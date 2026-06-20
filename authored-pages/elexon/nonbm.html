@@ -82,29 +82,24 @@
           <div class="card" style="padding:20px"><div class="tiny mb-8">BRONZE PATH</div><div class="mono small" style="word-break:break-all;margin-bottom:12px">data/bronze/elexon/nonbm/&lt;year&gt;/&lt;month&gt;/&lt;day&gt;/raw_&lt;uuid&gt;.json</div><div class="tiny mb-8">TRANSFORMER</div><div class="mono small">gridflow.silver.elexon.nonbm.NONBMTransformer</div></div>
         </div>
         <div data-tab-group="nonbm">
-          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('nonbm','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('nonbm','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('nonbm','py',this)" style="cursor:pointer">Python · polars</button></div>
+          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('nonbm','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('nonbm','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('nonbm','py',this)" style="cursor:pointer">Python · gridflow-models</button></div>
           <div data-tab-panel="nonbm-url" style="display:block"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">https://data.elexon.co.uk/bmrs/api/v1/datasets/NONBM?publishDateTimeFrom=2026-05-06T00:00Z&amp;publishDateTimeTo=2026-05-06T03:00Z&amp;format=json</pre></div></div>
           <div data-tab-panel="nonbm-sql" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto"><span class="c">-- Periods with significant NONBM dispatch over the last 30 days</span>
 SELECT settlement_date, settlement_period, generation_mw
-FROM read_parquet(<span class="s">'data/silver/elexon/nonbm/**/*.parquet'</span>)
+FROM silver_nonbm
 WHERE generation_mw &gt; 100
   AND settlement_date &gt;= current_date - INTERVAL 30 DAY
 ORDER BY generation_mw DESC, settlement_date, settlement_period
 LIMIT 50;</pre></div></div>
-          <div data-tab-panel="nonbm-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">import polars as pl
+          <div data-tab-panel="nonbm-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-nb = pl.read_parquet(<span class="s">"data/silver/elexon/nonbm/**/*.parquet"</span>)
-<span class="c"># Hour-of-day NONBM dispatch profile</span>
-profile = (
-    nb.with_columns(pl.col(<span class="s">"timestamp_utc"</span>).dt.hour().alias(<span class="s">"hour"</span>))
-      .group_by(<span class="s">"hour"</span>)
-      .agg([
-          pl.col(<span class="s">"generation_mw"</span>).mean().alias(<span class="s">"avg_mw"</span>),
-          pl.col(<span class="s">"generation_mw"</span>).max().alias(<span class="s">"peak_mw"</span>),
-      ])
-      .sort(<span class="s">"hour"</span>)
-)
-print(profile)</pre></div></div>
+data, models, common = setup_notebook()
+
+<span class="c"># nonbm: stored silver rows as a pandas DataFrame</span>
+df = data.elexon.query(<span class="s">"nonbm"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.elexon.describe(<span class="s">"nonbm"</span>)</pre></div></div>
         </div>
       </section>
       <section id="related" style="margin-bottom:56px" data-screen-label="Related">

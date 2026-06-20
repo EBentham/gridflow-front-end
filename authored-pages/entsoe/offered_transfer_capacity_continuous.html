@@ -201,14 +201,14 @@
           <table class="schema-table">
             <thead><tr><th scope="col" style="width: 22%;">Column</th><th scope="col" style="width: 14%;">Type</th><th scope="col" style="width: 8%; text-align:center;">Nullable</th><th scope="col">Description</th></tr></thead>
             <tbody>
-              <tr><td class="col-name">timestamp_utc <span class="pk-badge">PK</span></td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">tz-aware UTC. Source: <code class="mono">&lt;Period&gt;</code> start + <code class="mono">position × resolution</code>.<span class="cite">schemas/entsoe.py L560</span></td></tr>
-              <tr><td class="col-name">in_area_code <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Source zone EIC (capitalised <code class="mono">In_Domain</code> param on this variant).<span class="cite">schemas/entsoe.py L561 · endpoints.py L195</span></td></tr>
-              <tr><td class="col-name">out_area_code <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Destination zone EIC.<span class="cite">schemas/entsoe.py L562</span></td></tr>
-              <tr><td class="col-name">quantity_mw</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Offered MW (directional).<span class="cite">schemas/entsoe.py L563</span></td></tr>
-              <tr><td class="col-name">business_type <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Carries the auction-type code. Default <code class="mono">""</code>.<span class="cite">schemas/entsoe.py L564</span></td></tr>
-              <tr><td class="col-name">resolution</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">ISO duration; typically <code class="mono">PT60M</code>.<span class="cite">schemas/entsoe.py L565</span></td></tr>
-              <tr><td class="col-name">data_provider</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsoe"</code>.<span class="cite">schemas/entsoe.py L566</span></td></tr>
-              <tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Set at silver write.<span class="cite">schemas/entsoe.py L567</span></td></tr>
+              <tr><td class="col-name">timestamp_utc <span class="pk-badge">PK</span></td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">tz-aware UTC. Source: <code class="mono">&lt;Period&gt;</code> start + <code class="mono">position × resolution</code>.</td></tr>
+              <tr><td class="col-name">in_area_code <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Source zone EIC (capitalised <code class="mono">In_Domain</code> param on this variant).</td></tr>
+              <tr><td class="col-name">out_area_code <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Destination zone EIC.</td></tr>
+              <tr><td class="col-name">quantity_mw</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Offered MW (directional).</td></tr>
+              <tr><td class="col-name">business_type <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Carries the auction-type code. Default <code class="mono">""</code>.</td></tr>
+              <tr><td class="col-name">resolution</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">ISO duration; typically <code class="mono">PT60M</code>.</td></tr>
+              <tr><td class="col-name">data_provider</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsoe"</code>.</td></tr>
+              <tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Set at silver write.</td></tr>
             </tbody>
           </table>
           <div class="card mt-24" style="padding: 16px 20px; display: flex; gap: 32px; align-items: start;">
@@ -259,7 +259,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('otcc','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('otcc','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('otcc','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('otcc','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="otcc-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;">https://web-api.tp.entsoe.eu/api
@@ -276,21 +276,23 @@
 <pre class="code dark" style="padding: 18px 22px;"><span class="c">-- Continuous-OTC offered vs realised flow (GB-FR)</span>
 <span class="k">SELECT</span> o.timestamp_utc, o.quantity_mw <span class="k">AS</span> offered,
        f.flow_mw <span class="k">AS</span> realised, o.quantity_mw - abs(f.flow_mw) <span class="k">AS</span> unused_mw
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/entsoe/offered_transfer_capacity_continuous/**/*.parquet'</span>) o
-<span class="k">JOIN</span> read_parquet(<span class="s">'data/silver/entsoe/cross_border_flows/**/*.parquet'</span>) f
+<span class="k">FROM</span> silver_offered_transfer_capacity_continuous o
+<span class="k">JOIN</span> silver_cross_border_flows f
   <span class="k">ON</span> o.timestamp_utc = f.timestamp_utc
  <span class="k">AND</span> o.in_area_code = f.in_area_code
  <span class="k">AND</span> o.out_area_code = f.out_area_code
 <span class="k">ORDER BY</span> o.timestamp_utc <span class="k">DESC</span> <span class="k">LIMIT</span> 24;</pre>
             </div></div>
             <div data-tab-panel="otcc-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-otc = pl.read_parquet(<span class="s">"data/silver/entsoe/offered_transfer_capacity_continuous/**/*.parquet"</span>)
-<span class="c"># Per-border offered capacity profile — does it follow NTC?</span>
-<span class="k">print</span>(otc.group_by([<span class="s">"in_area_code"</span>, <span class="s">"out_area_code"</span>]).agg(
-    pl.col(<span class="s">"quantity_mw"</span>).mean().alias(<span class="s">"mean_offered_mw"</span>)
-))</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># offered_transfer_capacity_continuous: stored silver rows as a pandas DataFrame</span>
+df = data.entsoe.query(<span class="s">"offered_transfer_capacity_continuous"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.entsoe.describe(<span class="s">"offered_transfer_capacity_continuous"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -300,11 +302,11 @@ otc = pl.read_parquet(<span class="s">"data/silver/entsoe/offered_transfer_capac
           <h2 class="display-3 mb-8">Things to know before using this.</h2>
           <p class="small mb-24" style="max-width: 560px;">These are specific to <code class="mono">offered_transfer_capacity_continuous</code>. Also read the <a href="../entsoe.html#about" class="link">ENTSO-E-wide caveats</a> on the vendor page.</p>
           <div>
-            <div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;">A31 doc type shared across explicit / implicit / continuous</div><p class="small" style="margin: 0;">A31 is reused for three datasets — <code class="mono">offered_transfer_capacity_continuous</code>, <code class="mono">_explicit</code>, <code class="mono">_implicit</code> — differentiated by <code class="mono">Auction.Type</code> and <code class="mono">Contract_MarketAgreement.Type</code> extra params (capitalisation varies between variants). Select on dataset key, not DocumentType alone. <span class="src-cite">endpoints.py L186-228</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;">Capitalised domain params (<code class="mono">In_Domain</code> / <code class="mono">Out_Domain</code>)</div><p class="small" style="margin: 0;">A31 continuous uses <code class="mono">In_Domain</code> / <code class="mono">Out_Domain</code> (capitalised). The implicit and explicit variants use lowercase <code class="mono">in_Domain</code> / <code class="mono">out_Domain</code> — easy footgun. <span class="src-cite">endpoints.py L195</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;">Pydantic class is shared (H6 family)</div><p class="small" style="margin: 0;"><code class="mono">EntsoeTransmissionMarketQuantity</code> is shared across 12 H6 datasets. Reconciliation finding <code class="mono">58-offered-transfer-capacity-continuous-no-table.md</code> (wontfix v3-candidate) is stale — class exists. <span class="src-cite">schemas/entsoe.py L557</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;">Revisions overwrite</div><p class="small" style="margin: 0;">Same <code class="mono">(timestamp_utc, in_area_code, out_area_code, business_type)</code> re-publication overwrites silently on dedup. <span class="src-cite">silver/entsoe/h6_market.py L85-91</span></p></div></div>
-            <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">Entitlement-blocked on default API key</div><p class="small" style="margin: 0;">Live API returns HTTP 401 for the unregistered gridflow default key. <span class="src-cite">.planning/reconciliation/entsoe/20-offered-transfer-capacity-continuous-http-401.md</span></p></div></div>
+            <div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;">A31 doc type shared across explicit / implicit / continuous</div><p class="small" style="margin: 0;">A31 is reused for three datasets — <code class="mono">offered_transfer_capacity_continuous</code>, <code class="mono">_explicit</code>, <code class="mono">_implicit</code> — differentiated by <code class="mono">Auction.Type</code> and <code class="mono">Contract_MarketAgreement.Type</code> extra params (capitalisation varies between variants). Select on dataset key, not DocumentType alone. </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;">Capitalised domain params (<code class="mono">In_Domain</code> / <code class="mono">Out_Domain</code>)</div><p class="small" style="margin: 0;">A31 continuous uses <code class="mono">In_Domain</code> / <code class="mono">Out_Domain</code> (capitalised). The implicit and explicit variants use lowercase <code class="mono">in_Domain</code> / <code class="mono">out_Domain</code> — easy footgun. </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;">Pydantic class is shared (H6 family)</div><p class="small" style="margin: 0;"><code class="mono">EntsoeTransmissionMarketQuantity</code> is shared across 12 H6 datasets. Reconciliation finding <code class="mono">58-offered-transfer-capacity-continuous-no-table.md</code> (wontfix v3-candidate) is stale — class exists. </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;">Revisions overwrite</div><p class="small" style="margin: 0;">Same <code class="mono">(timestamp_utc, in_area_code, out_area_code, business_type)</code> re-publication overwrites silently on dedup. </p></div></div>
+            <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">Entitlement-blocked on default API key</div><p class="small" style="margin: 0;">Live API returns HTTP 401 for the unregistered gridflow default key. </p></div></div>
           </div>
         </section>
 

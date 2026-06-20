@@ -209,43 +209,43 @@
                 <td class="col-name">timestamp_utc <span class="pk-badge">PK</span></td>
                 <td class="col-type">datetime[UTC]</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">Half-hour period start. UTC enforced. Source: <code class="mono">from</code>. <span class="cite">schemas/neso.py L20, L23-28</span></td>
+                <td class="col-note">Half-hour period start. UTC enforced. Source: <code class="mono">from</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">period_end_utc</td>
                 <td class="col-type">datetime[UTC]</td>
                 <td style="text-align:center;" class="nullable">null</td>
-                <td class="col-note">Half-hour period end. Source: <code class="mono">to</code>. <span class="cite">schemas/neso.py L21</span></td>
+                <td class="col-note">Half-hour period end. Source: <code class="mono">to</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">forecast_gco2_kwh</td>
                 <td class="col-type">float | None</td>
                 <td style="text-align:center;" class="nullable">null</td>
-                <td class="col-note">Forecast carbon intensity. Source: <code class="mono">intensity.forecast</code>. <span class="cite">schemas/neso.py L34</span></td>
+                <td class="col-note">Forecast carbon intensity. Source: <code class="mono">intensity.forecast</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">actual_gco2_kwh</td>
                 <td class="col-type">float | None</td>
                 <td style="text-align:center;" class="nullable">null</td>
-                <td class="col-note">Post-period estimate. Source: <code class="mono">intensity.actual</code>. <span class="cite">schemas/neso.py L35</span></td>
+                <td class="col-note">Post-period estimate. Source: <code class="mono">intensity.actual</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">intensity_index</td>
                 <td class="col-type">str</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">Categorical: <code class="mono">very low</code> … <code class="mono">very high</code>. Source: <code class="mono">intensity.index</code>. <span class="cite">schemas/neso.py L12, L36</span></td>
+                <td class="col-note">Categorical: <code class="mono">very low</code> … <code class="mono">very high</code>. Source: <code class="mono">intensity.index</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">data_provider</td>
                 <td class="col-type">str</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">Always <code class="mono">"neso"</code>. <span class="cite">schemas/neso.py L16</span></td>
+                <td class="col-note">Always <code class="mono">"neso"</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">ingested_at</td>
                 <td class="col-type">datetime[UTC]</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">Silver transform timestamp. <span class="cite">silver/neso/carbon_intensity.py L469-474</span></td>
+                <td class="col-note">Silver transform timestamp. </td>
               </tr>
             </tbody>
           </table>
@@ -314,7 +314,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('ds','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('ds','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('ds','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('ds','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="ds-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;"><span class="c"># Header: Accept: application/json</span>
@@ -328,12 +328,20 @@ https://api.carbonintensity.org.uk/intensity/2026-05-06T12:00Z</pre>
 )
 <span class="k">SELECT</span> e.event_ts, ci.actual_gco2_kwh, ci.intensity_index
 <span class="k">FROM</span> events e
-<span class="k">LEFT JOIN</span> read_parquet(<span class="s">'data/silver/neso/intensity_at/**/*.parquet'</span>) ci
+<span class="k">LEFT JOIN</span> silver_intensity_at ci
   <span class="k">ON</span> ci.timestamp_utc = date_trunc(<span class="s">'hour'</span>, e.event_ts)
 <span class="k">ORDER BY</span> e.event_ts;</pre>
             </div></div>
             <div data-tab-panel="ds-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"></pre>
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
+
+data, models, common = setup_notebook()
+
+<span class="c"># intensity_at: stored silver rows as a pandas DataFrame</span>
+df = data.neso.query(<span class="s">"intensity_at"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.neso.describe(<span class="s">"intensity_at"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -348,28 +356,28 @@ https://api.carbonintensity.org.uk/intensity/2026-05-06T12:00Z</pre>
               <div class="caveat-num">01</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Single-row endpoint — use for point lookups, not series</div>
-                <p class="small" style="margin: 0;">Each call returns one record (the half-hour ending at <code class="mono">{from}</code>). For series, use <code class="mono">carbon_intensity</code> or <code class="mono">intensity_date</code>. <span class="src-cite"><code class="mono">connectors/neso/endpoints.py L83-89</code>.</span></p>
+                <p class="small" style="margin: 0;">Each call returns one record (the half-hour ending at <code class="mono">{from}</code>). For series, use <code class="mono">carbon_intensity</code> or <code class="mono">intensity_date</code>. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">02</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Datetime granularity — half-hour boundary</div>
-                <p class="small" style="margin: 0;">The API snaps <code class="mono">{from}</code> to the enclosing settlement-period boundary. Pass <code class="mono">12:00Z</code>, <code class="mono">12:15Z</code>, <code class="mono">12:29Z</code> and you get the same SP (<code class="mono">12:00..12:30</code>). <span class="src-cite">NESO docs — settlement-period semantics.</span></p>
+                <p class="small" style="margin: 0;">The API snaps <code class="mono">{from}</code> to the enclosing settlement-period boundary. Pass <code class="mono">12:00Z</code>, <code class="mono">12:15Z</code>, <code class="mono">12:29Z</code> and you get the same SP (<code class="mono">12:00..12:30</code>). </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">03</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Future datetimes return forecast only</div>
-                <p class="small" style="margin: 0;">Calling with a datetime later than the current SP returns <code class="mono">actual_gco2_kwh = null</code>. <span class="src-cite">vault Known Issues L104.</span></p>
+                <p class="small" style="margin: 0;">Calling with a datetime later than the current SP returns <code class="mono">actual_gco2_kwh = null</code>. </p>
               </div>
             </div>
             <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;">
               <div class="caveat-num">04</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Transformer is dynamically generated</div>
-                <p class="small" style="margin: 0;"><code class="mono">IntensityAtTransformer</code> is created at import time via <code class="mono">type()</code> in <code class="mono">register_neso_transformers()</code>. <span class="src-cite"><code class="mono">silver/neso/carbon_intensity.py L110-136</code>.</span></p>
+                <p class="small" style="margin: 0;"><code class="mono">IntensityAtTransformer</code> is created at import time via <code class="mono">type()</code> in <code class="mono">register_neso_transformers()</code>. </p>
               </div>
             </div>
           </div>

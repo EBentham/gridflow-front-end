@@ -84,7 +84,7 @@
           <div class="card" style="padding:20px"><div class="tiny mb-8">BRONZE PATH</div><div class="mono small" style="word-break:break-all;margin-bottom:12px">data/bronze/elexon/fou2t14d/&lt;year&gt;/&lt;month&gt;/&lt;day&gt;/raw_&lt;uuid&gt;.json</div><div class="tiny mb-8">TRANSFORMER</div><div class="mono small">gridflow.silver.elexon.fou2t14d.FOU2T14DTransformer</div></div>
         </div>
         <div data-tab-group="fou2t14d">
-          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('fou2t14d','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('fou2t14d','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('fou2t14d','py',this)" style="cursor:pointer">Python · polars</button></div>
+          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('fou2t14d','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('fou2t14d','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('fou2t14d','py',this)" style="cursor:pointer">Python · gridflow-models</button></div>
           <div data-tab-panel="fou2t14d-url" style="display:block"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">https://data.elexon.co.uk/bmrs/api/v1/datasets/FOU2T14D?publishDateTimeFrom=2026-05-06T00:00Z&amp;publishDateTimeTo=2026-05-06T03:00Z&amp;format=json</pre></div></div>
           <div data-tab-panel="fou2t14d-sql" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto"><span class="c">-- Latest-revision forward availability by fuel and delivery date</span>
 SELECT settlement_date, fuel_type, output_usable_mw
@@ -94,22 +94,20 @@ FROM (
            PARTITION BY settlement_date, fuel_type
            ORDER BY ingested_at DESC
          ) AS rn
-  FROM read_parquet(<span class="s">'data/silver/elexon/fou2t14d/**/*.parquet'</span>)
+  FROM silver_fou2t14d
 )
 WHERE rn = 1
   AND settlement_date BETWEEN current_date AND current_date + INTERVAL 14 DAY
 ORDER BY settlement_date, fuel_type;</pre></div></div>
-          <div data-tab-panel="fou2t14d-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">import polars as pl
+          <div data-tab-panel="fou2t14d-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-df = pl.read_parquet(<span class="s">"data/silver/elexon/fou2t14d/**/*.parquet"</span>)
-<span class="c"># Latest-revision selection per (settlement_date, fuel_type)</span>
-latest = (
-    df.sort(<span class="s">"ingested_at"</span>, descending=True)
-      .group_by([<span class="s">"settlement_date"</span>, <span class="s">"fuel_type"</span>])
-      .first()
-      .sort([<span class="s">"settlement_date"</span>, <span class="s">"fuel_type"</span>])
-)
-print(latest.head(20))</pre></div></div>
+data, models, common = setup_notebook()
+
+<span class="c"># fou2t14d: stored silver rows as a pandas DataFrame</span>
+df = data.elexon.query(<span class="s">"fou2t14d"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.elexon.describe(<span class="s">"fou2t14d"</span>)</pre></div></div>
         </div>
       </section>
       <section id="related" style="margin-bottom:56px" data-screen-label="Related">

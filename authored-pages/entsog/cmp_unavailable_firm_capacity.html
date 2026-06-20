@@ -257,18 +257,18 @@
               </tr>
             </thead>
             <tbody>
-<tr><td class="col-name">id <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Vendor concatenation. Dedup key. <span class="cite">silver/entsog/generic.py L126-130</span></td></tr>
-<tr><td class="col-name">timestamp_utc</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Set from <code class="mono">capacityFrom</code> via <code class="mono">_TIMESTAMP_PRIORITY</code>. Partition driver. <span class="cite">silver/entsog/generic.py L118-120, L45-53</span></td></tr>
-<tr><td class="col-name">capacity_from / capacity_to</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Capacity-validity window. <span class="cite">silver/entsog/datetime.py</span></td></tr>
-<tr><td class="col-name">operator_key / point_key / direction_key</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Operator-point-direction identity. <code class="mono">direction_key</code> is <strong>capitalised</strong> on this endpoint (<code class="mono">"Exit"</code>/<code class="mono">"Entry"</code>). <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">unavailable_capacity</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Firm capacity declared unavailable. <span class="cite">silver/entsog/generic.py L65-77 (_NUMERIC_NAMES)</span></td></tr>
-<tr><td class="col-name">available_capacity</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Currently available portion. <span class="cite">silver/entsog/generic.py L65-77</span></td></tr>
-<tr><td class="col-name">technical_capacity</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Maximum technical capacity (reference ceiling). <span class="cite">silver/entsog/generic.py L65-77</span></td></tr>
-<tr><td class="col-name">unit</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Always <code class="mono">"kWh/d"</code> — gas convention, <strong>NOT MWh</strong>. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">is_cam_relevant / is_cmp_relevant</td><td class="col-type">bool</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Regulatory relevance flags (CAM / CMP). <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">last_update_date_time</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Vendor publication timestamp. <span class="cite">silver/entsog/datetime.py</span></td></tr>
-<tr><td class="col-name">data_provider</td><td class="col-type">str ("entsog")</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsog"</code>. Constant. <span class="cite">silver/entsog/generic.py L132-136</span></td></tr>
-<tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Wall-clock at silver write. <span class="cite">silver/entsog/generic.py L132-136</span></td></tr>
+<tr><td class="col-name">id <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Vendor concatenation. Dedup key. </td></tr>
+<tr><td class="col-name">timestamp_utc</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Set from <code class="mono">capacityFrom</code> via <code class="mono">_TIMESTAMP_PRIORITY</code>. Partition driver. </td></tr>
+<tr><td class="col-name">capacity_from / capacity_to</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Capacity-validity window. </td></tr>
+<tr><td class="col-name">operator_key / point_key / direction_key</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Operator-point-direction identity. <code class="mono">direction_key</code> is <strong>capitalised</strong> on this endpoint (<code class="mono">"Exit"</code>/<code class="mono">"Entry"</code>). </td></tr>
+<tr><td class="col-name">unavailable_capacity</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Firm capacity declared unavailable. </td></tr>
+<tr><td class="col-name">available_capacity</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Currently available portion. </td></tr>
+<tr><td class="col-name">technical_capacity</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Maximum technical capacity (reference ceiling). </td></tr>
+<tr><td class="col-name">unit</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Always <code class="mono">"kWh/d"</code> — gas convention, <strong>NOT MWh</strong>. </td></tr>
+<tr><td class="col-name">is_cam_relevant / is_cmp_relevant</td><td class="col-type">bool</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Regulatory relevance flags (CAM / CMP). </td></tr>
+<tr><td class="col-name">last_update_date_time</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Vendor publication timestamp. </td></tr>
+<tr><td class="col-name">data_provider</td><td class="col-type">str ("entsog")</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsog"</code>. Constant. </td></tr>
+<tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Wall-clock at silver write. </td></tr>
             </tbody>
           </table>
           <div class="card mt-24" style="padding: 16px 20px; display: flex; gap: 32px; align-items: start;">
@@ -337,7 +337,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('cuf','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('cuf','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('cuf','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('cuf','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="cuf-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;">https://transparency.entsog.eu/api/v1/cmpUnavailables<span style="color:#6b6358;">?</span><span style="color:#c9a96e;">from</span>=2026-05-06<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">to</span>=2026-05-06<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">timeZone</span>=UCT<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">periodType</span>=day<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">forceDownload</span>=true<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">limit</span>=-1</pre>
@@ -349,24 +349,21 @@
        MAX_BY(technical_capacity, capacity_from)   / <span class="num">1e6</span> <span class="k">AS</span> technical_gwh,
        (MAX_BY(unavailable_capacity, capacity_from) * <span class="num">100.0</span>
         / NULLIF(MAX_BY(technical_capacity, capacity_from), <span class="num">0</span>)) <span class="k">AS</span> pct_unavailable
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/entsog/cmp_unavailable_firm_capacity/**/*.parquet'</span>)
+<span class="k">FROM</span> silver_cmp_unavailable_firm_capacity
 <span class="k">WHERE</span> capacity_from &lt;= current_date <span class="k">AND</span> capacity_to &gt; current_date
 <span class="k">GROUP BY</span> <span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>
 <span class="k">ORDER BY</span> pct_unavailable <span class="k">DESC</span>;</pre>
             </div></div>
             <div data-tab-panel="cuf-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-df = pl.read_parquet(<span class="s">"data/silver/entsog/cmp_unavailable_firm_capacity/**/*.parquet"</span>)
-<span class="c"># How does unavailability evolve year-over-year at Bacton?</span>
-yoy = (
-    df.filter(pl.col(<span class="s">"point_key"</span>) == <span class="s">"ITP-00005"</span>)
-      .with_columns(pl.col(<span class="s">"capacity_from"</span>).dt.year().alias(<span class="s">"year"</span>))
-      .group_by(<span class="s">"year"</span>)
-      .agg((pl.col(<span class="s">"unavailable_capacity"</span>).mean() / <span class="num">1e6</span>).alias(<span class="s">"avg_unavailable_gwh"</span>))
-      .sort(<span class="s">"year"</span>)
-)
-print(yoy)</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># cmp_unavailable_firm_capacity: stored silver rows as a pandas DataFrame</span>
+df = data.entsog.query(<span class="s">"cmp_unavailable_firm_capacity"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.entsog.describe(<span class="s">"cmp_unavailable_firm_capacity"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -377,11 +374,11 @@ print(yoy)</pre>
           <h2 class="display-3 mb-8">Things to know before using this.</h2>
           <p class="small mb-24" style="max-width: 560px;">These are specific to <code class="mono">cmp_unavailable_firm_capacity</code>. Also read the <a href="../entsog.html#about" class="link">ENTSO-G-wide caveats</a> on the vendor page.</p>
           <div>
-<div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">direction_key</code> is capitalised (<code class="mono">"Exit"</code>/<code class="mono">"Entry"</code>)</div><p class="small" style="margin: 0;">CMP-family endpoints capitalise direction values — unlike <code class="mono">/operationalData</code>. Lowercase both sides for cross-family joins. <span class="src-cite">vault Known Issues; CMP-family convention</span></p></div></div>
-<div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;">Triggers UIOLI / oversubscription</div><p class="small" style="margin: 0;">When <code class="mono">unavailable_capacity</code> is significant relative to <code class="mono">technical_capacity</code>, the TSO is required to consider UIOLI long-term or oversubscription. Pair with the <code class="mono">available_through_*</code> datasets to verify the response. <span class="src-cite">ENTSO-G CMP Network Code</span></p></div></div>
-<div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">timeZone=UCT</code> (vendor typo, intentional)</div><p class="small" style="margin: 0;">Connector sends <code class="mono">UCT</code> not <code class="mono">UTC</code>; sending <code class="mono">UTC</code> returns HTTP 400. <span class="src-cite">connectors/entsog/endpoints.py L17 · ENTSOG_TIMEZONE</span></p></div></div>
-<div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;">Empty windows return HTTP 404, not 200</div><p class="small" style="margin: 0;">ENTSO-G's empty convention is <code class="mono">HTTP 404 + {"message":"No result found"}</code>. Connector short-circuits as empty-bronze. <span class="src-cite">connectors/entsog/client.py L24-28, L109-115</span></p></div></div>
-<div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">available</code> + <code class="mono">unavailable</code> typically &lt; <code class="mono">technical</code></div><p class="small" style="margin: 0;">The residual is TSO-reserved (system balancing, frequency control). Don't model <code class="mono">technical = available + unavailable</code> exactly. <span class="src-cite">ENTSO-G data dictionary</span></p></div></div>
+<div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">direction_key</code> is capitalised (<code class="mono">"Exit"</code>/<code class="mono">"Entry"</code>)</div><p class="small" style="margin: 0;">CMP-family endpoints capitalise direction values — unlike <code class="mono">/operationalData</code>. Lowercase both sides for cross-family joins. </p></div></div>
+<div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;">Triggers UIOLI / oversubscription</div><p class="small" style="margin: 0;">When <code class="mono">unavailable_capacity</code> is significant relative to <code class="mono">technical_capacity</code>, the TSO is required to consider UIOLI long-term or oversubscription. Pair with the <code class="mono">available_through_*</code> datasets to verify the response. </p></div></div>
+<div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">timeZone=UCT</code> (vendor typo, intentional)</div><p class="small" style="margin: 0;">Connector sends <code class="mono">UCT</code> not <code class="mono">UTC</code>; sending <code class="mono">UTC</code> returns HTTP 400. </p></div></div>
+<div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;">Empty windows return HTTP 404, not 200</div><p class="small" style="margin: 0;">ENTSO-G's empty convention is <code class="mono">HTTP 404 + {"message":"No result found"}</code>. Connector short-circuits as empty-bronze. </p></div></div>
+<div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">available</code> + <code class="mono">unavailable</code> typically &lt; <code class="mono">technical</code></div><p class="small" style="margin: 0;">The residual is TSO-reserved (system balancing, frequency control). Don't model <code class="mono">technical = available + unavailable</code> exactly. </p></div></div>
           </div>
         </section>
 

@@ -82,27 +82,24 @@
           <div class="card" style="padding:20px"><div class="tiny mb-8">BRONZE PATH</div><div class="mono small" style="word-break:break-all;margin-bottom:12px">data/bronze/elexon/indod/&lt;year&gt;/&lt;month&gt;/&lt;day&gt;/raw_&lt;uuid&gt;.json</div><div class="tiny mb-8">TRANSFORMER</div><div class="mono small">gridflow.silver.elexon.indod.INDODTransformer</div></div>
         </div>
         <div data-tab-group="indod">
-          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('indod','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('indod','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('indod','py',this)" style="cursor:pointer">Python · polars</button></div>
+          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('indod','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('indod','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('indod','py',this)" style="cursor:pointer">Python · gridflow-models</button></div>
           <div data-tab-panel="indod-url" style="display:block"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">https://data.elexon.co.uk/bmrs/api/v1/datasets/INDOD?publishDateTimeFrom=2026-04-01T00:00Z&amp;publishDateTimeTo=2026-04-02T00:00Z&amp;format=json</pre></div></div>
           <div data-tab-panel="indod-sql" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto"><span class="c">-- Monthly demand totals over the last 12 months</span>
 SELECT date_trunc(<span class="s">'month'</span>, settlement_date) AS month,
        SUM(initial_demand_outturn_mw) AS monthly_mwh,
        AVG(initial_demand_outturn_mw) AS avg_daily_mwh
-FROM read_parquet(<span class="s">'data/silver/elexon/indod/**/*.parquet'</span>)
+FROM silver_indod
 WHERE settlement_date &gt;= current_date - INTERVAL 12 MONTH
 GROUP BY 1 ORDER BY 1;</pre></div></div>
-          <div data-tab-panel="indod-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">import polars as pl
+          <div data-tab-panel="indod-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-indod = pl.read_parquet(<span class="s">"data/silver/elexon/indod/**/*.parquet"</span>)
-<span class="c"># Year-on-year change in daily demand</span>
-yoy = (
-    indod.with_columns([
-        pl.col(<span class="s">"settlement_date"</span>).dt.year().alias(<span class="s">"year"</span>),
-        pl.col(<span class="s">"settlement_date"</span>).dt.ordinal_day().alias(<span class="s">"doy"</span>),
-    ])
-    .pivot(index=<span class="s">"doy"</span>, on=<span class="s">"year"</span>, values=<span class="s">"initial_demand_outturn_mw"</span>)
-)
-print(yoy.tail(10))</pre></div></div>
+data, models, common = setup_notebook()
+
+<span class="c"># indod: stored silver rows as a pandas DataFrame</span>
+df = data.elexon.query(<span class="s">"indod"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.elexon.describe(<span class="s">"indod"</span>)</pre></div></div>
         </div>
       </section>
       <section id="related" style="margin-bottom:56px" data-screen-label="Related">

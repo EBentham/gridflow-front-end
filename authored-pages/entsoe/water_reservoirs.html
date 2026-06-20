@@ -198,12 +198,12 @@
           <table class="schema-table">
             <thead><tr><th scope="col" style="width: 22%;">Column</th><th scope="col" style="width: 14%;">Type</th><th scope="col" style="width: 8%; text-align:center;">Nullable</th><th scope="col">Description</th></tr></thead>
             <tbody>
-              <tr><td class="col-name">timestamp_utc <span class="pk-badge">PK</span></td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Week boundary, tz-aware UTC. Source: <code class="mono">&lt;Period&gt;</code> start.<span class="cite">schemas/entsoe.py L243, L250-255</span></td></tr>
-              <tr><td class="col-name">area_code <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">EIC bidding zone — typically Nordic / Alpine. Source: <code class="mono">&lt;inBiddingZone_Domain.mRID&gt;</code>.<span class="cite">schemas/entsoe.py L244</span></td></tr>
-              <tr><td class="col-name">reservoir_mwh</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Stored energy in MWh (potential hydropower if released). Source: <code class="mono">&lt;Point&gt;&lt;quantity&gt;</code>.<span class="cite">schemas/entsoe.py L245</span></td></tr>
-              <tr><td class="col-name">resolution</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">ISO duration; typically <code class="mono">P7D</code>. Default <code class="mono">""</code>.<span class="cite">schemas/entsoe.py L246</span></td></tr>
-              <tr><td class="col-name">data_provider</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsoe"</code>.<span class="cite">schemas/entsoe.py L247</span></td></tr>
-              <tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Set at silver write.<span class="cite">schemas/entsoe.py L248</span></td></tr>
+              <tr><td class="col-name">timestamp_utc <span class="pk-badge">PK</span></td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Week boundary, tz-aware UTC. Source: <code class="mono">&lt;Period&gt;</code> start.</td></tr>
+              <tr><td class="col-name">area_code <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">EIC bidding zone — typically Nordic / Alpine. Source: <code class="mono">&lt;inBiddingZone_Domain.mRID&gt;</code>.</td></tr>
+              <tr><td class="col-name">reservoir_mwh</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Stored energy in MWh (potential hydropower if released). Source: <code class="mono">&lt;Point&gt;&lt;quantity&gt;</code>.</td></tr>
+              <tr><td class="col-name">resolution</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">ISO duration; typically <code class="mono">P7D</code>. Default <code class="mono">""</code>.</td></tr>
+              <tr><td class="col-name">data_provider</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsoe"</code>.</td></tr>
+              <tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Set at silver write.</td></tr>
             </tbody>
           </table>
           <div class="card mt-24" style="padding: 16px 20px; display: flex; gap: 32px; align-items: start; flex-wrap:wrap;">
@@ -255,7 +255,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('wr','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('wr','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('wr','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('wr','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="wr-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;">https://web-api.tp.entsoe.eu/api
@@ -272,21 +272,20 @@
        reservoir_mwh - lag(reservoir_mwh, 52) <span class="k">OVER</span> (
          <span class="k">PARTITION BY</span> area_code <span class="k">ORDER BY</span> timestamp_utc
        ) <span class="k">AS</span> yoy_change_mwh
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/entsoe/water_reservoirs/**/*.parquet'</span>)
+<span class="k">FROM</span> silver_water_reservoirs
 <span class="k">WHERE</span> area_code <span class="k">IN</span> (<span class="s">'10YNO-1--------2'</span>, <span class="s">'10Y1001A1001A44P'</span>)
 <span class="k">ORDER BY</span> area_code, timestamp_utc;</pre>
             </div></div>
             <div data-tab-panel="wr-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-res = pl.read_parquet(<span class="s">"data/silver/entsoe/water_reservoirs/**/*.parquet"</span>)
-prices = pl.read_parquet(<span class="s">"data/silver/entsoe/day_ahead_prices/**/*.parquet"</span>)
-<span class="c"># Weekly mean price vs reservoir level — the Nordic hydro-scarcity feature</span>
-weekly_p = prices.group_by_dynamic(<span class="s">"timestamp_utc"</span>, every=<span class="s">"1w"</span>).agg(
-    pl.col(<span class="s">"price_eur_mwh"</span>).mean()
-)
-joined = res.join(weekly_p, on=[<span class="s">"timestamp_utc"</span>, <span class="s">"area_code"</span>])
-<span class="k">print</span>(joined.tail())</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># water_reservoirs: stored silver rows as a pandas DataFrame</span>
+df = data.entsoe.query(<span class="s">"water_reservoirs"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.entsoe.describe(<span class="s">"water_reservoirs"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -296,11 +295,11 @@ joined = res.join(weekly_p, on=[<span class="s">"timestamp_utc"</span>, <span cl
           <h2 class="display-3 mb-8">Things to know before using this.</h2>
           <p class="small mb-24" style="max-width: 560px;">These are specific to <code class="mono">water_reservoirs</code>. Also read the <a href="../entsoe.html#about" class="link">ENTSO-E-wide caveats</a> on the vendor page.</p>
           <div>
-            <div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;">Only Nordic and Alpine zones publish</div><p class="small" style="margin: 0;">Most continental and GB zones return EMPTY — only zones with significant reservoir hydro (NO-1, SE-1, AT, CH) publish A72/A16. <span class="src-cite">vault Known Issues</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;">Unit is MWh (energy stored), not %</div><p class="small" style="margin: 0;">The value is <em>potential energy in MWh</em> if all reservoir water were released through the turbines, not a percentage of nameplate capacity. Compute percentage by joining against the TSO-declared maximum (rarely published — use rolling max). <span class="src-cite">ENTSO-E spec</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;">Weekly cadence (P7D)</div><p class="small" style="margin: 0;">Short windows (&lt;1 week) may return EMPTY. Use weekly periods. <span class="src-cite">vault Known Issues</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;">GB EMPTY post-Brexit</div><p class="small" style="margin: 0;">No GB hydro reservoir data via ENTSO-E. GB pumped-storage facilities (Dinorwig, Cruachan) are not "reservoirs" in the A72 sense. <span class="src-cite">vault Known Issues</span></p></div></div>
-            <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">Entitlement-blocked on default API key</div><p class="small" style="margin: 0;">Live API returns HTTP 401 for the unregistered gridflow default key. Schema verified from gridflow source. <span class="src-cite">.planning/reconciliation/entsoe/34-water-reservoirs-http-401.md</span></p></div></div>
+            <div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;">Only Nordic and Alpine zones publish</div><p class="small" style="margin: 0;">Most continental and GB zones return EMPTY — only zones with significant reservoir hydro (NO-1, SE-1, AT, CH) publish A72/A16. </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;">Unit is MWh (energy stored), not %</div><p class="small" style="margin: 0;">The value is <em>potential energy in MWh</em> if all reservoir water were released through the turbines, not a percentage of nameplate capacity. Compute percentage by joining against the TSO-declared maximum (rarely published — use rolling max). </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;">Weekly cadence (P7D)</div><p class="small" style="margin: 0;">Short windows (&lt;1 week) may return EMPTY. Use weekly periods. </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;">GB EMPTY post-Brexit</div><p class="small" style="margin: 0;">No GB hydro reservoir data via ENTSO-E. GB pumped-storage facilities (Dinorwig, Cruachan) are not "reservoirs" in the A72 sense. </p></div></div>
+            <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">Entitlement-blocked on default API key</div><p class="small" style="margin: 0;">Live API returns HTTP 401 for the unregistered gridflow default key. Schema verified from gridflow source. </p></div></div>
           </div>
         </section>
 

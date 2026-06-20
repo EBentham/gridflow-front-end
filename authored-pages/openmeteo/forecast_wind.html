@@ -215,26 +215,26 @@
               <tr><th scope="col" style="width: 28%;">Column</th><th scope="col" style="width: 13%;">Type</th><th scope="col" style="width: 8%; text-align:center;">Nullable</th><th scope="col">Description</th></tr>
             </thead>
             <tbody>
-              <tr><td class="col-name">timestamp_utc <span class="pk-badge">PK</span></td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">tz-aware UTC; hourly cadence. Validator requires tzinfo. Source: <code class="mono" style="font-size:11px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">hourly.time[i]</code>.<span class="cite">schemas/weather.py L26, L34-39</span></td></tr>
-              <tr><td class="col-name">location <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Site key from <code class="mono" style="font-size:11px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">WIND_LOCATIONS</code> — one of 12 (e.g. <code class="mono" style="font-size:11px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">hornsea</code>, <code class="mono" style="font-size:11px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">dogger_bank</code>, <code class="mono" style="font-size:11px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">whitelee</code>, <code class="mono" style="font-size:11px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">pen_y_cymoedd</code>).<span class="cite">schemas/weather.py L29 · connectors/openmeteo/endpoints.py L65-83</span></td></tr>
-              <tr><td class="col-name">latitude / longitude</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">WGS-84 decimal degrees (response value — may snap to grid cell).<span class="cite">schemas/weather.py L29</span></td></tr>
-              <tr><td class="col-name">temperature_2m_c</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Air temperature at 2 m, °C.<span class="cite">schemas/weather.py L76 · rename historical.py L111</span></td></tr>
-              <tr><td class="col-name">surface_pressure_hpa</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Surface pressure, hPa. Feeds the <code class="mono" style="font-size:11px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">air_density_kg_m3</code> derivation.<span class="cite">schemas/weather.py L77 · rename L113</span></td></tr>
-              <tr><td class="col-name">wind_speed_10m_mps</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Wind speed at 10 m, <strong>m/s</strong> (API km/h ÷3.6).<span class="cite">schemas/weather.py L80 · conversion L102</span></td></tr>
-              <tr><td class="col-name">wind_speed_80m_mps</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">80 m wind speed, m/s. Null when the underlying NWP model omits this height.<span class="cite">schemas/weather.py L81 · conversion L104</span></td></tr>
-              <tr><td class="col-name">wind_speed_100m_mps</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">100 m wind speed, m/s. Headline hub-height feature.<span class="cite">schemas/weather.py L82 · conversion L103</span></td></tr>
-              <tr><td class="col-name">wind_speed_120m_mps</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">120 m wind speed, m/s. Null when the NWP model omits this height.<span class="cite">schemas/weather.py L83 · conversion L105</span></td></tr>
-              <tr><td class="col-name">wind_speed_180m_mps</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">180 m wind speed, m/s. Null when the NWP model omits this height.<span class="cite">schemas/weather.py L84 · conversion L106</span></td></tr>
-              <tr><td class="col-name">wind_direction_10m / _80m / _100m / _120m / _180m_deg</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Wind direction at each height, degrees (0=N, 90=E). The 80 / 120 / 180 m fields go null when the model omits that height.<span class="cite">schemas/weather.py L86-90 · rename L127-131</span></td></tr>
-              <tr><td class="col-name">wind_gusts_10m_mps</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Peak gust at 10 m, m/s (km/h ÷3.6).<span class="cite">schemas/weather.py L92 · conversion L107</span></td></tr>
-              <tr><td class="col-name">cloud_cover_pct</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Total cloud cover, %.<span class="cite">schemas/weather.py L94 · rename L115</span></td></tr>
-              <tr><td class="col-name">cloud_cover_low / _mid / _high_pct</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Low / mid / high-altitude cloud cover, %.<span class="cite">schemas/weather.py L95-97 · rename L116-118</span></td></tr>
-              <tr><td class="col-name">dew_point_2m_c</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Dew point at 2 m, °C — proxy for icing risk on offshore blades.<span class="cite">schemas/weather.py L99 · rename L112</span></td></tr>
-              <tr><td class="col-name">precipitation_mm</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Hourly precipitation, mm.<span class="cite">schemas/weather.py L78 · rename L124</span></td></tr>
-              <tr><td class="col-name">air_density_kg_m3</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note"><code class="mono" style="font-size:11px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">surface_pressure_Pa / (287.05 × T_K)</code>. Power-curve density correction (standard 1.225 kg/m³). No unit-suffix rename.<span class="cite">schemas/weather.py L101 · derivation historical.py L241-252</span></td></tr>
-              <tr><td class="col-name">data_provider</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Constant <code class="mono" style="font-size:11px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">"open_meteo"</code> (underscore form).<span class="cite">schemas/weather.py L31 · stamp historical.py L221</span></td></tr>
-              <tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Wall-clock UTC at silver-build time.<span class="cite">schemas/weather.py L32</span></td></tr>
-              <tr><td class="col-name">event_time, available_at, source_run_id, dataset_version</td><td class="col-type">bitemporal</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">From <code class="mono" style="font-size:11px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">BaseSilverTransformer</code> (F0). <code class="mono" style="font-size:11px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">dataset_version="2.0.0"</code>.<span class="cite">BaseSilverTransformer</span></td></tr>
+              <tr><td class="col-name">timestamp_utc <span class="pk-badge">PK</span></td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">tz-aware UTC; hourly cadence. Validator requires tzinfo. Source: <code class="mono" style="font-size:11px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">hourly.time[i]</code>.</td></tr>
+              <tr><td class="col-name">location <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Site key from <code class="mono" style="font-size:11px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">WIND_LOCATIONS</code> — one of 12 (e.g. <code class="mono" style="font-size:11px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">hornsea</code>, <code class="mono" style="font-size:11px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">dogger_bank</code>, <code class="mono" style="font-size:11px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">whitelee</code>, <code class="mono" style="font-size:11px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">pen_y_cymoedd</code>).</td></tr>
+              <tr><td class="col-name">latitude / longitude</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">WGS-84 decimal degrees (response value — may snap to grid cell).</td></tr>
+              <tr><td class="col-name">temperature_2m_c</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Air temperature at 2 m, °C.</td></tr>
+              <tr><td class="col-name">surface_pressure_hpa</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Surface pressure, hPa. Feeds the <code class="mono" style="font-size:11px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">air_density_kg_m3</code> derivation.</td></tr>
+              <tr><td class="col-name">wind_speed_10m_mps</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Wind speed at 10 m, <strong>m/s</strong> (API km/h ÷3.6).</td></tr>
+              <tr><td class="col-name">wind_speed_80m_mps</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">80 m wind speed, m/s. Null when the underlying NWP model omits this height.</td></tr>
+              <tr><td class="col-name">wind_speed_100m_mps</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">100 m wind speed, m/s. Headline hub-height feature.</td></tr>
+              <tr><td class="col-name">wind_speed_120m_mps</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">120 m wind speed, m/s. Null when the NWP model omits this height.</td></tr>
+              <tr><td class="col-name">wind_speed_180m_mps</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">180 m wind speed, m/s. Null when the NWP model omits this height.</td></tr>
+              <tr><td class="col-name">wind_direction_10m / _80m / _100m / _120m / _180m_deg</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Wind direction at each height, degrees (0=N, 90=E). The 80 / 120 / 180 m fields go null when the model omits that height.</td></tr>
+              <tr><td class="col-name">wind_gusts_10m_mps</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Peak gust at 10 m, m/s (km/h ÷3.6).</td></tr>
+              <tr><td class="col-name">cloud_cover_pct</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Total cloud cover, %.</td></tr>
+              <tr><td class="col-name">cloud_cover_low / _mid / _high_pct</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Low / mid / high-altitude cloud cover, %.</td></tr>
+              <tr><td class="col-name">dew_point_2m_c</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Dew point at 2 m, °C — proxy for icing risk on offshore blades.</td></tr>
+              <tr><td class="col-name">precipitation_mm</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Hourly precipitation, mm.</td></tr>
+              <tr><td class="col-name">air_density_kg_m3</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note"><code class="mono" style="font-size:11px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">surface_pressure_Pa / (287.05 × T_K)</code>. Power-curve density correction (standard 1.225 kg/m³). No unit-suffix rename.</td></tr>
+              <tr><td class="col-name">data_provider</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Constant <code class="mono" style="font-size:11px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">"open_meteo"</code> (underscore form).</td></tr>
+              <tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Wall-clock UTC at silver-build time.</td></tr>
+              <tr><td class="col-name">event_time, available_at, source_run_id, dataset_version</td><td class="col-type">bitemporal</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">From <code class="mono" style="font-size:11px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">BaseSilverTransformer</code> (F0). <code class="mono" style="font-size:11px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">dataset_version="2.0.0"</code>.</td></tr>
             </tbody>
           </table>
 
@@ -290,7 +290,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('fw','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('fw','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('fw','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('fw','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="fw-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;">https://api.open-meteo.com/v1/forecast
@@ -310,28 +310,20 @@
        avg(wind_speed_100m_mps) <span class="k">FILTER</span> (<span class="k">WHERE</span> location <span class="k">IN</span>
          (<span class="s">'highland_central'</span>,<span class="s">'borders_crystalrig'</span>,<span class="s">'whitelee'</span>,<span class="s">'pen_y_cymoedd'</span>))
          <span class="k">AS</span> onshore_avg_100m_mps
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/open_meteo/forecast_wind/**/*.parquet'</span>)
+<span class="k">FROM</span> silver_forecast_wind
 <span class="k">WHERE</span> timestamp_utc &gt;= current_date
 <span class="k">GROUP BY</span> 1 <span class="k">ORDER BY</span> 1;</pre>
             </div></div>
             <div data-tab-panel="fw-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px; overflow-x:auto;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-df = pl.read_parquet(<span class="s">"data/silver/open_meteo/forecast_wind/**/*.parquet"</span>)
-<span class="c"># Power-curve-ready hub-height feature: prefer 100m, fall back to 10m x shear</span>
-power_input = (
-    df.with_columns(
-        pl.coalesce([
-            pl.col(<span class="s">"wind_speed_100m_mps"</span>),
-            pl.col(<span class="s">"wind_speed_10m_mps"</span>) * 1.4,  # rough shear bump
-        ]).alias(<span class="s">"hub_height_mps"</span>),
-        <span class="c"># Density-corrected effective wind speed (power-curve work)</span>
-        (pl.col(<span class="s">"hub_height_mps"</span>) * (pl.col(<span class="s">"air_density_kg_m3"</span>) / 1.225) ** (1/3))
-        .alias(<span class="s">"rho_corrected_mps"</span>),
-    )
-    .select([<span class="s">"timestamp_utc"</span>,<span class="s">"location"</span>,<span class="s">"hub_height_mps"</span>,<span class="s">"rho_corrected_mps"</span>])
-)
-print(power_input.tail(24))</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># forecast_wind: stored silver rows as a pandas DataFrame</span>
+df = data.open_meteo.query(<span class="s">"forecast_wind"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.open_meteo.describe(<span class="s">"forecast_wind"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -345,7 +337,7 @@ print(power_input.tail(24))</pre>
               <div class="caveat-num">01</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">No forecast_run_at — vintages overwrite silently</div>
-                <p class="small" style="margin: 0;">Dedup keeps the last silver row per <code class="mono" style="font-size:12px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">(timestamp_utc, location)</code>, overwriting prior forecast vintages on re-ingest. Lead-time backtests must pair against <code class="mono" style="font-size:12px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">historical_wind</code> at matching lead times. <span class="src-cite">vault Known Issues · silver/openmeteo/historical.py L217</span></p>
+                <p class="small" style="margin: 0;">Dedup keeps the last silver row per <code class="mono" style="font-size:12px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">(timestamp_utc, location)</code>, overwriting prior forecast vintages on re-ingest. Lead-time backtests must pair against <code class="mono" style="font-size:12px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">historical_wind</code> at matching lead times. </p>
               </div>
             </div>
             <div class="caveat-item discrepancy">
@@ -353,35 +345,35 @@ print(power_input.tail(24))</pre>
               <div>
                 <div class="eyebrow-discrepancy">DISCREPANCY · vault schema vs silver</div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Silver column names are unit-suffixed (F15-B)</div>
-                <p class="small" style="margin: 0;">Silver emits <code class="mono" style="font-size:12px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">wind_speed_10m_mps</code>, <code class="mono" style="font-size:12px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">wind_speed_100m_mps</code>…<code class="mono" style="font-size:12px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">180m_mps</code>, <code class="mono" style="font-size:12px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">wind_direction_*_deg</code>, <code class="mono" style="font-size:12px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">wind_gusts_10m_mps</code> with km/h→m/s ÷3.6 — the vault Silver Schema tables list the pre-rename names and are stale. Query the parquet with the suffixed forms. <span class="src-cite">silver/openmeteo/historical.py L101-134 · _output_columns L255-271</span></p>
+                <p class="small" style="margin: 0;">Silver emits <code class="mono" style="font-size:12px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">wind_speed_10m_mps</code>, <code class="mono" style="font-size:12px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">wind_speed_100m_mps</code>…<code class="mono" style="font-size:12px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">180m_mps</code>, <code class="mono" style="font-size:12px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">wind_direction_*_deg</code>, <code class="mono" style="font-size:12px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">wind_gusts_10m_mps</code> with km/h→m/s ÷3.6 — the vault Silver Schema tables list the pre-rename names and are stale. Query the parquet with the suffixed forms. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">03</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Hub-height nulls are model-driven, not silver bugs</div>
-                <p class="small" style="margin: 0;"><code class="mono" style="font-size:12px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">wind_speed_80/120/180m_mps</code> and matching directions go null when the NWP router selects a model that doesn't carry those heights (e.g. some GFS configs). Silver fabricates no values; <code class="mono" style="font-size:12px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">WindWeather</code> is permissive. Pin <code class="mono" style="font-size:12px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">models=ukmo_global</code> for stable hub-height coverage. <span class="src-cite">vault forecast_wind.md Known Issues "Hub-height nulls"</span></p>
+                <p class="small" style="margin: 0;"><code class="mono" style="font-size:12px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">wind_speed_80/120/180m_mps</code> and matching directions go null when the NWP router selects a model that doesn't carry those heights (e.g. some GFS configs). Silver fabricates no values; <code class="mono" style="font-size:12px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">WindWeather</code> is permissive. Pin <code class="mono" style="font-size:12px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">models=ukmo_global</code> for stable hub-height coverage. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">04</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">No NWP-model pinning by default</div>
-                <p class="small" style="margin: 0;">Open-Meteo's <code class="mono" style="font-size:12px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">/forecast</code> router selects an NWP model per request (UKMO / ECMWF / GFS / ICON). Hub-height availability shifts with model selection; pin via <code class="mono" style="font-size:12px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">&models=&lt;id&gt;</code> if reproducibility matters. <span class="src-cite">vault forecast_wind.md Known Issues "Unpinned NWP model"</span></p>
+                <p class="small" style="margin: 0;">Open-Meteo's <code class="mono" style="font-size:12px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">/forecast</code> router selects an NWP model per request (UKMO / ECMWF / GFS / ICON). Hub-height availability shifts with model selection; pin via <code class="mono" style="font-size:12px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">&models=&lt;id&gt;</code> if reproducibility matters. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">05</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Approximate site centroids (capacity-weighted, not NRO)</div>
-                <p class="small" style="margin: 0;">The 12 wind locations are capacity-weighted approximations per ADR-020, not per-turbine NRO coordinates. Sub-cluster resolution requires reading the ADR-020 trade-offs (vendor licensing + ergonomics). <span class="src-cite">docs/DECISION_LOG/ADR-020-openmeteo-location-approximation.md</span></p>
+                <p class="small" style="margin: 0;">The 12 wind locations are capacity-weighted approximations per ADR-020, not per-turbine NRO coordinates. Sub-cluster resolution requires reading the ADR-020 trade-offs (vendor licensing + ergonomics). </p>
               </div>
             </div>
             <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;">
               <div class="caveat-num">06</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Bronze path uses DOUBLE underscore separator</div>
-                <p class="small" style="margin: 0;">Bronze partitions are <code class="mono" style="font-size:12px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">bronze/open_meteo/forecast_wind__&lt;site&gt;/&lt;year&gt;/…</code> — a double underscore between dataset key and site. Silver <code class="mono" style="font-size:12px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">BRONZE_DATASET_PREFIX = "forecast_wind"</code> strips it on read; custom bronze-readers must match the <code class="mono" style="font-size:12px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">__</code> form or list zero files. <span class="src-cite">connectors/openmeteo/client.py L112 · silver/openmeteo/historical.py L142</span></p>
+                <p class="small" style="margin: 0;">Bronze partitions are <code class="mono" style="font-size:12px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">bronze/open_meteo/forecast_wind__&lt;site&gt;/&lt;year&gt;/…</code> — a double underscore between dataset key and site. Silver <code class="mono" style="font-size:12px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">BRONZE_DATASET_PREFIX = "forecast_wind"</code> strips it on read; custom bronze-readers must match the <code class="mono" style="font-size:12px; background: var(--paper-deep); padding: 2px 6px; border: 1px solid var(--rule);">__</code> form or list zero files. </p>
               </div>
             </div>
           </div>

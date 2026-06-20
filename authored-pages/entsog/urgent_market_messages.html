@@ -257,24 +257,24 @@
               </tr>
             </thead>
             <tbody>
-<tr><td class="col-name">id <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Vendor concatenation. Dedup key. <span class="cite">silver/entsog/generic.py L126-130</span></td></tr>
-<tr><td class="col-name">message_id</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Vendor-internal message ID. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">timestamp_utc</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Set from <code class="mono">publicationDateTime</code> via <code class="mono">_TIMESTAMP_PRIORITY</code> (publication wins). <span class="cite">silver/entsog/generic.py L118-120</span></td></tr>
-<tr><td class="col-name">publication_date_time</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">When the UMM was published. <span class="cite">silver/entsog/datetime.py</span></td></tr>
-<tr><td class="col-name">event_start / event_stop</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Outage window (vendor offsets converted to UTC). <span class="cite">silver/entsog/datetime.py</span></td></tr>
-<tr><td class="col-name">event_status / event_type / message_type</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note"><code class="mono">Active</code> / <code class="mono">Closed</code>; vendor event/message taxonomy. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">market_participant_key / _eic / _name</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">TSO identifiers. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">unavailability_type / unavailability_reason</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">When known. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">unit_measure</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Capacity unit when applicable. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">unavailable_capacity / available_capacity / technical_capacity</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Capacity figures in <code class="mono">unit_measure</code>. <span class="cite">silver/entsog/generic.py L65-77</span></td></tr>
-<tr><td class="col-name">balancing_zone_key / _eic / _name</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">When the UMM is zone-scoped. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">affected_asset_name / _eic</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Specific affected pipeline/station. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">remarks</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Free-text vendor narrative. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">u_mm_type</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note"><code class="mono">"Feeds"</code> etc. (collapsed from <code class="mono">uMMType</code> by <code class="mono">_normalise_column_names</code>). <span class="cite">silver/entsog/generic.py L264-290</span></td></tr>
-<tr><td class="col-name">is_latest_version</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note"><code class="mono">"Yes"</code> / <code class="mono">"No"</code> (string, not bool). <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">version_number / thread_id</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Revision tracking. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">data_provider</td><td class="col-type">str ("entsog")</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsog"</code>. Constant. <span class="cite">silver/entsog/generic.py L132-136</span></td></tr>
-<tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Wall-clock at silver write. <span class="cite">silver/entsog/generic.py L132-136</span></td></tr>
+<tr><td class="col-name">id <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Vendor concatenation. Dedup key. </td></tr>
+<tr><td class="col-name">message_id</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Vendor-internal message ID. </td></tr>
+<tr><td class="col-name">timestamp_utc</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Set from <code class="mono">publicationDateTime</code> via <code class="mono">_TIMESTAMP_PRIORITY</code> (publication wins). </td></tr>
+<tr><td class="col-name">publication_date_time</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">When the UMM was published. </td></tr>
+<tr><td class="col-name">event_start / event_stop</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Outage window (vendor offsets converted to UTC). </td></tr>
+<tr><td class="col-name">event_status / event_type / message_type</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note"><code class="mono">Active</code> / <code class="mono">Closed</code>; vendor event/message taxonomy. </td></tr>
+<tr><td class="col-name">market_participant_key / _eic / _name</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">TSO identifiers. </td></tr>
+<tr><td class="col-name">unavailability_type / unavailability_reason</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">When known. </td></tr>
+<tr><td class="col-name">unit_measure</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Capacity unit when applicable. </td></tr>
+<tr><td class="col-name">unavailable_capacity / available_capacity / technical_capacity</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Capacity figures in <code class="mono">unit_measure</code>. </td></tr>
+<tr><td class="col-name">balancing_zone_key / _eic / _name</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">When the UMM is zone-scoped. </td></tr>
+<tr><td class="col-name">affected_asset_name / _eic</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Specific affected pipeline/station. </td></tr>
+<tr><td class="col-name">remarks</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Free-text vendor narrative. </td></tr>
+<tr><td class="col-name">u_mm_type</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note"><code class="mono">"Feeds"</code> etc. (collapsed from <code class="mono">uMMType</code> by <code class="mono">_normalise_column_names</code>). </td></tr>
+<tr><td class="col-name">is_latest_version</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note"><code class="mono">"Yes"</code> / <code class="mono">"No"</code> (string, not bool). </td></tr>
+<tr><td class="col-name">version_number / thread_id</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Revision tracking. </td></tr>
+<tr><td class="col-name">data_provider</td><td class="col-type">str ("entsog")</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsog"</code>. Constant. </td></tr>
+<tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Wall-clock at silver write. </td></tr>
             </tbody>
           </table>
           <div class="card mt-24" style="padding: 16px 20px; display: flex; gap: 32px; align-items: start;">
@@ -343,7 +343,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('umm','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('umm','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('umm','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('umm','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="umm-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;">https://transparency.entsog.eu/api/v1/urgentMarketMessages<span style="color:#6b6358;">?</span><span style="color:#c9a96e;">limit</span>=-1</pre>
@@ -353,23 +353,21 @@
 <span class="k">SELECT</span> publication_date_time, market_participant_name, message_type,
        event_start, event_stop,
        unavailable_capacity / <span class="num">1e6</span> <span class="k">AS</span> unavailable_gwh
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/entsog/urgent_market_messages.parquet'</span>)
+<span class="k">FROM</span> silver_urgent_market_messages
 <span class="k">WHERE</span> event_status = <span class="s">'Active'</span>
   <span class="k">AND</span> event_start BETWEEN current_timestamp <span class="k">AND</span> current_timestamp + INTERVAL <span class="num">30</span> DAY
 <span class="k">ORDER BY</span> event_start;</pre>
             </div></div>
             <div data-tab-panel="umm-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-df = pl.read_parquet(<span class="s">"data/silver/entsog/urgent_market_messages.parquet"</span>)
-<span class="c"># UMM event count by TSO in the last year</span>
-recent = (
-    df.filter(pl.col(<span class="s">"publication_date_time"</span>) &gt;= pl.lit(<span class="s">"2025-05-01"</span>))
-      .group_by(<span class="s">"market_participant_name"</span>)
-      .agg(pl.len().alias(<span class="s">"events"</span>))
-      .sort(<span class="s">"events"</span>, descending=<span class="k">True</span>)
-)
-print(recent.head(<span class="num">15</span>))</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># urgent_market_messages: stored silver rows as a pandas DataFrame</span>
+df = data.entsog.query(<span class="s">"urgent_market_messages"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.entsog.describe(<span class="s">"urgent_market_messages"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -380,11 +378,11 @@ print(recent.head(<span class="num">15</span>))</pre>
           <h2 class="display-3 mb-8">Things to know before using this.</h2>
           <p class="small mb-24" style="max-width: 560px;">These are specific to <code class="mono">urgent_market_messages</code>. Also read the <a href="../entsog.html#about" class="link">ENTSO-G-wide caveats</a> on the vendor page.</p>
           <div>
-<div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;">Single-file reference dataset (no time partitions)</div><p class="small" style="margin: 0;">Output is <code class="mono">urgent_market_messages.parquet</code> overwritten on each refresh, not the partitioned <code class="mono">year=YYYY/month=MM/</code> layout used by other operational datasets. <span class="src-cite">silver/entsog/generic.py L196-202 · endpoints.py L198-205 reference=True</span></p></div></div>
-<div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;">No <code class="mono">from</code>/<code class="mono">to</code> query params</div><p class="small" style="margin: 0;">The endpoint returns a full UMM snapshot; pagination via <code class="mono">limit</code>+<code class="mono">offset</code> only. Connector sets <code class="mono">limit=-1</code> (all records). <span class="src-cite">vault Query-params table · endpoints.py L198-205</span></p></div></div>
-<div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">uMMType</code> → <code class="mono">u_mm_type</code> snake_case</div><p class="small" style="margin: 0;">Vendor camelCase <code class="mono">uMMType</code> is normalised to <code class="mono">u_mm_type</code> (the extra underscore between M and M is a <code class="mono">_camel_to_snake</code> artefact, not a typo). <span class="src-cite">silver/entsog/generic.py L257-261, L264-290</span></p></div></div>
-<div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">is_latest_version</code> is a string, not bool</div><p class="small" style="margin: 0;">Vendor returns <code class="mono">"Yes"</code>/<code class="mono">"No"</code> text — the transformer preserves it as <code class="mono">str</code>. Cast in DuckDB if you need a boolean predicate. <span class="src-cite">vault Bronze sample L95 · silver/entsog/generic.py does not coerce</span></p></div></div>
-<div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">Long-running events (years-spanning)</div><p class="small" style="margin: 0;">A single UMM can span years (e.g. the 2021 OGE notification with <code class="mono">eventStop=2030-01-01</code>). Filter on <code class="mono">eventStatus = "Active"</code> and the relevant <code class="mono">event_start</code> window, not on <code class="mono">publicationDateTime</code> alone. <span class="src-cite">vault Bronze sample L78-79</span></p></div></div>
+<div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;">Single-file reference dataset (no time partitions)</div><p class="small" style="margin: 0;">Output is <code class="mono">urgent_market_messages.parquet</code> overwritten on each refresh, not the partitioned <code class="mono">year=YYYY/month=MM/</code> layout used by other operational datasets. </p></div></div>
+<div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;">No <code class="mono">from</code>/<code class="mono">to</code> query params</div><p class="small" style="margin: 0;">The endpoint returns a full UMM snapshot; pagination via <code class="mono">limit</code>+<code class="mono">offset</code> only. Connector sets <code class="mono">limit=-1</code> (all records). </p></div></div>
+<div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">uMMType</code> → <code class="mono">u_mm_type</code> snake_case</div><p class="small" style="margin: 0;">Vendor camelCase <code class="mono">uMMType</code> is normalised to <code class="mono">u_mm_type</code> (the extra underscore between M and M is a <code class="mono">_camel_to_snake</code> artefact, not a typo). </p></div></div>
+<div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">is_latest_version</code> is a string, not bool</div><p class="small" style="margin: 0;">Vendor returns <code class="mono">"Yes"</code>/<code class="mono">"No"</code> text — the transformer preserves it as <code class="mono">str</code>. Cast in DuckDB if you need a boolean predicate. </p></div></div>
+<div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">Long-running events (years-spanning)</div><p class="small" style="margin: 0;">A single UMM can span years (e.g. the 2021 OGE notification with <code class="mono">eventStop=2030-01-01</code>). Filter on <code class="mono">eventStatus = "Active"</code> and the relevant <code class="mono">event_start</code> window, not on <code class="mono">publicationDateTime</code> alone. </p></div></div>
           </div>
         </section>
 

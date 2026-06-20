@@ -205,14 +205,14 @@
           <table class="schema-table">
             <thead><tr><th scope="col" style="width: 22%;">Column</th><th scope="col" style="width: 14%;">Type</th><th scope="col" style="width: 8%; text-align:center;">Nullable</th><th scope="col">Description</th></tr></thead>
             <tbody>
-              <tr><td class="col-name">timestamp_utc <span class="pk-badge">PK</span></td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">tz-aware UTC. Source: <code class="mono">&lt;Period&gt;</code> start + position × resolution.<span class="cite">schemas/entsoe.py L580</span></td></tr>
-              <tr><td class="col-name">in_area_code <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Single zone EIC. Source: <code class="mono">&lt;in_Domain.mRID&gt;</code>.<span class="cite">schemas/entsoe.py L581</span></td></tr>
-              <tr><td class="col-name">out_area_code <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">May equal in_area_code (single-zone surface). Source: <code class="mono">&lt;out_Domain.mRID&gt;</code>.<span class="cite">schemas/entsoe.py L582</span></td></tr>
-              <tr><td class="col-name">amount_eur</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">EUR cost. Source: <code class="mono">&lt;Point&gt;&lt;price.amount&gt;</code>.<span class="cite">schemas/entsoe.py L583</span></td></tr>
-              <tr><td class="col-name">business_type <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Cost category code. Default <code class="mono">""</code>.<span class="cite">schemas/entsoe.py L584</span></td></tr>
-              <tr><td class="col-name">resolution</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">ISO duration. Default <code class="mono">""</code>.<span class="cite">schemas/entsoe.py L585</span></td></tr>
-              <tr><td class="col-name">data_provider</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsoe"</code>.<span class="cite">schemas/entsoe.py L586</span></td></tr>
-              <tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Set at silver write.<span class="cite">schemas/entsoe.py L587</span></td></tr>
+              <tr><td class="col-name">timestamp_utc <span class="pk-badge">PK</span></td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">tz-aware UTC. Source: <code class="mono">&lt;Period&gt;</code> start + position × resolution.</td></tr>
+              <tr><td class="col-name">in_area_code <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Single zone EIC. Source: <code class="mono">&lt;in_Domain.mRID&gt;</code>.</td></tr>
+              <tr><td class="col-name">out_area_code <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">May equal in_area_code (single-zone surface). Source: <code class="mono">&lt;out_Domain.mRID&gt;</code>.</td></tr>
+              <tr><td class="col-name">amount_eur</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">EUR cost. Source: <code class="mono">&lt;Point&gt;&lt;price.amount&gt;</code>.</td></tr>
+              <tr><td class="col-name">business_type <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Cost category code. Default <code class="mono">""</code>.</td></tr>
+              <tr><td class="col-name">resolution</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">ISO duration. Default <code class="mono">""</code>.</td></tr>
+              <tr><td class="col-name">data_provider</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsoe"</code>.</td></tr>
+              <tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Set at silver write.</td></tr>
             </tbody>
           </table>
           <div class="card mt-24" style="padding: 16px 20px; display: flex; gap: 32px; align-items: start; flex-wrap:wrap;">
@@ -262,7 +262,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('cmc','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('cmc','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('cmc','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('cmc','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="cmc-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;">https://web-api.tp.entsoe.eu/api
@@ -278,27 +278,20 @@
 <span class="k">SELECT</span> date_trunc(<span class="s">'month'</span>, timestamp_utc) <span class="k">AS</span> month,
        in_area_code <span class="k">AS</span> zone,
        sum(amount_eur) <span class="k">AS</span> monthly_cost_eur
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/entsoe/congestion_management_costs/**/*.parquet'</span>)
+<span class="k">FROM</span> silver_congestion_management_costs
 <span class="k">WHERE</span> timestamp_utc &gt;= current_timestamp - <span class="k">INTERVAL</span> 365 <span class="k">DAY</span>
 <span class="k">GROUP BY</span> 1, 2 <span class="k">ORDER BY</span> 1 <span class="k">DESC</span>, monthly_cost_eur <span class="k">DESC</span>;</pre>
             </div></div>
             <div data-tab-panel="cmc-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-cost = pl.read_parquet(<span class="s">"data/silver/entsoe/congestion_management_costs/**/*.parquet"</span>)
-income = pl.read_parquet(<span class="s">"data/silver/entsoe/congestion_income/**/*.parquet"</span>)
-<span class="c"># Net congestion P&amp;L per zone (income - costs)</span>
-net = income.group_by([<span class="s">"timestamp_utc"</span>, <span class="s">"in_area_code"</span>]).agg(
-    pl.col(<span class="s">"amount_eur"</span>).sum().alias(<span class="s">"income_eur"</span>)
-).join(
-    cost.group_by([<span class="s">"timestamp_utc"</span>, <span class="s">"in_area_code"</span>]).agg(
-        pl.col(<span class="s">"amount_eur"</span>).sum().alias(<span class="s">"cost_eur"</span>)
-    ),
-    on=[<span class="s">"timestamp_utc"</span>, <span class="s">"in_area_code"</span>], how=<span class="s">"outer"</span>
-)
-<span class="k">print</span>(net.with_columns(
-    (pl.col(<span class="s">"income_eur"</span>).fill_null(0) - pl.col(<span class="s">"cost_eur"</span>).fill_null(0)).alias(<span class="s">"net_eur"</span>)
-).tail())</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># congestion_management_costs: stored silver rows as a pandas DataFrame</span>
+df = data.entsoe.query(<span class="s">"congestion_management_costs"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.entsoe.describe(<span class="s">"congestion_management_costs"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -308,11 +301,11 @@ net = income.group_by([<span class="s">"timestamp_utc"</span>, <span class="s">"
           <h2 class="display-3 mb-8">Things to know before using this.</h2>
           <p class="small mb-24" style="max-width: 560px;">One item below is a <strong>data-source discrepancy</strong> — the connector's domain style and the shared H6 amount schema disagree on scope. Surfaced so downstream consumers interpret the area codes correctly. Also read the <a href="../entsoe.html#about" class="link">ENTSO-E-wide caveats</a>.</p>
           <div>
-            <div class="caveat-item discrepancy"><div class="caveat-num">01</div><div><div class="eyebrow-discrepancy">Data-source discrepancy · domain_style</div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">domain_style="zone"</code> — not zone-pair</div><p class="small" style="margin: 0;">The connector declares <code class="mono">domain_style="zone"</code> (<code class="mono">endpoints.py L184</code>), but the shared H6 amount schema <code class="mono">EntsoeTransmissionMarketAmount</code> carries both <code class="mono">in_area_code</code> and <code class="mono">out_area_code</code>. This is the only H6 amount dataset with single-zone scope: query with <code class="mono">in_Domain</code> only; <code class="mono">out_area_code</code> may equal <code class="mono">in_area_code</code> or be empty. <span class="src-cite">endpoints.py L184 · frontmatter discrepancy</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;">Pairs with congestion_income for net P&amp;L</div><p class="small" style="margin: 0;">Cost-side counterpart to A25/B10. Net = income − cost; consistently negative for DE-LU (high redispatch costs) and positive for transit zones. <span class="src-cite">domain knowledge</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;">H6 amount transformer</div><p class="small" style="margin: 0;">Uses H6 amount-transformer variant. Output column is <code class="mono">amount_eur</code>. <span class="src-cite">silver/entsoe/h6_market.py L121-124</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;">Revisions overwrite</div><p class="small" style="margin: 0;">Same <code class="mono">(timestamp_utc, in_area_code, out_area_code, business_type)</code> overwrites silently. <span class="src-cite">silver/entsoe/h6_market.py L85-91</span></p></div></div>
-            <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">Entitlement-blocked on default API key</div><p class="small" style="margin: 0;">Live API returns HTTP 401 for the unregistered gridflow default key. Schema verified from gridflow source. <span class="src-cite">.planning/reconciliation/entsoe/08-congestion-management-costs-http-401.md</span></p></div></div>
+            <div class="caveat-item discrepancy"><div class="caveat-num">01</div><div><div class="eyebrow-discrepancy">Data-source discrepancy · domain_style</div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">domain_style="zone"</code> — not zone-pair</div><p class="small" style="margin: 0;">The connector declares <code class="mono">domain_style="zone"</code> (<code class="mono">endpoints.py L184</code>), but the shared H6 amount schema <code class="mono">EntsoeTransmissionMarketAmount</code> carries both <code class="mono">in_area_code</code> and <code class="mono">out_area_code</code>. This is the only H6 amount dataset with single-zone scope: query with <code class="mono">in_Domain</code> only; <code class="mono">out_area_code</code> may equal <code class="mono">in_area_code</code> or be empty. </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;">Pairs with congestion_income for net P&amp;L</div><p class="small" style="margin: 0;">Cost-side counterpart to A25/B10. Net = income − cost; consistently negative for DE-LU (high redispatch costs) and positive for transit zones. </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;">H6 amount transformer</div><p class="small" style="margin: 0;">Uses H6 amount-transformer variant. Output column is <code class="mono">amount_eur</code>. </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;">Revisions overwrite</div><p class="small" style="margin: 0;">Same <code class="mono">(timestamp_utc, in_area_code, out_area_code, business_type)</code> overwrites silently. </p></div></div>
+            <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">Entitlement-blocked on default API key</div><p class="small" style="margin: 0;">Live API returns HTTP 401 for the unregistered gridflow default key. Schema verified from gridflow source. </p></div></div>
           </div>
         </section>
 

@@ -209,37 +209,37 @@
                 <td class="col-name">timestamp_utc <span class="pk-badge">PK</span></td>
                 <td class="col-type">datetime[UTC]</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">Half-hour period start. UTC enforced. Source: <code class="mono">from</code>. <span class="cite">schemas/neso.py L20, L23-28</span></td>
+                <td class="col-note">Half-hour period start. UTC enforced. Source: <code class="mono">from</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">period_end_utc</td>
                 <td class="col-type">datetime[UTC]</td>
                 <td style="text-align:center;" class="nullable">null</td>
-                <td class="col-note">Half-hour period end. Source: <code class="mono">to</code>. <span class="cite">schemas/neso.py L21</span></td>
+                <td class="col-note">Half-hour period end. Source: <code class="mono">to</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">fuel <span class="pk-badge">PK</span></td>
                 <td class="col-type">str</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">Fuel type code (e.g. <code class="mono">gas</code>, <code class="mono">wind</code>, <code class="mono">solar</code>, <code class="mono">nuclear</code>, <code class="mono">imports</code>). Source: <code class="mono">generationmix.fuel</code>. <span class="cite">schemas/neso.py L58</span></td>
+                <td class="col-note">Fuel type code (e.g. <code class="mono">gas</code>, <code class="mono">wind</code>, <code class="mono">solar</code>, <code class="mono">nuclear</code>, <code class="mono">imports</code>). Source: <code class="mono">generationmix.fuel</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">generation_percentage</td>
                 <td class="col-type">float | None</td>
                 <td style="text-align:center;" class="nullable">null</td>
-                <td class="col-note">Share of generation mix in percent (0..100). Source: <code class="mono">generationmix.perc</code>. <span class="cite">schemas/neso.py L59</span></td>
+                <td class="col-note">Share of generation mix in percent (0..100). Source: <code class="mono">generationmix.perc</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">data_provider</td>
                 <td class="col-type">str</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">Always <code class="mono">"neso"</code>. <span class="cite">schemas/neso.py L16</span></td>
+                <td class="col-note">Always <code class="mono">"neso"</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">ingested_at</td>
                 <td class="col-type">datetime[UTC]</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">Silver transform timestamp. <span class="cite">silver/neso/carbon_intensity.py L469-474</span></td>
+                <td class="col-note">Silver transform timestamp. </td>
               </tr>
             </tbody>
           </table>
@@ -309,7 +309,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('ds','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('ds','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('ds','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('ds','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="ds-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;"><span class="c"># Header: Accept: application/json</span>
@@ -319,14 +319,22 @@ https://api.carbonintensity.org.uk/generation/2026-04-21T00:00Z/2026-04-22T00:00
 <pre class="code dark" style="padding: 18px 22px;"><span class="c">-- Daily mean wind share — renewable-penetration trend</span>
 <span class="k">SELECT</span> timestamp_utc::date <span class="k">AS</span> day,
        avg(generation_percentage) <span class="k">AS</span> mean_wind_pct
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/neso/generation/**/*.parquet'</span>)
+<span class="k">FROM</span> silver_generation
 <span class="k">WHERE</span> fuel = <span class="s">'wind'</span>
 <span class="k">GROUP BY</span> <span class="num">1</span>
 <span class="k">ORDER BY</span> <span class="num">1</span> <span class="k">DESC</span>
 <span class="k">LIMIT</span> <span class="num">30</span>;</pre>
             </div></div>
             <div data-tab-panel="ds-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"></pre>
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
+
+data, models, common = setup_notebook()
+
+<span class="c"># generation: stored silver rows as a pandas DataFrame</span>
+df = data.neso.query(<span class="s">"generation"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.neso.describe(<span class="s">"generation"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -341,35 +349,35 @@ https://api.carbonintensity.org.uk/generation/2026-04-21T00:00Z/2026-04-22T00:00
               <div class="caveat-num">01</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">NESO API status: beta</div>
-                <p class="small" style="margin: 0;">The <code class="mono">Generation Mix - National</code> category carries a beta qualifier (<code class="mono">endpoints.py L150</code> <code class="mono">category="Generation Mix - National beta"</code>) — NESO may modify the surface without the versioning notice applied to the main intensity routes. <span class="src-cite"><code class="mono">endpoints.py L150</code>.</span></p>
+                <p class="small" style="margin: 0;">The <code class="mono">Generation Mix - National</code> category carries a beta qualifier (<code class="mono">endpoints.py L150</code> <code class="mono">category="Generation Mix - National beta"</code>) — NESO may modify the surface without the versioning notice applied to the main intensity routes. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">02</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">14-day max window per request</div>
-                <p class="small" style="margin: 0;">Vendor max window is 14 days. The connector chunks longer spans (<code class="mono">_MAX_DAYS_PER_REQUEST=14</code>, <code class="mono">connectors/neso/carbon_intensity.py L21</code>). <span class="src-cite"><code class="mono">connectors/neso/carbon_intensity.py L21</code>.</span></p>
+                <p class="small" style="margin: 0;">Vendor max window is 14 days. The connector chunks longer spans (<code class="mono">_MAX_DAYS_PER_REQUEST=14</code>, <code class="mono">connectors/neso/carbon_intensity.py L21</code>). </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">03</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Fuel codes are vendor-managed and unstable</div>
-                <p class="small" style="margin: 0;">NESO's fuel category list (<code class="mono">gas</code>, <code class="mono">wind</code>, <code class="mono">solar</code>, <code class="mono">nuclear</code>, <code class="mono">imports</code>, <code class="mono">biomass</code>, <code class="mono">hydro</code>, <code class="mono">coal</code>, <code class="mono">other</code>) is not formally codified. New categories can appear; some are aggregates (<code class="mono">imports</code> collapses all interconnectors). <span class="src-cite">vault Modelling notes L110.</span></p>
+                <p class="small" style="margin: 0;">NESO's fuel category list (<code class="mono">gas</code>, <code class="mono">wind</code>, <code class="mono">solar</code>, <code class="mono">nuclear</code>, <code class="mono">imports</code>, <code class="mono">biomass</code>, <code class="mono">hydro</code>, <code class="mono">coal</code>, <code class="mono">other</code>) is not formally codified. New categories can appear; some are aggregates (<code class="mono">imports</code> collapses all interconnectors). </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">04</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Path placeholder <code class="mono">{from_dt}</code> internally</div>
-                <p class="small" style="margin: 0;">Docs document <code class="mono">/generation/{from}/{to}</code>; connector templates as <code class="mono">{from_dt}</code> / <code class="mono">{to_dt}</code>. URL identical. <span class="src-cite">vault Implementation Delta L106.</span></p>
+                <p class="small" style="margin: 0;">Docs document <code class="mono">/generation/{from}/{to}</code>; connector templates as <code class="mono">{from_dt}</code> / <code class="mono">{to_dt}</code>. URL identical. </p>
               </div>
             </div>
             <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;">
               <div class="caveat-num">05</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Transformer is dynamically generated</div>
-                <p class="small" style="margin: 0;"><code class="mono">GenerationTransformer</code> is created at import time via <code class="mono">type()</code> in <code class="mono">register_neso_transformers()</code>. <span class="src-cite"><code class="mono">silver/neso/carbon_intensity.py L110-136</code>.</span></p>
+                <p class="small" style="margin: 0;"><code class="mono">GenerationTransformer</code> is created at import time via <code class="mono">type()</code> in <code class="mono">register_neso_transformers()</code>. </p>
               </div>
             </div>
           </div>

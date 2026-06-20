@@ -198,14 +198,14 @@
           <table class="schema-table">
             <thead><tr><th scope="col" style="width: 22%;">Column</th><th scope="col" style="width: 14%;">Type</th><th scope="col" style="width: 8%; text-align:center;">Nullable</th><th scope="col">Description</th></tr></thead>
             <tbody>
-              <tr><td class="col-name">timestamp_utc <span class="pk-badge">PK</span></td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">tz-aware UTC.<span class="cite">schemas/entsoe.py L560</span></td></tr>
-              <tr><td class="col-name">in_area_code <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Source zone EIC.<span class="cite">schemas/entsoe.py L561</span></td></tr>
-              <tr><td class="col-name">out_area_code <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Destination zone EIC.<span class="cite">schemas/entsoe.py L562</span></td></tr>
-              <tr><td class="col-name">quantity_mw</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Transfer limit MW.<span class="cite">schemas/entsoe.py L563</span></td></tr>
-              <tr><td class="col-name">business_type <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">DC-link business type. Default <code class="mono">""</code>.<span class="cite">schemas/entsoe.py L564</span></td></tr>
-              <tr><td class="col-name">resolution</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">ISO duration; typically <code class="mono">PT60M</code>.<span class="cite">schemas/entsoe.py L565</span></td></tr>
-              <tr><td class="col-name">data_provider</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsoe"</code>.<span class="cite">schemas/entsoe.py L566</span></td></tr>
-              <tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Set at silver write.<span class="cite">schemas/entsoe.py L567</span></td></tr>
+              <tr><td class="col-name">timestamp_utc <span class="pk-badge">PK</span></td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">tz-aware UTC.</td></tr>
+              <tr><td class="col-name">in_area_code <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Source zone EIC.</td></tr>
+              <tr><td class="col-name">out_area_code <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Destination zone EIC.</td></tr>
+              <tr><td class="col-name">quantity_mw</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Transfer limit MW.</td></tr>
+              <tr><td class="col-name">business_type <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">DC-link business type. Default <code class="mono">""</code>.</td></tr>
+              <tr><td class="col-name">resolution</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">ISO duration; typically <code class="mono">PT60M</code>.</td></tr>
+              <tr><td class="col-name">data_provider</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsoe"</code>.</td></tr>
+              <tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Set at silver write.</td></tr>
             </tbody>
           </table>
           <div class="card mt-24" style="padding: 16px 20px; display: flex; gap: 32px; align-items: start;">
@@ -256,7 +256,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('dclil','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('dclil','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('dclil','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('dclil','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="dclil-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;">https://web-api.tp.entsoe.eu/api
@@ -272,8 +272,8 @@
 <span class="k">SELECT</span> d.timestamp_utc, d.in_area_code, d.out_area_code,
        n.ntc_mw, d.quantity_mw <span class="k">AS</span> dc_intraday_limit,
        n.ntc_mw - d.quantity_mw <span class="k">AS</span> derate_mw
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/entsoe/dc_link_intraday_transfer_limits/**/*.parquet'</span>) d
-<span class="k">JOIN</span> read_parquet(<span class="s">'data/silver/entsoe/net_transfer_capacity/**/*.parquet'</span>) n
+<span class="k">FROM</span> silver_dc_link_intraday_transfer_limits d
+<span class="k">JOIN</span> silver_net_transfer_capacity n
   <span class="k">ON</span> d.timestamp_utc = n.timestamp_utc
  <span class="k">AND</span> d.in_area_code = n.in_area_code
  <span class="k">AND</span> d.out_area_code = n.out_area_code
@@ -281,14 +281,15 @@
 <span class="k">ORDER BY</span> derate_mw <span class="k">DESC</span> <span class="k">LIMIT</span> 20;</pre>
             </div></div>
             <div data-tab-panel="dclil-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-dc = pl.read_parquet(<span class="s">"data/silver/entsoe/dc_link_intraday_transfer_limits/**/*.parquet"</span>)
-<span class="c"># Per-link distribution of intraday derates</span>
-<span class="k">print</span>(dc.group_by([<span class="s">"in_area_code"</span>, <span class="s">"out_area_code"</span>]).agg(
-    pl.col(<span class="s">"quantity_mw"</span>).min().alias(<span class="s">"min_mw"</span>),
-    pl.col(<span class="s">"quantity_mw"</span>).max().alias(<span class="s">"max_mw"</span>),
-).sort(<span class="s">"min_mw"</span>))</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># dc_link_intraday_transfer_limits: stored silver rows as a pandas DataFrame</span>
+df = data.entsoe.query(<span class="s">"dc_link_intraday_transfer_limits"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.entsoe.describe(<span class="s">"dc_link_intraday_transfer_limits"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -298,11 +299,11 @@ dc = pl.read_parquet(<span class="s">"data/silver/entsoe/dc_link_intraday_transf
           <h2 class="display-3 mb-8">Things to know before using this.</h2>
           <p class="small mb-24" style="max-width: 560px;">These are specific to <code class="mono">dc_link_intraday_transfer_limits</code>. Also read the <a href="../entsoe.html#about" class="link">ENTSO-E-wide caveats</a> on the vendor page.</p>
           <div>
-            <div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;">DC-only — not for AC interconnectors</div><p class="small" style="margin: 0;">A93 covers HVDC links (IFA, IFA2, ElecLink, BritNed, NordLink, NSL etc.). AC interconnectors use the standard A61 NTC surface. <span class="src-cite">vault Known Issues</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;">"Intraday" is the timing — not the cadence</div><p class="small" style="margin: 0;">The "intraday" in the name refers to which timeframe these limits apply to (intraday continuous trading), not how often they're published. Publication is hourly. <span class="src-cite">vault Known Issues</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;">Pydantic class is shared (H6 family)</div><p class="small" style="margin: 0;"><code class="mono">EntsoeTransmissionMarketQuantity</code> covers 12 H6 datasets. <span class="src-cite">schemas/entsoe.py L557</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;">Revisions overwrite</div><p class="small" style="margin: 0;">Same <code class="mono">(timestamp_utc, in_area_code, out_area_code, business_type)</code> overwrites silently. <span class="src-cite">silver/entsoe/h6_market.py L85-91</span></p></div></div>
-            <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">Entitlement-blocked on default API key</div><p class="small" style="margin: 0;">Live API returns HTTP 401 for the unregistered gridflow default key. <span class="src-cite">.planning/reconciliation/entsoe/13-dc-link-intraday-transfer-limits-http-401.md</span></p></div></div>
+            <div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;">DC-only — not for AC interconnectors</div><p class="small" style="margin: 0;">A93 covers HVDC links (IFA, IFA2, ElecLink, BritNed, NordLink, NSL etc.). AC interconnectors use the standard A61 NTC surface. </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;">"Intraday" is the timing — not the cadence</div><p class="small" style="margin: 0;">The "intraday" in the name refers to which timeframe these limits apply to (intraday continuous trading), not how often they're published. Publication is hourly. </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;">Pydantic class is shared (H6 family)</div><p class="small" style="margin: 0;"><code class="mono">EntsoeTransmissionMarketQuantity</code> covers 12 H6 datasets. </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;">Revisions overwrite</div><p class="small" style="margin: 0;">Same <code class="mono">(timestamp_utc, in_area_code, out_area_code, business_type)</code> overwrites silently. </p></div></div>
+            <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">Entitlement-blocked on default API key</div><p class="small" style="margin: 0;">Live API returns HTTP 401 for the unregistered gridflow default key. </p></div></div>
           </div>
         </section>
 

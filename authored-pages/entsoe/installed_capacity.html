@@ -325,7 +325,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   tz-aware UTC; validator requires tzinfo. Anchored at the year boundary. Source: <code class="mono">&lt;Period&gt;</code> start.
-                  <span class="cite">schemas/entsoe.py L161, L168-173</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -334,7 +334,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   EIC bidding zone identifier. Source: <code class="mono">&lt;inBiddingZone_Domain.mRID&gt;</code>.
-                  <span class="cite">schemas/entsoe.py L162</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -343,7 +343,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   EIC PSR code (<code class="mono">B01</code>..<code class="mono">B25</code>); falls back to <code class="mono">"unknown"</code> if the element is absent. Source: <code class="mono">&lt;MktPSRType&gt;&lt;psrType&gt;</code>.
-                  <span class="cite">schemas/entsoe.py L163 · silver/entsoe/installed_capacity.py L70-75</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -352,7 +352,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   MW installed capacity. Source: <code class="mono">&lt;Point&gt;&lt;quantity&gt;</code>.
-                  <span class="cite">schemas/entsoe.py L164</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -361,7 +361,7 @@
                 <td style="text-align:center;" class="nullable">Yes</td>
                 <td class="col-note">
                   ISO duration; typically <code class="mono">P1Y</code>. Default <code class="mono">""</code>.
-                  <span class="cite">schemas/entsoe.py L165</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -370,7 +370,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   Always <code class="mono">"entsoe"</code>. Default <code class="mono">"entsoe"</code>.
-                  <span class="cite">schemas/entsoe.py L166</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -379,7 +379,7 @@
                 <td style="text-align:center;" class="nullable">Yes</td>
                 <td class="col-note">
                   Set at silver write.
-                  <span class="cite">silver/entsoe/installed_capacity.py L84</span>
+                  
                 </td>
               </tr>
             </tbody>
@@ -458,7 +458,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('ic','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('ic','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('ic','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('ic','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="ic-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;">https://web-api.tp.entsoe.eu/api
@@ -475,21 +475,19 @@
        capacity_mw, lag(capacity_mw) <span class="k">OVER</span> (
          <span class="k">PARTITION BY</span> area_code, production_type <span class="k">ORDER BY</span> timestamp_utc
        ) <span class="k">AS</span> prev_year_mw
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/entsoe/installed_capacity/**/*.parquet'</span>)
+<span class="k">FROM</span> silver_installed_capacity
 <span class="k">ORDER BY</span> area_code, production_type, year_start;</pre>
             </div></div>
             <div data-tab-panel="ic-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-cap = pl.read_parquet(<span class="s">"data/silver/entsoe/installed_capacity/**/*.parquet"</span>)
-gen = pl.read_parquet(<span class="s">"data/silver/entsoe/actual_generation/**/*.parquet"</span>)
-<span class="c"># Capacity factor per PSR per zone (annual mean output / installed capacity)</span>
-util = gen.group_by([<span class="s">"area_code"</span>, <span class="s">"production_type"</span>]).agg(
-    pl.col(<span class="s">"generation_mw"</span>).mean().alias(<span class="s">"mean_mw"</span>),
-).join(cap, on=[<span class="s">"area_code"</span>, <span class="s">"production_type"</span>])
-<span class="k">print</span>(util.with_columns(
-    (pl.col(<span class="s">"mean_mw"</span>) / pl.col(<span class="s">"capacity_mw"</span>)).alias(<span class="s">"cf"</span>)
-).sort(<span class="s">"cf"</span>, descending=<span class="k">True</span>).head())</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># installed_capacity: stored silver rows as a pandas DataFrame</span>
+df = data.entsoe.query(<span class="s">"installed_capacity"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.entsoe.describe(<span class="s">"installed_capacity"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -505,35 +503,35 @@ util = gen.group_by([<span class="s">"area_code"</span>, <span class="s">"produc
               <div class="caveat-num">01</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Use a yearly window — <code class="mono">P1Y</code> resolution</div>
-                <p class="small" style="margin: 0;">Short windows return EMPTY. Build period bounds at year boundaries. <span class="src-cite">vault Known Issues #1</span></p>
+                <p class="small" style="margin: 0;">Short windows return EMPTY. Build period bounds at year boundaries. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">02</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">GB EMPTY post-Brexit</div>
-                <p class="small" style="margin: 0;">The GB capacity registry is via Elexon and DUKES instead of ENTSO-E. <span class="src-cite">vault Known Issues #2</span></p>
+                <p class="small" style="margin: 0;">The GB capacity registry is via Elexon and DUKES instead of ENTSO-E. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">03</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Distinct from <code class="mono">installed_capacity_units</code></div>
-                <p class="small" style="margin: 0;">A68 is aggregate by PSR type. A71/A33 (<code class="mono">installed_capacity_units</code>) is unit-level. Same <code class="mono">processType</code> A33; select on dataset key. <span class="src-cite">vault Known Issues #4</span></p>
+                <p class="small" style="margin: 0;">A68 is aggregate by PSR type. A71/A33 (<code class="mono">installed_capacity_units</code>) is unit-level. Same <code class="mono">processType</code> A33; select on dataset key. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">04</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Intra-year ingestion is idempotent</div>
-                <p class="small" style="margin: 0;">Values change at year boundaries; intra-year re-ingestion just rewrites the same data on <code class="mono">keep="last"</code> dedup. <span class="src-cite">silver/entsoe/installed_capacity.py L77-79</span></p>
+                <p class="small" style="margin: 0;">Values change at year boundaries; intra-year re-ingestion just rewrites the same data on <code class="mono">keep="last"</code> dedup. </p>
               </div>
             </div>
             <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;">
               <div class="caveat-num">05</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Entitlement-blocked on the default API key</div>
-                <p class="small" style="margin: 0;">The live API returns HTTP 401 for the unregistered gridflow default key. Schema verified from gridflow source. <span class="src-cite">.planning/reconciliation/entsoe/16-installed-capacity-http-401.md</span></p>
+                <p class="small" style="margin: 0;">The live API returns HTTP 401 for the unregistered gridflow default key. Schema verified from gridflow source. </p>
               </div>
             </div>
           </div>

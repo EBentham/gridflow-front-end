@@ -338,15 +338,15 @@
               </tr>
             </thead>
             <tbody>
-              <tr><td class="col-name">turl <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Announcement ID (the numeric <code class="mono">url</code> value from the news listing). Primary key. Source: <code class="mono">turl</code>.<span class="cite">silver/gie/agsi.py L344-348</span></td></tr>
-              <tr><td class="col-name">title</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Operator + summary line. Source: <code class="mono">title</code>.<span class="cite">dynamic pass-through</span></td></tr>
-              <tr><td class="col-name">summary</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">HTML-tagged short summary. Source: <code class="mono">summary</code>.<span class="cite">dynamic pass-through</span></td></tr>
-              <tr><td class="col-name">details</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">HTML-tagged full body — the enrichment payload this dataset is intended for. Source: <code class="mono">details</code>.<span class="cite">dynamic pass-through</span></td></tr>
-              <tr><td class="col-name">start_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Event start. Source: <code class="mono">start_at</code>.<span class="cite">silver/gie/agsi.py L287-298, L331-332</span></td></tr>
-              <tr><td class="col-name">end_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Often null. Source: <code class="mono">end_at</code>.<span class="cite">silver/gie/agsi.py L287-298, L331-332</span></td></tr>
-              <tr><td class="col-name">entities</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">JSON-encoded list of affected entity dicts. Source: <code class="mono">entities</code>.<span class="cite">silver/gie/agsi.py L329-330</span></td></tr>
-              <tr><td class="col-name">data_provider</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"gie_agsi"</code>. Default <code class="mono">"gie_agsi"</code>.<span class="cite">silver/gie/agsi.py L337</span></td></tr>
-              <tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Silver write timestamp.<span class="cite">silver/gie/agsi.py L338</span></td></tr>
+              <tr><td class="col-name">turl <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Announcement ID (the numeric <code class="mono">url</code> value from the news listing). Primary key. Source: <code class="mono">turl</code>.</td></tr>
+              <tr><td class="col-name">title</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Operator + summary line. Source: <code class="mono">title</code>.</td></tr>
+              <tr><td class="col-name">summary</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">HTML-tagged short summary. Source: <code class="mono">summary</code>.</td></tr>
+              <tr><td class="col-name">details</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">HTML-tagged full body — the enrichment payload this dataset is intended for. Source: <code class="mono">details</code>.</td></tr>
+              <tr><td class="col-name">start_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Event start. Source: <code class="mono">start_at</code>.</td></tr>
+              <tr><td class="col-name">end_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Often null. Source: <code class="mono">end_at</code>.</td></tr>
+              <tr><td class="col-name">entities</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">JSON-encoded list of affected entity dicts. Source: <code class="mono">entities</code>.</td></tr>
+              <tr><td class="col-name">data_provider</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"gie_agsi"</code>. Default <code class="mono">"gie_agsi"</code>.</td></tr>
+              <tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Silver write timestamp.</td></tr>
             </tbody>
           </table>
 
@@ -427,7 +427,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('ni','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('ni','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('ni','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('ni','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="ni-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;"><span class="c"># Header: x-key: $GIE_API_KEY  (lowercase)</span>
@@ -441,21 +441,20 @@ https://agsi.gie.eu/api/news<span style="color:#6b6358;">?</span><span style="co
        end_at,
        title,
        details
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/gie_agsi/news_item/**/*.parquet'</span>)
+<span class="k">FROM</span> silver_news_item
 <span class="k">WHERE</span> turl = <span class="s">'1713470'</span>
 <span class="k">ORDER BY</span> start_at <span class="k">DESC</span>;</pre>
             </div></div>
             <div data-tab-panel="ni-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-<span class="c"># Fallback: until the upstream `turl` filter is fixed, derive news_item-style enrichment</span>
-<span class="c"># from the news listing directly. Same primary key (url ↔ turl), same fields available.</span>
-news = pl.read_parquet(<span class="s">"data/silver/gie_agsi/news/**/*.parquet"</span>)
-detail = news.filter(pl.col(<span class="s">"url"</span>) == <span class="s">"1713470"</span>).select(
-    pl.col(<span class="s">"url"</span>).alias(<span class="s">"turl"</span>),
-    <span class="s">"title"</span>, <span class="s">"summary"</span>, <span class="s">"details"</span>, <span class="s">"start_at"</span>, <span class="s">"end_at"</span>, <span class="s">"entities"</span>,
-)
-print(detail)</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># news_item: stored silver rows as a pandas DataFrame</span>
+df = data.gie_agsi.query(<span class="s">"news_item"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.gie_agsi.describe(<span class="s">"news_item"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -472,35 +471,35 @@ print(detail)</pre>
               <div>
                 <div class="eyebrow-discrepancy">DISCREPANCY · documented filter vs live</div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Live <code class="mono">turl</code> filter is silently ignored</div>
-                <p class="small" style="margin: 0;"><code class="mono">/api/news?turl=&lt;id&gt;</code> returns the full 299-record listing byte-for-byte identical to <code class="mono">/api/news</code> (verified 2026-05-08, 2.6 MB). The connector's <code class="mono">_is_news_item_detail</code> discards the list shape, so silver yields zero rows. <span class="src-cite">vault Known Issues · live 2026-05-08</span></p>
+                <p class="small" style="margin: 0;"><code class="mono">/api/news?turl=&lt;id&gt;</code> returns the full 299-record listing byte-for-byte identical to <code class="mono">/api/news</code> (verified 2026-05-08, 2.6 MB). The connector's <code class="mono">_is_news_item_detail</code> discards the list shape, so silver yields zero rows. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">02</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Implementation phase = <code class="mono">deferred</code></div>
-                <p class="small" style="margin: 0;">Registered as <code class="mono">implementation_phase = "deferred"</code> (<code class="mono">endpoints.py L167</code>) — not part of the gridflow v0.7 storage delivery. The endpoint is documented + live-served, but production scheduling is deferred. <span class="src-cite">vault Known Issues</span></p>
+                <p class="small" style="margin: 0;">Registered as <code class="mono">implementation_phase = "deferred"</code> (<code class="mono">endpoints.py L167</code>) — not part of the gridflow v0.7 storage delivery. The endpoint is documented + live-served, but production scheduling is deferred. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">03</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">No Pydantic schema — <code class="mono">AgsiJsonTransformer</code> dynamic columns</div>
-                <p class="small" style="margin: 0;">Like other AGSI reference / news datasets, there is no typed silver contract; columns are dynamic. <span class="src-cite">vault Silver layer note · silver/gie/agsi.py L451-462</span></p>
+                <p class="small" style="margin: 0;">Like other AGSI reference / news datasets, there is no typed silver contract; columns are dynamic. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">04</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">x-key</code> header MUST be lowercase</div>
-                <p class="small" style="margin: 0;">Capitalised <code class="mono">X-Key</code> returns HTTP 401. <span class="src-cite">vault Known Issues #1</span></p>
+                <p class="small" style="margin: 0;">Capitalised <code class="mono">X-Key</code> returns HTTP 401. </p>
               </div>
             </div>
             <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;">
               <div class="caveat-num">05</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Workaround: read from <code class="mono">news</code> directly</div>
-                <p class="small" style="margin: 0;">Until the upstream <code class="mono">turl</code> filter behaves, derive <code class="mono">news_item</code>-style per-announcement enrichment from the <code class="mono">news</code> dataset on <code class="mono">url</code> (<code class="mono">url</code> and <code class="mono">turl</code> are the same identifier). <span class="src-cite">domain knowledge · Python tab above</span></p>
+                <p class="small" style="margin: 0;">Until the upstream <code class="mono">turl</code> filter behaves, derive <code class="mono">news_item</code>-style per-announcement enrichment from the <code class="mono">news</code> dataset on <code class="mono">url</code> (<code class="mono">url</code> and <code class="mono">turl</code> are the same identifier). </p>
               </div>
             </div>
           </div>

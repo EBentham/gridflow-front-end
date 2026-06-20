@@ -82,38 +82,30 @@
           <div class="card" style="padding:20px"><div class="tiny mb-8">BRONZE PATH</div><div class="mono small" style="word-break:break-all;margin-bottom:12px">data/bronze/elexon/itsdo/&lt;year&gt;/&lt;month&gt;/&lt;day&gt;/raw_&lt;uuid&gt;.json</div><div class="tiny mb-8">TRANSFORMER</div><div class="mono small">gridflow.silver.elexon.itsdo.ITSDOTransformer</div></div>
         </div>
         <div data-tab-group="itsdo">
-          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('itsdo','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('itsdo','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('itsdo','py',this)" style="cursor:pointer">Python · polars</button></div>
+          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('itsdo','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('itsdo','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('itsdo','py',this)" style="cursor:pointer">Python · gridflow-models</button></div>
           <div data-tab-panel="itsdo-url" style="display:block"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">https://data.elexon.co.uk/bmrs/api/v1/datasets/ITSDO?publishDateTimeFrom=2026-05-06T00:00Z&amp;publishDateTimeTo=2026-05-06T03:00Z&amp;format=json</pre></div></div>
           <div data-tab-panel="itsdo-sql" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto"><span class="c">-- Daily embedded-generation estimate: sum of (INDO − ITSDO) × 0.5 per day</span>
 WITH joined AS (
   SELECT i.settlement_date, i.settlement_period,
          i.initial_demand_outturn_mw
            - t.initial_transmission_system_demand_outturn_mw AS embedded_mw
-  FROM read_parquet(<span class="s">'data/silver/elexon/indo/**/*.parquet'</span>) i
-  JOIN read_parquet(<span class="s">'data/silver/elexon/itsdo/**/*.parquet'</span>) t
+  FROM silver_indo i
+  JOIN silver_itsdo t
     USING (settlement_date, settlement_period)
 )
 SELECT settlement_date, SUM(embedded_mw) * 0.5 AS embedded_mwh
 FROM joined
 WHERE settlement_date &gt;= current_date - INTERVAL 30 DAY
 GROUP BY 1 ORDER BY 1;</pre></div></div>
-          <div data-tab-panel="itsdo-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">import polars as pl
+          <div data-tab-panel="itsdo-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-indo = pl.read_parquet(<span class="s">"data/silver/elexon/indo/**/*.parquet"</span>)
-itsdo = pl.read_parquet(<span class="s">"data/silver/elexon/itsdo/**/*.parquet"</span>)
-embedded = (
-    indo.join(itsdo, on=[<span class="s">"settlement_date"</span>, <span class="s">"settlement_period"</span>], how=<span class="s">"inner"</span>)
-        .with_columns([
-            pl.col(<span class="s">"timestamp_utc"</span>).dt.hour().alias(<span class="s">"hour"</span>),
-            (pl.col(<span class="s">"initial_demand_outturn_mw"</span>)
-             - pl.col(<span class="s">"initial_transmission_system_demand_outturn_mw"</span>))
-              .alias(<span class="s">"embedded_mw"</span>),
-        ])
-        .group_by(<span class="s">"hour"</span>)
-        .agg(pl.col(<span class="s">"embedded_mw"</span>).mean().alias(<span class="s">"avg_embedded_mw"</span>))
-        .sort(<span class="s">"hour"</span>)
-)
-print(embedded)</pre></div></div>
+data, models, common = setup_notebook()
+
+<span class="c"># itsdo: stored silver rows as a pandas DataFrame</span>
+df = data.elexon.query(<span class="s">"itsdo"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.elexon.describe(<span class="s">"itsdo"</span>)</pre></div></div>
         </div>
       </section>
       <section id="related" style="margin-bottom:56px" data-screen-label="Related">

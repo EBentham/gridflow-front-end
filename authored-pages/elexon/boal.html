@@ -84,29 +84,26 @@
           <div class="card" style="padding:20px"><div class="tiny mb-8">BRONZE PATH</div><div class="mono small" style="word-break:break-all;margin-bottom:12px">data/bronze/elexon/boal/&lt;year&gt;/&lt;month&gt;/&lt;day&gt;/raw_&lt;uuid&gt;.json</div><div class="tiny mb-8">TRANSFORMER</div><div class="mono small">gridflow.silver.elexon.boal.BOALTransformer</div></div>
         </div>
         <div data-tab-group="boal">
-          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('boal','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('boal','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('boal','py',this)" style="cursor:pointer">Python · polars</button></div>
+          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('boal','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('boal','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('boal','py',this)" style="cursor:pointer">Python · gridflow-models</button></div>
           <div data-tab-panel="boal-url" style="display:block"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">https://data.elexon.co.uk/bmrs/api/v1/datasets/BOALF?from=2026-05-06T00:00Z&amp;to=2026-05-06T03:00Z&amp;format=json</pre></div></div>
           <div data-tab-panel="boal-sql" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto"><span class="c">-- Top 20 BMUs by absolute redispatched MW in the last 24h</span>
 SELECT bm_unit_id,
        SUM(ABS(bid_offer_level_to - bid_offer_level_from)) AS abs_mw_redispatched,
        COUNT(*) AS n_acceptances
-FROM read_parquet(<span class="s">'data/silver/elexon/boal/**/*.parquet'</span>)
+FROM silver_boal
 WHERE settlement_date &gt;= current_date - INTERVAL 1 DAY
 GROUP BY bm_unit_id
 ORDER BY abs_mw_redispatched DESC
 LIMIT 20;</pre></div></div>
-          <div data-tab-panel="boal-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">import polars as pl
+          <div data-tab-panel="boal-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-df = pl.read_parquet(<span class="s">"data/silver/elexon/boal/**/*.parquet"</span>)
-<span class="c"># STOR-flagged acceptances by hour-of-day</span>
-stor = (
-    df.filter(pl.col(<span class="s">"stor_flag"</span>))
-      .with_columns(pl.col(<span class="s">"timestamp_utc"</span>).dt.hour().alias(<span class="s">"hour"</span>))
-      .group_by(<span class="s">"hour"</span>)
-      .agg(pl.col(<span class="s">"acceptance_number"</span>).count().alias(<span class="s">"n_stor"</span>))
-      .sort(<span class="s">"hour"</span>)
-)
-print(stor)</pre></div></div>
+data, models, common = setup_notebook()
+
+<span class="c"># boal: stored silver rows as a pandas DataFrame</span>
+df = data.elexon.query(<span class="s">"boal"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.elexon.describe(<span class="s">"boal"</span>)</pre></div></div>
         </div>
       </section>
       <section id="related" style="margin-bottom:56px" data-screen-label="Related">

@@ -82,31 +82,25 @@
           <div class="card" style="padding:20px"><div class="tiny mb-8">BRONZE PATH</div><div class="mono small" style="word-break:break-all;margin-bottom:12px">data/bronze/elexon/pn/&lt;year&gt;/&lt;month&gt;/&lt;day&gt;/raw_&lt;uuid&gt;.json</div><div class="tiny mb-8">TRANSFORMER</div><div class="mono small">gridflow.silver.elexon.pn.PNTransformer</div></div>
         </div>
         <div data-tab-group="pn">
-          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('pn','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('pn','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('pn','py',this)" style="cursor:pointer">Python · polars</button></div>
+          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('pn','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('pn','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('pn','py',this)" style="cursor:pointer">Python · gridflow-models</button></div>
           <div data-tab-panel="pn-url" style="display:block"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">https://data.elexon.co.uk/bmrs/api/v1/datasets/PN?settlementDate=2026-05-06&amp;settlementPeriod=24&amp;format=json</pre></div></div>
           <div data-tab-panel="pn-sql" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto"><span class="c">-- Sum PN level_from per period (proxy for total expected generation at gate closure)</span>
 SELECT settlement_date, settlement_period,
        SUM(GREATEST(level_from, 0)) AS total_pn_positive_mw,
        SUM(LEAST(level_from, 0))    AS total_pn_negative_mw
-FROM read_parquet(<span class="s">'data/silver/elexon/pn/**/*.parquet'</span>)
+FROM silver_pn
 WHERE settlement_date &gt;= current_date - INTERVAL 1 DAY
 GROUP BY 1, 2
 ORDER BY 1, 2;</pre></div></div>
-          <div data-tab-panel="pn-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">import polars as pl
+          <div data-tab-panel="pn-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-pn = pl.read_parquet(<span class="s">"data/silver/elexon/pn/**/*.parquet"</span>)
-boal = pl.read_parquet(<span class="s">"data/silver/elexon/boal/**/*.parquet"</span>)
-<span class="c"># Redispatched MW = BOAL accepted level - PN declared level</span>
-redispatch = (
-    pn.join(boal, on=[<span class="s">"settlement_date"</span>, <span class="s">"settlement_period"</span>, <span class="s">"bm_unit_id"</span>], how=<span class="s">"inner"</span>)
-      .with_columns(
-          (pl.col(<span class="s">"bid_offer_level_from"</span>) - pl.col(<span class="s">"level_from"</span>))
-            .alias(<span class="s">"redispatched_mw"</span>)
-      )
-      .filter(pl.col(<span class="s">"redispatched_mw"</span>).abs() &gt; 10)
-      .select([<span class="s">"settlement_date"</span>, <span class="s">"settlement_period"</span>, <span class="s">"bm_unit_id"</span>, <span class="s">"redispatched_mw"</span>])
-)
-print(redispatch.head(20))</pre></div></div>
+data, models, common = setup_notebook()
+
+<span class="c"># pn: stored silver rows as a pandas DataFrame</span>
+df = data.elexon.query(<span class="s">"pn"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.elexon.describe(<span class="s">"pn"</span>)</pre></div></div>
         </div>
       </section>
       <section id="related" style="margin-bottom:56px" data-screen-label="Related">

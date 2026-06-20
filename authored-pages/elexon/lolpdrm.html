@@ -82,29 +82,25 @@
           <div class="card" style="padding:20px"><div class="tiny mb-8">BRONZE PATH</div><div class="mono small" style="word-break:break-all;margin-bottom:12px">data/bronze/elexon/lolpdrm/&lt;year&gt;/&lt;month&gt;/&lt;day&gt;/raw_&lt;uuid&gt;.json</div><div class="tiny mb-8">TRANSFORMER</div><div class="mono small">gridflow.silver.elexon.lolpdrm.LOLPDRMTransformer</div></div>
         </div>
         <div data-tab-group="lolpdrm">
-          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('lolpdrm','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('lolpdrm','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('lolpdrm','py',this)" style="cursor:pointer">Python · polars</button></div>
+          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('lolpdrm','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('lolpdrm','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('lolpdrm','py',this)" style="cursor:pointer">Python · gridflow-models</button></div>
           <div data-tab-panel="lolpdrm-url" style="display:block"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">https://data.elexon.co.uk/bmrs/api/v1/datasets/LOLPDRM?publishDateTimeFrom=2026-05-06T00:00Z&amp;publishDateTimeTo=2026-05-06T01:00Z&amp;format=json</pre></div></div>
           <div data-tab-panel="lolpdrm-sql" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto"><span class="c">-- Periods with non-zero LOLP over the last 30 days</span>
 SELECT settlement_date, settlement_period,
        loss_of_load_probability, derated_margin_mw
-FROM read_parquet(<span class="s">'data/silver/elexon/lolpdrm/**/*.parquet'</span>)
+FROM silver_lolpdrm
 WHERE loss_of_load_probability &gt; 0
   AND settlement_date &gt;= current_date - INTERVAL 30 DAY
 ORDER BY loss_of_load_probability DESC, settlement_date, settlement_period
 LIMIT 50;</pre></div></div>
-          <div data-tab-panel="lolpdrm-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">import polars as pl
+          <div data-tab-panel="lolpdrm-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-df = pl.read_parquet(<span class="s">"data/silver/elexon/lolpdrm/**/*.parquet"</span>)
-<span class="c"># Daily minimum de-rated margin (worst-margin period each day)</span>
-worst = (
-    df.group_by(<span class="s">"settlement_date"</span>)
-      .agg(
-          pl.col(<span class="s">"derated_margin_mw"</span>).min().alias(<span class="s">"worst_drm_mw"</span>),
-          pl.col(<span class="s">"loss_of_load_probability"</span>).max().alias(<span class="s">"max_lolp"</span>),
-      )
-      .sort(<span class="s">"settlement_date"</span>)
-)
-print(worst.tail(30))</pre></div></div>
+data, models, common = setup_notebook()
+
+<span class="c"># lolpdrm: stored silver rows as a pandas DataFrame</span>
+df = data.elexon.query(<span class="s">"lolpdrm"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.elexon.describe(<span class="s">"lolpdrm"</span>)</pre></div></div>
         </div>
       </section>
       <section id="related" style="margin-bottom:56px" data-screen-label="Related">

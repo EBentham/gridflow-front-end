@@ -209,43 +209,43 @@
                 <td class="col-name">timestamp_utc <span class="pk-badge">PK</span></td>
                 <td class="col-type">datetime[UTC]</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">Half-hour period start. UTC enforced by <code class="mono">_TimestampedNesoBase.must_be_utc</code> validator. Source: <code class="mono">from</code>. <span class="cite">schemas/neso.py L20, L23-28</span></td>
+                <td class="col-note">Half-hour period start. UTC enforced by <code class="mono">_TimestampedNesoBase.must_be_utc</code> validator. Source: <code class="mono">from</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">period_end_utc</td>
                 <td class="col-type">datetime[UTC]</td>
                 <td style="text-align:center;" class="nullable">null</td>
-                <td class="col-note">Half-hour period end (<code class="mono">timestamp_utc + 30 min</code>). Source: <code class="mono">to</code>. <span class="cite">schemas/neso.py L21</span></td>
+                <td class="col-note">Half-hour period end (<code class="mono">timestamp_utc + 30 min</code>). Source: <code class="mono">to</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">forecast_gco2_kwh</td>
                 <td class="col-type">float | None</td>
                 <td style="text-align:center;" class="nullable">null</td>
-                <td class="col-note">Forecast carbon intensity. Populated ahead of the period. Source: <code class="mono">intensity.forecast</code>. <span class="cite">schemas/neso.py L34</span></td>
+                <td class="col-note">Forecast carbon intensity. Populated ahead of the period. Source: <code class="mono">intensity.forecast</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">actual_gco2_kwh</td>
                 <td class="col-type">float | None</td>
                 <td style="text-align:center;" class="nullable">null</td>
-                <td class="col-note">Post-period estimate; null until published. Treat null as "not yet available". Source: <code class="mono">intensity.actual</code>. <span class="cite">schemas/neso.py L35</span></td>
+                <td class="col-note">Post-period estimate; null until published. Treat null as "not yet available". Source: <code class="mono">intensity.actual</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">intensity_index</td>
                 <td class="col-type">str</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">Categorical: <code class="mono">very low</code> / <code class="mono">low</code> / <code class="mono">moderate</code> / <code class="mono">high</code> / <code class="mono">very high</code>. Vendor-managed list. Source: <code class="mono">intensity.index</code>. <span class="cite">schemas/neso.py L12, L36</span></td>
+                <td class="col-note">Categorical: <code class="mono">very low</code> / <code class="mono">low</code> / <code class="mono">moderate</code> / <code class="mono">high</code> / <code class="mono">very high</code>. Vendor-managed list. Source: <code class="mono">intensity.index</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">data_provider</td>
                 <td class="col-type">str</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">Always <code class="mono">"neso"</code>. <span class="cite">schemas/neso.py L16</span></td>
+                <td class="col-note">Always <code class="mono">"neso"</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">ingested_at</td>
                 <td class="col-type">datetime[UTC]</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">Silver transform timestamp. <span class="cite">silver/neso/carbon_intensity.py L469-474</span></td>
+                <td class="col-note">Silver transform timestamp. </td>
               </tr>
             </tbody>
           </table>
@@ -311,7 +311,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('ds','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('ds','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('ds','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('ds','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="ds-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;"><span class="c"># Header: Accept: application/json</span>
@@ -323,12 +323,20 @@ https://api.carbonintensity.org.uk/intensity</pre>
        forecast_gco2_kwh,
        actual_gco2_kwh,
        intensity_index
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/neso/intensity_current/**/*.parquet'</span>)
+<span class="k">FROM</span> silver_intensity_current
 <span class="k">ORDER BY</span> timestamp_utc <span class="k">DESC</span>
 <span class="k">LIMIT</span> <span class="num">48</span>;</pre>
             </div></div>
             <div data-tab-panel="ds-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"></pre>
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
+
+data, models, common = setup_notebook()
+
+<span class="c"># intensity_current: stored silver rows as a pandas DataFrame</span>
+df = data.neso.query(<span class="s">"intensity_current"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.neso.describe(<span class="s">"intensity_current"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -343,28 +351,28 @@ https://api.carbonintensity.org.uk/intensity</pre>
               <div class="caveat-num">01</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Actuals lag — null is "not yet published"</div>
-                <p class="small" style="margin: 0;"><code class="mono">actual_gco2_kwh</code> is null for the current and most-recent periods until NESO publishes the post-period estimate. Treat null as "not yet available", not "zero carbon". <span class="src-cite">vault Known Issues L99-100.</span></p>
+                <p class="small" style="margin: 0;"><code class="mono">actual_gco2_kwh</code> is null for the current and most-recent periods until NESO publishes the post-period estimate. Treat null as "not yet available", not "zero carbon". </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">02</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">No-arg route — <code class="mono">/intensity</code> returns one row</div>
-                <p class="small" style="margin: 0;">Unlike <code class="mono">carbon_intensity</code> (range) and <code class="mono">intensity_today</code> (all-day), this endpoint returns exactly one record for the current half-hour. Use range siblings for time-series queries. <span class="src-cite"><code class="mono">connectors/neso/endpoints.py</code> L46-51.</span></p>
+                <p class="small" style="margin: 0;">Unlike <code class="mono">carbon_intensity</code> (range) and <code class="mono">intensity_today</code> (all-day), this endpoint returns exactly one record for the current half-hour. Use range siblings for time-series queries. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">03</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Transformer is dynamically generated</div>
-                <p class="small" style="margin: 0;"><code class="mono">IntensityCurrentTransformer</code> is not source-defined — it is created at import time by <code class="mono">register_neso_transformers()</code> (<code class="mono">silver/neso/carbon_intensity.py</code> L110-118) via <code class="mono">type()</code>. Static analysers (mypy, IDE) cannot inspect it without running registration. <span class="src-cite"><code class="mono">silver/neso/carbon_intensity.py L121-136</code>.</span></p>
+                <p class="small" style="margin: 0;"><code class="mono">IntensityCurrentTransformer</code> is not source-defined — it is created at import time by <code class="mono">register_neso_transformers()</code> (<code class="mono">silver/neso/carbon_intensity.py</code> L110-118) via <code class="mono">type()</code>. Static analysers (mypy, IDE) cannot inspect it without running registration. </p>
               </div>
             </div>
             <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;">
               <div class="caveat-num">04</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Index thresholds drift as the grid decarbonises</div>
-                <p class="small" style="margin: 0;"><code class="mono">intensity_index</code> buckets (<code class="mono">very low</code> … <code class="mono">very high</code>) are vendor-managed and shift over time as the GB grid decarbonises. Use raw <code class="mono">gCO2/kWh</code> for back-fitted analytics; use the index only for stable user-facing displays. <span class="src-cite">domain knowledge — NESO methodology.</span></p>
+                <p class="small" style="margin: 0;"><code class="mono">intensity_index</code> buckets (<code class="mono">very low</code> … <code class="mono">very high</code>) are vendor-managed and shift over time as the GB grid decarbonises. Use raw <code class="mono">gCO2/kWh</code> for back-fitted analytics; use the index only for stable user-facing displays. </p>
               </div>
             </div>
           </div>

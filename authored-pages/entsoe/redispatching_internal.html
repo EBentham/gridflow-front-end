@@ -200,14 +200,14 @@
           <table class="schema-table">
             <thead><tr><th scope="col" style="width: 22%;">Column</th><th scope="col" style="width: 14%;">Type</th><th scope="col" style="width: 8%; text-align:center;">Nullable</th><th scope="col">Description</th></tr></thead>
             <tbody>
-              <tr><td class="col-name">timestamp_utc <span class="pk-badge">PK</span></td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">tz-aware UTC. Source: <code class="mono">&lt;Period&gt;</code> start + position × resolution.<span class="cite">schemas/entsoe.py L560</span></td></tr>
-              <tr><td class="col-name">in_area_code <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Zone EIC (equals out_area_code for internal). Source: <code class="mono">&lt;in_Domain.mRID&gt;</code>.<span class="cite">schemas/entsoe.py L561</span></td></tr>
-              <tr><td class="col-name">out_area_code <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Same zone EIC. Source: <code class="mono">&lt;out_Domain.mRID&gt;</code>.<span class="cite">schemas/entsoe.py L562</span></td></tr>
-              <tr><td class="col-name">quantity_mw</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Internal redispatching MW. Source: <code class="mono">&lt;Point&gt;&lt;quantity&gt;</code>.<span class="cite">schemas/entsoe.py L563</span></td></tr>
-              <tr><td class="col-name">business_type <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">A85 — internal redispatching. Default <code class="mono">""</code>.<span class="cite">schemas/entsoe.py L564</span></td></tr>
-              <tr><td class="col-name">resolution</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">ISO duration; typically <code class="mono">PT60M</code>. Default <code class="mono">""</code>.<span class="cite">schemas/entsoe.py L565</span></td></tr>
-              <tr><td class="col-name">data_provider</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsoe"</code>.<span class="cite">schemas/entsoe.py L566</span></td></tr>
-              <tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Set at silver write.<span class="cite">schemas/entsoe.py L567</span></td></tr>
+              <tr><td class="col-name">timestamp_utc <span class="pk-badge">PK</span></td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">tz-aware UTC. Source: <code class="mono">&lt;Period&gt;</code> start + position × resolution.</td></tr>
+              <tr><td class="col-name">in_area_code <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Zone EIC (equals out_area_code for internal). Source: <code class="mono">&lt;in_Domain.mRID&gt;</code>.</td></tr>
+              <tr><td class="col-name">out_area_code <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Same zone EIC. Source: <code class="mono">&lt;out_Domain.mRID&gt;</code>.</td></tr>
+              <tr><td class="col-name">quantity_mw</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Internal redispatching MW. Source: <code class="mono">&lt;Point&gt;&lt;quantity&gt;</code>.</td></tr>
+              <tr><td class="col-name">business_type <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">A85 — internal redispatching. Default <code class="mono">""</code>.</td></tr>
+              <tr><td class="col-name">resolution</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">ISO duration; typically <code class="mono">PT60M</code>. Default <code class="mono">""</code>.</td></tr>
+              <tr><td class="col-name">data_provider</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsoe"</code>.</td></tr>
+              <tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Set at silver write.</td></tr>
             </tbody>
           </table>
           <div class="card mt-24" style="padding: 16px 20px; display: flex; gap: 32px; align-items: start; flex-wrap:wrap;">
@@ -257,7 +257,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('ri','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('ri','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('ri','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('ri','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="ri-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;">https://web-api.tp.entsoe.eu/api
@@ -274,23 +274,23 @@
 <span class="k">SELECT</span> date_trunc(<span class="s">'day'</span>, r.timestamp_utc) <span class="k">AS</span> day, r.in_area_code <span class="k">AS</span> zone,
        sum(r.quantity_mw) <span class="k">AS</span> total_mwh,
        sum(c.amount_eur) <span class="k">AS</span> total_cost_eur
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/entsoe/redispatching_internal/**/*.parquet'</span>) r
-<span class="k">LEFT JOIN</span> read_parquet(<span class="s">'data/silver/entsoe/congestion_management_costs/**/*.parquet'</span>) c
+<span class="k">FROM</span> silver_redispatching_internal r
+<span class="k">LEFT JOIN</span> silver_congestion_management_costs c
   <span class="k">ON</span> r.timestamp_utc = c.timestamp_utc <span class="k">AND</span> r.in_area_code = c.in_area_code
 <span class="k">WHERE</span> r.timestamp_utc &gt;= current_timestamp - <span class="k">INTERVAL</span> 30 <span class="k">DAY</span>
 <span class="k">GROUP BY</span> 1, 2
 <span class="k">ORDER BY</span> total_cost_eur <span class="k">DESC NULLS LAST</span>;</pre>
             </div></div>
             <div data-tab-panel="ri-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-rd = pl.read_parquet(<span class="s">"data/silver/entsoe/redispatching_internal/**/*.parquet"</span>)
-<span class="c"># Hours with significant internal redispatching by zone</span>
-heavy = rd.filter(pl.col(<span class="s">"quantity_mw"</span>) &gt; 1000).group_by(<span class="s">"in_area_code"</span>).agg(
-    pl.len().alias(<span class="s">"heavy_hours"</span>),
-    pl.col(<span class="s">"quantity_mw"</span>).mean().alias(<span class="s">"mean_mw"</span>)
-)
-<span class="k">print</span>(heavy.sort(<span class="s">"heavy_hours"</span>, descending=<span class="k">True</span>))</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># redispatching_internal: stored silver rows as a pandas DataFrame</span>
+df = data.entsoe.query(<span class="s">"redispatching_internal"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.entsoe.describe(<span class="s">"redispatching_internal"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -300,11 +300,11 @@ heavy = rd.filter(pl.col(<span class="s">"quantity_mw"</span>) &gt; 1000).group_
           <h2 class="display-3 mb-8">Things to know before using this.</h2>
           <p class="small mb-24" style="max-width: 560px;">These are specific to <code class="mono">redispatching_internal</code>. Also read the <a href="../entsoe.html#about" class="link">ENTSO-E-wide caveats</a> on the vendor page.</p>
           <div>
-            <div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">in_area_code == out_area_code</code></div><p class="small" style="margin: 0;">For internal redispatching, both domain params are the same zone EIC. The "from / to" interpretation is the internal sub-zone direction, encoded outside the silver schema. <span class="src-cite">vault Known Issues · endpoints.py L167-173</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;">A63 shared with redispatching_cross_border (businessType A46)</div><p class="small" style="margin: 0;">Select on dataset key, not DocumentType alone. <span class="src-cite">endpoints.py L160-173</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;">Pydantic class is shared (H6 family)</div><p class="small" style="margin: 0;"><code class="mono">EntsoeTransmissionMarketQuantity</code> covers 12 H6 datasets. Finding <code class="mono">68-redispatching-internal-no-table.md</code> (wontfix v3-candidate) is stale. <span class="src-cite">schemas/entsoe.py L557</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;">Revisions overwrite</div><p class="small" style="margin: 0;">Same <code class="mono">(timestamp_utc, in_area_code, out_area_code, business_type)</code> overwrites silently. <span class="src-cite">silver/entsoe/h6_market.py L85-91</span></p></div></div>
-            <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">Entitlement-blocked on default API key</div><p class="small" style="margin: 0;">Live API returns HTTP 401 for the unregistered gridflow default key. Schema verified from gridflow source. <span class="src-cite">.planning/reconciliation/entsoe/30-redispatching-internal-http-401.md</span></p></div></div>
+            <div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">in_area_code == out_area_code</code></div><p class="small" style="margin: 0;">For internal redispatching, both domain params are the same zone EIC. The "from / to" interpretation is the internal sub-zone direction, encoded outside the silver schema. </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;">A63 shared with redispatching_cross_border (businessType A46)</div><p class="small" style="margin: 0;">Select on dataset key, not DocumentType alone. </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;">Pydantic class is shared (H6 family)</div><p class="small" style="margin: 0;"><code class="mono">EntsoeTransmissionMarketQuantity</code> covers 12 H6 datasets. Finding <code class="mono">68-redispatching-internal-no-table.md</code> (wontfix v3-candidate) is stale. </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;">Revisions overwrite</div><p class="small" style="margin: 0;">Same <code class="mono">(timestamp_utc, in_area_code, out_area_code, business_type)</code> overwrites silently. </p></div></div>
+            <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">Entitlement-blocked on default API key</div><p class="small" style="margin: 0;">Live API returns HTTP 401 for the unregistered gridflow default key. Schema verified from gridflow source. </p></div></div>
           </div>
         </section>
 

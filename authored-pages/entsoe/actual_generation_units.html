@@ -205,15 +205,15 @@
           <table class="schema-table">
             <thead><tr><th scope="col" style="width: 22%;">Column</th><th scope="col" style="width: 14%;">Type</th><th scope="col" style="width: 8%; text-align:center;">Nullable</th><th scope="col">Description</th></tr></thead>
             <tbody>
-              <tr><td class="col-name">timestamp_utc <span class="pk-badge">PK</span></td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">tz-aware UTC; validator requires tzinfo. Source: <code class="mono">&lt;Period&gt;</code> start + position × resolution.<span class="cite">schemas/entsoe.py L222, L232-237</span></td></tr>
-              <tr><td class="col-name">area_code <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">EIC bidding zone. Source: <code class="mono">&lt;inBiddingZone_Domain.mRID&gt;</code>.<span class="cite">schemas/entsoe.py L223</span></td></tr>
-              <tr><td class="col-name">production_type</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">EIC PSR code; <code class="mono">"unknown"</code> if absent. Source: <code class="mono">&lt;MktPSRType&gt;&lt;psrType&gt;</code>.<span class="cite">schemas/entsoe.py L224 · silver L59</span></td></tr>
-              <tr><td class="col-name">unit_mrid <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Unit identifier — opaque string (IGCC / EIC / TSO internal). Source: <code class="mono">&lt;registeredResource.mRID&gt;</code>.<span class="cite">schemas/entsoe.py L225</span></td></tr>
-              <tr><td class="col-name">unit_name</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Human-readable unit name; may be absent. Default <code class="mono">""</code>.<span class="cite">schemas/entsoe.py L226</span></td></tr>
-              <tr><td class="col-name">generation_mw</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">MW. Source: <code class="mono">&lt;Point&gt;&lt;quantity&gt;</code>.<span class="cite">schemas/entsoe.py L227</span></td></tr>
-              <tr><td class="col-name">resolution</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">ISO duration; typically <code class="mono">PT60M</code>. Default <code class="mono">""</code>.<span class="cite">schemas/entsoe.py L228</span></td></tr>
-              <tr><td class="col-name">data_provider</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsoe"</code>.<span class="cite">schemas/entsoe.py L229</span></td></tr>
-              <tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Set at silver write.<span class="cite">schemas/entsoe.py L230</span></td></tr>
+              <tr><td class="col-name">timestamp_utc <span class="pk-badge">PK</span></td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">tz-aware UTC; validator requires tzinfo. Source: <code class="mono">&lt;Period&gt;</code> start + position × resolution.</td></tr>
+              <tr><td class="col-name">area_code <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">EIC bidding zone. Source: <code class="mono">&lt;inBiddingZone_Domain.mRID&gt;</code>.</td></tr>
+              <tr><td class="col-name">production_type</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">EIC PSR code; <code class="mono">"unknown"</code> if absent. Source: <code class="mono">&lt;MktPSRType&gt;&lt;psrType&gt;</code>.</td></tr>
+              <tr><td class="col-name">unit_mrid <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Unit identifier — opaque string (IGCC / EIC / TSO internal). Source: <code class="mono">&lt;registeredResource.mRID&gt;</code>.</td></tr>
+              <tr><td class="col-name">unit_name</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Human-readable unit name; may be absent. Default <code class="mono">""</code>.</td></tr>
+              <tr><td class="col-name">generation_mw</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">MW. Source: <code class="mono">&lt;Point&gt;&lt;quantity&gt;</code>.</td></tr>
+              <tr><td class="col-name">resolution</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">ISO duration; typically <code class="mono">PT60M</code>. Default <code class="mono">""</code>.</td></tr>
+              <tr><td class="col-name">data_provider</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsoe"</code>.</td></tr>
+              <tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Set at silver write.</td></tr>
             </tbody>
           </table>
           <div class="card mt-24" style="padding: 16px 20px; display: flex; gap: 32px; align-items: start; flex-wrap:wrap;">
@@ -261,7 +261,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('agu','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('agu','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('agu','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('agu','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="agu-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;">https://web-api.tp.entsoe.eu/api
@@ -276,21 +276,21 @@
 <pre class="code dark" style="padding: 18px 22px;"><span class="c">-- Per-unit daily mean output (last 30 days)</span>
 <span class="k">SELECT</span> date_trunc(<span class="s">'day'</span>, timestamp_utc) <span class="k">AS</span> day, unit_mrid, unit_name,
        avg(generation_mw) <span class="k">AS</span> mean_mw
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/entsoe/actual_generation_units/**/*.parquet'</span>)
+<span class="k">FROM</span> silver_actual_generation_units
 <span class="k">WHERE</span> timestamp_utc &gt;= current_timestamp - <span class="k">INTERVAL</span> 30 <span class="k">DAY</span>
 <span class="k">GROUP BY</span> 1, 2, 3
 <span class="k">ORDER BY</span> 1, mean_mw <span class="k">DESC</span>;</pre>
             </div></div>
             <div data-tab-panel="agu-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-df = pl.read_parquet(<span class="s">"data/silver/entsoe/actual_generation_units/**/*.parquet"</span>)
-<span class="c"># Per-unit capacity factor (vs declared capacity from installed_capacity_units)</span>
-cap = df.group_by(<span class="s">"unit_mrid"</span>).agg(
-    pl.col(<span class="s">"generation_mw"</span>).mean().alias(<span class="s">"mean_mw"</span>),
-    pl.col(<span class="s">"generation_mw"</span>).max().alias(<span class="s">"peak_mw"</span>),
-)
-<span class="k">print</span>(cap.sort(<span class="s">"peak_mw"</span>, descending=<span class="k">True</span>).head())</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># actual_generation_units: stored silver rows as a pandas DataFrame</span>
+df = data.entsoe.query(<span class="s">"actual_generation_units"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.entsoe.describe(<span class="s">"actual_generation_units"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -300,11 +300,11 @@ cap = df.group_by(<span class="s">"unit_mrid"</span>).agg(
           <h2 class="display-3 mb-8">Things to know before using this.</h2>
           <p class="small mb-24" style="max-width: 560px;">These are specific to <code class="mono">actual_generation_units</code>. Also read the <a href="../entsoe.html#about" class="link">ENTSO-E-wide caveats</a> on the vendor page.</p>
           <div>
-            <div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;">GB and most continental zones EMPTY</div><p class="small" style="margin: 0;">Both GB and DE-LU returned <code class="mono">Acknowledgement</code> reason 999 in live verification. Many TSOs publish per-unit data only via national portals (e.g. SMARD), not ENTSO-E. Use Elexon <code class="mono">pn</code> / <code class="mono">boal</code> for GB plant-by-plant. <span class="src-cite">vault Known Issues #1</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">unit_mrid</code> is opaque</div><p class="small" style="margin: 0;">Identifiers vary by TSO encoding (IGCC, EIC, internal). Treat as opaque strings; do not normalise or split. <span class="src-cite">vault Known Issues #2</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">psrType</code> filter ergonomics</div><p class="small" style="margin: 0;"><code class="mono">psrType</code> is documented as an optional query filter but is NOT in connector <code class="mono">optional_params</code> (<code class="mono">endpoints.py L103-108</code>). Callers can still inject via <code class="mono">**params</code>. <span class="src-cite">vault Implementation Delta</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;">Revisions overwrite</div><p class="small" style="margin: 0;">Same <code class="mono">(timestamp_utc, area_code, unit_mrid)</code> re-publication overwrites silently on dedup (<code class="mono">keep="last"</code>). <span class="src-cite">silver/entsoe/actual_generation_units.py L62-65</span></p></div></div>
-            <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">Entitlement-blocked on default API key</div><p class="small" style="margin: 0;">Live API returns HTTP 401 for the unregistered gridflow default key. Schema verified from gridflow source. <span class="src-cite">.planning/reconciliation/entsoe/02-actual-generation-units-http-401.md</span></p></div></div>
+            <div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;">GB and most continental zones EMPTY</div><p class="small" style="margin: 0;">Both GB and DE-LU returned <code class="mono">Acknowledgement</code> reason 999 in live verification. Many TSOs publish per-unit data only via national portals (e.g. SMARD), not ENTSO-E. Use Elexon <code class="mono">pn</code> / <code class="mono">boal</code> for GB plant-by-plant. </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">unit_mrid</code> is opaque</div><p class="small" style="margin: 0;">Identifiers vary by TSO encoding (IGCC, EIC, internal). Treat as opaque strings; do not normalise or split. </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">psrType</code> filter ergonomics</div><p class="small" style="margin: 0;"><code class="mono">psrType</code> is documented as an optional query filter but is NOT in connector <code class="mono">optional_params</code> (<code class="mono">endpoints.py L103-108</code>). Callers can still inject via <code class="mono">**params</code>. </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;">Revisions overwrite</div><p class="small" style="margin: 0;">Same <code class="mono">(timestamp_utc, area_code, unit_mrid)</code> re-publication overwrites silently on dedup (<code class="mono">keep="last"</code>). </p></div></div>
+            <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">Entitlement-blocked on default API key</div><p class="small" style="margin: 0;">Live API returns HTTP 401 for the unregistered gridflow default key. Schema verified from gridflow source. </p></div></div>
           </div>
         </section>
 

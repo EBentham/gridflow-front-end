@@ -209,25 +209,25 @@
                 <td class="col-name">fuel <span class="pk-badge">PK</span></td>
                 <td class="col-type">str</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">Normalised to lowercase snake_case (e.g. <code class="mono">"Gas (Combined Cycle)"</code> → <code class="mono">gas_combined_cycle</code>). <span class="cite">schemas/neso.py L51; silver/neso/carbon_intensity.py L362-363</span></td>
+                <td class="col-note">Normalised to lowercase snake_case (e.g. <code class="mono">"Gas (Combined Cycle)"</code> → <code class="mono">gas_combined_cycle</code>). </td>
               </tr>
               <tr>
                 <td class="col-name">factor_gco2_kwh</td>
                 <td class="col-type">float | None</td>
                 <td style="text-align:center;" class="nullable">null</td>
-                <td class="col-note">Fuel carbon factor in gCO2/kWh. <span class="cite">schemas/neso.py L52</span></td>
+                <td class="col-note">Fuel carbon factor in gCO2/kWh. </td>
               </tr>
               <tr>
                 <td class="col-name">data_provider</td>
                 <td class="col-type">str</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">Always <code class="mono">"neso"</code>. <span class="cite">schemas/neso.py L16</span></td>
+                <td class="col-note">Always <code class="mono">"neso"</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">ingested_at</td>
                 <td class="col-type">datetime[UTC]</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">Silver transform timestamp. <span class="cite">silver/neso/carbon_intensity.py L469-474</span></td>
+                <td class="col-note">Silver transform timestamp. </td>
               </tr>
             </tbody>
           </table>
@@ -297,7 +297,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('ds','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('ds','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('ds','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('ds','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="ds-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;"><span class="c"># Header: Accept: application/json</span>
@@ -306,11 +306,19 @@ https://api.carbonintensity.org.uk/intensity/factors</pre>
             <div data-tab-panel="ds-sql" style="display:none;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px;"><span class="c">-- MEF lookup: rank fuels by emissions factor</span>
 <span class="k">SELECT</span> fuel, factor_gco2_kwh
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/neso/intensity_factors/intensity_factors.parquet'</span>)
+<span class="k">FROM</span> silver_intensity_factors
 <span class="k">ORDER BY</span> factor_gco2_kwh <span class="k">DESC</span> <span class="k">NULLS</span> <span class="k">LAST</span>;</pre>
             </div></div>
             <div data-tab-panel="ds-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"></pre>
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
+
+data, models, common = setup_notebook()
+
+<span class="c"># intensity_factors: stored silver rows as a pandas DataFrame</span>
+df = data.neso.query(<span class="s">"intensity_factors"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.neso.describe(<span class="s">"intensity_factors"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -325,35 +333,35 @@ https://api.carbonintensity.org.uk/intensity/factors</pre>
               <div class="caveat-num">01</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">No <code class="mono">timestamp_utc</code> — reference schema</div>
-                <p class="small" style="margin: 0;"><code class="mono">CarbonIntensityFactor</code> inherits <code class="mono">_NesoBase</code>, not <code class="mono">_TimestampedNesoBase</code> — there is no <code class="mono">timestamp_utc</code> column. The dataset is a static lookup. <span class="src-cite"><code class="mono">schemas/neso.py L48-52</code>.</span></p>
+                <p class="small" style="margin: 0;"><code class="mono">CarbonIntensityFactor</code> inherits <code class="mono">_NesoBase</code>, not <code class="mono">_TimestampedNesoBase</code> — there is no <code class="mono">timestamp_utc</code> column. The dataset is a static lookup. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">02</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Written as a single file, not partitioned</div>
-                <p class="small" style="margin: 0;"><code class="mono">reference_dataset=True</code> (<code class="mono">endpoints.py L81</code>) routes through <code class="mono">_write_silver</code> L87-100 — emits one <code class="mono">intensity_factors.parquet</code> at the silver root, overwriting on each ingest. No <code class="mono">year=YYYY/month=MM/</code> partition tree. <span class="src-cite"><code class="mono">silver/neso/carbon_intensity.py L87-100</code>.</span></p>
+                <p class="small" style="margin: 0;"><code class="mono">reference_dataset=True</code> (<code class="mono">endpoints.py L81</code>) routes through <code class="mono">_write_silver</code> L87-100 — emits one <code class="mono">intensity_factors.parquet</code> at the silver root, overwriting on each ingest. No <code class="mono">year=YYYY/month=MM/</code> partition tree. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">03</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Fuel keys are normalised to snake_case</div>
-                <p class="small" style="margin: 0;">Raw API keys like <code class="mono">"Gas (Combined Cycle)"</code> become <code class="mono">gas_combined_cycle</code> (<code class="mono">silver/neso/carbon_intensity.py L362-363</code>). Joins to <code class="mono">fuelhh</code> codes (uppercase) require explicit case mapping. <span class="src-cite"><code class="mono">silver/neso/carbon_intensity.py L362-363</code>.</span></p>
+                <p class="small" style="margin: 0;">Raw API keys like <code class="mono">"Gas (Combined Cycle)"</code> become <code class="mono">gas_combined_cycle</code> (<code class="mono">silver/neso/carbon_intensity.py L362-363</code>). Joins to <code class="mono">fuelhh</code> codes (uppercase) require explicit case mapping. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">04</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Renewables and nuclear are zero-carbon by methodology</div>
-                <p class="small" style="margin: 0;">NESO assigns <code class="mono">factor_gco2_kwh = 0</code> to wind, solar, hydro, nuclear. Lifecycle emissions (manufacturing, fuel cycle) are out of scope — see Caveats #04 if you need full LCA factors. <span class="src-cite">NESO methodology; vault Modelling notes L109.</span></p>
+                <p class="small" style="margin: 0;">NESO assigns <code class="mono">factor_gco2_kwh = 0</code> to wind, solar, hydro, nuclear. Lifecycle emissions (manufacturing, fuel cycle) are out of scope — see Caveats #04 if you need full LCA factors. </p>
               </div>
             </div>
             <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;">
               <div class="caveat-num">05</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Factor revisions silently update the file</div>
-                <p class="small" style="margin: 0;">The single-file write means a factor revision overwrites prior values with no version history in silver. Snapshot bronze for time-travel; do not assume factors are immutable. <span class="src-cite"><code class="mono">silver/neso/carbon_intensity.py L87-100</code>; vault Modelling notes L109.</span></p>
+                <p class="small" style="margin: 0;">The single-file write means a factor revision overwrites prior values with no version history in silver. Snapshot bronze for time-travel; do not assume factors are immutable. </p>
               </div>
             </div>
           </div>

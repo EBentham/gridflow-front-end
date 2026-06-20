@@ -208,79 +208,79 @@
                 <td class="col-name">timestamp_utc <span class="pk-badge">PK</span></td>
                 <td class="col-type">datetime[UTC]</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">Half-hour period start. UTC enforced. Source: <code class="mono">from</code>. <span class="cite">schemas/neso.py L20, L23-28</span></td>
+                <td class="col-note">Half-hour period start. UTC enforced. Source: <code class="mono">from</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">period_end_utc</td>
                 <td class="col-type">datetime[UTC]</td>
                 <td style="text-align:center;" class="nullable">null</td>
-                <td class="col-note">Half-hour period end. Source: <code class="mono">to</code>. <span class="cite">schemas/neso.py L21</span></td>
+                <td class="col-note">Half-hour period end. Source: <code class="mono">to</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">regionid <span class="pk-badge">PK</span></td>
                 <td class="col-type">int | None</td>
                 <td style="text-align:center;" class="nullable">null</td>
-                <td class="col-note">Always <code class="mono">16</code> for this endpoint. Source: <code class="mono">regionid</code>. <span class="cite">schemas/neso.py L65</span></td>
+                <td class="col-note">Always <code class="mono">16</code> for this endpoint. Source: <code class="mono">regionid</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">dnoregion</td>
                 <td class="col-type">str</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">Always <code class="mono">Scotland</code>. Source: <code class="mono">dnoregion</code>. <span class="cite">schemas/neso.py L66</span></td>
+                <td class="col-note">Always <code class="mono">Scotland</code>. Source: <code class="mono">dnoregion</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">shortname <span class="pk-badge">PK</span></td>
                 <td class="col-type">str</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">Always <code class="mono">Scotland</code>. Source: <code class="mono">shortname</code>. <span class="cite">schemas/neso.py L67</span></td>
+                <td class="col-note">Always <code class="mono">Scotland</code>. Source: <code class="mono">shortname</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">postcode <span class="pk-badge">PK</span></td>
                 <td class="col-type">str</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">Blank for country routes. Source: <code class="mono">postcode</code>. <span class="cite">schemas/neso.py L68</span></td>
+                <td class="col-note">Blank for country routes. Source: <code class="mono">postcode</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">forecast_gco2_kwh</td>
                 <td class="col-type">float | None</td>
                 <td style="text-align:center;" class="nullable">null</td>
-                <td class="col-note">Regional forecast carbon intensity. Source: <code class="mono">intensity.forecast</code>. <span class="cite">schemas/neso.py L69</span></td>
+                <td class="col-note">Regional forecast carbon intensity. Source: <code class="mono">intensity.forecast</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">actual_gco2_kwh</td>
                 <td class="col-type">float | None</td>
                 <td style="text-align:center;" class="nullable">null</td>
-                <td class="col-note">Often null on regional endpoints. Source: <code class="mono">intensity.actual</code>. <span class="cite">schemas/neso.py L70</span></td>
+                <td class="col-note">Often null on regional endpoints. Source: <code class="mono">intensity.actual</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">intensity_index</td>
                 <td class="col-type">str</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">Categorical: <code class="mono">very low</code> … <code class="mono">very high</code>. Source: <code class="mono">intensity.index</code>. <span class="cite">schemas/neso.py L71</span></td>
+                <td class="col-note">Categorical: <code class="mono">very low</code> … <code class="mono">very high</code>. Source: <code class="mono">intensity.index</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">fuel <span class="pk-badge">PK</span></td>
                 <td class="col-type">str</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">Regional generation mix fuel. Source: <code class="mono">generationmix.fuel</code>. <span class="cite">schemas/neso.py L72</span></td>
+                <td class="col-note">Regional generation mix fuel. Source: <code class="mono">generationmix.fuel</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">generation_percentage</td>
                 <td class="col-type">float | None</td>
                 <td style="text-align:center;" class="nullable">null</td>
-                <td class="col-note">Regional fuel share in percent. Source: <code class="mono">generationmix.perc</code>. <span class="cite">schemas/neso.py L73</span></td>
+                <td class="col-note">Regional fuel share in percent. Source: <code class="mono">generationmix.perc</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">data_provider</td>
                 <td class="col-type">str</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">Always <code class="mono">"neso"</code>. <span class="cite">schemas/neso.py L16</span></td>
+                <td class="col-note">Always <code class="mono">"neso"</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">ingested_at</td>
                 <td class="col-type">datetime[UTC]</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">Silver transform timestamp. <span class="cite">silver/neso/carbon_intensity.py L469-474</span></td>
+                <td class="col-note">Silver transform timestamp. </td>
               </tr>
             </tbody>
           </table>
@@ -347,7 +347,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('ds','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('ds','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('ds','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('ds','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="ds-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;"><span class="c"># Header: Accept: application/json</span>
@@ -356,14 +356,22 @@ https://api.carbonintensity.org.uk/regional/scotland</pre>
             <div data-tab-panel="ds-sql" style="display:none;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px;"><span class="c">-- Scotland wind dominance: hours with wind share &gt;= 70% over the last 7 days</span>
 <span class="k">SELECT</span> timestamp_utc, generation_percentage, forecast_gco2_kwh, intensity_index
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/neso/regional_scotland/**/*.parquet'</span>)
+<span class="k">FROM</span> silver_regional_scotland
 <span class="k">WHERE</span> fuel = <span class="s">'wind'</span>
   <span class="k">AND</span> generation_percentage &gt;= <span class="num">70</span>
   <span class="k">AND</span> timestamp_utc &gt;= current_date - <span class="k">INTERVAL</span> <span class="num">7</span> <span class="k">DAY</span>
 <span class="k">ORDER BY</span> timestamp_utc <span class="k">DESC</span>;</pre>
             </div></div>
             <div data-tab-panel="ds-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"></pre>
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
+
+data, models, common = setup_notebook()
+
+<span class="c"># regional_scotland: stored silver rows as a pandas DataFrame</span>
+df = data.neso.query(<span class="s">"regional_scotland"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.neso.describe(<span class="s">"regional_scotland"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -378,28 +386,28 @@ https://api.carbonintensity.org.uk/regional/scotland</pre>
               <div class="caveat-num">01</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Region-keyed envelope (shared transformer with regional_wales)</div>
-                <p class="small" style="margin: 0;">Functionally identical to <code class="mono">regional_wales</code> — same <code class="mono">RegionalIntensity</code> schema, same <code class="mono">_transform_regional</code> path, only <code class="mono">regionid</code> differs (Scotland=16, Wales=17). <span class="src-cite"><code class="mono">endpoints.py L168-173</code>, L174-179; <code class="mono">silver/neso/carbon_intensity.py L400-445</code>.</span></p>
+                <p class="small" style="margin: 0;">Functionally identical to <code class="mono">regional_wales</code> — same <code class="mono">RegionalIntensity</code> schema, same <code class="mono">_transform_regional</code> path, only <code class="mono">regionid</code> differs (Scotland=16, Wales=17). </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">02</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">NESO API status: beta</div>
-                <p class="small" style="margin: 0;"><code class="mono">Carbon Intensity - Regional</code> is beta (<code class="mono">endpoints.py L170</code>). <span class="src-cite"><code class="mono">endpoints.py L170</code>.</span></p>
+                <p class="small" style="margin: 0;"><code class="mono">Carbon Intensity - Regional</code> is beta (<code class="mono">endpoints.py L170</code>). </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">03</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">regionid</code> always 16</div>
-                <p class="small" style="margin: 0;">Scotland carries <code class="mono">regionid=16</code>. <span class="src-cite">vault Bronze Sample L59.</span></p>
+                <p class="small" style="margin: 0;">Scotland carries <code class="mono">regionid=16</code>. </p>
               </div>
             </div>
             <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;">
               <div class="caveat-num">04</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Transformer is dynamically generated</div>
-                <p class="small" style="margin: 0;"><code class="mono">RegionalScotlandTransformer</code> is created at import time via <code class="mono">type()</code> in <code class="mono">register_neso_transformers()</code>. <span class="src-cite"><code class="mono">silver/neso/carbon_intensity.py L110-136</code>.</span></p>
+                <p class="small" style="margin: 0;"><code class="mono">RegionalScotlandTransformer</code> is created at import time via <code class="mono">type()</code> in <code class="mono">register_neso_transformers()</code>. </p>
               </div>
             </div>
           </div>

@@ -82,26 +82,24 @@
           <div class="card" style="padding:20px"><div class="tiny mb-8">BRONZE PATH</div><div class="mono small" style="word-break:break-all;margin-bottom:12px">data/bronze/elexon/imbalngc/&lt;year&gt;/&lt;month&gt;/&lt;day&gt;/raw_&lt;uuid&gt;.json</div><div class="tiny mb-8">TRANSFORMER</div><div class="mono small">gridflow.silver.elexon.imbalngc.ImbalNGCTransformer</div></div>
         </div>
         <div data-tab-group="imbalngc">
-          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('imbalngc','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('imbalngc','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('imbalngc','py',this)" style="cursor:pointer">Python · polars</button></div>
+          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('imbalngc','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('imbalngc','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('imbalngc','py',this)" style="cursor:pointer">Python · gridflow-models</button></div>
           <div data-tab-panel="imbalngc-url" style="display:block"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">https://data.elexon.co.uk/bmrs/api/v1/datasets/IMBALNGC?publishDateTimeFrom=2026-05-06T00:00Z&amp;publishDateTimeTo=2026-05-06T03:00Z&amp;format=json</pre></div></div>
           <div data-tab-panel="imbalngc-sql" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto"><span class="c">-- Average indicated imbalance by hour-of-day over the last 30 days</span>
 SELECT date_part(<span class="s">'hour'</span>, timestamp_utc) AS hour,
        AVG(indicated_imbalance) AS avg_imbalance_mwh,
        MIN(indicated_imbalance) AS min_imbalance_mwh
-FROM read_parquet(<span class="s">'data/silver/elexon/imbalngc/**/*.parquet'</span>)
+FROM silver_imbalngc
 WHERE settlement_date &gt;= current_date - INTERVAL 30 DAY
 GROUP BY 1 ORDER BY 1;</pre></div></div>
-          <div data-tab-panel="imbalngc-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">import polars as pl
+          <div data-tab-panel="imbalngc-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-df = pl.read_parquet(<span class="s">"data/silver/elexon/imbalngc/**/*.parquet"</span>)
-<span class="c"># Periods forecast to be short, sorted by depth</span>
-short = (
-    df.filter(pl.col(<span class="s">"indicated_imbalance"</span>) &lt; 0)
-      .sort(<span class="s">"indicated_imbalance"</span>)
-      .select([<span class="s">"settlement_date"</span>, <span class="s">"settlement_period"</span>, <span class="s">"indicated_imbalance"</span>])
-      .head(20)
-)
-print(short)</pre></div></div>
+data, models, common = setup_notebook()
+
+<span class="c"># imbalngc: stored silver rows as a pandas DataFrame</span>
+df = data.elexon.query(<span class="s">"imbalngc"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.elexon.describe(<span class="s">"imbalngc"</span>)</pre></div></div>
         </div>
       </section>
       <section id="related" style="margin-bottom:56px" data-screen-label="Related">

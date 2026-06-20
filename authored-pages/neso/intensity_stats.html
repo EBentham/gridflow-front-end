@@ -209,49 +209,49 @@
                 <td class="col-name">timestamp_utc <span class="pk-badge">PK</span></td>
                 <td class="col-type">datetime[UTC]</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">Stats block start. UTC enforced. Source: <code class="mono">from</code>. <span class="cite">schemas/neso.py L20, L23-28</span></td>
+                <td class="col-note">Stats block start. UTC enforced. Source: <code class="mono">from</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">period_end_utc <span class="pk-badge">PK</span></td>
                 <td class="col-type">datetime[UTC]</td>
                 <td style="text-align:center;" class="nullable">null</td>
-                <td class="col-note">Stats block end. Source: <code class="mono">to</code>. <span class="cite">schemas/neso.py L21</span></td>
+                <td class="col-note">Stats block end. Source: <code class="mono">to</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">max_gco2_kwh</td>
                 <td class="col-type">float | None</td>
                 <td style="text-align:center;" class="nullable">null</td>
-                <td class="col-note">Maximum intensity in the window. Source: <code class="mono">intensity.max</code>. <span class="cite">schemas/neso.py L42</span></td>
+                <td class="col-note">Maximum intensity in the window. Source: <code class="mono">intensity.max</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">average_gco2_kwh</td>
                 <td class="col-type">float | None</td>
                 <td style="text-align:center;" class="nullable">null</td>
-                <td class="col-note">Mean intensity in the window. Source: <code class="mono">intensity.average</code>. <span class="cite">schemas/neso.py L43</span></td>
+                <td class="col-note">Mean intensity in the window. Source: <code class="mono">intensity.average</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">min_gco2_kwh</td>
                 <td class="col-type">float | None</td>
                 <td style="text-align:center;" class="nullable">null</td>
-                <td class="col-note">Minimum intensity in the window. Source: <code class="mono">intensity.min</code>. <span class="cite">schemas/neso.py L44</span></td>
+                <td class="col-note">Minimum intensity in the window. Source: <code class="mono">intensity.min</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">intensity_index</td>
                 <td class="col-type">str</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">Window index categorical. Source: <code class="mono">intensity.index</code>. <span class="cite">schemas/neso.py L45</span></td>
+                <td class="col-note">Window index categorical. Source: <code class="mono">intensity.index</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">data_provider</td>
                 <td class="col-type">str</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">Always <code class="mono">"neso"</code>. <span class="cite">schemas/neso.py L16</span></td>
+                <td class="col-note">Always <code class="mono">"neso"</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">ingested_at</td>
                 <td class="col-type">datetime[UTC]</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">Silver transform timestamp. <span class="cite">silver/neso/carbon_intensity.py L469-474</span></td>
+                <td class="col-note">Silver transform timestamp. </td>
               </tr>
             </tbody>
           </table>
@@ -320,7 +320,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('ds','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('ds','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('ds','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('ds','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="ds-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;"><span class="c"># Header: Accept: application/json</span>
@@ -330,12 +330,20 @@ https://api.carbonintensity.org.uk/intensity/stats/2026-05-01T00:00Z/2026-05-08T
 <pre class="code dark" style="padding: 18px 22px;"><span class="c">-- 30-day rolling regime indicator: average and dispersion</span>
 <span class="k">SELECT</span> timestamp_utc, average_gco2_kwh, max_gco2_kwh, min_gco2_kwh,
        max_gco2_kwh - min_gco2_kwh <span class="k">AS</span> spread_g
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/neso/intensity_stats/**/*.parquet'</span>)
+<span class="k">FROM</span> silver_intensity_stats
 <span class="k">WHERE</span> timestamp_utc &gt;= current_date - <span class="k">INTERVAL</span> <span class="num">30</span> <span class="k">DAY</span>
 <span class="k">ORDER BY</span> timestamp_utc <span class="k">DESC</span>;</pre>
             </div></div>
             <div data-tab-panel="ds-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"></pre>
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
+
+data, models, common = setup_notebook()
+
+<span class="c"># intensity_stats: stored silver rows as a pandas DataFrame</span>
+df = data.neso.query(<span class="s">"intensity_stats"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.neso.describe(<span class="s">"intensity_stats"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -350,28 +358,28 @@ https://api.carbonintensity.org.uk/intensity/stats/2026-05-01T00:00Z/2026-05-08T
               <div class="caveat-num">01</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Aggregates derived from observed intensities, not raw computations</div>
-                <p class="small" style="margin: 0;">NESO computes max/avg/min from its own published intensity series — these values may not equal a downstream aggregation of <code class="mono">carbon_intensity</code> rows if revisions occurred between publish times. <span class="src-cite">vault Modelling notes L114; NESO methodology.</span></p>
+                <p class="small" style="margin: 0;">NESO computes max/avg/min from its own published intensity series — these values may not equal a downstream aggregation of <code class="mono">carbon_intensity</code> rows if revisions occurred between publish times. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">02</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Vendor allows 30-day window; connector chunks at 14</div>
-                <p class="small" style="margin: 0;">Vendor max window for stats is 30 days; the connector uses <code class="mono">_MAX_DAYS_PER_REQUEST = 14</code> uniformly (<code class="mono">connectors/neso/carbon_intensity.py L21</code>) — conservative, not incomplete. Stats spans larger than 14 days are split into multiple windows. <span class="src-cite">vault Implementation Delta L109; <code class="mono">connectors/neso/carbon_intensity.py L21</code>.</span></p>
+                <p class="small" style="margin: 0;">Vendor max window for stats is 30 days; the connector uses <code class="mono">_MAX_DAYS_PER_REQUEST = 14</code> uniformly (<code class="mono">connectors/neso/carbon_intensity.py L21</code>) — conservative, not incomplete. Stats spans larger than 14 days are split into multiple windows. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">03</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">No leakage when joining to per-SP labels</div>
-                <p class="small" style="margin: 0;">Block stats include the SP they cover. Joining <code class="mono">intensity_stats</code> aggregates back to per-SP training data without windowing creates lookahead. Use stats only for stable rolling regime features, not labels. <span class="src-cite">vault Modelling notes L114.</span></p>
+                <p class="small" style="margin: 0;">Block stats include the SP they cover. Joining <code class="mono">intensity_stats</code> aggregates back to per-SP training data without windowing creates lookahead. Use stats only for stable rolling regime features, not labels. </p>
               </div>
             </div>
             <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;">
               <div class="caveat-num">04</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Transformer is dynamically generated</div>
-                <p class="small" style="margin: 0;"><code class="mono">IntensityStatsTransformer</code> is created at import time via <code class="mono">type()</code> in <code class="mono">register_neso_transformers()</code>. <span class="src-cite"><code class="mono">silver/neso/carbon_intensity.py L110-136</code>.</span></p>
+                <p class="small" style="margin: 0;"><code class="mono">IntensityStatsTransformer</code> is created at import time via <code class="mono">type()</code> in <code class="mono">register_neso_transformers()</code>. </p>
               </div>
             </div>
           </div>

@@ -209,14 +209,14 @@
           <table class="schema-table">
             <thead><tr><th scope="col" style="width: 22%;">Column</th><th scope="col" style="width: 14%;">Type</th><th scope="col" style="width: 8%; text-align:center;">Nullable</th><th scope="col">Description</th></tr></thead>
             <tbody>
-              <tr><td class="col-name">timestamp_utc <span class="pk-badge">PK</span></td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">tz-aware UTC. Source: <code class="mono">&lt;Period&gt;</code> start + <code class="mono">position × resolution</code>.<span class="cite">schemas/entsoe.py L560</span></td></tr>
-              <tr><td class="col-name">in_area_code <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Source zone EIC.<span class="cite">schemas/entsoe.py L561</span></td></tr>
-              <tr><td class="col-name">out_area_code <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Destination zone EIC.<span class="cite">schemas/entsoe.py L562</span></td></tr>
-              <tr><td class="col-name">quantity_mw</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Used capacity MW. Source: <code class="mono">&lt;Point&gt;&lt;quantity&gt;</code>.<span class="cite">schemas/entsoe.py L563</span></td></tr>
-              <tr><td class="col-name">business_type <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note"><code class="mono">B05</code>. Default <code class="mono">""</code>.<span class="cite">schemas/entsoe.py L564</span></td></tr>
-              <tr><td class="col-name">resolution</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">ISO duration; typically <code class="mono">PT60M</code>.<span class="cite">schemas/entsoe.py L565</span></td></tr>
-              <tr><td class="col-name">data_provider</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsoe"</code>.<span class="cite">schemas/entsoe.py L566</span></td></tr>
-              <tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Set at silver write.<span class="cite">schemas/entsoe.py L567</span></td></tr>
+              <tr><td class="col-name">timestamp_utc <span class="pk-badge">PK</span></td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">tz-aware UTC. Source: <code class="mono">&lt;Period&gt;</code> start + <code class="mono">position × resolution</code>.</td></tr>
+              <tr><td class="col-name">in_area_code <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Source zone EIC.</td></tr>
+              <tr><td class="col-name">out_area_code <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Destination zone EIC.</td></tr>
+              <tr><td class="col-name">quantity_mw</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Used capacity MW. Source: <code class="mono">&lt;Point&gt;&lt;quantity&gt;</code>.</td></tr>
+              <tr><td class="col-name">business_type <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note"><code class="mono">B05</code>. Default <code class="mono">""</code>.</td></tr>
+              <tr><td class="col-name">resolution</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">ISO duration; typically <code class="mono">PT60M</code>.</td></tr>
+              <tr><td class="col-name">data_provider</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsoe"</code>.</td></tr>
+              <tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Set at silver write.</td></tr>
             </tbody>
           </table>
           <div class="card mt-24" style="padding: 16px 20px; display: flex; gap: 32px; align-items: start;">
@@ -266,7 +266,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('tcu','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('tcu','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('tcu','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('tcu','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="tcu-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;">https://web-api.tp.entsoe.eu/api
@@ -284,21 +284,23 @@
 <pre class="code dark" style="padding: 18px 22px;"><span class="c">-- Transfer capacity use vs realised flow (sanity check)</span>
 <span class="k">SELECT</span> u.timestamp_utc, u.quantity_mw <span class="k">AS</span> used_capacity,
        f.flow_mw, abs(u.quantity_mw - f.flow_mw) <span class="k">AS</span> gap_mw
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/entsoe/transfer_capacity_use/**/*.parquet'</span>) u
-<span class="k">JOIN</span> read_parquet(<span class="s">'data/silver/entsoe/cross_border_flows/**/*.parquet'</span>) f
+<span class="k">FROM</span> silver_transfer_capacity_use u
+<span class="k">JOIN</span> silver_cross_border_flows f
   <span class="k">ON</span> u.timestamp_utc = f.timestamp_utc
  <span class="k">AND</span> u.in_area_code = f.in_area_code
  <span class="k">AND</span> u.out_area_code = f.out_area_code
 <span class="k">ORDER BY</span> gap_mw <span class="k">DESC</span> <span class="k">LIMIT</span> 20;</pre>
             </div></div>
             <div data-tab-panel="tcu-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-use = pl.read_parquet(<span class="s">"data/silver/entsoe/transfer_capacity_use/**/*.parquet"</span>)
-<span class="c"># Per-border average use over a window</span>
-<span class="k">print</span>(use.group_by([<span class="s">"in_area_code"</span>, <span class="s">"out_area_code"</span>]).agg(
-    pl.col(<span class="s">"quantity_mw"</span>).abs().mean().alias(<span class="s">"mean_abs_use_mw"</span>)
-).sort(<span class="s">"mean_abs_use_mw"</span>, descending=<span class="k">True</span>))</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># transfer_capacity_use: stored silver rows as a pandas DataFrame</span>
+df = data.entsoe.query(<span class="s">"transfer_capacity_use"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.entsoe.describe(<span class="s">"transfer_capacity_use"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -308,11 +310,11 @@ use = pl.read_parquet(<span class="s">"data/silver/entsoe/transfer_capacity_use/
           <h2 class="display-3 mb-8">Things to know before using this.</h2>
           <p class="small mb-24" style="max-width: 560px;">These are specific to <code class="mono">transfer_capacity_use</code>. Also read the <a href="../entsoe.html#about" class="link">ENTSO-E-wide caveats</a> on the vendor page.</p>
           <div>
-            <div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">A25</code> DocumentType is heavily overloaded</div><p class="small" style="margin: 0;"><code class="mono">A25</code> is used for <code class="mono">transfer_capacity_use</code> (B05), <code class="mono">auction_revenue</code> (B07), <code class="mono">net_positions</code> (B09), and <code class="mono">congestion_income</code> (B10). Always select on the <code class="mono">(documentType, businessType)</code> pair. <span class="src-cite">endpoints.py L229-291</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">businessType=B05</code> pinned by connector</div><p class="small" style="margin: 0;">Connector pins <code class="mono">businessType=B05</code>. <span class="src-cite">endpoints.py L245</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;">Pydantic class is shared (H6 family)</div><p class="small" style="margin: 0;"><code class="mono">EntsoeTransmissionMarketQuantity</code> covers 12 H6 datasets. Reconciliation finding <code class="mono">71-transfer-capacity-use-no-table.md</code> (wontfix v3-candidate) is stale. <span class="src-cite">schemas/entsoe.py L557</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;">Revisions overwrite</div><p class="small" style="margin: 0;">Same <code class="mono">(timestamp_utc, in_area_code, out_area_code, business_type)</code> overwrites silently. <span class="src-cite">silver/entsoe/h6_market.py L85-91</span></p></div></div>
-            <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">Entitlement-blocked on default API key</div><p class="small" style="margin: 0;">Live API returns HTTP 401 for the unregistered gridflow default key. <span class="src-cite">.planning/reconciliation/entsoe/33-transfer-capacity-use-http-401.md</span></p></div></div>
+            <div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">A25</code> DocumentType is heavily overloaded</div><p class="small" style="margin: 0;"><code class="mono">A25</code> is used for <code class="mono">transfer_capacity_use</code> (B05), <code class="mono">auction_revenue</code> (B07), <code class="mono">net_positions</code> (B09), and <code class="mono">congestion_income</code> (B10). Always select on the <code class="mono">(documentType, businessType)</code> pair. </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">businessType=B05</code> pinned by connector</div><p class="small" style="margin: 0;">Connector pins <code class="mono">businessType=B05</code>. </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;">Pydantic class is shared (H6 family)</div><p class="small" style="margin: 0;"><code class="mono">EntsoeTransmissionMarketQuantity</code> covers 12 H6 datasets. Reconciliation finding <code class="mono">71-transfer-capacity-use-no-table.md</code> (wontfix v3-candidate) is stale. </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;">Revisions overwrite</div><p class="small" style="margin: 0;">Same <code class="mono">(timestamp_utc, in_area_code, out_area_code, business_type)</code> overwrites silently. </p></div></div>
+            <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">Entitlement-blocked on default API key</div><p class="small" style="margin: 0;">Live API returns HTTP 401 for the unregistered gridflow default key. </p></div></div>
           </div>
         </section>
 

@@ -251,7 +251,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   tz-aware UTC. Source: <code class="mono">&lt;Period&gt;</code> start + <code class="mono">position × resolution</code>.
-                  <span class="cite">schemas/entsoe.py L619</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -260,7 +260,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   Single area EIC. Renamed from <code class="mono">area_domain</code>. Source: <code class="mono">&lt;area_Domain.mRID&gt;</code>.
-                  <span class="cite">schemas/entsoe.py L620 · silver/entsoe/h8_balancing.py L143</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -269,7 +269,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   Aggregated bid MW. Source: <code class="mono">&lt;Point&gt;&lt;quantity&gt;</code>.
-                  <span class="cite">schemas/entsoe.py L621</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -278,7 +278,7 @@
                 <td style="text-align:center;" class="nullable">Yes</td>
                 <td class="col-note">
                   Reserve product code. Default <code class="mono">""</code>. Source: <code class="mono">&lt;businessType&gt;</code>.
-                  <span class="cite">schemas/entsoe.py L622</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -287,7 +287,7 @@
                 <td style="text-align:center;" class="nullable">Yes</td>
                 <td class="col-note">
                   Per-aggregate identifier (not per individual bidder). Renamed from <code class="mono">&lt;TimeSeries&gt;&lt;mRID&gt;</code>. Default <code class="mono">""</code>.
-                  <span class="cite">schemas/entsoe.py L623</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -296,7 +296,7 @@
                 <td style="text-align:center;" class="nullable">Yes</td>
                 <td class="col-note">
                   Up / down direction. Default <code class="mono">""</code>. Source: <code class="mono">&lt;flow_Direction&gt;</code>.
-                  <span class="cite">schemas/entsoe.py L624</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -305,7 +305,7 @@
                 <td style="text-align:center;" class="nullable">Yes</td>
                 <td class="col-note">
                   Local product code. Default <code class="mono">""</code>. Source: <code class="mono">&lt;Original_Market_Product&gt;</code>.
-                  <span class="cite">schemas/entsoe.py L625</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -314,7 +314,7 @@
                 <td style="text-align:center;" class="nullable">Yes</td>
                 <td class="col-note">
                   Standardised product code. Default <code class="mono">""</code>. Source: <code class="mono">&lt;Standard_Market_Product&gt;</code>.
-                  <span class="cite">schemas/entsoe.py L626</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -323,7 +323,7 @@
                 <td style="text-align:center;" class="nullable">Yes</td>
                 <td class="col-note">
                   ISO duration. Default <code class="mono">""</code>.
-                  <span class="cite">schemas/entsoe.py L627</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -332,7 +332,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   Always <code class="mono">"entsoe"</code>. Default <code class="mono">"entsoe"</code>.
-                  <span class="cite">schemas/entsoe.py L628</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -341,7 +341,7 @@
                 <td style="text-align:center;" class="nullable">Yes</td>
                 <td class="col-note">
                   Set at silver write.
-                  <span class="cite">schemas/entsoe.py L629</span>
+                  
                 </td>
               </tr>
             </tbody>
@@ -416,7 +416,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('abeb','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('abeb','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('abeb','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('abeb','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="abeb-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;">https://web-api.tp.entsoe.eu/api
@@ -431,23 +431,20 @@
 <pre class="code dark" style="padding: 18px 22px;"><span class="c">-- Aggregated bid stack per zone per direction (last 7 days)</span>
 <span class="k">SELECT</span> date_trunc(<span class="s">'day'</span>, timestamp_utc) <span class="k">AS</span> day, area_code, direction,
        sum(quantity_mw) <span class="k">AS</span> total_aggregated_mw
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/entsoe/aggregated_balancing_energy_bids/**/*.parquet'</span>)
+<span class="k">FROM</span> silver_aggregated_balancing_energy_bids
 <span class="k">WHERE</span> timestamp_utc &gt;= current_timestamp - <span class="k">INTERVAL</span> 7 <span class="k">DAY</span>
 <span class="k">GROUP BY</span> 1, 2, 3 <span class="k">ORDER BY</span> 1 <span class="k">DESC</span>, total_aggregated_mw <span class="k">DESC</span>;</pre>
             </div></div>
             <div data-tab-panel="abeb-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-agg = pl.read_parquet(<span class="s">"data/silver/entsoe/aggregated_balancing_energy_bids/**/*.parquet"</span>)
-ind = pl.read_parquet(<span class="s">"data/silver/entsoe/balancing_energy_bids/**/*.parquet"</span>)
-<span class="c"># Aggregate-vs-individual consistency (sanity check)</span>
-sum_ind = ind.group_by([<span class="s">"timestamp_utc"</span>, <span class="s">"area_code"</span>, <span class="s">"direction"</span>]).agg(
-    pl.col(<span class="s">"quantity_mw"</span>).sum().alias(<span class="s">"ind_total_mw"</span>)
-)
-sum_agg = agg.group_by([<span class="s">"timestamp_utc"</span>, <span class="s">"area_code"</span>, <span class="s">"direction"</span>]).agg(
-    pl.col(<span class="s">"quantity_mw"</span>).sum().alias(<span class="s">"agg_total_mw"</span>)
-)
-<span class="k">print</span>(sum_ind.join(sum_agg, on=[<span class="s">"timestamp_utc"</span>, <span class="s">"area_code"</span>, <span class="s">"direction"</span>]).tail())</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># aggregated_balancing_energy_bids: stored silver rows as a pandas DataFrame</span>
+df = data.entsoe.query(<span class="s">"aggregated_balancing_energy_bids"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.entsoe.describe(<span class="s">"aggregated_balancing_energy_bids"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -462,35 +459,35 @@ sum_agg = agg.group_by([<span class="s">"timestamp_utc"</span>, <span class="s">
               <div class="caveat-num">01</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">area_Domain</code> (not <code class="mono">connecting_Domain</code>)</div>
-                <p class="small" style="margin: 0;">A24 uses <code class="mono">area_Domain</code> (different from A37's <code class="mono">connecting_Domain</code>). The H8 transformer renames both to <code class="mono">area_code</code> so silver consumers see a uniform column. <span class="src-cite">silver/entsoe/h8_balancing.py L143 · endpoints.py L339-344</span></p>
+                <p class="small" style="margin: 0;">A24 uses <code class="mono">area_Domain</code> (different from A37's <code class="mono">connecting_Domain</code>). The H8 transformer renames both to <code class="mono">area_code</code> so silver consumers see a uniform column. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">02</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Reuses <code class="mono">balancing_energy_bids</code> Pydantic schema</div>
-                <p class="small" style="margin: 0;">Same <code class="mono">EntsoeBalancingEnergyBid</code> class. The <code class="mono">bid_mrid</code> field here represents the aggregate identifier rather than an individual bidder. <span class="src-cite">schemas/entsoe.py L616</span></p>
+                <p class="small" style="margin: 0;">Same <code class="mono">EntsoeBalancingEnergyBid</code> class. The <code class="mono">bid_mrid</code> field here represents the aggregate identifier rather than an individual bidder. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">03</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Aggregation is by area + direction + product</div>
-                <p class="small" style="margin: 0;">A24/A51 aggregates A37 over individual bidders; rows are by area / direction / product combination. Use this dataset when the individual ladder is not needed. <span class="src-cite">domain knowledge</span></p>
+                <p class="small" style="margin: 0;">A24/A51 aggregates A37 over individual bidders; rows are by area / direction / product combination. Use this dataset when the individual ladder is not needed. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">04</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Revisions overwrite</div>
-                <p class="small" style="margin: 0;">Same <code class="mono">(timestamp_utc, area_code, bid_mrid, direction)</code> re-publication overwrites silently on dedup. <span class="src-cite">silver/entsoe/h8_balancing.py L138</span></p>
+                <p class="small" style="margin: 0;">Same <code class="mono">(timestamp_utc, area_code, bid_mrid, direction)</code> re-publication overwrites silently on dedup. </p>
               </div>
             </div>
             <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;">
               <div class="caveat-num">05</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Entitlement-blocked on the default API key</div>
-                <p class="small" style="margin: 0;">The live API returns HTTP 401 for the unregistered gridflow default key. Schema verified from gridflow source. <span class="src-cite">.planning/reconciliation/entsoe/03-aggregated-balancing-energy-bids-http-401.md</span></p>
+                <p class="small" style="margin: 0;">The live API returns HTTP 401 for the unregistered gridflow default key. Schema verified from gridflow source. </p>
               </div>
             </div>
           </div>

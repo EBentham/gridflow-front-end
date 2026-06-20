@@ -84,7 +84,7 @@
           <div class="card" style="padding:20px"><div class="tiny mb-8">BRONZE PATH</div><div class="mono small" style="word-break:break-all;margin-bottom:12px">data/bronze/elexon/freq/&lt;year&gt;/&lt;month&gt;/&lt;day&gt;/raw_&lt;uuid&gt;.json</div><div class="tiny mb-8">TRANSFORMER</div><div class="mono small">gridflow.silver.elexon.freq.FreqTransformer</div></div>
         </div>
         <div data-tab-group="freq">
-          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('freq','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('freq','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('freq','py',this)" style="cursor:pointer">Python · polars</button></div>
+          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('freq','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('freq','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('freq','py',this)" style="cursor:pointer">Python · gridflow-models</button></div>
           <div data-tab-panel="freq-url" style="display:block"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">https://data.elexon.co.uk/bmrs/api/v1/datasets/FREQ?measurementDateTimeFrom=2026-05-09T00:00Z&amp;measurementDateTimeTo=2026-05-09T01:00Z&amp;format=json</pre></div></div>
           <div data-tab-panel="freq-sql" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto"><span class="c">-- Time spent outside the statutory operating range (49.5–50.5 Hz) per day</span>
 SELECT date_trunc(<span class="s">'day'</span>, timestamp_utc) AS day,
@@ -92,23 +92,19 @@ SELECT date_trunc(<span class="s">'day'</span>, timestamp_utc) AS day,
                 THEN 1 ELSE 0 END) AS n_excursion_samples,
        MIN(frequency_hz) AS min_hz,
        MAX(frequency_hz) AS max_hz
-FROM read_parquet(<span class="s">'data/silver/elexon/freq/**/*.parquet'</span>)
+FROM silver_freq
 WHERE timestamp_utc &gt;= current_date - INTERVAL 30 DAY
 GROUP BY 1
 ORDER BY 1;</pre></div></div>
-          <div data-tab-panel="freq-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">import polars as pl
+          <div data-tab-panel="freq-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-df = pl.read_parquet(<span class="s">"data/silver/elexon/freq/**/*.parquet"</span>)
-<span class="c"># Rolling 1-minute mean + max deviation from 50 Hz</span>
-roll = (
-    df.sort(<span class="s">"timestamp_utc"</span>)
-      .with_columns(
-          pl.col(<span class="s">"frequency_hz"</span>).rolling_mean(window_size=30).alias(<span class="s">"freq_60s"</span>),
-          (pl.col(<span class="s">"frequency_hz"</span>) - 50.0).abs()
-            .rolling_max(window_size=30).alias(<span class="s">"dev_60s"</span>),
-      )
-)
-print(roll.tail(20))</pre></div></div>
+data, models, common = setup_notebook()
+
+<span class="c"># freq: stored silver rows as a pandas DataFrame</span>
+df = data.elexon.query(<span class="s">"freq"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.elexon.describe(<span class="s">"freq"</span>)</pre></div></div>
         </div>
       </section>
       <section id="related" style="margin-bottom:56px" data-screen-label="Related">

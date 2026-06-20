@@ -210,19 +210,19 @@
           <table class="schema-table">
             <thead><tr><th scope="col" style="width: 22%;">Column</th><th scope="col" style="width: 14%;">Type</th><th scope="col" style="width: 8%; text-align:center;">Nullable</th><th scope="col">Description</th></tr></thead>
             <tbody>
-              <tr><td class="col-name">timestamp_utc <span class="pk-badge">PK</span></td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">tz-aware UTC.<span class="cite">schemas/entsoe.py L509, L523-528</span></td></tr>
-              <tr><td class="col-name">area_code <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Host zone EIC. Source: <code class="mono">&lt;BiddingZone_Domain.mRID&gt;</code>.<span class="cite">schemas/entsoe.py L510</span></td></tr>
-              <tr><td class="col-name">asset_mrid <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Offshore asset identifier (cable / substation). Default <code class="mono">""</code>.<span class="cite">schemas/entsoe.py L511</span></td></tr>
-              <tr><td class="col-name">asset_name</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Human-readable name. Default <code class="mono">""</code>.<span class="cite">schemas/entsoe.py L512</span></td></tr>
-              <tr><td class="col-name">outage_type</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note"><code class="mono">"planned"</code> / <code class="mono">"unplanned"</code>. Optional — some A79 publications omit <code class="mono">businessType</code>. Default <code class="mono">""</code>.<span class="cite">schemas/entsoe.py L513 · outages_h7.py L91-95</span></td></tr>
-              <tr><td class="col-name">unavailable_mw</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">MW unavailable. Source: <code class="mono">&lt;Point&gt;&lt;quantity&gt;</code>.<span class="cite">schemas/entsoe.py L514</span></td></tr>
-              <tr><td class="col-name">business_type</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">A53 / A54 (raw). Default <code class="mono">""</code>.<span class="cite">schemas/entsoe.py L515</span></td></tr>
-              <tr><td class="col-name">document_mrid</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Document-level identifier. Default <code class="mono">""</code>.<span class="cite">schemas/entsoe.py L516</span></td></tr>
-              <tr><td class="col-name">document_status</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Status code. Default <code class="mono">""</code>.<span class="cite">schemas/entsoe.py L517</span></td></tr>
-              <tr><td class="col-name">timeseries_mrid <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">TimeSeries within document. Default <code class="mono">""</code>.<span class="cite">schemas/entsoe.py L518</span></td></tr>
-              <tr><td class="col-name">resolution</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">ISO duration. Default <code class="mono">""</code>.<span class="cite">schemas/entsoe.py L519</span></td></tr>
-              <tr><td class="col-name">data_provider</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsoe"</code>.<span class="cite">schemas/entsoe.py L520</span></td></tr>
-              <tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Set at silver write.<span class="cite">schemas/entsoe.py L521</span></td></tr>
+              <tr><td class="col-name">timestamp_utc <span class="pk-badge">PK</span></td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">tz-aware UTC.</td></tr>
+              <tr><td class="col-name">area_code <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Host zone EIC. Source: <code class="mono">&lt;BiddingZone_Domain.mRID&gt;</code>.</td></tr>
+              <tr><td class="col-name">asset_mrid <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Offshore asset identifier (cable / substation). Default <code class="mono">""</code>.</td></tr>
+              <tr><td class="col-name">asset_name</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Human-readable name. Default <code class="mono">""</code>.</td></tr>
+              <tr><td class="col-name">outage_type</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note"><code class="mono">"planned"</code> / <code class="mono">"unplanned"</code>. Optional — some A79 publications omit <code class="mono">businessType</code>. Default <code class="mono">""</code>.</td></tr>
+              <tr><td class="col-name">unavailable_mw</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">MW unavailable. Source: <code class="mono">&lt;Point&gt;&lt;quantity&gt;</code>.</td></tr>
+              <tr><td class="col-name">business_type</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">A53 / A54 (raw). Default <code class="mono">""</code>.</td></tr>
+              <tr><td class="col-name">document_mrid</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Document-level identifier. Default <code class="mono">""</code>.</td></tr>
+              <tr><td class="col-name">document_status</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Status code. Default <code class="mono">""</code>.</td></tr>
+              <tr><td class="col-name">timeseries_mrid <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">TimeSeries within document. Default <code class="mono">""</code>.</td></tr>
+              <tr><td class="col-name">resolution</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">ISO duration. Default <code class="mono">""</code>.</td></tr>
+              <tr><td class="col-name">data_provider</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsoe"</code>.</td></tr>
+              <tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Set at silver write.</td></tr>
             </tbody>
           </table>
           <div class="card mt-24" style="padding: 16px 20px; display: flex; gap: 32px; align-items: start; flex-wrap:wrap;">
@@ -271,7 +271,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('oog','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('oog','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('oog','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('oog','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="oog-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;">https://web-api.tp.entsoe.eu/api
@@ -286,17 +286,20 @@
 <span class="k">SELECT</span> area_code, asset_name, outage_type,
        count(<span class="k">DISTINCT</span> document_mrid) <span class="k">AS</span> events,
        max(unavailable_mw) <span class="k">AS</span> peak_unavail_mw
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/entsoe/outages_offshore_grid/**/*.parquet'</span>)
+<span class="k">FROM</span> silver_outages_offshore_grid
 <span class="k">WHERE</span> timestamp_utc &gt;= current_timestamp - <span class="k">INTERVAL</span> 90 <span class="k">DAY</span>
 <span class="k">GROUP BY</span> 1, 2, 3 <span class="k">ORDER BY</span> peak_unavail_mw <span class="k">DESC</span> <span class="k">LIMIT</span> 20;</pre>
             </div></div>
             <div data-tab-panel="oog-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-out = pl.read_parquet(<span class="s">"data/silver/entsoe/outages_offshore_grid/**/*.parquet"</span>)
-fc = pl.read_parquet(<span class="s">"data/silver/entsoe/wind_solar_forecast/**/*.parquet"</span>)
-<span class="c"># Offshore outages should produce a B18 (Wind offshore) forecast-actual gap</span>
-<span class="k">print</span>(out.tail())</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># outages_offshore_grid: stored silver rows as a pandas DataFrame</span>
+df = data.entsoe.query(<span class="s">"outages_offshore_grid"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.entsoe.describe(<span class="s">"outages_offshore_grid"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -306,11 +309,11 @@ fc = pl.read_parquet(<span class="s">"data/silver/entsoe/wind_solar_forecast/**/
           <h2 class="display-3 mb-8">Things to know before using this.</h2>
           <p class="small mb-24" style="max-width: 560px;">These are specific to <code class="mono">outages_offshore_grid</code>. Also read the <a href="../entsoe.html#about" class="link">ENTSO-E-wide caveats</a> on the vendor page.</p>
           <div>
-            <div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;">Optional parameters per connector — no <code class="mono">BusinessType</code> pinned</div><p class="small" style="margin: 0;">A79 has only <code class="mono">DocStatus</code> and <code class="mono">mRID</code> in <code class="mono">optional_params</code> — no <code class="mono">BusinessType</code> filter is pinned. This returns all outage types in one call. <span class="src-cite">endpoints.py L75-81</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">asset_mrid</code> not <code class="mono">unit_mrid</code></div><p class="small" style="margin: 0;">A79 uses <code class="mono">asset_mrid</code> (cable / substation) — same shape as <code class="mono">outages_transmission</code>. Don't confuse with the <code class="mono">unit_mrid</code> used by generation outage surfaces. <span class="src-cite">schemas/entsoe.py L511-512</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;">H7 transformer family</div><p class="small" style="margin: 0;">Uses shared <code class="mono">_H7OutageTransformer</code> base. Single-zone domain (not zone-pair). <span class="src-cite">silver/entsoe/outages_h7.py L160-179</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">outage_type</code> is Optional</div><p class="small" style="margin: 0;">For this dataset only, <code class="mono">outage_type</code> defaults to <code class="mono">""</code> (not required). Some A79 publications don't carry a <code class="mono">businessType</code>. <span class="src-cite">schemas/entsoe.py L513</span></p></div></div>
-            <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">Entitlement-blocked on default API key</div><p class="small" style="margin: 0;">Live API returns HTTP 401 for the unregistered gridflow default key. <span class="src-cite">.planning/reconciliation/entsoe/25-outages-offshore-grid-http-401.md</span></p></div></div>
+            <div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;">Optional parameters per connector — no <code class="mono">BusinessType</code> pinned</div><p class="small" style="margin: 0;">A79 has only <code class="mono">DocStatus</code> and <code class="mono">mRID</code> in <code class="mono">optional_params</code> — no <code class="mono">BusinessType</code> filter is pinned. This returns all outage types in one call. </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">asset_mrid</code> not <code class="mono">unit_mrid</code></div><p class="small" style="margin: 0;">A79 uses <code class="mono">asset_mrid</code> (cable / substation) — same shape as <code class="mono">outages_transmission</code>. Don't confuse with the <code class="mono">unit_mrid</code> used by generation outage surfaces. </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;">H7 transformer family</div><p class="small" style="margin: 0;">Uses shared <code class="mono">_H7OutageTransformer</code> base. Single-zone domain (not zone-pair). </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">outage_type</code> is Optional</div><p class="small" style="margin: 0;">For this dataset only, <code class="mono">outage_type</code> defaults to <code class="mono">""</code> (not required). Some A79 publications don't carry a <code class="mono">businessType</code>. </p></div></div>
+            <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">Entitlement-blocked on default API key</div><p class="small" style="margin: 0;">Live API returns HTTP 401 for the unregistered gridflow default key. </p></div></div>
           </div>
         </section>
 

@@ -257,16 +257,16 @@
               </tr>
             </thead>
             <tbody>
-<tr><td class="col-name">timestamp_utc</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">tz-aware UTC; vendor sends <code class="mono">+02:00</code> (CEST) / <code class="mono">+01:00</code> (CET) — <code class="mono">parse_entsog_datetime_expr</code> normalises. Validator requires tzinfo. <span class="cite">schemas/entsog.py L15, L25-30; silver/entsog/physical_flows.py L87-89</span></td></tr>
-<tr><td class="col-name">point_key</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Connection-point identifier (e.g. <code class="mono">ITP-00005</code> = Bacton IUK). Required. <span class="cite">schemas/entsog.py L16; silver/entsog/physical_flows.py L73-74</span></td></tr>
-<tr><td class="col-name">point_label</td><td class="col-type">str (default "")</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Human-readable point name (e.g. <code class="mono">"Bacton (IUK)"</code>). <span class="cite">schemas/entsog.py L17</span></td></tr>
-<tr><td class="col-name">operator_key</td><td class="col-type">str (default "")</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">TSO identifier (e.g. <code class="mono">UK-TSO-0001</code> = National Gas TSO). <span class="cite">schemas/entsog.py L18</span></td></tr>
-<tr><td class="col-name">operator_label</td><td class="col-type">str (default "")</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">TSO human name. <span class="cite">schemas/entsog.py L19</span></td></tr>
-<tr><td class="col-name">direction_key</td><td class="col-type">str (default "")</td><td style="text-align:center;" class="nullable">null</td><td class="col-note"><code class="mono">"entry"</code> or <code class="mono">"exit"</code> (lowercase in <code class="mono">/operationalData</code>). <span class="cite">schemas/entsog.py L20</span></td></tr>
-<tr><td class="col-name">flow_gwh_per_day</td><td class="col-type">float (default 0.0)</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Normalised to GWh/day. <code class="mono">kWh/d ÷ 1e6</code>; <code class="mono">kWh/h × 24 ÷ 1e6</code>. <span class="cite">schemas/entsog.py L21; silver/entsog/physical_flows.py L24-33, L106-128</span></td></tr>
-<tr><td class="col-name">unit</td><td class="col-type">str (default "")</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Raw vendor unit string (e.g. <code class="mono">"kWh/d"</code>). Preserved for audit. <span class="cite">schemas/entsog.py L22</span></td></tr>
-<tr><td class="col-name">data_provider</td><td class="col-type">str (default "entsog")</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsog"</code>. <span class="cite">schemas/entsog.py L23</span></td></tr>
-<tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Wall-clock at silver write. <span class="cite">silver/entsog/physical_flows.py L137-141</span></td></tr>
+<tr><td class="col-name">timestamp_utc</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">tz-aware UTC; vendor sends <code class="mono">+02:00</code> (CEST) / <code class="mono">+01:00</code> (CET) — <code class="mono">parse_entsog_datetime_expr</code> normalises. Validator requires tzinfo. </td></tr>
+<tr><td class="col-name">point_key</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Connection-point identifier (e.g. <code class="mono">ITP-00005</code> = Bacton IUK). Required. </td></tr>
+<tr><td class="col-name">point_label</td><td class="col-type">str (default "")</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Human-readable point name (e.g. <code class="mono">"Bacton (IUK)"</code>). </td></tr>
+<tr><td class="col-name">operator_key</td><td class="col-type">str (default "")</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">TSO identifier (e.g. <code class="mono">UK-TSO-0001</code> = National Gas TSO). </td></tr>
+<tr><td class="col-name">operator_label</td><td class="col-type">str (default "")</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">TSO human name. </td></tr>
+<tr><td class="col-name">direction_key</td><td class="col-type">str (default "")</td><td style="text-align:center;" class="nullable">null</td><td class="col-note"><code class="mono">"entry"</code> or <code class="mono">"exit"</code> (lowercase in <code class="mono">/operationalData</code>). </td></tr>
+<tr><td class="col-name">flow_gwh_per_day</td><td class="col-type">float (default 0.0)</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Normalised to GWh/day. <code class="mono">kWh/d ÷ 1e6</code>; <code class="mono">kWh/h × 24 ÷ 1e6</code>. </td></tr>
+<tr><td class="col-name">unit</td><td class="col-type">str (default "")</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Raw vendor unit string (e.g. <code class="mono">"kWh/d"</code>). Preserved for audit. </td></tr>
+<tr><td class="col-name">data_provider</td><td class="col-type">str (default "entsog")</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsog"</code>. </td></tr>
+<tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Wall-clock at silver write. </td></tr>
             </tbody>
           </table>
           <div class="card mt-24" style="padding: 16px 20px; display: flex; gap: 32px; align-items: start;">
@@ -335,7 +335,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('pf','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('pf','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('pf','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('pf','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="pf-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;">https://transparency.entsog.eu/api/v1/operationalData<span style="color:#6b6358;">?</span><span style="color:#c9a96e;">from</span>=2026-05-06<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">to</span>=2026-05-06<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">timeZone</span>=UCT<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">indicator</span>=Physical%20Flow<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">periodType</span>=day<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">forceDownload</span>=true<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">limit</span>=-1</pre>
@@ -345,7 +345,7 @@
 <span class="k">SELECT</span> timestamp_utc::date <span class="k">AS</span> gas_day,
        SUM(<span class="k">CASE</span> <span class="k">WHEN</span> direction_key = <span class="s">'entry'</span> <span class="k">THEN</span> flow_gwh_per_day
                 <span class="k">WHEN</span> direction_key = <span class="s">'exit'</span>  <span class="k">THEN</span> -flow_gwh_per_day <span class="k">END</span>) <span class="k">AS</span> net_gb_gwh
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/entsog/physical_flows/**/*.parquet'</span>)
+<span class="k">FROM</span> silver_physical_flows
 <span class="k">WHERE</span> operator_key = <span class="s">'UK-TSO-0001'</span>
   <span class="k">AND</span> point_key <span class="k">IN</span> (<span class="s">'ITP-00005'</span>, <span class="s">'ITP-00207'</span>, <span class="s">'ITP-00090'</span>)
   <span class="k">AND</span> timestamp_utc &gt;= current_date - INTERVAL <span class="num">30</span> DAY
@@ -353,15 +353,15 @@
 <span class="k">ORDER BY</span> <span class="num">1</span>;</pre>
             </div></div>
             <div data-tab-panel="pf-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-df = pl.read_parquet(<span class="s">"data/silver/entsog/physical_flows/**/*.parquet"</span>)
-<span class="c"># Pivot to per-point daily flow</span>
-wide = df.pivot(
-    index=<span class="s">"timestamp_utc"</span>, on=<span class="s">"point_key"</span>,
-    values=<span class="s">"flow_gwh_per_day"</span>, aggregate_function=<span class="s">"sum"</span>,
-).sort(<span class="s">"timestamp_utc"</span>)
-print(wide.tail(<span class="num">7</span>))</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># physical_flows: stored silver rows as a pandas DataFrame</span>
+df = data.entsog.query(<span class="s">"physical_flows"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.entsog.describe(<span class="s">"physical_flows"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -372,12 +372,12 @@ print(wide.tail(<span class="num">7</span>))</pre>
           <h2 class="display-3 mb-8">Things to know before using this.</h2>
           <p class="small mb-24" style="max-width: 560px;">These are specific to <code class="mono">physical_flows</code>. Also read the <a href="../entsog.html#about" class="link">ENTSO-G-wide caveats</a> on the vendor page.</p>
           <div>
-<div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;">Indicator string is exact-case</div><p class="small" style="margin: 0;">Vendor rejects <code class="mono">physical flow</code> / <code class="mono">physical-flow</code>; connector sends the literal <code class="mono">"Physical Flow"</code>. <span class="src-cite">vault Known Issues · connectors/entsog/endpoints.py L96 PHYSICAL_FLOW_INDICATOR</span></p></div></div>
-<div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">timeZone=UCT</code> (vendor typo, intentional)</div><p class="small" style="margin: 0;">Connector sends <code class="mono">UCT</code> not <code class="mono">UTC</code>; sending <code class="mono">UTC</code> returns HTTP 400. Response <code class="mono">meta.timezone</code> echoes <code class="mono">"CET"</code> regardless. <span class="src-cite">connectors/entsog/endpoints.py L17 · ENTSOG_TIMEZONE</span></p></div></div>
-<div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;">Connector drops <code class="mono">pointDirection</code> for full-system fetch</div><p class="small" style="margin: 0;">Unlike sibling operational endpoints (which attach <code class="mono">DEFAULT_POINT_DIRECTIONS</code>), <code class="mono">physical_flows</code> deliberately omits the filter and returns every point per call. <span class="src-cite">connectors/entsog/endpoints.py L122 · vault Known Issues</span></p></div></div>
-<div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;">Empty windows return HTTP 404, not 200</div><p class="small" style="margin: 0;">ENTSO-G's empty convention is <code class="mono">HTTP 404 + {"message":"No result found"}</code>. Connector short-circuits as empty-bronze. <span class="src-cite">connectors/entsog/client.py L24-28, L109-115</span></p></div></div>
-<div class="caveat-item"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">Storage flows are signed by direction (not by sign)</div><p class="small" style="margin: 0;">A storage facility's withdrawal appears as <code class="mono">direction_key="entry"</code> into the gas-grid zone; injection appears as <code class="mono">"exit"</code>. The numeric <code class="mono">flow_gwh_per_day</code> stays positive — the sign convention lives in <code class="mono">direction_key</code>. <span class="src-cite">domain knowledge / vault Modelling notes</span></p></div></div>
-<div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">06</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">flowStatus</code> switches Provisional → Confirmed within ~1 week</div><p class="small" style="margin: 0;">Filter on <code class="mono">flowStatus = "Confirmed"</code> for backtests; <code class="mono">Provisional</code> (vendor preserves alongside the <code class="mono">"Provisionnal"</code> typo elsewhere) for live model serving. <span class="src-cite">vault Known Issues</span></p></div></div>
+<div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;">Indicator string is exact-case</div><p class="small" style="margin: 0;">Vendor rejects <code class="mono">physical flow</code> / <code class="mono">physical-flow</code>; connector sends the literal <code class="mono">"Physical Flow"</code>. </p></div></div>
+<div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">timeZone=UCT</code> (vendor typo, intentional)</div><p class="small" style="margin: 0;">Connector sends <code class="mono">UCT</code> not <code class="mono">UTC</code>; sending <code class="mono">UTC</code> returns HTTP 400. Response <code class="mono">meta.timezone</code> echoes <code class="mono">"CET"</code> regardless. </p></div></div>
+<div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;">Connector drops <code class="mono">pointDirection</code> for full-system fetch</div><p class="small" style="margin: 0;">Unlike sibling operational endpoints (which attach <code class="mono">DEFAULT_POINT_DIRECTIONS</code>), <code class="mono">physical_flows</code> deliberately omits the filter and returns every point per call. </p></div></div>
+<div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;">Empty windows return HTTP 404, not 200</div><p class="small" style="margin: 0;">ENTSO-G's empty convention is <code class="mono">HTTP 404 + {"message":"No result found"}</code>. Connector short-circuits as empty-bronze. </p></div></div>
+<div class="caveat-item"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">Storage flows are signed by direction (not by sign)</div><p class="small" style="margin: 0;">A storage facility's withdrawal appears as <code class="mono">direction_key="entry"</code> into the gas-grid zone; injection appears as <code class="mono">"exit"</code>. The numeric <code class="mono">flow_gwh_per_day</code> stays positive — the sign convention lives in <code class="mono">direction_key</code>. </p></div></div>
+<div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">06</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">flowStatus</code> switches Provisional → Confirmed within ~1 week</div><p class="small" style="margin: 0;">Filter on <code class="mono">flowStatus = "Confirmed"</code> for backtests; <code class="mono">Provisional</code> (vendor preserves alongside the <code class="mono">"Provisionnal"</code> typo elsewhere) for live model serving. </p></div></div>
           </div>
         </section>
 

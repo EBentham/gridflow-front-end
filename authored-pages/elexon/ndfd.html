@@ -82,7 +82,7 @@
           <div class="card" style="padding:20px"><div class="tiny mb-8">BRONZE PATH</div><div class="mono small" style="word-break:break-all;margin-bottom:12px">data/bronze/elexon/ndfd/&lt;year&gt;/&lt;month&gt;/&lt;day&gt;/raw_&lt;uuid&gt;.json</div><div class="tiny mb-8">TRANSFORMER</div><div class="mono small">gridflow.silver.elexon.demand_forecast.NDFDTransformer</div></div>
         </div>
         <div data-tab-group="ndfd">
-          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('ndfd','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('ndfd','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('ndfd','py',this)" style="cursor:pointer">Python · polars</button></div>
+          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('ndfd','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('ndfd','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('ndfd','py',this)" style="cursor:pointer">Python · gridflow-models</button></div>
           <div data-tab-panel="ndfd-url" style="display:block"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">https://data.elexon.co.uk/bmrs/api/v1/datasets/NDFD?publishDateTimeFrom=2026-04-01T00:00Z&amp;publishDateTimeTo=2026-04-02T00:00Z&amp;format=json</pre></div></div>
           <div data-tab-panel="ndfd-sql" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto"><span class="c">-- Latest-issue 14-day NDFD forecast</span>
 SELECT settlement_date, national_demand_mw, issue_time
@@ -91,25 +91,22 @@ FROM (
     PARTITION BY settlement_date
     ORDER BY issue_time DESC
   ) AS rn
-  FROM read_parquet(<span class="s">'data/silver/elexon/ndfd/**/*.parquet'</span>)
+  FROM silver_ndfd
   WHERE forecast_type = <span class="s">'2_14_day'</span>
 )
 WHERE rn = 1
   AND settlement_date BETWEEN current_date + INTERVAL 2 DAY
                           AND current_date + INTERVAL 14 DAY
 ORDER BY settlement_date;</pre></div></div>
-          <div data-tab-panel="ndfd-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">import polars as pl
+          <div data-tab-panel="ndfd-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-ndfd = pl.read_parquet(<span class="s">"data/silver/elexon/ndfd/**/*.parquet"</span>).filter(
-    pl.col(<span class="s">"forecast_type"</span>) == <span class="s">"2_14_day"</span>
-)
-<span class="c"># Forecast horizon coverage per latest publish</span>
-latest_issue = ndfd.select(<span class="s">"issue_time"</span>).max().item()
-coverage = (
-    ndfd.filter(pl.col(<span class="s">"issue_time"</span>) == latest_issue)
-        .select(<span class="s">"settlement_date"</span>).n_unique()
-)
-print(f<span class="s">"Latest NDFD issue ({latest_issue}) covers {coverage} delivery dates"</span>)</pre></div></div>
+data, models, common = setup_notebook()
+
+<span class="c"># ndfd: stored silver rows as a pandas DataFrame</span>
+df = data.elexon.query(<span class="s">"ndfd"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.elexon.describe(<span class="s">"ndfd"</span>)</pre></div></div>
         </div>
       </section>
       <section id="related" style="margin-bottom:56px" data-screen-label="Related">

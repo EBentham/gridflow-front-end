@@ -82,27 +82,25 @@
           <div class="card" style="padding:20px"><div class="tiny mb-8">BRONZE PATH</div><div class="mono small" style="word-break:break-all;margin-bottom:12px">data/bronze/elexon/netbsad/&lt;year&gt;/&lt;month&gt;/&lt;day&gt;/raw_&lt;uuid&gt;.json</div><div class="tiny mb-8">TRANSFORMER</div><div class="mono small">gridflow.silver.elexon.netbsad.NETBSADTransformer</div></div>
         </div>
         <div data-tab-group="netbsad">
-          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('netbsad','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('netbsad','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('netbsad','py',this)" style="cursor:pointer">Python · polars</button></div>
+          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('netbsad','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('netbsad','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('netbsad','py',this)" style="cursor:pointer">Python · gridflow-models</button></div>
           <div data-tab-panel="netbsad-url" style="display:block"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">https://data.elexon.co.uk/bmrs/api/v1/datasets/NETBSAD?from=2026-05-06T00:00Z&amp;to=2026-05-06T03:00Z&amp;format=json</pre></div></div>
           <div data-tab-panel="netbsad-sql" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto"><span class="c">-- Daily NETBSAD-derived buy-side price contribution</span>
 SELECT settlement_date,
        SUM(net_buy_price_adjustment) AS total_buy_adjustment_gbp_mwh,
        AVG(net_buy_volume_adjustment) AS avg_buy_volume_mwh
-FROM read_parquet(<span class="s">'data/silver/elexon/netbsad/**/*.parquet'</span>)
+FROM silver_netbsad
 WHERE settlement_date &gt;= current_date - INTERVAL 30 DAY
   AND net_buy_price_adjustment IS NOT NULL
 GROUP BY 1 ORDER BY 1;</pre></div></div>
-          <div data-tab-panel="netbsad-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">import polars as pl
+          <div data-tab-panel="netbsad-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-nb = pl.read_parquet(<span class="s">"data/silver/elexon/netbsad/**/*.parquet"</span>)
-sp = pl.read_parquet(<span class="s">"data/silver/elexon/system_prices/**/*.parquet"</span>)
-<span class="c"># Net BSAD share of cash-out price</span>
-combo = nb.join(sp, on=[<span class="s">"settlement_date"</span>, <span class="s">"settlement_period"</span>], how=<span class="s">"inner"</span>)
-combo = combo.with_columns(
-    (pl.col(<span class="s">"net_buy_price_adjustment"</span>) / pl.col(<span class="s">"system_buy_price"</span>))
-      .alias(<span class="s">"bsad_share_of_sbp"</span>)
-)
-print(combo.tail(10))</pre></div></div>
+data, models, common = setup_notebook()
+
+<span class="c"># netbsad: stored silver rows as a pandas DataFrame</span>
+df = data.elexon.query(<span class="s">"netbsad"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.elexon.describe(<span class="s">"netbsad"</span>)</pre></div></div>
         </div>
       </section>
       <section id="related" style="margin-bottom:56px" data-screen-label="Related">

@@ -264,7 +264,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   tz-aware UTC. Source: <code class="mono">&lt;Period&gt;</code> start + <code class="mono">position × resolution</code>.
-                  <span class="cite">schemas/entsoe.py L560</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -273,7 +273,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   Bidding zone EIC. Source: <code class="mono">&lt;in_Domain.mRID&gt;</code>.
-                  <span class="cite">schemas/entsoe.py L561</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -282,7 +282,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   May equal <code class="mono">in_area_code</code> (single-zone surface). Source: <code class="mono">&lt;out_Domain.mRID&gt;</code>.
-                  <span class="cite">schemas/entsoe.py L562</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -291,7 +291,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   Net position MW (positive = export, negative = import). Source: <code class="mono">&lt;Point&gt;&lt;quantity&gt;</code>.
-                  <span class="cite">schemas/entsoe.py L563</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -300,7 +300,7 @@
                 <td style="text-align:center;" class="nullable">Yes</td>
                 <td class="col-note">
                   <code class="mono">B09</code> — implicit auction net positions. Default <code class="mono">""</code>. Source: <code class="mono">&lt;businessType&gt;</code>.
-                  <span class="cite">schemas/entsoe.py L564</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -309,7 +309,7 @@
                 <td style="text-align:center;" class="nullable">Yes</td>
                 <td class="col-note">
                   ISO duration; typically <code class="mono">PT60M</code>. Default <code class="mono">""</code>.
-                  <span class="cite">schemas/entsoe.py L565</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -318,7 +318,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   Always <code class="mono">"entsoe"</code>. Default <code class="mono">"entsoe"</code>.
-                  <span class="cite">schemas/entsoe.py L566</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -327,7 +327,7 @@
                 <td style="text-align:center;" class="nullable">Yes</td>
                 <td class="col-note">
                   Set at silver write.
-                  <span class="cite">schemas/entsoe.py L567</span>
+                  
                 </td>
               </tr>
             </tbody>
@@ -403,7 +403,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('np','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('np','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('np','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('np','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="np-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;">https://web-api.tp.entsoe.eu/api
@@ -421,21 +421,21 @@
        count(*) <span class="k">FILTER</span> (<span class="k">WHERE</span> quantity_mw &gt; 0) <span class="k">AS</span> export_hours,
        count(*) <span class="k">FILTER</span> (<span class="k">WHERE</span> quantity_mw &lt; 0) <span class="k">AS</span> import_hours,
        avg(quantity_mw) <span class="k">AS</span> mean_net_mw
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/entsoe/net_positions/**/*.parquet'</span>)
+<span class="k">FROM</span> silver_net_positions
 <span class="k">WHERE</span> timestamp_utc &gt;= current_timestamp - <span class="k">INTERVAL</span> 30 <span class="k">DAY</span>
 <span class="k">GROUP BY</span> 1, 2
 <span class="k">ORDER BY</span> 1, mean_net_mw <span class="k">DESC</span>;</pre>
             </div></div>
             <div data-tab-panel="np-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-np_ = pl.read_parquet(<span class="s">"data/silver/entsoe/net_positions/**/*.parquet"</span>)
-flows = pl.read_parquet(<span class="s">"data/silver/entsoe/cross_border_flows/**/*.parquet"</span>)
-<span class="c"># DIY net position from flows (sum over border-direction) vs published</span>
-diy = flows.group_by([<span class="s">"timestamp_utc"</span>, <span class="s">"in_area_code"</span>]).agg(
-    pl.col(<span class="s">"flow_mw"</span>).sum().alias(<span class="s">"diy_export_mw"</span>)
-).rename({<span class="s">"in_area_code"</span>: <span class="s">"zone"</span>})
-<span class="k">print</span>(diy.tail())</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># net_positions: stored silver rows as a pandas DataFrame</span>
+df = data.entsoe.query(<span class="s">"net_positions"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.entsoe.describe(<span class="s">"net_positions"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -452,35 +452,35 @@ diy = flows.group_by([<span class="s">"timestamp_utc"</span>, <span class="s">"i
               <div>
                 <div class="eyebrow-discrepancy">Discrepancy · <code class="mono">domain_style</code> vs schema shape</div>
                 <div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">domain_style="zone"</code> — not zone-pair</div>
-                <p class="small" style="margin: 0;"><code class="mono">net_positions</code> is the only H6 dataset with <code class="mono">domain_style="zone"</code> (single zone). Query with <code class="mono">in_Domain</code> only. Because the shared H6 silver class <code class="mono">EntsoeTransmissionMarketQuantity</code> carries both <code class="mono">in_area_code</code> and <code class="mono">out_area_code</code>, <code class="mono">out_area_code</code> may equal <code class="mono">in_area_code</code> or be empty depending on API response shape — treat it as redundant on this surface. <span class="src-cite">endpoints.py L286 · schemas/entsoe.py L557-574 · frontmatter discrepancy</span></p>
+                <p class="small" style="margin: 0;"><code class="mono">net_positions</code> is the only H6 dataset with <code class="mono">domain_style="zone"</code> (single zone). Query with <code class="mono">in_Domain</code> only. Because the shared H6 silver class <code class="mono">EntsoeTransmissionMarketQuantity</code> carries both <code class="mono">in_area_code</code> and <code class="mono">out_area_code</code>, <code class="mono">out_area_code</code> may equal <code class="mono">in_area_code</code> or be empty depending on API response shape — treat it as redundant on this surface. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">02</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">A25</code> is heavily overloaded</div>
-                <p class="small" style="margin: 0;"><code class="mono">A25</code> covers <code class="mono">net_positions</code> (B09), <code class="mono">transfer_capacity_use</code> (B05), <code class="mono">auction_revenue</code> (B07), and <code class="mono">congestion_income</code> (B10). Always select on the <code class="mono">(documentType, businessType)</code> pair. <span class="src-cite">endpoints.py L229-291</span></p>
+                <p class="small" style="margin: 0;"><code class="mono">A25</code> covers <code class="mono">net_positions</code> (B09), <code class="mono">transfer_capacity_use</code> (B05), <code class="mono">auction_revenue</code> (B07), and <code class="mono">congestion_income</code> (B10). Always select on the <code class="mono">(documentType, businessType)</code> pair. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">03</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Net position vs net flow</div>
-                <p class="small" style="margin: 0;">Published net position is the implicit-auction clearing result; net physical flow (DIY-summed from <code class="mono">cross_border_flows</code>) may differ due to intraday adjustment. Both views are useful for different purposes — auction analytics vs settlement reconciliation. <span class="src-cite">vault Known Issues</span></p>
+                <p class="small" style="margin: 0;">Published net position is the implicit-auction clearing result; net physical flow (DIY-summed from <code class="mono">cross_border_flows</code>) may differ due to intraday adjustment. Both views are useful for different purposes — auction analytics vs settlement reconciliation. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">04</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Pydantic class is shared (H6 family)</div>
-                <p class="small" style="margin: 0;"><code class="mono">EntsoeTransmissionMarketQuantity</code> covers 12 H6 datasets. Reconciliation finding <code class="mono">56-net-positions-no-silver-schema-table.md</code> (wontfix v3-candidate) is stale — the class exists via the H6 shared refactor. <span class="src-cite">schemas/entsoe.py L557</span></p>
+                <p class="small" style="margin: 0;"><code class="mono">EntsoeTransmissionMarketQuantity</code> covers 12 H6 datasets. Reconciliation finding <code class="mono">56-net-positions-no-silver-schema-table.md</code> (wontfix v3-candidate) is stale — the class exists via the H6 shared refactor. </p>
               </div>
             </div>
             <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;">
               <div class="caveat-num">05</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Entitlement-blocked on default API key</div>
-                <p class="small" style="margin: 0;">Live API returns HTTP 401 for the unregistered gridflow default key. Schema verified from gridflow source. <span class="src-cite">.planning/reconciliation/entsoe/18-net-positions-http-401.md</span></p>
+                <p class="small" style="margin: 0;">Live API returns HTTP 401 for the unregistered gridflow default key. Schema verified from gridflow source. </p>
               </div>
             </div>
           </div>

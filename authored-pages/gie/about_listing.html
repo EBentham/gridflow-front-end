@@ -330,70 +330,70 @@
                 <td class="col-type">str</td>
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note"><code class="mono">"company"</code> or <code class="mono">"facility"</code>. The discriminator that splits SSO operators from DSR assets.
-                  <span class="cite">silver/gie/agsi.py L423, L432</span></td>
+                  </td>
               </tr>
               <tr>
                 <td class="col-name">entity_code <span class="pk-badge">PK</span></td>
                 <td class="col-type">str</td>
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">EIC identifier (16-char ISO 17442). Source: <code class="mono">eic</code> (or <code class="mono">code</code>).
-                  <span class="cite">silver/gie/agsi.py L424, L433 · endpoints.py L260, L276</span></td>
+                  </td>
               </tr>
               <tr>
                 <td class="col-name">entity_name</td>
                 <td class="col-type">str</td>
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">Falls back to the EIC if both labels are blank. Source: <code class="mono">short_name</code> / <code class="mono">name</code>.
-                  <span class="cite">silver/gie/agsi.py L425, L434 · endpoints.py L261, L277</span></td>
+                  </td>
               </tr>
               <tr>
                 <td class="col-name">country_code</td>
                 <td class="col-type">str</td>
                 <td style="text-align:center;" class="nullable">null</td>
                 <td class="col-note">ISO-2. Live shape is a string, not a nested dict. Source: <code class="mono">country</code>.
-                  <span class="cite">silver/gie/agsi.py L426, L435 · endpoints.py L262, L283</span></td>
+                  </td>
               </tr>
               <tr>
                 <td class="col-name">entity_type</td>
                 <td class="col-type">str</td>
                 <td style="text-align:center;" class="nullable">null</td>
                 <td class="col-note"><code class="mono">"SSO"</code> for a company (Storage System Operator), <code class="mono">"DSR"</code> for a facility. Source: <code class="mono">type</code>.
-                  <span class="cite">silver/gie/agsi.py L427, L436 · endpoints.py L270, L284</span></td>
+                  </td>
               </tr>
               <tr>
                 <td class="col-name">entity_url</td>
                 <td class="col-type">str</td>
                 <td style="text-align:center;" class="nullable">null</td>
                 <td class="col-note">Vendor-managed deep-link URL. Source: <code class="mono">url</code>.
-                  <span class="cite">silver/gie/agsi.py L428, L437 · endpoints.py L271, L285</span></td>
+                  </td>
               </tr>
               <tr>
                 <td class="col-name">company_code</td>
                 <td class="col-type">str</td>
                 <td style="text-align:center;" class="nullable">null</td>
                 <td class="col-note">Parent company EIC — facility rows only. Source: <code class="mono">company</code>.
-                  <span class="cite">silver/gie/agsi.py L438 · endpoints.py L286</span></td>
+                  </td>
               </tr>
               <tr>
                 <td class="col-name">company_name</td>
                 <td class="col-type">str</td>
                 <td style="text-align:center;" class="nullable">null</td>
                 <td class="col-note">Parent company <code class="mono">short_name</code> / <code class="mono">name</code> — facility rows only.
-                  <span class="cite">silver/gie/agsi.py L439 · endpoints.py L287</span></td>
+                  </td>
               </tr>
               <tr>
                 <td class="col-name">data_provider</td>
                 <td class="col-type">str</td>
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">Always <code class="mono">"gie_agsi"</code>. Default <code class="mono">"gie_agsi"</code>.
-                  <span class="cite">silver/gie/agsi.py L337</span></td>
+                  </td>
               </tr>
               <tr>
                 <td class="col-name">ingested_at</td>
                 <td class="col-type">datetime[UTC]</td>
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">Silver write timestamp.
-                  <span class="cite">silver/gie/agsi.py L338</span></td>
+                  </td>
               </tr>
             </tbody>
           </table>
@@ -482,7 +482,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('al','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('al','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('al','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('al','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="al-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;"><span class="c"># Header: x-key: $GIE_API_KEY  (lowercase)</span>
@@ -494,24 +494,22 @@ https://agsi.gie.eu/api/about<span style="color:#6b6358;">?</span><span style="c
        company_name,
        country_code,
        <span class="k">COUNT</span>(*) <span class="k">AS</span> facility_count
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/gie_agsi/about_listing/**/*.parquet'</span>)
+<span class="k">FROM</span> silver_about_listing
 <span class="k">WHERE</span> entity_level = <span class="s">'facility'</span>
   <span class="k">AND</span> operational_end_date <span class="k">IS NULL</span>  <span class="c">-- exclude decommissioned</span>
 <span class="k">GROUP BY</span> company_code, company_name, country_code
 <span class="k">ORDER BY</span> facility_count <span class="k">DESC</span>;</pre>
             </div></div>
             <div data-tab-panel="al-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-df = pl.read_parquet(<span class="s">"data/silver/gie_agsi/about_listing/**/*.parquet"</span>)
-<span class="c"># Build the company → facility EIC map needed for storage_reports facility queries</span>
-inventory = (
-    df.filter((pl.col(<span class="s">"entity_level"</span>) == <span class="s">"facility"</span>)
-              &amp; pl.col(<span class="s">"operational_end_date"</span>).is_null())
-      .select(<span class="s">"country_code"</span>, <span class="s">"company_code"</span>, <span class="s">"entity_code"</span>, <span class="s">"entity_name"</span>)
-      .sort(<span class="s">"country_code"</span>, <span class="s">"company_code"</span>)
-)
-print(inventory.head(<span class="num">20</span>))</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># about_listing: stored silver rows as a pandas DataFrame</span>
+df = data.gie_agsi.query(<span class="s">"about_listing"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.gie_agsi.describe(<span class="s">"about_listing"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -527,35 +525,35 @@ print(inventory.head(<span class="num">20</span>))</pre>
               <div class="caveat-num">01</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">No <code class="mono">last_page</code> / <code class="mono">total</code> — single-response listing</div>
-                <p class="small" style="margin: 0;">The live response is a top-level list of 71 companies (~53 KB, 2026-05-08) with no pagination envelope. <code class="mono">_listing_rows</code> accepts either the bare list or a <code class="mono">{"data": [...]}</code> wrapper. <span class="src-cite">vault Known Issues · endpoints.py L454-463</span></p>
+                <p class="small" style="margin: 0;">The live response is a top-level list of 71 companies (~53 KB, 2026-05-08) with no pagination envelope. <code class="mono">_listing_rows</code> accepts either the bare list or a <code class="mono">{"data": [...]}</code> wrapper. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">02</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">No Pydantic schema — reference data via <code class="mono">AgsiJsonTransformer</code></div>
-                <p class="small" style="margin: 0;">Unlike <code class="mono">storage</code> / <code class="mono">storage_reports</code>, this dataset has no typed silver contract. Columns are emitted by <code class="mono">parse_listing_inventory</code> plus the <code class="mono">AgsiJsonTransformer</code> dynamic-column pass. <span class="src-cite">vault Silver layer note · silver/gie/agsi.py L414-442</span></p>
+                <p class="small" style="margin: 0;">Unlike <code class="mono">storage</code> / <code class="mono">storage_reports</code>, this dataset has no typed silver contract. Columns are emitted by <code class="mono">parse_listing_inventory</code> plus the <code class="mono">AgsiJsonTransformer</code> dynamic-column pass. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">03</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">country</code> is a string, not a nested dict</div>
-                <p class="small" style="margin: 0;">The live shape carries <code class="mono">country: "AT"</code> (an ISO-2 string). Some other AGSI endpoints (e.g. <code class="mono">unavailability</code>) return <code class="mono">{"name": …, "code": …}</code> — listing differs. <span class="src-cite">vault Known Issues</span></p>
+                <p class="small" style="margin: 0;">The live shape carries <code class="mono">country: "AT"</code> (an ISO-2 string). Some other AGSI endpoints (e.g. <code class="mono">unavailability</code>) return <code class="mono">{"name": …, "code": …}</code> — listing differs. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">04</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">operational_end_date</code> flags decommissioned facilities</div>
-                <p class="small" style="margin: 0;">A non-null <code class="mono">operational_end_date</code> means the facility no longer reports to AGSI. Filter <code class="mono">WHERE operational_end_date IS NULL</code> for a forward-looking inventory. <span class="src-cite">vault Known Issues</span></p>
+                <p class="small" style="margin: 0;">A non-null <code class="mono">operational_end_date</code> means the facility no longer reports to AGSI. Filter <code class="mono">WHERE operational_end_date IS NULL</code> for a forward-looking inventory. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">05</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">x-key</code> header MUST be lowercase</div>
-                <p class="small" style="margin: 0;">The vendor enforces lowercase. Capitalised <code class="mono">X-Key</code> (the default in many HTTP libraries) returns HTTP 401. <span class="src-cite">vault Known Issues #1</span></p>
+                <p class="small" style="margin: 0;">The vendor enforces lowercase. Capitalised <code class="mono">X-Key</code> (the default in many HTTP libraries) returns HTTP 401. </p>
               </div>
             </div>
             <div class="caveat-item discrepancy" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;">
@@ -563,7 +561,7 @@ print(inventory.head(<span class="num">20</span>))</pre>
               <div>
                 <div class="eyebrow-discrepancy">DISCREPANCY · live shape vs fixture</div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Live shape is a top-level list; fixture is <code class="mono">{"data": [...]}</code></div>
-                <p class="small" style="margin: 0;">The live response (2026-05-08) is a bare top-level list of company objects; the test fixture wraps it in a <code class="mono">{"data": [...]}</code> envelope. <code class="mono">_listing_rows</code> (<code class="mono">endpoints.py L454-463</code>) accepts either shape — the fixture is stale but functionally compatible. <span class="src-cite">vault Implementation Delta</span></p>
+                <p class="small" style="margin: 0;">The live response (2026-05-08) is a bare top-level list of company objects; the test fixture wraps it in a <code class="mono">{"data": [...]}</code> envelope. <code class="mono">_listing_rows</code> (<code class="mono">endpoints.py L454-463</code>) accepts either shape — the fixture is stale but functionally compatible. </p>
               </div>
             </div>
           </div>

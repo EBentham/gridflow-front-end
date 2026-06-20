@@ -257,17 +257,17 @@
               </tr>
             </thead>
             <tbody>
-<tr><td class="col-name">id <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Vendor concatenation. Dedup key. <span class="cite">silver/entsog/generic.py L126-130</span></td></tr>
-<tr><td class="col-name">timestamp_utc</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Set from <code class="mono">periodFrom</code> via the priority list. Partition driver. <span class="cite">silver/entsog/generic.py L118-120</span></td></tr>
-<tr><td class="col-name">period_from / period_to</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Gas-day window. <span class="cite">silver/entsog/generic.py L114-116</span></td></tr>
-<tr><td class="col-name">indicator</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Always <code class="mono">"GCV"</code>. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">operator_key / point_key / direction_key</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Operator-point-direction identity (<code class="mono">"entry"</code>/<code class="mono">"exit"</code>). <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">unit</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note"><code class="mono">"kWh/Nm³"</code> — energy per normal cubic metre. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">value</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">GCV value (typically 10.5–12.5 <code class="mono">kWh/Nm³</code> for North Sea gas). <span class="cite">silver/entsog/generic.py L122-124</span></td></tr>
-<tr><td class="col-name">flow_status</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note"><code class="mono">"Provisional"</code> / <code class="mono">"Confirmed"</code>. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">last_update_date_time</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Vendor publication timestamp. <span class="cite">silver/entsog/datetime.py</span></td></tr>
-<tr><td class="col-name">data_provider</td><td class="col-type">str ("entsog")</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsog"</code>. Constant. <span class="cite">silver/entsog/generic.py L132-136</span></td></tr>
-<tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Wall-clock at silver write. <span class="cite">silver/entsog/generic.py L132-136</span></td></tr>
+<tr><td class="col-name">id <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Vendor concatenation. Dedup key. </td></tr>
+<tr><td class="col-name">timestamp_utc</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Set from <code class="mono">periodFrom</code> via the priority list. Partition driver. </td></tr>
+<tr><td class="col-name">period_from / period_to</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Gas-day window. </td></tr>
+<tr><td class="col-name">indicator</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Always <code class="mono">"GCV"</code>. </td></tr>
+<tr><td class="col-name">operator_key / point_key / direction_key</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Operator-point-direction identity (<code class="mono">"entry"</code>/<code class="mono">"exit"</code>). </td></tr>
+<tr><td class="col-name">unit</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note"><code class="mono">"kWh/Nm³"</code> — energy per normal cubic metre. </td></tr>
+<tr><td class="col-name">value</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">GCV value (typically 10.5–12.5 <code class="mono">kWh/Nm³</code> for North Sea gas). </td></tr>
+<tr><td class="col-name">flow_status</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note"><code class="mono">"Provisional"</code> / <code class="mono">"Confirmed"</code>. </td></tr>
+<tr><td class="col-name">last_update_date_time</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Vendor publication timestamp. </td></tr>
+<tr><td class="col-name">data_provider</td><td class="col-type">str ("entsog")</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsog"</code>. Constant. </td></tr>
+<tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Wall-clock at silver write. </td></tr>
             </tbody>
           </table>
           <div class="card mt-24" style="padding: 16px 20px; display: flex; gap: 32px; align-items: start;">
@@ -336,7 +336,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('gcv','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('gcv','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('gcv','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('gcv','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="gcv-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;">https://transparency.entsog.eu/api/v1/operationalData<span style="color:#6b6358;">?</span><span style="color:#c9a96e;">from</span>=2026-05-06<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">to</span>=2026-05-06<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">timeZone</span>=UCT<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">indicator</span>=GCV<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">periodType</span>=day<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">pointDirection</span>=UK-TSO-0001ITP-00005exit<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">forceDownload</span>=true<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">limit</span>=-1</pre>
@@ -346,22 +346,21 @@
 <span class="k">SELECT</span> point_key, point_label,
        AVG(value) <span class="k">AS</span> avg_gcv_kwh_nm3,
        STDDEV(value) <span class="k">AS</span> gcv_volatility
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/entsog/gcv/**/*.parquet'</span>)
+<span class="k">FROM</span> silver_gcv
 <span class="k">WHERE</span> timestamp_utc &gt;= current_date - INTERVAL <span class="num">30</span> DAY
   <span class="k">AND</span> point_key <span class="k">IN</span> (<span class="s">'ITP-00005'</span>, <span class="s">'ITP-00207'</span>)
 <span class="k">GROUP BY</span> <span class="num">1</span>, <span class="num">2</span>;</pre>
             </div></div>
             <div data-tab-panel="gcv-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-df = pl.read_parquet(<span class="s">"data/silver/entsog/gcv/**/*.parquet"</span>)
-<span class="c"># Convert physical_flows kWh/d to volumetric Nm3/d using GCV</span>
-flows = pl.read_parquet(<span class="s">"data/silver/entsog/physical_flows/**/*.parquet"</span>)
-joined = flows.join(
-    df.select([<span class="s">"timestamp_utc"</span>, <span class="s">"point_key"</span>, <span class="s">"value"</span>]).rename({<span class="s">"value"</span>: <span class="s">"gcv"</span>}),
-    on=[<span class="s">"timestamp_utc"</span>, <span class="s">"point_key"</span>], how=<span class="s">"left"</span>,
-)
-print(joined.with_columns((pl.col(<span class="s">"flow_gwh_per_day"</span>) * <span class="num">1e6</span> / pl.col(<span class="s">"gcv"</span>)).alias(<span class="s">"nm3_per_day"</span>)).head())</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># gcv: stored silver rows as a pandas DataFrame</span>
+df = data.entsog.query(<span class="s">"gcv"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.entsog.describe(<span class="s">"gcv"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -372,11 +371,11 @@ print(joined.with_columns((pl.col(<span class="s">"flow_gwh_per_day"</span>) * <
           <h2 class="display-3 mb-8">Things to know before using this.</h2>
           <p class="small mb-24" style="max-width: 560px;">These are specific to <code class="mono">gcv</code>. Also read the <a href="../entsog.html#about" class="link">ENTSO-G-wide caveats</a> on the vendor page.</p>
           <div>
-<div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;">Indicator string is exact-case (<code class="mono">"GCV"</code> — uppercase)</div><p class="small" style="margin: 0;">Vendor rejects <code class="mono">gcv</code> or <code class="mono">Gcv</code>; connector sends the literal <code class="mono">"GCV"</code>. <span class="src-cite">OPERATIONAL_INDICATORS["gcv"] = "GCV" · connectors/entsog/endpoints.py L106</span></p></div></div>
-<div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;">Unit <code class="mono">kWh/Nm³</code> — energy per normal cubic metre</div><p class="small" style="margin: 0;">Use GCV to convert between volumetric (<code class="mono">Nm³/d</code>) and energy (<code class="mono">kWh/d</code>) units. Typical North Sea blend = 11.5 kWh/Nm³. <span class="src-cite">vault Bronze sample L110; gas-physics convention</span></p></div></div>
-<div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">timeZone=UCT</code> (vendor typo, intentional)</div><p class="small" style="margin: 0;">Connector sends <code class="mono">UCT</code> not <code class="mono">UTC</code>; sending <code class="mono">UTC</code> returns HTTP 400. <span class="src-cite">connectors/entsog/endpoints.py L17 · ENTSOG_TIMEZONE</span></p></div></div>
-<div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;">Empty windows return HTTP 404, not 200</div><p class="small" style="margin: 0;">ENTSO-G's empty convention is <code class="mono">HTTP 404 + {"message":"No result found"}</code>. Connector short-circuits as empty-bronze. <span class="src-cite">connectors/entsog/client.py L24-28, L109-115</span></p></div></div>
-<div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">Slow-varying — daily values are smooth</div><p class="small" style="margin: 0;">GCV changes slowly (gas-blend variability is small day-to-day). Use for unit-conversion smoothing rather than as a market signal. <span class="src-cite">domain knowledge / vault sample volatility</span></p></div></div>
+<div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;">Indicator string is exact-case (<code class="mono">"GCV"</code> — uppercase)</div><p class="small" style="margin: 0;">Vendor rejects <code class="mono">gcv</code> or <code class="mono">Gcv</code>; connector sends the literal <code class="mono">"GCV"</code>. </p></div></div>
+<div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;">Unit <code class="mono">kWh/Nm³</code> — energy per normal cubic metre</div><p class="small" style="margin: 0;">Use GCV to convert between volumetric (<code class="mono">Nm³/d</code>) and energy (<code class="mono">kWh/d</code>) units. Typical North Sea blend = 11.5 kWh/Nm³. </p></div></div>
+<div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">timeZone=UCT</code> (vendor typo, intentional)</div><p class="small" style="margin: 0;">Connector sends <code class="mono">UCT</code> not <code class="mono">UTC</code>; sending <code class="mono">UTC</code> returns HTTP 400. </p></div></div>
+<div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;">Empty windows return HTTP 404, not 200</div><p class="small" style="margin: 0;">ENTSO-G's empty convention is <code class="mono">HTTP 404 + {"message":"No result found"}</code>. Connector short-circuits as empty-bronze. </p></div></div>
+<div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">Slow-varying — daily values are smooth</div><p class="small" style="margin: 0;">GCV changes slowly (gas-blend variability is small day-to-day). Use for unit-conversion smoothing rather than as a market signal. </p></div></div>
           </div>
         </section>
 

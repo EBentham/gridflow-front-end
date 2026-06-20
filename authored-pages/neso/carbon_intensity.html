@@ -289,13 +289,13 @@
               <tr><th scope="col" style="width: 24%;">Column</th><th scope="col" style="width: 14%;">Type</th><th scope="col" style="width: 8%; text-align:center;">Nullable</th><th scope="col">Description</th></tr>
             </thead>
             <tbody>
-              <tr><td class="col-name">timestamp_utc <span class="pk-badge">PK</span></td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Half-hour period START. Period END is <code class="mono">period_end_utc</code>. UTC always (vendor sends <code class="mono">Z</code> suffix). Source: <code class="mono">from</code>.<span class="cite">schemas/neso.py L31 · inherits _TimestampedNesoBase</span></td></tr>
-              <tr><td class="col-name">period_end_utc</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Half-hour period end (<code class="mono">timestamp_utc + 30 min</code>). Source: <code class="mono">to</code>.<span class="cite">schemas/neso.py L31+</span></td></tr>
-              <tr><td class="col-name">forecast_gco2_kwh</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Forecast carbon intensity in gCO2/kWh. Populated ahead of the period. Source: <code class="mono">intensity.forecast</code>.<span class="cite">schemas/neso.py L34</span></td></tr>
-              <tr><td class="col-name">actual_gco2_kwh</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Post-period estimated actual; <strong>often null before actuals publish</strong>. Treat null as "actual not yet available" not "zero carbon". Source: <code class="mono">intensity.actual</code>.<span class="cite">schemas/neso.py L35</span></td></tr>
-              <tr><td class="col-name">intensity_index</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Categorical: <code class="mono">very low</code> / <code class="mono">low</code> / <code class="mono">moderate</code> / <code class="mono">high</code> / <code class="mono">very high</code>. Vendor-managed value list; no regex constraint. Source: <code class="mono">intensity.index</code>.<span class="cite">schemas/neso.py L36</span></td></tr>
-              <tr><td class="col-name">data_provider</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"neso"</code>.<span class="cite">schemas/neso.py · derived</span></td></tr>
-              <tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Silver transform timestamp.<span class="cite">schemas/neso.py · derived</span></td></tr>
+              <tr><td class="col-name">timestamp_utc <span class="pk-badge">PK</span></td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Half-hour period START. Period END is <code class="mono">period_end_utc</code>. UTC always (vendor sends <code class="mono">Z</code> suffix). Source: <code class="mono">from</code>.</td></tr>
+              <tr><td class="col-name">period_end_utc</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Half-hour period end (<code class="mono">timestamp_utc + 30 min</code>). Source: <code class="mono">to</code>.</td></tr>
+              <tr><td class="col-name">forecast_gco2_kwh</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Forecast carbon intensity in gCO2/kWh. Populated ahead of the period. Source: <code class="mono">intensity.forecast</code>.</td></tr>
+              <tr><td class="col-name">actual_gco2_kwh</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Post-period estimated actual; <strong>often null before actuals publish</strong>. Treat null as "actual not yet available" not "zero carbon". Source: <code class="mono">intensity.actual</code>.</td></tr>
+              <tr><td class="col-name">intensity_index</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Categorical: <code class="mono">very low</code> / <code class="mono">low</code> / <code class="mono">moderate</code> / <code class="mono">high</code> / <code class="mono">very high</code>. Vendor-managed value list; no regex constraint. Source: <code class="mono">intensity.index</code>.</td></tr>
+              <tr><td class="col-name">data_provider</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"neso"</code>.</td></tr>
+              <tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Silver transform timestamp.</td></tr>
             </tbody>
           </table>
 
@@ -397,7 +397,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('ci','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('ci','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('ci','py',this)" style="cursor:pointer;">Python · parquet</button>
+              <button class="chip btn-like" onclick="setTab('ci','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="ci-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;"><span class="c"># Header: Accept: application/json</span>
@@ -408,29 +408,22 @@ https://api.carbonintensity.org.uk/intensity/2026-05-06T00:00Z/2026-05-07T00:00Z
 <span class="k">SELECT</span> date_trunc(<span class="s">'day'</span>, timestamp_utc) <span class="k">AS</span> day,
        min(actual_gco2_kwh) <span class="k">AS</span> min_actual,
        arg_min(timestamp_utc, actual_gco2_kwh) <span class="k">AS</span> cleanest_sp
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/neso/carbon_intensity/**/*.parquet'</span>)
+<span class="k">FROM</span> silver_carbon_intensity
 <span class="k">WHERE</span> actual_gco2_kwh <span class="k">IS NOT NULL</span>
   <span class="k">AND</span> timestamp_utc &gt;= current_date - <span class="k">INTERVAL</span> 30 <span class="k">DAY</span>
 <span class="k">GROUP BY</span> 1
 <span class="k">ORDER BY</span> 1 <span class="k">DESC</span>;</pre>
             </div></div>
             <div data-tab-panel="ci-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-df = pl.read_parquet(
-    <span class="s">"data/silver/neso/carbon_intensity/**/*.parquet"</span>,
-)
-<span class="c"># Forecast skill: mean absolute error between forecast and actual</span>
-skill = (
-    df.filter(pl.col(<span class="s">"actual_gco2_kwh"</span>).is_not_null())
-      .with_columns(
-          (pl.col(<span class="s">"forecast_gco2_kwh"</span>) - pl.col(<span class="s">"actual_gco2_kwh"</span>)).abs().alias(<span class="s">"abs_err"</span>)
-      )
-      .group_by(pl.col(<span class="s">"timestamp_utc"</span>).dt.date().alias(<span class="s">"day"</span>))
-      .agg(pl.col(<span class="s">"abs_err"</span>).mean().alias(<span class="s">"mae_gco2_kwh"</span>))
-      .sort(<span class="s">"day"</span>)
-)
-print(skill.tail(<span class="num">7</span>))</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># carbon_intensity: stored silver rows as a pandas DataFrame</span>
+df = data.neso.query(<span class="s">"carbon_intensity"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.neso.describe(<span class="s">"carbon_intensity"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -448,7 +441,7 @@ print(skill.tail(<span class="num">7</span>))</pre>
                 <div class="eyebrow-discrepancy">Data-source discrepancy</div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Path placeholder naming differs from vendor docs (cosmetic)</div>
                 <p class="small" style="margin: 0;">Vault Implementation Delta L111 notes that official NESO docs and <code class="mono">config/sources.yaml</code> use <code class="mono">{from}</code> and <code class="mono">{to}</code>; the gridflow connector at <code class="mono">connectors/neso/endpoints.py</code> internally uses <code class="mono">{from_dt}</code> and <code class="mono">{to_dt}</code> (to disambiguate from the Python <code class="mono">from</code> keyword), formatting to <code class="mono">/intensity/{from}/{to}</code> at request time. <strong>Cosmetic</strong> — internal placeholder naming differs from vendor's documented placeholders but the final URL is identical. No fix needed.</p>
-                <span class="src-cite">vault Implementation Delta L111 · connectors/neso/endpoints.py</span>
+                
               </div>
             </div>
             <div class="caveat-item discrepancy">
@@ -457,7 +450,7 @@ print(skill.tail(<span class="num">7</span>))</pre>
                 <div class="eyebrow-discrepancy">Data-source discrepancy</div>
                 <div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">carbon_intensity</code> and <code class="mono">intensity_current</code> share <code class="mono">/intensity</code> path prefix</div>
                 <p class="small" style="margin: 0;">Vault Implementation Delta L113: <code class="mono">carbon_intensity</code> and <code class="mono">intensity_current</code> share the same <code class="mono">/intensity</code> path in <code class="mono">config/sources.yaml</code> but <code class="mono">ENDPOINTS</code> distinguishes them — <code class="mono">carbon_intensity</code> is <code class="mono">/intensity/{from_dt}/{to_dt}</code> (range, max 14 days); <code class="mono">intensity_current</code> is <code class="mono">/intensity</code> (no-arg, current single record). Both produce the same <code class="mono">CarbonIntensity</code> silver schema but answer different questions. <strong>Documented design intent</strong> — same schema, different query semantics. Surfaced as Caveat #02 below so users know to pick the right dataset for their query shape.</p>
-                <span class="src-cite">vault Implementation Delta L113 · connectors/neso/endpoints.py::ENDPOINTS</span>
+                
               </div>
             </div>
             <div class="caveat-item">
@@ -465,7 +458,7 @@ print(skill.tail(<span class="num">7</span>))</pre>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Actuals lag — null is "not yet published"</div>
                 <p class="small" style="margin: 0;"><code class="mono">actual_gco2_kwh</code> is null for periods whose post-period estimate hasn't been computed yet (typically the most recent 1–2 hours, plus any backfill gaps). Filter <code class="mono">actual_gco2_kwh IS NOT NULL</code> for any back-fitted modelling; use <code class="mono">forecast_gco2_kwh</code> as the ex-ante feature when actuals aren't yet available. Do NOT treat null actual as "zero carbon".</p>
-                <span class="src-cite">vault Known Issues #3</span>
+                
               </div>
             </div>
             <div class="caveat-item">
@@ -473,7 +466,7 @@ print(skill.tail(<span class="num">7</span>))</pre>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Distinct from <code class="mono">intensity_current</code> despite same <code class="mono">/intensity</code> path prefix</div>
                 <p class="small" style="margin: 0;"><code class="mono">carbon_intensity</code> (this dataset) is a <strong>range</strong> query — <code class="mono">/intensity/{from}/{to}</code> with <code class="mono">max_days_per_request=14</code> — and produces a multi-row time series. <code class="mono">intensity_current</code> (separate dataset, same vendor) is a no-arg query against <code class="mono">/intensity</code> and returns the single current half-hour record. Both produce the same <code class="mono">CarbonIntensity</code> silver schema, but they are NOT aliases. Pick <code class="mono">carbon_intensity</code> for historical / back-fill / range queries; pick <code class="mono">intensity_current</code> for live "what is it right now" displays.</p>
-                <span class="src-cite">vault Implementation Delta L113</span>
+                
               </div>
             </div>
             <div class="caveat-item">
@@ -481,7 +474,7 @@ print(skill.tail(<span class="num">7</span>))</pre>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">14-day max window per request</div>
                 <p class="small" style="margin: 0;">Single requests cannot span more than 14 days. The connector auto-chunks longer windows into 14-day sub-requests with rate-limited iteration. Custom callers issuing raw HTTP must respect this — exceeding the window returns a vendor error rather than truncating silently.</p>
-                <span class="src-cite">vault API endpoint table · connector dispatch logic</span>
+                
               </div>
             </div>
             <div class="caveat-item">
@@ -489,7 +482,7 @@ print(skill.tail(<span class="num">7</span>))</pre>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">GB clock-change days = 46 or 50 settlement periods (sometimes)</div>
                 <p class="small" style="margin: 0;">Despite official docs describing periods 1–48 per day, GB clock-change days (DST transitions) carry 46 (spring forward) or 50 (autumn back) settlement periods. The connector handles this via <code class="mono">timestamp_utc</code> directly (no period-number arithmetic), but custom callers using <code class="mono">intensity_period</code> for slot accounting must account for the 46/50 cases.</p>
-                <span class="src-cite">vault Known Issues #4</span>
+                
               </div>
             </div>
             <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;">
@@ -497,7 +490,7 @@ print(skill.tail(<span class="num">7</span>))</pre>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Path placeholders use <code class="mono">{from_dt}</code> / <code class="mono">{to_dt}</code> internally</div>
                 <p class="small" style="margin: 0;">Official docs and <code class="mono">config/sources.yaml</code> describe the path as <code class="mono">/intensity/{from}/{to}</code>. The gridflow connector internally templates as <code class="mono">/intensity/{from_dt}/{to_dt}</code> to disambiguate from the Python <code class="mono">from</code> keyword in connector code. The final URL is identical to the documented form. Cosmetic divergence in source-reading; no behavior difference.</p>
-                <span class="src-cite">vault Implementation Delta L111</span>
+                
               </div>
             </div>
           </div>
