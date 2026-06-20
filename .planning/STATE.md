@@ -1,5 +1,17 @@
 # State
 
+## v3 — Recruiter-grade revamp (STARTED 2026-06-20)
+
+**Phase 13 (Mechanical Stream-M sweeps) IN PROGRESS. → READ `.planning/phases/13-mechanical-sweeps/13-BRIEF.md` FIRST to resume.**
+
+- **Phase 12 DONE — gate passed: Direction A (Quiet refinement).** 56 verified findings in `phases/12-review-exemplar/FINDINGS.md`; exemplar moved to `phases/12-review-exemplar/exemplar/` (a-quiet = locked pattern).
+- **Phase 13 Batch 1 DONE + verified + all 3 CI gates green (2026-06-20):** footer "cream paper" removed (`site.js`); viewport `width=1280`→responsive on 161 pages (`v3_sweep.py`); `fixes.css` folded into `theme.css` (the `--measure:680px` clamp — verified 0 overflow at 1280px+487px on a production page, figures clamp 680 vs 917 column). `build --check` idempotent · htmlhint 0 · lychee 4349/0.
+- **Phase 13 Batch 2 NEXT:** example swap (→ gridflow-models `data.<source>.query("<slug>",start,end)` facade + DuckDB `silver_<slug>`; source/slug from the authoritative `gridflow_models/.../research/handles/_get_method_registry.py`; skip orphans) + honesty/cite-strip (2042 trailing `cite`/`src-cite` spans across 129 pages — proven safe). Then an **agent Workflow** verifies (reads sampled pages), then 14/15 staggered creative polish → 16 ship.
+
+Everything below this block is the **v2 record (complete/deployed 2026-06-07)**.
+
+---
+
 ## Project Reference
 
 **Project:** gridflow-front-end

@@ -44,9 +44,7 @@
               A personal research platform for European power markets.
               Built around a bronze–silver–gold data warehouse and a
               probabilistic modelling stack.
-            </p>
-            <p class="tiny mt-16">Documentation site · cream paper</p>
-          </div>
+            </p>          </div>
           <div>
             <h4>Project</h4>
             <a href="${root}architecture.html">Architecture</a>
