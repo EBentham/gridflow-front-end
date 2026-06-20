@@ -5,12 +5,14 @@
 - **172 page-checks → 0 sweep-introduced issues.** GIE split correct (`lng`→`gie_alsi`, rest→`gie_agsi`); orphan `commercial_schedules_net_positions` correctly skipped (no fabricated facade, cites stripped, old example retained); reference-table variants (`bmunits_reference`, `intensity_factors`, `operators`, …) all map to `silver_<slug>`.
 - **1 finding — pre-existing content, not a sweep artifact:** `neso/intensity_factors.html` caveat #04 has a self-referential dangling cross-reference ("see Caveats #04" pointing at itself for LCA factors that don't exist). All sweep checks on that page pass. → fix in 14/15.
 
-## Batch 3 — remaining MECHANICAL honesty (uniform; do in Phase 13)
-Locked by D-V3-2; these are what Direction A removed but Batch 2's cite-strip didn't cover:
-- **snapshot-note `Static snapshot · live wiring planned`** — 130 files (uniform `<div class="snapshot-note …">`). +1 orphan variant (`Placeholder snapshot · dataset removed — see commercial_schedules`). NB "live wiring planned" greps to 161 files — **~30 occurrences sit outside the snapshot-note div**; inspect those contexts before scripting.
-- **fake `24h` / `7d` / `30d` chart toggle chips** — 72 files (decorative fake controls; no JS behind them).
-- Decide neutralization wording (exemplar used "illustrative shape, seeded" for the chart caption; snapshot-note → an honest static-snapshot line with no future-framing).
-- Validate on BOTH populations (Elexon hand-authored vs generated) before the script, same as Batch 1/2.
+## Batch 3 — MECHANICAL honesty — DONE (2026-06-20)
+Locked by D-V3-2; what Direction A removed but Batch 2's cite-strip didn't cover. Applied + gated:
+- **snapshot-note** `Static snapshot · live wiring planned` → **`Static snapshot · illustrative, seeded`** — 161 files. Two wrapper populations (130 generated `.snapshot-note` + 31 Elexon inline-styled) carried the identical text, so a text replace covered both. (Orphan's own note left untouched.)
+- **fake chart time-toggle chips** removed — labels vary per page (24h/7d/30d, 1y/3y/5y, 12mo, 90d…), so anchored on the **bare `row gap-8` wrapper holding 2+ time-label chips**; the functional example tab row (`row gap-8 mb-16`) is preserved. Validated in-memory on both populations + a year-toggle page (chips 3→0, tab row intact); 0 toggle rows remain.
+- Verification: deterministic (residue 0, idempotent across all 4 sweeps, htmlhint 172/0 structural, gates green) — uniform low-risk transforms didn't warrant another agent wave.
+- **`Real-time` NOT swept** — inspection showed it is overwhelmingly factual data-cadence prose ("real-time (operator-reported)", "Real-time fuel mix"), not site-live framing → 14/15 judgment.
+
+**→ Phase 13 (mechanical Stream-M) COMPLETE.** Three commits: batch 1 (viewport/measure/footer), batch 2 (examples/cites), batch 3 (snapshot/toggles).
 
 ## Deferred to 14/15 — JUDGMENT (inline / per-page; mechanical removal would mangle)
 - **Inline class refs**, ~5/page on all 172 pages: `EntsoeDayAheadPrice`, `…Transformer` mid-sentence ("validated against X, written via Y"); these are grammatical objects — need prose rewrite.

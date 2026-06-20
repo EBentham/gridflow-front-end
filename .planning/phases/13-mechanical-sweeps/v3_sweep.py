@@ -138,10 +138,35 @@ def sweep_cites(text: str, slug: str, source: str | None) -> str:
     return _CITE_RE.sub("", text)
 
 
+# ── Sweep: honesty (Batch 3) ─────────────────────────────────────────────────
+# Future-framing snapshot note. Both populations carry the same text inside
+# different wrappers (generated: .snapshot-note class; Elexon: inline-styled
+# div) — so replace the TEXT and leave whichever container holds it.
+SNAPSHOT_OLD = "Static snapshot · live wiring planned"
+SNAPSHOT_NEW = "Static snapshot · illustrative, seeded"
+# Fake chart time-range toggle chips (purely decorative — no JS behind them).
+# The toggle wrapper is the bare  row gap-8  div holding 2+ time-label chips;
+# the functional example tab-button row is  row gap-8 mb-16 , so it is NOT
+# matched, and time labels vary per page (24h/7d/30d, 1y/3y/5y, 12mo, ...).
+_TOGGLE_RE = re.compile(
+    r'<div class="row gap-8"[^>]*>\s*'
+    r'(?:<span class="chip(?: ink)? btn-like">[0-9]+(?:h|d|w|mo|y)</span>\s*){2,}'
+    r"</div>"
+)
+
+
+def sweep_honesty(text: str, slug: str, source: str | None) -> str:
+    """Neutralise the future-framing snapshot note + drop fake chart toggle chips."""
+    text = text.replace(SNAPSHOT_OLD, SNAPSHOT_NEW)
+    text = _TOGGLE_RE.sub("", text)
+    return text
+
+
 SWEEPS = {
     "viewport": sweep_viewport,
     "examples": sweep_examples,
     "cites": sweep_cites,
+    "honesty": sweep_honesty,
 }
 
 
