@@ -33,6 +33,8 @@ uv run gridflow-drift-check        # verify rendered pages against their vault s
 
 CI (`.github/workflows/deploy.yml`) additionally runs `htmlhint` and `lychee` link-checking before publishing to GitHub Pages.
 
+**There is no PR-triggered CI** — deploy.yml fires on push to `main` only. A local green `gridflow-build --check` (run it with `uv run --system-certs --extra build gridflow-build --check`; Avast intercepts TLS) is the merge gate for every PR. `gridflow-drift-check` runs the vault's **live-API** curl validator — never run it without explicit user confirmation.
+
 ## Tech stack
 
 - Static HTML5 + CSS3 + vanilla JS (ES2017+, no transpilation, no modules)
@@ -52,6 +54,8 @@ Critical — do not invert without explicit discussion:
 2. **Live API responses** (verified by `verify_curl_and_silver_schema.py` in the vault)
 3. **Obsidian Vault** (`<vault>/30-vendors/<vendor>/datasets/*.md`) — authored docs derived from #1+#2; **33 active Elexon datasets**
 4. **On-site rendered pages** (`site/hifi/data-sources/<vendor>/<dataset>.html`) — published view generated from #3 via the build script
+
+The repo's `vault/` directory is a **generated mirror** of #3 (flat `vault/<vendor>/<slug>.md`; `open-meteo`→`openmeteo` remap). Refresh it with the `propagate-vault-mirror` skill — never hand-edit mirror files (fix the canonical vault, then re-sync). `vault/.last_synced_from_vault` records the source vault SHA + UTC sync time; sync only after any pending vault reconcile branches have merged.
 
 ## Cross-repo paths (Windows local)
 
