@@ -98,7 +98,7 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
 |-------|-------------|----------|--------------|-------|
 | `forecast_date` | `date` | No | `forecastDate` | Forecast delivery date. |
 | `timestamp_utc` | `datetime[UTC]` | No | _derived_ | Derived from (settlement_date, settlement_period) via `utils/time.settlement_period_to_utc`. |
-| `forecast_demand_mw` | `float` | Yes | `demand` | MW. |
+| `forecast_demand_mw` | `float` | No | `demand` | MW. |
 | `published_at` | `datetime[UTC]` | Yes | `publishTime` | Publication timestamp from API. |
 | `data_provider` | `str` | No | _derived_ | Default `"elexon"`. |
 | `ingested_at` | `datetime[UTC]` | Yes | _derived_ | Time ingested into bronze. |

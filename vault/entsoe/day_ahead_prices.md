@@ -24,8 +24,8 @@ day-ahead prices are not published on ENTSO-E (returns Acknowledgement code
 999 — see Implementation delta below).
 
 → Link to relevant domain concept notes if they exist, e.g.:
-  [Day-ahead market](../../20-domain/markets/day-ahead.md)
-  [EIC codes](../../20-domain/concepts/eic-codes.md)
+  [Day-ahead market](../../../20-domain/markets/day-ahead.md)
+  [EIC codes](../../../20-domain/concepts/eic-codes.md)
 
 ---
 
@@ -125,6 +125,7 @@ EU day-ahead market after Brexit. Use Elexon `system_prices` for GB.
 | `timestamp_utc` | `datetime` (tz-aware UTC) | No | `Period.timeInterval.start + (position-1)*resolution` | Rejected if naive |
 | `area_code` | `str` | No | `TimeSeries/in_Domain.mRID` | EIC bidding zone mRID, as-is (no normalisation) |
 | `price_eur_mwh` | `float` | No | `Point/price.amount` | EUR/MWh (currency_Unit + price_Measure_Unit) |
+| `currency` | `str` | No (default `"EUR"`) | `TimeSeries/currency_Unit.name` | Source denomination (EUR/GBP); authoritative over the legacy `_eur_` value-column name. |
 | `resolution` | `str` | No (default `""`) | `Period/resolution` | ISO duration: `PT60M` or `PT15M` |
 | `data_provider` | `str` | No (default `"entsoe"`) | derived | Constant `"entsoe"` |
 | `ingested_at` | `datetime` (tz-aware UTC) | Yes | derived | Set by transformer at silver write |
@@ -217,4 +218,4 @@ None implemented.
 - [Silver transformer](../../../../src/gridflow/silver/entsoe/day_ahead_prices.py)
 - [Pydantic schema](../../../../src/gridflow/schemas/entsoe.py)
 - [Gold view/builder](none)
-- [Domain: day-ahead market](../../20-domain/markets/day-ahead.md)
+- [Domain: day-ahead market](../../../20-domain/markets/day-ahead.md)

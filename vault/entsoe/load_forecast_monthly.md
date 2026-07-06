@@ -16,7 +16,7 @@ type `A32` ("Month ahead"). Same schema and parser as week-ahead, with the
 forecast_horizon flag changed.
 
 → Link to relevant domain concept notes if they exist, e.g.:
-  [Load forecast](../../20-domain/concepts/load-forecast.md)
+  [Load forecast](../../../20-domain/concepts/load-forecast.md)
 
 ---
 
@@ -91,7 +91,7 @@ GB returns code 999 (`TOTAL_LOAD_FORECAST [6.1.C&D&E]`).
 **Transformer class**: `gridflow.silver.entsoe.load_forecast_monthly.LoadForecastMonthlyTransformer`
 **Pydantic schema**: `gridflow.schemas.entsoe.EntsoeLoadForecast` (shared base — the schema reuses `EntsoeLoadForecast` with `forecast_horizon="month_ahead"`)
 **Dedup key**: `(timestamp_utc, area_code)`
-**Point-in-time field**: none
+**Point-in-time field**: `published_at`
 
 ### Silver schema
 
@@ -102,6 +102,7 @@ GB returns code 999 (`TOTAL_LOAD_FORECAST [6.1.C&D&E]`).
 | `load_forecast_mw` | `float` | No | `Point/quantity` | MW |
 | `resolution` | `str` | No (default `""`) | `Period/resolution` | typically `P1M` |
 | `forecast_horizon` | `str` | No (default `"month_ahead"`) | derived | Constant |
+| `published_at` | `datetime[UTC]` | Yes | `<createdDateTime>` | Document publication vintage (leak-proof forecast issue time); typed-null when the source omits it. |
 | `data_provider` | `str` | No (default `"entsoe"`) | derived | Constant |
 | `ingested_at` | `datetime` (tz-aware UTC) | Yes | derived | |
 
@@ -170,4 +171,4 @@ None implemented.
 - [Silver transformer](../../../../src/gridflow/silver/entsoe/load_forecast_monthly.py)
 - [Pydantic schema](../../../../src/gridflow/schemas/entsoe.py)
 - [Gold view/builder](none)
-- [Domain: load forecast](../../20-domain/concepts/load-forecast.md)
+- [Domain: load forecast](../../../20-domain/concepts/load-forecast.md)

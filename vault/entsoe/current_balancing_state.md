@@ -34,8 +34,8 @@ likelihood models. Use [imbalance_volume.md](./imbalance_volume.md)
 when you need the settled (after-the-fact) volume per settlement period.
 
 → Domain concepts:
-  [Imbalance pricing](../../20-domain/markets/imbalance-price.md)
-  [Settlement period](../../20-domain/concepts/settlement-period.md)
+  [Imbalance pricing](../../../20-domain/markets/imbalance-price.md)
+  [Settlement period](../../../20-domain/concepts/settlement-period.md)
 
 ---
 

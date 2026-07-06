@@ -18,8 +18,8 @@ PT15M for continental control areas. The TSO-charged price for the side
 of imbalance.
 
 → Link to relevant domain concept notes if they exist, e.g.:
-  [Imbalance pricing](../../20-domain/markets/imbalance-price.md)
-  [Balancing settlement](../../20-domain/markets/balancing-settlement.md)
+  [Imbalance pricing](../../../20-domain/markets/imbalance-price.md)
+  [Balancing settlement](../../../20-domain/markets/balancing-settlement.md)
 
 ---
 
@@ -212,4 +212,4 @@ None implemented.
 - [Silver transformer](../../../../src/gridflow/silver/entsoe/imbalance_prices.py)
 - [Pydantic schema](../../../../src/gridflow/schemas/entsoe.py)
 - [Gold view/builder](none)
-- [Domain: imbalance pricing](../../20-domain/markets/imbalance-price.md)
+- [Domain: imbalance pricing](../../../20-domain/markets/imbalance-price.md)

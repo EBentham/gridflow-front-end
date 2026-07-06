@@ -17,8 +17,8 @@ reverse direction is published as a separate TimeSeries on a separate request.
 Used as a feature for cross-border price-spread models, congestion analysis,
 GB interconnector utilisation, and as a target for flow-forecasting.
 
-→ Domain refs: [Cross-border flow](../../20-domain/markets/cross-border-flow.md)
-[Bidding zone EIC codes](../../20-domain/concepts/eic-codes.md)
+→ Domain refs: [Cross-border flow](../../../20-domain/markets/cross-border-flow.md)
+[Bidding zone EIC codes](../../../20-domain/concepts/eic-codes.md)
 
 ---
 

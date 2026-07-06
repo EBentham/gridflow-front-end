@@ -117,7 +117,7 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
 | Field | Python type | Nullable | Source field | Notes |
 |-------|-------------|----------|--------------|-------|
 | `settlement_date` | `date` | No | `settlementDate` or `forecastDate` | Settlement date (BST/GMT calendar). |
-| `settlement_period` | `int` | No | `settlementPeriod` | 1..50 (DST: 46 spring, 50 autumn). |
+| `settlement_period` | `int` | Yes | `settlementPeriod` | 1..50 (DST: 46 spring, 50 autumn). |
 | `timestamp_utc` | `datetime[UTC]` | No | _derived_ | Derived from (settlement_date, settlement_period) via `utils/time.settlement_period_to_utc`. |
 | `bm_unit_id` | `str` | No | `bmUnit` | BM Unit identifier — preserve raw casing. |
 | `fuel_type` | `str` | Yes | `fuelType` | Fuel category (G5-W2.3: restored — was dropped before write). |

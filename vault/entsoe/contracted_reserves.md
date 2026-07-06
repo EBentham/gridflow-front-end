@@ -22,7 +22,7 @@ ENTSO-E API (despite the Postman catalog listing it as optional). A01=daily
 products."
 
 → Link to relevant domain concept notes if they exist, e.g.:
-  [Balancing reserves](../../20-domain/markets/balancing-reserves.md)
+  [Balancing reserves](../../../20-domain/markets/balancing-reserves.md)
 
 ---
 
@@ -224,4 +224,4 @@ None implemented.
 - [Silver transformer](../../../../src/gridflow/silver/entsoe/contracted_reserves.py)
 - [Pydantic schema](../../../../src/gridflow/schemas/entsoe.py)
 - [Gold view/builder](none)
-- [Domain: balancing reserves](../../20-domain/markets/balancing-reserves.md)
+- [Domain: balancing reserves](../../../20-domain/markets/balancing-reserves.md)

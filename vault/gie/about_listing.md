@@ -29,7 +29,7 @@ for query inventory planning and deduplicating against `about_summary`.
 | Property         | Value |
 |------------------|-------|
 | Base URL         | `https://agsi.gie.eu` |
-| Path             | `/api/about?show=listing` |
+| Path             | `/api/about` |
 | Method           | GET |
 | Auth             | header `x-key` (lowercase), key from env `GIE_API_KEY` |
 | Rate limit       | 60 calls/minute. Connector throttles to 1 req/s. |

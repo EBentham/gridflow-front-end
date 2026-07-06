@@ -121,8 +121,8 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/balancin
 | `bid_volume_mwh` | `float` | Yes | `bidVolume` | MWh. |
 | `total_accepted_offer_volume_mwh` | `float` | Yes | `totalAcceptedOfferVolume` | MWh. |
 | `total_accepted_bid_volume_mwh` | `float` | Yes | `totalAcceptedBidVolume` | MWh. |
-| `total_adjustment_sell_volume_mwh` | `float` | Yes | `totalAdjustmentSellVolume` | MWh. |
-| `total_adjustment_buy_volume_mwh` | `float` | Yes | `totalAdjustmentBuyVolume` | MWh. |
+| `priced_accepted_offers_volume_mwh` | `float` | Yes | `pricedAcceptedOffersVolume` | MWh. |
+| `priced_accepted_bids_volume_mwh` | `float` | Yes | `pricedAcceptedBidsVolume` | MWh. |
 | `data_provider` | `str` | No | _derived_ | Default `"elexon"`. |
 | `ingested_at` | `datetime[UTC]` | Yes | _derived_ | Time ingested into bronze. |
 

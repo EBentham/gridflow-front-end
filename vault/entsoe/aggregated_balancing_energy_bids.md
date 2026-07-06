@@ -27,8 +27,8 @@ uses `area_Domain` (singular control area), with the response carrying
 `<area_Domain.mRID>` rather than `connecting_Domain`.
 
 → Domain concepts:
-  [Balancing market](../../20-domain/markets/balancing-market.md)
-  [Reserve products](../../20-domain/concepts/reserve-products.md)
+  [Balancing market](../../../20-domain/markets/balancing-market.md)
+  [Reserve products](../../../20-domain/concepts/reserve-products.md)
 
 ---
 

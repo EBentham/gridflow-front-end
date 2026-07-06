@@ -98,7 +98,7 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
 **Transformer class**: `gridflow.silver.elexon.lolpdrm.LOLPDRMTransformer`
 **Pydantic schema**: `gridflow.schemas.elexon.ElexonLOLPDRM` — validated fail-soft on the full frame at write time (VTA-SCHEMA-01: invalid rows are logged and counted, never dropped).
 **Dedup key**: `(settlement_date, settlement_period)`
-**Point-in-time field**: `ingested_at` (no native PIT field)
+**Point-in-time field**: `published_at`
 
 ### Silver schema
 
@@ -109,6 +109,7 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
 | `timestamp_utc` | `datetime[UTC]` | No | _derived_ | Derived from (settlement_date, settlement_period) via `utils/time.settlement_period_to_utc`. |
 | `loss_of_load_probability` | `float` | No | `lossOfLoadProbability` | Probability 0..1. |
 | `derated_margin_mw` | `float` | No | `deratedMargin` | MW. |
+| `published_at` | `datetime[UTC]` | Yes | `publishTime` | Publication time / document vintage; bitemporal point-in-time field. |
 | `data_provider` | `str` | No | _derived_ | Default `"elexon"`. |
 | `ingested_at` | `datetime[UTC]` | Yes | _derived_ | Time ingested into bronze. |
 

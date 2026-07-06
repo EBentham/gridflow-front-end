@@ -139,7 +139,7 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
 | `affected_unit` | `str` | Yes | `affectedUnit` | Affected unit name. |
 | `affected_unit_eic` | `str` | Yes | `affectedUnitEIC` | EIC of affected unit. |
 | `bidding_zone` | `str` | Yes | `biddingZone` | Bidding zone code. |
-| `fuel_type` | `str` | No | `fuelType` | Fuel category (CCGT, COAL, NUCLEAR, WIND, etc.). |
+| `fuel_type` | `str` | Yes | `fuelType` | Fuel category (CCGT, COAL, NUCLEAR, WIND, etc.). |
 | `normal_capacity_mw` | `float` | Yes | `normalCapacity` | MW. |
 | `available_capacity_mw` | `float` | Yes | `availableCapacity` | MW. |
 | `unavailable_capacity_mw` | `float` | Yes | `unavailableCapacity` | MW. |

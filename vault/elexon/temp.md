@@ -99,9 +99,9 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
 
 | Field | Python type | Nullable | Source field | Notes |
 |-------|-------------|----------|--------------|-------|
-| `measurement_date` | `date` | No | `measurementDate` | G5-W1.4: vendor measurement-date carried through to silver. |
+| `measurement_date` | `date` | Yes | `measurementDate` | G5-W1.4: vendor measurement-date carried through to silver. |
 | `timestamp_utc` | `datetime[UTC]` | No | `publishDateTime` or `publishTime` | Derived from (settlement_date, settlement_period) via `utils/time.settlement_period_to_utc`. |
-| `temperature` | `float` | Yes | `temperature` | Celsius — measured. |
+| `temperature` | `float` | No | `temperature` | Celsius — measured. |
 | `normal_temperature` | `float` | Yes | `normal` | Celsius — seasonal normal. |
 | `low_temperature` | `float` | Yes | `low` | Celsius — seasonal low. |
 | `high_temperature` | `float` | Yes | `high` | Celsius — seasonal high. |

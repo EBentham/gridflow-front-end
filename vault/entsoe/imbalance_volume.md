@@ -18,7 +18,7 @@ to `direction`. Returned in `Balancing_MarketDocument`. Resolution typically
 PT15M.
 
 → Link to relevant domain concept notes if they exist, e.g.:
-  [Imbalance volume](../../20-domain/markets/imbalance-volume.md)
+  [Imbalance volume](../../../20-domain/markets/imbalance-volume.md)
 
 ---
 
@@ -187,4 +187,4 @@ None implemented.
 - [Silver transformer](../../../../src/gridflow/silver/entsoe/imbalance_volume.py)
 - [Pydantic schema](../../../../src/gridflow/schemas/entsoe.py)
 - [Gold view/builder](none)
-- [Domain: imbalance volume](../../20-domain/markets/imbalance-volume.md)
+- [Domain: imbalance volume](../../../20-domain/markets/imbalance-volume.md)

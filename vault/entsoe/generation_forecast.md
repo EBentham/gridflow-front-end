@@ -94,7 +94,7 @@ Live verification 2026-05-08:
 **Transformer class**: `gridflow.silver.entsoe.generation_forecast.GenerationForecastTransformer`
 **Pydantic schema**: `gridflow.schemas.entsoe.EntsoeGenerationForecast`
 **Dedup key**: `(timestamp_utc, area_code, production_type)`
-**Point-in-time field**: none
+**Point-in-time field**: `published_at`
 
 ### Silver schema
 
@@ -105,6 +105,7 @@ Live verification 2026-05-08:
 | production_type | str | No | `<MktPSRType><psrType>` if present, else "" | A71/A01 aggregate often has no MktPSRType — value defaults to "unknown" |
 | generation_forecast_mw | float | No | `<Point><quantity>` | MW |
 | resolution | str | No | parsed | Default "" in canonical. `PT60M` typical. |
+| published_at | datetime[UTC] | Yes | `<createdDateTime>` | Document publication vintage (leak-proof forecast issue time); typed-null when the source omits it. |
 | data_provider | str | No | constant | "entsoe" |
 
 ### Silver sample

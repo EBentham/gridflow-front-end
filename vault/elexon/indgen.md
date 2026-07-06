@@ -97,7 +97,7 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
 **Transformer class**: `gridflow.silver.elexon.indgen.INDGENTransformer`
 **Pydantic schema**: `gridflow.schemas.elexon.ElexonIndGen` — validated fail-soft on the full frame at write time (VTA-SCHEMA-01: invalid rows are logged and counted, never dropped).
 **Dedup key**: _inline in transformer (see `silver/elexon/indgen.py`)_
-**Point-in-time field**: `ingested_at` (no native PIT field)
+**Point-in-time field**: `published_at`
 
 ### Silver schema
 
@@ -106,8 +106,9 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
 | `settlement_date` | `date` | No | `settlementDate` | Settlement date (BST/GMT calendar). |
 | `settlement_period` | `int` | No | `settlementPeriod` | 1..50 (DST: 46 spring, 50 autumn). |
 | `timestamp_utc` | `datetime[UTC]` | No | _derived_ | Derived from (settlement_date, settlement_period) via `utils/time.settlement_period_to_utc`. |
-| `indicated_generation_mw` | `float` | Yes | `generation` | MW. |
+| `indicated_generation_mw` | `float` | No | `generation` | MW. |
 | `boundary` | `str` | Yes | `boundary` | `N` (national) or `Z` (zonal). |
+| `published_at` | `datetime[UTC]` | Yes | `publishTime` | Publication time / document vintage; bitemporal point-in-time field. |
 | `data_provider` | `str` | No | _derived_ | Default `"elexon"`. |
 | `ingested_at` | `datetime[UTC]` | Yes | _derived_ | Time ingested into bronze. |
 
