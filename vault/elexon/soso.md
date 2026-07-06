@@ -115,7 +115,7 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
 | Field | Python type | Nullable | Source field | Notes |
 |-------|-------------|----------|--------------|-------|
 | `settlement_date` | `date` | No | `settlementDate` | Settlement date (BST/GMT calendar). |
-| `settlement_period` | `int` | No | `settlementPeriod` | 1..50 (DST: 46 spring, 50 autumn). |
+| `settlement_period` | `int` | Yes | `settlementPeriod` | 1..50 (DST: 46 spring, 50 autumn). |
 | `timestamp_utc` | `datetime[UTC]` | No | _derived_ | Derived from (settlement_date, settlement_period) via `utils/time.settlement_period_to_utc`. |
 | `contract_identification` | `str` | No | `contractIdentification` | SOSO contract MRID. |
 | `sender_identification` | `str` | Yes | `senderIdentification` | Sender TSO identifier. |

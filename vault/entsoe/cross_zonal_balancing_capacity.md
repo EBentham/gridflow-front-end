@@ -27,8 +27,8 @@ capacity see `net_transfer_capacity` (A61).
 A38 is paired with `processType=A51` (cross-zonal capacity allocation).
 
 → Domain concepts:
-  [Cross-zonal markets](../../20-domain/markets/cross-zonal.md)
-  [Reserve sharing](../../20-domain/concepts/reserve-sharing.md)
+  [Cross-zonal markets](../../../20-domain/markets/cross-zonal.md)
+  [Reserve sharing](../../../20-domain/concepts/reserve-sharing.md)
 
 ---
 

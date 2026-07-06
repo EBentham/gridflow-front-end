@@ -17,7 +17,7 @@ typically D-1 around mid-day after capacity calculation. Used in spread
 models (NTC is the upper bound on commercial flow) and as an input to
 congestion forecasts.
 
-→ Domain: [Net transfer capacity](../../20-domain/markets/net-transfer-capacity.md)
+→ Domain: [Net transfer capacity](../../../20-domain/markets/net-transfer-capacity.md)
 
 ---
 

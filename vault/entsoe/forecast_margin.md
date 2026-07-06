@@ -17,7 +17,7 @@ peak demand. Article 8.1 (`YEAR_AHEAD_FORECAST_MARGIN_R3`). Document type
 analyses and as a market-tightness signal.
 
 → Link to relevant domain concept notes if they exist, e.g.:
-  [Capacity adequacy](../../20-domain/concepts/capacity-adequacy.md)
+  [Capacity adequacy](../../../20-domain/concepts/capacity-adequacy.md)
 
 ---
 
@@ -167,4 +167,4 @@ None implemented.
 - [Silver transformer](../../../../src/gridflow/silver/entsoe/forecast_margin.py)
 - [Pydantic schema](../../../../src/gridflow/schemas/entsoe.py)
 - [Gold view/builder](none)
-- [Domain: capacity adequacy](../../20-domain/concepts/capacity-adequacy.md)
+- [Domain: capacity adequacy](../../../20-domain/concepts/capacity-adequacy.md)

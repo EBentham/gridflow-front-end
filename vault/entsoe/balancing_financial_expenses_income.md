@@ -31,8 +31,8 @@ balancing-extension siblings that use `area_Domain` /
 `connecting_Domain` / `Acquiring_Domain+Connecting_Domain`.
 
 → Domain concepts:
-  [Imbalance pricing](../../20-domain/markets/imbalance-price.md)
-  [TSO economics](../../20-domain/concepts/tso-economics.md)
+  [Imbalance pricing](../../../20-domain/markets/imbalance-price.md)
+  [TSO economics](../../../20-domain/concepts/tso-economics.md)
 
 ---
 

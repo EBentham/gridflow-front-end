@@ -20,7 +20,7 @@ reserve type that gridflow currently fetches). Returned as
 (activation direction).
 
 → Link to relevant domain concept notes if they exist, e.g.:
-  [Balancing reserves](../../20-domain/markets/balancing-reserves.md)
+  [Balancing reserves](../../../20-domain/markets/balancing-reserves.md)
 
 ---
 
@@ -195,4 +195,4 @@ None implemented.
 - [Silver transformer](../../../../src/gridflow/silver/entsoe/activated_balancing_prices.py)
 - [Pydantic schema](../../../../src/gridflow/schemas/entsoe.py)
 - [Gold view/builder](none)
-- [Domain: balancing reserves](../../20-domain/markets/balancing-reserves.md)
+- [Domain: balancing reserves](../../../20-domain/markets/balancing-reserves.md)

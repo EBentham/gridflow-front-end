@@ -98,7 +98,7 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
 **Transformer class**: `gridflow.silver.elexon.atl.ATLTransformer`
 **Pydantic schema**: `gridflow.schemas.elexon.ElexonATL` — validated fail-soft on the full frame at write time (VTA-SCHEMA-01: invalid rows are logged and counted, never dropped).
 **Dedup key**: `(settlement_date, settlement_period)`
-**Point-in-time field**: `ingested_at` (no native PIT field)
+**Point-in-time field**: `published_at`
 
 ### Silver schema
 
@@ -111,6 +111,7 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
 | `business_type` | `str` | Yes | `businessType` | ENTSO-E business type. |
 | `document_id` | `str` | Yes | `documentId` | ENTSO-E document MRID. |
 | `document_revision` | `int` | Yes | `documentRevisionNumber` | Document revision number. |
+| `published_at` | `datetime[UTC]` | Yes | `publishTime` | Publication time / document vintage; bitemporal point-in-time field. |
 | `data_provider` | `str` | No | _derived_ | Default `"elexon"`. |
 | `ingested_at` | `datetime[UTC]` | Yes | _derived_ | Time ingested into bronze. |
 

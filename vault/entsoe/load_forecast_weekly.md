@@ -16,7 +16,7 @@ type `A31` ("Week ahead"). Used as a longer-horizon reference for forecast
 adaptation studies and weekly capacity planning.
 
 → Link to relevant domain concept notes if they exist, e.g.:
-  [Load forecast](../../20-domain/concepts/load-forecast.md)
+  [Load forecast](../../../20-domain/concepts/load-forecast.md)
 
 ---
 
@@ -94,7 +94,7 @@ sparse, typically one min and one max per week.)
 **Transformer class**: `gridflow.silver.entsoe.load_forecast_weekly.LoadForecastWeeklyTransformer`
 **Pydantic schema**: `gridflow.schemas.entsoe.EntsoeLoadForecastWeekly`
 **Dedup key**: `(timestamp_utc, area_code)`
-**Point-in-time field**: none
+**Point-in-time field**: `published_at`
 
 ### Silver schema
 
@@ -105,6 +105,7 @@ sparse, typically one min and one max per week.)
 | `load_forecast_mw` | `float` | No | `Point/quantity` | MW |
 | `resolution` | `str` | No (default `""`) | `Period/resolution` | typically `P7D` |
 | `forecast_horizon` | `str` | No (default `"week_ahead"`) | derived | Constant |
+| `published_at` | `datetime[UTC]` | Yes | `<createdDateTime>` | Document publication vintage (leak-proof forecast issue time); typed-null when the source omits it. |
 | `data_provider` | `str` | No (default `"entsoe"`) | derived | Constant |
 | `ingested_at` | `datetime` (tz-aware UTC) | Yes | derived | |
 
@@ -171,4 +172,4 @@ None implemented.
 - [Silver transformer](../../../../src/gridflow/silver/entsoe/load_forecast_weekly.py)
 - [Pydantic schema](../../../../src/gridflow/schemas/entsoe.py)
 - [Gold view/builder](none)
-- [Domain: load forecast](../../20-domain/concepts/load-forecast.md)
+- [Domain: load forecast](../../../20-domain/concepts/load-forecast.md)

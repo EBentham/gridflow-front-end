@@ -79,7 +79,7 @@ from the request. Each period row holds `intensity` and `generationmix`.
 | regionid | int | Yes | regionid | NESO region identifier. |
 | dnoregion | str | No | dnoregion | DNO region name. |
 | shortname | str | No | shortname | Short region label. |
-| postcode | str | No | postcode | Outward postcode when returned or requested. |
+| postcode | str | Yes | postcode | Outward postcode when returned or requested. |
 | forecast_gco2_kwh | float | Yes | intensity.forecast | Regional forecast carbon intensity. |
 | actual_gco2_kwh | float | Yes | intensity.actual | Not present in many official examples; nullable. |
 | intensity_index | str | No | intensity.index | Docs category string. |

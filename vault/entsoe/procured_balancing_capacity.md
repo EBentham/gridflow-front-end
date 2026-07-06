@@ -29,8 +29,8 @@ not cross-zonal — for the cross-zonal counterpart see
 [cross_zonal_balancing_capacity.md](./cross_zonal_balancing_capacity.md).
 
 → Domain concepts:
-  [Reserve products](../../20-domain/concepts/reserve-products.md)
-  [Capacity vs energy products](../../20-domain/concepts/capacity-vs-energy.md)
+  [Reserve products](../../../20-domain/concepts/reserve-products.md)
+  [Capacity vs energy products](../../../20-domain/concepts/capacity-vs-energy.md)
 
 ---
 

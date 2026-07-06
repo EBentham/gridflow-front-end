@@ -96,7 +96,7 @@ Live verification 2026-05-08:
 **Transformer class**: `gridflow.silver.entsoe.wind_solar_forecast.WindSolarForecastTransformer`
 **Pydantic schema**: `gridflow.schemas.entsoe.EntsoeWindSolarForecast`
 **Dedup key**: `(timestamp_utc, area_code, production_type)`
-**Point-in-time field**: none
+**Point-in-time field**: `published_at`
 
 ### Silver schema
 
@@ -107,6 +107,7 @@ Live verification 2026-05-08:
 | production_type | str | No | `<MktPSRType><psrType>` | B16=wind offshore, B18=wind onshore, B19=solar |
 | generation_forecast_mw | float | No | `<Point><quantity>` | renamed from `value` |
 | resolution | str | No | parsed | Default "" in canonical. `PT15M` / `PT60M`. |
+| published_at | datetime[UTC] | Yes | `<createdDateTime>` | Document publication vintage (leak-proof forecast issue time); typed-null when the source omits it. |
 | data_provider | str | No | constant | "entsoe" |
 
 ### Silver sample

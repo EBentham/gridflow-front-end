@@ -31,8 +31,8 @@ that connect via interconnectors. `connecting_Domain` is the area at
 which the bid connects to the reserve pool.
 
 → Domain concepts:
-  [Balancing market](../../20-domain/markets/balancing-market.md)
-  [Reserve products](../../20-domain/concepts/reserve-products.md)
+  [Balancing market](../../../20-domain/markets/balancing-market.md)
+  [Reserve products](../../../20-domain/concepts/reserve-products.md)
 
 ---
 

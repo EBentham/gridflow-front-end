@@ -129,18 +129,18 @@ mark all 12 as `Optional` — exactly one set is populated per row.
 | `settlement_date` | `date` | No | `settlementDate` | Settlement date (BST/GMT calendar). |
 | `settlement_period` | `int` | No | `settlementPeriod` | 1..50 (DST: 46 spring, 50 autumn). |
 | `timestamp_utc` | `datetime[UTC]` | No | _derived_ | Derived from (settlement_date, settlement_period) via `utils/time.settlement_period_to_utc`. |
-| `net_buy_price_adjustment` | `float \| None` | Yes | `netBuyPriceAdjustment` | _Legacy (pre-2026 bronze)._ GBP/MWh adjustment to BSP. |
-| `net_sell_price_adjustment` | `float \| None` | Yes | `netSellPriceAdjustment` | _Legacy (pre-2026 bronze)._ GBP/MWh adjustment to SSP. |
-| `net_buy_volume_adjustment` | `float \| None` | Yes | `netBuyVolumeAdjustment` | _Legacy (pre-2026 bronze)._ MWh. |
-| `net_sell_volume_adjustment` | `float \| None` | Yes | `netSellVolumeAdjustment` | _Legacy (pre-2026 bronze)._ MWh. |
-| `net_buy_price_cost_adjustment_energy` | `float \| None` | Yes | `netBuyPriceCostAdjustmentEnergy` | Cost adjustment to net buy price, energy axis. |
-| `net_buy_price_volume_adjustment_energy` | `float \| None` | Yes | `netBuyPriceVolumeAdjustmentEnergy` | Volume adjustment to net buy price, energy axis. |
-| `net_buy_price_volume_adjustment_system` | `float \| None` | Yes | `netBuyPriceVolumeAdjustmentSystem` | Volume adjustment to net buy price, system axis. |
-| `buy_price_price_adjustment` | `float \| None` | Yes | `buyPricePriceAdjustment` | Price-on-price adjustment to net buy price. |
-| `net_sell_price_cost_adjustment_energy` | `float \| None` | Yes | `netSellPriceCostAdjustmentEnergy` | Cost adjustment to net sell price, energy axis. |
-| `net_sell_price_volume_adjustment_energy` | `float \| None` | Yes | `netSellPriceVolumeAdjustmentEnergy` | Volume adjustment to net sell price, energy axis. |
-| `net_sell_price_volume_adjustment_system` | `float \| None` | Yes | `netSellPriceVolumeAdjustmentSystem` | Volume adjustment to net sell price, system axis. |
-| `sell_price_price_adjustment` | `float \| None` | Yes | `sellPricePriceAdjustment` | Price-on-price adjustment to net sell price. |
+| `net_buy_price_adjustment` | `float` | Yes | `netBuyPriceAdjustment` | _Legacy (pre-2026 bronze)._ GBP/MWh adjustment to BSP. |
+| `net_sell_price_adjustment` | `float` | Yes | `netSellPriceAdjustment` | _Legacy (pre-2026 bronze)._ GBP/MWh adjustment to SSP. |
+| `net_buy_volume_adjustment` | `float` | Yes | `netBuyVolumeAdjustment` | _Legacy (pre-2026 bronze)._ MWh. |
+| `net_sell_volume_adjustment` | `float` | Yes | `netSellVolumeAdjustment` | _Legacy (pre-2026 bronze)._ MWh. |
+| `net_buy_price_cost_adjustment_energy` | `float` | Yes | `netBuyPriceCostAdjustmentEnergy` | Cost adjustment to net buy price, energy axis. |
+| `net_buy_price_volume_adjustment_energy` | `float` | Yes | `netBuyPriceVolumeAdjustmentEnergy` | Volume adjustment to net buy price, energy axis. |
+| `net_buy_price_volume_adjustment_system` | `float` | Yes | `netBuyPriceVolumeAdjustmentSystem` | Volume adjustment to net buy price, system axis. |
+| `buy_price_price_adjustment` | `float` | Yes | `buyPricePriceAdjustment` | Price-on-price adjustment to net buy price. |
+| `net_sell_price_cost_adjustment_energy` | `float` | Yes | `netSellPriceCostAdjustmentEnergy` | Cost adjustment to net sell price, energy axis. |
+| `net_sell_price_volume_adjustment_energy` | `float` | Yes | `netSellPriceVolumeAdjustmentEnergy` | Volume adjustment to net sell price, energy axis. |
+| `net_sell_price_volume_adjustment_system` | `float` | Yes | `netSellPriceVolumeAdjustmentSystem` | Volume adjustment to net sell price, system axis. |
+| `sell_price_price_adjustment` | `float` | Yes | `sellPricePriceAdjustment` | Price-on-price adjustment to net sell price. |
 | `data_provider` | `str` | No | _derived_ | Default `"elexon"`. |
 | `ingested_at` | `datetime[UTC]` | Yes | _derived_ | Time ingested into bronze. |
 

@@ -19,8 +19,8 @@ demand series used for forecast-error analysis, peak detection, and
 weather-vs-demand modelling.
 
 → Link to relevant domain concept notes if they exist, e.g.:
-  [System load](../../20-domain/concepts/system-load.md)
-  [EIC codes](../../20-domain/concepts/eic-codes.md)
+  [System load](../../../20-domain/concepts/system-load.md)
+  [EIC codes](../../../20-domain/concepts/eic-codes.md)
 
 ---
 
@@ -200,4 +200,4 @@ None implemented.
 - [Silver transformer](../../../../src/gridflow/silver/entsoe/actual_load.py)
 - [Pydantic schema](../../../../src/gridflow/schemas/entsoe.py)
 - [Gold view/builder](none)
-- [Domain: system load](../../20-domain/concepts/system-load.md)
+- [Domain: system load](../../../20-domain/concepts/system-load.md)
