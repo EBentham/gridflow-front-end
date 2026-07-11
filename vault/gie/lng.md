@@ -34,14 +34,14 @@ active dataset key is `lng`.
 ## Bronze layer
 
 Path:
-`data/bronze/gie_alsi/lng/YYYY/MM/DD/raw_<uuid>.json`
+`{data_root}/bronze/gie_alsi/lng/YYYY/MM/DD/raw_<uuid>.json`
 
 The connector stamps `data_date=start.date()`.
 
 ## Silver layer
 
 Path:
-`data/silver/gie_alsi/lng/year=YYYY/month=MM/lng_YYYYMMDD.parquet`
+`{data_root}/silver/gie_alsi/lng/year=YYYY/month=MM/lng_YYYYMMDD.parquet`
 
 Transformer:
 `gridflow.silver.gie.alsi.LNGTerminalTransformer`

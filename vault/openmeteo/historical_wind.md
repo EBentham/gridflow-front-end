@@ -110,7 +110,7 @@ so silver shape is identical between archive and forecast.
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/open_meteo/historical_wind__<location>/<year>/<month>/<day>/raw_<uuid>.json`
+**Path pattern**: `{data_root}/bronze/open_meteo/historical_wind__<location>/<year>/<month>/<day>/raw_<uuid>.json`
 **Format**: Raw JSON, as-received. Immutable — never modified after write.
 **Granularity**: One file per (location, fetch). The connector iterates
 the twelve `WIND_LOCATIONS` per call and emits one `RawResponse` per
@@ -166,7 +166,7 @@ transformer's `BRONZE_DATASET_PREFIX` is `"historical_wind"`.
 
 ## Silver layer
 
-**Path pattern**: `data/silver/open_meteo/historical_wind/year=YYYY/month=MM/historical_wind_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/open_meteo/historical_wind/year=YYYY/month=MM/historical_wind_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.openmeteo.historical.HistoricalWindWeather`
 **Pydantic schema**: `gridflow.schemas.weather.WindWeather`
 **Dedup key**: `(timestamp_utc, location)` — `df.unique(subset=["timestamp_utc", "location"], keep="last")`
@@ -362,11 +362,11 @@ None implemented.
 ## Links
 
 - [Official API docs (Historical Weather)](https://open-meteo.com/en/docs/historical-weather-api)
-- [Connector source](../../../../Python/gridflow/src/gridflow/connectors/openmeteo/client.py)
-- [Silver transformer](../../../../Python/gridflow/src/gridflow/silver/openmeteo/historical.py)
-- [Pydantic schema](../../../../Python/gridflow/src/gridflow/schemas/weather.py)
+- `Python/gridflow/src/gridflow/connectors/openmeteo/client.py`
+- `Python/gridflow/src/gridflow/silver/openmeteo/historical.py`
+- `Python/gridflow/src/gridflow/schemas/weather.py`
 - [Gold view/builder](#) — none
 - [Forecast counterpart](./forecast_wind.md)
 - [Demand weather (7 cities)](./historical_demand.md)
 - [Solar weather (6 sites)](./historical_solar.md)
-- [ADR-020 — location approximation](../../../../Python/gridflow/docs/DECISION_LOG/ADR-020-openmeteo-location-approximation.md)
+- `Python/gridflow/docs/DECISION_LOG/ADR-020-openmeteo-location-approximation.md`

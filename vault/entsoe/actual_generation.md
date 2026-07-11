@@ -67,7 +67,7 @@ Live verification 2026-05-08:
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/entsoe/actual_generation/<year>/<month>/<day>/raw_<uuid>.xml`
+**Path pattern**: `{data_root}/bronze/entsoe/actual_generation/<year>/<month>/<day>/raw_<uuid>.xml`
 **Format**: Raw XML, as-received. Immutable.
 **Granularity**: One XML file per (zone, day) — connector iterates over `DEFAULT_ZONES`.
 
@@ -99,7 +99,7 @@ Live verification 2026-05-08:
 
 ## Silver layer
 
-**Path pattern**: `data/silver/entsoe/actual_generation/year=YYYY/month=MM/actual_generation_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/entsoe/actual_generation/year=YYYY/month=MM/actual_generation_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.entsoe.actual_generation.ActualGenerationTransformer`
 **Pydantic schema**: `gridflow.schemas.entsoe.EntsoeActualGeneration`
 **Dedup key**: `(timestamp_utc, area_code, production_type)`
@@ -180,7 +180,7 @@ None implemented.
 ## Links
 
 - [Official API docs](https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.pdf)
-- [Connector source](../../../../../../OneDrive/Desktop/Python/gridflow/src/gridflow/connectors/entsoe/client.py)
-- [Silver transformer](../../../../../../OneDrive/Desktop/Python/gridflow/src/gridflow/silver/entsoe/actual_generation.py)
-- [Pydantic schema](../../../../../../OneDrive/Desktop/Python/gridflow/src/gridflow/schemas/entsoe.py)
-- [Gold view/builder](none)
+- `OneDrive/Desktop/Python/gridflow/src/gridflow/connectors/entsoe/client.py`
+- `OneDrive/Desktop/Python/gridflow/src/gridflow/silver/entsoe/actual_generation.py`
+- `OneDrive/Desktop/Python/gridflow/src/gridflow/schemas/entsoe.py`
+- Gold view/builder

@@ -54,7 +54,7 @@ curl --ssl-no-revoke -fsS \
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/entsog/aggregated_physical_flows/<year>/<month>/<day>/raw_<uuid>.json`
+**Path pattern**: `{data_root}/bronze/entsog/aggregated_physical_flows/<year>/<month>/<day>/raw_<uuid>.json`
 **Format**: Raw JSON, as-received. Immutable.
 **Granularity**: One file per fetch call.
 
@@ -112,7 +112,7 @@ curl --ssl-no-revoke -fsS \
 
 ## Silver layer
 
-**Path pattern**: `data/silver/entsog/aggregated_physical_flows/year=YYYY/month=MM/aggregated_physical_flows_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/entsog/aggregated_physical_flows/year=YYYY/month=MM/aggregated_physical_flows_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.entsog.generic.GenericEntsogJsonTransformer (subclass AggregatedPhysicalFlowsTransformer)`
 **Pydantic schema**: Generic — no Pydantic schema declared
 **Dedup key**: `(id)` if present, else all non-`timestamp_utc` columns
@@ -233,7 +233,7 @@ TODO
 ## Links
 
 - [Official API docs (PDF)](https://transparency.entsog.eu/api/archiveDirectories/8/api-manual/TP_REG715_Documentation_TP_API%20-%20v2.1.pdf)
-- [Connector source](../../../../src/gridflow/connectors/entsog/endpoints.py)
-- [Silver transformer](../../../../src/gridflow/silver/entsog/generic.py)
-- [Pydantic schema](../../../../src/gridflow/schemas/entsog.py)
-- [Gold view/builder](none)
+- `src/gridflow/connectors/entsog/endpoints.py`
+- `src/gridflow/silver/entsog/generic.py`
+- `src/gridflow/schemas/entsog.py`
+- Gold view/builder

@@ -81,7 +81,7 @@ curl --ssl-no-revoke -fsS -H "Accept: application/xml" \
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/entsoe/balancing_energy_bids/<year>/<month>/<day>/raw_<uuid>.xml`
+**Path pattern**: `{data_root}/bronze/entsoe/balancing_energy_bids/<year>/<month>/<day>/raw_<uuid>.xml`
 **Format**: Raw XML (`Balancing_MarketDocument`), as-received.
 **Granularity**: One file per (connecting_area, fetch window, offset page).
 
@@ -120,7 +120,7 @@ From `tests/fixtures/entsoe/balancing_energy_bids_gb.xml`:
 
 ## Silver layer
 
-**Path pattern**: `data/silver/entsoe/balancing_energy_bids/year=YYYY/month=MM/balancing_energy_bids_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/entsoe/balancing_energy_bids/year=YYYY/month=MM/balancing_energy_bids_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.entsoe.h8_balancing.BalancingEnergyBidsTransformer`
 **Pydantic schema**: `gridflow.schemas.entsoe.EntsoeBalancingEnergyBid`
 **Dedup key**: `(timestamp_utc, area_code, bid_mrid, direction)`
@@ -219,9 +219,9 @@ typically point to the same EIC.
 ## Links
 
 - [Official API docs](https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.pdf) — Section 17.4 / GL EB 12.3.B&C
-- [Connector source](../../../../src/gridflow/connectors/entsoe/client.py)
-- [Endpoint registry](../../../../src/gridflow/connectors/entsoe/endpoints.py) — `balancing_energy_bids`
-- [Silver transformer](../../../../src/gridflow/silver/entsoe/h8_balancing.py) — `BalancingEnergyBidsTransformer`
-- [Pydantic schema](../../../../src/gridflow/schemas/entsoe.py) — `EntsoeBalancingEnergyBid`
-- [Fixture](../../../../tests/fixtures/entsoe/balancing_energy_bids_gb.xml)
+- `src/gridflow/connectors/entsoe/client.py`
+- `src/gridflow/connectors/entsoe/endpoints.py` — `balancing_energy_bids`
+- `src/gridflow/silver/entsoe/h8_balancing.py` — `BalancingEnergyBidsTransformer`
+- `src/gridflow/schemas/entsoe.py` — `EntsoeBalancingEnergyBid`
+- `tests/fixtures/entsoe/balancing_energy_bids_gb.xml`
 - [Aggregated counterpart](./aggregated_balancing_energy_bids.md)

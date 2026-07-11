@@ -75,7 +75,7 @@ curl --ssl-no-revoke -fsS -H "Accept: application/xml" \
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/entsoe/balancing_financial_expenses_income/<year>/<month>/<day>/raw_<uuid>.xml`
+**Path pattern**: `{data_root}/bronze/entsoe/balancing_financial_expenses_income/<year>/<month>/<day>/raw_<uuid>.xml`
 **Format**: Raw XML (`Publication_MarketDocument`, **not** `Balancing_MarketDocument`).
 **Granularity**: One file per (control_area, fetch window).
 
@@ -110,7 +110,7 @@ From `tests/fixtures/entsoe/balancing_financial_expenses_income_gb.xml`:
 
 ## Silver layer
 
-**Path pattern**: `data/silver/entsoe/balancing_financial_expenses_income/year=YYYY/month=MM/balancing_financial_expenses_income_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/entsoe/balancing_financial_expenses_income/year=YYYY/month=MM/balancing_financial_expenses_income_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.entsoe.h8_balancing.BalancingFinancialExpensesIncomeTransformer`
 **Pydantic schema**: `gridflow.schemas.entsoe.EntsoeBalancingFinancial`
 **Dedup key**: `(timestamp_utc, area_code, business_type)`
@@ -205,8 +205,8 @@ counterpart in the ENTSOE catalogue.
 ## Links
 
 - [Official API docs](https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.pdf) — Section 17.1.I
-- [Connector source](../../../../src/gridflow/connectors/entsoe/client.py)
-- [Endpoint registry](../../../../src/gridflow/connectors/entsoe/endpoints.py) — `balancing_financial_expenses_income`
-- [Silver transformer](../../../../src/gridflow/silver/entsoe/h8_balancing.py) — `BalancingFinancialExpensesIncomeTransformer`
-- [Pydantic schema](../../../../src/gridflow/schemas/entsoe.py) — `EntsoeBalancingFinancial`
-- [Fixture](../../../../tests/fixtures/entsoe/balancing_financial_expenses_income_gb.xml)
+- `src/gridflow/connectors/entsoe/client.py`
+- `src/gridflow/connectors/entsoe/endpoints.py` — `balancing_financial_expenses_income`
+- `src/gridflow/silver/entsoe/h8_balancing.py` — `BalancingFinancialExpensesIncomeTransformer`
+- `src/gridflow/schemas/entsoe.py` — `EntsoeBalancingFinancial`
+- `tests/fixtures/entsoe/balancing_financial_expenses_income_gb.xml`

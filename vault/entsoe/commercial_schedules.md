@@ -56,14 +56,14 @@ duplicate and is retained only as a deprecated pointer page.
 ## Bronze layer
 
 Path:
-`data/bronze/entsoe/commercial_schedules/YYYY/MM/DD/raw_<uuid>.xml`
+`{data_root}/bronze/entsoe/commercial_schedules/YYYY/MM/DD/raw_<uuid>.xml`
 
 Granularity: one file per `(in_Domain, out_Domain, day)` API call.
 
 ## Silver layer
 
 Path:
-`data/silver/entsoe/commercial_schedules/year=YYYY/month=MM/commercial_schedules_YYYYMMDD.parquet`
+`{data_root}/silver/entsoe/commercial_schedules/year=YYYY/month=MM/commercial_schedules_YYYYMMDD.parquet`
 
 Transformer:
 `gridflow.silver.entsoe.h6_market.CommercialSchedulesTransformer`

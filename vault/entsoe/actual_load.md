@@ -18,7 +18,7 @@ Resolution is typically PT15M for continental zones. This is the canonical
 demand series used for forecast-error analysis, peak detection, and
 weather-vs-demand modelling.
 
-→ Link to relevant domain concept notes if they exist, e.g.:
+Related domain notes:
   [System load](../../../20-domain/concepts/system-load.md)
   [EIC codes](../../../20-domain/concepts/eic-codes.md)
 
@@ -68,7 +68,7 @@ demand.
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/entsoe/actual_load/<year>/<month>/<day>/raw_<uuid>.xml`
+**Path pattern**: `{data_root}/bronze/entsoe/actual_load/<year>/<month>/<day>/raw_<uuid>.xml`
 **Format**: Raw XML.
 **Granularity**: One file per (zone, query window).
 
@@ -100,7 +100,7 @@ demand.
 
 ## Silver layer
 
-**Path pattern**: `data/silver/entsoe/actual_load/year=YYYY/month=MM/actual_load_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/entsoe/actual_load/year=YYYY/month=MM/actual_load_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.entsoe.actual_load.ActualLoadTransformer`
 **Pydantic schema**: `gridflow.schemas.entsoe.EntsoeActualLoad`
 **Dedup key**: `(timestamp_utc, area_code)`
@@ -195,9 +195,9 @@ None implemented.
 ## Links
 
 - [Official API docs](https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.html)
-- [Connector source](../../../../src/gridflow/connectors/entsoe/client.py)
-- [Endpoints](../../../../src/gridflow/connectors/entsoe/endpoints.py)
-- [Silver transformer](../../../../src/gridflow/silver/entsoe/actual_load.py)
-- [Pydantic schema](../../../../src/gridflow/schemas/entsoe.py)
-- [Gold view/builder](none)
+- `src/gridflow/connectors/entsoe/client.py`
+- `src/gridflow/connectors/entsoe/endpoints.py`
+- `src/gridflow/silver/entsoe/actual_load.py`
+- `src/gridflow/schemas/entsoe.py`
+- Gold view/builder
 - [Domain: system load](../../../20-domain/concepts/system-load.md)

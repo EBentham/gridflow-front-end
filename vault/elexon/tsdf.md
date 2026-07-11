@@ -12,10 +12,6 @@ layer_coverage: bronze, silver
 
 Transmission System Demand Forecast (TSDF) — published demand forecast restricted to the transmission system (excludes embedded generation). TSDF is the transmission-only demand companion of NDF.
 
-→ Link to relevant domain concept notes if they exist, e.g.:
-  [Imbalance pricing](../../../20-domain/markets/imbalance-price.md)
-  [Settlement period](../../../20-domain/concepts/settlement-period.md)
-
 ---
 
 ## API endpoint
@@ -56,7 +52,7 @@ curl --ssl-no-revoke -fsS \
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/elexon/tsdf/<year>/<month>/<day>/raw_<uuid>.json`
+**Path pattern**: `{data_root}/bronze/elexon/tsdf/<year>/<month>/<day>/raw_<uuid>.json`
 **Format**: Raw JSON, as-received. Immutable — never modified after write.
 **Granularity**: One file per API call (paginated requests append additional files for the same date partition).
 
@@ -93,7 +89,7 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
 
 ## Silver layer
 
-**Path pattern**: `data/silver/elexon/tsdf/year=YYYY/month=MM/tsdf_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/elexon/tsdf/year=YYYY/month=MM/tsdf_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.elexon.tsdf.TSDFTransformer`
 **Pydantic schema**: `gridflow.schemas.elexon.ElexonTSDF` — validated fail-soft on the full frame at write time (VTA-SCHEMA-01: invalid rows are logged and counted, never dropped).
 **Dedup key**: _inline in transformer (see `silver/elexon/tsdf.py`)_
@@ -159,5 +155,5 @@ TODO
 - [Connector source](../../../../../../Python/gridflow/src/gridflow/connectors/elexon/endpoints.py)
 - [Silver transformer](../../../../../../Python/gridflow/src/gridflow/silver/elexon/tsdf.py)
 - [Pydantic schema](../../../../../../Python/gridflow/src/gridflow/schemas/elexon.py)
-- [Gold view/builder](none)
+- Gold view/builder
 - [Domain: GB Balancing Mechanism](../../../20-domain/markets/gb-balancing-mechanism.md)

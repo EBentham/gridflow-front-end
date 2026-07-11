@@ -76,7 +76,7 @@ curl --ssl-no-revoke -fsS -H "Accept: application/xml" \
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/entsoe/procured_balancing_capacity/<year>/<month>/<day>/raw_<uuid>.xml`
+**Path pattern**: `{data_root}/bronze/entsoe/procured_balancing_capacity/<year>/<month>/<day>/raw_<uuid>.xml`
 **Format**: Raw XML.
 **Granularity**: One file per (control_area, fetch window, offset page).
 
@@ -112,7 +112,7 @@ From `tests/fixtures/entsoe/procured_balancing_capacity_gb.xml`:
 
 ## Silver layer
 
-**Path pattern**: `data/silver/entsoe/procured_balancing_capacity/year=YYYY/month=MM/procured_balancing_capacity_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/entsoe/procured_balancing_capacity/year=YYYY/month=MM/procured_balancing_capacity_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.entsoe.h8_balancing.ProcuredBalancingCapacityTransformer`
 **Pydantic schema**: `gridflow.schemas.entsoe.EntsoeBalancingCapacity`
 **Dedup key**: `(timestamp_utc, area_code, market_agreement_type)`
@@ -199,9 +199,9 @@ counterpart is A38, see
 ## Links
 
 - [Official API docs](https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.pdf) — Section 17 / 12.3.F
-- [Connector source](../../../../src/gridflow/connectors/entsoe/client.py)
-- [Endpoint registry](../../../../src/gridflow/connectors/entsoe/endpoints.py) — `procured_balancing_capacity`
-- [Silver transformer](../../../../src/gridflow/silver/entsoe/h8_balancing.py) — `ProcuredBalancingCapacityTransformer`
-- [Pydantic schema](../../../../src/gridflow/schemas/entsoe.py) — `EntsoeBalancingCapacity`
-- [Fixture](../../../../tests/fixtures/entsoe/procured_balancing_capacity_gb.xml)
+- `src/gridflow/connectors/entsoe/client.py`
+- `src/gridflow/connectors/entsoe/endpoints.py` — `procured_balancing_capacity`
+- `src/gridflow/silver/entsoe/h8_balancing.py` — `ProcuredBalancingCapacityTransformer`
+- `src/gridflow/schemas/entsoe.py` — `EntsoeBalancingCapacity`
+- `tests/fixtures/entsoe/procured_balancing_capacity_gb.xml`
 - [Cross-zonal counterpart](./cross_zonal_balancing_capacity.md)

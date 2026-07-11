@@ -55,7 +55,7 @@ as deprecated and links to `commercial_schedules` for the active surface.
 
 ## What is preserved
 
-- Historical Parquet under `data/silver/entsoe/commercial_schedules_net_positions/...`
+- Historical Parquet under `{data_root}/silver/entsoe/commercial_schedules_net_positions/...`
   may still exist in local data directories. No scheduled Gold consumer reads
   it; deleting it would be a separate data cleanup.
 - This vault page remains as a deprecation pointer for old links.

@@ -1,4 +1,4 @@
-﻿---
+---
 source: neso
 dataset_key: intensity_date
 vendor: National Energy System Operator (NESO)
@@ -46,7 +46,7 @@ curl --ssl-no-revoke -X GET \
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/neso/intensity_date/<year>/<month>/<day>/raw_<timestamp>_<hash>.json`
+**Path pattern**: `{data_root}/bronze/neso/intensity_date/<year>/<month>/<day>/raw_<timestamp>_<hash>.json`
 **Format**: Raw JSON, as received. Immutable after write, with `.meta.json` provenance sidecar.
 **Granularity**: One file per API call; range and daily routes may produce one file per chunk/day/period.
 
@@ -60,7 +60,7 @@ curl --ssl-no-revoke -X GET \
 
 ## Silver layer
 
-**Path pattern**: `data/silver/neso/intensity_date/year=<YYYY>/month=<MM>/intensity_date_<YYYYMMDD>.parquet`
+**Path pattern**: `{data_root}/silver/neso/intensity_date/year=<YYYY>/month=<MM>/intensity_date_<YYYYMMDD>.parquet`
 **Transformer class**: `gridflow.silver.neso.carbon_intensity.IntensityDateTransformer`
 **Pydantic schema**: `gridflow.schemas.neso.CarbonIntensity`
 **Dedup key**: `(timestamp_utc)`

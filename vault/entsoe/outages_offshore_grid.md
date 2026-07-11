@@ -72,7 +72,7 @@ Power Hub schemes.
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/entsoe/outages_offshore_grid/<year>/<month>/<day>/raw_<uuid>.xml`
+**Path pattern**: `{data_root}/bronze/entsoe/outages_offshore_grid/<year>/<month>/<day>/raw_<uuid>.xml`
 **Format**: Raw XML, immutable.
 **Granularity**: One file per (zone, day).
 
@@ -100,7 +100,7 @@ Power Hub schemes.
 
 ## Silver layer
 
-**Path pattern**: `data/silver/entsoe/outages_offshore_grid/year=YYYY/month=MM/outages_offshore_grid_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/entsoe/outages_offshore_grid/year=YYYY/month=MM/outages_offshore_grid_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.entsoe.outages_h7.OutagesOffshoreGridTransformer`
 **Pydantic schema**: `gridflow.schemas.entsoe.EntsoeOutagesOffshoreGrid`
 **Dedup key**: `(timestamp_utc, area_code, asset_mrid, timeseries_mrid)`
@@ -185,7 +185,7 @@ None implemented.
 ## Links
 
 - [Official API docs](https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.pdf)
-- [Connector source](../../../../../../OneDrive/Desktop/Python/gridflow/src/gridflow/connectors/entsoe/client.py)
-- [Silver transformer](../../../../../../OneDrive/Desktop/Python/gridflow/src/gridflow/silver/entsoe/outages_h7.py)
-- [Pydantic schema](../../../../../../OneDrive/Desktop/Python/gridflow/src/gridflow/schemas/entsoe.py)
-- [Gold view/builder](none)
+- `OneDrive/Desktop/Python/gridflow/src/gridflow/connectors/entsoe/client.py`
+- `OneDrive/Desktop/Python/gridflow/src/gridflow/silver/entsoe/outages_h7.py`
+- `OneDrive/Desktop/Python/gridflow/src/gridflow/schemas/entsoe.py`
+- Gold view/builder

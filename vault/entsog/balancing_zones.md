@@ -52,7 +52,7 @@ curl --ssl-no-revoke -fsS \
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/entsog/balancing_zones/<year>/<month>/<day>/raw_<uuid>.json` (one snapshot per weekly schedule)
+**Path pattern**: `{data_root}/bronze/entsog/balancing_zones/<year>/<month>/<day>/raw_<uuid>.json` (one snapshot per weekly schedule)
 **Format**: Raw JSON, as-received. Immutable.
 **Granularity**: One file per fetch call (full inventory).
 
@@ -92,7 +92,7 @@ curl --ssl-no-revoke -fsS \
 
 ## Silver layer
 
-**Path pattern**: `data/silver/entsog/balancing_zones.parquet` (single-file overwrite — `reference_dataset=True`)
+**Path pattern**: `{data_root}/silver/entsog/balancing_zones.parquet` (single-file overwrite — `reference_dataset=True`)
 **Transformer class**: `gridflow.silver.entsog.generic.GenericEntsogJsonTransformer (subclass BalancingZonesTransformer)`
 **Pydantic schema**: Generic — no Pydantic schema declared
 **Dedup key**: `(id)` if present, else inventory key (e.g. `point_key`, `operator_key`)
@@ -181,7 +181,7 @@ TODO — primarily used as join keys for operational datasets.
 ## Links
 
 - [Official API docs (PDF)](https://transparency.entsog.eu/api/archiveDirectories/8/api-manual/TP_REG715_Documentation_TP_API%20-%20v2.1.pdf)
-- [Connector source](../../../../src/gridflow/connectors/entsog/endpoints.py)
-- [Silver transformer](../../../../src/gridflow/silver/entsog/generic.py)
-- [Pydantic schema](../../../../src/gridflow/schemas/entsog.py)
-- [Gold view/builder](none)
+- `src/gridflow/connectors/entsog/endpoints.py`
+- `src/gridflow/silver/entsog/generic.py`
+- `src/gridflow/schemas/entsog.py`
+- Gold view/builder

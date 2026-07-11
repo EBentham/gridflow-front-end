@@ -21,10 +21,6 @@ v2_fix_history:
 
 2-14 day-ahead generation availability per BM Unit (UOU2T14D). The unit-level companion of FOU2T14D — every BM Unit's declared availability MW for every settlement period 2-14 days ahead. The vendor enforces a maximum 4-hour query window so the connector chunks requests accordingly.
 
-→ Link to relevant domain concept notes if they exist, e.g.:
-  [Imbalance pricing](../../../20-domain/markets/imbalance-price.md)
-  [Settlement period](../../../20-domain/concepts/settlement-period.md)
-
 ---
 
 ## API endpoint
@@ -69,7 +65,7 @@ curl --ssl-no-revoke -fsS \
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/elexon/uou2t14d/<year>/<month>/<day>/raw_<uuid>.json`
+**Path pattern**: `{data_root}/bronze/elexon/uou2t14d/<year>/<month>/<day>/raw_<uuid>.json`
 **Format**: Raw JSON, as-received. Immutable — never modified after write.
 **Granularity**: One file per API call (paginated requests append additional files for the same date partition).
 
@@ -106,7 +102,7 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
 
 ## Silver layer
 
-**Path pattern**: `data/silver/elexon/uou2t14d/year=YYYY/month=MM/uou2t14d_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/elexon/uou2t14d/year=YYYY/month=MM/uou2t14d_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.elexon.uou2t14d.UOU2T14DTransformer`
 **Pydantic schema**: `gridflow.schemas.elexon.ElexonUOU2T14D` (added 2026-05-20, gridflow G5-W4).
 **Dedup key**: _inline in transformer (see `silver/elexon/uou2t14d.py`)_
@@ -190,5 +186,5 @@ TODO
 - [Connector source](../../../../../../Python/gridflow/src/gridflow/connectors/elexon/endpoints.py)
 - [Silver transformer](../../../../../../Python/gridflow/src/gridflow/silver/elexon/uou2t14d.py)
 - [Pydantic schema](../../../../../../Python/gridflow/src/gridflow/schemas/elexon.py)
-- [Gold view/builder](none)
+- Gold view/builder
 - [Domain: GB Balancing Mechanism](../../../20-domain/markets/gb-balancing-mechanism.md)

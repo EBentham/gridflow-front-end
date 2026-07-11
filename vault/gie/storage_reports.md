@@ -72,7 +72,7 @@ curl --ssl-no-revoke -X GET \
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/gie_agsi/storage_reports/<year>/<month>/<day>/raw_<uuid>.json`
+**Path pattern**: `{data_root}/bronze/gie_agsi/storage_reports/<year>/<month>/<day>/raw_<uuid>.json`
 **Format**: Raw JSON, as-received. Immutable — never modified after write.
 **Granularity**: One file per (entity, gas day) call after pagination is unrolled.
 
@@ -132,7 +132,7 @@ returns numeric values:
 
 ## Silver layer
 
-**Path pattern**: `data/silver/gie_agsi/storage_reports/year=YYYY/month=MM/storage_reports_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/gie_agsi/storage_reports/year=YYYY/month=MM/storage_reports_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.gie.agsi.StorageReportsTransformer`
 **Pydantic schema**: `gridflow.schemas.gie.GasStorage`
 **Dedup key**: `(gas_day, entity_level, entity_code, entity_url)`
@@ -279,8 +279,8 @@ No discrepancies found.
 ## Links
 
 - [Official API docs](https://agsi.gie.eu/api)
-- [Connector source](../../../../../Python/gridflow/src/gridflow/connectors/gie/client.py)
-- [Endpoint registry](../../../../../Python/gridflow/src/gridflow/connectors/gie/endpoints.py)
-- [Silver transformer](../../../../../Python/gridflow/src/gridflow/silver/gie/agsi.py)
-- [Pydantic schema](../../../../../Python/gridflow/src/gridflow/schemas/gie.py)
+- `Python/gridflow/src/gridflow/connectors/gie/client.py`
+- `Python/gridflow/src/gridflow/connectors/gie/endpoints.py`
+- `Python/gridflow/src/gridflow/silver/gie/agsi.py`
+- `Python/gridflow/src/gridflow/schemas/gie.py`
 - [Domain: gas day](../../../20-domain/concepts/gas-day.md)

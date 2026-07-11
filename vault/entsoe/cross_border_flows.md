@@ -81,7 +81,7 @@ curl --ssl-no-revoke -fsS \
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/entsoe/cross_border_flows/<year>/<month>/<day>/raw_<uuid>.xml`
+**Path pattern**: `{data_root}/bronze/entsoe/cross_border_flows/<year>/<month>/<day>/raw_<uuid>.xml`
 **Format**: Raw XML, as-received. Immutable — never modified after write.
 **Granularity**: One file per (in_Domain, out_Domain, day) tuple
 
@@ -121,7 +121,7 @@ curl --ssl-no-revoke -fsS \
 
 ## Silver layer
 
-**Path pattern**: `data/silver/entsoe/cross_border_flows/year=YYYY/month=MM/cross_border_flows_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/entsoe/cross_border_flows/year=YYYY/month=MM/cross_border_flows_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.entsoe.cross_border_flows.CrossBorderFlowsTransformer`
 **Pydantic schema**: `gridflow.schemas.entsoe.EntsoeCrossborderFlow`
 **Dedup key**: `(timestamp_utc, in_area_code, out_area_code)`
@@ -210,7 +210,7 @@ None implemented.
 ## Links
 
 - [Official API docs (PDF)](https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.pdf)
-- [Connector source](../../../../src/gridflow/connectors/entsoe/endpoints.py)
-- [Silver transformer](../../../../src/gridflow/silver/entsoe/cross_border_flows.py)
-- [Pydantic schema](../../../../src/gridflow/schemas/entsoe.py)
+- `src/gridflow/connectors/entsoe/endpoints.py`
+- `src/gridflow/silver/entsoe/cross_border_flows.py`
+- `src/gridflow/schemas/entsoe.py`
 - [Gold view/builder](../../../../) (none)

@@ -12,10 +12,6 @@ layer_coverage: bronze, silver
 
 System Buy Price (SBP) and System Sell Price (SSP) — the cash-out prices used by the GB electricity Balancing Mechanism to settle imbalance. SBP is what generators pay (or are paid) for being short relative to their physical notifications, and SSP is what suppliers pay for being long. Together with the Net Imbalance Volume, this dataset is the canonical signal for short-term GB power-market value and is the basis of the imbalance price in BSC settlement.
 
-→ Link to relevant domain concept notes if they exist, e.g.:
-  [Imbalance pricing](../../../20-domain/markets/imbalance-price.md)
-  [Settlement period](../../../20-domain/concepts/settlement-period.md)
-
 ---
 
 ## API endpoint
@@ -54,7 +50,7 @@ curl --ssl-no-revoke -fsS \
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/elexon/system_prices/<year>/<month>/<day>/raw_<uuid>.json`
+**Path pattern**: `{data_root}/bronze/elexon/system_prices/<year>/<month>/<day>/raw_<uuid>.json`
 **Format**: Raw JSON, as-received. Immutable — never modified after write.
 **Granularity**: One file per API call (paginated requests append additional files for the same date partition).
 
@@ -126,7 +122,7 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/balancin
 
 ## Silver layer
 
-**Path pattern**: `data/silver/elexon/system_prices/year=YYYY/month=MM/system_prices_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/elexon/system_prices/year=YYYY/month=MM/system_prices_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.elexon.system_prices.SystemPriceTransformer`
 **Pydantic schema**: `gridflow.schemas.elexon.ElexonSystemPrice`
 **Dedup key**: `(settlement_date, settlement_period)`
@@ -207,5 +203,5 @@ TODO
 - [Connector source](../../../../../../Python/gridflow/src/gridflow/connectors/elexon/endpoints.py)
 - [Silver transformer](../../../../../../Python/gridflow/src/gridflow/silver/elexon/system_prices.py)
 - [Pydantic schema](../../../../../../Python/gridflow/src/gridflow/schemas/elexon.py)
-- [Gold view/builder](none)
+- Gold view/builder
 - [Domain: GB Balancing Mechanism](../../../20-domain/markets/gb-balancing-mechanism.md)

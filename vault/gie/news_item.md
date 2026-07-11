@@ -67,7 +67,7 @@ ignored.
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/gie_agsi/news_item/<year>/<month>/<day>/raw_<uuid>.json`
+**Path pattern**: `{data_root}/bronze/gie_agsi/news_item/<year>/<month>/<day>/raw_<uuid>.json`
 **Format**: Raw JSON. Immutable.
 **Granularity**: One file per announcement ID requested.
 
@@ -100,7 +100,7 @@ response` warning.
 
 ## Silver layer
 
-**Path pattern**: `data/silver/gie_agsi/news_item/year=YYYY/month=MM/news_item_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/gie_agsi/news_item/year=YYYY/month=MM/news_item_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.gie.agsi.NewsItemTransformer`
 **Pydantic schema**: (no dedicated schema — dynamic columns from `AgsiJsonTransformer`)
 **Dedup key**: `(turl,)` — falls back to `(id, url, entity_code)` if `turl` is absent.
@@ -200,7 +200,7 @@ discrepancy logged in this delta.
 ## Links
 
 - [Official API docs](https://agsi.gie.eu/api)
-- [Connector source](../../../../../Python/gridflow/src/gridflow/connectors/gie/client.py)
-- [Endpoint registry](../../../../../Python/gridflow/src/gridflow/connectors/gie/endpoints.py)
-- [Silver transformer](../../../../../Python/gridflow/src/gridflow/silver/gie/agsi.py)
+- `Python/gridflow/src/gridflow/connectors/gie/client.py`
+- `Python/gridflow/src/gridflow/connectors/gie/endpoints.py`
+- `Python/gridflow/src/gridflow/silver/gie/agsi.py`
 - [Domain: gas day](../../../20-domain/concepts/gas-day.md)

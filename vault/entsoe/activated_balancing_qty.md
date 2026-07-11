@@ -44,7 +44,7 @@ The transformer maps reserve `businessType` values as `A95 -> fcr`,
 ## Bronze layer
 
 Expected path:
-`data/bronze/entsoe/activated_balancing_qty/YYYY/MM/DD/raw_<uuid>.xml`
+`{data_root}/bronze/entsoe/activated_balancing_qty/YYYY/MM/DD/raw_<uuid>.xml`
 
 `read_bronze()` uses the base transformer's exact-date lookup with
 covering-partition fallback, then parses every `raw_*.xml` file with
@@ -53,7 +53,7 @@ covering-partition fallback, then parses every `raw_*.xml` file with
 ## Silver layer
 
 Path:
-`data/silver/entsoe/activated_balancing_qty/year=YYYY/month=MM/activated_balancing_qty_YYYYMMDD.parquet`
+`{data_root}/silver/entsoe/activated_balancing_qty/year=YYYY/month=MM/activated_balancing_qty_YYYYMMDD.parquet`
 
 Transformer class:
 `gridflow.silver.entsoe.activated_balancing_qty.ActivatedBalancingQtyTransformer`
@@ -94,4 +94,4 @@ Dedup key:
 - [Silver transformer](../../../../../../Python/gridflow/src/gridflow/silver/entsoe/activated_balancing_qty.py)
 - [Pydantic schema](../../../../../../Python/gridflow/src/gridflow/schemas/entsoe.py)
 - [Fixture](../../../../../../Python/gridflow/tests/fixtures/entsoe/activated_balancing_qty_gb.xml)
-- [Design spec](../../../10-projects/energy-pipeline/specs/entsoe-connector-extension.md)
+- [Design spec](../../../10-projects/gridflow/specs/entsoe-connector-extension.md)

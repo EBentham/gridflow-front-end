@@ -21,10 +21,6 @@ v2_fix_history:
 
 Net Balancing Services Adjustment Data (NETBSAD) — net price-adjustment and volume-adjustment terms applied to BSP/SSP so the cash-out prices reflect the cost of balancing services other than energy actions in BOALF. NETBSAD is computed from the disaggregated DISBSAD components.
 
-→ Link to relevant domain concept notes if they exist, e.g.:
-  [Imbalance pricing](../../../20-domain/markets/imbalance-price.md)
-  [Settlement period](../../../20-domain/concepts/settlement-period.md)
-
 ---
 
 ## API endpoint
@@ -66,7 +62,7 @@ curl --ssl-no-revoke -fsS \
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/elexon/netbsad/<year>/<month>/<day>/raw_<uuid>.json`
+**Path pattern**: `{data_root}/bronze/elexon/netbsad/<year>/<month>/<day>/raw_<uuid>.json`
 **Format**: Raw JSON, as-received. Immutable — never modified after write.
 **Granularity**: One file per API call (paginated requests append additional files for the same date partition).
 
@@ -111,7 +107,7 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
 
 ## Silver layer
 
-**Path pattern**: `data/silver/elexon/netbsad/year=YYYY/month=MM/netbsad_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/elexon/netbsad/year=YYYY/month=MM/netbsad_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.elexon.netbsad.NETBSADTransformer`
 **Pydantic schema**: `gridflow.schemas.elexon.ElexonNETBSAD` (added 2026-05-20, gridflow G5-W4).
 **Dedup key**: `(settlement_date, settlement_period)`
@@ -210,5 +206,5 @@ TODO
 - [Connector source](../../../../../../Python/gridflow/src/gridflow/connectors/elexon/endpoints.py)
 - [Silver transformer](../../../../../../Python/gridflow/src/gridflow/silver/elexon/netbsad.py)
 - [Pydantic schema](../../../../../../Python/gridflow/src/gridflow/schemas/elexon.py)
-- [Gold view/builder](none)
+- Gold view/builder
 - [Domain: GB Balancing Mechanism](../../../20-domain/markets/gb-balancing-mechanism.md)

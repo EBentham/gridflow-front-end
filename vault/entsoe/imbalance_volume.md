@@ -17,7 +17,7 @@ Total imbalance volumes in MWh per control area, by direction. Article
 to `direction`. Returned in `Balancing_MarketDocument`. Resolution typically
 PT15M.
 
-→ Link to relevant domain concept notes if they exist, e.g.:
+Related domain notes:
   [Imbalance volume](../../../20-domain/markets/imbalance-volume.md)
 
 ---
@@ -65,7 +65,7 @@ GB returns code 999 (`TOTAL_IMBALANCE_VOLUMES_R3 [17.1.H]`).
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/entsoe/imbalance_volume/<year>/<month>/<day>/raw_<uuid>.xml`
+**Path pattern**: `{data_root}/bronze/entsoe/imbalance_volume/<year>/<month>/<day>/raw_<uuid>.xml`
 **Format**: Raw XML (or ZIP-of-XML, unpacked).
 **Granularity**: One file per (control area, query window).
 
@@ -94,7 +94,7 @@ GB returns code 999 (`TOTAL_IMBALANCE_VOLUMES_R3 [17.1.H]`).
 
 ## Silver layer
 
-**Path pattern**: `data/silver/entsoe/imbalance_volume/year=YYYY/month=MM/imbalance_volume_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/entsoe/imbalance_volume/year=YYYY/month=MM/imbalance_volume_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.entsoe.imbalance_volume.ImbalanceVolumeTransformer`
 **Pydantic schema**: `gridflow.schemas.entsoe.EntsoeImbalanceVolume`
 **Dedup key**: `(timestamp_utc, area_code, direction)`
@@ -182,9 +182,9 @@ None implemented.
 ## Links
 
 - [Official API docs](https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.html)
-- [Connector source](../../../../src/gridflow/connectors/entsoe/client.py)
-- [Endpoints](../../../../src/gridflow/connectors/entsoe/endpoints.py)
-- [Silver transformer](../../../../src/gridflow/silver/entsoe/imbalance_volume.py)
-- [Pydantic schema](../../../../src/gridflow/schemas/entsoe.py)
-- [Gold view/builder](none)
+- `src/gridflow/connectors/entsoe/client.py`
+- `src/gridflow/connectors/entsoe/endpoints.py`
+- `src/gridflow/silver/entsoe/imbalance_volume.py`
+- `src/gridflow/schemas/entsoe.py`
+- Gold view/builder
 - [Domain: imbalance volume](../../../20-domain/markets/imbalance-volume.md)

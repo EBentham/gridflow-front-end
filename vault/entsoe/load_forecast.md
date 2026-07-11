@@ -15,7 +15,7 @@ prediction for the following day, used as the reference forecast against
 which actual load (A65/A16) measures forecast error. Document type `A65`
 + process type `A01` ("Day ahead"). Resolution typically PT15M.
 
-→ Link to relevant domain concept notes if they exist, e.g.:
+Related domain notes:
   [Load forecast](../../../20-domain/concepts/load-forecast.md)
   [Forecast error](../../../20-domain/concepts/forecast-error.md)
 
@@ -63,7 +63,7 @@ GB returns code 999 (`DAY_AHEAD_TOTAL_LOAD_FORECAST_R3 [6.1.B]`).
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/entsoe/load_forecast/<year>/<month>/<day>/raw_<uuid>.xml`
+**Path pattern**: `{data_root}/bronze/entsoe/load_forecast/<year>/<month>/<day>/raw_<uuid>.xml`
 **Format**: Raw XML.
 **Granularity**: One file per (zone, query window).
 
@@ -95,7 +95,7 @@ GB returns code 999 (`DAY_AHEAD_TOTAL_LOAD_FORECAST_R3 [6.1.B]`).
 
 ## Silver layer
 
-**Path pattern**: `data/silver/entsoe/load_forecast/year=YYYY/month=MM/load_forecast_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/entsoe/load_forecast/year=YYYY/month=MM/load_forecast_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.entsoe.load_forecast.LoadForecastTransformer`
 **Pydantic schema**: `gridflow.schemas.entsoe.EntsoeLoadForecast`
 **Dedup key**: `(timestamp_utc, area_code)`
@@ -172,9 +172,9 @@ None implemented.
 ## Links
 
 - [Official API docs](https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.html)
-- [Connector source](../../../../src/gridflow/connectors/entsoe/client.py)
-- [Endpoints](../../../../src/gridflow/connectors/entsoe/endpoints.py)
-- [Silver transformer](../../../../src/gridflow/silver/entsoe/load_forecast.py)
-- [Pydantic schema](../../../../src/gridflow/schemas/entsoe.py)
-- [Gold view/builder](none)
+- `src/gridflow/connectors/entsoe/client.py`
+- `src/gridflow/connectors/entsoe/endpoints.py`
+- `src/gridflow/silver/entsoe/load_forecast.py`
+- `src/gridflow/schemas/entsoe.py`
+- Gold view/builder
 - [Domain: forecast error](../../../20-domain/concepts/forecast-error.md)

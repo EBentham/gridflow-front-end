@@ -78,7 +78,7 @@ output. Open-Meteo nulls fields the selected model does not carry —
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/open_meteo/forecast_wind__<location>/<year>/<month>/<day>/raw_<uuid>.json`
+**Path pattern**: `{data_root}/bronze/open_meteo/forecast_wind__<location>/<year>/<month>/<day>/raw_<uuid>.json`
 **Format**: Raw JSON, as-received. Immutable — never modified after write.
 **Granularity**: One file per (location, fetch). The connector iterates
 the twelve `WIND_LOCATIONS` per call and emits one `RawResponse` per
@@ -143,7 +143,7 @@ parallel array or carry `null` — silver fills `None`.
 
 ## Silver layer
 
-**Path pattern**: `data/silver/open_meteo/forecast_wind/year=YYYY/month=MM/forecast_wind_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/open_meteo/forecast_wind/year=YYYY/month=MM/forecast_wind_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.openmeteo.forecast.ForecastWindWeather`
 **Pydantic schema**: `gridflow.schemas.weather.WindWeather`
 **Dedup key**: `(timestamp_utc, location)` — `df.unique(subset=["timestamp_utc", "location"], keep="last")`
@@ -327,11 +327,11 @@ None implemented.
 ## Links
 
 - [Official API docs (Forecast)](https://open-meteo.com/en/docs)
-- [Connector source](../../../../Python/gridflow/src/gridflow/connectors/openmeteo/client.py)
-- [Silver transformer](../../../../Python/gridflow/src/gridflow/silver/openmeteo/forecast.py)
-- [Pydantic schema](../../../../Python/gridflow/src/gridflow/schemas/weather.py)
+- `Python/gridflow/src/gridflow/connectors/openmeteo/client.py`
+- `Python/gridflow/src/gridflow/silver/openmeteo/forecast.py`
+- `Python/gridflow/src/gridflow/schemas/weather.py`
 - [Gold view/builder](#) — none
 - [Historical counterpart](./historical_wind.md)
 - [Demand forecast (7 cities)](./forecast_demand.md)
 - [Solar forecast (6 sites)](./forecast_solar.md)
-- [ADR-020 — location approximation](../../../../Python/gridflow/docs/DECISION_LOG/ADR-020-openmeteo-location-approximation.md)
+- `Python/gridflow/docs/DECISION_LOG/ADR-020-openmeteo-location-approximation.md`

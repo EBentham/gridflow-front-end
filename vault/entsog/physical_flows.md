@@ -68,7 +68,7 @@ curl --ssl-no-revoke -fsS \
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/entsog/physical_flows/<year>/<month>/<day>/raw_<uuid>.json`
+**Path pattern**: `{data_root}/bronze/entsog/physical_flows/<year>/<month>/<day>/raw_<uuid>.json`
 **Format**: Raw JSON, as-received. Immutable — never modified after write.
 **Granularity**: One file per `fetch()` call (one calendar day per file by convention)
 
@@ -139,7 +139,7 @@ curl --ssl-no-revoke -fsS \
 
 ## Silver layer
 
-**Path pattern**: `data/silver/entsog/physical_flows/year=YYYY/month=MM/physical_flows_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/entsog/physical_flows/year=YYYY/month=MM/physical_flows_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.entsog.PhysicalFlowsTransformer`
 **Pydantic schema**: `gridflow.schemas.entsog.EntsogPhysicalFlow`
 **Dedup key**: `(timestamp_utc, point_key, operator_key, direction_key)` — fields uniquely identifying one daily record per series
@@ -185,7 +185,7 @@ The ENTSO-G physical-flows endpoint returns these raw keys in each bronze record
 
 Raw bronze fields (not in silver): `id`, `dataSet`, `indicator`, `periodType`, `periodFrom`, `periodTo`, `tsoEicCode`, `tsoItemIdentifier`, `itemRemarks`, `generalRemarks`, `value`, `lastUpdateDateTime`, `isUnlimited`, `flowStatus`, `interruptionType`, `restorationInformation`, `capacityType`, `capacityBookingStatus`, `isCamRelevant`, `isNA`, `originalPeriodFrom`, `isCmpRelevant`, `bookingPlatformKey`, `bookingPlatformLabel`, `bookingPlatformURL`, `interruptionCalculationRemark`, `pointType`, `idPointType`, `isArchived`.
 
-These keys are available in the bronze layer at `data/bronze/entsog/physical_flows/`. The silver transformer selects and normalises only the fields listed in the schema table above.
+These keys are available in the bronze layer at `{data_root}/bronze/entsog/physical_flows/`. The silver transformer selects and normalises only the fields listed in the schema table above.
 
 ---
 
@@ -229,8 +229,8 @@ None implemented.
 ## Links
 
 - [Official API docs (PDF)](https://transparency.entsog.eu/api/archiveDirectories/8/api-manual/TP_REG715_Documentation_TP_API%20-%20v2.1.pdf)
-- [Connector source](../../../../src/gridflow/connectors/entsog/endpoints.py)
-- [Silver transformer](../../../../src/gridflow/silver/entsog/physical_flows.py)
-- [Pydantic schema](../../../../src/gridflow/schemas/entsog.py)
-- [Gold view/builder](none)
+- `src/gridflow/connectors/entsog/endpoints.py`
+- `src/gridflow/silver/entsog/physical_flows.py`
+- `src/gridflow/schemas/entsog.py`
+- Gold view/builder
 - [Domain: gas day](../../../20-domain/concepts/gas-day.md)
