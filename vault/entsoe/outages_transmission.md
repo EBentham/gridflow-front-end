@@ -69,7 +69,7 @@ Live verification 2026-05-08:
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/entsoe/outages_transmission/<year>/<month>/<day>/raw_<uuid>.xml`
+**Path pattern**: `{data_root}/bronze/entsoe/outages_transmission/<year>/<month>/<day>/raw_<uuid>.xml`
 **Format**: Raw XML — one bronze file per inner ZIP entry.
 **Granularity**: One bronze XML file per outage notification.
 
@@ -99,7 +99,7 @@ Live verification 2026-05-08:
 
 ## Silver layer
 
-**Path pattern**: `data/silver/entsoe/outages_transmission/year=YYYY/month=MM/outages_transmission_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/entsoe/outages_transmission/year=YYYY/month=MM/outages_transmission_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.entsoe.outages_h7.OutagesTransmissionTransformer`
 **Pydantic schema**: `gridflow.schemas.entsoe.EntsoeOutagesTransmission`
 **Dedup key**: `(timestamp_utc, in_area_code, out_area_code, asset_mrid, timeseries_mrid)`
@@ -187,7 +187,7 @@ None implemented.
 ## Links
 
 - [Official API docs](https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.pdf)
-- [Connector source](../../../../../../OneDrive/Desktop/Python/gridflow/src/gridflow/connectors/entsoe/client.py)
-- [Silver transformer](../../../../../../OneDrive/Desktop/Python/gridflow/src/gridflow/silver/entsoe/outages_h7.py)
-- [Pydantic schema](../../../../../../OneDrive/Desktop/Python/gridflow/src/gridflow/schemas/entsoe.py)
-- [Gold view/builder](none)
+- `OneDrive/Desktop/Python/gridflow/src/gridflow/connectors/entsoe/client.py`
+- `OneDrive/Desktop/Python/gridflow/src/gridflow/silver/entsoe/outages_h7.py`
+- `OneDrive/Desktop/Python/gridflow/src/gridflow/schemas/entsoe.py`
+- Gold view/builder

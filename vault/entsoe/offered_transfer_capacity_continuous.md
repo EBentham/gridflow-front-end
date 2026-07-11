@@ -73,7 +73,7 @@ curl --ssl-no-revoke -fsS \
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/entsoe/offered_transfer_capacity_continuous/<year>/<month>/<day>/raw_<uuid>.xml`
+**Path pattern**: `{data_root}/bronze/entsoe/offered_transfer_capacity_continuous/<year>/<month>/<day>/raw_<uuid>.xml`
 **Format**: Raw XML, immutable.
 **Granularity**: One file per (border, day).
 
@@ -90,7 +90,7 @@ group and only fingerprints by domain — not auction type.) Retried with
 
 ## Silver layer
 
-**Path pattern**: `data/silver/entsoe/offered_transfer_capacity_continuous/year=YYYY/month=MM/offered_transfer_capacity_continuous_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/entsoe/offered_transfer_capacity_continuous/year=YYYY/month=MM/offered_transfer_capacity_continuous_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.entsoe.h6_market.OfferedTransferCapacityContinuousTransformer`
 **Pydantic schema**: `gridflow.schemas.entsoe.EntsoeTransmissionMarketQuantity`
 **Dedup key**: `(timestamp_utc, in_area_code, out_area_code, business_type)`
@@ -162,6 +162,6 @@ None implemented.
 ## Links
 
 - [Official API docs (PDF)](https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.pdf)
-- [Connector source](../../../../src/gridflow/connectors/entsoe/endpoints.py)
-- [Silver transformer](../../../../src/gridflow/silver/entsoe/h6_market.py)
-- [Pydantic schema](../../../../src/gridflow/schemas/entsoe.py)
+- `src/gridflow/connectors/entsoe/endpoints.py`
+- `src/gridflow/silver/entsoe/h6_market.py`
+- `src/gridflow/schemas/entsoe.py`

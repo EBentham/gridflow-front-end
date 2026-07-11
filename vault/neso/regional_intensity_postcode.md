@@ -1,4 +1,4 @@
-﻿---
+---
 source: neso
 dataset_key: regional_intensity_postcode
 vendor: National Energy System Operator (NESO)
@@ -48,7 +48,7 @@ curl --ssl-no-revoke -X GET \
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/neso/regional_intensity_postcode/<year>/<month>/<day>/raw_<timestamp>_<hash>.json`
+**Path pattern**: `{data_root}/bronze/neso/regional_intensity_postcode/<year>/<month>/<day>/raw_<timestamp>_<hash>.json`
 **Format**: Raw JSON, as received. Immutable after write, with `.meta.json` provenance sidecar.
 **Granularity**: One file per API call; range and daily routes may produce one file per chunk/day/period.
 
@@ -67,7 +67,7 @@ includes a `postcode` field echoed from the request. Each period row holds
 
 ## Silver layer
 
-**Path pattern**: `data/silver/neso/regional_intensity_postcode/year=<YYYY>/month=<MM>/regional_intensity_postcode_<YYYYMMDD>.parquet`
+**Path pattern**: `{data_root}/silver/neso/regional_intensity_postcode/year=<YYYY>/month=<MM>/regional_intensity_postcode_<YYYYMMDD>.parquet`
 **Transformer class**: `gridflow.silver.neso.carbon_intensity.RegionalIntensityPostcodeTransformer`
 **Pydantic schema**: `gridflow.schemas.neso.RegionalIntensity`
 **Dedup key**: `(timestamp_utc, regionid, shortname, postcode, fuel)`

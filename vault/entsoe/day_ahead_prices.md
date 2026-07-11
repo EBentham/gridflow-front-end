@@ -23,7 +23,7 @@ balancing prices, and intraday prices are compared. Post-Brexit, GB
 day-ahead prices are not published on ENTSO-E (returns Acknowledgement code
 999 — see Implementation delta below).
 
-→ Link to relevant domain concept notes if they exist, e.g.:
+Related domain notes:
   [Day-ahead market](../../../20-domain/markets/day-ahead.md)
   [EIC codes](../../../20-domain/concepts/eic-codes.md)
 
@@ -74,7 +74,7 @@ EU day-ahead market after Brexit. Use Elexon `system_prices` for GB.
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/entsoe/day_ahead_prices/<year>/<month>/<day>/raw_<uuid>.xml`
+**Path pattern**: `{data_root}/bronze/entsoe/day_ahead_prices/<year>/<month>/<day>/raw_<uuid>.xml`
 **Format**: Raw XML, as-received. Immutable — never modified after write.
 **Granularity**: One file per (zone, query window). ZIP responses (large windows) are unpacked and each inner XML is stored as a separate raw file.
 
@@ -112,7 +112,7 @@ EU day-ahead market after Brexit. Use Elexon `system_prices` for GB.
 
 ## Silver layer
 
-**Path pattern**: `data/silver/entsoe/day_ahead_prices/year=YYYY/month=MM/day_ahead_prices_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/entsoe/day_ahead_prices/year=YYYY/month=MM/day_ahead_prices_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.entsoe.day_ahead_prices.DayAheadPricesTransformer`
 **Pydantic schema**: `gridflow.schemas.entsoe.EntsoeDayAheadPrice`
 **Dedup key**: `(timestamp_utc, area_code)` — last write wins
@@ -213,9 +213,9 @@ None implemented.
 ## Links
 
 - [Official API docs](https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.html)
-- [Connector source](../../../../src/gridflow/connectors/entsoe/client.py)
-- [Endpoints](../../../../src/gridflow/connectors/entsoe/endpoints.py)
-- [Silver transformer](../../../../src/gridflow/silver/entsoe/day_ahead_prices.py)
-- [Pydantic schema](../../../../src/gridflow/schemas/entsoe.py)
-- [Gold view/builder](none)
+- `src/gridflow/connectors/entsoe/client.py`
+- `src/gridflow/connectors/entsoe/endpoints.py`
+- `src/gridflow/silver/entsoe/day_ahead_prices.py`
+- `src/gridflow/schemas/entsoe.py`
+- Gold view/builder
 - [Domain: day-ahead market](../../../20-domain/markets/day-ahead.md)

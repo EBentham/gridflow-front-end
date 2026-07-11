@@ -69,7 +69,7 @@ publish per-unit realised flows; expect EMPTY across most European zones.
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/entsoe/actual_generation_units/<year>/<month>/<day>/raw_<uuid>.xml`
+**Path pattern**: `{data_root}/bronze/entsoe/actual_generation_units/<year>/<month>/<day>/raw_<uuid>.xml`
 **Format**: Raw XML, immutable.
 **Granularity**: One file per (zone, day).
 
@@ -88,7 +88,7 @@ When data is published, response root is `GL_MarketDocument` with one
 
 ## Silver layer
 
-**Path pattern**: `data/silver/entsoe/actual_generation_units/year=YYYY/month=MM/actual_generation_units_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/entsoe/actual_generation_units/year=YYYY/month=MM/actual_generation_units_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.entsoe.actual_generation_units.ActualGenerationUnitsTransformer`
 **Pydantic schema**: `gridflow.schemas.entsoe.EntsoeActualGenerationUnits`
 **Dedup key**: `(timestamp_utc, area_code, unit_mrid)`
@@ -165,7 +165,7 @@ None implemented.
 ## Links
 
 - [Official API docs](https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.pdf)
-- [Connector source](../../../../../../OneDrive/Desktop/Python/gridflow/src/gridflow/connectors/entsoe/client.py)
-- [Silver transformer](../../../../../../OneDrive/Desktop/Python/gridflow/src/gridflow/silver/entsoe/actual_generation_units.py)
-- [Pydantic schema](../../../../../../OneDrive/Desktop/Python/gridflow/src/gridflow/schemas/entsoe.py)
-- [Gold view/builder](none)
+- `OneDrive/Desktop/Python/gridflow/src/gridflow/connectors/entsoe/client.py`
+- `OneDrive/Desktop/Python/gridflow/src/gridflow/silver/entsoe/actual_generation_units.py`
+- `OneDrive/Desktop/Python/gridflow/src/gridflow/schemas/entsoe.py`
+- Gold view/builder

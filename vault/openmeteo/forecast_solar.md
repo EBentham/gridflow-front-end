@@ -83,7 +83,7 @@ curl --ssl-no-revoke -fsS \
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/open_meteo/forecast_solar__<location>/<year>/<month>/<day>/raw_<uuid>.json`
+**Path pattern**: `{data_root}/bronze/open_meteo/forecast_solar__<location>/<year>/<month>/<day>/raw_<uuid>.json`
 **Format**: Raw JSON, as-received. Immutable — never modified after write.
 **Granularity**: One file per (location, fetch). The connector iterates
 the six `SOLAR_LOCATIONS` per call and emits one `RawResponse` per
@@ -135,7 +135,7 @@ The silver transformer's `BRONZE_DATASET_PREFIX` is `"forecast_solar"`.
 
 ## Silver layer
 
-**Path pattern**: `data/silver/open_meteo/forecast_solar/year=YYYY/month=MM/forecast_solar_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/open_meteo/forecast_solar/year=YYYY/month=MM/forecast_solar_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.openmeteo.forecast.ForecastSolarWeather`
 **Pydantic schema**: `gridflow.schemas.weather.SolarWeather`
 **Dedup key**: `(timestamp_utc, location)` — `df.unique(subset=["timestamp_utc", "location"], keep="last")`
@@ -231,7 +231,7 @@ None implemented.
 ## Known issues and gotchas
 
 - **⚠️ On-disk GTI is north-facing (known-wrong) and NOT correctable in place.**
-  The existing `forecast_solar` silver in `data/silver/open_meteo/forecast_solar/`
+  The existing `forecast_solar` silver in `{data_root}/silver/open_meteo/forecast_solar/`
   was fetched at the pre-fix `azimuth=180` (= **north** under Open-Meteo's
   `0=S / ±180=N` convention) and is understated ~50% at solar noon. Unlike
   [historical_solar](./historical_solar.md) — re-corrected from the deterministic
@@ -304,11 +304,11 @@ None implemented.
 ## Links
 
 - [Official API docs (Forecast)](https://open-meteo.com/en/docs)
-- [Connector source](../../../../Python/gridflow/src/gridflow/connectors/openmeteo/client.py)
-- [Silver transformer](../../../../Python/gridflow/src/gridflow/silver/openmeteo/forecast.py)
-- [Pydantic schema](../../../../Python/gridflow/src/gridflow/schemas/weather.py)
+- `Python/gridflow/src/gridflow/connectors/openmeteo/client.py`
+- `Python/gridflow/src/gridflow/silver/openmeteo/forecast.py`
+- `Python/gridflow/src/gridflow/schemas/weather.py`
 - [Gold view/builder](#) — none
 - [Historical counterpart](./historical_solar.md)
 - [Demand forecast (7 cities)](./forecast_demand.md)
 - [Wind forecast (12 sites)](./forecast_wind.md)
-- [ADR-020 — location approximation](../../../../Python/gridflow/docs/DECISION_LOG/ADR-020-openmeteo-location-approximation.md)
+- `Python/gridflow/docs/DECISION_LOG/ADR-020-openmeteo-location-approximation.md`

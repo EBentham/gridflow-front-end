@@ -16,7 +16,7 @@ peak demand. Article 8.1 (`YEAR_AHEAD_FORECAST_MARGIN_R3`). Document type
 `A70` + process type `A33` ("Year ahead"). Used in capacity-adequacy
 analyses and as a market-tightness signal.
 
-→ Link to relevant domain concept notes if they exist, e.g.:
+Related domain notes:
   [Capacity adequacy](../../../20-domain/concepts/capacity-adequacy.md)
 
 ---
@@ -63,7 +63,7 @@ GB returns code 999 (`YEAR_AHEAD_FORECAST_MARGIN_R3 [8.1]`).
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/entsoe/forecast_margin/<year>/<month>/<day>/raw_<uuid>.xml`
+**Path pattern**: `{data_root}/bronze/entsoe/forecast_margin/<year>/<month>/<day>/raw_<uuid>.xml`
 **Format**: Raw XML.
 **Granularity**: One file per (zone, query window).
 
@@ -88,7 +88,7 @@ GB returns code 999 (`YEAR_AHEAD_FORECAST_MARGIN_R3 [8.1]`).
 
 ## Silver layer
 
-**Path pattern**: `data/silver/entsoe/forecast_margin/year=YYYY/month=MM/forecast_margin_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/entsoe/forecast_margin/year=YYYY/month=MM/forecast_margin_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.entsoe.forecast_margin.ForecastMarginTransformer`
 **Pydantic schema**: `gridflow.schemas.entsoe.EntsoeForecastMargin`
 **Dedup key**: `(timestamp_utc, area_code)`
@@ -162,9 +162,9 @@ None implemented.
 ## Links
 
 - [Official API docs](https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.html)
-- [Connector source](../../../../src/gridflow/connectors/entsoe/client.py)
-- [Endpoints](../../../../src/gridflow/connectors/entsoe/endpoints.py)
-- [Silver transformer](../../../../src/gridflow/silver/entsoe/forecast_margin.py)
-- [Pydantic schema](../../../../src/gridflow/schemas/entsoe.py)
-- [Gold view/builder](none)
+- `src/gridflow/connectors/entsoe/client.py`
+- `src/gridflow/connectors/entsoe/endpoints.py`
+- `src/gridflow/silver/entsoe/forecast_margin.py`
+- `src/gridflow/schemas/entsoe.py`
+- Gold view/builder
 - [Domain: capacity adequacy](../../../20-domain/concepts/capacity-adequacy.md)

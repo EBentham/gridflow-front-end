@@ -12,10 +12,6 @@ layer_coverage: bronze, silver
 
 REMIT outage and unavailability messages — Regulation (EU) No 1227/2011 mandates publication of generation, transmission, and demand-side asset unavailability events. The dataset carries every UMM (Urgent Market Message) raised against GB assets, with start/end times, capacity affected, cause, and event status.
 
-→ Link to relevant domain concept notes if they exist, e.g.:
-  [Imbalance pricing](../../../20-domain/markets/imbalance-price.md)
-  [Settlement period](../../../20-domain/concepts/settlement-period.md)
-
 ---
 
 ## API endpoint
@@ -55,7 +51,7 @@ curl --ssl-no-revoke -fsS \
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/elexon/remit/<year>/<month>/<day>/raw_<uuid>.json`
+**Path pattern**: `{data_root}/bronze/elexon/remit/<year>/<month>/<day>/raw_<uuid>.json`
 **Format**: Raw JSON, as-received. Immutable — never modified after write.
 **Granularity**: One file per API call (paginated requests append additional files for the same date partition).
 
@@ -114,7 +110,7 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
 
 ## Silver layer
 
-**Path pattern**: `data/silver/elexon/remit/year=YYYY/month=MM/remit_YYYYMMDD_run<available_at>.parquet`
+**Path pattern**: `{data_root}/silver/elexon/remit/year=YYYY/month=MM/remit_YYYYMMDD_run<available_at>.parquet`
 **Write mode**: append-only revision-preserving Silver files (`APPEND_ONLY = True`).
 **Transformer class**: `gridflow.silver.elexon.remit.REMITTransformer`
 **Pydantic schema**: `gridflow.schemas.elexon.ElexonREMIT` — validated fail-soft on the full frame at write time (VTA-SCHEMA-01: invalid rows are logged and counted, never dropped).
@@ -226,5 +222,5 @@ TODO
 - [Connector source](../../../../../../Python/gridflow/src/gridflow/connectors/elexon/endpoints.py)
 - [Silver transformer](../../../../../../Python/gridflow/src/gridflow/silver/elexon/remit.py)
 - [Pydantic schema](../../../../../../Python/gridflow/src/gridflow/schemas/elexon.py)
-- [Gold view/builder](none)
+- Gold view/builder
 - [Domain: GB Balancing Mechanism](../../../20-domain/markets/gb-balancing-mechanism.md)

@@ -12,10 +12,6 @@ layer_coverage: bronze, silver
 
 Actual Total Load Per Bidding Zone (ATL, ENTSO-E B0610) — the realised total load for the GB bidding zone per settlement period. ATL is what the EU transparency platform consumes for GB load.
 
-→ Link to relevant domain concept notes if they exist, e.g.:
-  [Imbalance pricing](../../../20-domain/markets/imbalance-price.md)
-  [Settlement period](../../../20-domain/concepts/settlement-period.md)
-
 ---
 
 ## API endpoint
@@ -55,7 +51,7 @@ curl --ssl-no-revoke -fsS \
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/elexon/atl/<year>/<month>/<day>/raw_<uuid>.json`
+**Path pattern**: `{data_root}/bronze/elexon/atl/<year>/<month>/<day>/raw_<uuid>.json`
 **Format**: Raw JSON, as-received. Immutable — never modified after write.
 **Granularity**: One file per API call (paginated requests append additional files for the same date partition).
 
@@ -94,7 +90,7 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
 
 ## Silver layer
 
-**Path pattern**: `data/silver/elexon/atl/year=YYYY/month=MM/atl_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/elexon/atl/year=YYYY/month=MM/atl_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.elexon.atl.ATLTransformer`
 **Pydantic schema**: `gridflow.schemas.elexon.ElexonATL` — validated fail-soft on the full frame at write time (VTA-SCHEMA-01: invalid rows are logged and counted, never dropped).
 **Dedup key**: `(settlement_date, settlement_period)`
@@ -166,5 +162,5 @@ TODO
 - [Connector source](../../../../../../Python/gridflow/src/gridflow/connectors/elexon/endpoints.py)
 - [Silver transformer](../../../../../../Python/gridflow/src/gridflow/silver/elexon/atl.py)
 - [Pydantic schema](../../../../../../Python/gridflow/src/gridflow/schemas/elexon.py)
-- [Gold view/builder](none)
+- Gold view/builder
 - [Domain: GB Balancing Mechanism](../../../20-domain/markets/gb-balancing-mechanism.md)

@@ -60,7 +60,7 @@ Live response is ~558 KB JSON.
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/gie_agsi/about_summary/<year>/<month>/<day>/raw_<uuid>.json`
+**Path pattern**: `{data_root}/bronze/gie_agsi/about_summary/<year>/<month>/<day>/raw_<uuid>.json`
 **Format**: Raw JSON. Immutable.
 **Granularity**: One file per fetch (weekly schedule per `config/sources.yaml`).
 
@@ -104,7 +104,7 @@ sample:
 
 ## Silver layer
 
-**Path pattern**: `data/silver/gie_agsi/about_summary/year=YYYY/month=MM/about_summary_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/gie_agsi/about_summary/year=YYYY/month=MM/about_summary_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.gie.agsi.AboutSummaryTransformer`
 **Pydantic schema**: (no dedicated schema — this is reference data; rows are flattened companies + facilities)
 **Dedup key**: `(entity_level, entity_code)`
@@ -232,7 +232,7 @@ None implemented.
 ## Links
 
 - [Official API docs](https://agsi.gie.eu/api)
-- [Connector source](../../../../../Python/gridflow/src/gridflow/connectors/gie/client.py)
-- [Endpoint registry](../../../../../Python/gridflow/src/gridflow/connectors/gie/endpoints.py)
-- [Silver transformer](../../../../../Python/gridflow/src/gridflow/silver/gie/agsi.py)
+- `Python/gridflow/src/gridflow/connectors/gie/client.py`
+- `Python/gridflow/src/gridflow/connectors/gie/endpoints.py`
+- `Python/gridflow/src/gridflow/silver/gie/agsi.py`
 - [Domain: gas day](../../../20-domain/concepts/gas-day.md)

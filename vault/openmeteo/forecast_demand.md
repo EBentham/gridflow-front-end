@@ -80,7 +80,7 @@ Verified 2026-05-08 (V1 plan F): HTTP 200, 48 hourly time entries
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/open_meteo/forecast_demand__<location>/<year>/<month>/<day>/raw_<uuid>.json`
+**Path pattern**: `{data_root}/bronze/open_meteo/forecast_demand__<location>/<year>/<month>/<day>/raw_<uuid>.json`
 **Format**: Raw JSON, as-received. Immutable — never modified after write.
 **Granularity**: One file per (location, fetch). The connector iterates
 the seven `DEMAND_LOCATIONS` per call and emits one `RawResponse` per
@@ -130,7 +130,7 @@ connector request adds `wind_direction_10m`, `relative_humidity_2m`,
 
 ## Silver layer
 
-**Path pattern**: `data/silver/open_meteo/forecast_demand/year=YYYY/month=MM/forecast_demand_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/open_meteo/forecast_demand/year=YYYY/month=MM/forecast_demand_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.openmeteo.forecast.ForecastDemandWeather`
 **Pydantic schema**: `gridflow.schemas.weather.DemandWeather`
 **Dedup key**: `(timestamp_utc, location)` — `df.unique(subset=["timestamp_utc", "location"], keep="last")`
@@ -307,11 +307,11 @@ None implemented.
 ## Links
 
 - [Official API docs (Forecast)](https://open-meteo.com/en/docs)
-- [Connector source](../../../../Python/gridflow/src/gridflow/connectors/openmeteo/client.py)
-- [Silver transformer](../../../../Python/gridflow/src/gridflow/silver/openmeteo/forecast.py)
-- [Pydantic schema](../../../../Python/gridflow/src/gridflow/schemas/weather.py)
+- `Python/gridflow/src/gridflow/connectors/openmeteo/client.py`
+- `Python/gridflow/src/gridflow/silver/openmeteo/forecast.py`
+- `Python/gridflow/src/gridflow/schemas/weather.py`
 - [Gold view/builder](#) — none
 - [Historical counterpart](./historical_demand.md)
 - [Wind forecast (12 sites)](./forecast_wind.md)
 - [Solar forecast (6 sites)](./forecast_solar.md)
-- [ADR-020 — location approximation](../../../../Python/gridflow/docs/DECISION_LOG/ADR-020-openmeteo-location-approximation.md)
+- `Python/gridflow/docs/DECISION_LOG/ADR-020-openmeteo-location-approximation.md`

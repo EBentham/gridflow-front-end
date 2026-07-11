@@ -71,7 +71,7 @@ design (no UK storage outages reported on AGSI).
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/gie_agsi/unavailability/<year>/<month>/<day>/raw_<uuid>.json`
+**Path pattern**: `{data_root}/bronze/gie_agsi/unavailability/<year>/<month>/<day>/raw_<uuid>.json`
 **Format**: Raw JSON. Immutable.
 **Granularity**: One file per (page, country, window) call.
 
@@ -123,7 +123,7 @@ coverage." The endpoint is live-served and well-formed.
 
 ## Silver layer
 
-**Path pattern**: `data/silver/gie_agsi/unavailability/year=YYYY/month=MM/unavailability_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/gie_agsi/unavailability/year=YYYY/month=MM/unavailability_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.gie.agsi.UnavailabilityTransformer`
 **Pydantic schema**: (no dedicated schema — dynamic columns from `AgsiJsonTransformer`)
 **Dedup key**: `(facility_eic, start, end)` — falls back to `(id, url, entity_code, eic)` per `AgsiJsonTransformer.unique` logic.
@@ -258,7 +258,7 @@ No connector-behaviour discrepancies found.
 ## Links
 
 - [Official API docs](https://agsi.gie.eu/api)
-- [Connector source](../../../../../Python/gridflow/src/gridflow/connectors/gie/client.py)
-- [Endpoint registry](../../../../../Python/gridflow/src/gridflow/connectors/gie/endpoints.py)
-- [Silver transformer](../../../../../Python/gridflow/src/gridflow/silver/gie/agsi.py)
+- `Python/gridflow/src/gridflow/connectors/gie/client.py`
+- `Python/gridflow/src/gridflow/connectors/gie/endpoints.py`
+- `Python/gridflow/src/gridflow/silver/gie/agsi.py`
 - [Domain: gas day](../../../20-domain/concepts/gas-day.md)

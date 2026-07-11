@@ -65,7 +65,7 @@ Live verification 2026-05-08:
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/entsoe/water_reservoirs/<year>/<month>/<day>/raw_<uuid>.xml`
+**Path pattern**: `{data_root}/bronze/entsoe/water_reservoirs/<year>/<month>/<day>/raw_<uuid>.xml`
 **Format**: Raw XML, immutable.
 **Granularity**: One file per (zone, day).
 
@@ -95,7 +95,7 @@ Live verification 2026-05-08:
 
 ## Silver layer
 
-**Path pattern**: `data/silver/entsoe/water_reservoirs/year=YYYY/month=MM/water_reservoirs_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/entsoe/water_reservoirs/year=YYYY/month=MM/water_reservoirs_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.entsoe.water_reservoirs.WaterReservoirsTransformer`
 **Pydantic schema**: `gridflow.schemas.entsoe.EntsoeWaterReservoirs`
 **Dedup key**: `(timestamp_utc, area_code)`
@@ -165,7 +165,7 @@ None implemented.
 ## Links
 
 - [Official API docs](https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.pdf)
-- [Connector source](../../../../../../OneDrive/Desktop/Python/gridflow/src/gridflow/connectors/entsoe/client.py)
-- [Silver transformer](../../../../../../OneDrive/Desktop/Python/gridflow/src/gridflow/silver/entsoe/water_reservoirs.py)
-- [Pydantic schema](../../../../../../OneDrive/Desktop/Python/gridflow/src/gridflow/schemas/entsoe.py)
-- [Gold view/builder](none)
+- `OneDrive/Desktop/Python/gridflow/src/gridflow/connectors/entsoe/client.py`
+- `OneDrive/Desktop/Python/gridflow/src/gridflow/silver/entsoe/water_reservoirs.py`
+- `OneDrive/Desktop/Python/gridflow/src/gridflow/schemas/entsoe.py`
+- Gold view/builder

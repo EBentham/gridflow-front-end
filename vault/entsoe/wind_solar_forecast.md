@@ -64,7 +64,7 @@ Live verification 2026-05-08:
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/entsoe/wind_solar_forecast/<year>/<month>/<day>/raw_<uuid>.xml`
+**Path pattern**: `{data_root}/bronze/entsoe/wind_solar_forecast/<year>/<month>/<day>/raw_<uuid>.xml`
 **Format**: Raw XML, immutable.
 **Granularity**: One file per (zone, day).
 
@@ -92,7 +92,7 @@ Live verification 2026-05-08:
 
 ## Silver layer
 
-**Path pattern**: `data/silver/entsoe/wind_solar_forecast/year=YYYY/month=MM/wind_solar_forecast_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/entsoe/wind_solar_forecast/year=YYYY/month=MM/wind_solar_forecast_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.entsoe.wind_solar_forecast.WindSolarForecastTransformer`
 **Pydantic schema**: `gridflow.schemas.entsoe.EntsoeWindSolarForecast`
 **Dedup key**: `(timestamp_utc, area_code, production_type)`
@@ -171,7 +171,7 @@ None implemented.
 ## Links
 
 - [Official API docs](https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.pdf)
-- [Connector source](../../../../../../OneDrive/Desktop/Python/gridflow/src/gridflow/connectors/entsoe/client.py)
-- [Silver transformer](../../../../../../OneDrive/Desktop/Python/gridflow/src/gridflow/silver/entsoe/wind_solar_forecast.py)
-- [Pydantic schema](../../../../../../OneDrive/Desktop/Python/gridflow/src/gridflow/schemas/entsoe.py)
-- [Gold view/builder](none)
+- `OneDrive/Desktop/Python/gridflow/src/gridflow/connectors/entsoe/client.py`
+- `OneDrive/Desktop/Python/gridflow/src/gridflow/silver/entsoe/wind_solar_forecast.py`
+- `OneDrive/Desktop/Python/gridflow/src/gridflow/schemas/entsoe.py`
+- Gold view/builder

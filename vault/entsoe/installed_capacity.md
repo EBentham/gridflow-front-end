@@ -63,7 +63,7 @@ Live verification 2026-05-08:
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/entsoe/installed_capacity/<year>/<month>/<day>/raw_<uuid>.xml`
+**Path pattern**: `{data_root}/bronze/entsoe/installed_capacity/<year>/<month>/<day>/raw_<uuid>.xml`
 **Format**: Raw XML, immutable.
 **Granularity**: One file per (zone, year-window).
 
@@ -90,7 +90,7 @@ Live verification 2026-05-08:
 
 ## Silver layer
 
-**Path pattern**: `data/silver/entsoe/installed_capacity/year=YYYY/month=MM/installed_capacity_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/entsoe/installed_capacity/year=YYYY/month=MM/installed_capacity_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.entsoe.installed_capacity.InstalledCapacityTransformer`
 **Pydantic schema**: `gridflow.schemas.entsoe.EntsoeInstalledCapacity`
 **Dedup key**: `(timestamp_utc, area_code, production_type)`
@@ -160,7 +160,7 @@ None implemented.
 ## Links
 
 - [Official API docs](https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.pdf)
-- [Connector source](../../../../../../OneDrive/Desktop/Python/gridflow/src/gridflow/connectors/entsoe/client.py)
-- [Silver transformer](../../../../../../OneDrive/Desktop/Python/gridflow/src/gridflow/silver/entsoe/installed_capacity.py)
-- [Pydantic schema](../../../../../../OneDrive/Desktop/Python/gridflow/src/gridflow/schemas/entsoe.py)
-- [Gold view/builder](none)
+- `OneDrive/Desktop/Python/gridflow/src/gridflow/connectors/entsoe/client.py`
+- `OneDrive/Desktop/Python/gridflow/src/gridflow/silver/entsoe/installed_capacity.py`
+- `OneDrive/Desktop/Python/gridflow/src/gridflow/schemas/entsoe.py`
+- Gold view/builder

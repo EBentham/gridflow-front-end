@@ -17,7 +17,7 @@ returned in a `Balancing_MarketDocument` envelope. Resolution typically
 PT15M for continental control areas. The TSO-charged price for the side
 of imbalance.
 
-→ Link to relevant domain concept notes if they exist, e.g.:
+Related domain notes:
   [Imbalance pricing](../../../20-domain/markets/imbalance-price.md)
   [Balancing settlement](../../../20-domain/markets/balancing-settlement.md)
 
@@ -65,7 +65,7 @@ Use Elexon `system_prices` for GB imbalance settlement.
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/entsoe/imbalance_prices/<year>/<month>/<day>/raw_<uuid>.xml`
+**Path pattern**: `{data_root}/bronze/entsoe/imbalance_prices/<year>/<month>/<day>/raw_<uuid>.xml`
 **Format**: Raw XML (or ZIP-of-XML, unpacked by the connector before storage).
 **Granularity**: One file per (control area, query window) — the connector unpacks ZIP envelopes per inner XML entry.
 
@@ -97,7 +97,7 @@ Use Elexon `system_prices` for GB imbalance settlement.
 
 ## Silver layer
 
-**Path pattern**: `data/silver/entsoe/imbalance_prices/year=YYYY/month=MM/imbalance_prices_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/entsoe/imbalance_prices/year=YYYY/month=MM/imbalance_prices_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.entsoe.imbalance_prices.ImbalancePricesTransformer`
 **Pydantic schema**: `gridflow.schemas.entsoe.EntsoeImbalancePrices`
 **Dedup key**: `(timestamp_utc, area_code, direction)`
@@ -207,9 +207,9 @@ None implemented.
 ## Links
 
 - [Official API docs](https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.html)
-- [Connector source](../../../../src/gridflow/connectors/entsoe/client.py)
-- [Endpoints](../../../../src/gridflow/connectors/entsoe/endpoints.py)
-- [Silver transformer](../../../../src/gridflow/silver/entsoe/imbalance_prices.py)
-- [Pydantic schema](../../../../src/gridflow/schemas/entsoe.py)
-- [Gold view/builder](none)
+- `src/gridflow/connectors/entsoe/client.py`
+- `src/gridflow/connectors/entsoe/endpoints.py`
+- `src/gridflow/silver/entsoe/imbalance_prices.py`
+- `src/gridflow/schemas/entsoe.py`
+- Gold view/builder
 - [Domain: imbalance pricing](../../../20-domain/markets/imbalance-price.md)

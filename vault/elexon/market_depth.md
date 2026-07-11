@@ -12,10 +12,6 @@ layer_coverage: bronze, silver
 
 Settlement Market Depth — per settlement period summary of indicative imbalance, offer/bid volumes, and accepted balancing volumes. Market depth aggregates BOALF, DISBSAD, and IMBALNGC into a single per-period snapshot useful for liquidity analytics.
 
-→ Link to relevant domain concept notes if they exist, e.g.:
-  [Imbalance pricing](../../../20-domain/markets/imbalance-price.md)
-  [Settlement period](../../../20-domain/concepts/settlement-period.md)
-
 ---
 
 ## API endpoint
@@ -54,7 +50,7 @@ curl --ssl-no-revoke -fsS \
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/elexon/market_depth/<year>/<month>/<day>/raw_<uuid>.json`
+**Path pattern**: `{data_root}/bronze/elexon/market_depth/<year>/<month>/<day>/raw_<uuid>.json`
 **Format**: Raw JSON, as-received. Immutable — never modified after write.
 **Granularity**: One file per API call (paginated requests append additional files for the same date partition).
 
@@ -103,7 +99,7 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/balancin
 
 ## Silver layer
 
-**Path pattern**: `data/silver/elexon/market_depth/year=YYYY/month=MM/market_depth_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/elexon/market_depth/year=YYYY/month=MM/market_depth_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.elexon.market_depth.MarketDepthTransformer`
 **Pydantic schema**: `gridflow.schemas.elexon.ElexonMarketDepth` — validated fail-soft on the full frame at write time (VTA-SCHEMA-01: invalid rows are logged and counted, never dropped).
 **Dedup key**: `(settlement_date, settlement_period)`
@@ -180,5 +176,5 @@ TODO
 - [Connector source](../../../../../../Python/gridflow/src/gridflow/connectors/elexon/endpoints.py)
 - [Silver transformer](../../../../../../Python/gridflow/src/gridflow/silver/elexon/market_depth.py)
 - [Pydantic schema](../../../../../../Python/gridflow/src/gridflow/schemas/elexon.py)
-- [Gold view/builder](none)
+- Gold view/builder
 - [Domain: GB Balancing Mechanism](../../../20-domain/markets/gb-balancing-mechanism.md)

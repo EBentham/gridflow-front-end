@@ -15,7 +15,7 @@ once per week with weekly resolution (`P7D`). Document type `A65` + process
 type `A31` ("Week ahead"). Used as a longer-horizon reference for forecast
 adaptation studies and weekly capacity planning.
 
-→ Link to relevant domain concept notes if they exist, e.g.:
+Related domain notes:
   [Load forecast](../../../20-domain/concepts/load-forecast.md)
 
 ---
@@ -62,7 +62,7 @@ GB returns code 999 (`TOTAL_LOAD_FORECAST [6.1.C&D&E]`).
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/entsoe/load_forecast_weekly/<year>/<month>/<day>/raw_<uuid>.xml`
+**Path pattern**: `{data_root}/bronze/entsoe/load_forecast_weekly/<year>/<month>/<day>/raw_<uuid>.xml`
 **Format**: Raw XML.
 **Granularity**: One file per (zone, query window).
 
@@ -90,7 +90,7 @@ sparse, typically one min and one max per week.)
 
 ## Silver layer
 
-**Path pattern**: `data/silver/entsoe/load_forecast_weekly/year=YYYY/month=MM/load_forecast_weekly_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/entsoe/load_forecast_weekly/year=YYYY/month=MM/load_forecast_weekly_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.entsoe.load_forecast_weekly.LoadForecastWeeklyTransformer`
 **Pydantic schema**: `gridflow.schemas.entsoe.EntsoeLoadForecastWeekly`
 **Dedup key**: `(timestamp_utc, area_code)`
@@ -167,9 +167,9 @@ None implemented.
 ## Links
 
 - [Official API docs](https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.html)
-- [Connector source](../../../../src/gridflow/connectors/entsoe/client.py)
-- [Endpoints](../../../../src/gridflow/connectors/entsoe/endpoints.py)
-- [Silver transformer](../../../../src/gridflow/silver/entsoe/load_forecast_weekly.py)
-- [Pydantic schema](../../../../src/gridflow/schemas/entsoe.py)
-- [Gold view/builder](none)
+- `src/gridflow/connectors/entsoe/client.py`
+- `src/gridflow/connectors/entsoe/endpoints.py`
+- `src/gridflow/silver/entsoe/load_forecast_weekly.py`
+- `src/gridflow/schemas/entsoe.py`
+- Gold view/builder
 - [Domain: load forecast](../../../20-domain/concepts/load-forecast.md)

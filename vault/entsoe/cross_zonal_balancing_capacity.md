@@ -74,7 +74,7 @@ curl --ssl-no-revoke -fsS -H "Accept: application/xml" \
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/entsoe/cross_zonal_balancing_capacity/<year>/<month>/<day>/raw_<uuid>.xml`
+**Path pattern**: `{data_root}/bronze/entsoe/cross_zonal_balancing_capacity/<year>/<month>/<day>/raw_<uuid>.xml`
 **Format**: Raw XML.
 **Granularity**: One file per (acquiring_area, connecting_area, fetch window).
 
@@ -111,7 +111,7 @@ From `tests/fixtures/entsoe/cross_zonal_balancing_capacity_gb_fr.xml`:
 
 ## Silver layer
 
-**Path pattern**: `data/silver/entsoe/cross_zonal_balancing_capacity/year=YYYY/month=MM/cross_zonal_balancing_capacity_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/entsoe/cross_zonal_balancing_capacity/year=YYYY/month=MM/cross_zonal_balancing_capacity_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.entsoe.h8_balancing.CrossZonalBalancingCapacityTransformer`
 **Pydantic schema**: `gridflow.schemas.entsoe.EntsoeCrossZonalBalancingCapacity`
 **Dedup key**: `(timestamp_utc, acquiring_area_code, connecting_area_code, market_agreement_type)`
@@ -204,9 +204,9 @@ For balancing energy (not capacity), see
 ## Links
 
 - [Official API docs](https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.pdf) — Section 17 / GL EB 12.3.H&I
-- [Connector source](../../../../src/gridflow/connectors/entsoe/client.py)
-- [Endpoint registry](../../../../src/gridflow/connectors/entsoe/endpoints.py) — `cross_zonal_balancing_capacity`
-- [Silver transformer](../../../../src/gridflow/silver/entsoe/h8_balancing.py) — `CrossZonalBalancingCapacityTransformer`
-- [Pydantic schema](../../../../src/gridflow/schemas/entsoe.py) — `EntsoeCrossZonalBalancingCapacity`
-- [Fixture](../../../../tests/fixtures/entsoe/cross_zonal_balancing_capacity_gb_fr.xml)
+- `src/gridflow/connectors/entsoe/client.py`
+- `src/gridflow/connectors/entsoe/endpoints.py` — `cross_zonal_balancing_capacity`
+- `src/gridflow/silver/entsoe/h8_balancing.py` — `CrossZonalBalancingCapacityTransformer`
+- `src/gridflow/schemas/entsoe.py` — `EntsoeCrossZonalBalancingCapacity`
+- `tests/fixtures/entsoe/cross_zonal_balancing_capacity_gb_fr.xml`
 - [Single-area counterpart](./procured_balancing_capacity.md)

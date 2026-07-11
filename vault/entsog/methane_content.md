@@ -67,7 +67,7 @@ curl --ssl-no-revoke -fsS \
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/entsog/methane_content/<year>/<month>/<day>/raw_<uuid>.json`
+**Path pattern**: `{data_root}/bronze/entsog/methane_content/<year>/<month>/<day>/raw_<uuid>.json`
 **Format**: Raw JSON, as-received. Immutable — never modified after write.
 **Granularity**: One file per `fetch()` call (one calendar day per file by convention)
 
@@ -100,7 +100,7 @@ curl --ssl-no-revoke -fsS \
 
 ## Silver layer
 
-**Path pattern**: `data/silver/entsog/methane_content/year=YYYY/month=MM/methane_content_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/entsog/methane_content/year=YYYY/month=MM/methane_content_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.entsog.GenericEntsogJsonTransformer (subclass MethaneContentTransformer)`
 **Pydantic schema**: `Generic — no Pydantic schema declared`
 **Dedup key**: `(timestamp_utc, point_key, operator_key, direction_key)` — fields uniquely identifying one daily record per series
@@ -108,7 +108,7 @@ curl --ssl-no-revoke -fsS \
 
 ### Silver schema
 
-_Schema is generic and dynamic — see [generic.py](../../../../src/gridflow/silver/entsog/generic.py); columns are produced by camelCase→snake_case normalisation of whatever the live response contains._
+_Schema is generic and dynamic — see `src/gridflow/silver/entsog/generic.py`; columns are produced by camelCase→snake_case normalisation of whatever the live response contains._
 
 ### Silver sample
 
@@ -158,8 +158,8 @@ None implemented.
 ## Links
 
 - [Official API docs (PDF)](https://transparency.entsog.eu/api/archiveDirectories/8/api-manual/TP_REG715_Documentation_TP_API%20-%20v2.1.pdf)
-- [Connector source](../../../../src/gridflow/connectors/entsog/endpoints.py)
-- [Silver transformer](../../../../src/gridflow/silver/entsog/generic.py)
-- [Pydantic schema](../../../../src/gridflow/schemas/entsog.py)
-- [Gold view/builder](none)
+- `src/gridflow/connectors/entsog/endpoints.py`
+- `src/gridflow/silver/entsog/generic.py`
+- `src/gridflow/schemas/entsog.py`
+- Gold view/builder
 - [Domain: gas day](../../../20-domain/concepts/gas-day.md)

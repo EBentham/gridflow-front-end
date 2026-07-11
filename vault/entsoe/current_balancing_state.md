@@ -79,7 +79,7 @@ curl --ssl-no-revoke -fsS -H "Accept: application/xml" \
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/entsoe/current_balancing_state/<year>/<month>/<day>/raw_<uuid>.xml`
+**Path pattern**: `{data_root}/bronze/entsoe/current_balancing_state/<year>/<month>/<day>/raw_<uuid>.xml`
 **Format**: Raw XML (`Balancing_MarketDocument`), as-received. Immutable — never modified after write.
 **Granularity**: One file per (control_area, fetch window) — typically one file per day per area.
 
@@ -115,7 +115,7 @@ From `tests/fixtures/entsoe/current_balancing_state_gb.xml`:
 
 ## Silver layer
 
-**Path pattern**: `data/silver/entsoe/current_balancing_state/year=YYYY/month=MM/current_balancing_state_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/entsoe/current_balancing_state/year=YYYY/month=MM/current_balancing_state_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.entsoe.h8_balancing.CurrentBalancingStateTransformer`
 **Pydantic schema**: `gridflow.schemas.entsoe.EntsoeBalancingState`
 **Dedup key**: `(timestamp_utc, area_code, business_type)`
@@ -196,9 +196,9 @@ None implemented.
 ## Links
 
 - [Official API docs](https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.pdf) — Section 17 (Balancing) and 12.3.A
-- [Connector source](../../../../src/gridflow/connectors/entsoe/client.py)
-- [Endpoint registry](../../../../src/gridflow/connectors/entsoe/endpoints.py) — see `current_balancing_state` entry
-- [Silver transformer](../../../../src/gridflow/silver/entsoe/h8_balancing.py)
-- [Pydantic schema](../../../../src/gridflow/schemas/entsoe.py) — `EntsoeBalancingState`
-- [Fixture](../../../../tests/fixtures/entsoe/current_balancing_state_gb.xml)
+- `src/gridflow/connectors/entsoe/client.py`
+- `src/gridflow/connectors/entsoe/endpoints.py` — see `current_balancing_state` entry
+- `src/gridflow/silver/entsoe/h8_balancing.py`
+- `src/gridflow/schemas/entsoe.py` — `EntsoeBalancingState`
+- `tests/fixtures/entsoe/current_balancing_state_gb.xml`
 - [Imbalance volume (A86 / A19)](./imbalance_volume.md)

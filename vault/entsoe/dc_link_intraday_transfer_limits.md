@@ -68,7 +68,7 @@ curl --ssl-no-revoke -fsS \
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/entsoe/dc_link_intraday_transfer_limits/<year>/<month>/<day>/raw_<uuid>.xml`
+**Path pattern**: `{data_root}/bronze/entsoe/dc_link_intraday_transfer_limits/<year>/<month>/<day>/raw_<uuid>.xml`
 **Format**: Raw XML, immutable.
 **Granularity**: One file per (in_Domain, out_Domain, day).
 
@@ -84,7 +84,7 @@ CB_CAPACITY_FOR_DC_LINKS_INTRADAY_R3 [11.3] (10YGB----------A,
 
 ## Silver layer
 
-**Path pattern**: `data/silver/entsoe/dc_link_intraday_transfer_limits/year=YYYY/month=MM/dc_link_intraday_transfer_limits_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/entsoe/dc_link_intraday_transfer_limits/year=YYYY/month=MM/dc_link_intraday_transfer_limits_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.entsoe.h6_market.DcLinkIntradayTransferLimitsTransformer`
 **Pydantic schema**: `gridflow.schemas.entsoe.EntsoeTransmissionMarketQuantity`
 **Dedup key**: `(timestamp_utc, in_area_code, out_area_code, business_type)`
@@ -161,6 +161,6 @@ None implemented.
 ## Links
 
 - [Official API docs (PDF)](https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.pdf)
-- [Connector source](../../../../src/gridflow/connectors/entsoe/endpoints.py)
-- [Silver transformer](../../../../src/gridflow/silver/entsoe/h6_market.py)
-- [Pydantic schema](../../../../src/gridflow/schemas/entsoe.py)
+- `src/gridflow/connectors/entsoe/endpoints.py`
+- `src/gridflow/silver/entsoe/h6_market.py`
+- `src/gridflow/schemas/entsoe.py`

@@ -15,7 +15,7 @@ forecast typically published once per month. Document type `A65` + process
 type `A32` ("Month ahead"). Same schema and parser as week-ahead, with the
 forecast_horizon flag changed.
 
-→ Link to relevant domain concept notes if they exist, e.g.:
+Related domain notes:
   [Load forecast](../../../20-domain/concepts/load-forecast.md)
 
 ---
@@ -62,7 +62,7 @@ GB returns code 999 (`TOTAL_LOAD_FORECAST [6.1.C&D&E]`).
 
 ## Bronze layer
 
-**Path pattern**: `data/bronze/entsoe/load_forecast_monthly/<year>/<month>/<day>/raw_<uuid>.xml`
+**Path pattern**: `{data_root}/bronze/entsoe/load_forecast_monthly/<year>/<month>/<day>/raw_<uuid>.xml`
 **Format**: Raw XML.
 **Granularity**: One file per (zone, query window).
 
@@ -87,7 +87,7 @@ GB returns code 999 (`TOTAL_LOAD_FORECAST [6.1.C&D&E]`).
 
 ## Silver layer
 
-**Path pattern**: `data/silver/entsoe/load_forecast_monthly/year=YYYY/month=MM/load_forecast_monthly_YYYYMMDD.parquet`
+**Path pattern**: `{data_root}/silver/entsoe/load_forecast_monthly/year=YYYY/month=MM/load_forecast_monthly_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.entsoe.load_forecast_monthly.LoadForecastMonthlyTransformer`
 **Pydantic schema**: `gridflow.schemas.entsoe.EntsoeLoadForecast` (shared base — the schema reuses `EntsoeLoadForecast` with `forecast_horizon="month_ahead"`)
 **Dedup key**: `(timestamp_utc, area_code)`
@@ -166,9 +166,9 @@ None implemented.
 ## Links
 
 - [Official API docs](https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.html)
-- [Connector source](../../../../src/gridflow/connectors/entsoe/client.py)
-- [Endpoints](../../../../src/gridflow/connectors/entsoe/endpoints.py)
-- [Silver transformer](../../../../src/gridflow/silver/entsoe/load_forecast_monthly.py)
-- [Pydantic schema](../../../../src/gridflow/schemas/entsoe.py)
-- [Gold view/builder](none)
+- `src/gridflow/connectors/entsoe/client.py`
+- `src/gridflow/connectors/entsoe/endpoints.py`
+- `src/gridflow/silver/entsoe/load_forecast_monthly.py`
+- `src/gridflow/schemas/entsoe.py`
+- Gold view/builder
 - [Domain: load forecast](../../../20-domain/concepts/load-forecast.md)
