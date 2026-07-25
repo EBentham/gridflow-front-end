@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  docs-integrity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      # R8-F01 / v0.17 P1.8: fails if an authored-pages override no longer
+      # carries every Silver schema column present in the committed vault
+      # mirror it was authored from (docs-propagation integrity gate).
+      - name: Authored-page staleness check
+        run: uv run --extra build gridflow-staleness-check
+
+      # Baseline ratchet — removals only. staleness-baseline.txt is a known-
+      # stale backlog (v0.17 P1.8 finding); a PR may burn it down but must
+      # never silently grow it to hide a newly-introduced stale page.
+      - name: Baseline ratchet — removals only
+        if: github.event_name == 'pull_request'
+        run: |
+          git fetch origin "$GITHUB_BASE_REF"
+          if git cat-file -e "origin/$GITHUB_BASE_REF:.github/staleness-baseline.txt" 2>/dev/null; then
+            added=$(git diff "origin/$GITHUB_BASE_REF"...HEAD -- .github/staleness-baseline.txt | grep -E '^\+[^+#]' || true)
+            if [ -n "$added" ]; then
+              echo "Baseline is a ratchet — entries may only be removed. Added:"; echo "$added"; exit 1
+            fi
+          else
+            echo "Baseline absent on base branch — bootstrap PR, ratchet enforcement skipped."
+          fi
+
+      # Makes the previously local-only merge gate (idempotent render across
+      # all vendor pages) mechanical on every PR, not just at deploy time.
+      - name: Verify build idempotence (CI-03)
+        run: uv run --extra build gridflow-build --check

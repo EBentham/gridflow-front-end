@@ -1,0 +1,45 @@
+# Known-stale backlog for gridflow-staleness-check (R8-F01 / v0.17 P1.8).
+#
+# Pre-existing drift between authored-pages/<vendor>/<slug>.html and the
+# committed vault mirror's Silver schema columns, discovered when the check
+# was introduced (2026-07-25). This is a ratchet baseline: entries may only
+# be REMOVED (once the authored page is brought current), never added — a
+# new stale page must fail CI, not get silently baselined.
+#
+# Regenerated 2026-07-25 (Sol diff-review F1): the matcher was upgraded from
+# raw substring to word-boundary matching, which caught entsoe/day_ahead_prices
+# (was a false pass -- "currency" matched inside an unrelated substring).
+#
+# Burn-down deferred to v0.18. One "vendor/slug" label per line. 32 entries.
+elexon/agpt
+elexon/agws
+elexon/atl
+elexon/fou2t14d
+elexon/imbalngc
+elexon/inddem
+elexon/indgen
+elexon/indo
+elexon/itsdo
+elexon/lolpdrm
+elexon/market_depth
+elexon/melngc
+elexon/ndf
+elexon/ndfd
+elexon/netbsad
+elexon/nonbm
+elexon/remit
+elexon/soso
+elexon/uou2t14d
+elexon/windfor
+entsoe/activated_balancing_prices
+entsoe/balancing_financial_expenses_income
+entsoe/day_ahead_prices
+entsoe/imbalance_prices
+entsoe/load_forecast_monthly
+entsoe/load_forecast_yearly
+entsoe/outages_production
+entsoe/wind_solar_forecast
+openmeteo/forecast_solar
+openmeteo/forecast_wind
+openmeteo/historical_solar
+openmeteo/historical_wind
