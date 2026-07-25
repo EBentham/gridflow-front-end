@@ -33,9 +33,13 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           git fetch origin "$GITHUB_BASE_REF"
-          added=$(git diff "origin/$GITHUB_BASE_REF"...HEAD -- .github/staleness-baseline.txt | grep -E '^\+[^+#]' || true)
-          if [ -n "$added" ]; then
-            echo "Baseline is a ratchet — entries may only be removed. Added:"; echo "$added"; exit 1
+          if git cat-file -e "origin/$GITHUB_BASE_REF:.github/staleness-baseline.txt" 2>/dev/null; then
+            added=$(git diff "origin/$GITHUB_BASE_REF"...HEAD -- .github/staleness-baseline.txt | grep -E '^\+[^+#]' || true)
+            if [ -n "$added" ]; then
+              echo "Baseline is a ratchet — entries may only be removed. Added:"; echo "$added"; exit 1
+            fi
+          else
+            echo "Baseline absent on base branch — bootstrap PR, ratchet enforcement skipped."
           fi
 
       # Makes the previously local-only merge gate (idempotent render across

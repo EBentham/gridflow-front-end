@@ -89,9 +89,12 @@ def _column_present(name: str, authored_html: str) -> bool:
 
     `_` counts as a word character in Python regex, so this correctly rejects
     `currency` matching inside `currency_unit`, and `available_capacity_mw`
-    matching inside `unavailable_capacity_mw`.
+    matching inside `unavailable_capacity_mw`. Lookarounds are used instead of
+    `\\b` so names that start or end with a non-word character (e.g. a
+    hypothetical `$schema`) still match exact occurrences — `\\b` would demand
+    a word boundary that cannot exist at a non-word edge.
     """
-    return re.search(rf"\b{re.escape(name)}\b", authored_html) is not None
+    return re.search(rf"(?<!\w){re.escape(name)}(?!\w)", authored_html) is not None
 
 
 def check_stamp(stamp_path: Path) -> bool:
