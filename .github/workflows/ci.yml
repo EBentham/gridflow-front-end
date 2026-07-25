@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  docs-integrity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      # R8-F01 / v0.17 P1.8: fails if an authored-pages override no longer
+      # carries every Silver schema column present in the committed vault
+      # mirror it was authored from (docs-propagation integrity gate).
+      - name: Authored-page staleness check
+        run: uv run --extra build gridflow-staleness-check
+
+      # Makes the previously local-only merge gate (idempotent render across
+      # all vendor pages) mechanical on every PR, not just at deploy time.
+      - name: Verify build idempotence (CI-03)
+        run: uv run --extra build gridflow-build --check
