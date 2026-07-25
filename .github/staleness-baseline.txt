@@ -6,7 +6,11 @@
 # be REMOVED (once the authored page is brought current), never added — a
 # new stale page must fail CI, not get silently baselined.
 #
-# Burn-down deferred to v0.18. One "vendor/slug" label per line.
+# Regenerated 2026-07-25 (Sol diff-review F1): the matcher was upgraded from
+# raw substring to word-boundary matching, which caught entsoe/day_ahead_prices
+# (was a false pass -- "currency" matched inside an unrelated substring).
+#
+# Burn-down deferred to v0.18. One "vendor/slug" label per line. 32 entries.
 elexon/agpt
 elexon/agws
 elexon/atl
@@ -29,6 +33,7 @@ elexon/uou2t14d
 elexon/windfor
 entsoe/activated_balancing_prices
 entsoe/balancing_financial_expenses_income
+entsoe/day_ahead_prices
 entsoe/imbalance_prices
 entsoe/load_forecast_monthly
 entsoe/load_forecast_yearly

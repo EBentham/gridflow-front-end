@@ -14,10 +14,12 @@ checked that hop 3 stayed in sync with hop 2 once an override was authored
 2. **Authored-vs-mirror check** — for every vendor dataset page in the
    committed mirror that has a parsed Silver schema block, a *wired*
    Pydantic schema (see below), and an authored HTML override, every Silver
-   schema column name from the mirror must appear verbatim in the authored
-   HTML. A column present in the mirror but absent from the authored
-   override means the override has drifted from the page it was meant to
-   showcase.
+   schema column name from the mirror must appear as a whole word in the
+   authored HTML (word-boundary match, not raw substring — `currency` must
+   not match inside `currency_unit`, and `available_capacity_mw` must not
+   match inside `unavailable_capacity_mw`). A column present in the mirror
+   but absent from the authored override means the override has drifted
+   from the page it was meant to showcase.
 
 Datasets with no wired Pydantic schema (``pydantic_schema_wired=False`` —
 "dynamic" schemas, e.g. most of ENTSO-G) are excluded from the column
@@ -31,8 +33,9 @@ with missing columns that IS listed there is reported as a non-failing
 ``KNOWN-STALE (baselined)`` warning; a page with missing columns NOT listed
 there fails the run. A baselined page that no longer has any missing columns
 is reported as an informational nudge to remove it from the baseline. The
-baseline may only shrink over time (burn-down), never grow silently — CI
-does not auto-add to it.
+baseline may only shrink over time (burn-down), never grow silently — this
+script does not auto-add to it, and CI (`ci.yml`) separately fails a PR that
+adds a line to it.
 
 Pages with no Silver schema section, or with no authored counterpart, are
 skipped (and counted). Authored pages with no mirror counterpart are
@@ -49,6 +52,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
+import re
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -80,6 +84,16 @@ class StalePage:
         return f"{self.vendor_id}/{self.slug}"
 
 
+def _column_present(name: str, authored_html: str) -> bool:
+    """Whole-word match: `name` must appear as a distinct token, not a substring.
+
+    `_` counts as a word character in Python regex, so this correctly rejects
+    `currency` matching inside `currency_unit`, and `available_capacity_mw`
+    matching inside `unavailable_capacity_mw`.
+    """
+    return re.search(rf"\b{re.escape(name)}\b", authored_html) is not None
+
+
 def check_stamp(stamp_path: Path) -> bool:
     """Validate the vault sync stamp JSON.
 
@@ -89,8 +103,9 @@ def check_stamp(stamp_path: Path) -> bool:
     Returns:
         True if the stamp exists and parses; False (with an ERROR printed to
         stderr) if it's missing or malformed. An age over
-        ``STAMP_MAX_AGE_DAYS`` only emits a WARNING and does not fail —
-        vault syncs are event-driven, not scheduled.
+        ``STAMP_MAX_AGE_DAYS`` (checked on exact elapsed seconds, not a
+        truncated day count) only emits a WARNING and does not fail — vault
+        syncs are event-driven, not scheduled.
     """
     try:
         raw = stamp_path.read_text(encoding="utf-8")
@@ -116,10 +131,11 @@ def check_stamp(stamp_path: Path) -> bool:
         )
         return False
 
-    age_days = (dt.datetime.now(dt.UTC) - synced_dt).days
-    if age_days > STAMP_MAX_AGE_DAYS:
+    age_seconds = (dt.datetime.now(dt.UTC) - synced_dt).total_seconds()
+    if age_seconds > STAMP_MAX_AGE_DAYS * 86400:
+        age_days_display = round(age_seconds / 86400, 1)
         print(
-            f"[gridflow-staleness-check] WARNING: vault sync stamp is {age_days} days old "
+            f"[gridflow-staleness-check] WARNING: vault sync stamp is {age_days_display} days old "
             f"(synced_at_utc={synced_at}) — confirm no vault changes are unpropagated.",
             file=sys.stderr,
         )
@@ -158,6 +174,10 @@ def check_authored_pages(
     comparison (their authored pages render "dynamic", never enumerating
     columns) and counted under `n_skipped_dynamic`.
 
+    Slugs are taken from ``DatasetDoc.slug`` (which honours a frontmatter
+    `dataset_key` override), not the markdown filename stem, so a
+    stem/dataset_key mismatch can never silently skip a deployed override.
+
     Args:
         vault_path: Root of the committed vault mirror (contains `<vendor>/*.md`).
         authored_dir: Root of authored HTML overrides (contains `<vendor>/*.html`).
@@ -182,9 +202,9 @@ def check_authored_pages(
         for md_path in sorted(vendor_dir.glob("*.md")):
             if md_path.name.lower() == "readme.md":
                 continue
-            slug = md_path.stem
-            mirror_slugs[vendor_id].add(slug)
             doc = parse_vault_file(md_path, vendor_id=vendor_id, vendor_label=vendor_label)
+            slug = doc.slug
+            mirror_slugs[vendor_id].add(slug)
             if not doc.schema_rows:
                 n_skipped_other += 1
                 continue
@@ -196,7 +216,9 @@ def check_authored_pages(
                 n_skipped_other += 1
                 continue
             authored_html = authored_path.read_text(encoding="utf-8")
-            missing = [row.name for row in doc.schema_rows if row.name not in authored_html]
+            missing = [
+                row.name for row in doc.schema_rows if not _column_present(row.name, authored_html)
+            ]
             if missing:
                 stale.append(StalePage(vendor_id=vendor_id, slug=slug, missing_columns=missing))
             else:

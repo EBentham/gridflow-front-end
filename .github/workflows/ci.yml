@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
@@ -23,6 +25,18 @@ jobs:
       # mirror it was authored from (docs-propagation integrity gate).
       - name: Authored-page staleness check
         run: uv run --extra build gridflow-staleness-check
+
+      # Baseline ratchet — removals only. staleness-baseline.txt is a known-
+      # stale backlog (v0.17 P1.8 finding); a PR may burn it down but must
+      # never silently grow it to hide a newly-introduced stale page.
+      - name: Baseline ratchet — removals only
+        if: github.event_name == 'pull_request'
+        run: |
+          git fetch origin "$GITHUB_BASE_REF"
+          added=$(git diff "origin/$GITHUB_BASE_REF"...HEAD -- .github/staleness-baseline.txt | grep -E '^\+[^+#]' || true)
+          if [ -n "$added" ]; then
+            echo "Baseline is a ratchet — entries may only be removed. Added:"; echo "$added"; exit 1
+          fi
 
       # Makes the previously local-only merge gate (idempotent render across
       # all vendor pages) mechanical on every PR, not just at deploy time.
