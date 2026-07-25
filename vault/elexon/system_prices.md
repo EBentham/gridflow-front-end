@@ -2,8 +2,8 @@
 source: elexon
 dataset_key: system_prices
 vendor: Elexon BMRS
-last_verified: 2026-05-09
-layer_coverage: bronze, silver
+last_verified: 2026-07-25
+layer_coverage: bronze, silver, gold
 ---
 
 # Elexon - System Buy/Sell Prices (`DISEBSP`)
@@ -166,7 +166,24 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/balancin
 
 ## Gold layer
 
-None implemented.
+Two gold artifacts consume this dataset:
+
+**Name**: `gold_uk_imbalance_context`
+**Type**: SQL view
+**File**: `src/gridflow/gold/views/uk_imbalance_context.sql`
+**Joins**: `silver_elexon_system_prices` LEFT JOIN `silver_neso_carbon_intensity` on `timestamp_utc`
+**Adds**: NESO carbon intensity forecast/actual/index alongside system prices and imbalance volume; `run_type` was replaced by `price_derivation_code` in the SELECT (v0.17 P1.5 — live silver no longer emits `run_type`).
+**Grain**: one row per `silver_elexon_system_prices` row — half-hourly settlement period **per vintage** (APPEND_ONLY per ADR-025; the view does not select latest vintage).
+
+**Name**: `system_marginal_price`
+**Type**: Polars gold builder (`SystemMarginalPriceBuilder`)
+**File**: `src/gridflow/gold/system_marginal_price.py`
+**Reads**: silver `elexon/system_prices` parquet via `scan_parquet_range`, then `select_latest_vintage` (one row per settlement period — the builder, unlike the view, DOES collapse vintages).
+**Adds**: `spread` (buy − sell), `abs_imbalance`, `hour_of_day`, `day_of_week` (ISO, 1=Mon..7=Sun — differs by one from `gridflow_models`' Python `weekday()` convention; pinned by `test_day_of_week_convention_iso`).
+**Grain**: one row per settlement period (latest vintage).
+
+Full column contracts: see the Gold layer contracts section of
+[data-contracts.md](../../../10-projects/gridflow/data-contracts.md).
 
 ---
 
@@ -203,5 +220,5 @@ TODO
 - [Connector source](../../../../../../Python/gridflow/src/gridflow/connectors/elexon/endpoints.py)
 - [Silver transformer](../../../../../../Python/gridflow/src/gridflow/silver/elexon/system_prices.py)
 - [Pydantic schema](../../../../../../Python/gridflow/src/gridflow/schemas/elexon.py)
-- Gold view/builder
+- [Gold view](../../../../../../Python/gridflow/src/gridflow/gold/views/uk_imbalance_context.sql) · [Gold builder](../../../../../../Python/gridflow/src/gridflow/gold/system_marginal_price.py)
 - [Domain: GB Balancing Mechanism](../../../20-domain/markets/gb-balancing-mechanism.md)

@@ -92,8 +92,13 @@ curl --ssl-no-revoke -X GET \
 **Name**: `gold_uk_imbalance_context`
 **Type**: SQL view
 **File**: `src/gridflow/gold/views/uk_imbalance_context.sql`
-**Joins**: `silver_system_prices` on `timestamp_utc`
+**Joins**: `silver_elexon_system_prices` LEFT JOIN `silver_neso_carbon_intensity` on `timestamp_utc` (source-qualified names; the single-token aliases are deprecated)
 **Adds**: Carbon intensity forecast, actual, and index alongside Elexon system prices and imbalance volume.
+**Grain**: one row per `silver_elexon_system_prices` row — half-hourly settlement period **per vintage** (system_prices is APPEND_ONLY per ADR-025; the view does not select latest vintage — consumers needing one row per period must filter, e.g. point-in-time `available_at <= :as_of`).
+**Leakage note**: `carbon_intensity_actual_gco2_kwh` is realised ex-post and NOT available at delivery time (column comment in the view); use the forecast column as the ex-ante feature.
+
+Full column contract: see the Gold layer contracts section of
+[data-contracts.md](../../../10-projects/gridflow/data-contracts.md).
 
 ---
 

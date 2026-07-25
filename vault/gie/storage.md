@@ -2,8 +2,8 @@
 source: gie_agsi
 dataset_key: storage
 vendor: GIE AGSI+ (Gas Storage)
-last_verified: 2026-05-08
-layer_coverage: bronze, silver
+last_verified: 2026-07-25
+layer_coverage: bronze, silver, gold
 ---
 
 # GIE AGSI+ — Storage (country-level gas storage)
@@ -193,7 +193,15 @@ DE returns numeric values:
 
 ## Gold layer
 
-None implemented.
+**Name**: `gold_eu_gas_storage`
+**Type**: SQL view
+**File**: `src/gridflow/gold/views/eu_gas_storage.sql`
+**Reads**: `silver_gie_agsi_storage` (source-qualified name; single-token aliases are deprecated) — a straight column projection, no joins.
+**Columns**: `gas_day`, `country_code`, `country_name`, `gas_in_storage_gwh`, `withdrawal_gwh`, `injection_gwh`, `working_gas_volume_gwh`, `storage_pct_full`, `trend`, `data_provider`, `ingested_at`.
+**Grain**: one row per (`gas_day`, `country_code`), ordered `gas_day DESC, country_code`.
+
+Full column contract: see the Gold layer contracts section of
+[data-contracts.md](../../../10-projects/gridflow/data-contracts.md).
 
 ---
 
