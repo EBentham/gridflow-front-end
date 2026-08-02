@@ -1,0 +1,84 @@
+/* ══════════════════════════════════════════════════════════════
+   v3 SHARED MECHANICAL FIXES  (loaded after theme.css)
+   All exemplar directions (A/B/C) layer on this identical foundation,
+   so the user judges DESIGN DIRECTION, not whether the fixes landed.
+   This file is the Stream-M CSS spec for Phase 13.
+   ══════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Shared editorial text-measure — every content block shares the prose
+     right edge so figures/tables stop looking "very wide vs the page". */
+  --measure: 680px;
+
+  /* Contrast: AA on cream paper (#f5f1eb). Were 2.28:1 / 1.61:1. */
+  --ink-faint: #6f685a;   /* was #a8a194 — used on labels, sidebar links, comments */
+  --ink-ghost: #8b8374;   /* was #c8c0b0 — used on breadcrumb separators (as text) */
+}
+
+/* ── Grid min-content blowout fix ──────────────────────────────
+   `220px 1fr` lets the 1fr track grow to its content's min-content
+   (~994px) and overflow the container. minmax(0,1fr) lets it shrink. */
+/* Scoped to tablet+ so theme.css's <=720px single-column rules still win
+   on mobile (a non-media rule here would clobber the mobile layout). */
+@media (min-width: 721px) {
+  body[data-page="dataset"] .page-layout {
+    grid-template-columns: 220px minmax(0, 1fr);
+  }
+  /* Same blowout in the inner 1fr grids (related cards, API two-up). */
+  body[data-page="dataset"] .related-grid,
+  body[data-page="dataset"] #api [style*="grid-template-columns:1fr 1fr"],
+  body[data-page="dataset"] #api [style*="grid-template-columns: 1fr 1fr"] {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+/* Mobile single column: theme.css uses bare `1fr` (= minmax(auto,1fr)),
+   which blows out the same way. Force the shrinkable form. */
+@media (max-width: 720px) {
+  body[data-page="dataset"] .page-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  /* theme.css's hero/min-width mobile overrides miss the ACTUAL shipped
+     inline format (hero is `1.35fr 1fr`, not `1fr auto`; the card is
+     `min-width: 340px` with a space). Match the real values so the hero
+     stacks and the metadata card stops forcing width. */
+  body[data-page="dataset"] [style*="min-width: 340px"],
+  body[data-page="dataset"] [style*="min-width:340px"] {
+    min-width: 0 !important;
+  }
+  body[data-page="dataset"] [style*="1.35fr 1fr"],
+  body[data-page="dataset"] [style*="1.4fr 1fr"] {
+    grid-template-columns: 1fr !important;
+    gap: 28px !important;
+  }
+}
+
+/* ── Desktop "too wide" fix (Mechanism B) ──────────────────────
+   Clamp figures, tables, code, and the chart frame to the prose measure. */
+body[data-page="dataset"] .chart,
+body[data-page="dataset"] .code-wrap,
+body[data-page="dataset"] pre.code {
+  max-width: var(--measure);
+}
+
+/* Wide tables (nowrap columns) scroll within the measure rather than
+   forcing the whole page wider — scroll the SECTION (block container
+   clips reliably), matching theme.css's own mobile pattern. */
+body[data-page="dataset"] #schema,
+body[data-page="dataset"] #sample {
+  overflow-x: auto;
+  max-width: var(--measure);
+}
+
+/* Long mono strings (paths, URLs, EICs) wrap instead of forcing width;
+   overflow-wrap:anywhere also lets the grid track shrink to fit. */
+body[data-page="dataset"] .mono {
+  overflow-wrap: anywhere;
+}
+
+/* ── Charts: stop vertical letterboxing ────────────────────────
+   theme.css sets svg{max-width:100%} but never height:auto, so a fixed
+   height attribute letterboxes the SVG. */
+[data-chart] svg,
+.chart svg {
+  height: auto;
+}
