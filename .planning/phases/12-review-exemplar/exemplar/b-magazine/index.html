@@ -1,0 +1,831 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Gridflow · A research platform for European power markets</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Gridflow — a personal research platform for European power markets. A medallion data pipeline, a probabilistic modelling stack, and the catalogue that ties them together." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,30..100&family=Inter:wght@300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/theme.css" />
+  <link rel="stylesheet" href="../fixes.css" />
+  <link rel="stylesheet" href="../b-magazine.css" />
+  <style>
+    /* ── pillar tiles ───────────────────────────────────────── */
+    .pillar {
+      display: block;
+      border: 1px solid var(--rule);
+      background: var(--paper-card);
+      padding: 36px 36px 32px;
+      text-decoration: none;
+      color: inherit;
+      transition: background .15s, border-color .15s;
+      position: relative;
+    }
+    .pillar:hover {
+      background: var(--paper-deep);
+      border-color: var(--ink-faint);
+    }
+    .pillar:hover .pillar-arrow { color: var(--accent); transform: translateX(4px); }
+    .pillar-arrow {
+      position: absolute;
+      top: 36px; right: 36px;
+      font-size: 20px;
+      color: var(--ink-faint);
+      transition: color .15s, transform .15s;
+    }
+    .pillar-num {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--ink-faint);
+      letter-spacing: 0.1em;
+      margin-bottom: 28px;
+    }
+    .pillar-title {
+      font-family: var(--serif);
+      font-size: 30px;
+      letter-spacing: -0.022em;
+      line-height: 1.05;
+      color: var(--ink-strong);
+      margin-bottom: 14px;
+    }
+    .pillar-desc {
+      font-size: 13px;
+      color: var(--ink-soft);
+      line-height: 1.65;
+      max-width: 340px;
+      margin-bottom: 28px;
+    }
+    .pillar-visual {
+      height: 72px;
+      display: flex;
+      align-items: flex-end;
+      gap: 0;
+      margin-bottom: 0;
+    }
+    .pillar-status {
+      position: absolute;
+      bottom: 32px; right: 36px;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: var(--ink-faint);
+      text-transform: uppercase;
+    }
+    .pillar-status.live {
+      color: var(--accent);
+    }
+    .pillar-status .dot { vertical-align: middle; margin-right: 6px; transform: translateY(-1px); }
+
+    /* Architecture pillar visual — three layer bars */
+    .arch-bars {
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+      height: 64px;
+    }
+    .arch-bar {
+      width: 44px;
+      border-radius: 2px 2px 0 0;
+      opacity: 0.9;
+    }
+
+    /* Catalogue pillar visual — vendor code chips */
+    .vendor-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+    .vendor-chip {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 4px 10px;
+      border: 1px solid var(--rule);
+      background: var(--paper);
+      color: var(--ink-soft);
+      border-radius: 2px;
+    }
+
+    /* Models pillar visual — quantile fan placeholder */
+    .quantile-fan {
+      width: 100%;
+      height: 64px;
+    }
+
+    /* scope strip */
+    .scope-strip {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      border-top: 1px solid var(--ink);
+      border-bottom: 1px solid var(--rule);
+    }
+    .scope-strip > div {
+      padding: 18px 20px;
+      border-right: 1px solid var(--rule);
+    }
+    .scope-strip > div:last-child { border-right: 0; }
+
+    /* currently working on */
+    .wip-bar {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 16px 0;
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+      flex-wrap: wrap;
+    }
+    .wip-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-tint);
+      flex-shrink: 0;
+    }
+
+    /* ── About section ──────────────────────────────────────── */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 64px;
+      align-items: start;
+    }
+    .about-name {
+      font-family: var(--serif);
+      font-size: 42px;
+      letter-spacing: -0.025em;
+      line-height: 1.05;
+      color: var(--ink-strong);
+      margin-bottom: 12px;
+    }
+    .about-name .here { color: var(--accent); font-style: italic; }
+    .about-where {
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin-bottom: 28px;
+    }
+    .about-intro {
+      font-family: var(--serif);
+      font-size: 19px;
+      line-height: 1.5;
+      color: var(--ink);
+      max-width: 540px;
+      margin-bottom: 28px;
+    }
+    .about-body {
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--ink-soft);
+      max-width: 540px;
+      margin-bottom: 32px;
+    }
+    .about-card {
+      border: 1px solid var(--rule);
+      background: var(--paper-card);
+      padding: 28px;
+    }
+    .about-card h4 {
+      font-family: var(--sans);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin-bottom: 18px;
+    }
+    .about-facts {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 24px;
+    }
+    .about-facts li {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 16px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--rule-soft);
+      font-size: 13px;
+    }
+    .about-facts li:last-child { border-bottom: 0; }
+    .about-facts .k {
+      font-family: var(--sans);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      padding-top: 2px;
+    }
+    .about-facts .v { color: var(--ink); }
+    .about-facts .v code, .about-facts .v .mono {
+      font-family: var(--mono);
+      font-size: 12px;
+    }
+    .about-callout {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 15px;
+      line-height: 1.5;
+      color: var(--ink);
+      border-left: 2px solid var(--accent);
+      padding: 4px 0 4px 16px;
+      margin: 0 0 32px;
+      max-width: 540px;
+    }
+    .about-contacts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    /* model-row link list (replaces "Planned" card grid) */
+    .model-row {
+      display: grid;
+      grid-template-columns: 80px 1fr 200px 80px auto;
+      gap: 28px;
+      padding: 28px 0;
+      border-bottom: 1px solid var(--rule);
+      align-items: center;
+    }
+    .model-row:last-child { border-bottom: 0; }
+    .model-row .num {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--ink-faint);
+      letter-spacing: 0.08em;
+    }
+    .model-row h3 {
+      font-size: 24px;
+      margin-bottom: 6px;
+    }
+    .model-row .desc {
+      font-size: 13px;
+      color: var(--ink-soft);
+      max-width: 500px;
+      line-height: 1.6;
+    }
+    .model-row .arrow { font-size: 22px; color: var(--ink-faint); transition: color .15s, transform .15s; }
+    a.model-row:hover { background: transparent; }
+    a.model-row:hover h3 { color: var(--accent); }
+    a.model-row:hover .arrow { color: var(--accent); transform: translateX(3px); }
+    .model-row .stage {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+    }
+    .model-row .stage.ship { color: var(--accent); }
+
+    /* honest live-status caveat */
+    .snapshot-note {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      color: var(--ink-faint);
+      text-transform: uppercase;
+    }
+
+    /* responsive: collapse model-row to simpler layout on mobile */
+    @media (max-width: 720px) {
+      .model-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding: 20px 0;
+      }
+      .model-row .num { margin-bottom: 4px; }
+      .model-row .arrow { display: none; }
+      .scope-strip {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .scope-strip > div:nth-child(3) { border-right: 0; }
+      .scope-strip > div:nth-child(-n+3) { border-bottom: 1px solid var(--rule); }
+      .about-grid { grid-template-columns: 1fr; }
+      .about-facts li { grid-template-columns: 1fr; gap: 4px; }
+      .pillar-status { position: static; margin-top: 12px; display: block; }
+    }
+  </style>
+</head>
+<body data-page="home" data-root="../../" data-screen-label="01 Home">
+<main>
+
+  <!-- ════════════════ HERO ════════════════ -->
+  <section class="block" style="padding-top: 64px; padding-bottom: 56px; border-bottom: 0;" data-screen-label="hero">
+    <div class="container">
+      <div class="stack-md" style="display:grid; grid-template-columns: 1.4fr 1fr; gap: 64px; align-items: end;">
+        <div>
+          <div class="eyebrow mb-24">A personal research platform for European power markets</div>
+          <h1 class="display-1" style="margin-bottom: 28px;">
+            A pipeline and catalogue<br/>
+            for UK &amp; European<br/>
+            <span class="italic">energy data.</span>
+          </h1>
+          <p style="max-width: 520px; margin-bottom: 32px; font-size: 15px; color: var(--ink-soft); line-height: 1.6;">
+            Gridflow ingests, normalises, and serves time-series data from six public and authenticated vendors — electricity, gas, weather, and carbon — into a single queryable warehouse. Models for demand, wind, solar, and clearing prices sit one layer above.
+          </p>
+          <div class="row gap-16">
+            <a href="architecture.html" class="btn primary">Explore the architecture →</a>
+            <a href="models/demand-forecast.html" class="btn ghost">See a model</a>
+          </div>
+        </div>
+
+        <!-- GB grid snapshot card -->
+        <div class="card" style="padding: 0;">
+          <div style="padding: 16px 20px; border-bottom: 1px solid var(--rule); display:flex; align-items:center; justify-content:space-between;">
+            <span class="eyebrow" style="font-size:10px;">GB grid · illustrative snapshot</span>
+            <span class="mono tiny">shape only · seeded SVG</span>
+          </div>
+          <div style="padding: 20px; display:grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items:center;">
+            <div data-chart="donut" data-opts='{"data":[{"value":34,"color":"#c45a3a"},{"value":28,"color":"#3b6b4b"},{"value":15,"color":"#86627d"},{"value":12,"color":"#7a96a8"},{"value":11,"color":"#c9a96e"}],"center":"34.6","centerSub":"GW DEMAND","width":160,"height":160}'></div>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              <div style="display:flex; align-items:center; gap:8px; justify-content:space-between;">
+                <span style="display:inline-flex;align-items:center;gap:8px;"><i style="width:8px;height:8px;background:#c45a3a;display:inline-block;"></i><span class="small">Gas</span></span>
+                <span class="mono small" style="color:var(--ink-strong)">34%</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px; justify-content:space-between;">
+                <span style="display:inline-flex;align-items:center;gap:8px;"><i style="width:8px;height:8px;background:#3b6b4b;display:inline-block;"></i><span class="small">Wind</span></span>
+                <span class="mono small" style="color:var(--ink-strong)">28%</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px; justify-content:space-between;">
+                <span style="display:inline-flex;align-items:center;gap:8px;"><i style="width:8px;height:8px;background:#86627d;display:inline-block;"></i><span class="small">Nuclear</span></span>
+                <span class="mono small" style="color:var(--ink-strong)">15%</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px; justify-content:space-between;">
+                <span style="display:inline-flex;align-items:center;gap:8px;"><i style="width:8px;height:8px;background:#7a96a8;display:inline-block;"></i><span class="small">Imports</span></span>
+                <span class="mono small" style="color:var(--ink-strong)">12%</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px; justify-content:space-between;">
+                <span style="display:inline-flex;align-items:center;gap:8px;"><i style="width:8px;height:8px;background:#c9a96e;display:inline-block;"></i><span class="small">Other</span></span>
+                <span class="mono small" style="color:var(--ink-strong)">11%</span>
+              </div>
+            </div>
+          </div>
+          <div style="border-top:1px solid var(--rule); padding: 12px 20px; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+            <span class="snapshot-note">Static snapshot · illustrative</span>
+            <a href="data-sources/elexon/fuelhh.html" class="link accent" style="font-size:12px;">Open <code class="mono">fuelhh</code> →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════ SCOPE STRIP ════════════════ -->
+  <div class="container">
+    <div class="scope-strip">
+      <div>
+        <div class="stat-n">6</div>
+        <div class="stat-l">Vendors mapped</div>
+      </div>
+      <div>
+        <div class="stat-n">162</div>
+        <div class="stat-l">Datasets ingested</div>
+      </div>
+      <div>
+        <div class="stat-n">4</div>
+        <div class="stat-l">Markets covered</div>
+      </div>
+      <div>
+        <div class="stat-n">12<span style="font-size:18px; color:var(--ink-soft); margin-left:2px;">y</span></div>
+        <div class="stat-l">History depth</div>
+      </div>
+      <div>
+        <div class="stat-n">3</div>
+        <div class="stat-l">Pipeline layers</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════ THREE PILLARS ════════════════ -->
+  <section class="block" data-screen-label="pillars">
+    <div class="container">
+      <div class="eyebrow mb-8">What's here</div>
+      <h2 class="display-3 mb-32">Three things to explore.</h2>
+
+      <div class="stack-md" style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 0; border-top: 1px solid var(--ink);">
+
+        <!-- Pillar 1 — Architecture -->
+        <a href="architecture.html" class="pillar" style="border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule);">
+          <span class="pillar-arrow">→</span>
+          <div class="pillar-num">01 · ARCHITECTURE</div>
+          <div class="pillar-title">Pipeline.</div>
+          <p class="pillar-desc">Bronze · silver · gold layers. End-to-end data flow, design decisions, and the full repo map.</p>
+          <div class="pillar-visual">
+            <div class="arch-bars">
+              <div style="display:flex;flex-direction:column;gap:4px;align-items:center;">
+                <div class="arch-bar" style="height:28px;background:#c45a3a;"></div>
+                <span style="font-family:var(--mono);font-size:10px;color:#c45a3a;letter-spacing:0.06em;">BRONZE</span>
+              </div>
+              <div style="width:16px;display:flex;align-items:center;justify-content:center;padding-bottom:18px;">
+                <svg width="16" height="10" viewBox="0 0 16 10"><path d="M0 5h12M8 1l6 4-6 4" stroke="var(--ink-faint)" stroke-width="1.2" fill="none"/></svg>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:4px;align-items:center;">
+                <div class="arch-bar" style="height:44px;background:var(--accent);"></div>
+                <span style="font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:0.06em;">SILVER</span>
+              </div>
+              <div style="width:16px;display:flex;align-items:center;justify-content:center;padding-bottom:18px;">
+                <svg width="16" height="10" viewBox="0 0 16 10"><path d="M0 5h12M8 1l6 4-6 4" stroke="var(--ink-faint)" stroke-width="1.2" fill="none"/></svg>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:4px;align-items:center;">
+                <div class="arch-bar" style="height:56px;background:var(--ink-strong);"></div>
+                <span style="font-family:var(--mono);font-size:10px;color:var(--ink-soft);letter-spacing:0.06em;">GOLD</span>
+              </div>
+            </div>
+          </div>
+        </a>
+
+        <!-- Pillar 2 — Catalogue -->
+        <a href="data-sources.html" class="pillar" style="border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule);">
+          <span class="pillar-arrow">→</span>
+          <div class="pillar-num">02 · CATALOGUE</div>
+          <div class="pillar-title">Vendors.</div>
+          <p class="pillar-desc">Six vendors mapped across UK and EU power, gas, carbon, and weather. The gridflow ETL pipeline ingests 162 datasets, every one documented here at full fidelity. Each dataset carries schema, queries, and caveats.</p>
+          <div class="pillar-visual" style="align-items:center;">
+            <div class="vendor-chips">
+              <span class="vendor-chip">EX · Elexon</span>
+              <span class="vendor-chip">EN · ENTSO-E</span>
+              <span class="vendor-chip">EG · ENTSO-G</span>
+              <span class="vendor-chip">GI · GIE</span>
+              <span class="vendor-chip">OM · Open-Meteo</span>
+              <span class="vendor-chip">NE · NESO</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- Pillar 3 — Models -->
+        <a href="models/demand-forecast.html" class="pillar" style="border-bottom: 1px solid var(--rule);">
+          <span class="pillar-arrow">→</span>
+          <div class="pillar-num">03 · MODELS</div>
+          <div class="pillar-title">Forecasts.</div>
+          <p class="pillar-desc">Quantitative work built on the warehouse — probabilistic demand, wind, solar, and a fundamentals SMP forecaster.</p>
+          <div class="pillar-visual" style="align-items:flex-end;">
+            <!-- quantile fan placeholder -->
+            <svg class="quantile-fan" viewBox="0 0 320 64" preserveAspectRatio="none">
+              <!-- p90 band -->
+              <path d="M0,42 C40,28 80,18 120,16 C160,14 200,22 240,30 C280,36 300,40 320,46 L320,52 C300,46 280,42 240,36 C200,28 160,20 120,22 C80,24 40,34 0,48 Z" fill="var(--accent-soft)" opacity="0.5"/>
+              <!-- p50 line -->
+              <path d="M0,46 C40,32 80,22 120,20 C160,18 200,26 240,34 C280,40 300,44 320,50" fill="none" stroke="var(--accent)" stroke-width="1.6"/>
+              <!-- realised dots -->
+              <circle cx="40" cy="34" r="2" fill="var(--ink)"/>
+              <circle cx="100" cy="22" r="2" fill="var(--ink)"/>
+              <circle cx="160" cy="20" r="2" fill="var(--ink)"/>
+              <circle cx="220" cy="32" r="2" fill="var(--ink)"/>
+              <circle cx="280" cy="42" r="2" fill="var(--ink)"/>
+              <!-- axis -->
+              <line x1="0" y1="58" x2="320" y2="58" stroke="var(--rule)" stroke-width="1"/>
+              <!-- labels -->
+              <text x="2" y="63" font-family="JetBrains Mono, monospace" font-size="9" fill="var(--ink-faint)">D+1 →</text>
+              <text x="265" y="14" font-family="JetBrains Mono, monospace" font-size="9" fill="var(--accent)">p10–p90</text>
+            </svg>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════ ARCHITECTURE PREVIEW ════════════════ -->
+  <section class="block" style="background: var(--paper-deep); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);" data-screen-label="architecture-preview">
+    <div class="container">
+      <div class="stack-md" style="display:grid; grid-template-columns: 0.9fr 1.1fr; gap: 64px; align-items: start;">
+        <div>
+          <div class="eyebrow mb-8">Architecture</div>
+          <h2 class="display-3 mb-24">Bronze · silver · <span class="italic">gold.</span></h2>
+          <p class="lede" style="margin-bottom: 24px; max-width: 440px;">
+            Raw API responses land in <em class="italic">bronze</em>.
+            Cleaned, typed, deduped tables live in <em class="italic">silver</em>.
+            Joined, analysis-ready views in <em class="italic">gold</em>.
+          </p>
+          <p style="font-size:14px; max-width: 440px; color:var(--ink-soft); line-height:1.7;">
+            Everything is Hive-partitioned Parquet, queryable from DuckDB or the Python client. Backfills are idempotent. Schema changes are caught at parse time by Pydantic v2 contracts. Bitemporal — every row carries both event-time and ingestion-time so point-in-time queries are trivial.
+          </p>
+          <div class="row gap-16 mt-24">
+            <a href="architecture.html" class="btn primary">Read the design doc →</a>
+          </div>
+        </div>
+
+        <!-- pipeline diagram -->
+        <div>
+          <div class="stack-sm" style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 14px;">
+            <!-- bronze col -->
+            <div class="card" style="background: var(--paper-card); padding: 20px;">
+              <div class="eyebrow mb-16" style="color:#c45a3a;">Bronze · raw</div>
+              <div style="display:flex; flex-direction:column; gap:8px;">
+                <div class="mono small" style="padding:8px 10px; background:var(--paper); border:1px solid var(--rule);">elexon/fuelhh.json</div>
+                <div class="mono small" style="padding:8px 10px; background:var(--paper); border:1px solid var(--rule);">entsoe/da_prices.xml</div>
+                <div class="mono small" style="padding:8px 10px; background:var(--paper); border:1px solid var(--rule);">gie/agsi.json</div>
+                <div class="mono small" style="padding:8px 10px; background:var(--paper); border:1px solid var(--rule);">openmeteo/weather.json</div>
+              </div>
+              <div class="tiny mt-16">append-only · SHA-256 hashed</div>
+            </div>
+            <!-- silver col -->
+            <div class="card" style="background: var(--paper-card); padding: 20px;">
+              <div class="eyebrow mb-16" style="color:var(--accent);">Silver · clean</div>
+              <div style="display:flex; flex-direction:column; gap:8px;">
+                <div class="mono small" style="padding:8px 10px; background:var(--paper); border:1px solid var(--rule);">silver.fuelhh</div>
+                <div class="mono small" style="padding:8px 10px; background:var(--paper); border:1px solid var(--rule);">silver.da_prices</div>
+                <div class="mono small" style="padding:8px 10px; background:var(--paper); border:1px solid var(--rule);">silver.gas_storage</div>
+                <div class="mono small" style="padding:8px 10px; background:var(--paper); border:1px solid var(--rule);">silver.weather_grid</div>
+              </div>
+              <div class="tiny mt-16">typed · partitioned · deduped</div>
+            </div>
+            <!-- gold col -->
+            <div class="card" style="background: var(--ink-strong); color: var(--paper); padding: 20px; border-color: var(--ink-strong);">
+              <div class="eyebrow mb-16" style="color: var(--accent-soft);">Gold · joined</div>
+              <div style="display:flex; flex-direction:column; gap:8px;">
+                <div class="mono small" style="padding:8px 10px; background:#26221d; border:1px solid #3a342c; color:#d6d0c1;">gold.gb_dispatch</div>
+                <div class="mono small" style="padding:8px 10px; background:#26221d; border:1px solid #3a342c; color:#d6d0c1;">gold.eu_prices</div>
+                <div class="mono small" style="padding:8px 10px; background:#26221d; border:1px solid #3a342c; color:#d6d0c1;">gold.fundamentals</div>
+                <div class="mono small" style="padding:8px 10px; background:#26221d; border:1px solid #3a342c; color:#d6d0c1;">gold.daily_brief</div>
+              </div>
+              <div class="tiny mt-16" style="color: #a8a194;">analyst-ready · DuckDB views</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════ DATA SOURCES PREVIEW ════════════════ -->
+  <section class="block" data-screen-label="sources-preview">
+    <div class="container">
+      <div class="stack-sm row between mb-32" style="align-items:flex-end;">
+        <div>
+          <div class="eyebrow mb-8">Catalogue</div>
+          <h2 class="display-3">Six feeds, one <span class="italic">warehouse.</span></h2>
+        </div>
+        <a href="data-sources.html" class="link">Full catalogue →</a>
+      </div>
+
+      <div class="stack-sm" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink);">
+        <!-- row 1 -->
+        <a href="data-sources/elexon.html" class="row-link" style="border-right:1px solid var(--rule); border-bottom:1px solid var(--rule); padding: 24px 28px;">
+          <div style="display:grid; grid-template-columns: 60px 1fr 80px auto; gap: 20px; align-items:center;">
+            <div class="mono small">EX</div>
+            <div>
+              <h3 style="font-size:20px; margin-bottom: 4px;">Elexon BMRS</h3>
+              <p class="small" style="margin:0;">GB electricity · prices, generation, demand, balancing</p>
+              <div class="tag-row mt-8">
+                <span class="chip" style="font-size:11px;">33 datasets</span>
+                <span class="chip" style="font-size:11px;">5m</span>
+              </div>
+            </div>
+            <div data-chart="sparkline" data-opts='{"seed":3,"width":80,"height":36}'></div>
+            <span class="arrow" aria-hidden="true">→</span>
+          </div>
+        </a>
+
+        <a href="data-sources.html#entsoe" class="row-link" style="border-bottom:1px solid var(--rule); padding: 24px 28px;">
+          <div style="display:grid; grid-template-columns: 60px 1fr 80px auto; gap: 20px; align-items:center;">
+            <div class="mono small">EN</div>
+            <div>
+              <h3 style="font-size:20px; margin-bottom: 4px;">ENTSO-E</h3>
+              <p class="small" style="margin:0;">European electricity transparency platform</p>
+              <div class="tag-row mt-8">
+                <span class="chip" style="font-size:11px;">49 datasets</span>
+                <span class="chip" style="font-size:11px;">15m</span>
+              </div>
+            </div>
+            <div data-chart="sparkline" data-opts='{"seed":7,"width":80,"height":36,"color":"#86627d","fill":"#e8dde8"}'></div>
+            <span class="arrow" aria-hidden="true">→</span>
+          </div>
+        </a>
+
+        <!-- row 2 -->
+        <a href="data-sources.html#entsog" class="row-link" style="border-right:1px solid var(--rule); border-bottom:1px solid var(--rule); padding: 24px 28px;">
+          <div style="display:grid; grid-template-columns: 60px 1fr 80px auto; gap: 20px; align-items:center;">
+            <div class="mono small">EG</div>
+            <div>
+              <h3 style="font-size:20px; margin-bottom: 4px;">ENTSO-G</h3>
+              <p class="small" style="margin:0;">European gas transmission flows at IPs</p>
+              <div class="tag-row mt-8">
+                <span class="chip" style="font-size:11px;">33 datasets</span>
+                <span class="chip" style="font-size:11px;">daily</span>
+              </div>
+            </div>
+            <div data-chart="sparkline" data-opts='{"seed":11,"width":80,"height":36,"color":"#c45a3a","fill":"#f6e2d5"}'></div>
+            <span class="arrow" aria-hidden="true">→</span>
+          </div>
+        </a>
+
+        <a href="data-sources.html#gie" class="row-link" style="border-bottom:1px solid var(--rule); padding: 24px 28px;">
+          <div style="display:grid; grid-template-columns: 60px 1fr 80px auto; gap: 20px; align-items:center;">
+            <div class="mono small">GI</div>
+            <div>
+              <h3 style="font-size:20px; margin-bottom: 4px;">GIE AGSI · ALSI</h3>
+              <p class="small" style="margin:0;">EU gas storage levels and LNG terminal send-out</p>
+              <div class="tag-row mt-8">
+                <span class="chip" style="font-size:11px;">8 datasets</span>
+                <span class="chip" style="font-size:11px;">daily</span>
+              </div>
+            </div>
+            <div data-chart="sparkline" data-opts='{"seed":13,"width":80,"height":36,"color":"#c9a96e","fill":"#efe5d1"}'></div>
+            <span class="arrow" aria-hidden="true">→</span>
+          </div>
+        </a>
+
+        <!-- row 3 -->
+        <a href="data-sources.html#weather" class="row-link" style="border-right:1px solid var(--rule); padding: 24px 28px;">
+          <div style="display:grid; grid-template-columns: 60px 1fr 80px auto; gap: 20px; align-items:center;">
+            <div class="mono small">OM</div>
+            <div>
+              <h3 style="font-size:20px; margin-bottom: 4px;">Open-Meteo</h3>
+              <p class="small" style="margin:0;">Weather — temperature, wind, radiation</p>
+              <div class="tag-row mt-8">
+                <span class="chip" style="font-size:11px;">6 datasets</span>
+                <span class="chip" style="font-size:11px;">hourly</span>
+              </div>
+            </div>
+            <div data-chart="sparkline" data-opts='{"seed":17,"width":80,"height":36,"color":"#7a96a8","fill":"#dde6ec"}'></div>
+            <span class="arrow" aria-hidden="true">→</span>
+          </div>
+        </a>
+
+        <a href="data-sources.html#carbon" class="row-link" style="padding: 24px 28px;">
+          <div style="display:grid; grid-template-columns: 60px 1fr 80px auto; gap: 20px; align-items:center;">
+            <div class="mono small">NE</div>
+            <div>
+              <h3 style="font-size:20px; margin-bottom: 4px;">NESO</h3>
+              <p class="small" style="margin:0;">GB carbon intensity — actuals, forecasts, regional</p>
+              <div class="tag-row mt-8">
+                <span class="chip" style="font-size:11px;">33 datasets</span>
+                <span class="chip" style="font-size:11px;">30m</span>
+              </div>
+            </div>
+            <div data-chart="sparkline" data-opts='{"seed":19,"width":80,"height":36}'></div>
+            <span class="arrow" aria-hidden="true">→</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════ MODELS ════════════════ -->
+  <section class="block" id="models" style="background: var(--paper-deep); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);" data-screen-label="models">
+    <div class="container">
+      <div class="stack-sm row between mb-8" style="align-items: baseline;">
+        <div>
+          <div class="eyebrow mb-8">Models</div>
+          <h2 class="display-3">From pipeline to signal</h2>
+        </div>
+      </div>
+      <p style="font-size:15px; color:var(--ink-soft); max-width:580px; margin-bottom:32px; line-height:1.65;">
+        The warehouse exists to support quantitative work. Probabilistic estimators
+        live in <code class="mono" style="font-size:12px;background:var(--paper);padding:1px 5px;border:1px solid var(--rule);">gridflow-models</code>,
+        a sibling repository — one LightGBM model per quantile, walk-forward validated,
+        artifact-pinned to the data fingerprint that trained them. The demand model
+        below is the worked example; wind, solar, a merit-order supply curve and a
+        fundamentals price model build on the same spine.
+      </p>
+
+      <div style="border-top: 1px solid var(--ink);">
+
+        <!-- Model 1 — Demand (shipping, links to case study) -->
+        <a href="models/demand-forecast.html" class="row-link model-row">
+          <span class="num">01</span>
+          <div>
+            <h3>Day-ahead demand · GB</h3>
+            <p class="desc">LightGBM quantile regression on national demand. Calendar + lag-feature pipeline; one model per quantile; six-fold expanding window. <strong style="color:var(--ink);">Currently the worked example</strong> — see the case study.</p>
+          </div>
+          <span class="mono small" style="color:var(--ink-soft);">7 quantiles · p05–p95</span>
+          <span class="stage ship">Shipped · case study</span>
+          <span class="arrow" aria-hidden="true">→</span>
+        </a>
+
+
+      </div>
+
+      <div style="border-top: 1px solid var(--rule); padding-top: 24px; margin-top: 0;">
+        <p class="small" style="color:var(--ink-faint); font-style:italic; margin:0;">Every model on this site is a function of the catalogue. Inputs are linked. Code is on GitHub. Caveats are stated.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════ QUERY IT ════════════════ -->
+  <section class="block" style="padding-bottom: 32px;" data-screen-label="query">
+    <div class="container">
+      <div class="eyebrow mb-8">Query it</div>
+      <h2 class="display-3 mb-32">SQL or Python — <span class="italic">pick one.</span></h2>
+
+      <div data-tabs style="border:1px solid var(--rule); background: var(--paper-card);">
+        <div class="stack-sm" style="display:grid; grid-template-columns: 200px 1fr;">
+          <div style="border-right:1px solid var(--rule); padding: 20px;">
+            <div class="tabs" style="flex-direction: column; border-bottom: 0; border-right: 0; gap: 0;">
+              <button class="active" style="text-align:left; border-bottom: 0; border-left: 2px solid var(--accent); padding-left: 12px;">DuckDB · SQL</button>
+              <button style="text-align:left; border-bottom: 0; border-left: 2px solid transparent; padding-left: 12px;">Python · gridflow-models</button>
+            </div>
+            <div class="tiny mt-32">All examples use the same canonical silver schema.</div>
+          </div>
+          <div style="padding: 0;">
+            <div class="tab-panel active code-wrap" style="padding: 0;">
+<pre class="code dark" style="border:0; border-radius: 0; padding: 24px;"><span class="c">-- GB residual demand last 30 days, hourly</span>
+<span class="k">SELECT</span>
+  date_trunc(<span class="s">'hour'</span>, settlement_dt) <span class="k">AS</span> hour,
+  sum(case when fuel_type = <span class="s">'WIND'</span>  then mw end) <span class="k">AS</span> wind_mw,
+  sum(case when fuel_type = <span class="s">'NPSHYD'</span> then mw end) <span class="k">AS</span> hydro_mw,
+  sum(mw) <span class="k">AS</span> total_mw
+<span class="k">FROM</span> silver.fuelhh
+<span class="k">WHERE</span> settlement_dt &gt;= now() - <span class="k">interval</span> <span class="s">'30 days'</span>
+<span class="k">GROUP BY</span> 1
+<span class="k">ORDER BY</span> 1;</pre>
+            </div>
+            <div class="tab-panel code-wrap" style="padding: 0;">
+<pre class="code dark" style="border:0; border-radius: 0; padding: 24px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
+data, models, common = setup_notebook()
+
+<span class="c"># Half-hourly fuel generation as a DataFrame</span>
+df = data.elexon.query(<span class="s">"fuelhh"</span>, start, end)
+
+<span class="c"># Inspect the schema without pulling the full series</span>
+schema = data.elexon.describe(<span class="s">"fuelhh"</span>)</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════ ABOUT ════════════════ -->
+  <section class="block" id="about" style="background: var(--paper-deep); border-top: 1px solid var(--ink); padding-top: 80px;" data-screen-label="about">
+    <div class="container">
+      <div class="eyebrow mb-24">About</div>
+
+      <div class="about-grid stack-md">
+        <div>
+          <h2 class="about-name">
+            Elliot Bentham, <span class="here">here.</span>
+          </h2>
+          <div class="about-where">Quantitative Developer · London · UK</div>
+
+          <p class="about-intro">
+            Gridflow is a personal research platform for UK and European
+            power markets — a medallion data pipeline, vendor catalogue
+            and probabilistic modelling stack, built in the open.
+          </p>
+
+          <p class="about-body">
+            I'm a quantitative developer at ICBCS working across FICC,
+            with prior experience in European power and gas research at
+            RISQ and FX options pricing at Bank of America Merrill
+            Lynch. Gridflow is where I work on the markets I want to
+            specialise in, and where I keep current with agentic AI
+            development workflows — context engineering, spec-first
+            prompting and disciplined use of tools like Claude Code.
+          </p>
+
+          <p class="about-callout">
+            Open to roles in energy trading and quantitative research.
+          </p>
+
+          <div class="row gap-16" style="flex-wrap:wrap;">
+            <a href="https://github.com/EBentham" target="_blank" rel="noopener" class="btn primary">GitHub →</a>
+            <a href="https://linkedin.com/in/elliot-bentham" target="_blank" rel="noopener" class="btn ghost">LinkedIn →</a>
+            <a href="cv.pdf" class="btn ghost">CV (PDF) →</a>
+            <a href="mailto:e.bentham31231@gmail.com" class="btn ghost">Email →</a>
+          </div>
+        </div>
+
+        <div class="about-card">
+          <h4>Skills</h4>
+          <ul class="about-facts">
+            <li>
+              <span class="k">Languages</span>
+              <span class="v"><span class="mono">Python · SQL</span></span>
+            </li>
+            <li>
+              <span class="k">Data engineering</span>
+              <span class="v"><span class="mono">Polars · DuckDB · Parquet · Pydantic</span> · medallion architecture · event-driven design (<span class="mono">Kafka</span>)</span>
+            </li>
+            <li>
+              <span class="k">Quant &amp; ML</span>
+              <span class="v"><span class="mono">LightGBM</span> · quantile regression · conformal prediction (<span class="mono">MAPIE</span>) · linear programming (<span class="mono">PuLP</span>) · Monte Carlo · time-series analysis</span>
+            </li>
+            <li>
+              <span class="k">HPC</span>
+              <span class="v">Multithreading · multiprocessing · parallel batch compute · distributed computing (<span class="mono">PySpark</span>)</span>
+            </li>
+            <li>
+              <span class="k">Cloud &amp; infra</span>
+              <span class="v"><span class="mono">AWS · Azure · Docker · Git · CI/CD</span></span>
+            </li>
+            <li>
+              <span class="k">Visualisation</span>
+              <span class="v"><span class="mono">Power BI · Plotly · matplotlib</span></span>
+            </li>
+            <li>
+              <span class="k">Markets</span>
+              <span class="v">UK &amp; European power · gas · FX options · rates · credit · commodities · vol surfaces</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  </main>
+  <script src="../../assets/charts.js"></script>
+  <script src="../../assets/site.js"></script>
+</body>
+</html>

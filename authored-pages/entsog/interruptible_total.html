@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <title>interruptible_total · ENTSO-G Transparency · Gridflow</title>
   <meta name="description" content="Total interruptible-product capacity per operator-point-direction — the upper bound on interruptible offered, distinct from interruptible_available."/>
-  <meta name="viewport" content="width=1280" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,30..100&family=Inter:wght@300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -235,7 +235,7 @@
               </div>
             </div>
             <div data-chart="barsH" data-opts='{"width":820,"items":[{"label":"Bacton IUK exit · firm avail","value":180,"display":"180 GWh","color":"#3b6b4b"},{"label":"Bacton IUK exit · interrupt","value":95,"display":"95 GWh","color":"#c45a3a"},{"label":"Bacton BBL exit · firm avail","value":180,"display":"180 GWh","color":"#3b6b4b"},{"label":"Bacton BBL exit · interrupt","value":20,"display":"20 GWh","color":"#c45a3a"},{"label":"Moffat IE entry · interrupt","value":8,"display":"8 GWh","color":"#c45a3a"}]}'></div>
-            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · live wiring planned</div>
+            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · illustrative, seeded</div>
           </div>
         </section>
 
@@ -256,17 +256,17 @@
               </tr>
             </thead>
             <tbody>
-<tr><td class="col-name">id <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Vendor concatenation. Dedup key. <span class="cite">silver/entsog/generic.py L126-130</span></td></tr>
-<tr><td class="col-name">timestamp_utc</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Set from <code class="mono">periodFrom</code> via the priority list. Partition driver. <span class="cite">silver/entsog/generic.py L118-120</span></td></tr>
-<tr><td class="col-name">period_from / period_to</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Validity window. <span class="cite">silver/entsog/generic.py L114-116</span></td></tr>
-<tr><td class="col-name">indicator</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Always <code class="mono">"Interruptible Total"</code>. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">operator_key / point_key / direction_key</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Operator-point-direction (<code class="mono">"entry"</code>/<code class="mono">"exit"</code>). <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">capacity_type</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note"><code class="mono">"Interruptible"</code>. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">unit</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Always <code class="mono">"kWh/d"</code>. Gas convention, <strong>NOT MWh</strong>. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">value</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Total interruptible capacity offered in the declared <code class="mono">unit</code>. <span class="cite">silver/entsog/generic.py L122-124</span></td></tr>
-<tr><td class="col-name">last_update_date_time</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Vendor publication timestamp. <span class="cite">silver/entsog/datetime.py</span></td></tr>
-<tr><td class="col-name">data_provider</td><td class="col-type">str ("entsog")</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsog"</code>. Constant. <span class="cite">silver/entsog/generic.py L132-136</span></td></tr>
-<tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Wall-clock at silver write. <span class="cite">silver/entsog/generic.py L132-136</span></td></tr>
+<tr><td class="col-name">id <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Vendor concatenation. Dedup key. </td></tr>
+<tr><td class="col-name">timestamp_utc</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Set from <code class="mono">periodFrom</code> via the priority list. Partition driver. </td></tr>
+<tr><td class="col-name">period_from / period_to</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Validity window. </td></tr>
+<tr><td class="col-name">indicator</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Always <code class="mono">"Interruptible Total"</code>. </td></tr>
+<tr><td class="col-name">operator_key / point_key / direction_key</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Operator-point-direction (<code class="mono">"entry"</code>/<code class="mono">"exit"</code>). </td></tr>
+<tr><td class="col-name">capacity_type</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note"><code class="mono">"Interruptible"</code>. </td></tr>
+<tr><td class="col-name">unit</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Always <code class="mono">"kWh/d"</code>. Gas convention, <strong>NOT MWh</strong>. </td></tr>
+<tr><td class="col-name">value</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Total interruptible capacity offered in the declared <code class="mono">unit</code>. </td></tr>
+<tr><td class="col-name">last_update_date_time</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Vendor publication timestamp. </td></tr>
+<tr><td class="col-name">data_provider</td><td class="col-type">str ("entsog")</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsog"</code>. Constant. </td></tr>
+<tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Wall-clock at silver write. </td></tr>
             </tbody>
           </table>
           <div class="card mt-24" style="padding: 16px 20px; display: flex; gap: 32px; align-items: start;">
@@ -335,7 +335,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('itl','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('itl','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('itl','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('itl','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="itl-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;">https://transparency.entsog.eu/api/v1/operationalData<span style="color:#6b6358;">?</span><span style="color:#c9a96e;">from</span>=2026-05-06<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">to</span>=2026-05-06<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">timeZone</span>=UCT<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">indicator</span>=Interruptible%20Total<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">periodType</span>=day<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">pointDirection</span>=UK-TSO-0001ITP-00005exit<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">forceDownload</span>=true<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">limit</span>=-1</pre>
@@ -344,17 +344,17 @@
 <pre class="code dark" style="padding: 18px 22px;"><span class="c">-- Total offered (firm + interruptible_total) vs technical</span>
 <span class="k">WITH</span> t <span class="k">AS</span> (
   <span class="k">SELECT</span> point_key, direction_key, value <span class="k">AS</span> tech
-  <span class="k">FROM</span> read_parquet(<span class="s">'data/silver/entsog/firm_technical/**/*.parquet'</span>)
+  <span class="k">FROM</span> silver_firm_technical
   <span class="k">WHERE</span> period_from &lt;= current_date <span class="k">AND</span> period_to &gt; current_date
 ),
 fa <span class="k">AS</span> (
   <span class="k">SELECT</span> point_key, direction_key, value <span class="k">AS</span> fa
-  <span class="k">FROM</span> read_parquet(<span class="s">'data/silver/entsog/firm_available/**/*.parquet'</span>)
+  <span class="k">FROM</span> silver_firm_available
   <span class="k">WHERE</span> period_from &lt;= current_date <span class="k">AND</span> period_to &gt; current_date
 ),
 it <span class="k">AS</span> (
   <span class="k">SELECT</span> point_key, direction_key, value <span class="k">AS</span> it
-  <span class="k">FROM</span> read_parquet(<span class="s">'data/silver/entsog/interruptible_total/**/*.parquet'</span>)
+  <span class="k">FROM</span> silver_interruptible_total
   <span class="k">WHERE</span> period_from &lt;= current_date <span class="k">AND</span> period_to &gt; current_date
 )
 <span class="k">SELECT</span> t.point_key, t.direction_key,
@@ -365,16 +365,15 @@ it <span class="k">AS</span> (
 <span class="k">ORDER BY</span> tech_gwh <span class="k">DESC</span>;</pre>
             </div></div>
             <div data-tab-panel="itl-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-df = pl.read_parquet(<span class="s">"data/silver/entsog/interruptible_total/**/*.parquet"</span>)
-<span class="c"># Latest total interruptible per point</span>
-latest = (
-    df.sort(<span class="s">"last_update_date_time"</span>, descending=<span class="k">True</span>)
-      .group_by([<span class="s">"point_key"</span>, <span class="s">"direction_key"</span>])
-      .agg(pl.col(<span class="s">"value"</span>).first().alias(<span class="s">"kwh_per_day"</span>))
-)
-print(latest)</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># interruptible_total: stored silver rows as a pandas DataFrame</span>
+df = data.entsog.query(<span class="s">"interruptible_total"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.entsog.describe(<span class="s">"interruptible_total"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -385,11 +384,11 @@ print(latest)</pre>
           <h2 class="display-3 mb-8">Things to know before using this.</h2>
           <p class="small mb-24" style="max-width: 560px;">These are specific to <code class="mono">interruptible_total</code>. Also read the <a href="../entsog.html#about" class="link">ENTSO-G-wide caveats</a> on the vendor page.</p>
           <div>
-<div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;">Indicator string is exact-case</div><p class="small" style="margin: 0;">Connector sends the literal <code class="mono">"Interruptible Total"</code>. <span class="src-cite">OPERATIONAL_INDICATORS["interruptible_total"] · connectors/entsog/endpoints.py L105</span></p></div></div>
-<div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">interruptible_total</code> ≥ <code class="mono">interruptible_available</code></div><p class="small" style="margin: 0;"><code class="mono">total</code> is the firm-equivalent offered; <code class="mono">available</code> subtracts unconverted rollover. Use <code class="mono">total</code> for theoretical headroom, <code class="mono">available</code> for what shippers can actually book today. <span class="src-cite">vault Modelling notes; ENTSO-G data dictionary</span></p></div></div>
-<div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">timeZone=UCT</code> (vendor typo, intentional)</div><p class="small" style="margin: 0;">Connector sends <code class="mono">UCT</code> not <code class="mono">UTC</code>; sending <code class="mono">UTC</code> returns HTTP 400. <span class="src-cite">connectors/entsog/endpoints.py L17 · ENTSOG_TIMEZONE</span></p></div></div>
-<div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;">Empty windows return HTTP 404, not 200</div><p class="small" style="margin: 0;">ENTSO-G's empty convention is <code class="mono">HTTP 404 + {"message":"No result found"}</code>. Connector short-circuits as empty-bronze. <span class="src-cite">connectors/entsog/client.py L24-28, L109-115</span></p></div></div>
-<div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">Day-level rows are rare — long products dominate</div><p class="small" style="margin: 0;">Most rows have multi-month or multi-year validity windows; daily rows appear only for short-product UIOLI capacity. <span class="src-cite">vault Bronze sample period-window shape</span></p></div></div>
+<div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;">Indicator string is exact-case</div><p class="small" style="margin: 0;">Connector sends the literal <code class="mono">"Interruptible Total"</code>. </p></div></div>
+<div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">interruptible_total</code> ≥ <code class="mono">interruptible_available</code></div><p class="small" style="margin: 0;"><code class="mono">total</code> is the firm-equivalent offered; <code class="mono">available</code> subtracts unconverted rollover. Use <code class="mono">total</code> for theoretical headroom, <code class="mono">available</code> for what shippers can actually book today. </p></div></div>
+<div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">timeZone=UCT</code> (vendor typo, intentional)</div><p class="small" style="margin: 0;">Connector sends <code class="mono">UCT</code> not <code class="mono">UTC</code>; sending <code class="mono">UTC</code> returns HTTP 400. </p></div></div>
+<div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;">Empty windows return HTTP 404, not 200</div><p class="small" style="margin: 0;">ENTSO-G's empty convention is <code class="mono">HTTP 404 + {"message":"No result found"}</code>. Connector short-circuits as empty-bronze. </p></div></div>
+<div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">Day-level rows are rare — long products dominate</div><p class="small" style="margin: 0;">Most rows have multi-month or multi-year validity windows; daily rows appear only for short-product UIOLI capacity. </p></div></div>
           </div>
         </section>
 

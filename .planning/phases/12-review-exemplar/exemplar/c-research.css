@@ -1,0 +1,45 @@
+/* ══════════════════════════════════════════════════════════════
+   Direction C — QUANT RESEARCH DESK
+   Layered on theme.css + fixes.css. Structural monospace labels, crisper
+   hairlines, a tighter/denser grid, restrained display type. A research-note
+   register — serious and technical, but still editorial-quiet (NOT a terminal/
+   dashboard). Type/spacing scoped to >=721px so the mobile reflow still wins.
+   ══════════════════════════════════════════════════════════════ */
+
+:root {
+  --rule: #cdc5b4;   /* slightly crisper hairlines */
+}
+
+/* Eyebrows become structural mono labels with a code-comment lead-in */
+.eyebrow {
+  font-family: var(--mono);
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 11px;
+  color: var(--ink-soft);
+}
+.eyebrow::before { content: "// "; color: var(--accent); }
+
+/* Chips read as monospace tokens, squared off */
+.chip {
+  font-family: var(--mono);
+  font-size: 10px;
+  border-radius: 0;
+  letter-spacing: 0;
+}
+
+/* Stat numbers in mono — a research-readout feel */
+.stat-n { font-family: var(--mono) !important; letter-spacing: -0.02em; }
+
+@media (min-width: 721px) {
+  /* Restrained display — body-and-data forward, not poster-headline */
+  .display-1 { font-size: 60px; letter-spacing: -0.03em; line-height: 1.02; }
+  .display-2 { font-size: 44px; letter-spacing: -0.02em; }
+  .display-3 { font-size: 30px; letter-spacing: -0.015em; }
+  h1 { font-size: 52px; letter-spacing: -0.025em; }
+  .lede { font-size: 17px; color: var(--ink-soft); }
+
+  /* Tighter, denser rhythm */
+  .block { padding-top: 72px; padding-bottom: 72px; }
+  body[data-page="dataset"] .main-content { padding: 36px 56px 72px 56px; }
+}

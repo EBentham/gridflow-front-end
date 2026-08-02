@@ -1,0 +1,1733 @@
+{
+  "note": "v3 creative-pass backlog. mechanical=Phase 13 (done). creative=Phase 14/15.",
+  "counts": {
+    "total": 172,
+    "tier1_recruiter_path": 22,
+    "tier2_long_tail": 150,
+    "top": 4,
+    "hub": 6,
+    "flagship": 12
+  },
+  "pages": [
+    {
+      "path": "site/hifi/index.html",
+      "type": "top",
+      "vendor": null,
+      "slug": "index",
+      "tier": 1,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "site/hifi/architecture.html",
+      "type": "top",
+      "vendor": null,
+      "slug": "architecture",
+      "tier": 1,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "site/hifi/data-sources.html",
+      "type": "top",
+      "vendor": null,
+      "slug": "data-sources",
+      "tier": 1,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "site/hifi/models/demand-forecast.html",
+      "type": "top",
+      "vendor": null,
+      "slug": "demand-forecast",
+      "tier": 1,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/elexon/_landing.html",
+      "type": "hub",
+      "vendor": "elexon",
+      "slug": "elexon",
+      "tier": 1,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/elexon/agpt.html",
+      "type": "dataset",
+      "vendor": "elexon",
+      "slug": "agpt",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/elexon/agws.html",
+      "type": "dataset",
+      "vendor": "elexon",
+      "slug": "agws",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/elexon/atl.html",
+      "type": "dataset",
+      "vendor": "elexon",
+      "slug": "atl",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/elexon/bmunits_reference.html",
+      "type": "dataset",
+      "vendor": "elexon",
+      "slug": "bmunits_reference",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/elexon/boal.html",
+      "type": "dataset",
+      "vendor": "elexon",
+      "slug": "boal",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/elexon/disbsad.html",
+      "type": "dataset",
+      "vendor": "elexon",
+      "slug": "disbsad",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/elexon/fou2t14d.html",
+      "type": "dataset",
+      "vendor": "elexon",
+      "slug": "fou2t14d",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/elexon/freq.html",
+      "type": "dataset",
+      "vendor": "elexon",
+      "slug": "freq",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/elexon/fuelhh.html",
+      "type": "dataset",
+      "vendor": "elexon",
+      "slug": "fuelhh",
+      "tier": 1,
+      "flagship": true,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/elexon/fuelinst.html",
+      "type": "dataset",
+      "vendor": "elexon",
+      "slug": "fuelinst",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/elexon/imbalngc.html",
+      "type": "dataset",
+      "vendor": "elexon",
+      "slug": "imbalngc",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/elexon/inddem.html",
+      "type": "dataset",
+      "vendor": "elexon",
+      "slug": "inddem",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/elexon/indgen.html",
+      "type": "dataset",
+      "vendor": "elexon",
+      "slug": "indgen",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/elexon/indo.html",
+      "type": "dataset",
+      "vendor": "elexon",
+      "slug": "indo",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/elexon/indod.html",
+      "type": "dataset",
+      "vendor": "elexon",
+      "slug": "indod",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/elexon/itsdo.html",
+      "type": "dataset",
+      "vendor": "elexon",
+      "slug": "itsdo",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/elexon/lolpdrm.html",
+      "type": "dataset",
+      "vendor": "elexon",
+      "slug": "lolpdrm",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/elexon/market_depth.html",
+      "type": "dataset",
+      "vendor": "elexon",
+      "slug": "market_depth",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/elexon/melngc.html",
+      "type": "dataset",
+      "vendor": "elexon",
+      "slug": "melngc",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/elexon/mid.html",
+      "type": "dataset",
+      "vendor": "elexon",
+      "slug": "mid",
+      "tier": 1,
+      "flagship": true,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/elexon/ndf.html",
+      "type": "dataset",
+      "vendor": "elexon",
+      "slug": "ndf",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/elexon/ndfd.html",
+      "type": "dataset",
+      "vendor": "elexon",
+      "slug": "ndfd",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/elexon/netbsad.html",
+      "type": "dataset",
+      "vendor": "elexon",
+      "slug": "netbsad",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/elexon/nonbm.html",
+      "type": "dataset",
+      "vendor": "elexon",
+      "slug": "nonbm",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/elexon/pn.html",
+      "type": "dataset",
+      "vendor": "elexon",
+      "slug": "pn",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/elexon/remit.html",
+      "type": "dataset",
+      "vendor": "elexon",
+      "slug": "remit",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/elexon/soso.html",
+      "type": "dataset",
+      "vendor": "elexon",
+      "slug": "soso",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/elexon/system_prices.html",
+      "type": "dataset",
+      "vendor": "elexon",
+      "slug": "system_prices",
+      "tier": 1,
+      "flagship": true,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/elexon/temp.html",
+      "type": "dataset",
+      "vendor": "elexon",
+      "slug": "temp",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/elexon/tsdf.html",
+      "type": "dataset",
+      "vendor": "elexon",
+      "slug": "tsdf",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/elexon/tsdfd.html",
+      "type": "dataset",
+      "vendor": "elexon",
+      "slug": "tsdfd",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/elexon/uou2t14d.html",
+      "type": "dataset",
+      "vendor": "elexon",
+      "slug": "uou2t14d",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/elexon/windfor.html",
+      "type": "dataset",
+      "vendor": "elexon",
+      "slug": "windfor",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/_landing.html",
+      "type": "hub",
+      "vendor": "entsoe",
+      "slug": "entsoe",
+      "tier": 1,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/activated_balancing_prices.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "activated_balancing_prices",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/activated_balancing_qty.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "activated_balancing_qty",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/actual_generation.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "actual_generation",
+      "tier": 1,
+      "flagship": true,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/actual_generation_units.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "actual_generation_units",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/actual_load.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "actual_load",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/aggregated_balancing_energy_bids.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "aggregated_balancing_energy_bids",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/auction_revenue.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "auction_revenue",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/balancing_energy_bids.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "balancing_energy_bids",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/balancing_financial_expenses_income.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "balancing_financial_expenses_income",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/commercial_schedules.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "commercial_schedules",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/commercial_schedules_net_positions.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "commercial_schedules_net_positions",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/congestion_income.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "congestion_income",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/congestion_management_costs.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "congestion_management_costs",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/contracted_reserves.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "contracted_reserves",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/countertrading.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "countertrading",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/cross_border_flows.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "cross_border_flows",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/cross_zonal_balancing_capacity.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "cross_zonal_balancing_capacity",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/current_balancing_state.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "current_balancing_state",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/day_ahead_prices.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "day_ahead_prices",
+      "tier": 1,
+      "flagship": true,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/dc_link_intraday_transfer_limits.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "dc_link_intraday_transfer_limits",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/forecast_margin.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "forecast_margin",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/generation_forecast.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "generation_forecast",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/generation_units_master_data.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "generation_units_master_data",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/imbalance_prices.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "imbalance_prices",
+      "tier": 1,
+      "flagship": true,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/imbalance_volume.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "imbalance_volume",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/installed_capacity.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "installed_capacity",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/installed_capacity_units.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "installed_capacity_units",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/load_forecast.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "load_forecast",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/load_forecast_monthly.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "load_forecast_monthly",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/load_forecast_weekly.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "load_forecast_weekly",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/load_forecast_yearly.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "load_forecast_yearly",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/net_positions.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "net_positions",
+      "tier": 1,
+      "flagship": true,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/net_transfer_capacity.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "net_transfer_capacity",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/offered_transfer_capacity_continuous.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "offered_transfer_capacity_continuous",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/offered_transfer_capacity_explicit.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "offered_transfer_capacity_explicit",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/offered_transfer_capacity_implicit.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "offered_transfer_capacity_implicit",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/outages_consumption.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "outages_consumption",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/outages_generation.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "outages_generation",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/outages_offshore_grid.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "outages_offshore_grid",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/outages_production.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "outages_production",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/outages_transmission.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "outages_transmission",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/procured_balancing_capacity.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "procured_balancing_capacity",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/redispatching_cross_border.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "redispatching_cross_border",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/redispatching_internal.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "redispatching_internal",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/total_capacity_allocated.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "total_capacity_allocated",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/total_nominated_capacity.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "total_nominated_capacity",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/transfer_capacity_use.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "transfer_capacity_use",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/water_reservoirs.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "water_reservoirs",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsoe/wind_solar_forecast.html",
+      "type": "dataset",
+      "vendor": "entsoe",
+      "slug": "wind_solar_forecast",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsog/_landing.html",
+      "type": "hub",
+      "vendor": "entsog",
+      "slug": "entsog",
+      "tier": 1,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsog/aggregate_interconnections.html",
+      "type": "dataset",
+      "vendor": "entsog",
+      "slug": "aggregate_interconnections",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsog/aggregated_physical_flows.html",
+      "type": "dataset",
+      "vendor": "entsog",
+      "slug": "aggregated_physical_flows",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsog/allocations.html",
+      "type": "dataset",
+      "vendor": "entsog",
+      "slug": "allocations",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsog/available_through_oversubscription.html",
+      "type": "dataset",
+      "vendor": "entsog",
+      "slug": "available_through_oversubscription",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsog/available_through_surrender.html",
+      "type": "dataset",
+      "vendor": "entsog",
+      "slug": "available_through_surrender",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsog/available_through_uioli_long_term.html",
+      "type": "dataset",
+      "vendor": "entsog",
+      "slug": "available_through_uioli_long_term",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsog/available_through_uioli_short_term.html",
+      "type": "dataset",
+      "vendor": "entsog",
+      "slug": "available_through_uioli_short_term",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsog/balancing_zones.html",
+      "type": "dataset",
+      "vendor": "entsog",
+      "slug": "balancing_zones",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsog/cmp_auction_premiums.html",
+      "type": "dataset",
+      "vendor": "entsog",
+      "slug": "cmp_auction_premiums",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsog/cmp_unavailable_firm_capacity.html",
+      "type": "dataset",
+      "vendor": "entsog",
+      "slug": "cmp_unavailable_firm_capacity",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsog/cmp_unsuccessful_requests.html",
+      "type": "dataset",
+      "vendor": "entsog",
+      "slug": "cmp_unsuccessful_requests",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsog/connection_points.html",
+      "type": "dataset",
+      "vendor": "entsog",
+      "slug": "connection_points",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsog/firm_available.html",
+      "type": "dataset",
+      "vendor": "entsog",
+      "slug": "firm_available",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsog/firm_booked.html",
+      "type": "dataset",
+      "vendor": "entsog",
+      "slug": "firm_booked",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsog/firm_technical.html",
+      "type": "dataset",
+      "vendor": "entsog",
+      "slug": "firm_technical",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsog/gcv.html",
+      "type": "dataset",
+      "vendor": "entsog",
+      "slug": "gcv",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsog/hydrogen_content.html",
+      "type": "dataset",
+      "vendor": "entsog",
+      "slug": "hydrogen_content",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsog/interconnections.html",
+      "type": "dataset",
+      "vendor": "entsog",
+      "slug": "interconnections",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsog/interruptible_available.html",
+      "type": "dataset",
+      "vendor": "entsog",
+      "slug": "interruptible_available",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsog/interruptible_booked.html",
+      "type": "dataset",
+      "vendor": "entsog",
+      "slug": "interruptible_booked",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsog/interruptible_total.html",
+      "type": "dataset",
+      "vendor": "entsog",
+      "slug": "interruptible_total",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsog/interruptions.html",
+      "type": "dataset",
+      "vendor": "entsog",
+      "slug": "interruptions",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsog/methane_content.html",
+      "type": "dataset",
+      "vendor": "entsog",
+      "slug": "methane_content",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsog/nominations.html",
+      "type": "dataset",
+      "vendor": "entsog",
+      "slug": "nominations",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsog/operator_point_directions.html",
+      "type": "dataset",
+      "vendor": "entsog",
+      "slug": "operator_point_directions",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsog/operators.html",
+      "type": "dataset",
+      "vendor": "entsog",
+      "slug": "operators",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsog/oxygen_content.html",
+      "type": "dataset",
+      "vendor": "entsog",
+      "slug": "oxygen_content",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsog/physical_flows.html",
+      "type": "dataset",
+      "vendor": "entsog",
+      "slug": "physical_flows",
+      "tier": 1,
+      "flagship": true,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsog/renominations.html",
+      "type": "dataset",
+      "vendor": "entsog",
+      "slug": "renominations",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsog/tariff_simulations.html",
+      "type": "dataset",
+      "vendor": "entsog",
+      "slug": "tariff_simulations",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsog/tariffs.html",
+      "type": "dataset",
+      "vendor": "entsog",
+      "slug": "tariffs",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsog/urgent_market_messages.html",
+      "type": "dataset",
+      "vendor": "entsog",
+      "slug": "urgent_market_messages",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/entsog/wobbe_index.html",
+      "type": "dataset",
+      "vendor": "entsog",
+      "slug": "wobbe_index",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/gie/_landing.html",
+      "type": "hub",
+      "vendor": "gie",
+      "slug": "gie",
+      "tier": 1,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/gie/about_listing.html",
+      "type": "dataset",
+      "vendor": "gie",
+      "slug": "about_listing",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/gie/about_summary.html",
+      "type": "dataset",
+      "vendor": "gie",
+      "slug": "about_summary",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/gie/lng.html",
+      "type": "dataset",
+      "vendor": "gie",
+      "slug": "lng",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/gie/news.html",
+      "type": "dataset",
+      "vendor": "gie",
+      "slug": "news",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/gie/news_item.html",
+      "type": "dataset",
+      "vendor": "gie",
+      "slug": "news_item",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/gie/storage.html",
+      "type": "dataset",
+      "vendor": "gie",
+      "slug": "storage",
+      "tier": 1,
+      "flagship": true,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/gie/storage_reports.html",
+      "type": "dataset",
+      "vendor": "gie",
+      "slug": "storage_reports",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/gie/unavailability.html",
+      "type": "dataset",
+      "vendor": "gie",
+      "slug": "unavailability",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/neso/_landing.html",
+      "type": "hub",
+      "vendor": "neso",
+      "slug": "neso",
+      "tier": 1,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/neso/carbon_intensity.html",
+      "type": "dataset",
+      "vendor": "neso",
+      "slug": "carbon_intensity",
+      "tier": 1,
+      "flagship": true,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/neso/generation.html",
+      "type": "dataset",
+      "vendor": "neso",
+      "slug": "generation",
+      "tier": 1,
+      "flagship": true,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/neso/generation_current.html",
+      "type": "dataset",
+      "vendor": "neso",
+      "slug": "generation_current",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/neso/generation_pt24h.html",
+      "type": "dataset",
+      "vendor": "neso",
+      "slug": "generation_pt24h",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/neso/intensity_at.html",
+      "type": "dataset",
+      "vendor": "neso",
+      "slug": "intensity_at",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/neso/intensity_current.html",
+      "type": "dataset",
+      "vendor": "neso",
+      "slug": "intensity_current",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/neso/intensity_date.html",
+      "type": "dataset",
+      "vendor": "neso",
+      "slug": "intensity_date",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/neso/intensity_factors.html",
+      "type": "dataset",
+      "vendor": "neso",
+      "slug": "intensity_factors",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/neso/intensity_fw24h.html",
+      "type": "dataset",
+      "vendor": "neso",
+      "slug": "intensity_fw24h",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/neso/intensity_fw48h.html",
+      "type": "dataset",
+      "vendor": "neso",
+      "slug": "intensity_fw48h",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/neso/intensity_period.html",
+      "type": "dataset",
+      "vendor": "neso",
+      "slug": "intensity_period",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/neso/intensity_pt24h.html",
+      "type": "dataset",
+      "vendor": "neso",
+      "slug": "intensity_pt24h",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/neso/intensity_stats.html",
+      "type": "dataset",
+      "vendor": "neso",
+      "slug": "intensity_stats",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/neso/intensity_stats_block.html",
+      "type": "dataset",
+      "vendor": "neso",
+      "slug": "intensity_stats_block",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/neso/intensity_today.html",
+      "type": "dataset",
+      "vendor": "neso",
+      "slug": "intensity_today",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/neso/regional_current.html",
+      "type": "dataset",
+      "vendor": "neso",
+      "slug": "regional_current",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/neso/regional_england.html",
+      "type": "dataset",
+      "vendor": "neso",
+      "slug": "regional_england",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/neso/regional_intensity.html",
+      "type": "dataset",
+      "vendor": "neso",
+      "slug": "regional_intensity",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/neso/regional_intensity_fw24h.html",
+      "type": "dataset",
+      "vendor": "neso",
+      "slug": "regional_intensity_fw24h",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/neso/regional_intensity_fw24h_postcode.html",
+      "type": "dataset",
+      "vendor": "neso",
+      "slug": "regional_intensity_fw24h_postcode",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/neso/regional_intensity_fw24h_regionid.html",
+      "type": "dataset",
+      "vendor": "neso",
+      "slug": "regional_intensity_fw24h_regionid",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/neso/regional_intensity_fw48h.html",
+      "type": "dataset",
+      "vendor": "neso",
+      "slug": "regional_intensity_fw48h",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/neso/regional_intensity_fw48h_postcode.html",
+      "type": "dataset",
+      "vendor": "neso",
+      "slug": "regional_intensity_fw48h_postcode",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/neso/regional_intensity_fw48h_regionid.html",
+      "type": "dataset",
+      "vendor": "neso",
+      "slug": "regional_intensity_fw48h_regionid",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/neso/regional_intensity_postcode.html",
+      "type": "dataset",
+      "vendor": "neso",
+      "slug": "regional_intensity_postcode",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/neso/regional_intensity_pt24h.html",
+      "type": "dataset",
+      "vendor": "neso",
+      "slug": "regional_intensity_pt24h",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/neso/regional_intensity_pt24h_postcode.html",
+      "type": "dataset",
+      "vendor": "neso",
+      "slug": "regional_intensity_pt24h_postcode",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/neso/regional_intensity_pt24h_regionid.html",
+      "type": "dataset",
+      "vendor": "neso",
+      "slug": "regional_intensity_pt24h_regionid",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/neso/regional_intensity_regionid.html",
+      "type": "dataset",
+      "vendor": "neso",
+      "slug": "regional_intensity_regionid",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/neso/regional_postcode.html",
+      "type": "dataset",
+      "vendor": "neso",
+      "slug": "regional_postcode",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/neso/regional_regionid.html",
+      "type": "dataset",
+      "vendor": "neso",
+      "slug": "regional_regionid",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/neso/regional_scotland.html",
+      "type": "dataset",
+      "vendor": "neso",
+      "slug": "regional_scotland",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/neso/regional_wales.html",
+      "type": "dataset",
+      "vendor": "neso",
+      "slug": "regional_wales",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/openmeteo/_landing.html",
+      "type": "hub",
+      "vendor": "openmeteo",
+      "slug": "openmeteo",
+      "tier": 1,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/openmeteo/forecast_demand.html",
+      "type": "dataset",
+      "vendor": "openmeteo",
+      "slug": "forecast_demand",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/openmeteo/forecast_solar.html",
+      "type": "dataset",
+      "vendor": "openmeteo",
+      "slug": "forecast_solar",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/openmeteo/forecast_wind.html",
+      "type": "dataset",
+      "vendor": "openmeteo",
+      "slug": "forecast_wind",
+      "tier": 1,
+      "flagship": true,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/openmeteo/historical_demand.html",
+      "type": "dataset",
+      "vendor": "openmeteo",
+      "slug": "historical_demand",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/openmeteo/historical_solar.html",
+      "type": "dataset",
+      "vendor": "openmeteo",
+      "slug": "historical_solar",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    },
+    {
+      "path": "authored-pages/openmeteo/historical_wind.html",
+      "type": "dataset",
+      "vendor": "openmeteo",
+      "slug": "historical_wind",
+      "tier": 2,
+      "flagship": false,
+      "mechanical": "done",
+      "creative": "pending"
+    }
+  ]
+}

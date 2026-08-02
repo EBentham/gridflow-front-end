@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/><title>tsdfd · Elexon BMRS · Gridflow</title>
   <meta name="description" content="Daily-published 2-14 day GB transmission demand forecast — the canonical medium-horizon signal for forward margin, transmission planning, and…"/>
-  <meta name="viewport" content="width=1280"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,30..100&family=Inter:wght@300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -57,7 +57,7 @@
         <div class="chart" style="padding:24px 28px">
           <div class="row between mb-16" style="align-items:baseline"><div><div class="eyebrow mb-4">tsdfd · silver layer</div><div class="small">Sparkline · MW · UTC · forecast delivery dates · published 1 Apr 2026</div></div><div class="row gap-8"><span class="chip ink btn-like">daily forecast</span><span class="chip btn-like">vs NDFD spread</span></div></div>
           <div data-chart="sparkline" data-opts='{"width":900,"height":280,"shape":"diurnal-load","params":{"peak":38500,"trough":22500,"noise":0.03,"seed":30}}'></div>
-          <div style="font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--ink-faint);text-transform:uppercase;margin-top:16px">Static snapshot · live wiring planned</div>
+          <div style="font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--ink-faint);text-transform:uppercase;margin-top:16px">Static snapshot · illustrative, seeded</div>
         </div>
       </section>
       <section id="schema" style="margin-bottom:56px" data-screen-label="Schema">
@@ -83,30 +83,28 @@
           <div class="card" style="padding:20px"><div class="tiny mb-8">BRONZE PATH</div><div class="mono small" style="word-break:break-all;margin-bottom:12px">data/bronze/elexon/tsdfd/&lt;year&gt;/&lt;month&gt;/&lt;day&gt;/raw_&lt;uuid&gt;.json</div><div class="tiny mb-8">TRANSFORMER</div><div class="mono small">gridflow.silver.elexon.tsdfd.TSDFDTransformer</div></div>
         </div>
         <div data-tab-group="tsdfd">
-          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('tsdfd','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('tsdfd','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('tsdfd','py',this)" style="cursor:pointer">Python · polars</button></div>
+          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('tsdfd','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('tsdfd','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('tsdfd','py',this)" style="cursor:pointer">Python · gridflow-models</button></div>
           <div data-tab-panel="tsdfd-url" style="display:block"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">https://data.elexon.co.uk/bmrs/api/v1/datasets/TSDFD?publishDateTimeFrom=2026-04-01T00:00Z&amp;publishDateTimeTo=2026-04-02T00:00Z&amp;format=json</pre></div></div>
           <div data-tab-panel="tsdfd-sql" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto"><span class="c">-- TSDFD vs NDFD spread (implied embedded contribution at the medium horizon)</span>
 SELECT t.forecast_date,
        n.national_demand_mw  AS national_forecast_mw,
        t.forecast_demand_mw  AS transmission_forecast_mw,
        (n.national_demand_mw - t.forecast_demand_mw) AS implied_embedded_mw
-FROM read_parquet(<span class="s">'data/silver/elexon/tsdfd/**/*.parquet'</span>) t
-JOIN read_parquet(<span class="s">'data/silver/elexon/ndfd/**/*.parquet'</span>) n
+FROM silver_tsdfd t
+JOIN silver_ndfd n
   ON t.forecast_date = n.settlement_date
 WHERE t.forecast_date &gt;= current_date
   AND t.forecast_date &lt;= current_date + INTERVAL 14 DAY
 ORDER BY t.forecast_date;</pre></div></div>
-          <div data-tab-panel="tsdfd-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">import polars as pl
+          <div data-tab-panel="tsdfd-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-tsdfd = pl.read_parquet(<span class="s">"data/silver/elexon/tsdfd/**/*.parquet"</span>)
-<span class="c"># Latest-revision forecast per forecast_date</span>
-latest = (
-    tsdfd.sort(<span class="s">"published_at"</span>, descending=True)
-         .group_by(<span class="s">"forecast_date"</span>)
-         .first()
-         .sort(<span class="s">"forecast_date"</span>)
-)
-print(latest.tail(14))</pre></div></div>
+data, models, common = setup_notebook()
+
+<span class="c"># tsdfd: stored silver rows as a pandas DataFrame</span>
+df = data.elexon.query(<span class="s">"tsdfd"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.elexon.describe(<span class="s">"tsdfd"</span>)</pre></div></div>
         </div>
       </section>
       <section id="related" style="margin-bottom:56px" data-screen-label="Related">

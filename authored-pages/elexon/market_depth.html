@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/><title>market_depth · Elexon BMRS · Gridflow</title>
   <meta name="description" content="Per-period GB balancing market summary — the canonical liquidity-and-headroom snapshot for cash-out cost analysis, daily volume totals, and BSC cross-checks."/>
-  <meta name="viewport" content="width=1280"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,30..100&family=Inter:wght@300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -56,7 +56,7 @@
         <div class="chart" style="padding:24px 28px">
           <div class="row between mb-16" style="align-items:baseline"><div><div class="eyebrow mb-4">market_depth · silver layer</div><div class="small">Horizontal bars · MWh · UTC · April 2026</div></div><div class="row gap-8"><span class="chip ink btn-like">accepted</span><span class="chip btn-like">total bid/offer</span></div></div>
           <div data-chart="barsH" data-opts='{"width":900,"height":280,"items":[{"label":"30 Apr","value":18400,"color":"#3b6b4b","display":"18.4 GWh"},{"label":"29 Apr","value":16200,"color":"#3b6b4b","display":"16.2 GWh"},{"label":"28 Apr","value":15800,"color":"#3b6b4b","display":"15.8 GWh"},{"label":"27 Apr","value":21500,"color":"#c45a3a","display":"21.5 GWh"},{"label":"26 Apr","value":14600,"color":"#3b6b4b","display":"14.6 GWh"},{"label":"25 Apr","value":17900,"color":"#3b6b4b","display":"17.9 GWh"},{"label":"24 Apr","value":23100,"color":"#c45a3a","display":"23.1 GWh"},{"label":"23 Apr","value":16800,"color":"#3b6b4b","display":"16.8 GWh"},{"label":"22 Apr","value":26400,"color":"#c45a3a","display":"26.4 GWh"},{"label":"21 Apr","value":15300,"color":"#3b6b4b","display":"15.3 GWh"}]}'></div>
-          <div style="font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--ink-faint);text-transform:uppercase;margin-top:16px">Static snapshot · live wiring planned</div>
+          <div style="font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--ink-faint);text-transform:uppercase;margin-top:16px">Static snapshot · illustrative, seeded</div>
         </div>
       </section>
       <section id="schema" style="margin-bottom:56px" data-screen-label="Schema">
@@ -82,30 +82,25 @@
           <div class="card" style="padding:20px"><div class="tiny mb-8">BRONZE PATH</div><div class="mono small" style="word-break:break-all;margin-bottom:12px">data/bronze/elexon/market_depth/&lt;year&gt;/&lt;month&gt;/&lt;day&gt;/raw_&lt;uuid&gt;.json</div><div class="tiny mb-8">TRANSFORMER</div><div class="mono small">gridflow.silver.elexon.market_depth.MarketDepthTransformer</div></div>
         </div>
         <div data-tab-group="market_depth">
-          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('market_depth','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('market_depth','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('market_depth','py',this)" style="cursor:pointer">Python · polars</button></div>
+          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('market_depth','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('market_depth','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('market_depth','py',this)" style="cursor:pointer">Python · gridflow-models</button></div>
           <div data-tab-panel="market_depth-url" style="display:block"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">https://data.elexon.co.uk/bmrs/api/v1/balancing/settlement/market-depth/2026-05-06?format=json</pre></div></div>
           <div data-tab-panel="market_depth-sql" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto"><span class="c">-- Daily accepted volumes (both directions) and average indicative imbalance</span>
 SELECT settlement_date,
        SUM(total_accepted_offer_volume_mwh)        AS accepted_offer_mwh,
        SUM(ABS(total_accepted_bid_volume_mwh))     AS accepted_bid_mwh,
        AVG(indicated_imbalance_mwh)                AS avg_indicated_imbalance_mwh
-FROM read_parquet(<span class="s">'data/silver/elexon/market_depth/**/*.parquet'</span>)
+FROM silver_market_depth
 WHERE settlement_date &gt;= current_date - INTERVAL 30 DAY
 GROUP BY 1 ORDER BY 1;</pre></div></div>
-          <div data-tab-panel="market_depth-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">import polars as pl
+          <div data-tab-panel="market_depth-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-md = pl.read_parquet(<span class="s">"data/silver/elexon/market_depth/**/*.parquet"</span>)
-<span class="c"># Liquidity proxy: total available volume per hour-of-day</span>
-liquidity = (
-    md.with_columns(
-        (pl.col(<span class="s">"offer_volume_mwh"</span>) + pl.col(<span class="s">"bid_volume_mwh"</span>).abs())
-          .alias(<span class="s">"total_available_mwh"</span>)
-    )
-    .group_by(pl.col(<span class="s">"timestamp_utc"</span>).dt.hour().alias(<span class="s">"hour"</span>))
-    .agg(pl.col(<span class="s">"total_available_mwh"</span>).mean())
-    .sort(<span class="s">"hour"</span>)
-)
-print(liquidity)</pre></div></div>
+data, models, common = setup_notebook()
+
+<span class="c"># market_depth: stored silver rows as a pandas DataFrame</span>
+df = data.elexon.query(<span class="s">"market_depth"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.elexon.describe(<span class="s">"market_depth"</span>)</pre></div></div>
         </div>
       </section>
       <section id="related" style="margin-bottom:56px" data-screen-label="Related">

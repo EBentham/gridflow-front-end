@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <title>allocations · ENTSO-G Transparency · Gridflow</title>
   <meta name="description" content="Final allocated quantities per operator-point-direction — the canonical settlement-grade flow record used downstream of nominations and physical-flow data."/>
-  <meta name="viewport" content="width=1280" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,30..100&family=Inter:wght@300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -230,13 +230,10 @@
                 <div class="eyebrow mb-4">allocations · silver layer · point_key=ITP-00005 · direction=exit</div>
                 <div class="small">Sparkline · GWh/day · 30-day window</div>
               </div>
-              <div class="row gap-8">
-<span class="chip ink btn-like">30d</span>
-<span class="chip btn-like">1y</span>
-              </div>
+              
             </div>
             <div data-chart="sparkline" data-opts='{"width":820,"height":140,"seed":19}'></div>
-            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · live wiring planned</div>
+            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · illustrative, seeded</div>
           </div>
         </section>
 
@@ -257,19 +254,19 @@
               </tr>
             </thead>
             <tbody>
-<tr><td class="col-name">id <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Vendor concatenation. Dedup key. <span class="cite">silver/entsog/generic.py L126-130</span></td></tr>
-<tr><td class="col-name">timestamp_utc</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Set from <code class="mono">periodFrom</code>. Partition driver. <span class="cite">silver/entsog/generic.py L118-120</span></td></tr>
-<tr><td class="col-name">period_from / period_to</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Gas-day window. <span class="cite">silver/entsog/generic.py L114-116</span></td></tr>
-<tr><td class="col-name">indicator</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Always <code class="mono">"Allocation"</code>. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">operator_key / operator_label</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">TSO identifier and human name. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">point_key / point_label</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Connection-point identifier and label. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">direction_key</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note"><code class="mono">"entry"</code> / <code class="mono">"exit"</code> (lowercase). <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">unit</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Typically <code class="mono">"kWh/d"</code> — gas convention, <strong>NOT MWh</strong>. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">value</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Allocated quantity in the declared <code class="mono">unit</code>. <span class="cite">silver/entsog/generic.py L122-124</span></td></tr>
-<tr><td class="col-name">last_update_date_time</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Vendor publication timestamp; may be <code class="mono">""</code>, <code class="mono">"-"</code>, <code class="mono">"N/A"</code>. <span class="cite">silver/entsog/datetime.py</span></td></tr>
-<tr><td class="col-name">is_cam_relevant / is_cmp_relevant</td><td class="col-type">bool</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Regulatory relevance flags (CAM / CMP). <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">data_provider</td><td class="col-type">str ("entsog")</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsog"</code>. Constant. <span class="cite">silver/entsog/generic.py L132-136</span></td></tr>
-<tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Wall-clock at silver write. <span class="cite">silver/entsog/generic.py L132-136</span></td></tr>
+<tr><td class="col-name">id <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Vendor concatenation. Dedup key. </td></tr>
+<tr><td class="col-name">timestamp_utc</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Set from <code class="mono">periodFrom</code>. Partition driver. </td></tr>
+<tr><td class="col-name">period_from / period_to</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Gas-day window. </td></tr>
+<tr><td class="col-name">indicator</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Always <code class="mono">"Allocation"</code>. </td></tr>
+<tr><td class="col-name">operator_key / operator_label</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">TSO identifier and human name. </td></tr>
+<tr><td class="col-name">point_key / point_label</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Connection-point identifier and label. </td></tr>
+<tr><td class="col-name">direction_key</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note"><code class="mono">"entry"</code> / <code class="mono">"exit"</code> (lowercase). </td></tr>
+<tr><td class="col-name">unit</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Typically <code class="mono">"kWh/d"</code> — gas convention, <strong>NOT MWh</strong>. </td></tr>
+<tr><td class="col-name">value</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Allocated quantity in the declared <code class="mono">unit</code>. </td></tr>
+<tr><td class="col-name">last_update_date_time</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Vendor publication timestamp; may be <code class="mono">""</code>, <code class="mono">"-"</code>, <code class="mono">"N/A"</code>. </td></tr>
+<tr><td class="col-name">is_cam_relevant / is_cmp_relevant</td><td class="col-type">bool</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Regulatory relevance flags (CAM / CMP). </td></tr>
+<tr><td class="col-name">data_provider</td><td class="col-type">str ("entsog")</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsog"</code>. Constant. </td></tr>
+<tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Wall-clock at silver write. </td></tr>
             </tbody>
           </table>
           <div class="card mt-24" style="padding: 16px 20px; display: flex; gap: 32px; align-items: start;">
@@ -338,7 +335,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('alloc','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('alloc','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('alloc','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('alloc','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="alloc-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;">https://transparency.entsog.eu/api/v1/operationalData<span style="color:#6b6358;">?</span><span style="color:#c9a96e;">from</span>=2026-05-06<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">to</span>=2026-05-06<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">timeZone</span>=UCT<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">indicator</span>=Allocation<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">periodType</span>=day<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">pointDirection</span>=UK-TSO-0001ITP-00005exit<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">forceDownload</span>=true<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">limit</span>=-1</pre>
@@ -350,8 +347,8 @@
        n.value <span class="k">AS</span> nominated_kwh,
        a.value <span class="k">AS</span> allocated_kwh,
        (a.value - n.value) <span class="k">AS</span> delta_kwh
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/entsog/nominations/**/*.parquet'</span>) n
-<span class="k">JOIN</span> read_parquet(<span class="s">'data/silver/entsog/allocations/**/*.parquet'</span>) a
+<span class="k">FROM</span> silver_nominations n
+<span class="k">JOIN</span> silver_allocations a
   <span class="k">ON</span>  n.period_from  = a.period_from
   <span class="k">AND</span> n.point_key    = a.point_key
   <span class="k">AND</span> n.operator_key = a.operator_key
@@ -360,17 +357,15 @@
 <span class="k">ORDER BY</span> <span class="num">1</span>;</pre>
             </div></div>
             <div data-tab-panel="alloc-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-df = pl.read_parquet(<span class="s">"data/silver/entsog/allocations/**/*.parquet"</span>)
-<span class="c"># Total GB allocations per direction per day</span>
-gb = (
-    df.filter(pl.col(<span class="s">"operator_key"</span>).str.starts_with(<span class="s">"UK-TSO-"</span>))
-      .group_by([<span class="s">"period_from"</span>, <span class="s">"direction_key"</span>])
-      .agg((pl.col(<span class="s">"value"</span>).sum() / <span class="num">1e6</span>).alias(<span class="s">"gwh"</span>))
-      .sort(<span class="s">"period_from"</span>)
-)
-print(gb.tail(<span class="num">14</span>))</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># allocations: stored silver rows as a pandas DataFrame</span>
+df = data.entsog.query(<span class="s">"allocations"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.entsog.describe(<span class="s">"allocations"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -381,11 +376,11 @@ print(gb.tail(<span class="num">14</span>))</pre>
           <h2 class="display-3 mb-8">Things to know before using this.</h2>
           <p class="small mb-24" style="max-width: 560px;">These are specific to <code class="mono">allocations</code>. Also read the <a href="../entsog.html#about" class="link">ENTSO-G-wide caveats</a> on the vendor page.</p>
           <div>
-<div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;">Indicator string is exact-case</div><p class="small" style="margin: 0;">Vendor rejects <code class="mono">allocation</code>/<code class="mono">allocations</code>; connector sends the literal <code class="mono">"Allocation"</code>. <span class="src-cite">OPERATIONAL_INDICATORS["allocations"] = "Allocation" · connectors/entsog/endpoints.py L98</span></p></div></div>
-<div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;">Allocations are post-flow</div><p class="small" style="margin: 0;">A row appears ~1 gas day after the flow date. For real-time analytics, use <code class="mono">nominations</code> or <code class="mono">physical_flows</code> instead. <span class="src-cite">vault Publication-lag table</span></p></div></div>
-<div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">timeZone=UCT</code> (vendor typo, intentional)</div><p class="small" style="margin: 0;">Connector sends <code class="mono">UCT</code> not <code class="mono">UTC</code>; sending <code class="mono">UTC</code> returns HTTP 400. <span class="src-cite">connectors/entsog/endpoints.py L17 · ENTSOG_TIMEZONE</span></p></div></div>
-<div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;">Empty windows return HTTP 404, not 200</div><p class="small" style="margin: 0;">ENTSO-G's empty convention is <code class="mono">HTTP 404 + {"message":"No result found"}</code>. Connector short-circuits as empty-bronze. <span class="src-cite">connectors/entsog/client.py L24-28, L109-115</span></p></div></div>
-<div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">Allocation ≠ physical flow</div><p class="small" style="margin: 0;">Allocation is the legally settled quantity; <code class="mono">physical_flow</code> is the metered throughput. They typically agree but differ when there are CMP adjustments. <span class="src-cite">domain knowledge / ENTSO-G data dictionary</span></p></div></div>
+<div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;">Indicator string is exact-case</div><p class="small" style="margin: 0;">Vendor rejects <code class="mono">allocation</code>/<code class="mono">allocations</code>; connector sends the literal <code class="mono">"Allocation"</code>. </p></div></div>
+<div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;">Allocations are post-flow</div><p class="small" style="margin: 0;">A row appears ~1 gas day after the flow date. For real-time analytics, use <code class="mono">nominations</code> or <code class="mono">physical_flows</code> instead. </p></div></div>
+<div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">timeZone=UCT</code> (vendor typo, intentional)</div><p class="small" style="margin: 0;">Connector sends <code class="mono">UCT</code> not <code class="mono">UTC</code>; sending <code class="mono">UTC</code> returns HTTP 400. </p></div></div>
+<div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;">Empty windows return HTTP 404, not 200</div><p class="small" style="margin: 0;">ENTSO-G's empty convention is <code class="mono">HTTP 404 + {"message":"No result found"}</code>. Connector short-circuits as empty-bronze. </p></div></div>
+<div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">Allocation ≠ physical flow</div><p class="small" style="margin: 0;">Allocation is the legally settled quantity; <code class="mono">physical_flow</code> is the metered throughput. They typically agree but differ when there are CMP adjustments. </p></div></div>
           </div>
         </section>
 

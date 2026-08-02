@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <title>installed_capacity_units · ENTSO-E Transparency · Gridflow</title>
   <meta name="description" content="Yearly installed MW capacity per EIC generation unit — the unit-level disaggregation of A68 and denominator for plant-by-plant capacity-factor calculation."/>
-  <meta name="viewport" content="width=1280" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,30..100&family=Inter:wght@300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -191,7 +191,7 @@
               {"label":"Amrumbank West · B18 wind offshore","value":302,"display":"302 MW"},
               {"label":"Listerfehrda · B19 wind onshore","value":20,"display":"20 MW","color":"#c45a3a"}
             ]}'></div>
-            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · live wiring planned</div>
+            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · illustrative, seeded</div>
           </div>
         </section>
 
@@ -205,15 +205,15 @@
           <table class="schema-table">
             <thead><tr><th scope="col" style="width: 22%;">Column</th><th scope="col" style="width: 14%;">Type</th><th scope="col" style="width: 8%; text-align:center;">Nullable</th><th scope="col">Description</th></tr></thead>
             <tbody>
-              <tr><td class="col-name">timestamp_utc <span class="pk-badge">PK</span></td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Year boundary, tz-aware UTC. Source: <code class="mono">&lt;Period&gt;</code> start.<span class="cite">schemas/entsoe.py L179, L189-194</span></td></tr>
-              <tr><td class="col-name">area_code <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">EIC bidding zone. Source: <code class="mono">&lt;inBiddingZone_Domain.mRID&gt;</code>.<span class="cite">schemas/entsoe.py L180</span></td></tr>
-              <tr><td class="col-name">production_type</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">EIC PSR code; <code class="mono">"unknown"</code> if absent. Source: <code class="mono">&lt;MktPSRType&gt;&lt;psrType&gt;</code>.<span class="cite">schemas/entsoe.py L181 · silver L65-67</span></td></tr>
-              <tr><td class="col-name">unit_mrid <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Unit identifier — opaque. Source: <code class="mono">&lt;registeredResource.mRID&gt;</code>.<span class="cite">schemas/entsoe.py L182</span></td></tr>
-              <tr><td class="col-name">unit_name</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Human-readable unit name. Default <code class="mono">""</code>.<span class="cite">schemas/entsoe.py L183</span></td></tr>
-              <tr><td class="col-name">capacity_mw</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">MW installed capacity for this unit. Source: <code class="mono">&lt;Point&gt;&lt;quantity&gt;</code>.<span class="cite">schemas/entsoe.py L184</span></td></tr>
-              <tr><td class="col-name">resolution</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">ISO duration; typically <code class="mono">P1Y</code>. Default <code class="mono">""</code>.<span class="cite">schemas/entsoe.py L185</span></td></tr>
-              <tr><td class="col-name">data_provider</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsoe"</code>.<span class="cite">schemas/entsoe.py L186</span></td></tr>
-              <tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Set at silver write.<span class="cite">schemas/entsoe.py L187</span></td></tr>
+              <tr><td class="col-name">timestamp_utc <span class="pk-badge">PK</span></td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Year boundary, tz-aware UTC. Source: <code class="mono">&lt;Period&gt;</code> start.</td></tr>
+              <tr><td class="col-name">area_code <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">EIC bidding zone. Source: <code class="mono">&lt;inBiddingZone_Domain.mRID&gt;</code>.</td></tr>
+              <tr><td class="col-name">production_type</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">EIC PSR code; <code class="mono">"unknown"</code> if absent. Source: <code class="mono">&lt;MktPSRType&gt;&lt;psrType&gt;</code>.</td></tr>
+              <tr><td class="col-name">unit_mrid <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Unit identifier — opaque. Source: <code class="mono">&lt;registeredResource.mRID&gt;</code>.</td></tr>
+              <tr><td class="col-name">unit_name</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Human-readable unit name. Default <code class="mono">""</code>.</td></tr>
+              <tr><td class="col-name">capacity_mw</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">MW installed capacity for this unit. Source: <code class="mono">&lt;Point&gt;&lt;quantity&gt;</code>.</td></tr>
+              <tr><td class="col-name">resolution</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">ISO duration; typically <code class="mono">P1Y</code>. Default <code class="mono">""</code>.</td></tr>
+              <tr><td class="col-name">data_provider</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsoe"</code>.</td></tr>
+              <tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Set at silver write.</td></tr>
             </tbody>
           </table>
           <div class="card mt-24" style="padding: 16px 20px; display: flex; gap: 32px; align-items: start; flex-wrap:wrap;">
@@ -264,7 +264,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('icu','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('icu','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('icu','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('icu','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="icu-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;">https://web-api.tp.entsoe.eu/api
@@ -278,26 +278,24 @@
             <div data-tab-panel="icu-sql" style="display:none;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px;"><span class="c">-- Top-20 largest units per zone (current year)</span>
 <span class="k">SELECT</span> area_code, unit_mrid, unit_name, production_type, capacity_mw
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/entsoe/installed_capacity_units/**/*.parquet'</span>)
+<span class="k">FROM</span> silver_installed_capacity_units
 <span class="k">WHERE</span> timestamp_utc = (
     <span class="k">SELECT</span> max(timestamp_utc)
-    <span class="k">FROM</span> read_parquet(<span class="s">'data/silver/entsoe/installed_capacity_units/**/*.parquet'</span>)
+    <span class="k">FROM</span> silver_installed_capacity_units
 )
 <span class="k">ORDER BY</span> area_code, capacity_mw <span class="k">DESC</span>
 <span class="k">LIMIT</span> 20;</pre>
             </div></div>
             <div data-tab-panel="icu-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-cap = pl.read_parquet(<span class="s">"data/silver/entsoe/installed_capacity_units/**/*.parquet"</span>)
-gen = pl.read_parquet(<span class="s">"data/silver/entsoe/actual_generation_units/**/*.parquet"</span>)
-<span class="c"># Per-unit capacity factor (annual mean output / installed capacity)</span>
-util = gen.group_by(<span class="s">"unit_mrid"</span>).agg(
-    pl.col(<span class="s">"generation_mw"</span>).mean().alias(<span class="s">"mean_mw"</span>),
-).join(cap.select([<span class="s">"unit_mrid"</span>, <span class="s">"capacity_mw"</span>]), on=<span class="s">"unit_mrid"</span>)
-<span class="k">print</span>(util.with_columns(
-    (pl.col(<span class="s">"mean_mw"</span>) / pl.col(<span class="s">"capacity_mw"</span>)).alias(<span class="s">"cf"</span>)
-).sort(<span class="s">"cf"</span>, descending=<span class="k">True</span>).head())</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># installed_capacity_units: stored silver rows as a pandas DataFrame</span>
+df = data.entsoe.query(<span class="s">"installed_capacity_units"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.entsoe.describe(<span class="s">"installed_capacity_units"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -307,11 +305,11 @@ util = gen.group_by(<span class="s">"unit_mrid"</span>).agg(
           <h2 class="display-3 mb-8">Things to know before using this.</h2>
           <p class="small mb-24" style="max-width: 560px;">These are specific to <code class="mono">installed_capacity_units</code>. Also read the <a href="../entsoe.html#about" class="link">ENTSO-E-wide caveats</a> on the vendor page.</p>
           <div>
-            <div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;">A71 doc type shared with generation_forecast</div><p class="small" style="margin: 0;">A71 is reused for <code class="mono">generation_forecast</code> (A71/A01) with a different <code class="mono">processType</code>. Select on dataset key, not <code class="mono">documentType</code> alone. <span class="src-cite">endpoints.py L100-102</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;">Empty <code class="mono">unit_mrid</code> rows filtered</div><p class="small" style="margin: 0;">Transformer drops rows where <code class="mono">unit_mrid == ""</code>. Aggregate-only data passes through other A71 surfaces, not here. <span class="src-cite">silver/entsoe/installed_capacity_units.py L68</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">unit_mrid</code> is opaque</div><p class="small" style="margin: 0;">Identifiers vary by TSO encoding (IGCC, EIC, internal). Treat as opaque strings. <span class="src-cite">vault Known Issues</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;">GB EMPTY post-Brexit</div><p class="small" style="margin: 0;">GB unit registry is via Elexon <code class="mono">bmunits</code> / BMRS, not ENTSO-E. <span class="src-cite">vault Known Issues</span></p></div></div>
-            <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">Entitlement-blocked on default API key</div><p class="small" style="margin: 0;">Live API returns HTTP 401 for the unregistered gridflow default key. Schema verified from gridflow source. <span class="src-cite">.planning/reconciliation/entsoe/17-installed-capacity-units-http-401.md</span></p></div></div>
+            <div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;">A71 doc type shared with generation_forecast</div><p class="small" style="margin: 0;">A71 is reused for <code class="mono">generation_forecast</code> (A71/A01) with a different <code class="mono">processType</code>. Select on dataset key, not <code class="mono">documentType</code> alone. </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;">Empty <code class="mono">unit_mrid</code> rows filtered</div><p class="small" style="margin: 0;">Transformer drops rows where <code class="mono">unit_mrid == ""</code>. Aggregate-only data passes through other A71 surfaces, not here. </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">unit_mrid</code> is opaque</div><p class="small" style="margin: 0;">Identifiers vary by TSO encoding (IGCC, EIC, internal). Treat as opaque strings. </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;">GB EMPTY post-Brexit</div><p class="small" style="margin: 0;">GB unit registry is via Elexon <code class="mono">bmunits</code> / BMRS, not ENTSO-E. </p></div></div>
+            <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">Entitlement-blocked on default API key</div><p class="small" style="margin: 0;">Live API returns HTTP 401 for the unregistered gridflow default key. Schema verified from gridflow source. </p></div></div>
           </div>
         </section>
 

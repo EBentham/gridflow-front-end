@@ -20,7 +20,36 @@ You do **not** implement code directly. When implementation is needed, you dispa
 
 ---
 
-## Current State (as of 2026-06-07)
+## v4 milestone — Full rebrand (ACTIVE, created 2026-08-02)
+
+**Position:** Phase 17 (Identity directions) — **WAITING on user inspiration references**
+(user is gathering; log each into `.planning/v3/inspiration.md` as it arrives). Phase map:
+17 identity → 18 exemplar + user gate → 19 theme rebuild + recruiter path (**the sole
+T3**) → 20 long-tail fleet → 21 ship. SoT: `ROADMAP.md § v4` + `v4-EFFORT-PLAN.md`.
+
+**Why v4:** design-capability research (`v3/design-capability-research.md`) showed the
+locked cream + Fraunces identity is Anthropic's #1 documented "generic AI default" look —
+user chose **FULL REBRAND** 2026-08-02 (palette / typography / layout language / name
+treatment all open; honesty rules, editorial values, content/facts, build contract stand).
+Seed theme: **"the electrified landscape"** — no eco-clichés, "optimism from the grid,
+not foliage" (`v3/inspiration.md` ref-01). D-V3-2..6 still bind (honesty cut ·
+gridflow-models facade · phased recruiter-first · exemplar-first gate · adaptive pacing).
+
+**Tooling:** Anthropic frontend-design skill vendored at
+`.claude/skills/frontend-design/SKILL.md` (gitignored → local-only; loads for this repo's
+sessions + subagents). Flow when refs arrive: mine refs → 2-3 DESIGN.mds → light user
+checkpoint → exemplar pair per direction (browser loop + design-critique/a11y) → user
+gate → winning DESIGN.md = the locked spec carried in every phase-19/20 brief.
+
+**v3 closed superseded-partial** (`v3/V3-CLOSE.md`): phases 12-13 delivered (56-finding
+review + mechanical sweeps over 161 pages); 14-16 never started. The **v3-close PR**
+(`feat/phase-12-exemplar` → `main`) carries the phase-13 sweeps + planning record — merge
+gate: local green `gridflow-build --check` + **USER push-ack**. v3 background:
+`phases/12-review-exemplar/12-BRIEF.md`.
+
+---
+
+## Current State — v2 (historical, as of 2026-06-07)
 
 **Milestone:** v2 full-vendor-coverage — **COMPLETE + DEPLOYED 2026-06-07** (Phases 7–11; PRs #24 + #25 merged → GitHub Pages live)  
 **Phase:** 11 — Site cleanup — **COMPLETE / SHIPPED 2026-06-07 (PR #25)**  

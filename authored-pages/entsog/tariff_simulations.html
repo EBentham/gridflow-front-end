@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <title>tariff_simulations · ENTSO-G Transparency · Gridflow</title>
   <meta name="description" content="Vendor-simulated total tariff cost per representative capacity product — the canonical forward-looking transmission-cost benchmark for capacity-booking…"/>
-  <meta name="viewport" content="width=1280" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,30..100&family=Inter:wght@300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -235,7 +235,7 @@
               </div>
             </div>
             <div data-chart="barsH" data-opts='{"width":820,"items":[{"label":"Yearly (Firm)","value":218000,"display":"EUR 218k","color":"#c45a3a"},{"label":"Interruptible Yearly","value":105000,"display":"EUR 105k","color":"#86627d"},{"label":"Quarterly (Firm)","value":65000,"display":"EUR 65k","color":"#3b6b4b"},{"label":"Monthly (Firm)","value":24500,"display":"EUR 24.5k","color":"#7a96a8"},{"label":"Daily (Firm)","value":980,"display":"EUR 980","color":"#c9a96e"}]}'></div>
-            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · live wiring planned</div>
+            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · illustrative, seeded</div>
           </div>
         </section>
 
@@ -256,24 +256,24 @@
               </tr>
             </thead>
             <tbody>
-<tr><td class="col-name">id <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Vendor concatenation. Dedup key. <span class="cite">silver/entsog/generic.py L126-130</span></td></tr>
-<tr><td class="col-name">timestamp_utc</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Set from <code class="mono">periodFrom</code> via the priority list. Partition driver. <span class="cite">silver/entsog/generic.py L118-120</span></td></tr>
-<tr><td class="col-name">period_from / period_to</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Capacity-product validity window. <span class="cite">silver/entsog/generic.py L114-116</span></td></tr>
-<tr><td class="col-name">direction_key / direction</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note"><code class="mono">"entry"</code> / <code class="mono">"exit"</code> (two vendor fields exist; first wins). <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">operator / operator_key / operator_label</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">TSO identifiers. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">operator_point_direction</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Concatenated key. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">country_code</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">ISO-style country code. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">connection</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Connection narrative. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">from_bz / to_bz</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Balancing-zone pair. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">tariff_capacity_type / tariff_capacity_unit</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">E.g. <code class="mono">"Firm"</code> / <code class="mono">"kWh/h"</code>. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">product_type</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">E.g. <code class="mono">"Yearly"</code>, <code class="mono">"Quarterly"</code>, <code class="mono">"Monthly"</code>, <code class="mono">"Daily"</code>. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">operator_currency</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">E.g. <code class="mono">"EUR"</code>, <code class="mono">"GBP"</code>. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">product_simulation_cost_in_local_currency</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Simulated total in the operator's local currency. <span class="cite">silver/entsog/generic.py L122-124</span></td></tr>
-<tr><td class="col-name">product_simulation_cost_in_euro</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Simulated total in EUR. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">exchange_rate_reference_date</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">FX-rate reference. May be <code class="mono">"N/A"</code>. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">last_update_date_time</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Vendor publication timestamp. <span class="cite">silver/entsog/datetime.py</span></td></tr>
-<tr><td class="col-name">data_provider</td><td class="col-type">str ("entsog")</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsog"</code>. Constant. <span class="cite">silver/entsog/generic.py L132-136</span></td></tr>
-<tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Wall-clock at silver write. <span class="cite">silver/entsog/generic.py L132-136</span></td></tr>
+<tr><td class="col-name">id <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Vendor concatenation. Dedup key. </td></tr>
+<tr><td class="col-name">timestamp_utc</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Set from <code class="mono">periodFrom</code> via the priority list. Partition driver. </td></tr>
+<tr><td class="col-name">period_from / period_to</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Capacity-product validity window. </td></tr>
+<tr><td class="col-name">direction_key / direction</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note"><code class="mono">"entry"</code> / <code class="mono">"exit"</code> (two vendor fields exist; first wins). </td></tr>
+<tr><td class="col-name">operator / operator_key / operator_label</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">TSO identifiers. </td></tr>
+<tr><td class="col-name">operator_point_direction</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Concatenated key. </td></tr>
+<tr><td class="col-name">country_code</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">ISO-style country code. </td></tr>
+<tr><td class="col-name">connection</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Connection narrative. </td></tr>
+<tr><td class="col-name">from_bz / to_bz</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Balancing-zone pair. </td></tr>
+<tr><td class="col-name">tariff_capacity_type / tariff_capacity_unit</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">E.g. <code class="mono">"Firm"</code> / <code class="mono">"kWh/h"</code>. </td></tr>
+<tr><td class="col-name">product_type</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">E.g. <code class="mono">"Yearly"</code>, <code class="mono">"Quarterly"</code>, <code class="mono">"Monthly"</code>, <code class="mono">"Daily"</code>. </td></tr>
+<tr><td class="col-name">operator_currency</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">E.g. <code class="mono">"EUR"</code>, <code class="mono">"GBP"</code>. </td></tr>
+<tr><td class="col-name">product_simulation_cost_in_local_currency</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Simulated total in the operator's local currency. </td></tr>
+<tr><td class="col-name">product_simulation_cost_in_euro</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Simulated total in EUR. </td></tr>
+<tr><td class="col-name">exchange_rate_reference_date</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">FX-rate reference. May be <code class="mono">"N/A"</code>. </td></tr>
+<tr><td class="col-name">last_update_date_time</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Vendor publication timestamp. </td></tr>
+<tr><td class="col-name">data_provider</td><td class="col-type">str ("entsog")</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsog"</code>. Constant. </td></tr>
+<tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Wall-clock at silver write. </td></tr>
             </tbody>
           </table>
           <div class="card mt-24" style="padding: 16px 20px; display: flex; gap: 32px; align-items: start;">
@@ -342,7 +342,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('tsim','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('tsim','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('tsim','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('tsim','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="tsim-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;">https://transparency.entsog.eu/api/v1/tariffsSimulations<span style="color:#6b6358;">?</span><span style="color:#c9a96e;">from</span>=2026-05-06<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">to</span>=2026-05-06<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">timeZone</span>=UCT<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">countryKey</span>=UK<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">forceDownload</span>=true<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">limit</span>=-1</pre>
@@ -352,27 +352,22 @@
 <span class="k">SELECT</span> product_type,
        product_simulation_cost_in_euro <span class="k">AS</span> cost_eur,
        (product_simulation_cost_in_euro / <span class="num">365.0</span>) <span class="k">AS</span> implied_daily_eur
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/entsog/tariff_simulations/**/*.parquet'</span>)
+<span class="k">FROM</span> silver_tariff_simulations
 <span class="k">WHERE</span> operator = <span class="s">'National Gas TSO'</span>
   <span class="k">AND</span> tariff_capacity_type = <span class="s">'Firm'</span>
   <span class="k">AND</span> period_from = <span class="s">'2025-10-01'</span>
 <span class="k">ORDER BY</span> product_simulation_cost_in_euro <span class="k">DESC</span>;</pre>
             </div></div>
             <div data-tab-panel="tsim-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-df = pl.read_parquet(<span class="s">"data/silver/entsog/tariff_simulations/**/*.parquet"</span>)
-<span class="c"># Year-over-year UK firm-yearly tariff cost</span>
-yoy = (
-    df.filter(pl.col(<span class="s">"country_code"</span>) == <span class="s">"GB"</span>)
-      .filter(pl.col(<span class="s">"tariff_capacity_type"</span>) == <span class="s">"Firm"</span>)
-      .filter(pl.col(<span class="s">"product_type"</span>) == <span class="s">"Yearly"</span>)
-      .with_columns(pl.col(<span class="s">"period_from"</span>).dt.year().alias(<span class="s">"gas_year"</span>))
-      .group_by([<span class="s">"gas_year"</span>, <span class="s">"operator"</span>])
-      .agg(pl.col(<span class="s">"product_simulation_cost_in_euro"</span>).mean().alias(<span class="s">"avg_euro"</span>))
-      .sort([<span class="s">"operator"</span>, <span class="s">"gas_year"</span>])
-)
-print(yoy)</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># tariff_simulations: stored silver rows as a pandas DataFrame</span>
+df = data.entsog.query(<span class="s">"tariff_simulations"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.entsog.describe(<span class="s">"tariff_simulations"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -383,11 +378,11 @@ print(yoy)</pre>
           <h2 class="display-3 mb-8">Things to know before using this.</h2>
           <p class="small mb-24" style="max-width: 560px;">These are specific to <code class="mono">tariff_simulations</code>. Also read the <a href="../entsog.html#about" class="link">ENTSO-G-wide caveats</a> on the vendor page.</p>
           <div>
-<div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;">Default <code class="mono">countryKey=UK</code> filter</div><p class="small" style="margin: 0;">Connector passes <code class="mono">countryKey=UK</code>. For full EU, override the param. <span class="src-cite">connectors/entsog/endpoints.py L195</span></p></div></div>
-<div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;">Simulation is for representative products, not actual auctions</div><p class="small" style="margin: 0;">The <code class="mono">productSimulationCostIn*</code> figures are the vendor's compositional total of all tariff components for a standardised capacity product. Actual auction-cleared prices may differ — compare against <code class="mono">cmp_auction_premiums</code>. <span class="src-cite">vault Modelling notes; tariff regulation framework</span></p></div></div>
-<div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">timeZone=UCT</code> (vendor typo, intentional)</div><p class="small" style="margin: 0;">Connector sends <code class="mono">UCT</code> not <code class="mono">UTC</code>; sending <code class="mono">UTC</code> returns HTTP 400. <span class="src-cite">connectors/entsog/endpoints.py L17 · ENTSOG_TIMEZONE</span></p></div></div>
-<div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;">Empty windows return HTTP 404, not 200</div><p class="small" style="margin: 0;">ENTSO-G's empty convention is <code class="mono">HTTP 404 + {"message":"No result found"}</code>. Connector short-circuits as empty-bronze. <span class="src-cite">connectors/entsog/client.py L24-28, L109-115</span></p></div></div>
-<div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">EUR and local-currency columns differ under FX</div><p class="small" style="margin: 0;">For GB operators both <code class="mono">product_simulation_cost_in_local_currency</code> and <code class="mono">product_simulation_cost_in_euro</code> are EUR (<code class="mono">operatorCurrency = "EUR"</code>). For non-EUR operators (RO, HU) they differ at the published FX rate; check <code class="mono">exchangeRateReferenceDate</code>. <span class="src-cite">vault Bronze sample L86; FX-rate convention</span></p></div></div>
+<div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;">Default <code class="mono">countryKey=UK</code> filter</div><p class="small" style="margin: 0;">Connector passes <code class="mono">countryKey=UK</code>. For full EU, override the param. </p></div></div>
+<div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;">Simulation is for representative products, not actual auctions</div><p class="small" style="margin: 0;">The <code class="mono">productSimulationCostIn*</code> figures are the vendor's compositional total of all tariff components for a standardised capacity product. Actual auction-cleared prices may differ — compare against <code class="mono">cmp_auction_premiums</code>. </p></div></div>
+<div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">timeZone=UCT</code> (vendor typo, intentional)</div><p class="small" style="margin: 0;">Connector sends <code class="mono">UCT</code> not <code class="mono">UTC</code>; sending <code class="mono">UTC</code> returns HTTP 400. </p></div></div>
+<div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;">Empty windows return HTTP 404, not 200</div><p class="small" style="margin: 0;">ENTSO-G's empty convention is <code class="mono">HTTP 404 + {"message":"No result found"}</code>. Connector short-circuits as empty-bronze. </p></div></div>
+<div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">EUR and local-currency columns differ under FX</div><p class="small" style="margin: 0;">For GB operators both <code class="mono">product_simulation_cost_in_local_currency</code> and <code class="mono">product_simulation_cost_in_euro</code> are EUR (<code class="mono">operatorCurrency = "EUR"</code>). For non-EUR operators (RO, HU) they differ at the published FX rate; check <code class="mono">exchangeRateReferenceDate</code>. </p></div></div>
           </div>
         </section>
 

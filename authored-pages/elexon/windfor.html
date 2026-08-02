@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/><title>windfor · Elexon BMRS · Gridflow</title>
   <meta name="description" content="Per-period GB wind generation forecast — the canonical signal for forecast-error analysis, load-net-wind modelling, and intra-day revision tracking."/>
-  <meta name="viewport" content="width=1280"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,30..100&family=Inter:wght@300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -57,7 +57,7 @@
         <div class="chart" style="padding:24px 28px">
           <div class="row between mb-16" style="align-items:baseline"><div><div class="eyebrow mb-4">windfor · silver layer</div><div class="small">Sparkline · MW · UTC · forecast for 6 May 2026</div></div><div class="row gap-8"><span class="chip ink btn-like">latest</span><span class="chip btn-like">initial</span></div></div>
           <div data-chart="sparkline" data-opts='{"width":900,"height":280,"shape":"diurnal-wind","params":{"mean":9500,"volatility":2200,"persistence":0.85,"seed":24}}'></div>
-          <div style="font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--ink-faint);text-transform:uppercase;margin-top:16px">Static snapshot · live wiring planned</div>
+          <div style="font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--ink-faint);text-transform:uppercase;margin-top:16px">Static snapshot · illustrative, seeded</div>
         </div>
       </section>
       <section id="schema" style="margin-bottom:56px" data-screen-label="Schema">
@@ -83,7 +83,7 @@
           <div class="card" style="padding:20px"><div class="tiny mb-8">BRONZE PATH</div><div class="mono small" style="word-break:break-all;margin-bottom:12px">data/bronze/elexon/windfor/&lt;year&gt;/&lt;month&gt;/&lt;day&gt;/raw_&lt;uuid&gt;.json</div><div class="tiny mb-8">TRANSFORMER</div><div class="mono small">gridflow.silver.elexon.wind_forecast.WindForecastTransformer</div></div>
         </div>
         <div data-tab-group="windfor">
-          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('windfor','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('windfor','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('windfor','py',this)" style="cursor:pointer">Python · polars</button></div>
+          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('windfor','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('windfor','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('windfor','py',this)" style="cursor:pointer">Python · gridflow-models</button></div>
           <div data-tab-panel="windfor-url" style="display:block"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">https://data.elexon.co.uk/bmrs/api/v1/datasets/WINDFOR?publishDateTimeFrom=2026-05-05T00:00Z&amp;publishDateTimeTo=2026-05-06T00:00Z&amp;format=json</pre></div></div>
           <div data-tab-panel="windfor-sql" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto"><span class="c">-- Latest-issue wind forecast vs FUELHH WIND actual (forecast error per period)</span>
 WITH latest AS (
@@ -92,11 +92,11 @@ WITH latest AS (
            PARTITION BY settlement_date, settlement_period
            ORDER BY issue_time DESC
          ) AS rn
-  FROM read_parquet(<span class="s">'data/silver/elexon/windfor/**/*.parquet'</span>)
+  FROM silver_windfor
   WHERE settlement_date IS NOT NULL
 ), actual AS (
   SELECT settlement_date, settlement_period, generation_mw AS wind_mw
-  FROM read_parquet(<span class="s">'data/silver/elexon/fuelhh/**/*.parquet'</span>)
+  FROM silver_fuelhh
   WHERE fuel_type = <span class="s">'WIND'</span>
 )
 SELECT l.settlement_date, l.settlement_period,
@@ -106,21 +106,15 @@ FROM latest l JOIN actual a USING (settlement_date, settlement_period)
 WHERE l.rn = 1
   AND l.settlement_date &gt;= current_date - INTERVAL 7 DAY
 ORDER BY l.settlement_date, l.settlement_period;</pre></div></div>
-          <div data-tab-panel="windfor-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">import polars as pl
+          <div data-tab-panel="windfor-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-wf = pl.read_parquet(<span class="s">"data/silver/elexon/windfor/**/*.parquet"</span>)
-<span class="c"># Forecast revision delta per period</span>
-revisions = (
-    wf.filter(pl.col(<span class="s">"settlement_date"</span>).is_not_null())
-      .sort([<span class="s">"settlement_date"</span>, <span class="s">"settlement_period"</span>, <span class="s">"issue_time"</span>])
-      .with_columns(
-          pl.col(<span class="s">"latest_forecast_mw"</span>)
-            .diff().over([<span class="s">"settlement_date"</span>, <span class="s">"settlement_period"</span>])
-              .alias(<span class="s">"revision_delta_mw"</span>)
-      )
-      .filter(pl.col(<span class="s">"revision_delta_mw"</span>).is_not_null())
-)
-print(revisions.tail(20))</pre></div></div>
+data, models, common = setup_notebook()
+
+<span class="c"># windfor: stored silver rows as a pandas DataFrame</span>
+df = data.elexon.query(<span class="s">"windfor"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.elexon.describe(<span class="s">"windfor"</span>)</pre></div></div>
         </div>
       </section>
       <section id="related" style="margin-bottom:56px" data-screen-label="Related">

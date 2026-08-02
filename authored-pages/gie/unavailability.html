@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <title>unavailability · GIE Storage · Gridflow</title>
   <meta name="description" content="Per-event AGSI storage outage and maintenance reports — the canonical capacity-reduction feed for short-term withdrawal forecasts, gas-spread trades, and…"/>
-  <meta name="viewport" content="width=1280" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,30..100&family=Inter:wght@300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -290,14 +290,10 @@
                 <div class="eyebrow mb-4">unavailability · silver layer · withdrawal GWh/day · by facility</div>
                 <div class="small">Horizontal bars · GWh/day offline · by facility · 2025-06 → 2026-05</div>
               </div>
-              <div class="row gap-8">
-                <span class="chip btn-like">30d</span>
-                <span class="chip btn-like">90d</span>
-                <span class="chip ink btn-like">1y</span>
-              </div>
+              
             </div>
             <div data-chart="barsH" data-opts='{"width":760,"items":[{"label":"Rehden","value":210,"display":"210.0 GWh/d"},{"label":"EWE H-Gas Zone","value":82.8,"display":"82.8 GWh/d"},{"label":"Haidach (AT)","value":63,"display":"63.0 GWh/d"},{"label":"Yela","value":49.2,"display":"49.2 GWh/d"},{"label":"Etzel ESE","value":44.2,"display":"44.2 GWh/d"},{"label":"Cortemaggiore","value":24.4,"display":"24.4 GWh/d"},{"label":"Cerville","value":16.8,"display":"16.8 GWh/d"},{"label":"Bergermeer","value":12.4,"display":"12.4 GWh/d"}]}'></div>
-            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · live wiring planned</div>
+            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · illustrative, seeded</div>
           </div>
         </section>
 
@@ -328,20 +324,20 @@
               </tr>
             </thead>
             <tbody>
-              <tr><td class="col-name">published</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Vendor publish timestamp; <code class="mono">_safe_datetime</code> parses naïve <code class="mono">YYYY-MM-DD HH:MM:SS</code> as UTC. Source: <code class="mono">published</code>.<span class="cite">silver/gie/agsi.py L46, L287-298, L331-332</span></td></tr>
-              <tr><td class="col-name">country</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">JSON-encoded <code class="mono">{"name", "code"}</code> dict — the live shape is nested. Source: <code class="mono">country</code>.<span class="cite">silver/gie/agsi.py L329-330</span></td></tr>
-              <tr><td class="col-name">company</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">JSON-encoded <code class="mono">{"name", "eic"}</code> dict. Source: <code class="mono">company</code>.<span class="cite">silver/gie/agsi.py L329-330</span></td></tr>
-              <tr><td class="col-name">facility <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">JSON-encoded <code class="mono">{"name", "eic"}</code> dict; the <code class="mono">eic</code> is the dedup key. Source: <code class="mono">facility</code>.<span class="cite">silver/gie/agsi.py L329-330</span></td></tr>
-              <tr><td class="col-name">start <span class="pk-badge">PK</span></td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Outage window start. Source: <code class="mono">start</code>.<span class="cite">silver/gie/agsi.py L46, L331-332</span></td></tr>
-              <tr><td class="col-name">end <span class="pk-badge">PK</span></td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Outage window end; check <code class="mono">end_flag</code> for confirmed-vs-estimate. Source: <code class="mono">end</code>.<span class="cite">silver/gie/agsi.py L46, L331-332</span></td></tr>
-              <tr><td class="col-name">volume</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">GWh — energy not stored during the outage. Captured by <code class="mono">numeric_names</code>. Source: <code class="mono">volume</code>.<span class="cite">silver/gie/agsi.py L300-307, L333-334</span></td></tr>
-              <tr><td class="col-name">injection</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">GWh/day injection-capacity reduction. Source: <code class="mono">injection</code>.<span class="cite">silver/gie/agsi.py L333-334</span></td></tr>
-              <tr><td class="col-name">withdrawal</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">GWh/day withdrawal-capacity reduction. Source: <code class="mono">withdrawal</code>.<span class="cite">silver/gie/agsi.py L333-334</span></td></tr>
-              <tr><td class="col-name">description</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Free-text operator note. Source: <code class="mono">description</code>.<span class="cite">silver/gie/agsi.py L335-336</span></td></tr>
-              <tr><td class="col-name">end_flag</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note"><code class="mono">Confirmed</code> or <code class="mono">Estimate</code>. Source: <code class="mono">end_flag</code>.<span class="cite">silver/gie/agsi.py L335-336</span></td></tr>
-              <tr><td class="col-name">type</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note"><code class="mono">Planned</code> · <code class="mono">Unplanned</code> · … Source: <code class="mono">type</code>.<span class="cite">silver/gie/agsi.py L335-336</span></td></tr>
-              <tr><td class="col-name">data_provider</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"gie_agsi"</code>. Default <code class="mono">"gie_agsi"</code>.<span class="cite">silver/gie/agsi.py L337</span></td></tr>
-              <tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Silver write timestamp.<span class="cite">silver/gie/agsi.py L338</span></td></tr>
+              <tr><td class="col-name">published</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Vendor publish timestamp; <code class="mono">_safe_datetime</code> parses naïve <code class="mono">YYYY-MM-DD HH:MM:SS</code> as UTC. Source: <code class="mono">published</code>.</td></tr>
+              <tr><td class="col-name">country</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">JSON-encoded <code class="mono">{"name", "code"}</code> dict — the live shape is nested. Source: <code class="mono">country</code>.</td></tr>
+              <tr><td class="col-name">company</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">JSON-encoded <code class="mono">{"name", "eic"}</code> dict. Source: <code class="mono">company</code>.</td></tr>
+              <tr><td class="col-name">facility <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">JSON-encoded <code class="mono">{"name", "eic"}</code> dict; the <code class="mono">eic</code> is the dedup key. Source: <code class="mono">facility</code>.</td></tr>
+              <tr><td class="col-name">start <span class="pk-badge">PK</span></td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Outage window start. Source: <code class="mono">start</code>.</td></tr>
+              <tr><td class="col-name">end <span class="pk-badge">PK</span></td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Outage window end; check <code class="mono">end_flag</code> for confirmed-vs-estimate. Source: <code class="mono">end</code>.</td></tr>
+              <tr><td class="col-name">volume</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">GWh — energy not stored during the outage. Captured by <code class="mono">numeric_names</code>. Source: <code class="mono">volume</code>.</td></tr>
+              <tr><td class="col-name">injection</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">GWh/day injection-capacity reduction. Source: <code class="mono">injection</code>.</td></tr>
+              <tr><td class="col-name">withdrawal</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">GWh/day withdrawal-capacity reduction. Source: <code class="mono">withdrawal</code>.</td></tr>
+              <tr><td class="col-name">description</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Free-text operator note. Source: <code class="mono">description</code>.</td></tr>
+              <tr><td class="col-name">end_flag</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note"><code class="mono">Confirmed</code> or <code class="mono">Estimate</code>. Source: <code class="mono">end_flag</code>.</td></tr>
+              <tr><td class="col-name">type</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note"><code class="mono">Planned</code> · <code class="mono">Unplanned</code> · … Source: <code class="mono">type</code>.</td></tr>
+              <tr><td class="col-name">data_provider</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"gie_agsi"</code>. Default <code class="mono">"gie_agsi"</code>.</td></tr>
+              <tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Silver write timestamp.</td></tr>
             </tbody>
           </table>
 
@@ -424,7 +420,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('un','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('un','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('un','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('un','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="un-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;"><span class="c"># Header: x-key: $GIE_API_KEY  (lowercase)</span>
@@ -439,24 +435,22 @@ https://agsi.gie.eu/api/unavailability
 <span class="k">SELECT</span> json_extract_string(country, <span class="s">'$.code'</span>) <span class="k">AS</span> country,
        date_trunc(<span class="s">'month'</span>, start) <span class="k">AS</span> month,
        <span class="k">SUM</span>(withdrawal) <span class="k">AS</span> gwh_per_day_offline
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/gie_agsi/unavailability/**/*.parquet'</span>)
+<span class="k">FROM</span> silver_unavailability
 <span class="k">WHERE</span> type = <span class="s">'Planned'</span>
   <span class="k">AND</span> start &gt;= current_date - <span class="k">INTERVAL</span> 1 <span class="k">YEAR</span>
 <span class="k">GROUP BY</span> 1, 2
 <span class="k">ORDER BY</span> 1, 2;</pre>
             </div></div>
             <div data-tab-panel="un-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-df = pl.read_parquet(<span class="s">"data/silver/gie_agsi/unavailability/**/*.parquet"</span>)
-<span class="c"># Currently-active outages: window contains today</span>
-today = pl.lit(pl.datetime(<span class="num">2026</span>, <span class="num">5</span>, <span class="num">8</span>, time_unit=<span class="s">"us"</span>))
-active = (
-    df.filter((pl.col(<span class="s">"start"</span>) &lt;= today) &amp; (pl.col(<span class="s">"end"</span>) &gt;= today))
-      .select(<span class="s">"country"</span>, <span class="s">"facility"</span>, <span class="s">"start"</span>, <span class="s">"end"</span>, <span class="s">"withdrawal"</span>, <span class="s">"type"</span>, <span class="s">"end_flag"</span>)
-      .sort(<span class="s">"withdrawal"</span>, descending=<span class="k">True</span>)
-)
-print(active.head(<span class="num">20</span>))</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># unavailability: stored silver rows as a pandas DataFrame</span>
+df = data.gie_agsi.query(<span class="s">"unavailability"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.gie_agsi.describe(<span class="s">"unavailability"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -472,14 +466,14 @@ print(active.head(<span class="num">20</span>))</pre>
               <div class="caveat-num">01</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Nested-dict columns are JSON-encoded at silver</div>
-                <p class="small" style="margin: 0;"><code class="mono">country</code>, <code class="mono">company</code>, <code class="mono">facility</code> arrive as nested dicts (<code class="mono">{"name": …, "code": …}</code> or <code class="mono">{"name": …, "eic": …}</code>). <code class="mono">AgsiJsonTransformer</code> JSON-encodes them at silver. Use <code class="mono">json_extract_string</code> / <code class="mono">pl.col(...).str.json_path_match(...)</code> to unwrap. <span class="src-cite">vault Known Issues · live 2026-05-08</span></p>
+                <p class="small" style="margin: 0;"><code class="mono">country</code>, <code class="mono">company</code>, <code class="mono">facility</code> arrive as nested dicts (<code class="mono">{"name": …, "code": …}</code> or <code class="mono">{"name": …, "eic": …}</code>). <code class="mono">AgsiJsonTransformer</code> JSON-encodes them at silver. Use <code class="mono">json_extract_string</code> / <code class="mono">pl.col(...).str.json_path_match(...)</code> to unwrap. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">02</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">GB returns zero rows by design</div>
-                <p class="small" style="margin: 0;">No UK storage outages are reported on AGSI. <code class="mono">country=GB</code> returns <code class="mono">{"last_page": 1, "total": 0, "data": []}</code>. <span class="src-cite">vault Known Issues · live 2026-05-08</span></p>
+                <p class="small" style="margin: 0;">No UK storage outages are reported on AGSI. <code class="mono">country=GB</code> returns <code class="mono">{"last_page": 1, "total": 0, "data": []}</code>. </p>
               </div>
             </div>
             <div class="caveat-item discrepancy">
@@ -487,7 +481,7 @@ print(active.head(<span class="num">20</span>))</pre>
               <div>
                 <div class="eyebrow-discrepancy">DISCREPANCY · docs ambiguity</div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Documentation ambiguity (v007 PDF)</div>
-                <p class="small" style="margin: 0;">The GIE v007 PDF leaves it unclear whether <code class="mono">/api/unavailability</code> is part of the AGSI API or a legacy/portal feature. The endpoint is live-served and well-formed (DE returned 30 records / 7 pages, 2026-05-08); treated as active. <span class="src-cite">vault Implementation Delta · docs/gie_agsi_endpoint_catalog.yaml</span></p>
+                <p class="small" style="margin: 0;">The GIE v007 PDF leaves it unclear whether <code class="mono">/api/unavailability</code> is part of the AGSI API or a legacy/portal feature. The endpoint is live-served and well-formed (DE returned 30 records / 7 pages, 2026-05-08); treated as active. </p>
               </div>
             </div>
             <div class="caveat-item discrepancy">
@@ -495,21 +489,21 @@ print(active.head(<span class="num">20</span>))</pre>
               <div>
                 <div class="eyebrow-discrepancy">DISCREPANCY · date-param semantics</div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Date-param alternatives produce different filters</div>
-                <p class="small" style="margin: 0;">The registry uses <code class="mono">start</code> / <code class="mono">end</code>; the live API also accepts <code class="mono">from</code> / <code class="mono">to</code> and produces a different <code class="mono">last_page</code> (different filter semantics). Gridflow standardises on <code class="mono">start</code>/<code class="mono">end</code>. <span class="src-cite">vault Implementation Delta</span></p>
+                <p class="small" style="margin: 0;">The registry uses <code class="mono">start</code> / <code class="mono">end</code>; the live API also accepts <code class="mono">from</code> / <code class="mono">to</code> and produces a different <code class="mono">last_page</code> (different filter semantics). Gridflow standardises on <code class="mono">start</code>/<code class="mono">end</code>. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">05</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">x-key</code> header MUST be lowercase</div>
-                <p class="small" style="margin: 0;">Capitalised <code class="mono">X-Key</code> returns HTTP 401. <span class="src-cite">vault Known Issues #1</span></p>
+                <p class="small" style="margin: 0;">Capitalised <code class="mono">X-Key</code> returns HTTP 401. </p>
               </div>
             </div>
             <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;">
               <div class="caveat-num">06</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">start</code> / <code class="mono">end</code> arrive as naïve local strings</div>
-                <p class="small" style="margin: 0;">The vendor returns <code class="mono">YYYY-MM-DD HH:MM:SS</code> without timezone; <code class="mono">_safe_datetime</code> parses with a UTC fallback. <span class="src-cite">vault Known Issues · silver/gie/agsi.py L46-61</span></p>
+                <p class="small" style="margin: 0;">The vendor returns <code class="mono">YYYY-MM-DD HH:MM:SS</code> without timezone; <code class="mono">_safe_datetime</code> parses with a UTC fallback. </p>
               </div>
             </div>
           </div>

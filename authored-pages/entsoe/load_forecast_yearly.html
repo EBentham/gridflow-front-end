@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <title>load_forecast_yearly · ENTSO-E Transparency · Gridflow</title>
   <meta name="description" content="Year-ahead TSO load forecast in MW per bidding zone — same shape as day-ahead but with forecast_horizon = &quot;year_ahead&quot;, paired with generation_forecast in the…"/>
-  <meta name="viewport" content="width=1280" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,30..100&family=Inter:wght@300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -218,7 +218,7 @@
               </div>
             </div>
             <div data-chart="sparkline" data-opts='{"width":900,"height":280,"seed":39}'></div>
-            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · live wiring planned</div>
+            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · illustrative, seeded</div>
           </div>
         </section>
 
@@ -247,7 +247,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   tz-aware UTC; validator requires tzinfo. Source: <code class="mono">&lt;Period&gt;</code> start + <code class="mono">position × resolution</code>.
-                  <span class="cite">schemas/entsoe.py L90, L97-102</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -256,7 +256,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   EIC bidding zone — <code class="mono">domain_style="out_bidding_zone"</code>. Source: <code class="mono">&lt;outBiddingZone_Domain.mRID&gt;</code>.
-                  <span class="cite">schemas/entsoe.py L91 · endpoints.py L129-131</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -265,7 +265,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   Forecast MW. Source: <code class="mono">&lt;Point&gt;&lt;quantity&gt;</code>.
-                  <span class="cite">schemas/entsoe.py L92</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -274,7 +274,7 @@
                 <td style="text-align:center;" class="nullable">Yes</td>
                 <td class="col-note">
                   ISO duration; typically <code class="mono">PT60M</code>. Default <code class="mono">""</code>.
-                  <span class="cite">schemas/entsoe.py L93</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -283,7 +283,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   <code class="mono">year_ahead</code> (subclass override).
-                  <span class="cite">silver/entsoe/load_forecast_yearly.py L13</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -292,7 +292,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   Always <code class="mono">"entsoe"</code>. Default <code class="mono">"entsoe"</code>.
-                  <span class="cite">schemas/entsoe.py L95</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -301,7 +301,7 @@
                 <td style="text-align:center;" class="nullable">Yes</td>
                 <td class="col-note">
                   Set at silver write (inherited from base transformer).
-                  <span class="cite">silver/entsoe/load_forecast.py L68</span>
+                  
                 </td>
               </tr>
             </tbody>
@@ -375,7 +375,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('lfy','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('lfy','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('lfy','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('lfy','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="lfy-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;">https://web-api.tp.entsoe.eu/api
@@ -392,24 +392,22 @@
        avg(y.load_forecast_mw) <span class="k">AS</span> year_ahead_mean,
        avg(a.load_mw) <span class="k">AS</span> actual_mean,
        avg(a.load_mw) - avg(y.load_forecast_mw) <span class="k">AS</span> error_mw
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/entsoe/load_forecast_yearly/**/*.parquet'</span>) y
-<span class="k">JOIN</span> read_parquet(<span class="s">'data/silver/entsoe/actual_load/**/*.parquet'</span>) a
+<span class="k">FROM</span> silver_load_forecast_yearly y
+<span class="k">JOIN</span> silver_actual_load a
   <span class="k">ON</span> y.timestamp_utc = a.timestamp_utc <span class="k">AND</span> y.area_code = a.area_code
 <span class="k">GROUP BY</span> 1, 2
 <span class="k">ORDER BY</span> 1, 2;</pre>
             </div></div>
             <div data-tab-panel="lfy-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-yfc = pl.read_parquet(<span class="s">"data/silver/entsoe/load_forecast_yearly/**/*.parquet"</span>)
-gfc = pl.read_parquet(<span class="s">"data/silver/entsoe/generation_forecast/**/*.parquet"</span>)
-<span class="c"># Forecast margin (DIY) — should match the published forecast_margin dataset</span>
-margin = gfc.group_by([<span class="s">"timestamp_utc"</span>, <span class="s">"area_code"</span>]).agg(
-    pl.col(<span class="s">"generation_forecast_mw"</span>).sum().alias(<span class="s">"gen_mw"</span>)
-).join(yfc, on=[<span class="s">"timestamp_utc"</span>, <span class="s">"area_code"</span>]).with_columns(
-    (pl.col(<span class="s">"gen_mw"</span>) - pl.col(<span class="s">"load_forecast_mw"</span>)).alias(<span class="s">"diy_margin_mw"</span>)
-)
-<span class="k">print</span>(margin.tail())</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># load_forecast_yearly: stored silver rows as a pandas DataFrame</span>
+df = data.entsoe.query(<span class="s">"load_forecast_yearly"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.entsoe.describe(<span class="s">"load_forecast_yearly"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -424,35 +422,35 @@ margin = gfc.group_by([<span class="s">"timestamp_utc"</span>, <span class="s">"
               <div class="caveat-num">01</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Reuses <code class="mono">load_forecast</code> Pydantic schema</div>
-                <p class="small" style="margin: 0;">Same <code class="mono">EntsoeLoadForecast</code> class as <code class="mono">load_forecast</code>; only the <code class="mono">forecast_horizon</code> constant differs (subclass override). Filter on <code class="mono">forecast_horizon</code> when combining horizons. <span class="src-cite">silver/entsoe/load_forecast_yearly.py</span></p>
+                <p class="small" style="margin: 0;">Same <code class="mono">EntsoeLoadForecast</code> class as <code class="mono">load_forecast</code>; only the <code class="mono">forecast_horizon</code> constant differs (subclass override). Filter on <code class="mono">forecast_horizon</code> when combining horizons. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">02</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">outBiddingZone_Domain</code> (not <code class="mono">in_Domain</code>)</div>
-                <p class="small" style="margin: 0;">A65/A33 uses <code class="mono">outBiddingZone_Domain</code>. <span class="src-cite">endpoints.py L129-131</span></p>
+                <p class="small" style="margin: 0;">A65/A33 uses <code class="mono">outBiddingZone_Domain</code>. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">03</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Use a yearly window</div>
-                <p class="small" style="margin: 0;">Year-ahead forecast — short windows may return EMPTY. Build period bounds at year boundaries. <span class="src-cite">vault Known Issues</span></p>
+                <p class="small" style="margin: 0;">Year-ahead forecast — short windows may return EMPTY. Build period bounds at year boundaries. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">04</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Pair with <code class="mono">generation_forecast</code> for margin</div>
-                <p class="small" style="margin: 0;"><code class="mono">generation_forecast − load_forecast_yearly</code> is the conceptual basis for the <code class="mono">forecast_margin</code> (A70/A33) dataset. <span class="src-cite">forecast_margin.md brief</span></p>
+                <p class="small" style="margin: 0;"><code class="mono">generation_forecast − load_forecast_yearly</code> is the conceptual basis for the <code class="mono">forecast_margin</code> (A70/A33) dataset. </p>
               </div>
             </div>
             <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;">
               <div class="caveat-num">05</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Not entitlement-blocked</div>
-                <p class="small" style="margin: 0;">A65/A33 is one of the 14 ENTSO-E endpoints accessible with the free gridflow default API key. <span class="src-cite">.planning/reconciliation/entsoe/ — no load_forecast_yearly-http-401.md</span></p>
+                <p class="small" style="margin: 0;">A65/A33 is one of the 14 ENTSO-E endpoints accessible with the free gridflow default API key. </p>
               </div>
             </div>
           </div>

@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <title>commercial_schedules_net_positions · ENTSO-E Transparency · Gridflow</title>
   <meta name="description" content="Deprecated pointer for the V2-removed commercial_schedules_net_positions slug — registered an identical EntsoeDocType to commercial_schedules (ADR-019). Use…"/>
-  <meta name="viewport" content="width=1280" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,30..100&family=Inter:wght@300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -271,7 +271,7 @@
                 <td style="text-align:center;" class="nullable">n/a</td>
                 <td class="col-note">
                   Dataset removed; refer to <a href="commercial_schedules.html" class="link"><code class="mono">commercial_schedules</code></a> for the active schema.
-                  <span class="cite">endpoints.py L155-159 (removal comment)</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -280,7 +280,7 @@
                 <td style="text-align:center;" class="nullable">n/a</td>
                 <td class="col-note">
                   Historical files under <code class="mono">data/silver/entsoe/commercial_schedules_net_positions/…</code> may exist locally; no scheduled gold consumer reads them.
-                  <span class="cite">vault L29-32</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -289,7 +289,7 @@
                 <td style="text-align:center;" class="nullable">n/a</td>
                 <td class="col-note">
                   All consumers should read <code class="mono">silver.commercial_schedules</code> instead.
-                  <span class="cite">this brief · commercial_schedules.md</span>
+                  
                 </td>
               </tr>
             </tbody>
@@ -401,35 +401,35 @@ df = pl.read_parquet(<span class="s">"data/silver/entsoe/commercial_schedules/**
               <div>
                 <div class="eyebrow-discrepancy">Discrepancy · vault vs gridflow registry</div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Removed in V2 (ADR-019)</div>
-                <p class="small" style="margin: 0;">The vault page (<code class="mono">vault/entsoe/commercial_schedules_net_positions.md</code>) still exists as a deprecation pointer marking status <code class="mono">deprecated</code>. The gridflow registry entry (<code class="mono">endpoints.py L155-159</code>) was removed in V2 because it registered an identical <code class="mono">EntsoeDocType</code> to <code class="mono">commercial_schedules</code> and returned the identical XML. The "net positions" interpretation was never implemented. <span class="src-cite">endpoints.py L155-159 (removal comment) · vault deprecation note</span></p>
+                <p class="small" style="margin: 0;">The vault page (<code class="mono">vault/entsoe/commercial_schedules_net_positions.md</code>) still exists as a deprecation pointer marking status <code class="mono">deprecated</code>. The gridflow registry entry (<code class="mono">endpoints.py L155-159</code>) was removed in V2 because it registered an identical <code class="mono">EntsoeDocType</code> to <code class="mono">commercial_schedules</code> and returned the identical XML. The "net positions" interpretation was never implemented. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">02</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Use <code class="mono">commercial_schedules</code> for the underlying data</div>
-                <p class="small" style="margin: 0;">All consumers should read <code class="mono">silver.commercial_schedules</code>. The API call shape is identical. <span class="src-cite">vault L29-32</span></p>
+                <p class="small" style="margin: 0;">All consumers should read <code class="mono">silver.commercial_schedules</code>. The API call shape is identical. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">03</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Legacy parquet may exist locally — not used by gold</div>
-                <p class="small" style="margin: 0;">Historical files under <code class="mono">data/silver/entsoe/commercial_schedules_net_positions/…</code> may remain in some data directories. Deleting them is a separate cleanup; no scheduled gold consumer reads them. <span class="src-cite">vault L29-32</span></p>
+                <p class="small" style="margin: 0;">Historical files under <code class="mono">data/silver/entsoe/commercial_schedules_net_positions/…</code> may remain in some data directories. Deleting them is a separate cleanup; no scheduled gold consumer reads them. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">04</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">A real signed <code class="mono">net_position_mw</code> is v3 backlog</div>
-                <p class="small" style="margin: 0;">A genuine "net positions" dataset would require pairing both zone-pair directions per period and emitting a single signed value. It should be added under a new dataset key when a downstream consumer needs it — tracked in v3. <span class="src-cite">vault L34-37</span></p>
+                <p class="small" style="margin: 0;">A genuine "net positions" dataset would require pairing both zone-pair directions per period and emitting a single signed value. It should be added under a new dataset key when a downstream consumer needs it — tracked in v3. </p>
               </div>
             </div>
             <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;">
               <div class="caveat-num">05</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Not entitlement-blocked</div>
-                <p class="small" style="margin: 0;">The underlying A09 endpoint (now <code class="mono">commercial_schedules</code>) is accessible with the free gridflow default API key. <span class="src-cite">.planning/reconciliation/entsoe/ — no 401 file for this slug</span></p>
+                <p class="small" style="margin: 0;">The underlying A09 endpoint (now <code class="mono">commercial_schedules</code>) is accessible with the free gridflow default API key. </p>
               </div>
             </div>
           </div>

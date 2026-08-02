@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <title>operator_point_directions · ENTSO-G Transparency · Gridflow</title>
   <meta name="description" content="Operator-point-direction triples with full validity, CAM/CMP flags, contract types, and GCV ranges — the canonical reference for resolving operational-data…"/>
-  <meta name="viewport" content="width=1280" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,30..100&family=Inter:wght@300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -235,7 +235,7 @@
               </div>
             </div>
             <div data-chart="barsH" data-opts='{"width":820,"items":[{"label":"Germany (DE)","value":1100,"display":"~1,100","color":"#c45a3a"},{"label":"Italy (IT)","value":620,"display":"~620","color":"#3b6b4b"},{"label":"France (FR)","value":480,"display":"~480","color":"#7a96a8"},{"label":"United Kingdom (UK)","value":120,"display":"~120","color":"#86627d"},{"label":"Ireland (IE)","value":40,"display":"~40","color":"#c9a96e"}]}'></div>
-            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · live wiring planned</div>
+            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · illustrative, seeded</div>
           </div>
         </section>
 
@@ -256,23 +256,23 @@
               </tr>
             </thead>
             <tbody>
-<tr><td class="col-name">id <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Vendor concatenation. Dedup key. <span class="cite">silver/entsog/generic.py L126-130</span></td></tr>
-<tr><td class="col-name">point_key / point_label</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Connection-point identifier and label. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">operator_key / operator_label</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">TSO identifier and name. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">tso_eic_code</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">EIC cross-reference. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">direction_key</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note"><code class="mono">"entry"</code> / <code class="mono">"exit"</code>. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">valid_from / valid_to</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Combo validity window. <span class="cite">silver/entsog/datetime.py::parse_entsog_datetime_expr</span></td></tr>
-<tr><td class="col-name">has_data</td><td class="col-type">bool</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Whether operational data exists for this combo. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">is_cam_relevant / is_cmp_relevant</td><td class="col-type">bool</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Regulatory flags — vendor <code class="mono">isCAMRelevant</code> (uppercase) coalesces with the operationalData camelCase via <code class="mono">_normalise_column_names</code>. <span class="cite">silver/entsog/generic.py L264-290</span></td></tr>
-<tr><td class="col-name">t_so_country / t_so_balancing_zone</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">TSO country & balancing zone. Note awkward snake_case from the <code class="mono">tSO</code> camel pattern. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">cross_border_point_type</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">E.g. <code class="mono">"Cross-Border Transmission IP between EU and ExtEU"</code>. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">adjacent_tso_eic / adjacent_operator_key / adjacent_country / adjacent_zones</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">The counterparty TSO across the interconnector. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">annual / quarterly / monthly / daily / day_ahead / half_annual / multi_annual _contracts_is_available</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Vendor-narrative product availability (yes/no text). <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">tp_tso_gcv_min / tp_tso_gcv_max / tp_tso_gcv_unit</td><td class="col-type">str / float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">GCV (Gross Calorific Value) range for the point. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">sentence_cmp_unsuccessful / _unavailable / _auction / _made_available</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Free-text CMP narrative sentences. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">last_update_date_time</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Vendor publication timestamp. <span class="cite">silver/entsog/datetime.py</span></td></tr>
-<tr><td class="col-name">data_provider</td><td class="col-type">str ("entsog")</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsog"</code>. Constant. <span class="cite">silver/entsog/generic.py L132-136</span></td></tr>
-<tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Wall-clock at silver write. <span class="cite">silver/entsog/generic.py L132-136</span></td></tr>
+<tr><td class="col-name">id <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Vendor concatenation. Dedup key. </td></tr>
+<tr><td class="col-name">point_key / point_label</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Connection-point identifier and label. </td></tr>
+<tr><td class="col-name">operator_key / operator_label</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">TSO identifier and name. </td></tr>
+<tr><td class="col-name">tso_eic_code</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">EIC cross-reference. </td></tr>
+<tr><td class="col-name">direction_key</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note"><code class="mono">"entry"</code> / <code class="mono">"exit"</code>. </td></tr>
+<tr><td class="col-name">valid_from / valid_to</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Combo validity window. </td></tr>
+<tr><td class="col-name">has_data</td><td class="col-type">bool</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Whether operational data exists for this combo. </td></tr>
+<tr><td class="col-name">is_cam_relevant / is_cmp_relevant</td><td class="col-type">bool</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Regulatory flags — vendor <code class="mono">isCAMRelevant</code> (uppercase) coalesces with the operationalData camelCase via <code class="mono">_normalise_column_names</code>. </td></tr>
+<tr><td class="col-name">t_so_country / t_so_balancing_zone</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">TSO country & balancing zone. Note awkward snake_case from the <code class="mono">tSO</code> camel pattern. </td></tr>
+<tr><td class="col-name">cross_border_point_type</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">E.g. <code class="mono">"Cross-Border Transmission IP between EU and ExtEU"</code>. </td></tr>
+<tr><td class="col-name">adjacent_tso_eic / adjacent_operator_key / adjacent_country / adjacent_zones</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">The counterparty TSO across the interconnector. </td></tr>
+<tr><td class="col-name">annual / quarterly / monthly / daily / day_ahead / half_annual / multi_annual _contracts_is_available</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Vendor-narrative product availability (yes/no text). </td></tr>
+<tr><td class="col-name">tp_tso_gcv_min / tp_tso_gcv_max / tp_tso_gcv_unit</td><td class="col-type">str / float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">GCV (Gross Calorific Value) range for the point. </td></tr>
+<tr><td class="col-name">sentence_cmp_unsuccessful / _unavailable / _auction / _made_available</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Free-text CMP narrative sentences. </td></tr>
+<tr><td class="col-name">last_update_date_time</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Vendor publication timestamp. </td></tr>
+<tr><td class="col-name">data_provider</td><td class="col-type">str ("entsog")</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsog"</code>. Constant. </td></tr>
+<tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Wall-clock at silver write. </td></tr>
             </tbody>
           </table>
           <div class="card mt-24" style="padding: 16px 20px; display: flex; gap: 32px; align-items: start;">
@@ -341,7 +341,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('opd','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('opd','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('opd','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('opd','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="opd-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;">https://transparency.entsog.eu/api/v1/operatorPointDirections<span style="color:#6b6358;">?</span><span style="color:#c9a96e;">limit</span>=-1<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">hasData</span>=1</pre>
@@ -351,8 +351,8 @@
 <span class="k">SELECT</span> pf.timestamp_utc, pf.point_key, pf.direction_key,
        opd.t_so_country, opd.t_so_balancing_zone, opd.adjacent_country,
        pf.flow_gwh_per_day
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/entsog/physical_flows/**/*.parquet'</span>) pf
-<span class="k">LEFT JOIN</span> read_parquet(<span class="s">'data/silver/entsog/operator_point_directions.parquet'</span>) opd
+<span class="k">FROM</span> silver_physical_flows pf
+<span class="k">LEFT JOIN</span> silver_operator_point_directions opd
   <span class="k">ON</span>  pf.operator_key  = opd.operator_key
   <span class="k">AND</span> pf.point_key     = opd.point_key
   <span class="k">AND</span> pf.direction_key = opd.direction_key
@@ -360,17 +360,15 @@
 <span class="k">ORDER BY</span> pf.timestamp_utc;</pre>
             </div></div>
             <div data-tab-panel="opd-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-opd = pl.read_parquet(<span class="s">"data/silver/entsog/operator_point_directions.parquet"</span>)
-<span class="c"># Which adjacent countries does UK have direct interconnections to?</span>
-uk_links = (
-    opd.filter(pl.col(<span class="s">"t_so_country"</span>) == <span class="s">"UK"</span>)
-       .group_by(<span class="s">"adjacent_country"</span>)
-       .agg(pl.len().alias(<span class="s">"combos"</span>))
-       .sort(<span class="s">"combos"</span>, descending=<span class="k">True</span>)
-)
-print(uk_links)</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># operator_point_directions: stored silver rows as a pandas DataFrame</span>
+df = data.entsog.query(<span class="s">"operator_point_directions"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.entsog.describe(<span class="s">"operator_point_directions"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -381,11 +379,11 @@ print(uk_links)</pre>
           <h2 class="display-3 mb-8">Things to know before using this.</h2>
           <p class="small mb-24" style="max-width: 560px;">These are specific to <code class="mono">operator_point_directions</code>. Also read the <a href="../entsog.html#about" class="link">ENTSO-G-wide caveats</a> on the vendor page.</p>
           <div>
-<div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;">Single-file reference dataset (no time partitions)</div><p class="small" style="margin: 0;">Output is <code class="mono">operator_point_directions.parquet</code> overwritten on each refresh. <span class="src-cite">silver/entsog/generic.py L196-202 · endpoints.py L231-239 reference=True</span></p></div></div>
-<div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">is_cam_relevant</code> coalesces uppercase + camelCase variants</div><p class="small" style="margin: 0;">Vendor returns <code class="mono">isCAMRelevant</code> (uppercase CAM) here vs <code class="mono">isCamRelevant</code> in operationalData. <code class="mono">_normalise_column_names</code> collapses both into <code class="mono">is_cam_relevant</code> via <code class="mono">pl.coalesce</code>. <span class="src-cite">silver/entsog/generic.py L264-290 · vault Known Issues</span></p></div></div>
-<div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">tSO*</code> fields produce odd snake_case (<code class="mono">t_so_country</code>)</div><p class="small" style="margin: 0;">The <code class="mono">_camel_to_snake</code> regex splits <code class="mono">tSO</code> as <code class="mono">t_s_o</code>, then collapses repeated <code class="mono">_</code> to <code class="mono">t_so</code>. Match the silver column name, not the camelCase. <span class="src-cite">silver/entsog/generic.py L257-261</span></p></div></div>
-<div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">timeZone</code> not accepted</div><p class="small" style="margin: 0;">Reference endpoints take no <code class="mono">from</code>/<code class="mono">to</code>/<code class="mono">timeZone</code> — full-snapshot only with <code class="mono">limit=-1</code>. <span class="src-cite">vault Query-params · endpoints.py L231-239</span></p></div></div>
-<div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">hasData=1</code> excludes recently-dormant combos</div><p class="small" style="margin: 0;">Use without the filter for full historical inventory; with the filter for currently-active combos only. <span class="src-cite">vault Known Issues</span></p></div></div>
+<div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;">Single-file reference dataset (no time partitions)</div><p class="small" style="margin: 0;">Output is <code class="mono">operator_point_directions.parquet</code> overwritten on each refresh. </p></div></div>
+<div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">is_cam_relevant</code> coalesces uppercase + camelCase variants</div><p class="small" style="margin: 0;">Vendor returns <code class="mono">isCAMRelevant</code> (uppercase CAM) here vs <code class="mono">isCamRelevant</code> in operationalData. <code class="mono">_normalise_column_names</code> collapses both into <code class="mono">is_cam_relevant</code> via <code class="mono">pl.coalesce</code>. </p></div></div>
+<div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">tSO*</code> fields produce odd snake_case (<code class="mono">t_so_country</code>)</div><p class="small" style="margin: 0;">The <code class="mono">_camel_to_snake</code> regex splits <code class="mono">tSO</code> as <code class="mono">t_s_o</code>, then collapses repeated <code class="mono">_</code> to <code class="mono">t_so</code>. Match the silver column name, not the camelCase. </p></div></div>
+<div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">timeZone</code> not accepted</div><p class="small" style="margin: 0;">Reference endpoints take no <code class="mono">from</code>/<code class="mono">to</code>/<code class="mono">timeZone</code> — full-snapshot only with <code class="mono">limit=-1</code>. </p></div></div>
+<div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">hasData=1</code> excludes recently-dormant combos</div><p class="small" style="margin: 0;">Use without the filter for full historical inventory; with the filter for currently-active combos only. </p></div></div>
           </div>
         </section>
 

@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <title>net_transfer_capacity · ENTSO-E Transparency · Gridflow</title>
   <meta name="description" content="Day-ahead forecasted net transfer capacity in MW per zone-pair direction — the capacity denominator for interconnector utilisation modelling and the cap that…"/>
-  <meta name="viewport" content="width=1280" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,30..100&family=Inter:wght@300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -220,14 +220,10 @@
                 <div class="eyebrow mb-4">net_transfer_capacity · silver layer · 10YGB---------A → 10YFR-RTE------C</div>
                 <div class="small">Line · MW · UTC · day-ahead</div>
               </div>
-              <div class="row gap-8">
-                <span class="chip ink btn-like">24h</span>
-                <span class="chip btn-like">7d</span>
-                <span class="chip btn-like">30d</span>
-              </div>
+              
             </div>
             <div data-chart="sparkline" data-opts='{"width":900,"height":280,"seed":43}'></div>
-            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · live wiring planned</div>
+            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · illustrative, seeded</div>
           </div>
         </section>
 
@@ -257,7 +253,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   tz-aware UTC; validator requires tzinfo. Source: <code class="mono">&lt;Period&gt;</code> start + <code class="mono">position × resolution</code>.
-                  <span class="cite">schemas/entsoe.py L322, L330-335</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -266,7 +262,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   Source zone EIC. Source: <code class="mono">&lt;in_Domain.mRID&gt;</code>.
-                  <span class="cite">schemas/entsoe.py L323</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -275,7 +271,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   Destination zone EIC. Source: <code class="mono">&lt;out_Domain.mRID&gt;</code>.
-                  <span class="cite">schemas/entsoe.py L324</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -284,7 +280,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   Net transfer capacity in MW (directional). Source: <code class="mono">&lt;Point&gt;&lt;quantity&gt;</code>.
-                  <span class="cite">schemas/entsoe.py L325</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -293,7 +289,7 @@
                 <td style="text-align:center;" class="nullable">Yes</td>
                 <td class="col-note">
                   ISO duration; typically <code class="mono">PT60M</code>. Default <code class="mono">""</code>.
-                  <span class="cite">schemas/entsoe.py L326</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -302,7 +298,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   Always <code class="mono">"entsoe"</code>. Default <code class="mono">"entsoe"</code>.
-                  <span class="cite">schemas/entsoe.py L327</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -311,7 +307,7 @@
                 <td style="text-align:center;" class="nullable">Yes</td>
                 <td class="col-note">
                   Set at silver write. Added G5-W3 to match transformer.
-                  <span class="cite">schemas/entsoe.py L328</span>
+                  
                 </td>
               </tr>
             </tbody>
@@ -386,7 +382,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('ntc','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('ntc','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('ntc','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('ntc','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="ntc-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;">https://web-api.tp.entsoe.eu/api
@@ -402,8 +398,8 @@
 <pre class="code dark" style="padding: 18px 22px;"><span class="c">-- Interconnector utilisation per border-direction per hour</span>
 <span class="k">SELECT</span> n.timestamp_utc, n.in_area_code, n.out_area_code,
        n.ntc_mw, f.flow_mw, f.flow_mw / n.ntc_mw <span class="k">AS</span> utilisation
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/entsoe/net_transfer_capacity/**/*.parquet'</span>) n
-<span class="k">JOIN</span> read_parquet(<span class="s">'data/silver/entsoe/cross_border_flows/**/*.parquet'</span>) f
+<span class="k">FROM</span> silver_net_transfer_capacity n
+<span class="k">JOIN</span> silver_cross_border_flows f
   <span class="k">ON</span> n.timestamp_utc = f.timestamp_utc
  <span class="k">AND</span> n.in_area_code = f.in_area_code
  <span class="k">AND</span> n.out_area_code = f.out_area_code
@@ -411,14 +407,15 @@
 <span class="k">ORDER BY</span> utilisation <span class="k">DESC</span> <span class="k">LIMIT</span> 50;</pre>
             </div></div>
             <div data-tab-panel="ntc-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-ntc = pl.read_parquet(<span class="s">"data/silver/entsoe/net_transfer_capacity/**/*.parquet"</span>)
-<span class="c"># Per-border NTC profile — does NTC derate at predictable hours?</span>
-profile = ntc.with_columns(pl.col(<span class="s">"timestamp_utc"</span>).dt.hour().alias(<span class="s">"hour"</span>)).group_by(
-    [<span class="s">"in_area_code"</span>, <span class="s">"out_area_code"</span>, <span class="s">"hour"</span>]
-).agg(pl.col(<span class="s">"ntc_mw"</span>).mean().alias(<span class="s">"mean_ntc"</span>))
-<span class="k">print</span>(profile.sort([<span class="s">"in_area_code"</span>, <span class="s">"out_area_code"</span>, <span class="s">"hour"</span>]).head(24))</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># net_transfer_capacity: stored silver rows as a pandas DataFrame</span>
+df = data.entsoe.query(<span class="s">"net_transfer_capacity"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.entsoe.describe(<span class="s">"net_transfer_capacity"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -433,35 +430,35 @@ profile = ntc.with_columns(pl.col(<span class="s">"timestamp_utc"</span>).dt.hou
               <div class="caveat-num">01</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Directional — same border has two NTC values</div>
-                <p class="small" style="margin: 0;">NTC is asymmetric — GB → FR can differ from FR → GB depending on which constraint binds. Pair both directions for the full interconnector picture. <span class="src-cite">vault Known Issues</span></p>
+                <p class="small" style="margin: 0;">NTC is asymmetric — GB → FR can differ from FR → GB depending on which constraint binds. Pair both directions for the full interconnector picture. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">02</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">contract_MarketAgreement.Type=A01</code> pinned by connector</div>
-                <p class="small" style="margin: 0;">Connector pins <code class="mono">A01</code> (daily auction). Other contract types (intraday <code class="mono">A02</code>, monthly <code class="mono">A03</code>) return different surfaces. <span class="src-cite">endpoints.py L135-141</span></p>
+                <p class="small" style="margin: 0;">Connector pins <code class="mono">A01</code> (daily auction). Other contract types (intraday <code class="mono">A02</code>, monthly <code class="mono">A03</code>) return different surfaces. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">03</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Domain params capitalised</div>
-                <p class="small" style="margin: 0;">A61 uses <code class="mono">In_Domain</code> / <code class="mono">Out_Domain</code> (capitalised) — different from the lowercase <code class="mono">in_Domain</code> / <code class="mono">out_Domain</code> of most ENTSO-E surfaces. Common footgun. <span class="src-cite">endpoints.py L135-141 · vault Known Issues</span></p>
+                <p class="small" style="margin: 0;">A61 uses <code class="mono">In_Domain</code> / <code class="mono">Out_Domain</code> (capitalised) — different from the lowercase <code class="mono">in_Domain</code> / <code class="mono">out_Domain</code> of most ENTSO-E surfaces. Common footgun. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">04</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Revisions overwrite</div>
-                <p class="small" style="margin: 0;">Same <code class="mono">(timestamp_utc, in_area_code, out_area_code)</code> re-publication overwrites silently on dedup. <span class="src-cite">silver/entsoe/net_transfer_capacity.py L73-75</span></p>
+                <p class="small" style="margin: 0;">Same <code class="mono">(timestamp_utc, in_area_code, out_area_code)</code> re-publication overwrites silently on dedup. </p>
               </div>
             </div>
             <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;">
               <div class="caveat-num">05</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Entitlement-blocked on default API key</div>
-                <p class="small" style="margin: 0;">Live API returns HTTP 401 for the unregistered gridflow default key. Schema verified from gridflow source. <span class="src-cite">.planning/reconciliation/entsoe/19-net-transfer-capacity-http-401.md</span></p>
+                <p class="small" style="margin: 0;">Live API returns HTTP 401 for the unregistered gridflow default key. Schema verified from gridflow source. </p>
               </div>
             </div>
           </div>

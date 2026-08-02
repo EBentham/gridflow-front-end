@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <title>interruptions · ENTSO-G Transparency · Gridflow</title>
   <meta name="description" content="Planned and unplanned capacity interruption events per point — historically the canonical record for outage attribution. Endpoint withdrawn by vendor in 2026…"/>
-  <meta name="viewport" content="width=1280" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,30..100&family=Inter:wght@300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -230,13 +230,10 @@
                 <div class="eyebrow mb-4">interruptions · silver layer · GB points · pre-2026-05 archive</div>
                 <div class="small">Horizontal bars · count · pre-2026-05 archive</div>
               </div>
-              <div class="row gap-8">
-<span class="chip ink btn-like">1y</span>
-<span class="chip btn-like">3y</span>
-              </div>
+              
             </div>
             <div data-chart="barsH" data-opts='{"width":820,"items":[{"label":"Bacton IUK (ITP-00005)","value":3,"display":"3","color":"#c45a3a"},{"label":"Bacton BBL (ITP-00207)","value":3,"display":"3","color":"#3b6b4b"},{"label":"Moffat IE (ITP-00495)","value":1,"display":"1","color":"#7a96a8"},{"label":"Moffat (ITP-00090)","value":1,"display":"1","color":"#86627d"}]}'></div>
-            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · live wiring planned</div>
+            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · illustrative, seeded</div>
           </div>
         </section>
 
@@ -257,19 +254,19 @@
               </tr>
             </thead>
             <tbody>
-<tr><td class="col-name">id <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Vendor concatenation. Dedup key. <span class="cite">silver/entsog/generic.py L126-130</span></td></tr>
-<tr><td class="col-name">timestamp_utc</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Event start, set from <code class="mono">eventStart</code> via <code class="mono">_TIMESTAMP_PRIORITY</code>. Partition driver. <span class="cite">silver/entsog/generic.py L118-120, L45-53</span></td></tr>
-<tr><td class="col-name">event_start / event_stop</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Outage window. <span class="cite">silver/entsog/generic.py L114-116</span></td></tr>
-<tr><td class="col-name">operator_key / operator_label</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">TSO identifier and human name. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">point_key / point_label</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Connection-point identifier and label. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">direction_key</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note"><code class="mono">"entry"</code> / <code class="mono">"exit"</code>. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">interruption_type</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Planned / Unplanned / operator-specific variants. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">restoration_information</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Free-text vendor field. <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">unavailable_capacity</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Lost capacity in the vendor unit. <span class="cite">silver/entsog/generic.py L65-77 (_NUMERIC_NAMES)</span></td></tr>
-<tr><td class="col-name">unit</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Capacity unit (typically <code class="mono">"kWh/d"</code>). <span class="cite">dynamic</span></td></tr>
-<tr><td class="col-name">last_update_date_time</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Vendor publication timestamp. <span class="cite">silver/entsog/datetime.py</span></td></tr>
-<tr><td class="col-name">data_provider</td><td class="col-type">str ("entsog")</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsog"</code>. Constant. <span class="cite">silver/entsog/generic.py L132-136</span></td></tr>
-<tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Wall-clock at silver write. <span class="cite">silver/entsog/generic.py L132-136</span></td></tr>
+<tr><td class="col-name">id <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Vendor concatenation. Dedup key. </td></tr>
+<tr><td class="col-name">timestamp_utc</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Event start, set from <code class="mono">eventStart</code> via <code class="mono">_TIMESTAMP_PRIORITY</code>. Partition driver. </td></tr>
+<tr><td class="col-name">event_start / event_stop</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Outage window. </td></tr>
+<tr><td class="col-name">operator_key / operator_label</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">TSO identifier and human name. </td></tr>
+<tr><td class="col-name">point_key / point_label</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Connection-point identifier and label. </td></tr>
+<tr><td class="col-name">direction_key</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note"><code class="mono">"entry"</code> / <code class="mono">"exit"</code>. </td></tr>
+<tr><td class="col-name">interruption_type</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Planned / Unplanned / operator-specific variants. </td></tr>
+<tr><td class="col-name">restoration_information</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Free-text vendor field. </td></tr>
+<tr><td class="col-name">unavailable_capacity</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Lost capacity in the vendor unit. </td></tr>
+<tr><td class="col-name">unit</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Capacity unit (typically <code class="mono">"kWh/d"</code>). </td></tr>
+<tr><td class="col-name">last_update_date_time</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">null</td><td class="col-note">Vendor publication timestamp. </td></tr>
+<tr><td class="col-name">data_provider</td><td class="col-type">str ("entsog")</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsog"</code>. Constant. </td></tr>
+<tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Wall-clock at silver write. </td></tr>
             </tbody>
           </table>
           <div class="card mt-24" style="padding: 16px 20px; display: flex; gap: 32px; align-items: start;">
@@ -338,7 +335,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('int','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('int','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('int','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('int','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="int-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;"># Historic only — returns HTTP 404 after 2026-05-19
@@ -349,7 +346,7 @@ https://transparency.entsog.eu/api/v1/interruptions<span style="color:#6b6358;">
 <span class="k">SELECT</span> point_key, point_label,
        COUNT(*) <span class="k">AS</span> events,
        SUM(unavailable_capacity) / <span class="num">1e6</span> <span class="k">AS</span> total_lost_gwh
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/entsog/interruptions/**/*.parquet'</span>)
+<span class="k">FROM</span> silver_interruptions
 <span class="k">WHERE</span> event_start &gt;= <span class="s">'2025-01-01'</span>
   <span class="k">AND</span> event_start &lt;  <span class="s">'2026-01-01'</span>
 <span class="k">GROUP BY</span> <span class="num">1</span>, <span class="num">2</span>
@@ -357,16 +354,15 @@ https://transparency.entsog.eu/api/v1/interruptions<span style="color:#6b6358;">
 <span class="k">LIMIT</span> <span class="num">10</span>;</pre>
             </div></div>
             <div data-tab-panel="int-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-df = pl.read_parquet(<span class="s">"data/silver/entsog/interruptions/**/*.parquet"</span>)
-<span class="c"># Planned vs Unplanned breakdown</span>
-breakdown = (
-    df.group_by(<span class="s">"interruption_type"</span>)
-      .agg(pl.len().alias(<span class="s">"events"</span>))
-      .sort(<span class="s">"events"</span>, descending=<span class="k">True</span>)
-)
-print(breakdown)</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># interruptions: stored silver rows as a pandas DataFrame</span>
+df = data.entsog.query(<span class="s">"interruptions"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.entsog.describe(<span class="s">"interruptions"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -377,11 +373,11 @@ print(breakdown)</pre>
           <h2 class="display-3 mb-8">Things to know before using this.</h2>
           <p class="small mb-24" style="max-width: 560px;">These are specific to <code class="mono">interruptions</code>. Also read the <a href="../entsog.html#about" class="link">ENTSO-G-wide caveats</a> on the vendor page.</p>
           <div>
-<div class="caveat-item discrepancy"><div class="caveat-num">01</div><div><div class="eyebrow-discrepancy">Discrepancy · endpoint withdrawn</div><div style="font-weight: 500; margin-bottom: 6px;">Endpoint withdrawn by vendor (2026-05-19)</div><p class="small" style="margin: 0;">The live API returns HTTP 404 for <code class="mono">/interruptions</code>, while the vault frontmatter records <code class="mono">removed: 2026-05-19</code>; historic data remains queryable from the bronze archive. Use <code class="mono">urgent_market_messages</code> as a partial replacement for unplanned-outage notifications. <span class="src-cite">.planning/reconciliation/entsog/02-interruptions-http-404.md closed 2026-05-19 · vault frontmatter removed: 2026-05-19</span></p></div></div>
-<div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">timeZone=UCT</code> (vendor typo, intentional)</div><p class="small" style="margin: 0;">When the endpoint was live, the connector sent <code class="mono">UCT</code> not <code class="mono">UTC</code>. <span class="src-cite">connectors/entsog/endpoints.py L17 · ENTSOG_TIMEZONE</span></p></div></div>
-<div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;">Event-driven cadence</div><p class="small" style="margin: 0;">A <code class="mono">(point_key, direction_key)</code> may have 0 or many interruptions per gas day. Dedup on <code class="mono">id</code> (vendor concatenation). <span class="src-cite">silver/entsog/generic.py L126-130</span></p></div></div>
-<div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">interruption_type</code> is free-text-ish</div><p class="small" style="margin: 0;">Vendor values include <code class="mono">Planned</code>, <code class="mono">Unplanned</code>, and operator-specific variants. Map to a canonical taxonomy before aggregating. <span class="src-cite">vault Bronze sample field reference</span></p></div></div>
-<div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">Historic replay is the canonical use</div><p class="small" style="margin: 0;">The connector entry remains in <code class="mono">ENDPOINTS</code> for replay/backtest workflows; live fetches now bronze the 404 response (empty) via the standard short-circuit. <span class="src-cite">connectors/entsog/endpoints.py L155-166 · connectors/entsog/client.py L109-115</span></p></div></div>
+<div class="caveat-item discrepancy"><div class="caveat-num">01</div><div><div class="eyebrow-discrepancy">Discrepancy · endpoint withdrawn</div><div style="font-weight: 500; margin-bottom: 6px;">Endpoint withdrawn by vendor (2026-05-19)</div><p class="small" style="margin: 0;">The live API returns HTTP 404 for <code class="mono">/interruptions</code>, while the vault frontmatter records <code class="mono">removed: 2026-05-19</code>; historic data remains queryable from the bronze archive. Use <code class="mono">urgent_market_messages</code> as a partial replacement for unplanned-outage notifications. </p></div></div>
+<div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">timeZone=UCT</code> (vendor typo, intentional)</div><p class="small" style="margin: 0;">When the endpoint was live, the connector sent <code class="mono">UCT</code> not <code class="mono">UTC</code>. </p></div></div>
+<div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;">Event-driven cadence</div><p class="small" style="margin: 0;">A <code class="mono">(point_key, direction_key)</code> may have 0 or many interruptions per gas day. Dedup on <code class="mono">id</code> (vendor concatenation). </p></div></div>
+<div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">interruption_type</code> is free-text-ish</div><p class="small" style="margin: 0;">Vendor values include <code class="mono">Planned</code>, <code class="mono">Unplanned</code>, and operator-specific variants. Map to a canonical taxonomy before aggregating. </p></div></div>
+<div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">Historic replay is the canonical use</div><p class="small" style="margin: 0;">The connector entry remains in <code class="mono">ENDPOINTS</code> for replay/backtest workflows; live fetches now bronze the 404 response (empty) via the standard short-circuit. </p></div></div>
           </div>
         </section>
 

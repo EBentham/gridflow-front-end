@@ -4,7 +4,7 @@
   <meta charset="utf-8"/>
   <title>agws · Elexon BMRS · Gridflow</title>
   <meta name="description" content="Half-hourly GB wind and solar generation — the canonical renewables-only series for forecast-error analysis, capacity factors, and embedded-solar attribution."/>
-  <meta name="viewport" content="width=1280"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,30..100&family=Inter:wght@300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -135,10 +135,10 @@
               <div class="eyebrow mb-4">agws · silver layer</div>
               <div class="small">Stacked area · MW · UTC · 6 May 2026</div>
             </div>
-            <div class="row gap-8"><span class="chip ink btn-like">24h</span><span class="chip btn-like">7d</span><span class="chip btn-like">30d</span></div>
+            
           </div>
           <div data-chart="stackedArea" data-opts='{"width":900,"height":280,"series":[{"name":"Wind Onshore","color":"#3b6b4b","shape":"diurnal-wind","params":{"mean":3500,"volatility":1200,"persistence":0.75,"seed":21}},{"name":"Wind Offshore","color":"#5a8aa6","shape":"diurnal-wind","params":{"mean":5200,"volatility":1500,"persistence":0.78,"seed":22}},{"name":"Solar","color":"#d4a73a","shape":"diurnal-solar","params":{"peak":3800,"peak_hour":12.5,"half_width":5}}]}'></div>
-          <div style="font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--ink-faint);text-transform:uppercase;margin-top:16px">Static snapshot · live wiring planned</div>
+          <div style="font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--ink-faint);text-transform:uppercase;margin-top:16px">Static snapshot · illustrative, seeded</div>
         </div>
       </section>
 
@@ -274,27 +274,26 @@
           <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px">
             <button class="chip btn-like ink" onclick="setTab('agws','url',this)" style="cursor:pointer">Example URL</button>
             <button class="chip btn-like" onclick="setTab('agws','sql',this)" style="cursor:pointer">DuckDB · SQL</button>
-            <button class="chip btn-like" onclick="setTab('agws','py',this)" style="cursor:pointer">Python · polars</button>
+            <button class="chip btn-like" onclick="setTab('agws','py',this)" style="cursor:pointer">Python · gridflow-models</button>
           </div>
           <div data-tab-panel="agws-url" style="display:block"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">https://data.elexon.co.uk/bmrs/api/v1/datasets/AGWS?publishDateTimeFrom=2026-05-01T00:00:00Z&amp;publishDateTimeTo=2026-05-02T00:00:00Z&amp;format=json</pre></div></div>
           <div data-tab-panel="agws-sql" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto"><span class="c">-- Daily wind onshore vs offshore totals</span>
 SELECT settlement_date,
        SUM(CASE WHEN psr_type = <span class="s">'Wind Onshore'</span>  THEN generation_mw END) AS onshore_mwh,
        SUM(CASE WHEN psr_type = <span class="s">'Wind Offshore'</span> THEN generation_mw END) AS offshore_mwh
-FROM read_parquet(<span class="s">'data/silver/elexon/agws/**/*.parquet'</span>)
+FROM silver_agws
 WHERE settlement_date &gt;= current_date - INTERVAL 30 DAY
 GROUP BY settlement_date
 ORDER BY settlement_date;</pre></div></div>
-          <div data-tab-panel="agws-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">import polars as pl
+          <div data-tab-panel="agws-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-df = pl.read_parquet(<span class="s">"data/silver/elexon/agws/**/*.parquet"</span>)
-<span class="c"># Wind capacity-factor proxy: GB onshore vs offshore</span>
-wind = (
-    df.filter(pl.col(<span class="s">"psr_type"</span>).str.starts_with(<span class="s">"Wind"</span>))
-      .group_by(<span class="s">"psr_type"</span>)
-      .agg(pl.col(<span class="s">"generation_mw"</span>).mean().alias(<span class="s">"avg_mw"</span>))
-)
-print(wind)</pre></div></div>
+data, models, common = setup_notebook()
+
+<span class="c"># agws: stored silver rows as a pandas DataFrame</span>
+df = data.elexon.query(<span class="s">"agws"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.elexon.describe(<span class="s">"agws"</span>)</pre></div></div>
         </div>
       </section>
 

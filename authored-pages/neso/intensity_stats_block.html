@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <title>intensity_stats_block · NESO Carbon Intensity · Gridflow</title>
   <meta name="description" content="GB carbon-intensity statistics split into configurable hour blocks — the canonical sub-day regime view for diurnal-pattern analysis and intra-day flexible-load…"/>
-  <meta name="viewport" content="width=1280" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,30..100&family=Inter:wght@300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -177,14 +177,10 @@
                 <div class="eyebrow mb-4">intensity_stats_block · silver layer</div>
                 <div class="small">Horizontal bars · gCO2/kWh · 4 blocks × 30 days</div>
               </div>
-              <div class="row gap-8">
-                <span class="chip ink btn-like">6h</span>
-                <span class="chip btn-like">12h</span>
-                <span class="chip btn-like">24h</span>
-              </div>
+              
             </div>
             <div data-chart="barsH" data-opts='{"width":820,"items":[{"label":"00:00","value":212,"display":"212"},{"label":"06:00","value":110,"display":"110"},{"label":"12:00","value":78,"display":"78"},{"label":"18:00","value":225,"display":"225"}]}'></div>
-            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · live wiring planned</div>
+            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · illustrative, seeded</div>
           </div>
         </section>
 
@@ -209,49 +205,49 @@
                 <td class="col-name">timestamp_utc <span class="pk-badge">PK</span></td>
                 <td class="col-type">datetime[UTC]</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">Block start. UTC enforced. Source: <code class="mono">from</code>. <span class="cite">schemas/neso.py L20, L23-28</span></td>
+                <td class="col-note">Block start. UTC enforced. Source: <code class="mono">from</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">period_end_utc <span class="pk-badge">PK</span></td>
                 <td class="col-type">datetime[UTC]</td>
                 <td style="text-align:center;" class="nullable">null</td>
-                <td class="col-note">Block end. Source: <code class="mono">to</code>. <span class="cite">schemas/neso.py L21</span></td>
+                <td class="col-note">Block end. Source: <code class="mono">to</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">max_gco2_kwh</td>
                 <td class="col-type">float | None</td>
                 <td style="text-align:center;" class="nullable">null</td>
-                <td class="col-note">Maximum intensity in block. Source: <code class="mono">intensity.max</code>. <span class="cite">schemas/neso.py L42</span></td>
+                <td class="col-note">Maximum intensity in block. Source: <code class="mono">intensity.max</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">average_gco2_kwh</td>
                 <td class="col-type">float | None</td>
                 <td style="text-align:center;" class="nullable">null</td>
-                <td class="col-note">Mean intensity in block. Source: <code class="mono">intensity.average</code>. <span class="cite">schemas/neso.py L43</span></td>
+                <td class="col-note">Mean intensity in block. Source: <code class="mono">intensity.average</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">min_gco2_kwh</td>
                 <td class="col-type">float | None</td>
                 <td style="text-align:center;" class="nullable">null</td>
-                <td class="col-note">Minimum intensity in block. Source: <code class="mono">intensity.min</code>. <span class="cite">schemas/neso.py L44</span></td>
+                <td class="col-note">Minimum intensity in block. Source: <code class="mono">intensity.min</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">intensity_index</td>
                 <td class="col-type">str</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">Block index categorical. Source: <code class="mono">intensity.index</code>. <span class="cite">schemas/neso.py L45</span></td>
+                <td class="col-note">Block index categorical. Source: <code class="mono">intensity.index</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">data_provider</td>
                 <td class="col-type">str</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">Always <code class="mono">"neso"</code>. <span class="cite">schemas/neso.py L16</span></td>
+                <td class="col-note">Always <code class="mono">"neso"</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">ingested_at</td>
                 <td class="col-type">datetime[UTC]</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">Silver transform timestamp. <span class="cite">silver/neso/carbon_intensity.py L469-474</span></td>
+                <td class="col-note">Silver transform timestamp. </td>
               </tr>
             </tbody>
           </table>
@@ -317,7 +313,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('ds','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('ds','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('ds','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('ds','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="ds-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;"><span class="c"># Header: Accept: application/json</span>
@@ -328,13 +324,21 @@ https://api.carbonintensity.org.uk/intensity/stats/2026-05-06T00:00Z/2026-05-07T
 <span class="k">SELECT</span> extract(<span class="s">'hour'</span> <span class="k">FROM</span> timestamp_utc) <span class="k">AS</span> block_start_h,
        avg(average_gco2_kwh) <span class="k">AS</span> mean_g,
        count(*) <span class="k">AS</span> n
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/neso/intensity_stats_block/**/*.parquet'</span>)
+<span class="k">FROM</span> silver_intensity_stats_block
 <span class="k">WHERE</span> timestamp_utc &gt;= current_date - <span class="k">INTERVAL</span> <span class="num">30</span> <span class="k">DAY</span>
 <span class="k">GROUP BY</span> <span class="num">1</span>
 <span class="k">ORDER BY</span> <span class="num">1</span>;</pre>
             </div></div>
             <div data-tab-panel="ds-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"></pre>
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
+
+data, models, common = setup_notebook()
+
+<span class="c"># intensity_stats_block: stored silver rows as a pandas DataFrame</span>
+df = data.neso.query(<span class="s">"intensity_stats_block"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.neso.describe(<span class="s">"intensity_stats_block"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -349,28 +353,28 @@ https://api.carbonintensity.org.uk/intensity/stats/2026-05-06T00:00Z/2026-05-07T
               <div class="caveat-num">01</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">{block}</code> defaults to 24 in the connector</div>
-                <p class="small" style="margin: 0;"><code class="mono">endpoints.py L132</code> sets <code class="mono">default_values={"block": 24}</code> — calling with no override yields one row per day. Pass <code class="mono">block=6</code> for the diurnal split. <span class="src-cite"><code class="mono">endpoints.py L132</code>; <code class="mono">endpoints.py L16 DEFAULT_STATS_BLOCK_HOURS=24</code>.</span></p>
+                <p class="small" style="margin: 0;"><code class="mono">endpoints.py L132</code> sets <code class="mono">default_values={"block": 24}</code> — calling with no override yields one row per day. Pass <code class="mono">block=6</code> for the diurnal split. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">02</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Block boundaries are clock-aligned, not solar-aligned</div>
-                <p class="small" style="margin: 0;">Blocks start at UTC midnight; sunrise/sunset bias falls inside blocks. For solar-aligned analysis, either request hour-of-day stats over <code class="mono">intensity_period</code> rows or compute aggregates client-side. <span class="src-cite">NESO docs — block windowing semantics.</span></p>
+                <p class="small" style="margin: 0;">Blocks start at UTC midnight; sunrise/sunset bias falls inside blocks. For solar-aligned analysis, either request hour-of-day stats over <code class="mono">intensity_period</code> rows or compute aggregates client-side. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">03</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">14-day connector chunking applies</div>
-                <p class="small" style="margin: 0;"><code class="mono">_MAX_DAYS_PER_REQUEST=14</code> (<code class="mono">connectors/neso/carbon_intensity.py L21</code>) applies to stats_block as well as raw stats. Multi-week pulls split into multiple windowed requests. <span class="src-cite"><code class="mono">connectors/neso/carbon_intensity.py L21</code>.</span></p>
+                <p class="small" style="margin: 0;"><code class="mono">_MAX_DAYS_PER_REQUEST=14</code> (<code class="mono">connectors/neso/carbon_intensity.py L21</code>) applies to stats_block as well as raw stats. Multi-week pulls split into multiple windowed requests. </p>
               </div>
             </div>
             <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;">
               <div class="caveat-num">04</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Transformer is dynamically generated</div>
-                <p class="small" style="margin: 0;"><code class="mono">IntensityStatsBlockTransformer</code> is created at import time via <code class="mono">type()</code> in <code class="mono">register_neso_transformers()</code>. <span class="src-cite"><code class="mono">silver/neso/carbon_intensity.py L110-136</code>.</span></p>
+                <p class="small" style="margin: 0;"><code class="mono">IntensityStatsBlockTransformer</code> is created at import time via <code class="mono">type()</code> in <code class="mono">register_neso_transformers()</code>. </p>
               </div>
             </div>
           </div>

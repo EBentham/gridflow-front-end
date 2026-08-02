@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <title>balancing_energy_bids · ENTSO-E Transparency · Gridflow</title>
   <meta name="description" content="Individual balancing energy bids in MW per connecting area — the raw bid-stack that procurement clears against, with bid_mrid, direction, and standard /…"/>
-  <meta name="viewport" content="width=1280" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,30..100&family=Inter:wght@300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -216,14 +216,10 @@
                 <div class="eyebrow mb-4">balancing_energy_bids · silver layer · 10YGB----------A</div>
                 <div class="small">Price ladder · EUR/MWh · UTC · single hour</div>
               </div>
-              <div class="row gap-8">
-                <span class="chip ink btn-like">24h</span>
-                <span class="chip btn-like">7d</span>
-                <span class="chip btn-like">30d</span>
-              </div>
+              
             </div>
             <div data-chart="priceLadder" data-opts='{"width":900,"height":280,"seed":91}'></div>
-            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · live wiring planned</div>
+            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · illustrative, seeded</div>
           </div>
         </section>
 
@@ -251,7 +247,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   tz-aware UTC. Source: <code class="mono">&lt;Period&gt;</code> start + <code class="mono">position × resolution</code>.
-                  <span class="cite">schemas/entsoe.py L619, L631-636</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -260,7 +256,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   Connecting area EIC. Renamed by the H8 transformer from <code class="mono">connecting_domain</code>. Source: <code class="mono">&lt;connecting_Domain.mRID&gt;</code>.
-                  <span class="cite">schemas/entsoe.py L620 · silver/entsoe/h8_balancing.py L107</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -269,7 +265,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   Bid MW. Source: <code class="mono">&lt;Point&gt;&lt;quantity&gt;</code>.
-                  <span class="cite">schemas/entsoe.py L621</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -278,7 +274,7 @@
                 <td style="text-align:center;" class="nullable">Yes</td>
                 <td class="col-note">
                   Bid business code. Default <code class="mono">""</code>. Source: <code class="mono">&lt;businessType&gt;</code>.
-                  <span class="cite">schemas/entsoe.py L622</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -287,7 +283,7 @@
                 <td style="text-align:center;" class="nullable">Yes</td>
                 <td class="col-note">
                   Individual bid identifier. Renamed from <code class="mono">&lt;TimeSeries&gt;&lt;mRID&gt;</code>. Default <code class="mono">""</code>.
-                  <span class="cite">schemas/entsoe.py L623 · silver/entsoe/h8_balancing.py L109</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -296,7 +292,7 @@
                 <td style="text-align:center;" class="nullable">Yes</td>
                 <td class="col-note">
                   Up / down direction code. Renamed from <code class="mono">&lt;flow_Direction&gt;</code>. Default <code class="mono">""</code>.
-                  <span class="cite">schemas/entsoe.py L624</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -305,7 +301,7 @@
                 <td style="text-align:center;" class="nullable">Yes</td>
                 <td class="col-note">
                   Bidder's product designation. Default <code class="mono">""</code>. Source: <code class="mono">&lt;Original_Market_Product&gt;</code>.
-                  <span class="cite">schemas/entsoe.py L625</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -314,7 +310,7 @@
                 <td style="text-align:center;" class="nullable">Yes</td>
                 <td class="col-note">
                   Standardised product designation. Default <code class="mono">""</code>. Source: <code class="mono">&lt;Standard_Market_Product&gt;</code>.
-                  <span class="cite">schemas/entsoe.py L626</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -323,7 +319,7 @@
                 <td style="text-align:center;" class="nullable">Yes</td>
                 <td class="col-note">
                   ISO duration. Default <code class="mono">""</code>.
-                  <span class="cite">schemas/entsoe.py L627</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -332,7 +328,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   Always <code class="mono">"entsoe"</code>. Default <code class="mono">"entsoe"</code>.
-                  <span class="cite">schemas/entsoe.py L628</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -341,7 +337,7 @@
                 <td style="text-align:center;" class="nullable">Yes</td>
                 <td class="col-note">
                   Set at silver write.
-                  <span class="cite">schemas/entsoe.py L629</span>
+                  
                 </td>
               </tr>
             </tbody>
@@ -418,7 +414,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('beb','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('beb','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('beb','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('beb','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="beb-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;">https://web-api.tp.entsoe.eu/api
@@ -436,19 +432,20 @@
 <span class="k">SELECT</span> timestamp_utc, area_code, direction,
        count(*) <span class="k">AS</span> bid_count,
        sum(quantity_mw) <span class="k">AS</span> total_offered_mw
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/entsoe/balancing_energy_bids/**/*.parquet'</span>)
+<span class="k">FROM</span> silver_balancing_energy_bids
 <span class="k">WHERE</span> timestamp_utc &gt;= current_timestamp - <span class="k">INTERVAL</span> 7 <span class="k">DAY</span>
 <span class="k">GROUP BY</span> 1, 2, 3 <span class="k">ORDER BY</span> timestamp_utc <span class="k">DESC</span> <span class="k">LIMIT</span> 100;</pre>
             </div></div>
             <div data-tab-panel="beb-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-bids = pl.read_parquet(<span class="s">"data/silver/entsoe/balancing_energy_bids/**/*.parquet"</span>)
-<span class="c"># Bid concentration — which standard products dominate the stack?</span>
-<span class="k">print</span>(bids.group_by([<span class="s">"standard_market_product"</span>, <span class="s">"direction"</span>]).agg(
-    pl.col(<span class="s">"quantity_mw"</span>).sum().alias(<span class="s">"total_mw"</span>),
-    pl.col(<span class="s">"bid_mrid"</span>).n_unique().alias(<span class="s">"n_bids"</span>),
-).sort(<span class="s">"total_mw"</span>, descending=<span class="k">True</span>).head())</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># balancing_energy_bids: stored silver rows as a pandas DataFrame</span>
+df = data.entsoe.query(<span class="s">"balancing_energy_bids"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.entsoe.describe(<span class="s">"balancing_energy_bids"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -463,35 +460,35 @@ bids = pl.read_parquet(<span class="s">"data/silver/entsoe/balancing_energy_bids
               <div class="caveat-num">01</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">connecting_Domain</code> (not <code class="mono">area_Domain</code>)</div>
-                <p class="small" style="margin: 0;">A37 uses <code class="mono">connecting_Domain</code> for the area param (renamed by the H8 transformer). <span class="src-cite">endpoints.py L326-338</span></p>
+                <p class="small" style="margin: 0;">A37 uses <code class="mono">connecting_Domain</code> for the area param (renamed by the H8 transformer). </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">02</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Offset paging</div>
-                <p class="small" style="margin: 0;">Connector exposes <code class="mono">offset</code> as optional — large bid stacks may require multiple requests with offset paging. Default offset is 0. <span class="src-cite">endpoints.py L331-336</span></p>
+                <p class="small" style="margin: 0;">Connector exposes <code class="mono">offset</code> as optional — large bid stacks may require multiple requests with offset paging. Default offset is 0. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">03</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">bid_mrid</code> is the per-bid identifier</div>
-                <p class="small" style="margin: 0;"><code class="mono">bid_mrid</code> is renamed from <code class="mono">&lt;TimeSeries&gt;&lt;mRID&gt;</code> — each bid is a separate TimeSeries. Dedup includes <code class="mono">bid_mrid + direction</code>. <span class="src-cite">silver/entsoe/h8_balancing.py L109, L138</span></p>
+                <p class="small" style="margin: 0;"><code class="mono">bid_mrid</code> is renamed from <code class="mono">&lt;TimeSeries&gt;&lt;mRID&gt;</code> — each bid is a separate TimeSeries. Dedup includes <code class="mono">bid_mrid + direction</code>. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">04</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">standard_market_product</code> vs <code class="mono">original_market_product</code></div>
-                <p class="small" style="margin: 0;">Standard = harmonised across TSOs (e.g. A04 = mFRR); original = bidder's local code. Use standard for cross-zone aggregation. <span class="src-cite">schemas/entsoe.py L625-626</span></p>
+                <p class="small" style="margin: 0;">Standard = harmonised across TSOs (e.g. A04 = mFRR); original = bidder's local code. Use standard for cross-zone aggregation. </p>
               </div>
             </div>
             <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;">
               <div class="caveat-num">05</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Entitlement-blocked on the default API key</div>
-                <p class="small" style="margin: 0;">The live API returns HTTP 401 for the unregistered gridflow default key. Schema verified from gridflow source. <span class="src-cite">.planning/reconciliation/entsoe/05-balancing-energy-bids-http-401.md</span></p>
+                <p class="small" style="margin: 0;">The live API returns HTTP 401 for the unregistered gridflow default key. Schema verified from gridflow source. </p>
               </div>
             </div>
           </div>

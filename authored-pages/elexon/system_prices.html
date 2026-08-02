@@ -266,14 +266,10 @@
                 <div class="eyebrow mb-4">system_prices · silver layer · SBP vs SSP</div>
                 <div class="small">Price ladder · £/MWh · UTC · 6 May 2026</div>
               </div>
-              <div class="row gap-8">
-                <span class="chip ink btn-like">24h</span>
-                <span class="chip btn-like">7d</span>
-                <span class="chip btn-like">30d</span>
-              </div>
+              
             </div>
             <div data-chart="priceLadder" data-opts='{"width":900,"height":280,"seed":7}'></div>
-            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · live wiring planned</div>
+            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · illustrative, seeded</div>
           </div>
         </section>
 
@@ -450,7 +446,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('system_prices','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('system_prices','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('system_prices','py',this)" style="cursor:pointer;">Python · parquet</button>
+              <button class="chip btn-like" onclick="setTab('system_prices','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="system_prices-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;">https://data.elexon.co.uk/bmrs/api/v1/balancing/settlement/system-prices/2026-05-06<span style="color:#6b6358;">?</span><span style="color:#c9a96e;">format</span>=json</pre>
@@ -460,23 +456,20 @@
 <span class="k">SELECT</span> settlement_date, settlement_period,
        system_sell_price, system_buy_price,
        net_imbalance_volume
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/elexon/system_prices/**/*.parquet'</span>)
+<span class="k">FROM</span> silver_system_prices
 <span class="k">WHERE</span> settlement_date &gt;= current_date - <span class="k">INTERVAL</span> 7 <span class="k">DAY</span>
 <span class="k">ORDER BY</span> settlement_date, settlement_period;</pre>
           </div></div>
             <div data-tab-panel="system_prices-py"  style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-df = pl.read_parquet(
-    <span class="s">"data/silver/elexon/system_prices/**/*.parquet"</span>,
-)
-<span class="c"># daily mean SBP and a min/max spread for volatility</span>
-daily = df.group_by(<span class="s">"settlement_date"</span>).agg(
-    pl.col(<span class="s">"system_buy_price"</span>).mean().alias(<span class="s">"sbp_mean"</span>),
-    (pl.col(<span class="s">"system_buy_price"</span>).max() -
-     pl.col(<span class="s">"system_buy_price"</span>).min()).alias(<span class="s">"sbp_range"</span>),
-)
-print(daily.sort(<span class="s">"settlement_date"</span>).tail())</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># system_prices: stored silver rows as a pandas DataFrame</span>
+df = data.elexon.query(<span class="s">"system_prices"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.elexon.describe(<span class="s">"system_prices"</span>)</pre>
           </div></div>
           </div>
         </section>

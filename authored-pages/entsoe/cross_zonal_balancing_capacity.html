@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <title>cross_zonal_balancing_capacity · ENTSO-E Transparency · Gridflow</title>
   <meta name="description" content="Cross-zonal balancing capacity allocation in MW per acquiring / connecting area pair — the capacity reserved on interconnectors for cross-border balancing…"/>
-  <meta name="viewport" content="width=1280" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,30..100&family=Inter:wght@300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -219,14 +219,10 @@
                 <div class="eyebrow mb-4">cross_zonal_balancing_capacity · silver layer · 10YGB----------A ↔ 10YFR-RTE------C</div>
                 <div class="small">Line · MW · UTC · 6 May 2026</div>
               </div>
-              <div class="row gap-8">
-                <span class="chip ink btn-like">24h</span>
-                <span class="chip btn-like">7d</span>
-                <span class="chip btn-like">30d</span>
-              </div>
+              
             </div>
             <div data-chart="sparkline" data-opts='{"width":900,"height":280,"seed":95}'></div>
-            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · live wiring planned</div>
+            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · illustrative, seeded</div>
           </div>
         </section>
 
@@ -256,7 +252,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   tz-aware UTC. Source: <code class="mono">&lt;Period&gt;</code> start + <code class="mono">position × resolution</code>.
-                  <span class="cite">schemas/entsoe.py L662, L672-677</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -265,7 +261,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   Acquiring (importing) area EIC. Source: <code class="mono">&lt;Acquiring_Domain.mRID&gt;</code>.
-                  <span class="cite">schemas/entsoe.py L663 · silver/entsoe/h8_balancing.py L188</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -274,7 +270,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   Connecting (exporting) area EIC. Source: <code class="mono">&lt;Connecting_Domain.mRID&gt;</code>.
-                  <span class="cite">schemas/entsoe.py L664 · silver/entsoe/h8_balancing.py L189</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -283,7 +279,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   Cross-zonal capacity MW. Source: <code class="mono">&lt;Point&gt;&lt;quantity&gt;</code>.
-                  <span class="cite">schemas/entsoe.py L665</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -292,7 +288,7 @@
                 <td style="text-align:center;" class="nullable">Yes</td>
                 <td class="col-note">
                   Contract type (A01 daily, etc.). Default <code class="mono">""</code>. Source: <code class="mono">&lt;Type_MarketAgreement.Type&gt;</code>.
-                  <span class="cite">schemas/entsoe.py L666</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -301,7 +297,7 @@
                 <td style="text-align:center;" class="nullable">Yes</td>
                 <td class="col-note">
                   Reserve product code. Default <code class="mono">""</code>. Source: <code class="mono">&lt;businessType&gt;</code>.
-                  <span class="cite">schemas/entsoe.py L667</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -310,7 +306,7 @@
                 <td style="text-align:center;" class="nullable">Yes</td>
                 <td class="col-note">
                   ISO duration. Default <code class="mono">""</code>.
-                  <span class="cite">schemas/entsoe.py L668</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -319,7 +315,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   Always <code class="mono">"entsoe"</code>. Default <code class="mono">"entsoe"</code>.
-                  <span class="cite">schemas/entsoe.py L669</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -328,7 +324,7 @@
                 <td style="text-align:center;" class="nullable">Yes</td>
                 <td class="col-note">
                   Set at silver write.
-                  <span class="cite">schemas/entsoe.py L670</span>
+                  
                 </td>
               </tr>
             </tbody>
@@ -402,7 +398,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('czbc','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('czbc','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('czbc','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('czbc','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="czbc-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;">https://web-api.tp.entsoe.eu/api
@@ -419,23 +415,20 @@
 <span class="k">SELECT</span> acquiring_area_code, connecting_area_code,
        avg(quantity_mw) <span class="k">AS</span> mean_capacity_mw,
        max(quantity_mw) <span class="k">AS</span> peak_capacity_mw
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/entsoe/cross_zonal_balancing_capacity/**/*.parquet'</span>)
+<span class="k">FROM</span> silver_cross_zonal_balancing_capacity
 <span class="k">WHERE</span> timestamp_utc &gt;= current_timestamp - <span class="k">INTERVAL</span> 30 <span class="k">DAY</span>
 <span class="k">GROUP BY</span> 1, 2 <span class="k">ORDER BY</span> peak_capacity_mw <span class="k">DESC</span>;</pre>
             </div></div>
             <div data-tab-panel="czbc-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-xz = pl.read_parquet(<span class="s">"data/silver/entsoe/cross_zonal_balancing_capacity/**/*.parquet"</span>)
-ntc = pl.read_parquet(<span class="s">"data/silver/entsoe/net_transfer_capacity/**/*.parquet"</span>)
-<span class="c"># What fraction of NTC is reserved for balancing?</span>
-joined = xz.join(
-    ntc.rename({<span class="s">"in_area_code"</span>: <span class="s">"connecting_area_code"</span>, <span class="s">"out_area_code"</span>: <span class="s">"acquiring_area_code"</span>}),
-    on=[<span class="s">"timestamp_utc"</span>, <span class="s">"acquiring_area_code"</span>, <span class="s">"connecting_area_code"</span>],
-)
-<span class="k">print</span>(joined.with_columns(
-    (pl.col(<span class="s">"quantity_mw"</span>) / pl.col(<span class="s">"ntc_mw"</span>)).alias(<span class="s">"balancing_share"</span>)
-).tail())</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># cross_zonal_balancing_capacity: stored silver rows as a pandas DataFrame</span>
+df = data.entsoe.query(<span class="s">"cross_zonal_balancing_capacity"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.entsoe.describe(<span class="s">"cross_zonal_balancing_capacity"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -450,35 +443,35 @@ joined = xz.join(
               <div class="caveat-num">01</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Acquiring + connecting domains (not <code class="mono">in</code>/<code class="mono">out</code>)</div>
-                <p class="small" style="margin: 0;">A38 uses <code class="mono">Acquiring_Domain</code> / <code class="mono">Connecting_Domain</code> — distinct from the <code class="mono">in_</code>/<code class="mono">out_Domain</code> naming of cross-border flow datasets. <span class="src-cite">endpoints.py L353-360 · schemas/entsoe.py L663-664</span></p>
+                <p class="small" style="margin: 0;">A38 uses <code class="mono">Acquiring_Domain</code> / <code class="mono">Connecting_Domain</code> — distinct from the <code class="mono">in_</code>/<code class="mono">out_Domain</code> naming of cross-border flow datasets. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">02</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Custom <code class="mono">_rename_domain_columns</code></div>
-                <p class="small" style="margin: 0;">Unique among H8 datasets — the transformer overrides <code class="mono">_rename_domain_columns</code> to map both <code class="mono">Acquiring_Domain</code> and <code class="mono">Connecting_Domain</code>. <span class="src-cite">silver/entsoe/h8_balancing.py L187-191</span></p>
+                <p class="small" style="margin: 0;">Unique among H8 datasets — the transformer overrides <code class="mono">_rename_domain_columns</code> to map both <code class="mono">Acquiring_Domain</code> and <code class="mono">Connecting_Domain</code>. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">03</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">Type_MarketAgreement.Type</code> optional</div>
-                <p class="small" style="margin: 0;">Connector exposes as optional. <span class="src-cite">endpoints.py L359</span></p>
+                <p class="small" style="margin: 0;">Connector exposes as optional. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">04</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Revisions overwrite</div>
-                <p class="small" style="margin: 0;">Same <code class="mono">(timestamp_utc, acquiring_area_code, connecting_area_code, market_agreement_type)</code> re-publication overwrites silently on dedup. <span class="src-cite">silver/entsoe/h8_balancing.py L180-185</span></p>
+                <p class="small" style="margin: 0;">Same <code class="mono">(timestamp_utc, acquiring_area_code, connecting_area_code, market_agreement_type)</code> re-publication overwrites silently on dedup. </p>
               </div>
             </div>
             <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;">
               <div class="caveat-num">05</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Entitlement-blocked on the default API key</div>
-                <p class="small" style="margin: 0;">The live API returns HTTP 401 for the unregistered gridflow default key. Schema verified from gridflow source. <span class="src-cite">.planning/reconciliation/entsoe/11-cross-zonal-balancing-capacity-http-401.md</span></p>
+                <p class="small" style="margin: 0;">The live API returns HTTP 401 for the unregistered gridflow default key. Schema verified from gridflow source. </p>
               </div>
             </div>
           </div>

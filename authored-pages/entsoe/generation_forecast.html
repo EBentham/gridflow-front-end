@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <title>generation_forecast · ENTSO-E Transparency · Gridflow</title>
   <meta name="description" content="Day-ahead total generation forecast in MW per bidding zone — the TSO-published reference covering all dispatchable + non-dispatchable PSR types, distinct from…"/>
-  <meta name="viewport" content="width=1280" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,30..100&family=Inter:wght@300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -217,14 +217,10 @@
                 <div class="eyebrow mb-4">generation_forecast · silver layer · 10Y1001A1001A82H</div>
                 <div class="small">Line · MW · UTC · 6 May 2026</div>
               </div>
-              <div class="row gap-8">
-                <span class="chip ink btn-like">24h</span>
-                <span class="chip btn-like">7d</span>
-                <span class="chip btn-like">30d</span>
-              </div>
+              
             </div>
             <div data-chart="sparkline" data-opts='{"width":900,"height":280,"seed":17}'></div>
-            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · live wiring planned</div>
+            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · illustrative, seeded</div>
           </div>
         </section>
 
@@ -251,7 +247,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   tz-aware UTC; validator requires tzinfo. Source: <code class="mono">&lt;Period&gt;</code> start + <code class="mono">position × resolution</code>.
-                  <span class="cite">schemas/entsoe.py L204, L211-216</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -260,7 +256,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   EIC bidding zone. Source: <code class="mono">&lt;inBiddingZone_Domain.mRID&gt;</code>.
-                  <span class="cite">schemas/entsoe.py L205</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -269,7 +265,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   A71/A01 aggregate often has no <code class="mono">MktPSRType</code> — silver fills with <code class="mono">"unknown"</code>. Source: <code class="mono">&lt;MktPSRType&gt;&lt;psrType&gt;</code> if present.
-                  <span class="cite">schemas/entsoe.py L206 · silver/entsoe/generation_forecast.py L69-74</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -278,7 +274,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   Forecast MW. Source: <code class="mono">&lt;Point&gt;&lt;quantity&gt;</code>.
-                  <span class="cite">schemas/entsoe.py L207</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -287,7 +283,7 @@
                 <td style="text-align:center;" class="nullable">Yes</td>
                 <td class="col-note">
                   ISO duration; typically <code class="mono">PT60M</code>. Default <code class="mono">""</code>.
-                  <span class="cite">schemas/entsoe.py L208</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -296,7 +292,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   Always <code class="mono">"entsoe"</code>. Default <code class="mono">"entsoe"</code>.
-                  <span class="cite">schemas/entsoe.py L209</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -305,7 +301,7 @@
                 <td style="text-align:center;" class="nullable">Yes</td>
                 <td class="col-note">
                   Set at silver write.
-                  <span class="cite">silver/entsoe/generation_forecast.py L83</span>
+                  
                 </td>
               </tr>
             </tbody>
@@ -378,7 +374,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('gf','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('gf','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('gf','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('gf','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="gf-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;">https://web-api.tp.entsoe.eu/api
@@ -393,21 +389,21 @@
 <pre class="code dark" style="padding: 18px 22px;"><span class="c">-- Daily peak forecast generation per zone (last 7 days)</span>
 <span class="k">SELECT</span> date_trunc(<span class="s">'day'</span>, timestamp_utc) <span class="k">AS</span> day, area_code,
        max(generation_forecast_mw) <span class="k">AS</span> peak_forecast_mw
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/entsoe/generation_forecast/**/*.parquet'</span>)
+<span class="k">FROM</span> silver_generation_forecast
 <span class="k">WHERE</span> timestamp_utc &gt;= current_timestamp - <span class="k">INTERVAL</span> 7 <span class="k">DAY</span>
 <span class="k">GROUP BY</span> 1, 2
 <span class="k">ORDER BY</span> 1, 2;</pre>
             </div></div>
             <div data-tab-panel="gf-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-gen = pl.read_parquet(<span class="s">"data/silver/entsoe/generation_forecast/**/*.parquet"</span>)
-load = pl.read_parquet(<span class="s">"data/silver/entsoe/load_forecast/**/*.parquet"</span>)
-<span class="c"># Demand-supply imbalance forecast — a baseline price-direction feature</span>
-gap = gen.join(load, on=[<span class="s">"timestamp_utc"</span>, <span class="s">"area_code"</span>]).with_columns(
-    (pl.col(<span class="s">"generation_forecast_mw"</span>) - pl.col(<span class="s">"load_forecast_mw"</span>)).alias(<span class="s">"gap_mw"</span>),
-)
-<span class="k">print</span>(gap.select([<span class="s">"timestamp_utc"</span>, <span class="s">"area_code"</span>, <span class="s">"gap_mw"</span>]).tail())</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># generation_forecast: stored silver rows as a pandas DataFrame</span>
+df = data.entsoe.query(<span class="s">"generation_forecast"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.entsoe.describe(<span class="s">"generation_forecast"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -422,35 +418,35 @@ gap = gen.join(load, on=[<span class="s">"timestamp_utc"</span>, <span class="s"
               <div class="caveat-num">01</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">GB EMPTY post-Brexit</div>
-                <p class="small" style="margin: 0;">GB returns <code class="mono">Acknowledgement</code> reason 999. No GB equivalent — Elexon <code class="mono">ndf</code> is residual demand forecast, not gross generation. <span class="src-cite">vault Known Issues #1</span></p>
+                <p class="small" style="margin: 0;">GB returns <code class="mono">Acknowledgement</code> reason 999. No GB equivalent — Elexon <code class="mono">ndf</code> is residual demand forecast, not gross generation. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">02</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">A71 doc type shared with <code class="mono">installed_capacity_units</code></div>
-                <p class="small" style="margin: 0;"><code class="mono">A71</code> is reused for <code class="mono">installed_capacity_units</code> (A71/A33) with a different <code class="mono">processType</code>. Select on dataset key, not <code class="mono">documentType</code> alone. <span class="src-cite">endpoints.py L93-98</span></p>
+                <p class="small" style="margin: 0;"><code class="mono">A71</code> is reused for <code class="mono">installed_capacity_units</code> (A71/A33) with a different <code class="mono">processType</code>. Select on dataset key, not <code class="mono">documentType</code> alone. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">03</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">production_type</code> defaults to <code class="mono">"unknown"</code></div>
-                <p class="small" style="margin: 0;">Aggregate A71/A01 often contains no <code class="mono">MktPSRType</code> element — silver fills with <code class="mono">"unknown"</code>. <span class="src-cite">silver/entsoe/generation_forecast.py L69-74</span></p>
+                <p class="small" style="margin: 0;">Aggregate A71/A01 often contains no <code class="mono">MktPSRType</code> element — silver fills with <code class="mono">"unknown"</code>. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">04</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Forecast revisions overwrite</div>
-                <p class="small" style="margin: 0;">Same <code class="mono">(timestamp_utc, area_code, production_type)</code> re-publication overwrites silently on dedup. No <code class="mono">published_at</code> for PIT. <span class="src-cite">silver/entsoe/generation_forecast.py L76-78</span></p>
+                <p class="small" style="margin: 0;">Same <code class="mono">(timestamp_utc, area_code, production_type)</code> re-publication overwrites silently on dedup. No <code class="mono">published_at</code> for PIT. </p>
               </div>
             </div>
             <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;">
               <div class="caveat-num">05</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Entitlement-blocked on the default API key</div>
-                <p class="small" style="margin: 0;">The live API returns HTTP 401 for the unregistered gridflow default key. Schema verified from gridflow source. <span class="src-cite">.planning/reconciliation/entsoe/14-generation-forecast-http-401.md</span></p>
+                <p class="small" style="margin: 0;">The live API returns HTTP 401 for the unregistered gridflow default key. Schema verified from gridflow source. </p>
               </div>
             </div>
           </div>

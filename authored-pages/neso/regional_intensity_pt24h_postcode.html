@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <title>regional_intensity_pt24h_postcode · NESO Carbon Intensity · Gridflow</title>
   <meta name="description" content="Postcode-scoped regional carbon intensity for the prior 24 hours — the canonical look-back series for one UK outward postcode for skill scoring and…"/>
-  <meta name="viewport" content="width=1280" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,30..100&family=Inter:wght@300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -183,7 +183,7 @@
               </div>
             </div>
             <div data-chart="sparkline" data-opts='{"width":860,"height":96,"seed":55,"n":48}'></div>
-            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · live wiring planned</div>
+            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · illustrative, seeded</div>
           </div>
         </section>
 
@@ -208,79 +208,79 @@
                 <td class="col-name">timestamp_utc <span class="pk-badge">PK</span></td>
                 <td class="col-type">datetime[UTC]</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">Half-hour period start. UTC enforced. Source: <code class="mono">from</code>. <span class="cite">schemas/neso.py L20, L23-28</span></td>
+                <td class="col-note">Half-hour period start. UTC enforced. Source: <code class="mono">from</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">period_end_utc</td>
                 <td class="col-type">datetime[UTC]</td>
                 <td style="text-align:center;" class="nullable">null</td>
-                <td class="col-note">Half-hour period end. Source: <code class="mono">to</code>. <span class="cite">schemas/neso.py L21</span></td>
+                <td class="col-note">Half-hour period end. Source: <code class="mono">to</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">regionid <span class="pk-badge">PK</span></td>
                 <td class="col-type">int | None</td>
                 <td style="text-align:center;" class="nullable">null</td>
-                <td class="col-note">DNO region serving this postcode. Source: <code class="mono">regionid</code>. <span class="cite">schemas/neso.py L65</span></td>
+                <td class="col-note">DNO region serving this postcode. Source: <code class="mono">regionid</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">dnoregion</td>
                 <td class="col-type">str</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">DNO region name. Source: <code class="mono">dnoregion</code>. <span class="cite">schemas/neso.py L66</span></td>
+                <td class="col-note">DNO region name. Source: <code class="mono">dnoregion</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">shortname <span class="pk-badge">PK</span></td>
                 <td class="col-type">str</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">Short region label. Source: <code class="mono">shortname</code>. <span class="cite">schemas/neso.py L67</span></td>
+                <td class="col-note">Short region label. Source: <code class="mono">shortname</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">postcode <span class="pk-badge">PK</span></td>
                 <td class="col-type">str</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">The requested outward postcode. Source: <code class="mono">postcode</code>. <span class="cite">schemas/neso.py L68</span></td>
+                <td class="col-note">The requested outward postcode. Source: <code class="mono">postcode</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">forecast_gco2_kwh</td>
                 <td class="col-type">float | None</td>
                 <td style="text-align:center;" class="nullable">null</td>
-                <td class="col-note">Regional forecast carbon intensity. Source: <code class="mono">intensity.forecast</code>. <span class="cite">schemas/neso.py L69</span></td>
+                <td class="col-note">Regional forecast carbon intensity. Source: <code class="mono">intensity.forecast</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">actual_gco2_kwh</td>
                 <td class="col-type">float | None</td>
                 <td style="text-align:center;" class="nullable">null</td>
-                <td class="col-note">Often null on regional endpoints. Source: <code class="mono">intensity.actual</code>. <span class="cite">schemas/neso.py L70</span></td>
+                <td class="col-note">Often null on regional endpoints. Source: <code class="mono">intensity.actual</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">intensity_index</td>
                 <td class="col-type">str</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">Categorical: <code class="mono">very low</code> … <code class="mono">very high</code>. Source: <code class="mono">intensity.index</code>. <span class="cite">schemas/neso.py L71</span></td>
+                <td class="col-note">Categorical: <code class="mono">very low</code> … <code class="mono">very high</code>. Source: <code class="mono">intensity.index</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">fuel <span class="pk-badge">PK</span></td>
                 <td class="col-type">str</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">Regional generation mix fuel. Source: <code class="mono">generationmix.fuel</code>. <span class="cite">schemas/neso.py L72</span></td>
+                <td class="col-note">Regional generation mix fuel. Source: <code class="mono">generationmix.fuel</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">generation_percentage</td>
                 <td class="col-type">float | None</td>
                 <td style="text-align:center;" class="nullable">null</td>
-                <td class="col-note">Regional fuel share in percent. Source: <code class="mono">generationmix.perc</code>. <span class="cite">schemas/neso.py L73</span></td>
+                <td class="col-note">Regional fuel share in percent. Source: <code class="mono">generationmix.perc</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">data_provider</td>
                 <td class="col-type">str</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">Always <code class="mono">"neso"</code>. <span class="cite">schemas/neso.py L16</span></td>
+                <td class="col-note">Always <code class="mono">"neso"</code>. </td>
               </tr>
               <tr>
                 <td class="col-name">ingested_at</td>
                 <td class="col-type">datetime[UTC]</td>
                 <td style="text-align:center;" class="nullable">—</td>
-                <td class="col-note">Silver transform timestamp. <span class="cite">silver/neso/carbon_intensity.py L469-474</span></td>
+                <td class="col-note">Silver transform timestamp. </td>
               </tr>
             </tbody>
           </table>
@@ -347,7 +347,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('ds','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('ds','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('ds','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('ds','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="ds-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;"><span class="c"># Header: Accept: application/json</span>
@@ -356,13 +356,21 @@ https://api.carbonintensity.org.uk/regional/intensity/2026-05-06T00:00Z/pt24h/po
             <div data-tab-panel="ds-sql" style="display:none;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px;"><span class="c">-- Yesterday's cleanest postcode SP (intensity-only rows)</span>
 <span class="k">SELECT</span> timestamp_utc, forecast_gco2_kwh, intensity_index
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/neso/regional_intensity_pt24h_postcode/**/*.parquet'</span>)
+<span class="k">FROM</span> silver_regional_intensity_pt24h_postcode
 <span class="k">WHERE</span> fuel = <span class="s">''</span>
 <span class="k">ORDER BY</span> forecast_gco2_kwh
 <span class="k">LIMIT</span> <span class="num">1</span>;</pre>
             </div></div>
             <div data-tab-panel="ds-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"></pre>
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
+
+data, models, common = setup_notebook()
+
+<span class="c"># regional_intensity_pt24h_postcode: stored silver rows as a pandas DataFrame</span>
+df = data.neso.query(<span class="s">"regional_intensity_pt24h_postcode"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.neso.describe(<span class="s">"regional_intensity_pt24h_postcode"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -377,35 +385,35 @@ https://api.carbonintensity.org.uk/regional/intensity/2026-05-06T00:00Z/pt24h/po
               <div class="caveat-num">01</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Outward postcode only</div>
-                <p class="small" style="margin: 0;"><code class="mono">{postcode}</code> accepts the outward part only (e.g. <code class="mono">RG10</code>). <span class="src-cite">NESO docs.</span></p>
+                <p class="small" style="margin: 0;"><code class="mono">{postcode}</code> accepts the outward part only (e.g. <code class="mono">RG10</code>). </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">02</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">NESO API status: beta</div>
-                <p class="small" style="margin: 0;"><code class="mono">Carbon Intensity - Regional</code> is beta (<code class="mono">endpoints.py L249</code>). <span class="src-cite"><code class="mono">endpoints.py L249</code>.</span></p>
+                <p class="small" style="margin: 0;"><code class="mono">Carbon Intensity - Regional</code> is beta (<code class="mono">endpoints.py L249</code>). </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">03</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">actual_gco2_kwh</code> often absent</div>
-                <p class="small" style="margin: 0;">Regional endpoints rarely publish actuals. <span class="src-cite">vault Implementation Delta L116.</span></p>
+                <p class="small" style="margin: 0;">Regional endpoints rarely publish actuals. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">04</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Window anchored to SP enclosing <code class="mono">{from}</code></div>
-                <p class="small" style="margin: 0;">The 24h look-back ends at the SP containing <code class="mono">{from}</code>. <span class="src-cite">NESO docs.</span></p>
+                <p class="small" style="margin: 0;">The 24h look-back ends at the SP containing <code class="mono">{from}</code>. </p>
               </div>
             </div>
             <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;">
               <div class="caveat-num">05</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Transformer is dynamically generated</div>
-                <p class="small" style="margin: 0;"><code class="mono">RegionalIntensityPt24HPostcodeTransformer</code> is created at import time via <code class="mono">type()</code>. <span class="src-cite"><code class="mono">silver/neso/carbon_intensity.py L110-136</code>.</span></p>
+                <p class="small" style="margin: 0;"><code class="mono">RegionalIntensityPt24HPostcodeTransformer</code> is created at import time via <code class="mono">type()</code>. </p>
               </div>
             </div>
           </div>

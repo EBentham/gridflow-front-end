@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/><title>remit · Elexon BMRS · Gridflow</title>
   <meta name="description" content="Per-asset GB outage and unavailability messages — the canonical revision-tracked record for what's offline, capacity at risk, and outage attribution."/>
-  <meta name="viewport" content="width=1280"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,30..100&family=Inter:wght@300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -56,7 +56,7 @@
         <div class="chart" style="padding:24px 28px">
           <div class="row between mb-16" style="align-items:baseline"><div><div class="eyebrow mb-4">remit · silver layer</div><div class="small">Horizontal bars · unavailable MW · UTC · 2026-05-08</div></div><div class="row gap-8"><span class="chip ink btn-like">active</span><span class="chip btn-like">planned upcoming</span></div></div>
           <div data-chart="barsH" data-opts='{"width":900,"height":280,"items":[{"label":"Nuclear","value":1820,"color":"#86627d","display":"1820 MW"},{"label":"CCGT","value":1240,"color":"#c45a3a","display":"1240 MW"},{"label":"Coal","value":0,"color":"#5a5e5f","display":"0 MW"},{"label":"Wind","value":410,"color":"#3b6b4b","display":"410 MW"},{"label":"Interconnector","value":720,"color":"#5a8aa6","display":"720 MW"},{"label":"OCGT","value":180,"color":"#c45a3a","display":"180 MW"},{"label":"Biomass","value":290,"color":"#c9a96e","display":"290 MW"},{"label":"Hydro / pumped","value":130,"color":"#5a8aa6","display":"130 MW"}]}'></div>
-          <div style="font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--ink-faint);text-transform:uppercase;margin-top:16px">Static snapshot · live wiring planned</div>
+          <div style="font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--ink-faint);text-transform:uppercase;margin-top:16px">Static snapshot · illustrative, seeded</div>
         </div>
       </section>
       <section id="schema" style="margin-bottom:56px" data-screen-label="Schema">
@@ -82,7 +82,7 @@
           <div class="card" style="padding:20px"><div class="tiny mb-8">BRONZE PATH</div><div class="mono small" style="word-break:break-all;margin-bottom:12px">data/bronze/elexon/remit/&lt;year&gt;/&lt;month&gt;/&lt;day&gt;/raw_&lt;uuid&gt;.json</div><div class="tiny mb-8">TRANSFORMER</div><div class="mono small">gridflow.silver.elexon.remit.REMITTransformer</div></div>
         </div>
         <div data-tab-group="remit">
-          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('remit','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('remit','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('remit','py',this)" style="cursor:pointer">Python · polars</button></div>
+          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('remit','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('remit','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('remit','py',this)" style="cursor:pointer">Python · gridflow-models</button></div>
           <div data-tab-panel="remit-url" style="display:block"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">https://data.elexon.co.uk/bmrs/api/v1/datasets/REMIT?publishDateTimeFrom=2026-05-06T00:00Z&amp;publishDateTimeTo=2026-05-07T00:00Z&amp;format=json</pre></div></div>
           <div data-tab-panel="remit-sql" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto"><span class="c">-- Latest revision per UMM, currently active outages</span>
 SELECT mrid, asset_id, fuel_type, unavailable_capacity_mw,
@@ -91,28 +91,21 @@ FROM (
   SELECT *, ROW_NUMBER() OVER (
     PARTITION BY mrid ORDER BY revision_number DESC
   ) AS rn
-  FROM read_parquet(<span class="s">'data/silver/elexon/remit/**/*.parquet'</span>)
+  FROM silver_remit
   WHERE event_status = <span class="s">'Active'</span>
 )
 WHERE rn = 1
   AND event_end_time &gt; current_timestamp
 ORDER BY unavailable_capacity_mw DESC NULLS LAST;</pre></div></div>
-          <div data-tab-panel="remit-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">import polars as pl
+          <div data-tab-panel="remit-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-remit = pl.read_parquet(<span class="s">"data/silver/elexon/remit/**/*.parquet"</span>)
-<span class="c"># Latest revision per mrid, total unavailable capacity by fuel</span>
-latest = (
-    remit.sort(<span class="s">"revision_number"</span>, descending=True)
-         .group_by(<span class="s">"mrid"</span>)
-         .first()
-)
-by_fuel = (
-    latest.filter(pl.col(<span class="s">"event_status"</span>) == <span class="s">"Active"</span>)
-          .group_by(<span class="s">"fuel_type"</span>)
-          .agg(pl.col(<span class="s">"unavailable_capacity_mw"</span>).sum().alias(<span class="s">"total_mw_out"</span>))
-          .sort(<span class="s">"total_mw_out"</span>, descending=True)
-)
-print(by_fuel)</pre></div></div>
+data, models, common = setup_notebook()
+
+<span class="c"># remit: stored silver rows as a pandas DataFrame</span>
+df = data.elexon.query(<span class="s">"remit"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.elexon.describe(<span class="s">"remit"</span>)</pre></div></div>
         </div>
       </section>
       <section id="related" style="margin-bottom:56px" data-screen-label="Related">

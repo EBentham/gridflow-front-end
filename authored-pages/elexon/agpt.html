@@ -4,7 +4,7 @@
   <meta charset="utf-8"/>
   <title>agpt · Elexon BMRS · Gridflow</title>
   <meta name="description" content="Half-hourly GB generation per ENTSO-E PSR type — the canonical source for the onshore/offshore wind split, capacity factors, and pan-European comparability."/>
-  <meta name="viewport" content="width=1280"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,30..100&family=Inter:wght@300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -136,10 +136,10 @@
               <div class="eyebrow mb-4">agpt · silver layer</div>
               <div class="small">Stacked area · MW · UTC · 6 May 2026</div>
             </div>
-            <div class="row gap-8"><span class="chip ink btn-like">24h</span><span class="chip btn-like">7d</span><span class="chip btn-like">30d</span></div>
+            
           </div>
           <div data-chart="stackedArea" data-opts='{"width":900,"height":280,"series":[{"name":"Wind Onshore","color":"#3b6b4b","shape":"diurnal-wind","params":{"mean":3500,"volatility":1200,"persistence":0.75,"seed":42}},{"name":"Wind Offshore","color":"#5a8aa6","shape":"diurnal-wind","params":{"mean":5200,"volatility":1500,"persistence":0.78,"seed":43}},{"name":"Solar","color":"#d4a73a","shape":"diurnal-solar","params":{"peak":3800,"peak_hour":12.5,"half_width":5}},{"name":"Biomass","color":"#c9a96e","shape":"flat-baseload","params":{"mean":2200,"noise":0.04}},{"name":"Pumped Storage","color":"#86627d","shape":"bipolar-flow","params":{"amplitude":900,"period":12,"noise":0.2}}]}'></div>
-          <div style="font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--ink-faint);text-transform:uppercase;margin-top:16px">Static snapshot · live wiring planned</div>
+          <div style="font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--ink-faint);text-transform:uppercase;margin-top:16px">Static snapshot · illustrative, seeded</div>
         </div>
       </section>
 
@@ -293,27 +293,25 @@
           <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px">
             <button class="chip btn-like ink" onclick="setTab('agpt','url',this)" style="cursor:pointer">Example URL</button>
             <button class="chip btn-like" onclick="setTab('agpt','sql',this)" style="cursor:pointer">DuckDB · SQL</button>
-            <button class="chip btn-like" onclick="setTab('agpt','py',this)" style="cursor:pointer">Python · polars</button>
+            <button class="chip btn-like" onclick="setTab('agpt','py',this)" style="cursor:pointer">Python · gridflow-models</button>
           </div>
           <div data-tab-panel="agpt-url" style="display:block"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">https://data.elexon.co.uk/bmrs/api/v1/datasets/AGPT?publishDateTimeFrom=2026-05-01T00:00:00Z&amp;publishDateTimeTo=2026-05-02T00:00:00Z&amp;format=json</pre></div></div>
           <div data-tab-panel="agpt-sql" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto"><span class="c">-- Wind split (onshore vs offshore) over the last 30 days</span>
 SELECT settlement_date, settlement_period,
        psr_type, generation_mw
-FROM read_parquet(<span class="s">'data/silver/elexon/agpt/**/*.parquet'</span>)
+FROM silver_agpt
 WHERE psr_type IN (<span class="s">'Wind Onshore'</span>, <span class="s">'Wind Offshore'</span>)
   AND settlement_date &gt;= current_date - INTERVAL 30 DAY
 ORDER BY settlement_date, settlement_period;</pre></div></div>
-          <div data-tab-panel="agpt-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">import polars as pl
+          <div data-tab-panel="agpt-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-df = pl.read_parquet(<span class="s">"data/silver/elexon/agpt/**/*.parquet"</span>)
-<span class="c"># Pivot PSR-type to columns for wind onshore/offshore share</span>
-mix = df.pivot(
-    index=[<span class="s">"settlement_date"</span>, <span class="s">"settlement_period"</span>],
-    on=<span class="s">"psr_type"</span>,
-    values=<span class="s">"generation_mw"</span>,
-    aggregate_function=<span class="s">"sum"</span>,
-)
-print(mix.head())</pre></div></div>
+data, models, common = setup_notebook()
+
+<span class="c"># agpt: stored silver rows as a pandas DataFrame</span>
+df = data.elexon.query(<span class="s">"agpt"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.elexon.describe(<span class="s">"agpt"</span>)</pre></div></div>
         </div>
       </section>
 

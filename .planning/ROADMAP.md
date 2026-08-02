@@ -1,7 +1,7 @@
 # Roadmap
 
-**Milestone:** v2 full-vendor-coverage (**COMPLETE + DEPLOYED 2026-06-07** — Phases 7–11; PRs #24 + #25 merged → GitHub Pages live) · v1 cleanup (Complete, historical record below)
-**Created:** 2026-05-17 (v1) · Extended 2026-05-18 (v2) · Rescoped 2026-05-19 (Phase 7 Reconciliation inserted; existing 7→8, 8→9, 9→10 per ADR-0001)
+**Milestone:** v4 full rebrand (**ACTIVE** — created 2026-08-02; § v4 Phases below) · v3 recruiter-grade revamp (**SUPERSEDED-PARTIAL** 2026-08-02 — phases 12-13 delivered, 14-16 superseded; § v3 record below) · v2 full-vendor-coverage (**COMPLETE + DEPLOYED 2026-06-07** — Phases 7–11; PRs #24 + #25 merged → GitHub Pages live) · v1 cleanup (Complete, historical record below)
+**Created:** 2026-05-17 (v1) · Extended 2026-05-18 (v2) · Rescoped 2026-05-19 (Phase 7 Reconciliation inserted; existing 7→8, 8→9, 9→10 per ADR-0001) · v3 2026-06-20 (planned in `phases/12-review-exemplar/12-BRIEF.md`, outside this file) · v4 2026-08-02 (full rebrand, § below)
 **Granularity:** standard
 **Parallelization:** enabled (sequential 7 → 8 → 9 → 10 recommended; Phase 8 — bug fix — is independent of Phase 7 per ADR-0001 D-03; see Phase Dependencies)
 **Coverage:** 31/31 v2 REQ-IDs mapped (5 RECON-* added with the Phase 7 rescope) + 50/50 v1 REQ-IDs delivered
@@ -11,6 +11,25 @@
 **v2 milestone goal:** A recruiter clicks any vendor on the data-sources hub and sees a complete dataset catalog; clicks any dataset and gets full documentation (overview · schema · sample · API · caveats · related) at `fuelhh` fidelity. Site-wide total: **162 datasets across 6 vendors** (Elexon 33 · ENTSO-E 49 · ENTSO-G 33 · GIE 8 · NESO 33 · Open-Meteo 6). The build script stays idempotent, CI-gated, and vault-driven across the expanded surface; the editorial-quiet aesthetic and honest framing established in v1 hold across all 129 new pages.
 
 **v1 milestone goal (delivered 2026-05-18):** Recruiter-credible portfolio at `fuelhh` fidelity for 33 Elexon datasets + ENTSO-E cross-vendor proof, no fake-live framing, mobile-functional, vault → site templating pipeline shipped.
+
+---
+
+## v4 Phases (ACTIVE — Full rebrand)
+
+**v4 milestone goal:** Replace the site's visual identity end-to-end — palette, typography, layout language, name treatment — with a distinctive, subject-grounded design that cannot be read as an AI default, while preserving the honest content, editorial values, recruiter-first positioning, and the vault → site build contract. Everything visual is on the table (D-V3-1 superseded 2026-08-02); content/facts and honesty rules (no fake-live, no SaaS framing) are unchanged. Seed theme: **"the electrified landscape"** — electrification and the renewables build-out told as an infrastructure/markets story (user constraint: optimism from the grid, not foliage — no eco-clichés). Background: `v3/design-capability-research.md` + `v3/inspiration.md`.
+
+- [ ] **Phase 17: Identity directions** — Finish the user inspiration haul (≥10 refs, ≥1 contrasting bucket, 2-3 anti-refs, logged in `v3/inspiration.md`) → mine into **2-3 candidate direction DESIGN.mds** (named color tokens + rationale · type roles · spacing/shape · one signature element · do-not-use list), each passing the frontend-design skill's self-critique ("would I produce this for a similar prompt?" → no). Light user checkpoint on the DESIGN.mds before exemplar spend.
+- [ ] **Phase 18: Exemplar + gate** — Homepage + one flagship dataset page (default `system_prices`) fully built per direction with the browser screenshot loop; design-critique + accessibility-review passes; 0 horizontal overflow at desktop and 390px; **user gate picks the winner** → winning DESIGN.md + exemplar code locked as THE spec.
+- [ ] **Phase 19: Theme rebuild + recruiter path** — New `theme.css` implementing the locked spec (porting phase-13 structural fixes: measure clamp, overflow behavior, AA contrast); re-skin + creative-polish the recruiter path (4 top pages + 6 hubs + ~12 flagships); fold in phase-13 deferred judgment items + FINDINGS.md Stream-C recruiter-path items; CI gates green throughout.
+- [ ] **Phase 20: Long-tail fleet** — Staggered background agents apply the locked spec + voice rules (`v3/voice-diagnosis.md`) to the ~150 templated tail pages on disjoint sets, winning DESIGN.md in every brief; verification is objective (facts-accuracy · consistency · gates), never taste.
+- [ ] **Phase 21: Consistency + a11y + ship** — Site-wide consistency sweep, WCAG AA re-audit, full gate suite (`gridflow-build --check` idempotent · htmlhint · lychee), PR → `main` → deploy; optional v4 tag per milestone-close convention.
+
+**Dependencies:** strictly sequential 17 → 18 → 19 → 20 → 21 (18 gated on the user pick; 20 gated on 19's theme landing).
+**Effort:** `v4-EFFORT-PLAN.md` (per-phase ceremony tiers; 19 is the sole T3).
+
+## v3 record (superseded-partial 2026-08-02)
+
+v3 "Recruiter-grade revamp" (started 2026-06-20; planned in `phases/12-review-exemplar/12-BRIEF.md`, not in this file): **Phase 12** (multi-agent review → 56-finding `FINDINGS.md` + 3-direction exemplar; gate picked Direction A) and **Phase 13** (mechanical honesty/responsive/facade sweeps over 161 pages, batches 1-3, commits `4277396..e20a4c1`) **delivered** — the phase-13 commits ship with the v3-close PR. Phases 14-16 (Direction-A polish + fleet) never started; superseded by the v4 full-rebrand decision after design-capability research showed the locked cream + Fraunces identity is Anthropic's #1 documented "generic AI default" look. Close note: `v3/V3-CLOSE.md`.
 
 ---
 

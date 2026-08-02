@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/><title>fuelinst · Elexon BMRS · Gridflow</title>
   <meta name="description" content="Five-minute GB generation by fuel type — the canonical near-real-time series for live stack monitoring, intra-period dispatch, and FUELHH validation."/>
-  <meta name="viewport" content="width=1280"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,30..100&family=Inter:wght@300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -56,9 +56,9 @@
         <div class="eyebrow mb-8">Static snapshot</div>
         <h2 class="display-3 mb-24">GB generation mix · 5-minute <span class="italic fg-accent">resolution.</span></h2>
         <div class="chart" style="padding:24px 28px">
-          <div class="row between mb-16" style="align-items:baseline"><div><div class="eyebrow mb-4">fuelinst · silver layer</div><div class="small">Stacked area · MW · UTC · last 24h</div></div><div class="row gap-8"><span class="chip btn-like">1h</span><span class="chip ink btn-like">24h</span><span class="chip btn-like">7d</span></div></div>
+          <div class="row between mb-16" style="align-items:baseline"><div><div class="eyebrow mb-4">fuelinst · silver layer</div><div class="small">Stacked area · MW · UTC · last 24h</div></div></div>
           <div data-chart="stackedArea" data-opts='{"width":900,"height":280,"seed":60}'></div>
-          <div style="font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--ink-faint);text-transform:uppercase;margin-top:16px">Static snapshot · live wiring planned</div>
+          <div style="font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--ink-faint);text-transform:uppercase;margin-top:16px">Static snapshot · illustrative, seeded</div>
         </div>
       </section>
       <section id="schema" style="margin-bottom:56px" data-screen-label="Schema">
@@ -85,29 +85,25 @@
           <div class="card" style="padding:20px"><div class="tiny mb-8">BRONZE PATH</div><div class="mono small" style="word-break:break-all;margin-bottom:12px">data/bronze/elexon/fuelinst/&lt;year&gt;/&lt;month&gt;/&lt;day&gt;/raw_&lt;uuid&gt;.json</div><div class="tiny mb-8">TRANSFORMER</div><div class="mono small">gridflow.silver.elexon.fuelinst.FuelInstTransformer</div></div>
         </div>
         <div data-tab-group="fuelinst">
-          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('fuelinst','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('fuelinst','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('fuelinst','py',this)" style="cursor:pointer">Python · polars</button></div>
+          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('fuelinst','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('fuelinst','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('fuelinst','py',this)" style="cursor:pointer">Python · gridflow-models</button></div>
           <div data-tab-panel="fuelinst-url" style="display:block"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">https://data.elexon.co.uk/bmrs/api/v1/datasets/FUELINST?publishDateTimeFrom=2026-05-06T00:00Z&amp;publishDateTimeTo=2026-05-06T03:00Z&amp;format=json</pre></div></div>
           <div data-tab-panel="fuelinst-sql" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto"><span class="c">-- Mean fuel mix per hour over the last 24h</span>
 SELECT date_trunc(<span class="s">'hour'</span>, timestamp_utc) AS hour,
        fuel_type,
        AVG(generation_mw) AS mean_mw
-FROM read_parquet(<span class="s">'data/silver/elexon/fuelinst/**/*.parquet'</span>)
+FROM silver_fuelinst
 WHERE timestamp_utc &gt;= now() - INTERVAL 24 HOUR
 GROUP BY 1, 2
 ORDER BY 1, mean_mw DESC;</pre></div></div>
-          <div data-tab-panel="fuelinst-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">import polars as pl
+          <div data-tab-panel="fuelinst-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-df = pl.read_parquet(<span class="s">"data/silver/elexon/fuelinst/**/*.parquet"</span>)
-<span class="c"># Rollup to half-hourly to validate against fuelhh</span>
-hh = (
-    df.with_columns(
-        pl.col(<span class="s">"timestamp_utc"</span>).dt.truncate(<span class="s">"30m"</span>).alias(<span class="s">"period_utc"</span>)
-    )
-    .group_by([<span class="s">"period_utc"</span>, <span class="s">"fuel_type"</span>])
-    .agg(pl.col(<span class="s">"generation_mw"</span>).mean().alias(<span class="s">"mean_mw"</span>))
-    .sort([<span class="s">"period_utc"</span>, <span class="s">"fuel_type"</span>])
-)
-print(hh.head(20))</pre></div></div>
+data, models, common = setup_notebook()
+
+<span class="c"># fuelinst: stored silver rows as a pandas DataFrame</span>
+df = data.elexon.query(<span class="s">"fuelinst"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.elexon.describe(<span class="s">"fuelinst"</span>)</pre></div></div>
         </div>
       </section>
       <section id="related" style="margin-bottom:56px" data-screen-label="Related">

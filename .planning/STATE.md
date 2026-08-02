@@ -1,5 +1,33 @@
 # State
 
+## v4 — Full rebrand (ACTIVE — created 2026-08-02)
+
+**Phase 17 (Identity directions) — WAITING on user inspiration references.**
+v3 closed superseded-partial 2026-08-02 (phases 12-13 delivered; 14-16 superseded by the
+full-rebrand decision) — see `v3/V3-CLOSE.md` · `ROADMAP.md § v4` · `v4-EFFORT-PLAN.md`.
+Identity fully open (palette/type/layout/name treatment); honesty rules + content/facts +
+build contract stand; seed theme **"the electrified landscape"** (no eco-clichés) per
+`v3/inspiration.md`. frontend-design skill vendored at `.claude/skills/` (gitignored,
+local-only). **Next:** (1) v3-close PR `feat/phase-12-exemplar` → `main` merges on USER
+ack after green `gridflow-build --check`; (2) as refs land in `v3/inspiration.md`, mine →
+2-3 DESIGN.mds → light user checkpoint → Phase 18 exemplars → user gate → 19/20/21.
+
+## v3 — Recruiter-grade revamp (CLOSED superseded-partial 2026-08-02 · started 2026-06-20)
+
+**Phase 13 mechanical COMPLETE — batches 1-3 committed on `feat/phase-12-exemplar` (e20a4c1..4277396), NOT yet merged to `main`.** → READ `.planning/phases/13-mechanical-sweeps/13-BRIEF.md` for the record.
+
+- **Phase 12 DONE — gate passed: Direction A (Quiet refinement).** 56 verified findings in `phases/12-review-exemplar/FINDINGS.md`; exemplar moved to `phases/12-review-exemplar/exemplar/` (a-quiet = locked pattern).
+- **Phase 13 Batch 1 DONE + verified + all 3 CI gates green (2026-06-20):** footer "cream paper" removed (`site.js`); viewport `width=1280`→responsive on 161 pages (`v3_sweep.py`); `fixes.css` folded into `theme.css` (the `--measure:680px` clamp — verified 0 overflow at 1280px+487px on a production page, figures clamp 680 vs 917 column). `build --check` idempotent · htmlhint 0 · lychee 4349/0.
+- **Phase 13 Batch 2 DONE + verified + committed (2026-06-20):** 161 facade example swaps (`data.<source>.query/.describe` + DuckDB `silver_<slug>`, registry-driven, GIE split + 3 parquet-path shapes, 1 orphan skipped) + cite-strip (all `cite`/`src-cite` gone, incl. nested-`<code>` variant). ~13-agent verification Workflow + 2 deterministic re-checks → **0 sweep-introduced issues across 172 page-checks**. Gates green. See `phases/13-mechanical-sweeps/13-VERIFICATION.md`.
+- **Phase 13 Batch 3 DONE (2026-06-20) — Phase 13 MECHANICAL COMPLETE:** snapshot-note `Static snapshot · live wiring planned` → `Static snapshot · illustrative, seeded` (161 files, both wrapper populations via text replace); fake chart time-toggle chip rows removed (per-page variable labels — anchored on the bare `row gap-8` wrapper, functional tab row preserved). All 4 sweeps idempotent; gates green (build --check · htmlhint 172/0 · lychee 0). `Real-time` left as factual data-cadence prose (not site-live framing) → 14/15.
+- **Deferred to 14/15 (judgment):** inline class refs (`…Transformer`/`EntsoeDayAheadPrice`, ~5/page), "Defined in `schemas/…py` (lines NN)" lines, `TRANSFORMER`/`PARQUET PATH` metadata cells, dated "Verified against vendor docs on `<date>`" (40 files), neso/intensity_factors caveat self-ref.
+- **2026-08-02 — D-V3-1 / Direction A SUPERSEDED: FULL REBRAND (user decision).** Design-capability research (`.planning/v3/design-capability-research.md`) showed cream + Fraunces is Anthropic's #1 documented "generic AI default" look; user reopened the identity entirely (palette, type, layout language, name treatment all on the table; honesty rules + editorial values + content stand). User is curating 10-20 inspiration references (2-3 vibe buckets) — direction work BLOCKED on that input. Anthropic `frontend-design` skill vendored at `.claude/skills/frontend-design/SKILL.md`. Flow when refs arrive: refs → DESIGN.md per direction → exemplar pair (home + 1 flagship) per direction → user gate → winning DESIGN.md = locked spec in every 14/15 agent brief. Phase-13 structural fixes carry into any theme.
+- **Phase 14 (creative) approach = EXEMPLAR-FIRST, not fleet-first** (advisor 2026-06-20): a fleet of independent rewriters makes N voices (still reads AI) and "good prose" can't be LLM-judged — only the user's eyeball. So: orchestrator **hand-crafts the home page** (voice gold-standard) + reads/diagnoses the high-value pages (some prose is already good — don't blanket-rewrite) → **user gate on home (± 1 flagship)** → then the fleet IMITATES the locked exemplar on the 150 templated tail, verified for **facts-accuracy + consistency** (objective), NOT "is it good". Hand-do the 10 unique pages (4 top + 6 hubs); fleet does the 162 datasets. **Facts rule: reorganize/sharpen, introduce NO claim not supported by current page/vault/gridflow.** Manifest: `.planning/v3/page-manifest.json` (172; tier-1 recruiter path = 22 = 4 top + 6 hubs + 12 flagship; tier-2 tail = 150).
+
+Everything below this block is the **v2 record (complete/deployed 2026-06-07)**.
+
+---
+
 ## Project Reference
 
 **Project:** gridflow-front-end

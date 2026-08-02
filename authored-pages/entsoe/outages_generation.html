@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <title>outages_generation · ENTSO-E Transparency · Gridflow</title>
   <meta name="description" content="Unavailability of generation units per zone — MW unavailable per unit per interval, mapped from ENTSO-E businessType A53 (planned) / A54 (unplanned), the…"/>
-  <meta name="viewport" content="width=1280" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,30..100&family=Inter:wght@300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -181,17 +181,13 @@
                 <div class="eyebrow mb-4">outages_generation · silver layer · 10Y1001A1001A82H (DE-LU)</div>
                 <div class="small">Horizontal bars · MW unavailable · UTC · 6 May 2026</div>
               </div>
-              <div class="row gap-8">
-                <span class="chip ink btn-like">24h</span>
-                <span class="chip btn-like">7d</span>
-                <span class="chip btn-like">30d</span>
-              </div>
+              
             </div>
             <div data-chart="barsH" data-opts='{"width":900,"height":280,"items":[
               {"label":"Irsching 5 · planned","value":845,"display":"845 MW"},
               {"label":"Ostsee Wind 3 · unplanned","value":620,"display":"620 MW","color":"#c45a3a"}
             ]}'></div>
-            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · live wiring planned</div>
+            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · illustrative, seeded</div>
           </div>
         </section>
 
@@ -207,15 +203,15 @@
           <table class="schema-table">
             <thead><tr><th scope="col" style="width: 22%;">Column</th><th scope="col" style="width: 14%;">Type</th><th scope="col" style="width: 8%; text-align:center;">Nullable</th><th scope="col">Description</th></tr></thead>
             <tbody>
-              <tr><td class="col-name">timestamp_utc <span class="pk-badge">PK</span></td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">tz-aware UTC; validator requires tzinfo.<span class="cite">schemas/entsoe.py L136, L146-151</span></td></tr>
-              <tr><td class="col-name">area_code</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Control area / bidding zone EIC. Source: <code class="mono">&lt;BiddingZone_Domain.mRID&gt;</code>.<span class="cite">schemas/entsoe.py L137</span></td></tr>
-              <tr><td class="col-name">unit_mrid <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Unit identifier (opaque). Source: <code class="mono">&lt;RegisteredResource.mRID&gt;</code>.<span class="cite">schemas/entsoe.py L138</span></td></tr>
-              <tr><td class="col-name">unit_name</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Human-readable unit name. Default <code class="mono">""</code>.<span class="cite">schemas/entsoe.py L139</span></td></tr>
-              <tr><td class="col-name">outage_type</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note"><code class="mono">"planned"</code> (A53) / <code class="mono">"unplanned"</code> (A54). Derived from <code class="mono">&lt;businessType&gt;</code>.<span class="cite">schemas/entsoe.py L140 · outages_generation.py L73-77</span></td></tr>
-              <tr><td class="col-name">unavailable_mw</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">MW unavailable during the interval. Source: <code class="mono">&lt;Point&gt;&lt;quantity&gt;</code>.<span class="cite">schemas/entsoe.py L141</span></td></tr>
-              <tr><td class="col-name">resolution</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">ISO duration. Default <code class="mono">""</code>.<span class="cite">schemas/entsoe.py L142</span></td></tr>
-              <tr><td class="col-name">data_provider</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsoe"</code>.<span class="cite">schemas/entsoe.py L143</span></td></tr>
-              <tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Set at silver write.<span class="cite">schemas/entsoe.py L144</span></td></tr>
+              <tr><td class="col-name">timestamp_utc <span class="pk-badge">PK</span></td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">tz-aware UTC; validator requires tzinfo.</td></tr>
+              <tr><td class="col-name">area_code</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Control area / bidding zone EIC. Source: <code class="mono">&lt;BiddingZone_Domain.mRID&gt;</code>.</td></tr>
+              <tr><td class="col-name">unit_mrid <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Unit identifier (opaque). Source: <code class="mono">&lt;RegisteredResource.mRID&gt;</code>.</td></tr>
+              <tr><td class="col-name">unit_name</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Human-readable unit name. Default <code class="mono">""</code>.</td></tr>
+              <tr><td class="col-name">outage_type</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note"><code class="mono">"planned"</code> (A53) / <code class="mono">"unplanned"</code> (A54). Derived from <code class="mono">&lt;businessType&gt;</code>.</td></tr>
+              <tr><td class="col-name">unavailable_mw</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">MW unavailable during the interval. Source: <code class="mono">&lt;Point&gt;&lt;quantity&gt;</code>.</td></tr>
+              <tr><td class="col-name">resolution</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">ISO duration. Default <code class="mono">""</code>.</td></tr>
+              <tr><td class="col-name">data_provider</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsoe"</code>.</td></tr>
+              <tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Set at silver write.</td></tr>
             </tbody>
           </table>
           <div class="card mt-24" style="padding: 16px 20px; display: flex; gap: 32px; align-items: start;">
@@ -265,7 +261,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('og','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('og','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('og','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('og','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="og-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;">https://web-api.tp.entsoe.eu/api
@@ -279,23 +275,21 @@
             <div data-tab-panel="og-sql" style="display:none;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px;"><span class="c">-- Top-10 highest-MW unplanned outages last 30 days</span>
 <span class="k">SELECT</span> timestamp_utc, area_code, unit_name, outage_type, unavailable_mw
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/entsoe/outages_generation/**/*.parquet'</span>)
+<span class="k">FROM</span> silver_outages_generation
 <span class="k">WHERE</span> outage_type = <span class="s">'unplanned'</span>
   <span class="k">AND</span> timestamp_utc &gt;= current_timestamp - <span class="k">INTERVAL</span> 30 <span class="k">DAY</span>
 <span class="k">ORDER BY</span> unavailable_mw <span class="k">DESC</span> <span class="k">LIMIT</span> 10;</pre>
             </div></div>
             <div data-tab-panel="og-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-out = pl.read_parquet(<span class="s">"data/silver/entsoe/outages_generation/**/*.parquet"</span>)
-cap = pl.read_parquet(<span class="s">"data/silver/entsoe/installed_capacity_units/**/*.parquet"</span>)
-<span class="c"># Availability factor per unit (1 - sum(unavailable) / hours / capacity)</span>
-hours_unavail = out.group_by(<span class="s">"unit_mrid"</span>).agg(
-    pl.col(<span class="s">"unavailable_mw"</span>).sum().alias(<span class="s">"total_mwh_unavail"</span>)
-).join(cap.select([<span class="s">"unit_mrid"</span>, <span class="s">"capacity_mw"</span>]), on=<span class="s">"unit_mrid"</span>)
-<span class="k">print</span>(hours_unavail.with_columns(
-    (pl.col(<span class="s">"total_mwh_unavail"</span>) / pl.col(<span class="s">"capacity_mw"</span>)).alias(<span class="s">"hours_equiv_unavail"</span>)
-).sort(<span class="s">"hours_equiv_unavail"</span>, descending=<span class="k">True</span>).head())</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># outages_generation: stored silver rows as a pandas DataFrame</span>
+df = data.entsoe.query(<span class="s">"outages_generation"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.entsoe.describe(<span class="s">"outages_generation"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -305,11 +299,11 @@ hours_unavail = out.group_by(<span class="s">"unit_mrid"</span>).agg(
           <h2 class="display-3 mb-8">Things to know before using this.</h2>
           <p class="small mb-24" style="max-width: 560px;">These are specific to <code class="mono">outages_generation</code>. Also read the <a href="../entsoe.html#about" class="link">ENTSO-E-wide caveats</a> on the vendor page.</p>
           <div>
-            <div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">outage_type</code> derived from <code class="mono">businessType</code></div><p class="small" style="margin: 0;">Transformer maps <code class="mono">businessType=A53</code> → <code class="mono">"planned"</code>, <code class="mono">A54</code> → <code class="mono">"unplanned"</code>. Other businessType values pass through unchanged. <span class="src-cite">silver/entsoe/outages_generation.py L72-77</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;">Connector pins <code class="mono">BusinessType=A53</code> by default</div><p class="small" style="margin: 0;"><code class="mono">endpoints.py</code> extra_params pins A53 — only planned outages are fetched by default. Unplanned outages (A54) require manual override via <code class="mono">**params</code>. <span class="src-cite">endpoints.py L54-56</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;">Dedup on <code class="mono">(timestamp_utc, unit_mrid)</code> — no area code</div><p class="small" style="margin: 0;">Unique key drops <code class="mono">area_code</code> because <code class="mono">unit_mrid</code> is globally unique. Caveat: if the same <code class="mono">unit_mrid</code> appears in multiple areas (rare), only one row survives. <span class="src-cite">silver/entsoe/outages_generation.py L88-90</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;">Distinct from H7 outages family</div><p class="small" style="margin: 0;"><code class="mono">outages_generation</code> has its own transformer file (older, A80-specific). The H7 family (<code class="mono">outages_consumption</code>, <code class="mono">_production</code>, <code class="mono">_transmission</code>, <code class="mono">_offshore_grid</code>) shares <code class="mono">outages_h7.py</code>. <span class="src-cite">gridflow source tree</span></p></div></div>
-            <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">Entitlement-blocked on default API key</div><p class="small" style="margin: 0;">Live API returns HTTP 401 for the unregistered gridflow default key. <span class="src-cite">.planning/reconciliation/entsoe/24-outages-generation-http-401.md</span></p></div></div>
+            <div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">outage_type</code> derived from <code class="mono">businessType</code></div><p class="small" style="margin: 0;">Transformer maps <code class="mono">businessType=A53</code> → <code class="mono">"planned"</code>, <code class="mono">A54</code> → <code class="mono">"unplanned"</code>. Other businessType values pass through unchanged. </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;">Connector pins <code class="mono">BusinessType=A53</code> by default</div><p class="small" style="margin: 0;"><code class="mono">endpoints.py</code> extra_params pins A53 — only planned outages are fetched by default. Unplanned outages (A54) require manual override via <code class="mono">**params</code>. </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;">Dedup on <code class="mono">(timestamp_utc, unit_mrid)</code> — no area code</div><p class="small" style="margin: 0;">Unique key drops <code class="mono">area_code</code> because <code class="mono">unit_mrid</code> is globally unique. Caveat: if the same <code class="mono">unit_mrid</code> appears in multiple areas (rare), only one row survives. </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;">Distinct from H7 outages family</div><p class="small" style="margin: 0;"><code class="mono">outages_generation</code> has its own transformer file (older, A80-specific). The H7 family (<code class="mono">outages_consumption</code>, <code class="mono">_production</code>, <code class="mono">_transmission</code>, <code class="mono">_offshore_grid</code>) shares <code class="mono">outages_h7.py</code>. </p></div></div>
+            <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">Entitlement-blocked on default API key</div><p class="small" style="margin: 0;">Live API returns HTTP 401 for the unregistered gridflow default key. </p></div></div>
           </div>
         </section>
 

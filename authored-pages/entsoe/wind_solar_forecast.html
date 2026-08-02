@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <title>wind_solar_forecast · ENTSO-E Transparency · Gridflow</title>
   <meta name="description" content="Day-ahead TSO-published wind onshore, wind offshore, and solar generation forecast in MW per bidding zone — the canonical input for renewable-driven…"/>
-  <meta name="viewport" content="width=1280" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,30..100&family=Inter:wght@300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -214,14 +214,10 @@
                 <div class="eyebrow mb-4">wind_solar_forecast · silver layer · 10Y1001A1001A82H</div>
                 <div class="small">Stacked area · MW · UTC · 6 May 2026</div>
               </div>
-              <div class="row gap-8">
-                <span class="chip ink btn-like">24h</span>
-                <span class="chip btn-like">7d</span>
-                <span class="chip btn-like">30d</span>
-              </div>
+              
             </div>
             <div data-chart="stackedArea" data-opts='{"width":900,"height":280,"seed":27}'></div>
-            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · live wiring planned</div>
+            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · illustrative, seeded</div>
           </div>
         </section>
 
@@ -248,7 +244,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   tz-aware UTC; validator requires tzinfo. Source: <code class="mono">&lt;Period&gt;</code> start + <code class="mono">position × resolution</code>.
-                  <span class="cite">schemas/entsoe.py L111, L118-123</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -257,7 +253,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   EIC bidding zone. Source: <code class="mono">&lt;inBiddingZone_Domain.mRID&gt;</code>.
-                  <span class="cite">schemas/entsoe.py L112</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -266,7 +262,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   <code class="mono">B16</code> = Solar; <code class="mono">B18</code> = Wind Offshore; <code class="mono">B19</code> = Wind Onshore. Source: <code class="mono">&lt;MktPSRType&gt;&lt;psrType&gt;</code>.
-                  <span class="cite">schemas/entsoe.py L113</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -275,7 +271,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   Forecast MW. Source: <code class="mono">&lt;Point&gt;&lt;quantity&gt;</code>.
-                  <span class="cite">schemas/entsoe.py L114</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -284,7 +280,7 @@
                 <td style="text-align:center;" class="nullable">Yes</td>
                 <td class="col-note">
                   ISO duration; typically <code class="mono">PT60M</code>. Default <code class="mono">""</code>.
-                  <span class="cite">schemas/entsoe.py L115</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -293,7 +289,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   Always <code class="mono">"entsoe"</code>. Default <code class="mono">"entsoe"</code>.
-                  <span class="cite">schemas/entsoe.py L116</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -302,7 +298,7 @@
                 <td style="text-align:center;" class="nullable">Yes</td>
                 <td class="col-note">
                   Set at silver write.
-                  <span class="cite">silver/entsoe/wind_solar_forecast.py L81</span>
+                  
                 </td>
               </tr>
             </tbody>
@@ -377,7 +373,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('wsf','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('wsf','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('wsf','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('wsf','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="wsf-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;">https://web-api.tp.entsoe.eu/api
@@ -395,26 +391,20 @@
        max(<span class="k">CASE WHEN</span> production_type=<span class="s">'B16'</span> <span class="k">THEN</span> generation_forecast_mw <span class="k">END</span>) <span class="k">AS</span> peak_solar,
        max(<span class="k">CASE WHEN</span> production_type=<span class="s">'B19'</span> <span class="k">THEN</span> generation_forecast_mw <span class="k">END</span>) <span class="k">AS</span> peak_wind_on,
        max(<span class="k">CASE WHEN</span> production_type=<span class="s">'B18'</span> <span class="k">THEN</span> generation_forecast_mw <span class="k">END</span>) <span class="k">AS</span> peak_wind_off
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/entsoe/wind_solar_forecast/**/*.parquet'</span>)
+<span class="k">FROM</span> silver_wind_solar_forecast
 <span class="k">WHERE</span> timestamp_utc &gt;= current_timestamp - <span class="k">INTERVAL</span> 7 <span class="k">DAY</span>
 <span class="k">GROUP BY</span> 1, 2 <span class="k">ORDER BY</span> 1, 2;</pre>
             </div></div>
             <div data-tab-panel="wsf-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-fc = pl.read_parquet(<span class="s">"data/silver/entsoe/wind_solar_forecast/**/*.parquet"</span>)
-act = pl.read_parquet(<span class="s">"data/silver/entsoe/actual_generation/**/*.parquet"</span>)
-<span class="c"># Forecast skill: per-PSR forecast error</span>
-joined = fc.join(
-    act.filter(pl.col(<span class="s">"production_type"</span>).is_in([<span class="s">"B16"</span>, <span class="s">"B18"</span>, <span class="s">"B19"</span>])),
-    on=[<span class="s">"timestamp_utc"</span>, <span class="s">"area_code"</span>, <span class="s">"production_type"</span>],
-)
-err = joined.with_columns(
-    (pl.col(<span class="s">"generation_mw"</span>) - pl.col(<span class="s">"generation_forecast_mw"</span>)).alias(<span class="s">"err_mw"</span>)
-)
-<span class="k">print</span>(err.group_by([<span class="s">"area_code"</span>, <span class="s">"production_type"</span>]).agg(
-    pl.col(<span class="s">"err_mw"</span>).std().alias(<span class="s">"rmse"</span>)
-))</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># wind_solar_forecast: stored silver rows as a pandas DataFrame</span>
+df = data.entsoe.query(<span class="s">"wind_solar_forecast"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.entsoe.describe(<span class="s">"wind_solar_forecast"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -429,35 +419,35 @@ err = joined.with_columns(
               <div class="caveat-num">01</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Only 3 PSR types (<code class="mono">B16</code> <code class="mono">B18</code> <code class="mono">B19</code>)</div>
-                <p class="small" style="margin: 0;">A69 covers solar (<code class="mono">B16</code>), wind offshore (<code class="mono">B18</code>), wind onshore (<code class="mono">B19</code>). Not other renewables (hydro, biomass) — for those use <code class="mono">generation_forecast</code> (A71/A01). <span class="src-cite">schemas/entsoe.py L108</span></p>
+                <p class="small" style="margin: 0;">A69 covers solar (<code class="mono">B16</code>), wind offshore (<code class="mono">B18</code>), wind onshore (<code class="mono">B19</code>). Not other renewables (hydro, biomass) — for those use <code class="mono">generation_forecast</code> (A71/A01). </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">02</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">GB EMPTY post-Brexit</div>
-                <p class="small" style="margin: 0;">GB renewable forecasts are via Elexon <code class="mono">windfor</code> (wind only). No GB solar forecast on ENTSO-E. <span class="src-cite">vault Known Issues</span></p>
+                <p class="small" style="margin: 0;">GB renewable forecasts are via Elexon <code class="mono">windfor</code> (wind only). No GB solar forecast on ENTSO-E. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">03</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Forecast revisions overwrite</div>
-                <p class="small" style="margin: 0;">Same <code class="mono">(timestamp_utc, area_code, production_type)</code> re-publication overwrites silently on dedup. <span class="src-cite">silver/entsoe/wind_solar_forecast.py L74-76</span></p>
+                <p class="small" style="margin: 0;">Same <code class="mono">(timestamp_utc, area_code, production_type)</code> re-publication overwrites silently on dedup. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">04</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Resolution may be <code class="mono">PT15M</code> for some zones</div>
-                <p class="small" style="margin: 0;">Most zones publish <code class="mono">PT60M</code>, but a few publish <code class="mono">PT15M</code>. Filter on <code class="mono">resolution</code> before joining settlement-period datasets. <span class="src-cite">vault Known Issues</span></p>
+                <p class="small" style="margin: 0;">Most zones publish <code class="mono">PT60M</code>, but a few publish <code class="mono">PT15M</code>. Filter on <code class="mono">resolution</code> before joining settlement-period datasets. </p>
               </div>
             </div>
             <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;">
               <div class="caveat-num">05</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Entitlement-blocked on the default API key</div>
-                <p class="small" style="margin: 0;">The live API returns HTTP 401 for the unregistered gridflow default key. Schema verified from gridflow source. <span class="src-cite">.planning/reconciliation/entsoe/35-wind-solar-forecast-http-401.md</span></p>
+                <p class="small" style="margin: 0;">The live API returns HTTP 401 for the unregistered gridflow default key. Schema verified from gridflow source. </p>
               </div>
             </div>
           </div>

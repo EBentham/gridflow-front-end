@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <title>cross_border_flows · ENTSO-E Transparency · Gridflow</title>
   <meta name="description" content="Hourly physical cross-border flows in MW per zone-pair direction — the canonical input for interconnector utilisation, congestion analysis, and cross-border…"/>
-  <meta name="viewport" content="width=1280" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,30..100&family=Inter:wght@300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -222,14 +222,10 @@
                 <div class="eyebrow mb-4">cross_border_flows · silver layer · 10YGB---------A → 10YFR-RTE------C</div>
                 <div class="small">Line · MW · UTC · 6 May 2026</div>
               </div>
-              <div class="row gap-8">
-                <span class="chip ink btn-like">24h</span>
-                <span class="chip btn-like">7d</span>
-                <span class="chip btn-like">30d</span>
-              </div>
+              
             </div>
             <div data-chart="sparkline" data-opts='{"width":900,"height":280,"seed":41}'></div>
-            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · live wiring planned</div>
+            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · illustrative, seeded</div>
           </div>
         </section>
 
@@ -259,7 +255,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   tz-aware UTC; validator requires tzinfo. Source: <code class="mono">&lt;Period&gt;</code> start + <code class="mono">position × resolution</code>.
-                  <span class="cite">schemas/entsoe.py L71, L79-84</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -268,7 +264,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   Source zone EIC. Source: <code class="mono">&lt;in_Domain.mRID&gt;</code>.
-                  <span class="cite">schemas/entsoe.py L72</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -277,7 +273,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   Destination zone EIC. Source: <code class="mono">&lt;out_Domain.mRID&gt;</code>.
-                  <span class="cite">schemas/entsoe.py L73</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -286,7 +282,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   MW physical flow (directional, positive = in → out). Source: <code class="mono">&lt;Point&gt;&lt;quantity&gt;</code>.
-                  <span class="cite">schemas/entsoe.py L74</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -295,7 +291,7 @@
                 <td style="text-align:center;" class="nullable">Yes</td>
                 <td class="col-note">
                   ISO duration; typically <code class="mono">PT60M</code>. Added in G5-W3 to match transformer output. Default <code class="mono">""</code>.
-                  <span class="cite">schemas/entsoe.py L75</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -304,7 +300,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   Always <code class="mono">"entsoe"</code>. Default <code class="mono">"entsoe"</code>.
-                  <span class="cite">schemas/entsoe.py L76</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -313,7 +309,7 @@
                 <td style="text-align:center;" class="nullable">Yes</td>
                 <td class="col-note">
                   Set at silver write. Added in G5-W3.
-                  <span class="cite">schemas/entsoe.py L77</span>
+                  
                 </td>
               </tr>
             </tbody>
@@ -391,7 +387,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('cbf','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('cbf','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('cbf','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('cbf','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="cbf-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;">https://web-api.tp.entsoe.eu/api
@@ -409,21 +405,20 @@
             <span class="k">ELSE</span> -flow_mw <span class="k">END</span> <span class="k">AS</span> gb_export_mw,
        <span class="k">CASE WHEN</span> in_area_code=<span class="s">'10YGB----------A'</span> <span class="k">THEN</span> out_area_code
             <span class="k">ELSE</span> in_area_code <span class="k">END</span> <span class="k">AS</span> counterparty
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/entsoe/cross_border_flows/**/*.parquet'</span>)
+<span class="k">FROM</span> silver_cross_border_flows
 <span class="k">WHERE</span> <span class="s">'10YGB----------A'</span> <span class="k">IN</span> (in_area_code, out_area_code)
 <span class="k">ORDER BY</span> timestamp_utc <span class="k">DESC</span> <span class="k">LIMIT</span> 100;</pre>
             </div></div>
             <div data-tab-panel="cbf-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-flows = pl.read_parquet(<span class="s">"data/silver/entsoe/cross_border_flows/**/*.parquet"</span>)
-prices = pl.read_parquet(<span class="s">"data/silver/entsoe/day_ahead_prices/**/*.parquet"</span>)
-<span class="c"># Spread-flow correlation: do flows track day-ahead spread?</span>
-gb_fr = flows.filter(
-    (pl.col(<span class="s">"in_area_code"</span>) == <span class="s">"10YGB----------A"</span>) &amp;
-    (pl.col(<span class="s">"out_area_code"</span>) == <span class="s">"10YFR-RTE------C"</span>)
-)
-<span class="k">print</span>(gb_fr.tail())</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># cross_border_flows: stored silver rows as a pandas DataFrame</span>
+df = data.entsoe.query(<span class="s">"cross_border_flows"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.entsoe.describe(<span class="s">"cross_border_flows"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -439,35 +434,35 @@ gb_fr = flows.filter(
               <div class="caveat-num">01</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Directional — pair both halves for net flow</div>
-                <p class="small" style="margin: 0;">Each border requires two requests (one per direction). True net flow = <code class="mono">flow(GB→FR) − flow(FR→GB)</code>. <span class="src-cite">vault Known Issues · endpoints.py L47-49</span></p>
+                <p class="small" style="margin: 0;">Each border requires two requests (one per direction). True net flow = <code class="mono">flow(GB→FR) − flow(FR→GB)</code>. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">02</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">GB borders still publish post-Brexit</div>
-                <p class="small" style="margin: 0;">Unlike <code class="mono">actual_generation</code>, GB cross-border flows continue to publish via ENTSO-E (the flows are physical and reported by the European-side TSO). <span class="src-cite">vault Known Issues</span></p>
+                <p class="small" style="margin: 0;">Unlike <code class="mono">actual_generation</code>, GB cross-border flows continue to publish via ENTSO-E (the flows are physical and reported by the European-side TSO). </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">03</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Resolution typically <code class="mono">PT60M</code></div>
-                <p class="small" style="margin: 0;">Most borders publish <code class="mono">PT60M</code>. The G5-W3 schema update (2026-05) added <code class="mono">resolution</code> to the Pydantic class to match transformer output. <span class="src-cite">schemas/entsoe.py L66-69</span></p>
+                <p class="small" style="margin: 0;">Most borders publish <code class="mono">PT60M</code>. The G5-W3 schema update (2026-05) added <code class="mono">resolution</code> to the Pydantic class to match transformer output. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">04</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Revisions overwrite</div>
-                <p class="small" style="margin: 0;">Same <code class="mono">(timestamp_utc, in_area_code, out_area_code)</code> re-publication overwrites silently on dedup. No <code class="mono">published_at</code> for point-in-time queries. <span class="src-cite">silver/entsoe/cross_border_flows.py L68-70</span></p>
+                <p class="small" style="margin: 0;">Same <code class="mono">(timestamp_utc, in_area_code, out_area_code)</code> re-publication overwrites silently on dedup. No <code class="mono">published_at</code> for point-in-time queries. </p>
               </div>
             </div>
             <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;">
               <div class="caveat-num">05</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Entitlement-blocked on default API key</div>
-                <p class="small" style="margin: 0;">Live API returns HTTP 401 for the unregistered gridflow default key. Schema verified from gridflow source. <span class="src-cite">.planning/reconciliation/entsoe/10-cross-border-flows-http-401.md</span></p>
+                <p class="small" style="margin: 0;">Live API returns HTTP 401 for the unregistered gridflow default key. Schema verified from gridflow source. </p>
               </div>
             </div>
           </div>

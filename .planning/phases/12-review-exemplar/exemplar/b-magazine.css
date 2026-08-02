@@ -1,0 +1,37 @@
+/* ══════════════════════════════════════════════════════════════
+   Direction B — EDITORIAL MAGAZINE
+   Layered on theme.css + fixes.css. Bigger Fraunces display, more air,
+   refined letterspaced labels, a deeper forest accent. "Designed by a person."
+   Type/spacing scoped to >=721px so the mobile reflow (theme.css) still wins.
+   ══════════════════════════════════════════════════════════════ */
+
+:root {
+  --accent: #2f5d3f;   /* a deeper, more confident forest */
+}
+
+/* Labels: quieter, more letterspaced — magazine eyebrows */
+.eyebrow {
+  letter-spacing: 0.26em;
+  font-size: 10px;
+  color: var(--ink-soft);
+}
+.chip { letter-spacing: 0.04em; }
+
+/* Editorial divider weight */
+.stats-strip { border-top: 2px solid var(--ink-strong); }
+
+@media (min-width: 721px) {
+  /* Let Fraunces carry the page — larger, tighter display */
+  .display-1 { font-size: 88px; letter-spacing: -0.045em; line-height: 0.96; }
+  .display-2 { font-size: 58px; letter-spacing: -0.035em; line-height: 1.0; }
+  .display-3 { font-size: 40px; letter-spacing: -0.03em; line-height: 1.05; }
+  h1 { font-size: 76px; letter-spacing: -0.04em; }
+
+  /* A bigger, calmer lede */
+  .lede { font-size: 21px; line-height: 1.55; }
+
+  /* Generous vertical rhythm */
+  .block { padding-top: 104px; padding-bottom: 104px; }
+  body[data-page="dataset"] .main-content { padding: 56px 72px 96px 72px; }
+  .display-3.mb-24 { margin-bottom: 30px; }
+}

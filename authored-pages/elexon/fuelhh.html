@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <title>fuelhh · Elexon BMRS · Gridflow</title>
-  <meta name="viewport" content="width=1280" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,30..100&family=Inter:wght@300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -266,14 +266,10 @@
                 <div class="eyebrow mb-4">fuelhh · silver layer · all fuel types</div>
                 <div class="small">Stacked area · MW · UTC · 6 May 2026</div>
               </div>
-              <div class="row gap-8">
-                <span class="chip ink btn-like">24h</span>
-                <span class="chip btn-like">7d</span>
-                <span class="chip btn-like">30d</span>
-              </div>
+              
             </div>
             <div data-chart="stackedArea" data-opts='{"width":900,"height":280,"seed":42}'></div>
-            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · live wiring planned</div>
+            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · illustrative, seeded</div>
           </div>
         </section>
 
@@ -446,7 +442,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('fuelhh','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('fuelhh','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('fuelhh','py',this)" style="cursor:pointer;">Python · parquet</button>
+              <button class="chip btn-like" onclick="setTab('fuelhh','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="fuelhh-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;">https://data.elexon.co.uk/bmrs/api/v1/datasets/FUELHH<span style="color:#6b6358;">?</span><span style="color:#c9a96e;">publishDateTimeFrom</span>=2026-05-01T00:00:00Z<span style="color:#6b6358;">&amp;</span><span style="color:#c9a96e;">publishDateTimeTo</span>=2026-05-02T00:00:00Z</pre>
@@ -454,24 +450,20 @@
             <div data-tab-panel="fuelhh-sql" style="display:none;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px;"><span class="c">-- Read the silver-layer parquet via DuckDB</span>
 <span class="k">SELECT</span> *
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/elexon/fuelhh/**/*.parquet'</span>)
+<span class="k">FROM</span> silver_fuelhh
 <span class="k">WHERE</span> settlement_date &gt;= current_date - <span class="k">INTERVAL</span> 30 <span class="k">DAY</span>
 <span class="k">LIMIT</span> 100;</pre>
           </div></div>
             <div data-tab-panel="fuelhh-py"  style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-df = pl.read_parquet(
-    <span class="s">"data/silver/elexon/fuelhh/**/*.parquet"</span>,
-)
-<span class="c"># pivot to wide format: one column per fuel type</span>
-mix = df.pivot(
-    index=[<span class="s">"settlement_date"</span>, <span class="s">"settlement_period"</span>],
-    on=<span class="s">"fuel_type"</span>,
-    values=<span class="s">"generation_mw"</span>,
-    aggregate_function=<span class="s">"sum"</span>,
-)
-print(mix.head())</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># fuelhh: stored silver rows as a pandas DataFrame</span>
+df = data.elexon.query(<span class="s">"fuelhh"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.elexon.describe(<span class="s">"fuelhh"</span>)</pre>
           </div></div>
           </div>
         </section>

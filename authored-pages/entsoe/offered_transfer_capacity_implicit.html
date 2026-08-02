@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <title>offered_transfer_capacity_implicit · ENTSO-E Transparency · Gridflow</title>
   <meta name="description" content="Offered transfer capacity in MW per zone-pair for implicit allocations — capacity that clears through the day-ahead implicit auction with the spot price, the…"/>
-  <meta name="viewport" content="width=1280" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,30..100&family=Inter:wght@300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -181,14 +181,10 @@
                 <div class="eyebrow mb-4">offered_transfer_capacity_implicit · silver layer · 10YGB---------A → 10YFR-RTE------C</div>
                 <div class="small">Line · MW · UTC · 6 May 2026</div>
               </div>
-              <div class="row gap-8">
-                <span class="chip ink btn-like">24h</span>
-                <span class="chip btn-like">7d</span>
-                <span class="chip btn-like">30d</span>
-              </div>
+              
             </div>
             <div data-chart="sparkline" data-opts='{"width":900,"height":280,"seed":53}'></div>
-            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · live wiring planned</div>
+            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · illustrative, seeded</div>
           </div>
         </section>
 
@@ -202,14 +198,14 @@
           <table class="schema-table">
             <thead><tr><th scope="col" style="width: 22%;">Column</th><th scope="col" style="width: 14%;">Type</th><th scope="col" style="width: 8%; text-align:center;">Nullable</th><th scope="col">Description</th></tr></thead>
             <tbody>
-              <tr><td class="col-name">timestamp_utc <span class="pk-badge">PK</span></td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">tz-aware UTC.<span class="cite">schemas/entsoe.py L560</span></td></tr>
-              <tr><td class="col-name">in_area_code <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Source zone EIC.<span class="cite">schemas/entsoe.py L561</span></td></tr>
-              <tr><td class="col-name">out_area_code <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Destination zone EIC.<span class="cite">schemas/entsoe.py L562</span></td></tr>
-              <tr><td class="col-name">quantity_mw</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Offered MW (directional).<span class="cite">schemas/entsoe.py L563</span></td></tr>
-              <tr><td class="col-name">business_type <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Auction-type code. Default <code class="mono">""</code>.<span class="cite">schemas/entsoe.py L564</span></td></tr>
-              <tr><td class="col-name">resolution</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">ISO duration; typically <code class="mono">PT60M</code>.<span class="cite">schemas/entsoe.py L565</span></td></tr>
-              <tr><td class="col-name">data_provider</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsoe"</code>.<span class="cite">schemas/entsoe.py L566</span></td></tr>
-              <tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Set at silver write.<span class="cite">schemas/entsoe.py L567</span></td></tr>
+              <tr><td class="col-name">timestamp_utc <span class="pk-badge">PK</span></td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">tz-aware UTC.</td></tr>
+              <tr><td class="col-name">in_area_code <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Source zone EIC.</td></tr>
+              <tr><td class="col-name">out_area_code <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Destination zone EIC.</td></tr>
+              <tr><td class="col-name">quantity_mw</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Offered MW (directional).</td></tr>
+              <tr><td class="col-name">business_type <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Auction-type code. Default <code class="mono">""</code>.</td></tr>
+              <tr><td class="col-name">resolution</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">ISO duration; typically <code class="mono">PT60M</code>.</td></tr>
+              <tr><td class="col-name">data_provider</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsoe"</code>.</td></tr>
+              <tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Set at silver write.</td></tr>
             </tbody>
           </table>
           <div class="card mt-24" style="padding: 16px 20px; display: flex; gap: 32px; align-items: start;">
@@ -260,7 +256,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('otci','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('otci','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('otci','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('otci','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="otci-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;">https://web-api.tp.entsoe.eu/api
@@ -277,24 +273,24 @@
 <pre class="code dark" style="padding: 18px 22px;"><span class="c">-- Implicit-OTC vs price spread (GB-FR — does offered cap match arb signal?)</span>
 <span class="k">SELECT</span> i.timestamp_utc, i.quantity_mw <span class="k">AS</span> implicit_mw,
        gb.price_eur_mwh - fr.price_eur_mwh <span class="k">AS</span> spread_eur
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/entsoe/offered_transfer_capacity_implicit/**/*.parquet'</span>) i
-<span class="k">JOIN</span> read_parquet(<span class="s">'data/silver/entsoe/day_ahead_prices/**/*.parquet'</span>) gb
+<span class="k">FROM</span> silver_offered_transfer_capacity_implicit i
+<span class="k">JOIN</span> silver_day_ahead_prices gb
   <span class="k">ON</span> i.timestamp_utc = gb.timestamp_utc <span class="k">AND</span> gb.area_code = <span class="s">'10YGB----------A'</span>
-<span class="k">JOIN</span> read_parquet(<span class="s">'data/silver/entsoe/day_ahead_prices/**/*.parquet'</span>) fr
+<span class="k">JOIN</span> silver_day_ahead_prices fr
   <span class="k">ON</span> i.timestamp_utc = fr.timestamp_utc <span class="k">AND</span> fr.area_code = <span class="s">'10YFR-RTE------C'</span>
 <span class="k">WHERE</span> i.in_area_code = <span class="s">'10YGB----------A'</span> <span class="k">AND</span> i.out_area_code = <span class="s">'10YFR-RTE------C'</span>
 <span class="k">ORDER BY</span> i.timestamp_utc <span class="k">DESC</span> <span class="k">LIMIT</span> 24;</pre>
             </div></div>
             <div data-tab-panel="otci-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-imp = pl.read_parquet(<span class="s">"data/silver/entsoe/offered_transfer_capacity_implicit/**/*.parquet"</span>)
-ntc = pl.read_parquet(<span class="s">"data/silver/entsoe/net_transfer_capacity/**/*.parquet"</span>)
-<span class="c"># What fraction of NTC is offered to implicit (vs explicit / continuous)?</span>
-joined = imp.join(ntc, on=[<span class="s">"timestamp_utc"</span>, <span class="s">"in_area_code"</span>, <span class="s">"out_area_code"</span>], suffix=<span class="s">"_n"</span>)
-<span class="k">print</span>(joined.with_columns(
-    (pl.col(<span class="s">"quantity_mw"</span>) / pl.col(<span class="s">"ntc_mw"</span>)).alias(<span class="s">"implicit_share"</span>)
-).select([<span class="s">"timestamp_utc"</span>, <span class="s">"implicit_share"</span>]).tail())</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># offered_transfer_capacity_implicit: stored silver rows as a pandas DataFrame</span>
+df = data.entsoe.query(<span class="s">"offered_transfer_capacity_implicit"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.entsoe.describe(<span class="s">"offered_transfer_capacity_implicit"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -304,11 +300,11 @@ joined = imp.join(ntc, on=[<span class="s">"timestamp_utc"</span>, <span class="
           <h2 class="display-3 mb-8">Things to know before using this.</h2>
           <p class="small mb-24" style="max-width: 560px;">These are specific to <code class="mono">offered_transfer_capacity_implicit</code>. Also read the <a href="../entsoe.html#about" class="link">ENTSO-E-wide caveats</a> on the vendor page.</p>
           <div>
-            <div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;">Lowercase domain params (<code class="mono">in_Domain</code> / <code class="mono">out_Domain</code>)</div><p class="small" style="margin: 0;">Like <code class="mono">_explicit</code>, this variant uses lowercase. The <code class="mono">_continuous</code> variant uses capitalised. <span class="src-cite">endpoints.py L202-212</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;">Implicit allocation clears with day-ahead price</div><p class="small" style="margin: 0;">Unlike explicit (sold separately in advance) or continuous (sold on demand), implicit capacity clears as part of the day-ahead spot auction. <span class="src-cite">domain knowledge</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;">Residual after explicit allocations</div><p class="small" style="margin: 0;">Implicit OTC is typically <code class="mono">NTC − sum(explicit allocations)</code>. When explicit allocations are large, implicit shrinks. <span class="src-cite">domain knowledge</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;">Pydantic class is shared (H6 family)</div><p class="small" style="margin: 0;"><code class="mono">EntsoeTransmissionMarketQuantity</code> covers 12 H6 datasets. Reconciliation finding <code class="mono">60-offered-transfer-capacity-implicit-no-table.md</code> (wontfix v3-candidate) is stale. <span class="src-cite">schemas/entsoe.py L557</span></p></div></div>
-            <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">Entitlement-blocked on default API key</div><p class="small" style="margin: 0;">Live API returns HTTP 401 for the unregistered gridflow default key. <span class="src-cite">.planning/reconciliation/entsoe/22-offered-transfer-capacity-implicit-http-401.md</span></p></div></div>
+            <div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;">Lowercase domain params (<code class="mono">in_Domain</code> / <code class="mono">out_Domain</code>)</div><p class="small" style="margin: 0;">Like <code class="mono">_explicit</code>, this variant uses lowercase. The <code class="mono">_continuous</code> variant uses capitalised. </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;">Implicit allocation clears with day-ahead price</div><p class="small" style="margin: 0;">Unlike explicit (sold separately in advance) or continuous (sold on demand), implicit capacity clears as part of the day-ahead spot auction. </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;">Residual after explicit allocations</div><p class="small" style="margin: 0;">Implicit OTC is typically <code class="mono">NTC − sum(explicit allocations)</code>. When explicit allocations are large, implicit shrinks. </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;">Pydantic class is shared (H6 family)</div><p class="small" style="margin: 0;"><code class="mono">EntsoeTransmissionMarketQuantity</code> covers 12 H6 datasets. Reconciliation finding <code class="mono">60-offered-transfer-capacity-implicit-no-table.md</code> (wontfix v3-candidate) is stale. </p></div></div>
+            <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">Entitlement-blocked on default API key</div><p class="small" style="margin: 0;">Live API returns HTTP 401 for the unregistered gridflow default key. </p></div></div>
           </div>
         </section>
 

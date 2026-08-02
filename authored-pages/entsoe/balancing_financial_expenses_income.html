@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <title>balancing_financial_expenses_income · ENTSO-E Transparency · Gridflow</title>
   <meta name="description" content="Financial expenses and income for balancing in EUR per control area — the €-side P&amp;L of the balancing mechanism, distinct from MWh activations and MW capacity."/>
-  <meta name="viewport" content="width=1280" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,30..100&family=Inter:wght@300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -179,14 +179,10 @@
                 <div class="eyebrow mb-4">balancing_financial_expenses_income · silver layer · 10YGB----------A</div>
                 <div class="small">Line · EUR · UTC · daily</div>
               </div>
-              <div class="row gap-8">
-                <span class="chip ink btn-like">30d</span>
-                <span class="chip btn-like">90d</span>
-                <span class="chip btn-like">1y</span>
-              </div>
+              
             </div>
             <div data-chart="sparkline" data-opts='{"width":900,"height":280,"seed":97}'></div>
-            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · live wiring planned</div>
+            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · illustrative, seeded</div>
           </div>
         </section>
 
@@ -203,13 +199,13 @@
           <table class="schema-table">
             <thead><tr><th scope="col" style="width: 22%;">Column</th><th scope="col" style="width: 14%;">Type</th><th scope="col" style="width: 8%; text-align:center;">Nullable</th><th scope="col">Description</th></tr></thead>
             <tbody>
-              <tr><td class="col-name">timestamp_utc <span class="pk-badge">PK</span></td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">tz-aware UTC. Source: <code class="mono">&lt;Period&gt;</code> start + position × resolution.<span class="cite">schemas/entsoe.py L683, L691-696</span></td></tr>
-              <tr><td class="col-name">area_code <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Control area EIC (renamed from control_area_domain). Source: <code class="mono">&lt;controlArea_Domain.mRID&gt;</code>.<span class="cite">schemas/entsoe.py L684 · h8_balancing.py L200</span></td></tr>
-              <tr><td class="col-name">amount_eur</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">EUR (expense if positive, income if negative depending on businessType). Source: <code class="mono">&lt;Point&gt;&lt;price.amount&gt;</code>.<span class="cite">schemas/entsoe.py L685</span></td></tr>
-              <tr><td class="col-name">business_type <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Distinguishes expense / income line items. Default <code class="mono">""</code>.<span class="cite">schemas/entsoe.py L686</span></td></tr>
-              <tr><td class="col-name">resolution</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">ISO duration. Default <code class="mono">""</code>.<span class="cite">schemas/entsoe.py L687</span></td></tr>
-              <tr><td class="col-name">data_provider</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsoe"</code>.<span class="cite">schemas/entsoe.py L688</span></td></tr>
-              <tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Set at silver write.<span class="cite">schemas/entsoe.py L689</span></td></tr>
+              <tr><td class="col-name">timestamp_utc <span class="pk-badge">PK</span></td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">tz-aware UTC. Source: <code class="mono">&lt;Period&gt;</code> start + position × resolution.</td></tr>
+              <tr><td class="col-name">area_code <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Control area EIC (renamed from control_area_domain). Source: <code class="mono">&lt;controlArea_Domain.mRID&gt;</code>.</td></tr>
+              <tr><td class="col-name">amount_eur</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">EUR (expense if positive, income if negative depending on businessType). Source: <code class="mono">&lt;Point&gt;&lt;price.amount&gt;</code>.</td></tr>
+              <tr><td class="col-name">business_type <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Distinguishes expense / income line items. Default <code class="mono">""</code>.</td></tr>
+              <tr><td class="col-name">resolution</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">ISO duration. Default <code class="mono">""</code>.</td></tr>
+              <tr><td class="col-name">data_provider</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsoe"</code>.</td></tr>
+              <tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Set at silver write.</td></tr>
             </tbody>
           </table>
           <div class="card mt-24" style="padding: 16px 20px; display: flex; gap: 32px; align-items: start; flex-wrap:wrap;">
@@ -260,7 +256,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('bfei','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('bfei','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('bfei','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('bfei','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="bfei-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;">https://web-api.tp.entsoe.eu/api
@@ -276,25 +272,20 @@
        sum(<span class="k">CASE WHEN</span> amount_eur &gt; 0 <span class="k">THEN</span> amount_eur <span class="k">ELSE</span> 0 <span class="k">END</span>) <span class="k">AS</span> expense_eur,
        sum(<span class="k">CASE WHEN</span> amount_eur &lt; 0 <span class="k">THEN</span> amount_eur <span class="k">ELSE</span> 0 <span class="k">END</span>) <span class="k">AS</span> income_eur,
        sum(amount_eur) <span class="k">AS</span> net_eur
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/entsoe/balancing_financial_expenses_income/**/*.parquet'</span>)
+<span class="k">FROM</span> silver_balancing_financial_expenses_income
 <span class="k">WHERE</span> timestamp_utc &gt;= current_timestamp - <span class="k">INTERVAL</span> 30 <span class="k">DAY</span>
 <span class="k">GROUP BY</span> 1, 2 <span class="k">ORDER BY</span> 1, net_eur <span class="k">DESC</span>;</pre>
             </div></div>
             <div data-tab-panel="bfei-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-fin = pl.read_parquet(<span class="s">"data/silver/entsoe/balancing_financial_expenses_income/**/*.parquet"</span>)
-qty = pl.read_parquet(<span class="s">"data/silver/entsoe/activated_balancing_qty/**/*.parquet"</span>)
-<span class="c"># €/MWh implied by financial / quantity</span>
-joined = fin.group_by([<span class="s">"timestamp_utc"</span>, <span class="s">"area_code"</span>]).agg(
-    pl.col(<span class="s">"amount_eur"</span>).sum().alias(<span class="s">"total_eur"</span>)
-).join(
-    qty.group_by([<span class="s">"timestamp_utc"</span>, <span class="s">"area_code"</span>]).agg(
-        pl.col(<span class="s">"quantity_mwh"</span>).sum().alias(<span class="s">"total_mwh"</span>)
-    ),
-    on=[<span class="s">"timestamp_utc"</span>, <span class="s">"area_code"</span>]
-)
-<span class="k">print</span>(joined.with_columns((pl.col(<span class="s">"total_eur"</span>) / pl.col(<span class="s">"total_mwh"</span>)).alias(<span class="s">"eur_per_mwh"</span>)).tail())</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># balancing_financial_expenses_income: stored silver rows as a pandas DataFrame</span>
+df = data.entsoe.query(<span class="s">"balancing_financial_expenses_income"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.entsoe.describe(<span class="s">"balancing_financial_expenses_income"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -304,11 +295,11 @@ joined = fin.group_by([<span class="s">"timestamp_utc"</span>, <span class="s">"
           <h2 class="display-3 mb-8">Things to know before using this.</h2>
           <p class="small mb-24" style="max-width: 560px;">These are specific to <code class="mono">balancing_financial_expenses_income</code>. Also read the <a href="../entsoe.html#about" class="link">ENTSO-E-wide caveats</a> on the vendor page.</p>
           <div>
-            <div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">value_tag="price.amount"</code> (not quantity)</div><p class="small" style="margin: 0;">A87 carries currency values, so the transformer parses <code class="mono">&lt;Point&gt;&lt;price.amount&gt;</code> rather than <code class="mono">&lt;Point&gt;&lt;quantity&gt;</code>. Output column is <code class="mono">amount_eur</code>. <span class="src-cite">silver/entsoe/h8_balancing.py L197-199</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;">Sign convention varies by businessType</div><p class="small" style="margin: 0;">Different businessType codes denote different P&amp;L line items — sign convention varies. Aggregate over businessType for full P&amp;L. <span class="src-cite">domain knowledge</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">controlArea_Domain</code></div><p class="small" style="margin: 0;">Uses <code class="mono">controlArea_Domain</code> for the area param (renamed by the H8 transformer to <code class="mono">area_code</code>). <span class="src-cite">silver/entsoe/h8_balancing.py L200</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;">Revisions overwrite</div><p class="small" style="margin: 0;">Same <code class="mono">(timestamp_utc, area_code, business_type)</code> re-publication overwrites silently on dedup. <span class="src-cite">silver/entsoe/h8_balancing.py L210</span></p></div></div>
-            <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">Entitlement-blocked on default API key</div><p class="small" style="margin: 0;">Live API returns HTTP 401 for the unregistered gridflow default key. Schema verified from gridflow source. <span class="src-cite">.planning/reconciliation/entsoe/06-balancing-financial-expenses-income-http-401.md</span></p></div></div>
+            <div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">value_tag="price.amount"</code> (not quantity)</div><p class="small" style="margin: 0;">A87 carries currency values, so the transformer parses <code class="mono">&lt;Point&gt;&lt;price.amount&gt;</code> rather than <code class="mono">&lt;Point&gt;&lt;quantity&gt;</code>. Output column is <code class="mono">amount_eur</code>. </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;">Sign convention varies by businessType</div><p class="small" style="margin: 0;">Different businessType codes denote different P&amp;L line items — sign convention varies. Aggregate over businessType for full P&amp;L. </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">controlArea_Domain</code></div><p class="small" style="margin: 0;">Uses <code class="mono">controlArea_Domain</code> for the area param (renamed by the H8 transformer to <code class="mono">area_code</code>). </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;">Revisions overwrite</div><p class="small" style="margin: 0;">Same <code class="mono">(timestamp_utc, area_code, business_type)</code> re-publication overwrites silently on dedup. </p></div></div>
+            <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">Entitlement-blocked on default API key</div><p class="small" style="margin: 0;">Live API returns HTTP 401 for the unregistered gridflow default key. Schema verified from gridflow source. </p></div></div>
           </div>
         </section>
 

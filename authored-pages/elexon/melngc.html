@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/><title>melngc · Elexon BMRS · Gridflow</title>
   <meta name="description" content="Half-hourly GB indicated margin — the canonical day-ahead headroom signal for capacity adequacy, de-rating comparison, and stress-period detection."/>
-  <meta name="viewport" content="width=1280"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,30..100&family=Inter:wght@300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -54,9 +54,9 @@
 <section id="snapshot" style="margin-bottom:56px" data-screen-label="Snapshot">
         <div class="eyebrow mb-8">Static snapshot</div><h2 class="display-3 mb-24">Indicated margin · 24-hour day-ahead <span class="italic fg-accent">view.</span></h2>
         <div class="chart" style="padding:24px 28px">
-          <div class="row between mb-16" style="align-items:baseline"><div><div class="eyebrow mb-4">melngc · silver layer</div><div class="small">Sparkline · MW · UTC · forecast for 6 May 2026</div></div><div class="row gap-8"><span class="chip ink btn-like">24h</span><span class="chip btn-like">7d</span><span class="chip btn-like">30d</span></div></div>
+          <div class="row between mb-16" style="align-items:baseline"><div><div class="eyebrow mb-4">melngc · silver layer</div><div class="small">Sparkline · MW · UTC · forecast for 6 May 2026</div></div></div>
           <div data-chart="sparkline" data-opts='{"width":900,"height":280,"shape":"flat-baseload","params":{"mean":8500,"noise":0.12,"seed":39}}'></div>
-          <div style="font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--ink-faint);text-transform:uppercase;margin-top:16px">Static snapshot · live wiring planned</div>
+          <div style="font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--ink-faint);text-transform:uppercase;margin-top:16px">Static snapshot · illustrative, seeded</div>
         </div>
       </section>
       <section id="schema" style="margin-bottom:56px" data-screen-label="Schema">
@@ -82,30 +82,24 @@
           <div class="card" style="padding:20px"><div class="tiny mb-8">BRONZE PATH</div><div class="mono small" style="word-break:break-all;margin-bottom:12px">data/bronze/elexon/melngc/&lt;year&gt;/&lt;month&gt;/&lt;day&gt;/raw_&lt;uuid&gt;.json</div><div class="tiny mb-8">TRANSFORMER</div><div class="mono small">gridflow.silver.elexon.melngc.MelNGCTransformer</div></div>
         </div>
         <div data-tab-group="melngc">
-          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('melngc','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('melngc','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('melngc','py',this)" style="cursor:pointer">Python · polars</button></div>
+          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('melngc','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('melngc','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('melngc','py',this)" style="cursor:pointer">Python · gridflow-models</button></div>
           <div data-tab-panel="melngc-url" style="display:block"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">https://data.elexon.co.uk/bmrs/api/v1/datasets/MELNGC?publishDateTimeFrom=2026-05-06T00:00Z&amp;publishDateTimeTo=2026-05-06T03:00Z&amp;format=json</pre></div></div>
           <div data-tab-panel="melngc-sql" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto"><span class="c">-- Worst (smallest) indicated margin per day over the last 30 days</span>
 SELECT settlement_date,
        MIN(indicated_margin) AS worst_margin_mw,
        AVG(indicated_margin) AS avg_margin_mw
-FROM read_parquet(<span class="s">'data/silver/elexon/melngc/**/*.parquet'</span>)
+FROM silver_melngc
 WHERE settlement_date &gt;= current_date - INTERVAL 30 DAY
 GROUP BY 1 ORDER BY 1;</pre></div></div>
-          <div data-tab-panel="melngc-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">import polars as pl
+          <div data-tab-panel="melngc-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-melngc = pl.read_parquet(<span class="s">"data/silver/elexon/melngc/**/*.parquet"</span>)
-lolpdrm = pl.read_parquet(<span class="s">"data/silver/elexon/lolpdrm/**/*.parquet"</span>)
-<span class="c"># Compare indicative vs de-rated margin per period</span>
-compare = (
-    melngc.join(lolpdrm, on=[<span class="s">"settlement_date"</span>, <span class="s">"settlement_period"</span>], how=<span class="s">"inner"</span>)
-          .with_columns(
-              (pl.col(<span class="s">"indicated_margin"</span>) - pl.col(<span class="s">"derated_margin_mw"</span>))
-                .alias(<span class="s">"derating_haircut_mw"</span>)
-          )
-          .select([<span class="s">"settlement_date"</span>, <span class="s">"settlement_period"</span>,
-                   <span class="s">"indicated_margin"</span>, <span class="s">"derated_margin_mw"</span>, <span class="s">"derating_haircut_mw"</span>])
-)
-print(compare.tail(20))</pre></div></div>
+data, models, common = setup_notebook()
+
+<span class="c"># melngc: stored silver rows as a pandas DataFrame</span>
+df = data.elexon.query(<span class="s">"melngc"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.elexon.describe(<span class="s">"melngc"</span>)</pre></div></div>
         </div>
       </section>
       <section id="related" style="margin-bottom:56px" data-screen-label="Related">

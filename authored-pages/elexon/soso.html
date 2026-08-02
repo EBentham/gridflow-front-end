@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/><title>soso · Elexon BMRS · Gridflow</title>
   <meta name="description" content="Per-trade GB interconnector SO-SO prices — the canonical reference for cross-border arbitrage, interconnector flow analysis, and TSO-trade cost attribution."/>
-  <meta name="viewport" content="width=1280"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,30..100&family=Inter:wght@300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -57,7 +57,7 @@
         <div class="chart" style="padding:24px 28px">
           <div class="row between mb-16" style="align-items:baseline"><div><div class="eyebrow mb-4">soso · silver layer</div><div class="small">Horizontal bars · MW x trades · UTC · April 2026</div></div><div class="row gap-8"><span class="chip ink btn-like">imports</span><span class="chip btn-like">exports</span></div></div>
           <div data-chart="barsH" data-opts='{"width":900,"height":280,"items":[{"label":"IFA (France)","value":92000,"color":"#c45a3a","display":"92 GWh"},{"label":"ElecLink (France)","value":64000,"color":"#c45a3a","display":"64 GWh"},{"label":"BritNed (NL)","value":58000,"color":"#5a8aa6","display":"58 GWh"},{"label":"NSL (Norway)","value":51000,"color":"#86627d","display":"51 GWh"},{"label":"Viking Link (DK)","value":47000,"color":"#86627d","display":"47 GWh"},{"label":"Moyle (NI)","value":18000,"color":"#3b6b4b","display":"18 GWh"},{"label":"EWIC (IRE)","value":22000,"color":"#3b6b4b","display":"22 GWh"},{"label":"Greenlink (IRE)","value":14000,"color":"#3b6b4b","display":"14 GWh"}]}'></div>
-          <div style="font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--ink-faint);text-transform:uppercase;margin-top:16px">Static snapshot · live wiring planned</div>
+          <div style="font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--ink-faint);text-transform:uppercase;margin-top:16px">Static snapshot · illustrative, seeded</div>
         </div>
       </section>
       <section id="schema" style="margin-bottom:56px" data-screen-label="Schema">
@@ -83,7 +83,7 @@
           <div class="card" style="padding:20px"><div class="tiny mb-8">BRONZE PATH</div><div class="mono small" style="word-break:break-all;margin-bottom:12px">data/bronze/elexon/soso/&lt;year&gt;/&lt;month&gt;/&lt;day&gt;/raw_&lt;uuid&gt;.json</div><div class="tiny mb-8">TRANSFORMER</div><div class="mono small">gridflow.silver.elexon.soso.SOSOTransformer</div></div>
         </div>
         <div data-tab-group="soso">
-          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('soso','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('soso','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('soso','py',this)" style="cursor:pointer">Python · polars</button></div>
+          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('soso','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('soso','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('soso','py',this)" style="cursor:pointer">Python · gridflow-models</button></div>
           <div data-tab-panel="soso-url" style="display:block"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">https://data.elexon.co.uk/bmrs/api/v1/datasets/SOSO?publishDateTimeFrom=2026-05-06T00:00Z&amp;publishDateTimeTo=2026-05-07T00:00Z&amp;format=json</pre></div></div>
           <div data-tab-panel="soso-sql" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto"><span class="c">-- Daily SOSO trade volume by interconnector</span>
 SELECT settlement_date, trader_unit,
@@ -91,24 +91,18 @@ SELECT settlement_date, trader_unit,
        SUM(CASE WHEN trade_direction = <span class="s">'Offer'</span> THEN trade_quantity_mw END) AS export_mw,
        COUNT(*) AS n_trades,
        AVG(trade_price) AS avg_price_gbp_mwh
-FROM read_parquet(<span class="s">'data/silver/elexon/soso/**/*.parquet'</span>)
+FROM silver_soso
 WHERE settlement_date &gt;= current_date - INTERVAL 30 DAY
 GROUP BY 1, 2 ORDER BY 1, 2;</pre></div></div>
-          <div data-tab-panel="soso-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">import polars as pl
+          <div data-tab-panel="soso-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-soso = pl.read_parquet(<span class="s">"data/silver/elexon/soso/**/*.parquet"</span>)
-sp = pl.read_parquet(<span class="s">"data/silver/elexon/system_prices/**/*.parquet"</span>)
-<span class="c"># SOSO price vs same-period SBP -- implied imbalance premium</span>
-arbitrage = (
-    soso.join(sp, on=[<span class="s">"settlement_date"</span>, <span class="s">"settlement_period"</span>], how=<span class="s">"inner"</span>)
-        .with_columns(
-            (pl.col(<span class="s">"system_buy_price"</span>) - pl.col(<span class="s">"trade_price"</span>))
-              .alias(<span class="s">"imbalance_premium_gbp_mwh"</span>)
-        )
-        .select([<span class="s">"settlement_date"</span>, <span class="s">"trader_unit"</span>, <span class="s">"trade_direction"</span>,
-                 <span class="s">"trade_price"</span>, <span class="s">"system_buy_price"</span>, <span class="s">"imbalance_premium_gbp_mwh"</span>])
-)
-print(arbitrage.head())</pre></div></div>
+data, models, common = setup_notebook()
+
+<span class="c"># soso: stored silver rows as a pandas DataFrame</span>
+df = data.elexon.query(<span class="s">"soso"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.elexon.describe(<span class="s">"soso"</span>)</pre></div></div>
         </div>
       </section>
       <section id="related" style="margin-bottom:56px" data-screen-label="Related">

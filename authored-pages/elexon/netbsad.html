@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/><title>netbsad · Elexon BMRS · Gridflow</title>
   <meta name="description" content="Per-period netted GB BSAD adjustments — the canonical aggregate for SBP/SSP attribution, BSC settlement reconciliation, and DISBSAD validation."/>
-  <meta name="viewport" content="width=1280"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,30..100&family=Inter:wght@300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -56,7 +56,7 @@
         <div class="chart" style="padding:24px 28px">
           <div class="row between mb-16" style="align-items:baseline"><div><div class="eyebrow mb-4">netbsad · silver layer</div><div class="small">Horizontal bars · £/MWh · UTC · April 2026</div></div><div class="row gap-8"><span class="chip ink btn-like">buy adjustment</span><span class="chip btn-like">sell adjustment</span></div></div>
           <div data-chart="barsH" data-opts='{"width":900,"height":280,"items":[{"label":"30 Apr","value":18.4,"color":"#3b6b4b","display":"\u00a318.4"},{"label":"29 Apr","value":14.1,"color":"#3b6b4b","display":"\u00a314.1"},{"label":"28 Apr","value":12.7,"color":"#3b6b4b","display":"\u00a312.7"},{"label":"27 Apr","value":21.3,"color":"#c45a3a","display":"\u00a321.3"},{"label":"26 Apr","value":9.8,"color":"#3b6b4b","display":"\u00a39.8"},{"label":"25 Apr","value":16.5,"color":"#3b6b4b","display":"\u00a316.5"},{"label":"24 Apr","value":22.9,"color":"#c45a3a","display":"\u00a322.9"},{"label":"23 Apr","value":11.4,"color":"#3b6b4b","display":"\u00a311.4"},{"label":"22 Apr","value":28.6,"color":"#c45a3a","display":"\u00a328.6"},{"label":"21 Apr","value":13.2,"color":"#3b6b4b","display":"\u00a313.2"}]}'></div>
-          <div style="font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--ink-faint);text-transform:uppercase;margin-top:16px">Static snapshot · live wiring planned</div>
+          <div style="font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--ink-faint);text-transform:uppercase;margin-top:16px">Static snapshot · illustrative, seeded</div>
         </div>
       </section>
       <section id="schema" style="margin-bottom:56px" data-screen-label="Schema">
@@ -82,27 +82,25 @@
           <div class="card" style="padding:20px"><div class="tiny mb-8">BRONZE PATH</div><div class="mono small" style="word-break:break-all;margin-bottom:12px">data/bronze/elexon/netbsad/&lt;year&gt;/&lt;month&gt;/&lt;day&gt;/raw_&lt;uuid&gt;.json</div><div class="tiny mb-8">TRANSFORMER</div><div class="mono small">gridflow.silver.elexon.netbsad.NETBSADTransformer</div></div>
         </div>
         <div data-tab-group="netbsad">
-          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('netbsad','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('netbsad','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('netbsad','py',this)" style="cursor:pointer">Python · polars</button></div>
+          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('netbsad','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('netbsad','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('netbsad','py',this)" style="cursor:pointer">Python · gridflow-models</button></div>
           <div data-tab-panel="netbsad-url" style="display:block"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">https://data.elexon.co.uk/bmrs/api/v1/datasets/NETBSAD?from=2026-05-06T00:00Z&amp;to=2026-05-06T03:00Z&amp;format=json</pre></div></div>
           <div data-tab-panel="netbsad-sql" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto"><span class="c">-- Daily NETBSAD-derived buy-side price contribution</span>
 SELECT settlement_date,
        SUM(net_buy_price_adjustment) AS total_buy_adjustment_gbp_mwh,
        AVG(net_buy_volume_adjustment) AS avg_buy_volume_mwh
-FROM read_parquet(<span class="s">'data/silver/elexon/netbsad/**/*.parquet'</span>)
+FROM silver_netbsad
 WHERE settlement_date &gt;= current_date - INTERVAL 30 DAY
   AND net_buy_price_adjustment IS NOT NULL
 GROUP BY 1 ORDER BY 1;</pre></div></div>
-          <div data-tab-panel="netbsad-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">import polars as pl
+          <div data-tab-panel="netbsad-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-nb = pl.read_parquet(<span class="s">"data/silver/elexon/netbsad/**/*.parquet"</span>)
-sp = pl.read_parquet(<span class="s">"data/silver/elexon/system_prices/**/*.parquet"</span>)
-<span class="c"># Net BSAD share of cash-out price</span>
-combo = nb.join(sp, on=[<span class="s">"settlement_date"</span>, <span class="s">"settlement_period"</span>], how=<span class="s">"inner"</span>)
-combo = combo.with_columns(
-    (pl.col(<span class="s">"net_buy_price_adjustment"</span>) / pl.col(<span class="s">"system_buy_price"</span>))
-      .alias(<span class="s">"bsad_share_of_sbp"</span>)
-)
-print(combo.tail(10))</pre></div></div>
+data, models, common = setup_notebook()
+
+<span class="c"># netbsad: stored silver rows as a pandas DataFrame</span>
+df = data.elexon.query(<span class="s">"netbsad"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.elexon.describe(<span class="s">"netbsad"</span>)</pre></div></div>
         </div>
       </section>
       <section id="related" style="margin-bottom:56px" data-screen-label="Related">

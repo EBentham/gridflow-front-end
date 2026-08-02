@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/><title>indgen · Elexon BMRS · Gridflow</title>
   <meta name="description" content="Half-hourly GB indicated generation forecast — the canonical day-ahead generation signal for imbalance reconstruction, forecast-error analysis, and zonal…"/>
-  <meta name="viewport" content="width=1280"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,30..100&family=Inter:wght@300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -54,9 +54,9 @@
 <section id="snapshot" style="margin-bottom:56px" data-screen-label="Snapshot">
         <div class="eyebrow mb-8">Static snapshot</div><h2 class="display-3 mb-24">Indicated generation · 24-hour <span class="italic fg-accent">forecast.</span></h2>
         <div class="chart" style="padding:24px 28px">
-          <div class="row between mb-16" style="align-items:baseline"><div><div class="eyebrow mb-4">indgen · silver layer</div><div class="small">Sparkline · MW · UTC · forecast for 6 May 2026</div></div><div class="row gap-8"><span class="chip ink btn-like">24h</span><span class="chip btn-like">7d</span><span class="chip btn-like">30d</span></div></div>
+          <div class="row between mb-16" style="align-items:baseline"><div><div class="eyebrow mb-4">indgen · silver layer</div><div class="small">Sparkline · MW · UTC · forecast for 6 May 2026</div></div></div>
           <div data-chart="sparkline" data-opts='{"width":900,"height":280,"shape":"flat-baseload","params":{"mean":34000,"noise":0.08,"seed":28}}'></div>
-          <div style="font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--ink-faint);text-transform:uppercase;margin-top:16px">Static snapshot · live wiring planned</div>
+          <div style="font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--ink-faint);text-transform:uppercase;margin-top:16px">Static snapshot · illustrative, seeded</div>
         </div>
       </section>
       <section id="schema" style="margin-bottom:56px" data-screen-label="Schema">
@@ -82,16 +82,16 @@
           <div class="card" style="padding:20px"><div class="tiny mb-8">BRONZE PATH</div><div class="mono small" style="word-break:break-all;margin-bottom:12px">data/bronze/elexon/indgen/&lt;year&gt;/&lt;month&gt;/&lt;day&gt;/raw_&lt;uuid&gt;.json</div><div class="tiny mb-8">TRANSFORMER</div><div class="mono small">gridflow.silver.elexon.indgen.INDGENTransformer</div></div>
         </div>
         <div data-tab-group="indgen">
-          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('indgen','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('indgen','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('indgen','py',this)" style="cursor:pointer">Python · polars</button></div>
+          <div class="row gap-8 mb-16" style="align-items:center;border-bottom:1px solid var(--rule);padding-bottom:12px"><button class="chip btn-like ink" onclick="setTab('indgen','url',this)" style="cursor:pointer">Example URL</button><button class="chip btn-like" onclick="setTab('indgen','sql',this)" style="cursor:pointer">DuckDB · SQL</button><button class="chip btn-like" onclick="setTab('indgen','py',this)" style="cursor:pointer">Python · gridflow-models</button></div>
           <div data-tab-panel="indgen-url" style="display:block"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">https://data.elexon.co.uk/bmrs/api/v1/datasets/INDGEN?publishDateTimeFrom=2026-05-06T00:00Z&amp;publishDateTimeTo=2026-05-06T03:00Z&amp;format=json</pre></div></div>
           <div data-tab-panel="indgen-sql" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto"><span class="c">-- Reproduce IMBALNGC from INDGEN − INDDEM (national boundary only)</span>
 WITH g AS (
   SELECT settlement_date, settlement_period, indicated_generation_mw
-  FROM read_parquet(<span class="s">'data/silver/elexon/indgen/**/*.parquet'</span>)
+  FROM silver_indgen
   WHERE boundary = <span class="s">'N'</span>
 ), d AS (
   SELECT settlement_date, settlement_period, indicated_demand_mw
-  FROM read_parquet(<span class="s">'data/silver/elexon/inddem/**/*.parquet'</span>)
+  FROM silver_inddem
   WHERE boundary = <span class="s">'N'</span>
 )
 SELECT g.settlement_date, g.settlement_period,
@@ -99,18 +99,15 @@ SELECT g.settlement_date, g.settlement_period,
 FROM g JOIN d USING (settlement_date, settlement_period)
 WHERE g.settlement_date = current_date
 ORDER BY g.settlement_period;</pre></div></div>
-          <div data-tab-panel="indgen-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding:18px 22px;overflow-x:auto">import polars as pl
+          <div data-tab-panel="indgen-py" style="display:none"><div class="code-wrap"><pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-ig = pl.read_parquet(<span class="s">"data/silver/elexon/indgen/**/*.parquet"</span>).filter(pl.col(<span class="s">"boundary"</span>) == <span class="s">"N"</span>)
-id_ = pl.read_parquet(<span class="s">"data/silver/elexon/inddem/**/*.parquet"</span>).filter(pl.col(<span class="s">"boundary"</span>) == <span class="s">"N"</span>)
-joined = (
-    ig.join(id_, on=[<span class="s">"settlement_date"</span>, <span class="s">"settlement_period"</span>], how=<span class="s">"inner"</span>)
-      .with_columns(
-          (pl.col(<span class="s">"indicated_generation_mw"</span>) - pl.col(<span class="s">"indicated_demand_mw"</span>))
-            .alias(<span class="s">"implied_imbalance_mwh"</span>)
-      )
-)
-print(joined.tail())</pre></div></div>
+data, models, common = setup_notebook()
+
+<span class="c"># indgen: stored silver rows as a pandas DataFrame</span>
+df = data.elexon.query(<span class="s">"indgen"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.elexon.describe(<span class="s">"indgen"</span>)</pre></div></div>
         </div>
       </section>
       <section id="related" style="margin-bottom:56px" data-screen-label="Related">

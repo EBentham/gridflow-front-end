@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <title>forecast_margin · ENTSO-E Transparency · Gridflow</title>
   <meta name="description" content="Year-ahead forecast margin in MW per bidding zone — the TSO-published capacity-adequacy view, generation forecast minus load forecast across a full forward…"/>
-  <meta name="viewport" content="width=1280" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,30..100&family=Inter:wght@300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -223,7 +223,7 @@
               </div>
             </div>
             <div data-chart="sparkline" data-opts='{"width":900,"height":280,"seed":29}'></div>
-            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · live wiring planned</div>
+            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · illustrative, seeded</div>
           </div>
         </section>
 
@@ -250,7 +250,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   tz-aware UTC; validator requires tzinfo. Source: <code class="mono">&lt;Period&gt;</code> start + <code class="mono">position × resolution</code>.
-                  <span class="cite">schemas/entsoe.py L298, L305-310</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -259,7 +259,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   EIC bidding zone. Source: <code class="mono">&lt;outBiddingZone_Domain.mRID&gt;</code>.
-                  <span class="cite">schemas/entsoe.py L299</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -268,7 +268,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   Margin MW = generation forecast − load forecast. Negative = capacity shortage. Source: <code class="mono">&lt;Point&gt;&lt;quantity&gt;</code>.
-                  <span class="cite">schemas/entsoe.py L300</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -277,7 +277,7 @@
                 <td style="text-align:center;" class="nullable">Yes</td>
                 <td class="col-note">
                   ISO duration; typically <code class="mono">PT60M</code>. Default <code class="mono">""</code>.
-                  <span class="cite">schemas/entsoe.py L301</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -286,7 +286,7 @@
                 <td style="text-align:center;" class="nullable">—</td>
                 <td class="col-note">
                   Always <code class="mono">"entsoe"</code>. Default <code class="mono">"entsoe"</code>.
-                  <span class="cite">schemas/entsoe.py L302</span>
+                  
                 </td>
               </tr>
               <tr>
@@ -295,7 +295,7 @@
                 <td style="text-align:center;" class="nullable">Yes</td>
                 <td class="col-note">
                   Set at silver write.
-                  <span class="cite">schemas/entsoe.py L303</span>
+                  
                 </td>
               </tr>
             </tbody>
@@ -369,7 +369,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('fm','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('fm','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('fm','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('fm','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="fm-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;">https://web-api.tp.entsoe.eu/api
@@ -385,19 +385,20 @@
 <span class="k">SELECT</span> area_code, date_trunc(<span class="s">'year'</span>, timestamp_utc) <span class="k">AS</span> year,
        count(*) <span class="k">FILTER</span> (<span class="k">WHERE</span> forecast_margin_mw &lt; 0) <span class="k">AS</span> shortage_hours,
        min(forecast_margin_mw) <span class="k">AS</span> worst_margin_mw
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/entsoe/forecast_margin/**/*.parquet'</span>)
+<span class="k">FROM</span> silver_forecast_margin
 <span class="k">GROUP BY</span> 1, 2
 <span class="k">ORDER BY</span> 1, 2;</pre>
             </div></div>
             <div data-tab-panel="fm-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-mar = pl.read_parquet(<span class="s">"data/silver/entsoe/forecast_margin/**/*.parquet"</span>)
-<span class="c"># LOLE proxy: count of hours with margin &lt; 0 per area per year</span>
-lole = mar.filter(pl.col(<span class="s">"forecast_margin_mw"</span>) &lt; 0).group_by(
-    [pl.col(<span class="s">"timestamp_utc"</span>).dt.year().alias(<span class="s">"year"</span>), <span class="s">"area_code"</span>]
-).agg(pl.len().alias(<span class="s">"shortage_hours"</span>))
-<span class="k">print</span>(lole.sort([<span class="s">"area_code"</span>, <span class="s">"year"</span>]))</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># forecast_margin: stored silver rows as a pandas DataFrame</span>
+df = data.entsoe.query(<span class="s">"forecast_margin"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.entsoe.describe(<span class="s">"forecast_margin"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -412,35 +413,35 @@ lole = mar.filter(pl.col(<span class="s">"forecast_margin_mw"</span>) &lt; 0).gr
               <div class="caveat-num">01</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;"><code class="mono">outBiddingZone_Domain</code> (not <code class="mono">in_Domain</code>)</div>
-                <p class="small" style="margin: 0;">A70/A33 uses <code class="mono">outBiddingZone_Domain</code> for the area param (<code class="mono">domain_style="out_bidding_zone"</code>). Wrong param style returns EMPTY. <span class="src-cite">endpoints.py L132-134</span></p>
+                <p class="small" style="margin: 0;">A70/A33 uses <code class="mono">outBiddingZone_Domain</code> for the area param (<code class="mono">domain_style="out_bidding_zone"</code>). Wrong param style returns EMPTY. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">02</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Use a yearly window</div>
-                <p class="small" style="margin: 0;">Year-ahead forecast — short windows may return EMPTY or partial. Build period bounds at year boundaries. <span class="src-cite">vault Known Issues</span></p>
+                <p class="small" style="margin: 0;">Year-ahead forecast — short windows may return EMPTY or partial. Build period bounds at year boundaries. </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">03</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Margin is signed — negative = capacity shortage</div>
-                <p class="small" style="margin: 0;"><code class="mono">forecast_margin_mw &lt; 0</code> indicates TSO-anticipated supply shortfall (a key LOLE input). <span class="src-cite">ENTSO-E spec</span></p>
+                <p class="small" style="margin: 0;"><code class="mono">forecast_margin_mw &lt; 0</code> indicates TSO-anticipated supply shortfall (a key LOLE input). </p>
               </div>
             </div>
             <div class="caveat-item">
               <div class="caveat-num">04</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Revisions overwrite</div>
-                <p class="small" style="margin: 0;">Same <code class="mono">(timestamp_utc, area_code)</code> re-publication overwrites silently on dedup. No <code class="mono">published_at</code> for PIT. <span class="src-cite">silver/entsoe/forecast_margin.py L62</span></p>
+                <p class="small" style="margin: 0;">Same <code class="mono">(timestamp_utc, area_code)</code> re-publication overwrites silently on dedup. No <code class="mono">published_at</code> for PIT. </p>
               </div>
             </div>
             <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;">
               <div class="caveat-num">05</div>
               <div>
                 <div style="font-weight: 500; margin-bottom: 6px;">Not entitlement-blocked</div>
-                <p class="small" style="margin: 0;">A70/A33 is one of the 14 ENTSO-E endpoints accessible with the free gridflow default API key (per Phase 7 D-06). <span class="src-cite">.planning/reconciliation/entsoe/ — no forecast_margin-http-401.md</span></p>
+                <p class="small" style="margin: 0;">A70/A33 is one of the 14 ENTSO-E endpoints accessible with the free gridflow default API key (per Phase 7 D-06). </p>
               </div>
             </div>
           </div>

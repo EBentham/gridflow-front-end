@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <title>countertrading · ENTSO-E Transparency · Gridflow</title>
   <meta name="description" content="Hourly countertrading MW per zone-pair direction — TSO-initiated reverse-direction trade to relieve congestion, distinct from redispatching by using…"/>
-  <meta name="viewport" content="width=1280" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,30..100&family=Inter:wght@300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -175,14 +175,10 @@
                 <div class="eyebrow mb-4">countertrading · silver layer · 10Y1001A1001A82H → 10YNL----------L</div>
                 <div class="small">Line · MW · UTC · 6 May 2026</div>
               </div>
-              <div class="row gap-8">
-                <span class="chip ink btn-like">24h</span>
-                <span class="chip btn-like">7d</span>
-                <span class="chip btn-like">30d</span>
-              </div>
+              
             </div>
             <div data-chart="sparkline" data-opts='{"width":900,"height":280,"seed":67}'></div>
-            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · live wiring planned</div>
+            <div class="snapshot-note mt-16" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); text-transform: uppercase;">Static snapshot · illustrative, seeded</div>
           </div>
         </section>
 
@@ -196,14 +192,14 @@
           <table class="schema-table">
             <thead><tr><th scope="col" style="width: 22%;">Column</th><th scope="col" style="width: 14%;">Type</th><th scope="col" style="width: 8%; text-align:center;">Nullable</th><th scope="col">Description</th></tr></thead>
             <tbody>
-              <tr><td class="col-name">timestamp_utc <span class="pk-badge">PK</span></td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">tz-aware UTC. Source: <code class="mono">&lt;Period&gt;</code> start + position × resolution.<span class="cite">schemas/entsoe.py L560</span></td></tr>
-              <tr><td class="col-name">in_area_code <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Source zone EIC. Source: <code class="mono">&lt;in_Domain.mRID&gt;</code>.<span class="cite">schemas/entsoe.py L561</span></td></tr>
-              <tr><td class="col-name">out_area_code <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Destination zone EIC. Source: <code class="mono">&lt;out_Domain.mRID&gt;</code>.<span class="cite">schemas/entsoe.py L562</span></td></tr>
-              <tr><td class="col-name">quantity_mw</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Countertrade MW (in reverse direction of congested flow). Source: <code class="mono">&lt;Point&gt;&lt;quantity&gt;</code>.<span class="cite">schemas/entsoe.py L563</span></td></tr>
-              <tr><td class="col-name">business_type <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Carries the countertrade business code. Default <code class="mono">""</code>.<span class="cite">schemas/entsoe.py L564</span></td></tr>
-              <tr><td class="col-name">resolution</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">ISO duration; typically <code class="mono">PT60M</code>. Default <code class="mono">""</code>.<span class="cite">schemas/entsoe.py L565</span></td></tr>
-              <tr><td class="col-name">data_provider</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsoe"</code>.<span class="cite">schemas/entsoe.py L566</span></td></tr>
-              <tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Set at silver write.<span class="cite">schemas/entsoe.py L567</span></td></tr>
+              <tr><td class="col-name">timestamp_utc <span class="pk-badge">PK</span></td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">tz-aware UTC. Source: <code class="mono">&lt;Period&gt;</code> start + position × resolution.</td></tr>
+              <tr><td class="col-name">in_area_code <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Source zone EIC. Source: <code class="mono">&lt;in_Domain.mRID&gt;</code>.</td></tr>
+              <tr><td class="col-name">out_area_code <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Destination zone EIC. Source: <code class="mono">&lt;out_Domain.mRID&gt;</code>.</td></tr>
+              <tr><td class="col-name">quantity_mw</td><td class="col-type">float</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Countertrade MW (in reverse direction of congested flow). Source: <code class="mono">&lt;Point&gt;&lt;quantity&gt;</code>.</td></tr>
+              <tr><td class="col-name">business_type <span class="pk-badge">PK</span></td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Carries the countertrade business code. Default <code class="mono">""</code>.</td></tr>
+              <tr><td class="col-name">resolution</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">ISO duration; typically <code class="mono">PT60M</code>. Default <code class="mono">""</code>.</td></tr>
+              <tr><td class="col-name">data_provider</td><td class="col-type">str</td><td style="text-align:center;" class="nullable">—</td><td class="col-note">Always <code class="mono">"entsoe"</code>.</td></tr>
+              <tr><td class="col-name">ingested_at</td><td class="col-type">datetime[UTC]</td><td style="text-align:center;" class="nullable">Yes</td><td class="col-note">Set at silver write.</td></tr>
             </tbody>
           </table>
           <div class="card mt-24" style="padding: 16px 20px; display: flex; gap: 32px; align-items: start; flex-wrap:wrap;">
@@ -253,7 +249,7 @@
             <div class="row gap-8 mb-16" style="align-items:center; border-bottom:1px solid var(--rule); padding-bottom:12px;">
               <button class="chip btn-like ink" onclick="setTab('ct','url',this)" style="cursor:pointer;">Example URL</button>
               <button class="chip btn-like" onclick="setTab('ct','sql',this)" style="cursor:pointer;">DuckDB · SQL</button>
-              <button class="chip btn-like" onclick="setTab('ct','py',this)" style="cursor:pointer;">Python · polars</button>
+              <button class="chip btn-like" onclick="setTab('ct','py',this)" style="cursor:pointer;">Python · gridflow-models</button>
             </div>
             <div data-tab-panel="ct-url" style="display:block;"><div class="code-wrap">
 <pre class="code dark" style="padding: 18px 22px; overflow-x: auto;">https://web-api.tp.entsoe.eu/api
@@ -269,20 +265,21 @@
 <span class="k">SELECT</span> in_area_code, out_area_code,
        count(*) <span class="k">FILTER</span> (<span class="k">WHERE</span> quantity_mw &gt; 0) <span class="k">AS</span> active_hours,
        sum(quantity_mw) <span class="k">AS</span> total_mwh
-<span class="k">FROM</span> read_parquet(<span class="s">'data/silver/entsoe/countertrading/**/*.parquet'</span>)
+<span class="k">FROM</span> silver_countertrading
 <span class="k">WHERE</span> timestamp_utc &gt;= current_timestamp - <span class="k">INTERVAL</span> 90 <span class="k">DAY</span>
 <span class="k">GROUP BY</span> 1, 2
 <span class="k">ORDER BY</span> total_mwh <span class="k">DESC</span>;</pre>
             </div></div>
             <div data-tab-panel="ct-py" style="display:none;"><div class="code-wrap">
-<pre class="code dark" style="padding: 18px 22px;"><span class="k">import</span> polars <span class="k">as</span> pl
+<pre class="code dark" style="padding: 18px 22px;"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
 
-ct = pl.read_parquet(<span class="s">"data/silver/entsoe/countertrading/**/*.parquet"</span>)
-rd = pl.read_parquet(<span class="s">"data/silver/entsoe/redispatching_cross_border/**/*.parquet"</span>)
-<span class="c"># Countertrade vs redispatch — alternative congestion mechanisms by border</span>
-ct_sum = ct.group_by([<span class="s">"in_area_code"</span>, <span class="s">"out_area_code"</span>]).agg(pl.col(<span class="s">"quantity_mw"</span>).sum().alias(<span class="s">"ct_mwh"</span>))
-rd_sum = rd.group_by([<span class="s">"in_area_code"</span>, <span class="s">"out_area_code"</span>]).agg(pl.col(<span class="s">"quantity_mw"</span>).sum().alias(<span class="s">"rd_mwh"</span>))
-<span class="k">print</span>(ct_sum.join(rd_sum, on=[<span class="s">"in_area_code"</span>, <span class="s">"out_area_code"</span>], how=<span class="s">"outer"</span>))</pre>
+data, models, common = setup_notebook()
+
+<span class="c"># countertrading: stored silver rows as a pandas DataFrame</span>
+df = data.entsoe.query(<span class="s">"countertrading"</span>, <span class="s">"2026-01-01"</span>, <span class="s">"2026-01-31"</span>)
+
+<span class="c"># columns, dtypes, nullability, notes</span>
+data.entsoe.describe(<span class="s">"countertrading"</span>)</pre>
             </div></div>
           </div>
         </section>
@@ -292,11 +289,11 @@ rd_sum = rd.group_by([<span class="s">"in_area_code"</span>, <span class="s">"ou
           <h2 class="display-3 mb-8">Things to know before using this.</h2>
           <p class="small mb-24" style="max-width: 560px;">These are specific to <code class="mono">countertrading</code>. Also read the <a href="../entsoe.html#about" class="link">ENTSO-E-wide caveats</a> on the vendor page.</p>
           <div>
-            <div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;">Alternative to redispatching</div><p class="small" style="margin: 0;">Countertrading and redispatching are two TSO mechanisms for managing congestion — countertrading uses market clearing (the TSO buys reverse capacity at market prices), redispatching uses direct generation control. <span class="src-cite">domain knowledge</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;">Directional per border-pair</div><p class="small" style="margin: 0;">Each border-pair has two directions; pair both for the full picture. <span class="src-cite">endpoints.py L174-179</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;">Pydantic class is shared (H6 family)</div><p class="small" style="margin: 0;"><code class="mono">EntsoeTransmissionMarketQuantity</code> covers 12 H6 datasets. Finding <code class="mono">47-countertrading-no-silver-schema-table.md</code> (wontfix v3-candidate) is stale. <span class="src-cite">schemas/entsoe.py L557</span></p></div></div>
-            <div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;">Revisions overwrite</div><p class="small" style="margin: 0;">Same <code class="mono">(timestamp_utc, in_area_code, out_area_code, business_type)</code> overwrites silently. <span class="src-cite">silver/entsoe/h6_market.py L85-91</span></p></div></div>
-            <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">Entitlement-blocked on default API key</div><p class="small" style="margin: 0;">Live API returns HTTP 401 for the unregistered gridflow default key. Schema verified from gridflow source. <span class="src-cite">.planning/reconciliation/entsoe/09-countertrading-http-401.md</span></p></div></div>
+            <div class="caveat-item"><div class="caveat-num">01</div><div><div style="font-weight: 500; margin-bottom: 6px;">Alternative to redispatching</div><p class="small" style="margin: 0;">Countertrading and redispatching are two TSO mechanisms for managing congestion — countertrading uses market clearing (the TSO buys reverse capacity at market prices), redispatching uses direct generation control. </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">02</div><div><div style="font-weight: 500; margin-bottom: 6px;">Directional per border-pair</div><p class="small" style="margin: 0;">Each border-pair has two directions; pair both for the full picture. </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">03</div><div><div style="font-weight: 500; margin-bottom: 6px;">Pydantic class is shared (H6 family)</div><p class="small" style="margin: 0;"><code class="mono">EntsoeTransmissionMarketQuantity</code> covers 12 H6 datasets. Finding <code class="mono">47-countertrading-no-silver-schema-table.md</code> (wontfix v3-candidate) is stale. </p></div></div>
+            <div class="caveat-item"><div class="caveat-num">04</div><div><div style="font-weight: 500; margin-bottom: 6px;">Revisions overwrite</div><p class="small" style="margin: 0;">Same <code class="mono">(timestamp_utc, in_area_code, out_area_code, business_type)</code> overwrites silently. </p></div></div>
+            <div class="caveat-item" style="border-bottom: 1px solid var(--rule); padding-bottom: 16px;"><div class="caveat-num">05</div><div><div style="font-weight: 500; margin-bottom: 6px;">Entitlement-blocked on default API key</div><p class="small" style="margin: 0;">Live API returns HTTP 401 for the unregistered gridflow default key. Schema verified from gridflow source. </p></div></div>
           </div>
         </section>
 
