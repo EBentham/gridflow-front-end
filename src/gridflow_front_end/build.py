@@ -357,10 +357,22 @@ def _strip_link(text: str) -> str:
 
 
 def _markdown_inline(text: str) -> str:
-    """Render a minimal markdown subset: backticks → <code>, **bold**, *italic*."""
+    """Render a minimal markdown subset: backticks -> <code>, **bold**, *italic*/_italic_,
+    [text](url) -> <a>.
+
+    Escapes first (matching the pre-existing backtick/bold approach), then
+    reconstructs tags from the escaped text via regex — so any `<`, `>`, `&`,
+    or quote characters authored in link URLs or emphasised text stay inert;
+    they are HTML-entity-escaped rather than passed through as raw markup.
+    Bold is substituted before italic so a leftover single `*` from a
+    consumed `**pair**` can never be mistaken for an italic delimiter.
+    """
     text = html_escape(text)
     text = re.sub(r"`([^`]+)`", r"<code>\1</code>", text)
     text = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", text)
+    text = re.sub(r"\*([^*\n]+)\*", r"<em>\1</em>", text)
+    text = re.sub(r"(?<!\w)_([^_\n]+)_(?!\w)", r"<em>\1</em>", text)
+    text = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", r'<a href="\2">\1</a>', text)
     return text
 
 
@@ -561,6 +573,13 @@ def _extract_caveats(section: str) -> list[Caveat]:
     from what remains. A trailing period on the title is dropped since it
     belongs to the bold lead-in's own sentence, not the title text.
 
+    A bullet's body may wrap onto subsequent physical lines: the vault's
+    authored markdown indents continuation lines by two spaces (standard
+    Obsidian bullet-wrap style) rather than repeating the leading `-`. Each
+    indented, non-blank line immediately following an open bullet belongs to
+    that bullet's body and is joined with a single space. A blank line (or
+    the next `- ` bullet) terminates the continuation.
+
     Pure horizontal-rule lines (``---``) can appear inside a section's body
     (a markdown ``---`` divider before the next ``##`` heading is not itself
     a heading, so `_split_sections` leaves it in-section) and must not be
@@ -569,29 +588,41 @@ def _extract_caveats(section: str) -> list[Caveat]:
     caveats: list[Caveat] = []
     for line in section.splitlines():
         stripped = line.strip()
-        if not stripped.startswith("-"):
+        if not stripped:
+            # Blank line terminates any open bullet's continuation.
             continue
-        if re.fullmatch(r"-{3,}", stripped):
+        if stripped.startswith("-"):
+            if re.fullmatch(r"-{3,}", stripped):
+                # Horizontal rule — not a bullet, and terminates continuation
+                # of whatever bullet preceded it.
+                continue
+            content = stripped[1:].strip()
+            m = _CAVEAT_LEAD_RE.match(content)
+            if m:
+                title = m.group("title").strip().rstrip(".").strip()
+                rest = m.group("rest")
+                sep_m = _CAVEAT_SEP_RE.match(rest)
+                body = rest[sep_m.end() :].strip() if sep_m else rest.strip()
+                if not sep_m and re.fullmatch(r"[.!?]*", body):
+                    # Title-only bullet (e.g. `- **GB empty post-Brexit**.`) —
+                    # the trailing punctuation belongs to the title's own
+                    # sentence, not a separate body; don't render a stray "."
+                    # as the caveat body.
+                    body = ""
+                caveats.append(Caveat(title=title, text=body))
+            else:
+                # Fallback: take the first sentence as title
+                title = content.split(".", 1)[0]
+                body = content[len(title) :].lstrip(". ").strip()
+                caveats.append(Caveat(title=title, text=body))
             continue
-        content = stripped[1:].strip()
-        m = _CAVEAT_LEAD_RE.match(content)
-        if m:
-            title = m.group("title").strip().rstrip(".").strip()
-            rest = m.group("rest")
-            sep_m = _CAVEAT_SEP_RE.match(rest)
-            body = rest[sep_m.end() :].strip() if sep_m else rest.strip()
-            if not sep_m and re.fullmatch(r"[.!?]*", body):
-                # Title-only bullet (e.g. `- **GB empty post-Brexit**.`) —
-                # the trailing punctuation belongs to the title's own
-                # sentence, not a separate body; don't render a stray "."
-                # as the caveat body.
-                body = ""
-            caveats.append(Caveat(title=title, text=body))
-        else:
-            # Fallback: take the first sentence as title
-            title = content.split(".", 1)[0]
-            body = content[len(title) :].lstrip(". ").strip()
-            caveats.append(Caveat(title=title, text=body))
+        if line[:1].isspace() and caveats:
+            # Indented continuation line: append to the most recently opened
+            # bullet's body, joined with a space.
+            if caveats[-1].text:
+                caveats[-1] = Caveat(title=caveats[-1].title, text=f"{caveats[-1].text} {stripped}")
+            else:
+                caveats[-1] = Caveat(title=caveats[-1].title, text=stripped)
     return caveats
 
 
