@@ -45,24 +45,47 @@ jobs:
             pull_request)
               # Diff base is the PR's base branch, as before.
               git fetch origin "${{ github.base_ref }}"
-              diff_range="origin/${{ github.base_ref }}...HEAD"
+              diff_spec="origin/${{ github.base_ref }}...HEAD"
               ;;
             push)
               # F-15/R3-d(a): origin/$GITHUB_BASE_REF is undefined on push
               # events (no PR context) — use the event's own before/after
-              # pair instead. fetch-depth: 0 above makes `before` resolvable.
+              # pair instead. fetch-depth: 0 above makes `before` resolvable
+              # in the common case.
               before="${{ github.event.before }}"
               if [ -z "$before" ] || [ "$before" = "0000000000000000000000000000000000000000" ]; then
-                echo "push event has no resolvable 'before' SHA (new branch or force-pushed history) — skipping ratchet comparison with notice, rather than diffing against an invalid ref."
+                echo "push event has no resolvable 'before' SHA (branch creation) — skipping ratchet comparison with notice, rather than diffing against an invalid ref."
                 exit 0
               fi
-              diff_range="${before}...HEAD"
+              # Sol B3 pass-1: a force push can rewrite history so the prior
+              # tip is unfetchable even with fetch-depth: 0 (the commit is
+              # dangling / gc'd on the remote). That must FAIL loud, never
+              # skip silently — a silent skip is exactly the ratchet hole
+              # this ordering hardens against.
+              if ! git cat-file -e "${before}^{commit}" 2>/dev/null; then
+                echo "push ratchet cannot verify a force-pushed range — baseline integrity must be checked manually (before-SHA ${before} is unresolvable, e.g. a pre-force-push tip pruned from history)." >&2
+                exit 1
+              fi
+              # Two-dot (not three-dot) endpoint semantics: before/HEAD are
+              # the actual endpoints of what landed on the branch. Three-dot
+              # diffs merge-base(before,HEAD)->HEAD instead, which can hide
+              # reintroduced lines whenever history has diverged (e.g. a
+              # force push moves the merge-base away from `before`).
+              diff_spec="${before} HEAD"
               ;;
             *)
               echo "Unhandled event '${{ github.event_name }}' for the ratchet — skipping with notice."
               exit 0
               ;;
           esac
+
+          # No `|| true` here: a genuine git failure (bad/dangling ref, etc.)
+          # must fail the step under `set -e`, not be swallowed. `diff_spec`
+          # is intentionally unquoted below so the push branch's two-dot
+          # "before HEAD" (two words) and the pull_request branch's
+          # "base...HEAD" (one word) both split into the right number of
+          # positional args.
+          diff_output=$(git diff $diff_spec -- .github/staleness-baseline.txt)
 
           # F-15/R3-d(c): count ALL added non-blank lines, not just
           # non-comment ones — the prior `^\+[^+#]` pattern let a baseline
@@ -72,7 +95,33 @@ jobs:
           # the leading '+', which still naturally excludes the diff's
           # `+++ b/...` file-header line (that char IS '+') and blank added
           # lines (a bare '+' has no following character at all).
-          added=$(git diff "$diff_range" -- .github/staleness-baseline.txt | grep -E '^\+[^+]' || true)
+          #
+          # grep's exit code 1 ("no match") is a valid, expected outcome
+          # here — the clean-baseline case — and must NOT fail the step.
+          # Any other nonzero exit (2+, a genuine grep error) must still
+          # fail. This is applied to grep alone (not piped straight from
+          # git diff) so a git fatal error can never be masked as "no
+          # lines added" — that masking was the root cause of this finding.
+          #
+          # NOTE: this is `if cmd; then ... else ...; fi` — deliberately NOT
+          # `if ! cmd; then` (bash's `!` negates $? for the if-test itself,
+          # so `$?` read *inside* that then-block would already be the
+          # negated value, not grep's real exit code) and NOT a bare
+          # `added=$(... | grep ...)` statement (under `set -e`+pipefail a
+          # standalone nonzero pipeline aborts the script immediately,
+          # before grep's exit code can even be inspected). Using the
+          # command as the `if` condition directly is exempt from `set -e`
+          # and leaves $? un-negated in the branches.
+          if added=$(printf '%s\n' "$diff_output" | grep -E '^\+[^+]'); then
+            grep_status=0
+          else
+            grep_status=$?
+          fi
+          if [ "$grep_status" -gt 1 ]; then
+            echo "grep failed unexpectedly (exit $grep_status) while checking the baseline ratchet." >&2
+            exit "$grep_status"
+          fi
+
           if [ -n "$added" ]; then
             echo "Baseline is a ratchet — entries may only be removed. Added:"
             echo "$added"
