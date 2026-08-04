@@ -323,7 +323,7 @@ def _parse_frontmatter(text: str) -> tuple[dict[str, str], str]:
     if end == -1:
         return {}, text
     fm_text = text[3:end].strip()
-    body = text[end + 4:].lstrip("\n")
+    body = text[end + 4 :].lstrip("\n")
     frontmatter: dict[str, str] = {}
     for line in fm_text.splitlines():
         if ":" in line:
@@ -525,7 +525,12 @@ def _try_parse_listdict(raw: str) -> tuple[list[list[str]], list[str]]:
         if not s.startswith("["):
             return [], []
         # Replace Python None/True/False with JSON nulls/bools
-        s_json = s.replace("'", '"').replace("True", "true").replace("False", "false").replace("None", "null")
+        s_json = (
+            s.replace("'", '"')
+            .replace("True", "true")
+            .replace("False", "false")
+            .replace("None", "null")
+        )
         # Drop trailing commas before ] or }
         s_json = re.sub(r",(\s*[\]}])", r"\1", s_json)
         data = json.loads(s_json)
@@ -540,25 +545,52 @@ def _try_parse_listdict(raw: str) -> tuple[list[list[str]], list[str]]:
     return rows, columns
 
 
+_CAVEAT_LEAD_RE = re.compile(r"^\*\*(?P<title>[^*]+?)\*\*\s*(?P<rest>.*)$")
+_CAVEAT_SEP_RE = re.compile(r"^[—:\-–]\s*")
+
+
 def _extract_caveats(section: str) -> list[Caveat]:
     """Parse 'Known issues and gotchas' bullet list into numbered caveats.
 
-    The vault format is a bulleted list with `- **Title** — body` or
-    `- **Title**: body` shapes.
+    The vault format uses three observed bullet shapes: `- **Title** — body`,
+    `- **Title**: body`, and `` - **Title.** body `` (a bold lead-in ending in
+    its own sentence period, immediately followed by the body sentence with
+    no separator character at all — e.g. ``**PSR types are human-readable
+    labels.** Elexon's AGPT API returns...``). All three are handled by
+    stripping the bold title, then optionally stripping a leading separator
+    from what remains. A trailing period on the title is dropped since it
+    belongs to the bold lead-in's own sentence, not the title text.
+
+    Pure horizontal-rule lines (``---``) can appear inside a section's body
+    (a markdown ``---`` divider before the next ``##`` heading is not itself
+    a heading, so `_split_sections` leaves it in-section) and must not be
+    misread as an empty caveat bullet — they are skipped explicitly.
     """
     caveats: list[Caveat] = []
     for line in section.splitlines():
         stripped = line.strip()
         if not stripped.startswith("-"):
             continue
+        if re.fullmatch(r"-{3,}", stripped):
+            continue
         content = stripped[1:].strip()
-        m = re.match(r"\*\*(?P<title>[^*]+)\*\*\s*[—:\-–]\s*(?P<body>.*)$", content)
+        m = _CAVEAT_LEAD_RE.match(content)
         if m:
-            caveats.append(Caveat(title=m.group("title").strip(), text=m.group("body").strip()))
+            title = m.group("title").strip().rstrip(".").strip()
+            rest = m.group("rest")
+            sep_m = _CAVEAT_SEP_RE.match(rest)
+            body = rest[sep_m.end() :].strip() if sep_m else rest.strip()
+            if not sep_m and re.fullmatch(r"[.!?]*", body):
+                # Title-only bullet (e.g. `- **GB empty post-Brexit**.`) —
+                # the trailing punctuation belongs to the title's own
+                # sentence, not a separate body; don't render a stray "."
+                # as the caveat body.
+                body = ""
+            caveats.append(Caveat(title=title, text=body))
         else:
             # Fallback: take the first sentence as title
             title = content.split(".", 1)[0]
-            body = content[len(title):].lstrip(". ").strip()
+            body = content[len(title) :].lstrip(". ").strip()
             caveats.append(Caveat(title=title, text=body))
     return caveats
 
@@ -571,7 +603,9 @@ def _extract_api_code_from_title(title_line: str, slug: str) -> str:
     return slug.upper()
 
 
-def parse_vault_file(path: Path, vendor_id: str = "elexon", vendor_label: str = "Elexon BMRS") -> DatasetDoc:
+def parse_vault_file(
+    path: Path, vendor_id: str = "elexon", vendor_label: str = "Elexon BMRS"
+) -> DatasetDoc:
     text = path.read_text(encoding="utf-8")
     fm, body = _parse_frontmatter(text)
     slug = fm.get("dataset_key", path.stem)
@@ -693,7 +727,9 @@ def render_dataset(env: Environment, doc: DatasetDoc, manifest: dict) -> str:
     )
 
 
-def render_vendor_hub(env: Environment, manifest: dict, vendor_id: str, vendor_label: str, vendor_meta: dict) -> str:
+def render_vendor_hub(
+    env: Environment, manifest: dict, vendor_id: str, vendor_label: str, vendor_meta: dict
+) -> str:
     template = env.get_template("vendor-hub.html.j2")
     return template.render(
         vendor_id=vendor_id,
@@ -802,7 +838,10 @@ def build_vendor(env: Environment, vendor_id: str, vault_path: Path, out_root: P
         for w in warnings:
             print(f"  WARN: {w}", file=sys.stderr)
     if errors:
-        print(f"[gridflow-build] {vendor_id}: {len(errors)} content error(s) - failing build:", file=sys.stderr)
+        print(
+            f"[gridflow-build] {vendor_id}: {len(errors)} content error(s) - failing build:",
+            file=sys.stderr,
+        )
         for e in errors:
             print(f"  ERROR: {e}", file=sys.stderr)
         sys.exit(1)
@@ -826,7 +865,9 @@ def build_vendor(env: Environment, vendor_id: str, vault_path: Path, out_root: P
         shutil.copy(authored_hub, hub_path)
         print(f"  wrote: data-sources/{vendor_id}.html (authored hub)")
     else:
-        hub_html = render_vendor_hub(env, manifest, vendor_id, vendor_label, vendor_cfg["vendor_meta"])
+        hub_html = render_vendor_hub(
+            env, manifest, vendor_id, vendor_label, vendor_cfg["vendor_meta"]
+        )
         hub_path.write_text(hub_html, encoding="utf-8")
         print(f"  wrote: data-sources/{vendor_id}.html")
     return n_pages
