@@ -356,7 +356,112 @@ def _strip_link(text: str) -> str:
     return re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", text)
 
 
-def _markdown_inline(text: str) -> str:
+# Link-count telemetry from the most recent `_markdown_inline` pass, keyed by
+# outcome. Populated as a module-level counter (rather than threaded through
+# every call site) so `build()` can report resolved-vs-plain-text counts for
+# vault-relative `.md` links without changing every caller's signature.
+_MD_LINK_STATS: dict[str, int] = {"resolved": 0, "plain_text": 0}
+
+
+def _reset_md_link_stats() -> None:
+    _MD_LINK_STATS["resolved"] = 0
+    _MD_LINK_STATS["plain_text"] = 0
+
+
+_MANIFEST_SLUGS_CACHE: dict[str, set[str]] | None = None
+
+
+def _all_manifest_slugs() -> dict[str, set[str]]:
+    """Slug set per vendor, loaded from each vendor's manifest and cached.
+
+    Used to decide whether a vault-relative `.md` link target actually has a
+    published dataset page (`site/hifi/data-sources/<vendor>/<slug>.html`).
+    """
+    global _MANIFEST_SLUGS_CACHE
+    if _MANIFEST_SLUGS_CACHE is None:
+        cache: dict[str, set[str]] = {}
+        for vendor_id in REAL_VENDORS:
+            try:
+                manifest = load_manifest(vendor_id)
+            except FileNotFoundError:
+                cache[vendor_id] = set()
+                continue
+            cache[vendor_id] = {d["id"] for g in manifest["groups"] for d in g["datasets"]}
+        _MANIFEST_SLUGS_CACHE = cache
+    return _MANIFEST_SLUGS_CACHE
+
+
+_MD_LINK_TARGET_RE = re.compile(r"^(?P<path>[^#]*\.md)(?P<anchor>#.*)?$")
+
+
+def _resolve_md_link(target: str, vendor_id: str) -> str | None:
+    """Resolve a vault-relative `.md` link to its published dataset-page href.
+
+    Routing shape (see module docstring / `build_vendor`): a vault file at
+    `vault/<vendor>/<slug>.md` publishes to
+    `site/hifi/data-sources/<vendor>/<slug>.html`, and dataset pages for the
+    same vendor sit flat in that vendor's directory, so a same-vendor link
+    resolves to `<slug>.html` and a cross-vendor link to
+    `../<other-vendor>/<slug>.html` (matching the existing sibling-link and
+    vendor-hub href shapes already used by the Jinja templates).
+
+    Recognised shapes: bare `slug.md`, `./slug.md` (same vendor), and
+    `../<vendor>/slug.md` (cross-vendor) — each with an optional `#anchor`
+    suffix, which is preserved verbatim. Anything else (a domain-notes path
+    like `../../../20-domain/...`, `../README.md`, or a same/cross-vendor
+    slug that isn't in that vendor's manifest — i.e. has no published page)
+    returns None so the caller renders plain text instead of a dead link.
+    """
+    m = _MD_LINK_TARGET_RE.match(target)
+    if not m:
+        return None
+    path, anchor = m.group("path"), m.group("anchor") or ""
+    parts = path.split("/")
+    if len(parts) == 1 or (len(parts) == 2 and parts[0] == "."):
+        target_vendor = vendor_id
+        slug = Path(parts[-1]).stem
+    elif len(parts) == 3 and parts[0] == ".." and parts[1] in REAL_VENDORS:
+        target_vendor = parts[1]
+        slug = Path(parts[2]).stem
+    else:
+        return None
+    if slug not in _all_manifest_slugs().get(target_vendor, set()):
+        return None
+    if target_vendor == vendor_id:
+        return f"{slug}.html{anchor}"
+    return f"../{target_vendor}/{slug}.html{anchor}"
+
+
+_URI_SCHEME_RE = re.compile(r"^([a-zA-Z][a-zA-Z0-9+.\-]*):")
+_ALLOWED_URI_SCHEMES = frozenset({"http", "https", "mailto"})
+
+
+def _sanitize_href(url: str, vendor_id: str) -> str | None:
+    """Return a safe href for `url`, or None if it must render as plain text.
+
+    Allowlist: `http:`, `https:`, `mailto:`; scheme-less relative paths;
+    `#anchor` fragments; and vault-relative `.md` targets that resolve to a
+    published dataset page (see `_resolve_md_link`). Everything else —
+    `javascript:`, `data:`, `vbscript:`, any other unrecognised scheme,
+    protocol-relative `//` links, and `.md` targets with no published page —
+    is rejected so the caller can render inert plain text instead of a
+    clickable href.
+    """
+    scheme_match = _URI_SCHEME_RE.match(url)
+    if scheme_match:
+        return url if scheme_match.group(1).lower() in _ALLOWED_URI_SCHEMES else None
+    if url.startswith("//"):
+        return None
+    if url.startswith("#"):
+        return url
+    if re.search(r"\.md(#.*)?$", url):
+        resolved = _resolve_md_link(url, vendor_id)
+        _MD_LINK_STATS["resolved" if resolved else "plain_text"] += 1
+        return resolved
+    return url
+
+
+def _markdown_inline(text: str, vendor_id: str = "") -> str:
     """Render a minimal markdown subset: backticks -> <code>, **bold**, *italic*/_italic_,
     [text](url) -> <a>.
 
@@ -366,13 +471,27 @@ def _markdown_inline(text: str) -> str:
     they are HTML-entity-escaped rather than passed through as raw markup.
     Bold is substituted before italic so a leftover single `*` from a
     consumed `**pair**` can never be mistaken for an italic delimiter.
+
+    `[text](url)` links are passed through `_sanitize_href` (scoped to
+    `vendor_id`, the current dataset page's vendor): an unsafe or dead link
+    target renders as escaped plain text instead of an `<a href>` — see
+    `_sanitize_href` and `_resolve_md_link` for the allowlist/resolution
+    rules.
     """
     text = html_escape(text)
     text = re.sub(r"`([^`]+)`", r"<code>\1</code>", text)
     text = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", text)
     text = re.sub(r"\*([^*\n]+)\*", r"<em>\1</em>", text)
     text = re.sub(r"(?<!\w)_([^_\n]+)_(?!\w)", r"<em>\1</em>", text)
-    text = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", r'<a href="\2">\1</a>', text)
+
+    def _link_repl(m: re.Match[str]) -> str:
+        label, url = m.group(1), m.group(2)
+        href = _sanitize_href(url, vendor_id)
+        if href is None:
+            return label
+        return f'<a href="{href}">{label}</a>'
+
+    text = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", _link_repl, text)
     return text
 
 
@@ -577,25 +696,41 @@ def _extract_caveats(section: str) -> list[Caveat]:
     authored markdown indents continuation lines by two spaces (standard
     Obsidian bullet-wrap style) rather than repeating the leading `-`. Each
     indented, non-blank line immediately following an open bullet belongs to
-    that bullet's body and is joined with a single space. A blank line (or
-    the next `- ` bullet) terminates the continuation.
+    that bullet's body and is joined with a single space, UNTIL a terminator
+    is seen. A blank line or a pure horizontal-rule (``---``) line genuinely
+    resets the open-bullet state: any indented content that follows a
+    terminator is non-caveat content and is ignored, it does NOT get
+    appended to the caveat that preceded the terminator.
+
+    An indented nested `-` bullet (e.g. Obsidian sub-bullets under a caveat)
+    is not itself a new top-level caveat — top-level bullets are only
+    recognised at column 0. While a caveat is open, an indented nested
+    bullet joins that caveat's body as plain text (its own leading `-`
+    marker is stripped). A nested bullet encountered after a terminator has
+    no open caveat to join, so — like any other post-terminator indented
+    line — it is ignored as non-caveat content.
 
     Pure horizontal-rule lines (``---``) can appear inside a section's body
     (a markdown ``---`` divider before the next ``##`` heading is not itself
     a heading, so `_split_sections` leaves it in-section) and must not be
-    misread as an empty caveat bullet — they are skipped explicitly.
+    misread as an empty caveat bullet — they are skipped explicitly (and, as
+    above, they close out any open caveat's continuation).
     """
     caveats: list[Caveat] = []
+    caveat_open = False
     for line in section.splitlines():
         stripped = line.strip()
         if not stripped:
             # Blank line terminates any open bullet's continuation.
+            caveat_open = False
             continue
-        if stripped.startswith("-"):
-            if re.fullmatch(r"-{3,}", stripped):
-                # Horizontal rule — not a bullet, and terminates continuation
-                # of whatever bullet preceded it.
-                continue
+        if re.fullmatch(r"-{3,}", stripped):
+            # Horizontal rule — not a bullet, and terminates continuation
+            # of whatever bullet preceded it.
+            caveat_open = False
+            continue
+        is_indented = line[:1].isspace()
+        if not is_indented and stripped.startswith("-"):
             content = stripped[1:].strip()
             m = _CAVEAT_LEAD_RE.match(content)
             if m:
@@ -615,14 +750,20 @@ def _extract_caveats(section: str) -> list[Caveat]:
                 title = content.split(".", 1)[0]
                 body = content[len(title) :].lstrip(". ").strip()
                 caveats.append(Caveat(title=title, text=body))
+            caveat_open = True
             continue
-        if line[:1].isspace() and caveats:
-            # Indented continuation line: append to the most recently opened
-            # bullet's body, joined with a space.
+        if is_indented and caveat_open and caveats:
+            # Indented continuation line (including a nested `-` bullet,
+            # whose own marker is stripped): joins the open caveat's body,
+            # joined with a space.
+            joined = stripped[1:].strip() if stripped.startswith("-") else stripped
             if caveats[-1].text:
-                caveats[-1] = Caveat(title=caveats[-1].title, text=f"{caveats[-1].text} {stripped}")
+                caveats[-1] = Caveat(title=caveats[-1].title, text=f"{caveats[-1].text} {joined}")
             else:
-                caveats[-1] = Caveat(title=caveats[-1].title, text=stripped)
+                caveats[-1] = Caveat(title=caveats[-1].title, text=joined)
+            continue
+        # Indented content with no open caveat (post-terminator block, or a
+        # nested bullet after a terminator) — non-caveat content, ignored.
     return caveats
 
 
@@ -1045,6 +1186,7 @@ def build(vault_path: Path, output_dir: Path | None = None) -> tuple[int, int, i
     """
     env = make_env()
     out_root = output_dir or SITE_DIR
+    _reset_md_link_stats()
 
     n_pages = 0
     n_hubs = 0
@@ -1058,6 +1200,10 @@ def build(vault_path: Path, output_dir: Path | None = None) -> tuple[int, int, i
     n_hub_stubs = build_coming_soon_stubs(env, out_root)
     n_pages += copy_authored_dataset_pages_for_coming_soon(out_root)
     n_dataset_stubs = build_dataset_stubs_from_landings(env, out_root)
+    print(
+        f"[gridflow-build] vault-relative .md links: {_MD_LINK_STATS['resolved']} resolved, "
+        f"{_MD_LINK_STATS['plain_text']} rendered as plain text (no published page)"
+    )
     return n_pages, n_hubs, n_hub_stubs, n_dataset_stubs
 
 
