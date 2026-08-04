@@ -27,20 +27,58 @@ jobs:
         run: uv run --extra build gridflow-staleness-check
 
       # Baseline ratchet — removals only. staleness-baseline.txt is a known-
-      # stale backlog (v0.17 P1.8 finding); a PR may burn it down but must
-      # never silently grow it to hide a newly-introduced stale page.
+      # stale backlog (v0.17 P1.8 finding); a PR or a push to main may burn
+      # it down but must never silently grow it to hide a newly-introduced
+      # stale page. F-15/R3-d: runs on BOTH pull_request and push (push to
+      # main was previously unguarded) and fails outright on either trigger
+      # — main must never regress. The prior "baseline absent on base ->
+      # skip" bootstrap escape is removed outright (F-15/R3-d(b)): the
+      # baseline is committed today, so there is no live bootstrap case to
+      # special-case, and a silent skip is a standing hole. If the baseline
+      # is ever absent at the diff base for some other repo history reason,
+      # `git diff` naturally treats every current line as "added", which is
+      # the correct ratchet-safe outcome (fail closed, not skip).
       - name: Baseline ratchet — removals only
-        if: github.event_name == 'pull_request'
         run: |
-          git fetch origin "$GITHUB_BASE_REF"
-          if git cat-file -e "origin/$GITHUB_BASE_REF:.github/staleness-baseline.txt" 2>/dev/null; then
-            added=$(git diff "origin/$GITHUB_BASE_REF"...HEAD -- .github/staleness-baseline.txt | grep -E '^\+[^+#]' || true)
-            if [ -n "$added" ]; then
-              echo "Baseline is a ratchet — entries may only be removed. Added:"; echo "$added"; exit 1
-            fi
-          else
-            echo "Baseline absent on base branch — bootstrap PR, ratchet enforcement skipped."
+          set -euo pipefail
+          case "${{ github.event_name }}" in
+            pull_request)
+              # Diff base is the PR's base branch, as before.
+              git fetch origin "${{ github.base_ref }}"
+              diff_range="origin/${{ github.base_ref }}...HEAD"
+              ;;
+            push)
+              # F-15/R3-d(a): origin/$GITHUB_BASE_REF is undefined on push
+              # events (no PR context) — use the event's own before/after
+              # pair instead. fetch-depth: 0 above makes `before` resolvable.
+              before="${{ github.event.before }}"
+              if [ -z "$before" ] || [ "$before" = "0000000000000000000000000000000000000000" ]; then
+                echo "push event has no resolvable 'before' SHA (new branch or force-pushed history) — skipping ratchet comparison with notice, rather than diffing against an invalid ref."
+                exit 0
+              fi
+              diff_range="${before}...HEAD"
+              ;;
+            *)
+              echo "Unhandled event '${{ github.event_name }}' for the ratchet — skipping with notice."
+              exit 0
+              ;;
+          esac
+
+          # F-15/R3-d(c): count ALL added non-blank lines, not just
+          # non-comment ones — the prior `^\+[^+#]` pattern let a baseline
+          # entry re-enter disguised as a comment (`+#elexon/foo`), to be
+          # un-commented in a later diff hunk without ever tripping the
+          # ratchet. `^\+[^+]` requires a second, non-'+' character after
+          # the leading '+', which still naturally excludes the diff's
+          # `+++ b/...` file-header line (that char IS '+') and blank added
+          # lines (a bare '+' has no following character at all).
+          added=$(git diff "$diff_range" -- .github/staleness-baseline.txt | grep -E '^\+[^+]' || true)
+          if [ -n "$added" ]; then
+            echo "Baseline is a ratchet — entries may only be removed. Added:"
+            echo "$added"
+            exit 1
           fi
+          echo "Baseline ratchet OK — no lines added on this diff."
 
       # Makes the previously local-only merge gate (idempotent render across
       # all vendor pages) mechanical on every PR, not just at deploy time.
