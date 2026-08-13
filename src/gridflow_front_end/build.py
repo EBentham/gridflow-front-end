@@ -323,7 +323,7 @@ def _parse_frontmatter(text: str) -> tuple[dict[str, str], str]:
     if end == -1:
         return {}, text
     fm_text = text[3:end].strip()
-    body = text[end + 4:].lstrip("\n")
+    body = text[end + 4 :].lstrip("\n")
     frontmatter: dict[str, str] = {}
     for line in fm_text.splitlines():
         if ":" in line:
@@ -356,11 +356,219 @@ def _strip_link(text: str) -> str:
     return re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", text)
 
 
-def _markdown_inline(text: str) -> str:
-    """Render a minimal markdown subset: backticks → <code>, **bold**, *italic*."""
+# Link-count telemetry from the most recent `_markdown_inline` pass, keyed by
+# outcome. Populated as a module-level counter (rather than threaded through
+# every call site) so `build()` can report resolved-vs-plain-text counts for
+# vault-relative `.md` links without changing every caller's signature.
+_MD_LINK_STATS: dict[str, int] = {"resolved": 0, "plain_text": 0, "fragment_dropped": 0}
+
+
+def _reset_md_link_stats() -> None:
+    _MD_LINK_STATS["resolved"] = 0
+    _MD_LINK_STATS["plain_text"] = 0
+    _MD_LINK_STATS["fragment_dropped"] = 0
+
+
+# Section ids that actually exist on a generated dataset page
+# (templates/dataset.html.j2) — the only fragments a resolved `.md` link may
+# carry, because the deploy gate link-checks fragments (`lychee
+# --include-fragments`): an anchor to a heading that only exists in the vault
+# source would 404 the fragment and block deployment.
+_GENERATED_SECTION_IDS = frozenset(
+    {"overview", "snapshot-chart", "schema", "sample", "api", "caveats", "related"}
+)
+
+# Vault heading slugs whose content demonstrably lands in a specific generated
+# section. Anything not listed here (e.g. `#changelog`, ad-hoc subsection
+# anchors) has no generated counterpart: the fragment is dropped and counted,
+# and the link points at the page top.
+_VAULT_FRAGMENT_TO_SECTION_ID = {
+    "known-issues-and-gotchas": "caveats",
+    "silver-schema": "schema",
+    # Subsection of "Known issues and gotchas" (historical_wind) — its content
+    # renders inside the caveats section.
+    "archive-10m100m-limitation": "caveats",
+}
+
+
+def _map_fragment(frag: str) -> str | None:
+    """Best generated-page anchor for a vault fragment slug, or None."""
+    if frag in _GENERATED_SECTION_IDS:
+        return frag
+    return _VAULT_FRAGMENT_TO_SECTION_ID.get(frag)
+
+
+# Caveat-extraction telemetry, same shape and lifecycle as `_MD_LINK_STATS`:
+# any line inside a "Known issues and gotchas" section that the grammar cannot
+# place is COUNTED here rather than silently discarded, and `build()` reports
+# a nonzero count at the end of the run.
+_CAVEAT_STATS: dict[str, int] = {"dropped_lines": 0}
+
+
+def _reset_caveat_stats() -> None:
+    _CAVEAT_STATS["dropped_lines"] = 0
+
+
+_MANIFEST_SLUGS_CACHE: dict[str, set[str]] | None = None
+
+
+def _all_manifest_slugs() -> dict[str, set[str]]:
+    """Slug set per vendor, loaded from each vendor's manifest and cached.
+
+    Used to decide whether a vault-relative `.md` link target actually has a
+    published dataset page (`site/hifi/data-sources/<vendor>/<slug>.html`).
+    """
+    global _MANIFEST_SLUGS_CACHE
+    if _MANIFEST_SLUGS_CACHE is None:
+        cache: dict[str, set[str]] = {}
+        for vendor_id in REAL_VENDORS:
+            try:
+                manifest = load_manifest(vendor_id)
+            except FileNotFoundError:
+                cache[vendor_id] = set()
+                continue
+            cache[vendor_id] = {d["id"] for g in manifest["groups"] for d in g["datasets"]}
+        _MANIFEST_SLUGS_CACHE = cache
+    return _MANIFEST_SLUGS_CACHE
+
+
+_MD_LINK_TARGET_RE = re.compile(r"^(?P<path>[^#]*\.md)(?P<anchor>#.*)?$")
+
+
+def _resolve_md_link(target: str, vendor_id: str) -> str | None:
+    """Resolve a vault-relative `.md` link to its published dataset-page href.
+
+    Routing shape (see module docstring / `build_vendor`): a vault file at
+    `vault/<vendor>/<slug>.md` publishes to
+    `site/hifi/data-sources/<vendor>/<slug>.html`, and dataset pages for the
+    same vendor sit flat in that vendor's directory, so a same-vendor link
+    resolves to `<slug>.html` and a cross-vendor link to
+    `../<other-vendor>/<slug>.html` (matching the existing sibling-link and
+    vendor-hub href shapes already used by the Jinja templates).
+
+    Recognised shapes: bare `slug.md`, `./slug.md` (same vendor), and
+    `../<vendor>/slug.md` (cross-vendor) — each with an optional `#anchor`
+    suffix. A fragment survives only if it names a real generated section id,
+    directly or via `_VAULT_FRAGMENT_TO_SECTION_ID`; otherwise it is dropped
+    (counted in `_MD_LINK_STATS["fragment_dropped"]`) so the deploy gate's
+    fragment-aware link check cannot fail on a vault-only heading anchor.
+    Anything else (a domain-notes path
+    like `../../../20-domain/...`, `../README.md`, or a same/cross-vendor
+    slug that isn't in that vendor's manifest — i.e. has no published page)
+    returns None so the caller renders plain text instead of a dead link.
+    """
+    m = _MD_LINK_TARGET_RE.match(target)
+    if not m:
+        return None
+    path, anchor = m.group("path"), m.group("anchor") or ""
+    parts = path.split("/")
+    if len(parts) == 1 or (len(parts) == 2 and parts[0] == "."):
+        target_vendor = vendor_id
+        slug = Path(parts[-1]).stem
+    elif len(parts) == 3 and parts[0] == ".." and parts[1] in REAL_VENDORS:
+        target_vendor = parts[1]
+        slug = Path(parts[2]).stem
+    else:
+        return None
+    if slug not in _all_manifest_slugs().get(target_vendor, set()):
+        return None
+    if anchor:
+        mapped = _map_fragment(anchor[1:])
+        if mapped:
+            anchor = f"#{mapped}"
+        else:
+            # Cross-page link stays useful without its fragment: keep the
+            # page target, drop the vault-only anchor.
+            _MD_LINK_STATS["fragment_dropped"] += 1
+            anchor = ""
+    if target_vendor == vendor_id:
+        return f"{slug}.html{anchor}"
+    return f"../{target_vendor}/{slug}.html{anchor}"
+
+
+_URI_SCHEME_RE = re.compile(r"^([a-zA-Z][a-zA-Z0-9+.\-]*):")
+_ALLOWED_URI_SCHEMES = frozenset({"http", "https", "mailto"})
+# WHATWG URL parsing removes ASCII tab/newline anywhere in the input and trims
+# leading/trailing C0 controls and space BEFORE the scheme is read — so the
+# allowlist must see the same normalized string the browser will, or
+# `java<TAB>script:` slips past `_URI_SCHEME_RE` as a "relative" URL and
+# executes anyway.
+_ASCII_TAB_NL_RE = re.compile(r"[\t\n\r]")
+_C0_AND_SPACE = "".join(chr(c) for c in range(0x21))
+
+
+def _sanitize_href(url: str, vendor_id: str) -> str | None:
+    """Return a safe href for `url`, or None if it must render as plain text.
+
+    The input is first normalized the way browsers normalize URLs (tab/newline
+    removed anywhere, C0 controls and spaces trimmed at the ends), and the
+    normalized form is both what gets checked and what gets returned.
+
+    Allowlist: `http:`, `https:`, `mailto:`; scheme-less relative paths;
+    `#anchor` fragments that map to a real generated section id (via
+    `_map_fragment` — same-page anchors to vault-only headings render as
+    plain text, counted); and vault-relative `.md` targets that resolve to a
+    published dataset page (see `_resolve_md_link`). Everything else —
+    `javascript:`, `data:`, `vbscript:`, any other unrecognised scheme,
+    protocol-relative `//` links, and `.md` targets with no published page —
+    is rejected so the caller can render inert plain text instead of a
+    clickable href.
+    """
+    url = _ASCII_TAB_NL_RE.sub("", url).strip(_C0_AND_SPACE)
+    scheme_match = _URI_SCHEME_RE.match(url)
+    if scheme_match:
+        return url if scheme_match.group(1).lower() in _ALLOWED_URI_SCHEMES else None
+    if url.startswith("//"):
+        return None
+    if url.startswith("#"):
+        frag = url[1:]
+        if not frag:
+            return url
+        mapped = _map_fragment(frag)
+        if mapped:
+            return f"#{mapped}"
+        # A same-page link whose anchor has no generated counterpart is a
+        # dead link with no useful remainder — render plain text, counted.
+        _MD_LINK_STATS["fragment_dropped"] += 1
+        return None
+    if re.search(r"\.md(#.*)?$", url):
+        resolved = _resolve_md_link(url, vendor_id)
+        _MD_LINK_STATS["resolved" if resolved else "plain_text"] += 1
+        return resolved
+    return url
+
+
+def _markdown_inline(text: str, vendor_id: str = "") -> str:
+    """Render a minimal markdown subset: backticks -> <code>, **bold**, *italic*/_italic_,
+    [text](url) -> <a>.
+
+    Escapes first (matching the pre-existing backtick/bold approach), then
+    reconstructs tags from the escaped text via regex — so any `<`, `>`, `&`,
+    or quote characters authored in link URLs or emphasised text stay inert;
+    they are HTML-entity-escaped rather than passed through as raw markup.
+    Bold is substituted before italic so a leftover single `*` from a
+    consumed `**pair**` can never be mistaken for an italic delimiter.
+
+    `[text](url)` links are passed through `_sanitize_href` (scoped to
+    `vendor_id`, the current dataset page's vendor): an unsafe or dead link
+    target renders as escaped plain text instead of an `<a href>` — see
+    `_sanitize_href` and `_resolve_md_link` for the allowlist/resolution
+    rules.
+    """
     text = html_escape(text)
     text = re.sub(r"`([^`]+)`", r"<code>\1</code>", text)
     text = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", text)
+    text = re.sub(r"\*([^*\n]+)\*", r"<em>\1</em>", text)
+    text = re.sub(r"(?<!\w)_([^_\n]+)_(?!\w)", r"<em>\1</em>", text)
+
+    def _link_repl(m: re.Match[str]) -> str:
+        label, url = m.group(1), m.group(2)
+        href = _sanitize_href(url, vendor_id)
+        if href is None:
+            return label
+        return f'<a href="{href}">{label}</a>'
+
+    text = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", _link_repl, text)
     return text
 
 
@@ -525,7 +733,12 @@ def _try_parse_listdict(raw: str) -> tuple[list[list[str]], list[str]]:
         if not s.startswith("["):
             return [], []
         # Replace Python None/True/False with JSON nulls/bools
-        s_json = s.replace("'", '"').replace("True", "true").replace("False", "false").replace("None", "null")
+        s_json = (
+            s.replace("'", '"')
+            .replace("True", "true")
+            .replace("False", "false")
+            .replace("None", "null")
+        )
         # Drop trailing commas before ] or }
         s_json = re.sub(r",(\s*[\]}])", r"\1", s_json)
         data = json.loads(s_json)
@@ -540,26 +753,116 @@ def _try_parse_listdict(raw: str) -> tuple[list[list[str]], list[str]]:
     return rows, columns
 
 
+_CAVEAT_LEAD_RE = re.compile(r"^\*\*(?P<title>[^*]+?)\*\*\s*(?P<rest>.*)$")
+_CAVEAT_SEP_RE = re.compile(r"^[—:\-–]\s*")
+
+
 def _extract_caveats(section: str) -> list[Caveat]:
     """Parse 'Known issues and gotchas' bullet list into numbered caveats.
 
-    The vault format is a bulleted list with `- **Title** — body` or
-    `- **Title**: body` shapes.
+    The vault format uses three observed bullet shapes: `- **Title** — body`,
+    `- **Title**: body`, and `` - **Title.** body `` (a bold lead-in ending in
+    its own sentence period, immediately followed by the body sentence with
+    no separator character at all — e.g. ``**PSR types are human-readable
+    labels.** Elexon's AGPT API returns...``). All three are handled by
+    stripping the bold title, then optionally stripping a leading separator
+    from what remains. A trailing period on the title is dropped since it
+    belongs to the bold lead-in's own sentence, not the title text.
+
+    A bullet's body may wrap onto subsequent physical lines: the vault's
+    authored markdown indents continuation lines by two spaces (standard
+    Obsidian bullet-wrap style) rather than repeating the leading `-`. Each
+    indented, non-blank line immediately following an open bullet belongs to
+    that bullet's body and is joined with a single space, UNTIL a terminator
+    is seen. A blank line or a pure horizontal-rule (``---``) line genuinely
+    resets the open-bullet state: any indented content that follows a
+    terminator is non-caveat content — it does NOT get appended to the
+    caveat that preceded the terminator, and it is counted in
+    ``_CAVEAT_STATS["dropped_lines"]`` rather than silently discarded.
+
+    An in-section subheading (``### Control-area vs cross-zonal``) opens a
+    caveat of its own: the heading text is the title and the col-0 prose
+    lines that follow are its body, joined across blank-separated paragraphs
+    until the next bullet, subheading, or horizontal rule. Col-0 prose with
+    no open subheading has nowhere to go and is counted as dropped.
+
+    An indented nested `-` bullet (e.g. Obsidian sub-bullets under a caveat)
+    is not itself a new top-level caveat — top-level bullets are only
+    recognised at column 0. While a caveat is open, an indented nested
+    bullet joins that caveat's body as plain text (its own leading `-`
+    marker is stripped). A nested bullet encountered after a terminator has
+    no open caveat to join, so — like any other post-terminator indented
+    line — it is dropped and counted, not silently ignored.
+
+    Pure horizontal-rule lines (``---``) can appear inside a section's body
+    (a markdown ``---`` divider before the next ``##`` heading is not itself
+    a heading, so `_split_sections` leaves it in-section) and must not be
+    misread as an empty caveat bullet — they are skipped explicitly (and, as
+    above, they close out any open caveat's continuation).
     """
     caveats: list[Caveat] = []
+    caveat_open = False
+    heading_open = False
     for line in section.splitlines():
         stripped = line.strip()
-        if not stripped.startswith("-"):
+        if not stripped:
+            # Blank line terminates any open bullet's continuation. A
+            # heading-opened caveat stays open: its prose paragraphs are
+            # authored blank-separated at column 0.
+            caveat_open = False
             continue
-        content = stripped[1:].strip()
-        m = re.match(r"\*\*(?P<title>[^*]+)\*\*\s*[—:\-–]\s*(?P<body>.*)$", content)
-        if m:
-            caveats.append(Caveat(title=m.group("title").strip(), text=m.group("body").strip()))
-        else:
-            # Fallback: take the first sentence as title
-            title = content.split(".", 1)[0]
-            body = content[len(title):].lstrip(". ").strip()
-            caveats.append(Caveat(title=title, text=body))
+        if re.fullmatch(r"-{3,}", stripped):
+            # Horizontal rule — not a bullet, and terminates continuation
+            # of whatever bullet or subheading preceded it.
+            caveat_open = False
+            heading_open = False
+            continue
+        is_indented = line[:1].isspace()
+        if not is_indented and stripped.startswith("#"):
+            # An in-section subheading (`### Control-area vs cross-zonal`)
+            # opens a caveat whose body is the col-0 prose that follows it.
+            caveats.append(Caveat(title=stripped.lstrip("#").strip(), text=""))
+            caveat_open = False
+            heading_open = True
+            continue
+        if not is_indented and stripped.startswith("-"):
+            heading_open = False
+            content = stripped[1:].strip()
+            m = _CAVEAT_LEAD_RE.match(content)
+            if m:
+                title = m.group("title").strip().rstrip(".").strip()
+                rest = m.group("rest")
+                sep_m = _CAVEAT_SEP_RE.match(rest)
+                body = rest[sep_m.end() :].strip() if sep_m else rest.strip()
+                if not sep_m and re.fullmatch(r"[.!?]*", body):
+                    # Title-only bullet (e.g. `- **GB empty post-Brexit**.`) —
+                    # the trailing punctuation belongs to the title's own
+                    # sentence, not a separate body; don't render a stray "."
+                    # as the caveat body.
+                    body = ""
+                caveats.append(Caveat(title=title, text=body))
+            else:
+                # Fallback: take the first sentence as title
+                title = content.split(".", 1)[0]
+                body = content[len(title) :].lstrip(". ").strip()
+                caveats.append(Caveat(title=title, text=body))
+            caveat_open = True
+            continue
+        if ((is_indented and caveat_open) or (not is_indented and heading_open)) and caveats:
+            # Continuation content: an indented line under an open bullet
+            # (including a nested `-` bullet, whose own marker is stripped),
+            # or a col-0 prose line under an open subheading. Joins the open
+            # caveat's body with a space.
+            joined = stripped[1:].strip() if stripped.startswith("-") else stripped
+            if caveats[-1].text:
+                caveats[-1] = Caveat(title=caveats[-1].title, text=f"{caveats[-1].text} {joined}")
+            else:
+                caveats[-1] = Caveat(title=caveats[-1].title, text=joined)
+            continue
+        # Anything the grammar cannot place (indented content after a
+        # terminator, col-0 prose with no open subheading) is counted, never
+        # silently discarded — `build()` reports a nonzero count.
+        _CAVEAT_STATS["dropped_lines"] += 1
     return caveats
 
 
@@ -571,7 +874,9 @@ def _extract_api_code_from_title(title_line: str, slug: str) -> str:
     return slug.upper()
 
 
-def parse_vault_file(path: Path, vendor_id: str = "elexon", vendor_label: str = "Elexon BMRS") -> DatasetDoc:
+def parse_vault_file(
+    path: Path, vendor_id: str = "elexon", vendor_label: str = "Elexon BMRS"
+) -> DatasetDoc:
     text = path.read_text(encoding="utf-8")
     fm, body = _parse_frontmatter(text)
     slug = fm.get("dataset_key", path.stem)
@@ -693,7 +998,9 @@ def render_dataset(env: Environment, doc: DatasetDoc, manifest: dict) -> str:
     )
 
 
-def render_vendor_hub(env: Environment, manifest: dict, vendor_id: str, vendor_label: str, vendor_meta: dict) -> str:
+def render_vendor_hub(
+    env: Environment, manifest: dict, vendor_id: str, vendor_label: str, vendor_meta: dict
+) -> str:
     template = env.get_template("vendor-hub.html.j2")
     return template.render(
         vendor_id=vendor_id,
@@ -802,7 +1109,10 @@ def build_vendor(env: Environment, vendor_id: str, vault_path: Path, out_root: P
         for w in warnings:
             print(f"  WARN: {w}", file=sys.stderr)
     if errors:
-        print(f"[gridflow-build] {vendor_id}: {len(errors)} content error(s) - failing build:", file=sys.stderr)
+        print(
+            f"[gridflow-build] {vendor_id}: {len(errors)} content error(s) - failing build:",
+            file=sys.stderr,
+        )
         for e in errors:
             print(f"  ERROR: {e}", file=sys.stderr)
         sys.exit(1)
@@ -826,7 +1136,9 @@ def build_vendor(env: Environment, vendor_id: str, vault_path: Path, out_root: P
         shutil.copy(authored_hub, hub_path)
         print(f"  wrote: data-sources/{vendor_id}.html (authored hub)")
     else:
-        hub_html = render_vendor_hub(env, manifest, vendor_id, vendor_label, vendor_cfg["vendor_meta"])
+        hub_html = render_vendor_hub(
+            env, manifest, vendor_id, vendor_label, vendor_cfg["vendor_meta"]
+        )
         hub_path.write_text(hub_html, encoding="utf-8")
         print(f"  wrote: data-sources/{vendor_id}.html")
     return n_pages
@@ -973,6 +1285,8 @@ def build(vault_path: Path, output_dir: Path | None = None) -> tuple[int, int, i
     """
     env = make_env()
     out_root = output_dir or SITE_DIR
+    _reset_md_link_stats()
+    _reset_caveat_stats()
 
     n_pages = 0
     n_hubs = 0
@@ -986,6 +1300,18 @@ def build(vault_path: Path, output_dir: Path | None = None) -> tuple[int, int, i
     n_hub_stubs = build_coming_soon_stubs(env, out_root)
     n_pages += copy_authored_dataset_pages_for_coming_soon(out_root)
     n_dataset_stubs = build_dataset_stubs_from_landings(env, out_root)
+    print(
+        f"[gridflow-build] vault-relative .md links: {_MD_LINK_STATS['resolved']} resolved, "
+        f"{_MD_LINK_STATS['plain_text']} rendered as plain text (no published page), "
+        f"{_MD_LINK_STATS['fragment_dropped']} fragment(s) dropped (no generated anchor)"
+    )
+    if _CAVEAT_STATS["dropped_lines"]:
+        print(
+            f"[gridflow-build] WARNING: {_CAVEAT_STATS['dropped_lines']} line(s) in "
+            "'Known issues and gotchas' sections could not be placed by the caveat "
+            "grammar and were dropped from rendered output",
+            file=sys.stderr,
+        )
     return n_pages, n_hubs, n_hub_stubs, n_dataset_stubs
 
 

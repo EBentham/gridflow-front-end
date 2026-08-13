@@ -10,36 +10,3 @@
 # raw substring to word-boundary matching, which caught entsoe/day_ahead_prices
 # (was a false pass -- "currency" matched inside an unrelated substring).
 #
-# Burn-down deferred to v0.18. One "vendor/slug" label per line. 32 entries.
-elexon/agpt
-elexon/agws
-elexon/atl
-elexon/fou2t14d
-elexon/imbalngc
-elexon/inddem
-elexon/indgen
-elexon/indo
-elexon/itsdo
-elexon/lolpdrm
-elexon/market_depth
-elexon/melngc
-elexon/ndf
-elexon/ndfd
-elexon/netbsad
-elexon/nonbm
-elexon/remit
-elexon/soso
-elexon/uou2t14d
-elexon/windfor
-entsoe/activated_balancing_prices
-entsoe/balancing_financial_expenses_income
-entsoe/day_ahead_prices
-entsoe/imbalance_prices
-entsoe/load_forecast_monthly
-entsoe/load_forecast_yearly
-entsoe/outages_production
-entsoe/wind_solar_forecast
-openmeteo/forecast_solar
-openmeteo/forecast_wind
-openmeteo/historical_solar
-openmeteo/historical_wind

@@ -27,20 +27,107 @@ jobs:
         run: uv run --extra build gridflow-staleness-check
 
       # Baseline ratchet — removals only. staleness-baseline.txt is a known-
-      # stale backlog (v0.17 P1.8 finding); a PR may burn it down but must
-      # never silently grow it to hide a newly-introduced stale page.
+      # stale backlog (v0.17 P1.8 finding); a PR or a push to main may burn
+      # it down but must never silently grow it to hide a newly-introduced
+      # stale page. F-15/R3-d: runs on BOTH pull_request and push (push to
+      # main was previously unguarded) and fails outright on either trigger
+      # — main must never regress. The prior "baseline absent on base ->
+      # skip" bootstrap escape is removed outright (F-15/R3-d(b)): the
+      # baseline is committed today, so there is no live bootstrap case to
+      # special-case, and a silent skip is a standing hole. If the baseline
+      # is ever absent at the diff base for some other repo history reason,
+      # `git diff` naturally treats every current line as "added", which is
+      # the correct ratchet-safe outcome (fail closed, not skip).
       - name: Baseline ratchet — removals only
-        if: github.event_name == 'pull_request'
         run: |
-          git fetch origin "$GITHUB_BASE_REF"
-          if git cat-file -e "origin/$GITHUB_BASE_REF:.github/staleness-baseline.txt" 2>/dev/null; then
-            added=$(git diff "origin/$GITHUB_BASE_REF"...HEAD -- .github/staleness-baseline.txt | grep -E '^\+[^+#]' || true)
-            if [ -n "$added" ]; then
-              echo "Baseline is a ratchet — entries may only be removed. Added:"; echo "$added"; exit 1
-            fi
+          set -euo pipefail
+          case "${{ github.event_name }}" in
+            pull_request)
+              # Diff base is the PR's base branch, as before.
+              git fetch origin "${{ github.base_ref }}"
+              diff_spec="origin/${{ github.base_ref }}...HEAD"
+              ;;
+            push)
+              # F-15/R3-d(a): origin/$GITHUB_BASE_REF is undefined on push
+              # events (no PR context) — use the event's own before/after
+              # pair instead. fetch-depth: 0 above makes `before` resolvable
+              # in the common case.
+              before="${{ github.event.before }}"
+              if [ -z "$before" ] || [ "$before" = "0000000000000000000000000000000000000000" ]; then
+                echo "push event has no resolvable 'before' SHA (branch creation) — skipping ratchet comparison with notice, rather than diffing against an invalid ref."
+                exit 0
+              fi
+              # Sol B3 pass-1: a force push can rewrite history so the prior
+              # tip is unfetchable even with fetch-depth: 0 (the commit is
+              # dangling / gc'd on the remote). That must FAIL loud, never
+              # skip silently — a silent skip is exactly the ratchet hole
+              # this ordering hardens against.
+              if ! git cat-file -e "${before}^{commit}" 2>/dev/null; then
+                echo "push ratchet cannot verify a force-pushed range — baseline integrity must be checked manually (before-SHA ${before} is unresolvable, e.g. a pre-force-push tip pruned from history)." >&2
+                exit 1
+              fi
+              # Two-dot (not three-dot) endpoint semantics: before/HEAD are
+              # the actual endpoints of what landed on the branch. Three-dot
+              # diffs merge-base(before,HEAD)->HEAD instead, which can hide
+              # reintroduced lines whenever history has diverged (e.g. a
+              # force push moves the merge-base away from `before`).
+              diff_spec="${before} HEAD"
+              ;;
+            *)
+              echo "Unhandled event '${{ github.event_name }}' for the ratchet — skipping with notice."
+              exit 0
+              ;;
+          esac
+
+          # No `|| true` here: a genuine git failure (bad/dangling ref, etc.)
+          # must fail the step under `set -e`, not be swallowed. `diff_spec`
+          # is intentionally unquoted below so the push branch's two-dot
+          # "before HEAD" (two words) and the pull_request branch's
+          # "base...HEAD" (one word) both split into the right number of
+          # positional args.
+          diff_output=$(git diff $diff_spec -- .github/staleness-baseline.txt)
+
+          # F-15/R3-d(c): count ALL added non-blank lines, not just
+          # non-comment ones — the prior `^\+[^+#]` pattern let a baseline
+          # entry re-enter disguised as a comment (`+#elexon/foo`), to be
+          # un-commented in a later diff hunk without ever tripping the
+          # ratchet. `^\+[^+]` requires a second, non-'+' character after
+          # the leading '+', which still naturally excludes the diff's
+          # `+++ b/...` file-header line (that char IS '+') and blank added
+          # lines (a bare '+' has no following character at all).
+          #
+          # grep's exit code 1 ("no match") is a valid, expected outcome
+          # here — the clean-baseline case — and must NOT fail the step.
+          # Any other nonzero exit (2+, a genuine grep error) must still
+          # fail. This is applied to grep alone (not piped straight from
+          # git diff) so a git fatal error can never be masked as "no
+          # lines added" — that masking was the root cause of this finding.
+          #
+          # NOTE: this is `if cmd; then ... else ...; fi` — deliberately NOT
+          # `if ! cmd; then` (bash's `!` negates $? for the if-test itself,
+          # so `$?` read *inside* that then-block would already be the
+          # negated value, not grep's real exit code) and NOT a bare
+          # `added=$(... | grep ...)` statement (under `set -e`+pipefail a
+          # standalone nonzero pipeline aborts the script immediately,
+          # before grep's exit code can even be inspected). Using the
+          # command as the `if` condition directly is exempt from `set -e`
+          # and leaves $? un-negated in the branches.
+          if added=$(printf '%s\n' "$diff_output" | grep -E '^\+[^+]'); then
+            grep_status=0
           else
-            echo "Baseline absent on base branch — bootstrap PR, ratchet enforcement skipped."
+            grep_status=$?
           fi
+          if [ "$grep_status" -gt 1 ]; then
+            echo "grep failed unexpectedly (exit $grep_status) while checking the baseline ratchet." >&2
+            exit "$grep_status"
+          fi
+
+          if [ -n "$added" ]; then
+            echo "Baseline is a ratchet — entries may only be removed. Added:"
+            echo "$added"
+            exit 1
+          fi
+          echo "Baseline ratchet OK — no lines added on this diff."
 
       # Makes the previously local-only merge gate (idempotent render across
       # all vendor pages) mechanical on every PR, not just at deploy time.

@@ -27,7 +27,7 @@
             {{ doc.title_line }}
           </h1>
           {% if doc.overview_paragraphs %}
-            <p class="lede" style="max-width: 660px;">{{ doc.overview_paragraphs[0] | md_inline | safe }}</p>
+            <p class="lede" style="max-width: 660px;">{{ doc.overview_paragraphs[0] | md_inline(doc.vendor_id) | safe }}</p>
           {% endif %}
           {% if doc.last_verified %}
             <p class="tiny mt-16" style="max-width:660px;">
@@ -121,7 +121,7 @@
           <div class="eyebrow mb-8">Overview</div>
           <h2 class="display-3 mb-24">What this dataset is.</h2>
           {% for p in doc.overview_paragraphs %}
-            <p style="max-width:680px; font-size:15px; line-height:1.65; margin-bottom:16px;">{{ p | md_inline | safe }}</p>
+            <p style="max-width:680px; font-size:15px; line-height:1.65; margin-bottom:16px;">{{ p | md_inline(doc.vendor_id) | safe }}</p>
           {% endfor %}
         </section>
 
@@ -171,7 +171,7 @@
                     <td class="col-name">{{ row.name }}{% if row.pk %} <span class="pk-badge">PK</span>{% endif %}</td>
                     <td class="col-type">{{ row.type }}</td>
                     <td style="text-align:center;" class="nullable">{% if row.nullable %}null{% else %}—{% endif %}</td>
-                    <td class="col-note">{{ row.note | md_inline | safe }}</td>
+                    <td class="col-note">{{ row.note | md_inline(doc.vendor_id) | safe }}</td>
                   </tr>
                 {% endfor %}
               </tbody>
@@ -214,7 +214,7 @@
               <div class="tiny mb-8">ENDPOINT</div>
               <div class="mono small" style="word-break:break-all; margin-bottom:12px;">{{ doc.base_url or 'https://data.elexon.co.uk/bmrs/api/v1' }}<br/>{{ doc.api_path or '/datasets/' ~ doc.api_code }}</div>
               <div class="tiny mb-8">AUTH</div>
-              <div class="small">{{ doc.auth_note | md_inline | safe if doc.auth_note else 'Public · no key required' }}</div>
+              <div class="small">{{ doc.auth_note | md_inline(doc.vendor_id) | safe if doc.auth_note else 'Public · no key required' }}</div>
             </div>
             <div class="card" style="padding:20px;">
               <div class="tiny mb-8">BRONZE PATH</div>
@@ -269,8 +269,8 @@ print(df.head())</pre>
                 <div class="caveat-item"{% if loop.last %} style="border-bottom:1px solid var(--rule); padding-bottom:16px;"{% endif %}>
                   <div class="caveat-num">{{ '%02d' | format(loop.index) }}</div>
                   <div>
-                    <div style="font-weight:500; margin-bottom:6px;">{{ caveat.title | md_inline | safe }}</div>
-                    {% if caveat.text %}<p class="small" style="margin:0;">{{ caveat.text | md_inline | safe }}</p>{% endif %}
+                    <div style="font-weight:500; margin-bottom:6px;">{{ caveat.title | md_inline(doc.vendor_id) | safe }}</div>
+                    {% if caveat.text %}<p class="small" style="margin:0;">{{ caveat.text | md_inline(doc.vendor_id) | safe }}</p>{% endif %}
                   </div>
                 </div>
               {% endfor %}
