@@ -80,7 +80,13 @@ def main() -> None:
     handler = _SilentHandler
 
     try:
-        server = http.server.HTTPServer(("", args.port), handler)
+        # Threading, not http.server.HTTPServer: that one is single-threaded, and
+        # SimpleHTTPRequestHandler speaks HTTP/1.1 keep-alive, so a browser's idle
+        # connection holds the only handler thread and every other request is
+        # refused until it times out. The socket stays bound throughout, so the
+        # server looks healthy from netstat while serving nobody.
+        server = http.server.ThreadingHTTPServer(("", args.port), handler)
+        server.daemon_threads = True
     except OSError as exc:
         sys.exit(
             f"[gridflow-serve] Could not bind to port {args.port}: {exc}\n"
