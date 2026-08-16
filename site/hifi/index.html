@@ -323,36 +323,40 @@
         <!-- GB grid snapshot card -->
         <div class="card" style="padding: 0;">
           <div style="padding: 16px 20px; border-bottom: 1px solid var(--rule); display:flex; align-items:center; justify-content:space-between;">
-            <span class="eyebrow" style="font-size:10px;">GB grid · illustrative snapshot</span>
-            <span class="mono tiny">shape only · seeded SVG</span>
+            <span class="eyebrow" style="font-size:10px;">GB grid · 1–5 August 2026</span>
+            <span class="mono tiny">Elexon FUELHH · mean output</span>
           </div>
           <div style="padding: 20px; display:grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items:center;">
-            <div data-chart="donut" data-opts='{"data":[{"value":34,"color":"#c45a3a"},{"value":28,"color":"#3b6b4b"},{"value":15,"color":"#86627d"},{"value":12,"color":"#7a96a8"},{"value":11,"color":"#c9a96e"}],"center":"34.6","centerSub":"GW DEMAND","width":160,"height":160}'></div>
+            <div data-chart="donut" data-opts='{"data":[{"value":6408.2,"color":"#2a7d4f"},{"value":5639.3,"color":"#c0451a"},{"value":3589.4,"color":"#2f6fb0"},{"value":2350.2,"color":"#e0a413"},{"value":3174.4,"color":"#7a3470"},{"value":929.2,"color":"#8b8374"}],"center":"22.0","centerSub":"GW GENERATION","width":160,"height":160}'></div>
             <div style="display:flex; flex-direction:column; gap:10px;">
               <div style="display:flex; align-items:center; gap:8px; justify-content:space-between;">
-                <span style="display:inline-flex;align-items:center;gap:8px;"><i style="width:8px;height:8px;background:#c45a3a;display:inline-block;"></i><span class="small">Gas</span></span>
-                <span class="mono small" style="color:var(--ink-strong)">34%</span>
+                <span style="display:inline-flex;align-items:center;gap:8px;"><i style="width:8px;height:8px;background:#2a7d4f;display:inline-block;"></i><span class="small">Wind</span></span>
+                <span class="mono small" style="color:var(--ink-strong)">29%</span>
               </div>
               <div style="display:flex; align-items:center; gap:8px; justify-content:space-between;">
-                <span style="display:inline-flex;align-items:center;gap:8px;"><i style="width:8px;height:8px;background:#3b6b4b;display:inline-block;"></i><span class="small">Wind</span></span>
-                <span class="mono small" style="color:var(--ink-strong)">28%</span>
+                <span style="display:inline-flex;align-items:center;gap:8px;"><i style="width:8px;height:8px;background:#c0451a;display:inline-block;"></i><span class="small">CCGT</span></span>
+                <span class="mono small" style="color:var(--ink-strong)">26%</span>
               </div>
               <div style="display:flex; align-items:center; gap:8px; justify-content:space-between;">
-                <span style="display:inline-flex;align-items:center;gap:8px;"><i style="width:8px;height:8px;background:#86627d;display:inline-block;"></i><span class="small">Nuclear</span></span>
-                <span class="mono small" style="color:var(--ink-strong)">15%</span>
+                <span style="display:inline-flex;align-items:center;gap:8px;"><i style="width:8px;height:8px;background:#2f6fb0;display:inline-block;"></i><span class="small">Nuclear</span></span>
+                <span class="mono small" style="color:var(--ink-strong)">16%</span>
               </div>
               <div style="display:flex; align-items:center; gap:8px; justify-content:space-between;">
-                <span style="display:inline-flex;align-items:center;gap:8px;"><i style="width:8px;height:8px;background:#7a96a8;display:inline-block;"></i><span class="small">Imports</span></span>
-                <span class="mono small" style="color:var(--ink-strong)">12%</span>
-              </div>
-              <div style="display:flex; align-items:center; gap:8px; justify-content:space-between;">
-                <span style="display:inline-flex;align-items:center;gap:8px;"><i style="width:8px;height:8px;background:#c9a96e;display:inline-block;"></i><span class="small">Other</span></span>
+                <span style="display:inline-flex;align-items:center;gap:8px;"><i style="width:8px;height:8px;background:#e0a413;display:inline-block;"></i><span class="small">Biomass</span></span>
                 <span class="mono small" style="color:var(--ink-strong)">11%</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px; justify-content:space-between;">
+                <span style="display:inline-flex;align-items:center;gap:8px;"><i style="width:8px;height:8px;background:#7a3470;display:inline-block;"></i><span class="small">Imports</span></span>
+                <span class="mono small" style="color:var(--ink-strong)">14%</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px; justify-content:space-between;">
+                <span style="display:inline-flex;align-items:center;gap:8px;"><i style="width:8px;height:8px;background:#8b8374;display:inline-block;"></i><span class="small">Other</span></span>
+                <span class="mono small" style="color:var(--ink-strong)">4%</span>
               </div>
             </div>
           </div>
           <div style="border-top:1px solid var(--rule); padding: 12px 20px; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
-            <span class="snapshot-note">Static snapshot · illustrative</span>
+            <span class="snapshot-note">Mean of 240 settlement periods · 1–5 Aug 2026</span>
             <a href="data-sources/elexon/fuelhh.html" class="link accent" style="font-size:12px;">Open <code class="mono">fuelhh</code> →</a>
           </div>
         </div>
@@ -559,7 +563,7 @@
                 <span class="chip" style="font-size:11px;">5m</span>
               </div>
             </div>
-            <div data-chart="sparkline" data-opts='{"seed":3,"width":80,"height":36}'></div>
+            <div data-chart="sparkline" data-opts='{"width":80,"height":36,"values":[160.0,132.88,160.0,115.04,158.0,170.504,104.46,123.75,159.0,92.76,65.0,51.66,31.062,26.03,13.52,33.81,82.4,110.13,96.1,178.5,172.77,178.5,178.5,182.0,142.07,139.81,139.2,137.96,139.26,135.02,160.5,160.5,96.2,124.12,117.96,85.0,129.78,129.44,132.47,-6.49,113.54,165.0,167.55,185.0,167.55,167.55,167.55,99.9,119.29,104.4,126.56,112.07,121.19,134.66,138.69,155.0,107.89,155.0,145.0,93.41,75.23,79.03,88.7,103.98,125.42,97.61,107.31,174.56,127.363,127.48,140.9,146.49,135.0,102.95,113.08,109.472,117.11,112.12,151.71,100.35,110.53,129.0,128.0,139.0,132.918,97.5,139.0,93.71,97.068,59.5,98.5,167.42,120.06,108.01,81.702,149.0,158.1,155.35,125.82,148.151,95.08,89.0,89.1,85.0,145.0,145.0,55.51,3.0,-10.376,-9.8,-9.0,-18.71,-48.0,102.24,125.35,148.0,145.2,155.4,147.58,140.73],"n":120}'></div>
             <span class="arrow" aria-hidden="true">→</span>
           </div>
         </a>
@@ -575,7 +579,7 @@
                 <span class="chip" style="font-size:11px;">15m</span>
               </div>
             </div>
-            <div data-chart="sparkline" data-opts='{"seed":7,"width":80,"height":36,"color":"#86627d","fill":"#e8dde8"}'></div>
+            <div data-chart="sparkline" data-opts='{"width":80,"height":36,"color":"#86627d","fill":"#e8dde8","values":[158.728,155.016,150.39,150.433,156.966,161.981,160.233,144.619,103.615,67.62,40.826,25.518,24.486,24.439,27.658,70.163,115.58,148.029,182.212,192.948,198.66,185.82,191.657,166.931,160.654,152.887,149.899,156.271,158.027,153.329,153.093,114.225,35.803,29.369,27.968,27.129,27.637,27.903,28.467,53.672,122.562,168.066,183.733,192.111,184.433,165.137,150.184,141.716,137.641,132.97,131.925,137.297,158.395,168.89,166.411,161.169,136.737,101.395,89.125,67.946,54.378,70.241,98.592,125.022,147.688,171.332,195.547,197.82,186.695,169.511,168.562,152.901,143.436,137.472,140.607,149.601,164.281,176.982,180.378,176.983,154.013,123.86,104.617,93.766,93.342,100.241,108.92,122.937,140.098,161.029,174.702,193.725,185.766,169.888,159.574,152.908,152.048,146.591,136.597,130.727,149.387,158.824,159.309,140.283,95.428,27.325,4.33,1.994,1.643,1.785,2.233,18.986,90.141,136.285,150.449,162.693,175.804,164.445,162.84,147.778],"n":120}'></div>
             <span class="arrow" aria-hidden="true">→</span>
           </div>
         </a>
@@ -592,7 +596,7 @@
                 <span class="chip" style="font-size:11px;">daily</span>
               </div>
             </div>
-            <div data-chart="sparkline" data-opts='{"seed":11,"width":80,"height":36,"color":"#c45a3a","fill":"#f6e2d5"}'></div>
+            <div data-chart="sparkline" data-opts='{"width":80,"height":36,"color":"#c45a3a","fill":"#f6e2d5","values":[38.307,36.949,38.271,38.869,39.68],"n":5}'></div>
             <span class="arrow" aria-hidden="true">→</span>
           </div>
         </a>
@@ -608,7 +612,7 @@
                 <span class="chip" style="font-size:11px;">daily</span>
               </div>
             </div>
-            <div data-chart="sparkline" data-opts='{"seed":13,"width":80,"height":36,"color":"#c9a96e","fill":"#efe5d1"}'></div>
+            <div data-chart="sparkline" data-opts='{"width":80,"height":36,"color":"#c9a96e","fill":"#efe5d1","values":[64.366,64.728,64.98,65.204,65.451],"n":5}'></div>
             <span class="arrow" aria-hidden="true">→</span>
           </div>
         </a>
@@ -625,7 +629,7 @@
                 <span class="chip" style="font-size:11px;">hourly</span>
               </div>
             </div>
-            <div data-chart="sparkline" data-opts='{"seed":17,"width":80,"height":36,"color":"#7a96a8","fill":"#dde6ec"}'></div>
+            <div data-chart="sparkline" data-opts='{"width":80,"height":36,"color":"#7a96a8","fill":"#dde6ec","values":[13.886,13.543,13.1,12.771,12.414,12.229,13.029,14.586,16.071,17.229,18.271,19.143,19.957,20.3,20.686,20.657,20.5,20.071,19.429,18.614,17.329,16.357,15.6,14.929,13.5,13.0,12.629,12.257,11.714,11.4,12.257,14.314,16.257,18.014,19.6,20.857,22.286,22.8,23.157,23.071,22.857,22.714,22.471,21.243,19.914,18.914,18.043,17.586,16.471,16.3,15.857,15.586,15.314,15.143,15.743,17.057,18.557,20.229,21.857,23.343,24.714,25.343,26.057,26.114,25.957,25.443,24.343,22.843,20.671,19.714,19.229,18.871,18.057,18.014,17.657,17.5,17.3,17.414,17.814,18.829,19.957,20.943,21.743,22.6,24.114,24.171,23.857,24.029,22.857,22.157,22.086,20.786,19.943,18.886,18.157,17.557,17.214,16.8,16.4,16.143,15.886,15.571,15.743,16.471,17.286,18.1,18.786,19.371,19.514,19.214,19.171,19.129,18.314,17.757,17.143,16.514,15.757,15.057,14.586,14.286],"n":120}'></div>
             <span class="arrow" aria-hidden="true">→</span>
           </div>
         </a>
@@ -641,7 +645,7 @@
                 <span class="chip" style="font-size:11px;">30m</span>
               </div>
             </div>
-            <div data-chart="sparkline" data-opts='{"seed":19,"width":80,"height":36}'></div>
+            <div data-chart="sparkline" data-opts='{"width":80,"height":36,"values":[165.0,139.0,123.0,117.0,118.0,112.0,100.0,80.0,67.0,63.0,62.0,60.0,60.0,60.0,60.0,72.0,98.0,135.0,153.0,171.0,173.0,160.0,162.0,161.0,156.0,146.0,147.0,154.0,156.0,138.0,124.0,105.0,88.0,79.0,75.0,73.0,71.0,71.0,79.0,115.0,138.0,153.0,168.0,180.0,176.0,170.0,158.0,155.0,151.0,145.0,132.0,137.0,148.0,146.0,130.0,108.0,85.0,67.0,61.0,58.0,58.0,63.0,68.0,98.0,129.0,143.0,159.0,170.0,172.0,167.0,156.0,158.0,167.0,170.0,165.0,173.0,176.0,172.0,153.0,139.0,122.0,105.0,98.0,91.0,87.0,87.0,84.0,88.0,104.0,121.0,139.0,137.0,130.0,130.0,115.0,105.0,94.0,86.0,67.0,55.0,57.0,59.0,56.0,60.0,54.0,49.0,46.0,45.0,42.0,41.0,40.0,41.0,44.0,59.0,79.0,95.0,104.0,100.0,95.0,87.0],"n":120}'></div>
             <span class="arrow" aria-hidden="true">→</span>
           </div>
         </a>
