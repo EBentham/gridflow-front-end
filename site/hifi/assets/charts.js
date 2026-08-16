@@ -185,8 +185,10 @@
       const N = opts.n || 48;
       const labels = opts.series.map((s) => s.name);
       const colors = opts.series.map((s, i) => s.color || [PALETTE.rust, PALETTE.forest, PALETTE.plum, PALETTE.sky, PALETTE.sand, "#d4a73a", "#5a8aa6", PALETTE.slate][i % 8]);
-      // generate each layer's raw series
+      // Each layer's raw series. Precedence matches sparkline():
+      // explicit values > shape generator > zero-fill.
       const series = opts.series.map((s, i) => {
+        if (Array.isArray(s.values) && s.values.length > 0) return s.values;
         const params = Object.assign({ seed: 7 + i * 13 }, s.params || {});
         const gen = SHAPES[s.shape];
         if (!gen) return new Array(N).fill(0);
