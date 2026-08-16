@@ -33,7 +33,9 @@
           <div class="row gap-8 mb-12" style="align-items:center;">
             <span class="eyebrow">{{ manifest.group }} · {{ doc.vendor_id }} · silver</span>
             {% if manifest.freq %}<span class="chip" style="font-size:11px;">{{ manifest.freq }}{% if manifest.lag and manifest.lag != "0" %} · {{ manifest.lag }} lag{% endif %}</span>{% endif %}
-            <span class="chip" style="font-size:11px;">Illustrative snapshot</span>
+            {# Switches with the snapshot chart below — a page whose chart plots
+               real silver data must not wear an "Illustrative snapshot" chip. #}
+            {% if chart %}<span class="chip" style="font-size:11px;">Snapshot · {{ chart.start_label }} – {{ chart.end_label }}</span>{% else %}<span class="chip" style="font-size:11px;">Illustrative snapshot</span>{% endif %}
           </div>
           <h1 class="display-2" style="margin-bottom: 14px;">
             <span class="fg-soft" style="font-size: 28px; font-family: var(--mono); letter-spacing: -0.01em;">{{ doc.slug }}</span><br/>
@@ -140,20 +142,57 @@
           {% endfor %}
         </section>
 
-        {# ─── snapshot chart (illustrative) ─── #}
+        {# ─── snapshot chart ─── #}
+        {# Two states, and every caption in this section switches with them.
+           `chart` is the distilled real series for this dataset, or None when
+           the extract had none (or the series failed a guard — see
+           chart_data.py). A real chart names its dataset, column, aggregation
+           and window; a seeded one says it is seeded. Never uniform in either
+           direction: a page must not claim real data it does not have, and an
+           "illustrative" label over real values is the same error reversed.
+
+           sparkline, not stackedArea, for the real path: stackedArea hardcodes
+           an 00:00–24:00 x-axis, which would mislabel a 5-day series as one
+           day. sparkline draws no axis at all, so the caption is the only
+           claim being made. `n` is emitted with `values` because charts.js
+           scales x by `opts.n || 48` and would otherwise run a 120-point
+           series past the viewBox. #}
         <section id="snapshot-chart" style="margin-bottom:56px;">
-          <div class="eyebrow mb-8">Illustrative snapshot</div>
-          <h2 class="display-3 mb-24">Shape of the silver layer.</h2>
-          <div class="chart" style="padding:24px 28px;">
-            <div class="row between mb-16" style="align-items:baseline;">
-              <div>
-                <div class="eyebrow mb-4">{{ doc.slug }} · silver layer</div>
-                <div class="small">Deterministic seeded snapshot — shape only, not real values.</div>
+          {% if chart %}
+            <div class="eyebrow mb-8">Silver-layer snapshot</div>
+            <h2 class="display-3 mb-24">Shape of the silver layer.</h2>
+            <div class="chart" style="padding:24px 28px;">
+              <div class="row between mb-16" style="align-items:baseline;">
+                <div>
+                  <div class="eyebrow mb-4">{{ doc.slug }} · silver layer · {{ chart.column }}</div>
+                  <div class="small">{{ chart.aggregation }} · {{ chart.start_label }} – {{ chart.end_label }}{% if chart.downsampled %} · {{ chart.points_raw }} points block-averaged to {{ chart.points }}{% endif %}</div>
+                </div>
+                <span class="chip" style="font-size:11px;">Static snapshot</span>
               </div>
-              <span class="chip" style="font-size:11px;">Illustrative snapshot</span>
+              <div data-chart="sparkline" data-opts='{{ chart_opts }}'></div>
+              {# Endpoint labels only. Several datasets are unevenly spaced or
+                 block-averaged, so an intermediate tick would sit under a
+                 sample it does not describe. #}
+              <div class="row between mt-8" style="font-family:var(--mono); font-size:10px; color:var(--ink-faint);">
+                <span>{{ chart.start_label }}</span>
+                <span>{{ chart.end_label }}</span>
+              </div>
+              <div class="mt-16" style="font-family:var(--mono); font-size:10px; letter-spacing:0.08em; color:var(--ink-faint); text-transform:uppercase;">{{ doc.vendor_label }} {{ doc.slug }} · {{ chart.column }} · silver layer</div>
             </div>
-            <div data-chart="stackedArea" data-opts='{"width":900,"height":280,"seed":{{ (doc.slug | sum(start=0, attribute=None)) if false else 42 }}}'></div>
-          </div>
+          {% else %}
+            <div class="eyebrow mb-8">Illustrative snapshot</div>
+            <h2 class="display-3 mb-24">Shape of the silver layer.</h2>
+            <div class="chart" style="padding:24px 28px;">
+              <div class="row between mb-16" style="align-items:baseline;">
+                <div>
+                  <div class="eyebrow mb-4">{{ doc.slug }} · silver layer</div>
+                  <div class="small">Deterministic seeded snapshot — shape only, not real values.</div>
+                </div>
+                <span class="chip" style="font-size:11px;">Illustrative snapshot</span>
+              </div>
+              <div data-chart="stackedArea" data-opts='{"width":900,"height":280,"seed":42}'></div>
+            </div>
+          {% endif %}
         </section>
 
         {# ─── schema ─── #}
