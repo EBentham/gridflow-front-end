@@ -27,6 +27,15 @@ Vault path resolution order:
     1. --vault-path CLI flag
     2. $GRIDFLOW_VAULT_PATH env var
     3. <repo>/vault/ (vendored fallback)
+
+Snapshot-chart data is a separate, occasional step:
+
+    gridflow-build --refresh-chart-data          # re-distil site/hifi/data/chart-series.json
+
+That command reads a local gridflow extract and rewrites the committed
+``site/hifi/data/chart-series.json``; ordinary builds only ever read that file.
+See ``chart_data`` for why the read is split in two — CI builds from a bare
+checkout and cannot see the extract.
 """
 
 from __future__ import annotations
@@ -44,6 +53,8 @@ from html import escape as html_escape
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
+
+from gridflow_front_end import chart_data
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 TEMPLATES_DIR = REPO_ROOT / "templates"
@@ -985,7 +996,15 @@ def make_env() -> Environment:
     return env
 
 
-def render_dataset(env: Environment, doc: DatasetDoc, manifest: dict) -> str:
+def render_dataset(
+    env: Environment, doc: DatasetDoc, manifest: dict, chart: dict | None = None
+) -> str:
+    """Render one dataset page.
+
+    ``chart`` is the distilled real series for this page, or ``None`` when the
+    page has no extracted data — in which case the template renders its seeded
+    snapshot and the "illustrative, seeded" caption that goes with it.
+    """
     template = env.get_template("dataset.html.j2")
     siblings = manifest_siblings(manifest, doc.slug)
     manifest_entry = manifest_index(manifest).get(doc.slug, {})
@@ -995,6 +1014,13 @@ def render_dataset(env: Environment, doc: DatasetDoc, manifest: dict) -> str:
         siblings=siblings,
         all_groups=manifest["groups"],
         manifest_total=manifest_total_count(manifest),
+        chart=chart,
+        chart_opts=json.dumps(
+            {"width": 900, "height": 280, "n": chart["points"], "values": chart["values"]},
+            separators=(",", ":"),
+        )
+        if chart
+        else "",
     )
 
 
@@ -1069,8 +1095,22 @@ def audit_vault_content(docs: list[DatasetDoc]) -> tuple[list[str], list[str]]:
     return warnings, errors
 
 
-def build_vendor(env: Environment, vendor_id: str, vault_path: Path, out_root: Path) -> int:
-    """Render one vendor's dataset pages + hub. Returns dataset-page count."""
+def build_vendor(
+    env: Environment,
+    vendor_id: str,
+    vault_path: Path,
+    out_root: Path,
+    chart_series: dict[str, dict] | None = None,
+) -> tuple[int, int, int]:
+    """Render one vendor's dataset pages + hub.
+
+    Returns ``(dataset_page_count, template_page_count, real_chart_count)``.
+    ``chart_series`` is the committed distilled series keyed
+    ``"<vendor>/<slug>"``; a page with no entry renders its seeded chart. Only
+    template-rendered pages can receive an injected series, so the second count
+    is the denominator for the third.
+    """
+    chart_series = chart_series or {}
     vendor_cfg = REAL_VENDORS[vendor_id]
     vendor_label = vendor_cfg["label"]
     vendor_dir = vault_path / vendor_id
@@ -1118,16 +1158,26 @@ def build_vendor(env: Environment, vendor_id: str, vault_path: Path, out_root: P
         sys.exit(1)
 
     n_pages = 0
+    n_template_pages = 0
+    n_real_charts = 0
     for _path, doc in docs:
         out_path = out_dataset_dir / f"{doc.slug}.html"
         authored = AUTHORED_DIR / vendor_id / f"{doc.slug}.html"
         if authored.exists():
+            # Authored pages carry their own markup verbatim, charts included —
+            # they are not template-rendered, so chart injection does not reach
+            # them. Subsuming their baked-in values is a separate change.
             shutil.copy(authored, out_path)
             print(f"  wrote: data-sources/{vendor_id}/{doc.slug}.html (authored)")
         else:
-            html = render_dataset(env, doc, manifest)
+            chart = chart_series.get(f"{vendor_id}/{doc.slug}")
+            html = render_dataset(env, doc, manifest, chart=chart)
             out_path.write_text(html, encoding="utf-8")
-            print(f"  wrote: data-sources/{vendor_id}/{doc.slug}.html")
+            suffix = f" (real: {chart['column']})" if chart else ""
+            print(f"  wrote: data-sources/{vendor_id}/{doc.slug}.html{suffix}")
+            n_template_pages += 1
+            if chart:
+                n_real_charts += 1
         n_pages += 1
 
     hub_path = out_root / "data-sources" / f"{vendor_id}.html"
@@ -1141,7 +1191,7 @@ def build_vendor(env: Environment, vendor_id: str, vault_path: Path, out_root: P
         )
         hub_path.write_text(hub_html, encoding="utf-8")
         print(f"  wrote: data-sources/{vendor_id}.html")
-    return n_pages
+    return n_pages, n_template_pages, n_real_charts
 
 
 def build_coming_soon_stubs(env: Environment, out_root: Path) -> int:
@@ -1288,18 +1338,38 @@ def build(vault_path: Path, output_dir: Path | None = None) -> tuple[int, int, i
     _reset_md_link_stats()
     _reset_caveat_stats()
 
+    chart_series = chart_data.load_series(SITE_DIR)
+
     n_pages = 0
     n_hubs = 0
+    n_template_pages = 0
+    n_real_charts = 0
     for vendor_id in REAL_VENDORS:
         if not (vault_path / vendor_id).is_dir():
             print(f"  skip vendor (no vault dir): {vendor_id}")
             continue
-        n_pages += build_vendor(env, vendor_id, vault_path, out_root)
+        pages, template_pages, real_charts = build_vendor(
+            env, vendor_id, vault_path, out_root, chart_series
+        )
+        n_pages += pages
+        n_template_pages += template_pages
+        n_real_charts += real_charts
         n_hubs += 1
 
     n_hub_stubs = build_coming_soon_stubs(env, out_root)
     n_pages += copy_authored_dataset_pages_for_coming_soon(out_root)
     n_dataset_stubs = build_dataset_stubs_from_landings(env, out_root)
+    if chart_series:
+        print(
+            f"[gridflow-build] snapshot charts: {n_real_charts} real series injected from "
+            f"{chart_data.series_path(SITE_DIR).name}, "
+            f"{n_template_pages - n_real_charts} template page(s) seeded"
+        )
+    else:
+        print(
+            "[gridflow-build] snapshot charts: no chart-series.json — all template pages "
+            "seeded (run --refresh-chart-data against a local gridflow extract)"
+        )
     print(
         f"[gridflow-build] vault-relative .md links: {_MD_LINK_STATS['resolved']} resolved, "
         f"{_MD_LINK_STATS['plain_text']} rendered as plain text (no published page), "
@@ -1345,6 +1415,42 @@ def _diff_outputs(temp_dir: Path) -> list[str]:
     return differing
 
 
+def refresh_chart_data(cli_path: str | None) -> int:
+    """Re-distil the committed chart-series file from a local gridflow extract.
+
+    Local-only: the extract lives outside the repo, so this is run by hand after
+    a re-extract and the resulting JSON is committed. Every dataset that did NOT
+    become a chart is reported with its reason — a silently short list would read
+    as "the extract had nothing", which is exactly the failure this guards.
+    """
+    extract_root = chart_data.resolve_extract_path(cli_path)
+    print(f"[gridflow-build] chart extract: {extract_root}")
+    try:
+        payload, notes, problems = chart_data.distil(extract_root)
+    except FileNotFoundError as exc:
+        print(f"[gridflow-build] ERROR: {exc}", file=sys.stderr)
+        return 1
+    out_path = chart_data.write_series(payload, SITE_DIR)
+    for note in notes:
+        print(f"  seeded: {note}")
+    if problems:
+        print(
+            f"[gridflow-build] {len(problems)} column-choice divergence(s) from the extract's "
+            "charts-manifest:",
+            file=sys.stderr,
+        )
+        for problem in problems:
+            print(f"  NOTE: {problem}", file=sys.stderr)
+    print(
+        f"[gridflow-build] wrote {out_path.relative_to(REPO_ROOT)}: "
+        f"{payload['count']} real series over {payload['window_label']}, "
+        f"{len(notes)} dataset(s) left seeded"
+    )
+    print("[gridflow-build] commit that file — CI builds from a bare checkout and cannot")
+    print("                 see the extract, so an uncommitted refresh never reaches the site.")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="gridflow-build", description=__doc__.split("\n", 1)[0])
     parser.add_argument(
@@ -1358,7 +1464,23 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Build twice and exit non-zero if any output changes between builds (idempotence check).",
     )
+    parser.add_argument(
+        "--refresh-chart-data",
+        action="store_true",
+        help="Re-distil site/hifi/data/chart-series.json from a local gridflow extract "
+        "and exit without building. Run this after a re-extract, then commit the file.",
+    )
+    parser.add_argument(
+        "--chart-extract-path",
+        default=None,
+        help="Path to the gridflow chart-data extract (containing manifest.json). "
+        "Defaults to $GRIDFLOW_CHART_EXTRACT_PATH, then "
+        f"{chart_data.DEFAULT_EXTRACT}. Only used by --refresh-chart-data.",
+    )
     args = parser.parse_args(argv)
+
+    if args.refresh_chart_data:
+        return refresh_chart_data(args.chart_extract_path)
 
     vault_path = resolve_vault_path(args.vault_path)
     print(f"[gridflow-build] vault: {vault_path}")
