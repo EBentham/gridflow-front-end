@@ -15,7 +15,20 @@
         <span class="sep">/</span>
         <span class="here">{{ doc.slug }}</span>
       </div>
-      <div style="display:grid; grid-template-columns: 1fr auto; gap: 48px; align-items: stretch;">
+      {# Two fixes, both caused by this grid deferring to the spec table:
+
+         align-items:start, not stretch -- the spec grid's rows are `1fr`, so
+         under `stretch` they split the HERO COLUMN's height rather than their
+         own content's, giving 200px+ cells around one line of text.
+
+         minmax(340px, 460px), not `auto` -- an `auto` track sizes to
+         max-content, so one long PRIMARY KEY value (windfor's is 86 chars)
+         inflated the table to 790px and starved the prose column to 299px,
+         wrapping the title over five lines. Capping the table keeps the
+         content column dominant no matter what the metadata says.
+         minmax(0, 1fr) lets the left track actually shrink rather than
+         defaulting to its min-content floor. #}
+      <div style="display:grid; grid-template-columns: minmax(0, 1fr) minmax(340px, 460px); gap: 48px; align-items: start;">
         <div>
           <div class="row gap-8 mb-12" style="align-items:center;">
             <span class="eyebrow">{{ manifest.group }} · {{ doc.vendor_id }} · silver</span>
@@ -36,7 +49,9 @@
             </p>
           {% endif %}
         </div>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(3, 1fr); gap: 0; border: 1px solid var(--rule); background: var(--paper-card); min-width: 340px;">
+        {# overflow-wrap:anywhere so a long PRIMARY KEY / path value wraps inside
+           its cell instead of pushing the whole table wider. #}
+        <div style="display:grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(3, 1fr); gap: 0; border: 1px solid var(--rule); background: var(--paper-card); min-width: 340px; overflow-wrap: anywhere;">
           <div style="padding: 16px 18px; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule);">
             <div class="tiny mb-6">SILVER PATH</div>
             <div class="mono small">silver.{{ doc.slug }}</div>
