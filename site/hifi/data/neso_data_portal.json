@@ -9,7 +9,7 @@
       ]
     },
     {
-      "name": "Carbon Intensity",
+      "name": "Generation mix archive",
       "blurb": "Half-hourly GB generation mix by fuel type and carbon intensity, archived from 2009.",
       "datasets": [
         { "id": "historic_generation_mix", "title": "Historic generation mix & carbon intensity", "freq": "30 min", "lag": "Not stated by NESO", "rows": "~48 / day" }
