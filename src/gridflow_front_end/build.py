@@ -250,8 +250,8 @@ REAL_VENDORS: dict[str, dict] = {
                 "CKAN file-download platform distinct from the existing NESO Carbon "
                 "Intensity API. Per-BMU wind availability forecasts, embedded (sub-"
                 "transmission) wind/solar generation forecasts, and a half-hourly GB "
-                "generation-mix archive back to 2009. 129 catalogued packages; 3 implemented "
-                "so far, 29 more eligible and queued as Planned."
+                "generation-mix archive back to 2009. The portal publishes 129 packages; "
+                "3 are implemented so far, with 29 more documented and ready to add next."
             ),
             "vendor_docs_url": "https://www.neso.energy/data-portal/api-guidance",
             "base_url": "api.neso.energy/api/3/action",

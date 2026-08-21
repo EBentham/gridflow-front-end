@@ -69,7 +69,7 @@
           <h1 class="display-2" style="margin-bottom: 18px;">
             NESO <span class="italic">Data Portal.</span>
           </h1>
-          <p class="lede" style="max-width: 580px;">The National Energy System Operator's general open-data catalogue &mdash; a CKAN file-download platform, distinct from the existing <a href="neso.html" class="link">NESO Carbon Intensity</a> API despite the shared name. Per-BMU wind availability forecasts, embedded (sub-transmission) wind/solar generation forecasts, and a half-hourly GB generation-mix archive back to 2009. 129 packages are catalogued across the portal; 3 are implemented here, with the next 29 eligible packages queued below as Planned.</p>
+          <p class="lede" style="max-width: 580px;">The National Energy System Operator's general open-data catalogue &mdash; a CKAN file-download platform, distinct from the existing <a href="neso.html" class="link">NESO Carbon Intensity</a> API despite the shared name. Per-BMU wind availability forecasts, embedded (sub-transmission) wind/solar generation forecasts, and a half-hourly GB generation-mix archive back to 2009. The portal publishes 129 packages; 3 are implemented here, and the 29 listed below are the ones most readily added next.</p>
           <div class="row gap-16 mt-32">
             <a href="#datasets" class="btn primary">Browse 3 datasets &darr;</a>
             <a href="https://www.neso.energy/data-portal/api-guidance" target="_blank" rel="noopener" class="btn ghost">Vendor docs &nearr;</a>
@@ -117,7 +117,7 @@
       </div>
       <div>
         <div class="stat-n">29</div>
-        <div class="stat-l">Planned &middot; eligible, not yet built</div>
+        <div class="stat-l">Planned &middot; documented, not yet built</div>
       </div>
       <div>
         <div class="stat-n">129</div>
@@ -223,25 +223,27 @@
     <div class="container">
       <div class="row between mb-32" style="align-items: end;">
         <div>
-          <div class="eyebrow mb-8">29 packages &middot; T1 tier, eligible</div>
+          <div class="eyebrow mb-8">29 packages &middot; next in line</div>
           <h2 class="display-3">Planned.</h2>
         </div>
       </div>
 
       <p class="small mb-24" style="max-width: 760px; color:var(--ink-soft);">
-        The portal's full CKAN catalogue is 129 packages. 33 pass the "T1" bar
-        &mdash; a single CSV resource, no parser or multi-era work needed &mdash;
-        of which 2 (<span class="mono">daily_wind_availability</span>,
-        <span class="mono">historic_generation_mix</span>) are already
-        implemented above. Two more T1 packages are administrative, not GB
-        power/gas market data, and are deliberately not queued as datasets:
-        <span class="mono">data-portal-planned-changes-known-issues</span> (the
-        portal's own changelog) and
-        <span class="mono">national-demand-balancing-mechanism-units</span> (a
-        bare BMU-ID list with no time dimension). That leaves the 29 below —
-        catalogued, not yet connected to a silver schema or bronze data.
-        The remaining 96 packages (T2&ndash;T5: multi-resource or non-CSV) are
-        out of scope for this page.
+        The portal publishes 129 packages in total. Thirty-three of them are
+        straightforward to ingest &mdash; one CSV file each, no bespoke parser
+        and no format changes part-way through their history. Two of those are
+        already built: <span class="mono">daily_wind_availability</span> and
+        <span class="mono">historic_generation_mix</span>, above. Two others
+        describe the portal rather than the grid, so they are not treated as
+        datasets here:
+        <span class="mono">data-portal-planned-changes-known-issues</span> is
+        the portal's own changelog, and
+        <span class="mono">national-demand-balancing-mechanism-units</span> is
+        a bare list of BM unit IDs with no time dimension. That leaves the 29
+        listed below &mdash; catalogued and understood, but not yet connected
+        to a schema or ingested. The other 96 packages need more work per
+        dataset: several files spanning different eras, or formats other than
+        CSV such as spreadsheets, archives and PDFs.
       </p>
 
       <div class="planned-grid">
