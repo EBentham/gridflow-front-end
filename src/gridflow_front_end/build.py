@@ -1295,9 +1295,11 @@ _PARTIAL_CONNECTOR_VENDORS = frozenset({"neso_data_portal"})
 def _vendor_stub_metadata() -> dict[str, dict[str, str | None]]:
     """Lookup table: vendor folder → {label, docs_url, connector_state}.
 
-    Drives ``build_dataset_stubs_from_landings``. Covers all REAL_VENDORS (the six
-    documented vendors, including the unified ``gie``) plus any COMING_SOON_VENDORS
-    (currently none).
+    Drives ``build_dataset_stubs_from_landings``. Covers all REAL_VENDORS (the
+    seven documented vendors, including the unified ``gie``) plus any
+    COMING_SOON_VENDORS (currently none). Vendors in
+    ``_PARTIAL_CONNECTOR_VENDORS`` report ``connector_state="planned"`` so their
+    stubs never claim the pipeline already ingests them.
     """
     meta: dict[str, dict[str, str | None]] = {}
     for vendor_id, cfg in REAL_VENDORS.items():

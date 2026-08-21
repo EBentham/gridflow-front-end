@@ -292,7 +292,7 @@
         <div class="caveat">
           <div class="num">01</div>
           <div>
-            <h4>A file-download API, not a query API</h4>
+            <h4>Gridflow downloads whole files here, it does not page rows</h4>
             <p>Every other gridflow vendor is a JSON or XML query API &mdash; send parameters, get rows back. On the Data Portal, <span class="mono">package_show</span> returns <em>metadata</em>, and the bulk data lives in CSV/XLSX/ZIP resources discovered through that metadata and downloaded separately. CKAN does expose row-level queries over these resources via <span class="mono">datastore_search</span> and <span class="mono">datastore_search_sql</span>, but at a much tighter 2 requests/minute; gridflow takes the whole-file download path instead, which is why this connector reads bytes rather than paging rows.</p>
             <div class="src">Source &middot; vault README.md &middot; endpoints.md</div>
           </div>
