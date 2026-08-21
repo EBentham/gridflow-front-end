@@ -269,11 +269,15 @@ REAL_VENDORS: dict[str, dict] = {
 }
 
 
-# All seven vendors are now documented at full fidelity (Phase 10 closed the v2
-# milestone; T-23 added neso_data_portal): elexon, entsoe, entsog, gie, neso,
-# openmeteo, neso_data_portal all live in REAL_VENDORS above. This list is
-# intentionally empty — the coming-soon machinery
-# (build_coming_soon_stubs / build_dataset_stubs_from_landings) is retained, dormant,
+# All seven vendors ship real documentation (Phase 10 closed the v2 milestone;
+# T-23 added neso_data_portal): elexon, entsoe, entsog, gie, neso, openmeteo,
+# neso_data_portal all live in REAL_VENDORS above. Six of them are documented at
+# full fidelity — every dataset their landing page links to is implemented.
+# neso_data_portal is the exception: it links 29 eligible-but-unbuilt CKAN
+# packages, so build_dataset_stubs_from_landings is ACTIVE (see
+# _PARTIAL_CONNECTOR_VENDORS below, which keeps those stubs from claiming the
+# pipeline already ingests them). This list stays empty — the VENDOR-level
+# coming-soon machinery (build_coming_soon_stubs) is retained, dormant,
 # for any future vendor that ships ahead of its documentation.
 COMING_SOON_VENDORS: list[dict] = []
 
@@ -1227,8 +1231,8 @@ def build_vendor(
 def build_coming_soon_stubs(env: Environment, out_root: Path) -> int:
     """Render coming-soon vendor hub stubs for any deferred vendors.
 
-    For each entry in ``COMING_SOON_VENDORS`` (currently empty — all six vendors
-    are documented at full fidelity after the v2 milestone), copies
+    For each entry in ``COMING_SOON_VENDORS`` (currently empty — every one of the
+    seven vendors ships a real landing page), copies
     ``authored-pages/<vendor_id>/_landing.html`` verbatim if present, else renders
     ``vendor-coming-soon.html.j2``. Dormant after v2; retained for any future
     vendor that ships ahead of its documentation.
