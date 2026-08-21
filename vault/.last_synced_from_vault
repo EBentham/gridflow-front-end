@@ -1,5 +1,6 @@
 {
-    "vault_commit":  "97567f78feec203c0a2c1f5a1a811926af59eb29",
-    "vault_ref":  "master",
-    "synced_at_utc":  "2026-07-25T21:51:30Z"
+    "vault_commit":  "1a7e539f3898ea366bb9da9395d276a284fdaa58",
+    "vault_ref":  "docs/daily-2026-08-17-gridflow",
+    "synced_at_utc":  "2026-08-21T20:20:00Z",
+    "note":  "T-23 partial sync (neso_data_portal only): sourced from this branch, not vault master, because 30-vendors/neso-data-portal/ is not yet merged to master (commit 90b57bb, 'phase COMPLETE', is an ancestor). Deviates from propagate-vault-mirror precondition 1 (sync only from merged master) by necessity of this task; other vendor mirrors were not re-synced."
 }
