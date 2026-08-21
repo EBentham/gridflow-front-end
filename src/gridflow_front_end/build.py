@@ -1277,6 +1277,17 @@ def copy_authored_dataset_pages_for_coming_soon(out_root: Path) -> int:
     return n
 
 
+# REAL_VENDORS whose gridflow connector does NOT cover every dataset the
+# vendor's landing page links to. Every other REAL_VENDOR is documented at
+# full fidelity — every linked dataset is already ingested, so its Planned
+# stubs (if any) may truthfully say so. neso_data_portal links its full
+# implemented + eligible-but-not-yet-built catalogue from one landing page
+# (T-23): the "shipping" stub copy ("the gridflow ETL pipeline already
+# ingests it") would be false for the ~29 not-yet-implemented packages —
+# exactly the "Shipping badge on unfinished work" front-end CLAUDE.md bans.
+_PARTIAL_CONNECTOR_VENDORS = frozenset({"neso_data_portal"})
+
+
 def _vendor_stub_metadata() -> dict[str, dict[str, str | None]]:
     """Lookup table: vendor folder → {label, docs_url, connector_state}.
 
@@ -1289,7 +1300,9 @@ def _vendor_stub_metadata() -> dict[str, dict[str, str | None]]:
         meta[vendor_id] = {
             "label": cfg["label"],
             "docs_url": cfg["vendor_meta"].get("vendor_docs_url"),
-            "connector_state": "shipping",
+            "connector_state": (
+                "planned" if vendor_id in _PARTIAL_CONNECTOR_VENDORS else "shipping"
+            ),
         }
     for cfg in COMING_SOON_VENDORS:
         meta[cfg["vendor_id"]] = {
