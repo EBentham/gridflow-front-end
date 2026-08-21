@@ -66,6 +66,7 @@ SOURCE_TO_VENDOR: dict[str, str] = {
     "gie_agsi": "gie",
     "gie_alsi": "gie",
     "neso": "neso",
+    "neso_data_portal": "neso_data_portal",
     "open_meteo": "openmeteo",
 }
 

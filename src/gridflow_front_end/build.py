@@ -237,12 +237,42 @@ REAL_VENDORS: dict[str, dict] = {
             "stat_four_label": "GB sites",
         },
     },
+    "neso_data_portal": {
+        "label": "NESO Data Portal",
+        "vendor_doc_base": "https://www.neso.energy/data-portal/api-guidance",
+        "vendor_meta": {
+            "region": "United Kingdom",
+            "domain": "Electricity",
+            "heading_prefix": "NESO",
+            "heading_italic": "Data Portal.",
+            "lede": (
+                "The National Energy System Operator's general open-data catalogue — a "
+                "CKAN file-download platform distinct from the existing NESO Carbon "
+                "Intensity API. Per-BMU wind availability forecasts, embedded (sub-"
+                "transmission) wind/solar generation forecasts, and a half-hourly GB "
+                "generation-mix archive back to 2009. 129 catalogued packages; 3 implemented "
+                "so far, 29 more eligible and queued as Planned."
+            ),
+            "vendor_docs_url": "https://www.neso.energy/data-portal/api-guidance",
+            "base_url": "api.neso.energy/api/3/action",
+            "auth": "Public · no key required",
+            "rate_limit": "1 req/s · CKAN action API (IP-block enforced)",
+            "format": "CKAN JSON metadata → CSV file download",
+            "earliest": "2009-01-01 · historic_generation_mix",
+            "timezone": "UTC · daily / half-hourly grain",
+            "stat_three_value": "129",
+            "stat_three_label": "CKAN packages catalogued",
+            "stat_four_value": "3",
+            "stat_four_label": "Implemented so far",
+        },
+    },
 }
 
 
-# All six vendors are now documented at full fidelity (Phase 10 closed the v2
-# milestone): elexon, entsoe, entsog, gie, neso, openmeteo all live in
-# REAL_VENDORS above. This list is intentionally empty — the coming-soon machinery
+# All seven vendors are now documented at full fidelity (Phase 10 closed the v2
+# milestone; T-23 added neso_data_portal): elexon, entsoe, entsog, gie, neso,
+# openmeteo, neso_data_portal all live in REAL_VENDORS above. This list is
+# intentionally empty — the coming-soon machinery
 # (build_coming_soon_stubs / build_dataset_stubs_from_landings) is retained, dormant,
 # for any future vendor that ships ahead of its documentation.
 COMING_SOON_VENDORS: list[dict] = []

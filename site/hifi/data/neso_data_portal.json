@@ -1,0 +1,19 @@
+{
+  "groups": [
+    {
+      "name": "Generation",
+      "blurb": "Per-BMU wind availability forecasts and embedded (sub-transmission) wind/solar generation forecasts from the NESO Open Data Portal's CKAN file catalogue.",
+      "datasets": [
+        { "id": "daily_wind_availability", "title": "Daily wind availability · per-BMU forecast", "freq": "daily", "lag": "Not stated by NESO (whole-file republication)", "rows": "~300 / day (per wind BMU)" },
+        { "id": "embedded_wind_solar_forecast", "title": "Embedded wind & solar forecast · current issue", "freq": "30 min", "lag": "Forecast issue cadence not stated by NESO", "rows": "~48 / day" }
+      ]
+    },
+    {
+      "name": "Carbon Intensity",
+      "blurb": "Half-hourly GB generation mix by fuel type and carbon intensity, archived from 2009.",
+      "datasets": [
+        { "id": "historic_generation_mix", "title": "Historic generation mix & carbon intensity", "freq": "30 min", "lag": "Not stated by NESO", "rows": "~48 / day" }
+      ]
+    }
+  ]
+}
