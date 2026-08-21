@@ -10,16 +10,12 @@ layer_coverage: "bronze, silver"
 
 ## Overview
 
-Per-BMU daily wind availability forecast, 2–14 days ahead: for each
-transmission-connected wind BM unit, the MW expected to be available on each
-future GB availability day. NESO republishes the whole file, so successive
-captures are successive forecast vintages of the same days — the dataset
-answers "what did NESO believe about wind availability for day D, as of
-capture time T?". In models it is a supply-side input for margin/scarcity
-forecasting, and its `BMU_ID` column cross-references Elexon BM units
-directly (stored verbatim for exactly that join). Chosen as the first
-Data-Portal dataset because it is the cleanest possible shape: daily grain,
-no intra-day timezone ambiguity, three columns.
+Per-BMU wind availability forecasts, 2–14 days ahead: the MW each
+transmission-connected wind BM unit expects to have available on a given day.
+NESO republishes the whole file, so successive captures are successive
+forecast vintages of the same days — you can ask what NESO expected for day
+D as of capture time T. A supply-side input for margin and scarcity models;
+`BMU_ID` joins straight to Elexon BM units, and is stored verbatim for that.
 
 → [Settlement period](../../../20-domain/concepts/settlement-period.md)
 

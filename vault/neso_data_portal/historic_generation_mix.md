@@ -10,16 +10,15 @@ layer_coverage: "bronze, silver"
 
 ## Overview
 
-Half-hourly GB electricity generation mix from 2009: MW output per fuel
-(gas, coal, nuclear, wind, embedded wind, hydro, imports, biomass, other,
-solar, storage), total generation, carbon intensity, and NESO's own
-percentage shares for each. The longest half-hourly fuel-mix history in the
-stack and the highest-modelling-value dataset of this vendor's first slice —
-a training backbone for carbon-intensity and fuel-switching models, and a
-cross-check candidate against Elexon `fuelhh` (transmission-only, so
-`wind_emb` here covers what Elexon structurally cannot). NESO cleanses and
-republishes the **whole history**, so two captures can legitimately disagree
-about the same half-hour — vintages matter.
+Half-hourly GB generation mix from 2009: MW per fuel (gas, coal, nuclear,
+wind, embedded wind, hydro, imports, biomass, solar, storage, other), total
+generation, carbon intensity, and NESO's own percentage shares. The longest
+half-hourly fuel-mix history in the stack — a training backbone for
+carbon-intensity and fuel-switching models. It also reaches what Elexon
+`fuelhh` structurally cannot: `fuelhh` is transmission-only, while `wind_emb`
+here includes embedded wind. NESO cleanses and republishes the **whole
+history**, so two captures can legitimately disagree about the same
+half-hour — vintages matter.
 
 → [Settlement period](../../../20-domain/concepts/settlement-period.md)
 

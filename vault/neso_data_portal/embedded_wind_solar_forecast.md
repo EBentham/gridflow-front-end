@@ -10,16 +10,15 @@ layer_coverage: "bronze, silver"
 
 ## Overview
 
-NESO's half-hourly forecast of **embedded** (distribution-connected) wind
-and solar generation and capacity for GB, per settlement period. Embedded
-generation is invisible to Elexon's transmission-metered datasets — it
-appears there only as suppressed demand — so this dataset fills the gap the
-Elexon stack structurally cannot: models of net demand, effective margin, or
-solar-driven demand suppression need it. Each vendor file is one forecast
-issue (the issue instant is stamped in the vendor's own filename);
-successive issues are successive vintages of the same settlement periods.
-Only the **current** resource of the 11-resource package is ingested
-(chosen slice); archive chunks are catalogued but not implemented.
+NESO's half-hourly forecast of **embedded** (distribution-connected) wind and
+solar generation and capacity for GB, per settlement period. Embedded
+generation is invisible to Elexon's transmission-metered datasets — it shows
+up there only as suppressed demand — so this fills a gap the Elexon stack
+structurally cannot: net demand, effective margin, and solar-driven demand
+suppression. Each vendor file is one forecast issue, its instant stamped in
+the filename; successive issues are successive vintages of the same
+settlement periods. Only the **current** file is ingested; the historical
+archives are catalogued but not built.
 
 → [Settlement period](../../../20-domain/concepts/settlement-period.md)
 
