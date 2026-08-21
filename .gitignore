@@ -29,3 +29,5 @@ site/hifi/data-sources/neso/*.html
 site/hifi/data-sources/neso.html
 site/hifi/data-sources/openmeteo/*.html
 site/hifi/data-sources/openmeteo.html
+site/hifi/data-sources/neso_data_portal/*.html
+site/hifi/data-sources/neso_data_portal.html

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <title>Data sources · Gridflow</title>
-  <meta name="description" content="Browse the gridflow data catalogue: 162 documented datasets across six vendors spanning UK and EU electricity, gas, carbon intensity, and weather."/>
+  <meta name="description" content="Browse the gridflow data catalogue: 165 documented datasets across seven vendors spanning UK and EU electricity, gas, carbon intensity, and weather."/>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,7 +24,7 @@
 
       <div style="display:grid; grid-template-columns: 1.5fr 1fr; gap: 64px; align-items: end;">
         <div>
-          <div class="eyebrow mb-16">Catalog · 6 vendors · 162 datasets · all documented at full fidelity</div>
+          <div class="eyebrow mb-16">Catalog · 7 vendors · 165 datasets · six at full fidelity, one growing</div>
           <h1 class="display-2" style="margin-bottom: 18px;">
             Where the data <span class="italic">comes from.</span>
           </h1>
@@ -35,8 +35,8 @@
         </div>
         <div style="display:flex; flex-direction: column; gap: 12px; align-items: flex-end;">
           <div class="row gap-8">
-            <span class="chip btn-like ink">All · 6</span>
-            <span class="chip btn-like">Electricity · 3</span>
+            <span class="chip btn-like ink">All · 7</span>
+            <span class="chip btn-like">Electricity · 4</span>
             <span class="chip btn-like">Gas · 2</span>
             <span class="chip btn-like">LNG · 1</span>
             <span class="chip btn-like">Weather · 1</span>
@@ -59,7 +59,7 @@
     <div class="container">
       <div class="row between mb-24" style="align-items: baseline;">
         <h2 class="display-3"><span class="fg-soft">01.</span> Electricity</h2>
-        <span class="small">3 vendors · 115 datasets · earliest 2014</span>
+        <span class="small">4 vendors · 118 datasets · earliest 2009</span>
       </div>
 
       <!-- Elexon (featured, big) -->
@@ -131,6 +131,28 @@
             </div>
           </div>
           <div data-chart="sparkline" data-opts='{"width":260,"height":48,"values":[165.0,139.0,123.0,117.0,118.0,112.0,100.0,80.0,67.0,63.0,62.0,60.0,60.0,60.0,60.0,72.0,98.0,135.0,153.0,171.0,173.0,160.0,162.0,161.0,156.0,146.0,147.0,154.0,156.0,138.0,124.0,105.0,88.0,79.0,75.0,73.0,71.0,71.0,79.0,115.0,138.0,153.0,168.0,180.0,176.0,170.0,158.0,155.0,151.0,145.0,132.0,137.0,148.0,146.0,130.0,108.0,85.0,67.0,61.0,58.0,58.0,63.0,68.0,98.0,129.0,143.0,159.0,170.0,172.0,167.0,156.0,158.0,167.0,170.0,165.0,173.0,176.0,172.0,153.0,139.0,122.0,105.0,98.0,91.0,87.0,87.0,84.0,88.0,104.0,121.0,139.0,137.0,130.0,130.0,115.0,105.0,94.0,86.0,67.0,55.0,57.0,59.0,56.0,60.0,54.0,49.0,46.0,45.0,42.0,41.0,40.0,41.0,44.0,59.0,79.0,95.0,104.0,100.0,95.0,87.0],"n":120}'></div>
+          <span class="arrow" aria-hidden="true">→</span>
+        </div>
+      </a>
+
+      <!-- NESO Data Portal -->
+      <a href="data-sources/neso_data_portal.html" id="dataportal" class="row-link card flush" style="border:1px solid var(--rule); padding: 24px 28px; margin-top: 12px; display:block;">
+        <div style="display:grid; grid-template-columns: 80px 1fr 280px auto; gap: 32px; align-items: center;">
+          <div>
+            <div class="mono" style="font-size: 28px; color: var(--ink-strong); font-family: var(--serif);">ND</div>
+            <div class="tiny mt-8">UK</div>
+          </div>
+          <div>
+            <h3 style="font-size: 22px; margin-bottom: 6px;">NESO Data Portal</h3>
+            <p class="small" style="max-width: 420px; margin: 0 0 10px;">CKAN file-download catalogue — per-BMU wind availability, embedded wind/solar forecasts, and a half-hourly generation mix archive from 2009.</p>
+            <div class="tag-row">
+              <span class="chip" style="font-size:11px;">30 min</span>
+              <span class="chip" style="font-size:11px;">3 datasets</span>
+              <span class="chip" style="font-size:11px;">Public</span>
+              <span class="chip" style="font-size:11px;">1 req/s</span>
+            </div>
+          </div>
+          <div data-chart="sparkline" data-opts='{"width":260,"height":48,"color":"#5c8a5c","fill":"#dceadc","values":[33.812,39.575,47.175,47.319,52.671,50.388,47.86,44.911,52.193,55.106,50.318,49.946,42.16,37.064,35.55,43.039,42.039,46.431,46.127,31.856,25.377,24.464,25.521,29.241,27.369,21.513,23.757,20.265,25.385,23.287,29.147,21.749,21.479,22.223,18.948,20.613,26.614,39.047,33.578,28.298,22.349,21.846,23.027,27.779,30.107,32.822,28.599,29.265,33.874,41.107,42.815,41.12,45.364,46.568,41.999,36.574,41.356,37.806,35.968,38.176,40.08,40.682,35.266,39.228,43.095,35.747,34.642,36.206,41.422,37.964,40.069,43.433,32.832,37.959,32.633,27.72,31.574,31.594,37.281,41.443,32.358,38.518,35.808,39.62,37.052,37.918,38.543,32.537,36.416,25.819,42.756,41.09,46.911,39.689,40.046,23.835,33.459,34.968,33.125,36.347,25.449,28.822,28.716,21.663,22.079,21.98,19.842,31.941,27.59,35.654,27.698,20.578,21.896,24.114,27.851,26.784,27.737,18.247,24.054,24.529],"n":120}'></div>
           <span class="arrow" aria-hidden="true">→</span>
         </div>
       </a>
@@ -309,6 +331,15 @@
             <td class="mono">2018-01</td>
             <td>Public</td>
             <td class="mono">10 req/s</td>
+          </tr>
+          <tr>
+            <td><a href="#dataportal" class="link">NESO Data Portal</a></td>
+            <td>United Kingdom</td>
+            <td>Electricity</td>
+            <td>3</td>
+            <td class="mono">2009-01</td>
+            <td>Public</td>
+            <td class="mono">1 req/s</td>
           </tr>
         </tbody>
       </table>

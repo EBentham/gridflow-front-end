@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>NESO Data Portal · Gridflow</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,30..100&family=Inter:wght@300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/theme.css" />
+  <style>
+    /* page-specific tweaks — kept minimal */
+    body { min-width: 0; }
+    .meta-grid { display:grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--rule); background: var(--paper-card); }
+    .meta-grid > div { padding: 18px 20px; border-bottom: 1px solid var(--rule); }
+    .meta-grid > div:nth-child(odd) { border-right: 1px solid var(--rule); }
+    .meta-grid > div:nth-last-child(-n+2) { border-bottom: 0; }
+    .meta-grid .mono { word-break: break-all; }
+    .ds-grid { display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .planned-grid { display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .footer { margin-top: 0; }
+    .card.ds-card { border:1px solid var(--rule); padding: 20px 22px; background: var(--paper-card); display:block; }
+    .card.ds-card h4 { font-family: var(--serif); font-size: 18px; margin: 0; }
+    .card.ds-card .mono.small { min-width: 0; }
+    .ds-meta { color: var(--ink-soft); }
+    .card.planned-card { border:1px solid var(--rule); padding: 14px 16px; background: var(--paper-card); display:block; }
+    .card.planned-card .mono.small { color: var(--ink-strong); }
+    .card.planned-card .title { display:block; font-size: 13px; color: var(--ink-soft); margin-top: 4px; }
+    .group-head { display:flex; justify-content:space-between; align-items:baseline; margin-bottom: 16px; }
+    .group-head h3 { font-family: var(--serif); font-size: 24px; font-weight: 400; margin: 0; }
+
+    @media (max-width: 1080px) {
+      .hero-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
+      .stats-strip { grid-template-columns: repeat(2, 1fr) !important; }
+      .stats-strip > div:nth-child(2) { border-right: 0; }
+      .stats-strip > div:nth-child(1), .stats-strip > div:nth-child(2) { border-bottom: 1px solid var(--rule); }
+      .ds-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .planned-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 560px) {
+      .meta-grid { grid-template-columns: 1fr; }
+      .meta-grid > div { border-right: 0 !important; border-bottom: 1px solid var(--rule); }
+      .meta-grid > div:last-child { border-bottom: 0; }
+      .ds-grid { grid-template-columns: 1fr; }
+      .planned-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body data-page="vendor" data-root="../" data-screen-label="Vendor · NESO Data Portal">
+<main>
+
+  <!-- hero -->
+  <section class="block" style="padding: 48px 0 40px;">
+    <div class="container">
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <a href="../index.html">Gridflow</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="../data-sources.html">Data sources</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span class="here" aria-current="page">NESO Data Portal</span>
+      </nav>
+
+      <div class="hero-grid" style="display:grid; grid-template-columns: 1.4fr 1fr; gap: 64px; align-items: end;">
+        <div>
+          <div class="row gap-8 mb-16" style="align-items:center;">
+            <span class="eyebrow">NESO &middot; United Kingdom &middot; Electricity</span>
+          </div>
+          <h1 class="display-2" style="margin-bottom: 18px;">
+            NESO <span class="italic">Data Portal.</span>
+          </h1>
+          <p class="lede" style="max-width: 580px;">NESO's open-data catalogue: wind availability forecasts, embedded wind and solar forecasts, and a half-hourly GB generation-mix archive back to 2009 &mdash; published as downloadable files through CKAN. Separate from the <a href="neso.html" class="link">NESO Carbon Intensity</a> API despite the shared name. Three of its 129 packages are implemented here; the 29 below come next.</p>
+          <div class="row gap-16 mt-32">
+            <a href="#datasets" class="btn primary">Browse 3 datasets &darr;</a>
+            <a href="https://www.neso.energy/data-portal/api-guidance" target="_blank" rel="noopener" class="btn ghost">Vendor docs &nearr;</a>
+          </div>
+        </div>
+
+        <div>
+          <div class="meta-grid">
+            <div>
+              <div class="tiny mb-8">BASE URL</div>
+              <div class="mono small">api.neso.energy/api/3/action</div>
+            </div>
+            <div>
+              <div class="tiny mb-8">AUTH</div>
+              <div class="small">Public &middot; no key required</div>
+            </div>
+            <div>
+              <div class="tiny mb-8">FORMAT</div>
+              <div class="small">CKAN JSON metadata &rarr; CSV file download</div>
+            </div>
+            <div>
+              <div class="tiny mb-8">RATE LIMIT</div>
+              <div class="small">1 req/s &middot; CKAN action API<br/><span style="color:var(--ink-faint);">IP-block enforced, not HTTP 429</span></div>
+            </div>
+            <div>
+              <div class="tiny mb-8">EARLIEST</div>
+              <div class="small">2009-01-01 &middot; historic_generation_mix</div>
+            </div>
+            <div>
+              <div class="tiny mb-8">TIMEZONE</div>
+              <div class="small">UTC &middot; daily / half-hourly grain</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- stats strip -->
+  <div class="container">
+    <div class="stats-strip" style="grid-template-columns: repeat(4, 1fr);">
+      <div>
+        <div class="stat-n">3</div>
+        <div class="stat-l">Datasets implemented</div>
+      </div>
+      <div>
+        <div class="stat-n">29</div>
+        <div class="stat-l">Planned &middot; documented, not yet built</div>
+      </div>
+      <div>
+        <div class="stat-n">129</div>
+        <div class="stat-l">CKAN packages catalogued</div>
+      </div>
+      <div>
+        <div class="stat-n">2009</div>
+        <div class="stat-l">Archive depth &middot; generation mix</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- dataset catalog -->
+  <section class="block" id="datasets" style="background: var(--paper-deep); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);">
+    <div class="container">
+      <div class="row between mb-32" style="align-items: end;">
+        <div>
+          <div class="eyebrow mb-8">3 datasets &middot; 2 categories</div>
+          <h2 class="display-3">The catalog.</h2>
+        </div>
+      </div>
+
+      <!-- Group: Generation -->
+      <div class="mb-32">
+        <div class="group-head">
+          <h3>Generation</h3>
+          <span class="small">2 datasets</span>
+        </div>
+        <p class="small mb-24" style="max-width:640px; color:var(--ink-soft);">Per-BMU wind availability forecasts and embedded (sub-transmission) wind/solar generation forecasts from the CKAN file catalogue.</p>
+
+        <div class="ds-grid">
+          <a href="neso_data_portal/daily_wind_availability.html" class="row-link card flush ds-card">
+            <div class="row between" style="align-items: flex-start; margin-bottom: 12px;">
+              <div>
+                <div class="row gap-8 mb-8">
+                  <span class="mono small" style="color:var(--ink-strong);">daily_wind_availability</span>
+                  <span class="chip" style="font-size:10px;">daily</span>
+                </div>
+                <h4>Daily wind availability &middot; per-BMU forecast</h4>
+              </div>
+              <span class="arrow" aria-hidden="true">&rarr;</span>
+            </div>
+            <div class="row gap-16 small ds-meta">
+              <span><span class="mono">daily</span></span>
+              <span>Lag <span class="mono">not stated</span></span>
+              <span><span class="mono">~300 / day</span></span>
+            </div>
+          </a>
+
+          <a href="neso_data_portal/embedded_wind_solar_forecast.html" class="row-link card flush ds-card">
+            <div class="row between" style="align-items: flex-start; margin-bottom: 12px;">
+              <div>
+                <div class="row gap-8 mb-8">
+                  <span class="mono small" style="color:var(--ink-strong);">embedded_wind_solar_forecast</span>
+                  <span class="chip" style="font-size:10px;">30 min</span>
+                </div>
+                <h4>Embedded wind &amp; solar forecast &middot; current issue</h4>
+              </div>
+              <span class="arrow" aria-hidden="true">&rarr;</span>
+            </div>
+            <div class="row gap-16 small ds-meta">
+              <span><span class="mono">30 min</span></span>
+              <span>Lag <span class="mono">not stated</span></span>
+              <span><span class="mono">~48 / day</span></span>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Group: Generation mix archive -->
+      <div class="mb-32">
+        <div class="group-head">
+          <h3>Generation mix archive</h3>
+          <span class="small">1 dataset</span>
+        </div>
+        <p class="small mb-24" style="max-width:640px; color:var(--ink-soft);">Half-hourly GB generation mix by fuel type and carbon intensity, archived from 2009.</p>
+
+        <div class="ds-grid">
+          <a href="neso_data_portal/historic_generation_mix.html" class="row-link card flush ds-card">
+            <div class="row between" style="align-items: flex-start; margin-bottom: 12px;">
+              <div>
+                <div class="row gap-8 mb-8">
+                  <span class="mono small" style="color:var(--ink-strong);">historic_generation_mix</span>
+                  <span class="chip" style="font-size:10px;">30 min</span>
+                </div>
+                <h4>Historic generation mix &amp; carbon intensity</h4>
+              </div>
+              <span class="arrow" aria-hidden="true">&rarr;</span>
+            </div>
+            <div class="row gap-16 small ds-meta">
+              <span><span class="mono">30 min</span></span>
+              <span>Lag <span class="mono">not stated</span></span>
+              <span><span class="mono">~48 / day</span></span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- planned catalogue -->
+  <section class="block" id="planned">
+    <div class="container">
+      <div class="row between mb-32" style="align-items: end;">
+        <div>
+          <div class="eyebrow mb-8">29 packages &middot; next in line</div>
+          <h2 class="display-3">Planned.</h2>
+        </div>
+      </div>
+
+      <p class="small mb-24" style="max-width: 760px; color:var(--ink-soft);">
+        The portal publishes 129 packages in total. Thirty-three of them are
+        straightforward to ingest &mdash; one CSV file each, no bespoke parser
+        and no format changes part-way through their history. Two of those are
+        already built: <span class="mono">daily_wind_availability</span> and
+        <span class="mono">historic_generation_mix</span>, above. Two others
+        describe the portal rather than the grid, so they are not treated as
+        datasets here:
+        <span class="mono">data-portal-planned-changes-known-issues</span> is
+        the portal's own changelog, and
+        <span class="mono">national-demand-balancing-mechanism-units</span> is
+        a bare list of BM unit IDs with no time dimension. That leaves the 29
+        listed below &mdash; catalogued and understood, but not yet connected
+        to a schema or ingested. The other 96 packages need more work per
+        dataset: several files spanning different eras, or formats other than
+        CSV such as spreadsheets, archives and PDFs.
+      </p>
+
+      <div class="planned-grid">
+        <a href="neso_data_portal/constraint_cost_forecast_24_months_ahead.html" class="row-link card planned-card"><span class="mono small">constraint_cost_forecast_24_months_ahead</span><span class="title">24 Months Ahead Constraint Cost Forecast</span></a>
+        <a href="neso_data_portal/aahedc_tariffs.html" class="row-link card planned-card"><span class="mono small">aahedc_tariffs</span><span class="title">AAHEDC Tariffs</span></a>
+        <a href="neso_data_portal/bsuos_fixed_tariffs.html" class="row-link card planned-card"><span class="mono small">bsuos_fixed_tariffs</span><span class="title">BSUoS Fixed Tariffs</span></a>
+        <a href="neso_data_portal/contract_transfer_of_obligation.html" class="row-link card planned-card"><span class="mono small">contract_transfer_of_obligation</span><span class="title">Contract Transfer of Obligation</span></a>
+        <a href="neso_data_portal/country_carbon_intensity_forecast.html" class="row-link card planned-card"><span class="mono small">country_carbon_intensity_forecast</span><span class="title">Country Carbon Intensity Forecast</span></a>
+        <a href="neso_data_portal/daily_opmr.html" class="row-link card planned-card"><span class="mono small">daily_opmr</span><span class="title">Daily Operational Planning Margin Requirement</span></a>
+        <a href="neso_data_portal/day_ahead_half_hourly_demand_forecast_performance.html" class="row-link card planned-card"><span class="mono small">day_ahead_half_hourly_demand_forecast_performance</span><span class="title">Day Ahead Half Hourly Demand Forecast Performance</span></a>
+        <a href="neso_data_portal/demand_profile_dates.html" class="row-link card planned-card"><span class="mono small">demand_profile_dates</span><span class="title">Demand Profile Dates</span></a>
+        <a href="neso_data_portal/dynamic_moderation_requirements.html" class="row-link card planned-card"><span class="mono small">dynamic_moderation_requirements</span><span class="title">Dynamic Moderation Requirements</span></a>
+        <a href="neso_data_portal/dynamic_regulation_requirements.html" class="row-link card planned-card"><span class="mono small">dynamic_regulation_requirements</span><span class="title">Dynamic Regulation Requirements</span></a>
+        <a href="neso_data_portal/embedded_register.html" class="row-link card planned-card"><span class="mono small">embedded_register</span><span class="title">Embedded Register</span></a>
+        <a href="neso_data_portal/gb_system_inertia_bid_and_offer_costs.html" class="row-link card planned-card"><span class="mono small">gb_system_inertia_bid_and_offer_costs</span><span class="title">GB System Inertia Bid and Offer Costs</span></a>
+        <a href="neso_data_portal/interconnector_register.html" class="row-link card planned-card"><span class="mono small">interconnector_register</span><span class="title">Interconnector Register</span></a>
+        <a href="neso_data_portal/long_term_2_52_weeks_ahead_national_demand_forecast.html" class="row-link card planned-card"><span class="mono small">long_term_2_52_weeks_ahead_national_demand_forecast</span><span class="title">Long Term (2&ndash;52 weeks ahead) National Demand Forecast</span></a>
+        <a href="neso_data_portal/long_term_forecasts_for_dc_dm_dr_requirements.html" class="row-link card planned-card"><span class="mono small">long_term_forecasts_for_dc_dm_dr_requirements</span><span class="title">Long-Term Forecasts for DC, DM and DR Requirements</span></a>
+        <a href="neso_data_portal/obp_non_bm_physical_notifications.html" class="row-link card planned-card"><span class="mono small">obp_non_bm_physical_notifications</span><span class="title">OBP &middot; Non-BM Physical Notifications</span></a>
+        <a href="neso_data_portal/obp_non_bm_reserve_instructions.html" class="row-link card planned-card"><span class="mono small">obp_non_bm_reserve_instructions</span><span class="title">OBP &middot; Non-BM Instructions</span></a>
+        <a href="neso_data_portal/obp_reserve_availability_utilisation_price.html" class="row-link card planned-card"><span class="mono small">obp_reserve_availability_utilisation_price</span><span class="title">OBP &middot; Reserve Availability MW and Utilisation Price</span></a>
+        <a href="neso_data_portal/operational_transparency_forum_network_congestion_data.html" class="row-link card planned-card"><span class="mono small">operational_transparency_forum_network_congestion_data</span><span class="title">Operational Transparency Forum &middot; Network Congestion Data</span></a>
+        <a href="neso_data_portal/quick_reserve_auction_requirement_forecast.html" class="row-link card planned-card"><span class="mono small">quick_reserve_auction_requirement_forecast</span><span class="title">Quick Reserve Auction Requirement Forecast</span></a>
+        <a href="neso_data_portal/short_term_operating_reserve_stor_day_ahead_auction_results.html" class="row-link card planned-card"><span class="mono small">short_term_operating_reserve_stor_day_ahead_auction_results</span><span class="title">STOR Day Ahead Auction Results</span></a>
+        <a href="neso_data_portal/slow_reserve_requirement_forecast.html" class="row-link card planned-card"><span class="mono small">slow_reserve_requirement_forecast</span><span class="title">Slow Reserve Requirement Forecast</span></a>
+        <a href="neso_data_portal/stability_midterm_y_1_utilisation_report.html" class="row-link card planned-card"><span class="mono small">stability_midterm_y_1_utilisation_report</span><span class="title">Stability Midterm (Y-1) Utilisation Report</span></a>
+        <a href="neso_data_portal/static_firm_frequency_response_requirement.html" class="row-link card planned-card"><span class="mono small">static_firm_frequency_response_requirement</span><span class="title">Static Firm Frequency Response Requirement</span></a>
+        <a href="neso_data_portal/stor_windows.html" class="row-link card planned-card"><span class="mono small">stor_windows</span><span class="title">STOR Windows</span></a>
+        <a href="neso_data_portal/transmission_entry_capacity_tec_register.html" class="row-link card planned-card"><span class="mono small">transmission_entry_capacity_tec_register</span><span class="title">Transmission Entry Capacity (TEC) Register</span></a>
+        <a href="neso_data_portal/upcoming_trades.html" class="row-link card planned-card"><span class="mono small">upcoming_trades</span><span class="title">Upcoming Trades</span></a>
+        <a href="neso_data_portal/weekly_opmr.html" class="row-link card planned-card"><span class="mono small">weekly_opmr</span><span class="title">Weekly Operational Planning Margin Requirement</span></a>
+        <a href="neso_data_portal/weekly_wind_availability.html" class="row-link card planned-card"><span class="mono small">weekly_wind_availability</span><span class="title">Weekly Wind Availability</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- vendor-wide caveats -->
+  <section class="block" id="about" style="background: var(--paper-deep); border-top: 1px solid var(--rule);">
+    <div class="container">
+      <div class="row between mb-32" style="align-items: end;">
+        <div>
+          <div class="eyebrow mb-8">Caveats &middot; known quirks</div>
+          <h2 class="display-3">What to watch for.</h2>
+        </div>
+      </div>
+
+      <div class="caveats" style="max-width: 920px;">
+        <div class="caveat">
+          <div class="num">01</div>
+          <div>
+            <h4>Gridflow downloads whole files here, it does not page rows</h4>
+            <p>Every other gridflow vendor is a JSON or XML query API &mdash; send parameters, get rows back. On the Data Portal, <span class="mono">package_show</span> returns <em>metadata</em>, and the bulk data lives in CSV/XLSX/ZIP resources discovered through that metadata and downloaded separately. CKAN does expose row-level queries over these resources via <span class="mono">datastore_search</span> and <span class="mono">datastore_search_sql</span>, but at a much tighter 2 requests/minute; gridflow takes the whole-file download path instead, which is why this connector reads bytes rather than paging rows.</p>
+            <div class="src">Source &middot; vault README.md &middot; endpoints.md</div>
+          </div>
+        </div>
+
+        <div class="caveat">
+          <div class="num">02</div>
+          <div>
+            <h4>Two vendors share the "NESO" name</h4>
+            <p>This page documents the Open Data Portal (CKAN, <span class="mono">api.neso.energy</span>). The separate <a href="neso.html" class="link">NESO Carbon Intensity</a> vendor on this site documents <span class="mono">api.carbonintensity.org.uk</span>, unrelated infrastructure with its own gridflow source key. The two are not merged and should not be confused.</p>
+            <div class="src">Source &middot; vault README.md</div>
+          </div>
+        </div>
+
+        <div class="caveat">
+          <div class="num">03</div>
+          <div>
+            <h4>Keyless, but rate-limited by IP block, not HTTP 429</h4>
+            <p>No API key is required for any of the 9 CKAN actions this portal exposes. NESO's own guidance recommends a maximum of 1 request/second on the action API and reserves the right to block the requesting IP if that guidance isn't followed &mdash; there is no documented soft-throttle response to detect and back off from.</p>
+            <div class="src">Source &middot; vault endpoints.md &middot; README.md "Rate limits"</div>
+          </div>
+        </div>
+
+        <div class="caveat">
+          <div class="num">04</div>
+          <div>
+            <h4>No backfill: the portal serves only its current file</h4>
+            <p>All three implemented datasets refuse a historical <span class="mono">gridflow backfill</span> or a historical ingest window by design &mdash; verified live. <span class="mono">daily_wind_availability</span> and <span class="mono">embedded_wind_solar_forecast</span> are rolling forward-looking forecasts; <span class="mono">historic_generation_mix</span> republishes its whole 2009-to-now archive on every capture, so the vintage axis (not a historical query parameter) is how successive captures are told apart.</p>
+            <div class="src">Source &middot; vault dataset pages &middot; "Known issues and gotchas"</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+<script src="../assets/charts.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

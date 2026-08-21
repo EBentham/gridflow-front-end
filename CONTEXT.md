@@ -37,11 +37,11 @@ The operation of identifying Drift and pushing the fix into the *derivative* lay
 _Avoid_: sync (suggests two-way), audit (suggests one-off)
 
 **Vendor**:
-A data source upstream of the gridflow ecosystem — Elexon, ENTSO-E, ENTSO-G, GIE, NESO, Open-Meteo. v2 site coverage is 6 Vendors; GIE is occasionally split into AGSI + ALSI on the Site (2 Site sub-hubs), but the upstream Vendor count remains 6.
+A data source upstream of the gridflow ecosystem — Elexon, ENTSO-E, ENTSO-G, GIE, NESO, Open-Meteo. v2 site coverage is 6 Vendors; GIE is occasionally split into AGSI + ALSI on the Site (2 Site sub-hubs), but the upstream Vendor count remains 6. T-23 (2026-08-21, post-v2) added a 7th, `neso_data_portal` — a second, unrelated NESO vendor (CKAN file catalogue, distinct from the existing NESO Carbon Intensity API).
 _Avoid_: provider, source (overloaded)
 
 **Dataset**:
-A Vendor-level concept: one named time-series or table available from a Vendor's API. Each Dataset has at most one Pydantic class in the Canonical, one `.md` file in the Vault, one `<dataset>.html` on the Site. v2 target: 163 Datasets across 6 Vendors.
+A Vendor-level concept: one named time-series or table available from a Vendor's API. Each Dataset has at most one Pydantic class in the Canonical, one `.md` file in the Vault, one `<dataset>.html` on the Site. v2 target: 163 Datasets across 6 Vendors (162 actually shipped). T-23 added `neso_data_portal`'s 3 implemented Datasets, bringing the current total to 165 across 7 Vendors. A further 29 eligible-but-unimplemented `neso_data_portal` packages are **not** counted as Datasets — they have no Pydantic class and no Vault file — but they *do* each render a "Planned" stub `<dataset>.html`, generated from the vendor landing page's links by `build_dataset_stubs_from_landings`.
 _Avoid_: endpoint (a Dataset can map to multiple endpoints / param shapes), table (loaded with DB connotations)
 
 ## Relationships

@@ -237,13 +237,47 @@ REAL_VENDORS: dict[str, dict] = {
             "stat_four_label": "GB sites",
         },
     },
+    "neso_data_portal": {
+        "label": "NESO Data Portal",
+        "vendor_doc_base": "https://www.neso.energy/data-portal/api-guidance",
+        "vendor_meta": {
+            "region": "United Kingdom",
+            "domain": "Electricity",
+            "heading_prefix": "NESO",
+            "heading_italic": "Data Portal.",
+            "lede": (
+                "The National Energy System Operator's general open-data catalogue — a "
+                "CKAN file-download platform distinct from the existing NESO Carbon "
+                "Intensity API. Per-BMU wind availability forecasts, embedded (sub-"
+                "transmission) wind/solar generation forecasts, and a half-hourly GB "
+                "generation-mix archive back to 2009. The portal publishes 129 packages; "
+                "3 are implemented so far, with 29 more documented and ready to add next."
+            ),
+            "vendor_docs_url": "https://www.neso.energy/data-portal/api-guidance",
+            "base_url": "api.neso.energy/api/3/action",
+            "auth": "Public · no key required",
+            "rate_limit": "1 req/s · CKAN action API (IP-block enforced)",
+            "format": "CKAN JSON metadata → CSV file download",
+            "earliest": "2009-01-01 · historic_generation_mix",
+            "timezone": "UTC · daily / half-hourly grain",
+            "stat_three_value": "129",
+            "stat_three_label": "CKAN packages catalogued",
+            "stat_four_value": "3",
+            "stat_four_label": "Implemented so far",
+        },
+    },
 }
 
 
-# All six vendors are now documented at full fidelity (Phase 10 closed the v2
-# milestone): elexon, entsoe, entsog, gie, neso, openmeteo all live in
-# REAL_VENDORS above. This list is intentionally empty — the coming-soon machinery
-# (build_coming_soon_stubs / build_dataset_stubs_from_landings) is retained, dormant,
+# All seven vendors ship real documentation (Phase 10 closed the v2 milestone;
+# T-23 added neso_data_portal): elexon, entsoe, entsog, gie, neso, openmeteo,
+# neso_data_portal all live in REAL_VENDORS above. Six of them are documented at
+# full fidelity — every dataset their landing page links to is implemented.
+# neso_data_portal is the exception: it links 29 eligible-but-unbuilt CKAN
+# packages, so build_dataset_stubs_from_landings is ACTIVE (see
+# _PARTIAL_CONNECTOR_VENDORS below, which keeps those stubs from claiming the
+# pipeline already ingests them). This list stays empty — the VENDOR-level
+# coming-soon machinery (build_coming_soon_stubs) is retained, dormant,
 # for any future vendor that ships ahead of its documentation.
 COMING_SOON_VENDORS: list[dict] = []
 
@@ -1197,8 +1231,8 @@ def build_vendor(
 def build_coming_soon_stubs(env: Environment, out_root: Path) -> int:
     """Render coming-soon vendor hub stubs for any deferred vendors.
 
-    For each entry in ``COMING_SOON_VENDORS`` (currently empty — all six vendors
-    are documented at full fidelity after the v2 milestone), copies
+    For each entry in ``COMING_SOON_VENDORS`` (currently empty — every one of the
+    seven vendors ships a real landing page), copies
     ``authored-pages/<vendor_id>/_landing.html`` verbatim if present, else renders
     ``vendor-coming-soon.html.j2``. Dormant after v2; retained for any future
     vendor that ships ahead of its documentation.
@@ -1247,19 +1281,34 @@ def copy_authored_dataset_pages_for_coming_soon(out_root: Path) -> int:
     return n
 
 
+# REAL_VENDORS whose gridflow connector does NOT cover every dataset the
+# vendor's landing page links to. Every other REAL_VENDOR is documented at
+# full fidelity — every linked dataset is already ingested, so its Planned
+# stubs (if any) may truthfully say so. neso_data_portal links its full
+# implemented + eligible-but-not-yet-built catalogue from one landing page
+# (T-23): the "shipping" stub copy ("the gridflow ETL pipeline already
+# ingests it") would be false for the ~29 not-yet-implemented packages —
+# exactly the "Shipping badge on unfinished work" front-end CLAUDE.md bans.
+_PARTIAL_CONNECTOR_VENDORS = frozenset({"neso_data_portal"})
+
+
 def _vendor_stub_metadata() -> dict[str, dict[str, str | None]]:
     """Lookup table: vendor folder → {label, docs_url, connector_state}.
 
-    Drives ``build_dataset_stubs_from_landings``. Covers all REAL_VENDORS (the six
-    documented vendors, including the unified ``gie``) plus any COMING_SOON_VENDORS
-    (currently none).
+    Drives ``build_dataset_stubs_from_landings``. Covers all REAL_VENDORS (the
+    seven documented vendors, including the unified ``gie``) plus any
+    COMING_SOON_VENDORS (currently none). Vendors in
+    ``_PARTIAL_CONNECTOR_VENDORS`` report ``connector_state="planned"`` so their
+    stubs never claim the pipeline already ingests them.
     """
     meta: dict[str, dict[str, str | None]] = {}
     for vendor_id, cfg in REAL_VENDORS.items():
         meta[vendor_id] = {
             "label": cfg["label"],
             "docs_url": cfg["vendor_meta"].get("vendor_docs_url"),
-            "connector_state": "shipping",
+            "connector_state": (
+                "planned" if vendor_id in _PARTIAL_CONNECTOR_VENDORS else "shipping"
+            ),
         }
     for cfg in COMING_SOON_VENDORS:
         meta[cfg["vendor_id"]] = {
