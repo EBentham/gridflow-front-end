@@ -1,8 +1,9 @@
 # gridflow-front-end
 
 Static documentation site for the [gridflow](https://github.com/EBentham/gridflow) ETL
-pipeline (UK/EU energy market data) and the [gridflow-models](https://github.com/EBentham/gridflow-models)
-modelling projects. Editorial-quiet portfolio aimed at full-stack data-science recruiters
+pipeline (UK/EU energy market data), the [gridflow-models](https://github.com/EBentham/gridflow-models)
+modelling projects, and the [gridflow-explorer](https://github.com/EBentham/gridflow-explorer)
+interactive analytics app. Editorial-quiet portfolio aimed at full-stack data-science recruiters
 in energy trading. **Not a product** — no SaaS chrome, no fake live indicators.
 
 Deployed via GitHub Pages from `site/hifi/` on push to `main`.
