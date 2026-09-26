@@ -1,0 +1,16 @@
+# gridflow-front-end — seat rulings (from v5, 2026-09-26)
+
+One line per ruling. `OWNER` = Bobbo typed it. `PROXY-SOURCED` = the seat ruled it under autonomous mode
+(classes 1-3); every PROXY-SOURCED line is a veto slot at the milestone close. Evidence, never intention.
+Earlier milestones keep their decisions phase-local (`phases/`, `docs/adr/`).
+
+| # | when (UTC) | unit | source | ruling |
+|---|---|---|---|---|
+| 1 | 2026-09-26T17:15Z | design | OWNER | Homepage design locked: canvas v5-B chosen, final board R3-final; DESIGN.md and site/hifi/assets/tokens.css written; CLAUDE.md locked line updated. Bobbo will rewrite the About copy himself. |
+| 2 | 2026-09-26T17:15Z | milestone | OWNER | "go with all your recommendations, start phases 22 to 24": v5 ratified (v5/MILESTONE.md). D1 v4 closed, v5 opened. D2 dataset agents write the canonical vault; the 130 authored overrides retire. |
+| 3 | 2026-09-26T17:15Z | milestone | OWNER | Same ratification: D3 real charts only via a new silver distil, seeded fallback deleted. D4 the site documents only what gridflow ingests; NESO Data Portal stubs dropped. D6 integration branch v5/site, one cutover. |
+| 4 | 2026-09-26T17:15Z | D5 | OWNER | Near-duplicate endpoint variants become family pages: the Phase 22 audit proposes the families and Bobbo rules on each one. |
+| 5 | 2026-09-26T17:15Z | D7 | PROXY-SOURCED (class 1, ratified text) | The live drift check is not approved by the ratification: D7 itself required his explicit yes. It waits for "run it" with his ENTSO-E key set; Phase 22 proceeds without it. |
+| 6 | 2026-09-26T17:15Z | git | PROXY-SOURCED (class 2, seat interpretation) | Commit authority for v5: commits and PRs into v5/site as the plan describes, plus docs-only commits to main. The cutover merge to main stays Bobbo's. Veto slot. |
+| 7 | 2026-09-26T17:15Z | seat | PROXY-SOURCED (class 2, routing) | The OWNER front-end lane (2026-09-26) governs v5: Opus 5.5 executes, no Sol/Astra, no tiers. The seat is a plain chat, not /jarvis (unit-pipeline). This seat: claude-opus-5-5. |
+| 8 | 2026-09-26T23:16Z | milestone | OWNER | "everything that can be done autonomously, done autonomously" while he sleeps: overnight run is 22, 23, 25a (design-independent pipeline) and round 1 of the 24 and 27 loops. 25b waits for the 24 lock. |

@@ -1,5 +1,9 @@
 # v4 — Full rebrand · EFFORT-PLAN
 
+> **SUPERSEDED 2026-09-26.** v4 closed at the design lock; phases 19-21 were replaced by v5
+> (`v5/MILESTONE.md`, `v5-EFFORT-PLAN.md`). The tiers below no longer bind: the front-end lane
+> (OWNER 2026-09-26) has no tiers. Kept for history.
+
 Created 2026-08-02 alongside ROADMAP § v4. Per-phase ceremony tiers; unit-pickup
 resourcing plans confirm-or-escalate these pre-assigned tiers rather than re-deriving.
 Tiers govern WHICH stages run, never how many review passes — reviews run to convergence

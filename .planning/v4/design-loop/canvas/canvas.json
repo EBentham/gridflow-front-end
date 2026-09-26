@@ -1,0 +1,292 @@
+{
+  "v": 3,
+  "attachments": {},
+  "boards": {
+    "A-engraved.dc.html": {
+      "h": 1800,
+      "title": "A: Engraved plate",
+      "w": 1440,
+      "x": 1491,
+      "y": 0
+    },
+    "B-borehole.dc.html": {
+      "h": 1800,
+      "title": "B: Borehole",
+      "w": 1440,
+      "x": 3040,
+      "y": 0
+    },
+    "B1-open.dc.html": {
+      "h": 1800,
+      "title": "B1: Open section",
+      "w": 1440,
+      "x": 0,
+      "y": 4440
+    },
+    "B2-block.dc.html": {
+      "h": 1800,
+      "title": "B2: Block diagram",
+      "w": 1440,
+      "x": 1520,
+      "y": 4440
+    },
+    "B3-dipping.dc.html": {
+      "h": 1800,
+      "title": "B3: Dipping beds",
+      "w": 1440,
+      "x": 3040,
+      "y": 4440
+    },
+    "B4-quarry.dc.html": {
+      "h": 1800,
+      "title": "B4: Quarry benches",
+      "w": 1440,
+      "x": 4560,
+      "y": 4440
+    },
+    "B5-quiet.dc.html": {
+      "h": 1800,
+      "title": "B5: Quiet strata",
+      "w": 1440,
+      "x": 6080,
+      "y": 4440
+    },
+    "C-horizon.dc.html": {
+      "h": 1800,
+      "title": "C: Demand horizon",
+      "w": 1440,
+      "x": 4560,
+      "y": 0
+    },
+    "D-type.dc.html": {
+      "h": 1800,
+      "title": "D: Type as instrument (wildcard)",
+      "w": 1440,
+      "x": 0,
+      "y": 2220
+    },
+    "E-schematic.dc.html": {
+      "h": 1800,
+      "title": "E: Single-line diagram (wildcard)",
+      "w": 1440,
+      "x": 1520,
+      "y": 2220
+    },
+    "Main.dc.html": {
+      "h": 1800,
+      "title": "Baseline: landscape v1, as August left it",
+      "w": 1440,
+      "x": 0,
+      "y": 0
+    },
+    "R3-panorama.dc.html": {
+      "h": 5973,
+      "title": "R3-1: The new grid, drawn",
+      "w": 1440,
+      "x": 0,
+      "y": 6660
+    },
+    "R3-section-v2.dc.html": {
+      "h": 5343,
+      "title": "R3-3 v2: with the purpose section",
+      "w": 1440,
+      "x": 4560,
+      "y": 6660
+    },
+    "R3-section.dc.html": {
+      "h": 5138,
+      "title": "R3-3: Above ground, below ground",
+      "w": 1440,
+      "x": 3040,
+      "y": 6660
+    },
+    "R3-transition.dc.html": {
+      "h": 7060,
+      "title": "R3-2: The transition, in data",
+      "w": 1440,
+      "x": 1520,
+      "y": 6660
+    },
+    "R3-v3-A.dc.html": {
+      "h": 5703,
+      "title": "Final v3-A: Notebook",
+      "w": 1440,
+      "x": 0,
+      "y": 14140
+    },
+    "R3-v3-B.dc.html": {
+      "h": 5703,
+      "title": "Final v3-B: Handle tree",
+      "w": 1440,
+      "x": 1520,
+      "y": 14140
+    },
+    "R3-v3-C.dc.html": {
+      "h": 5703,
+      "title": "Final v3-C: Lifecycle",
+      "w": 1440,
+      "x": 3040,
+      "y": 14140
+    },
+    "R3-v4-P1.dc.html": {
+      "h": 5919,
+      "title": "P1: Merit-order stack",
+      "w": 1440,
+      "x": 1520,
+      "y": 20263
+    },
+    "R3-v4-P2.dc.html": {
+      "h": 5919,
+      "title": "P2: The questions each model answers",
+      "w": 1440,
+      "x": 3040,
+      "y": 20263
+    },
+    "R3-v4-P3.dc.html": {
+      "h": 5919,
+      "title": "P3: Specimens, one panel per model",
+      "w": 1440,
+      "x": 4560,
+      "y": 20263
+    },
+    "R3-v4-base.dc.html": {
+      "h": 5919,
+      "title": "v4 base: notebook tweaks, current purpose section",
+      "w": 1440,
+      "x": 0,
+      "y": 20263
+    },
+    "R3-v5-A.dc.html": {
+      "h": 5919,
+      "title": "v5-A: Panorama stack",
+      "w": 1440,
+      "x": 0,
+      "y": 26782
+    },
+    "R3-v5-B.dc.html": {
+      "h": 5919,
+      "title": "v5-B: Clearing a distribution",
+      "w": 1440,
+      "x": 1520,
+      "y": 26782
+    },
+    "R3-v5-C.dc.html": {
+      "h": 5919,
+      "title": "v5-C: The forecast, assembled",
+      "w": 1440,
+      "x": 3040,
+      "y": 26782
+    },
+    "R3-final.dc.html": {
+      "x": 0,
+      "y": 33301,
+      "w": 1440,
+      "h": 6317,
+      "title": "Locked homepage (reference for DESIGN.md)"
+    }
+  },
+  "createdOnFiles": {
+    "at": "2026-09-25T12:00:00Z",
+    "v": 1
+  },
+  "designSystems": [],
+  "launch": {
+    "view": "canvas"
+  },
+  "notes": {
+    "row1": {
+      "kind": "title1",
+      "maxW": 6000,
+      "text": "Electrified landscape: the August baseline and three refinements",
+      "w": 240,
+      "x": 0,
+      "y": -300
+    },
+    "row2": {
+      "kind": "title1",
+      "maxW": 2960,
+      "text": "Wildcards: is the direction itself wrong?",
+      "w": 240,
+      "x": 0,
+      "y": 1920
+    },
+    "row3": {
+      "kind": "title1",
+      "maxW": 7520,
+      "text": "Round 2: the borehole look, without the borehole",
+      "w": 240,
+      "x": 0,
+      "y": 4140
+    },
+    "row4": {
+      "kind": "title1",
+      "maxW": 6000,
+      "text": "Round 3: the full homepage, energy transition theme",
+      "w": 240,
+      "x": 0,
+      "y": 6360
+    },
+    "row5": {
+      "kind": "title1",
+      "maxW": 4480,
+      "text": "Chosen design: three versions of the notebook section",
+      "w": 240,
+      "x": 0,
+      "y": 13840
+    },
+    "row6": {
+      "kind": "title1",
+      "maxW": 5920,
+      "text": "Locked page: three versions of the research-platform section",
+      "w": 240,
+      "x": 0,
+      "y": 19963
+    },
+    "row7": {
+      "kind": "title1",
+      "maxW": 4400,
+      "text": "Merit-order stack: three layouts",
+      "w": 240,
+      "x": -113,
+      "y": 26427
+    },
+    "row8": {
+      "x": 0,
+      "y": 33001,
+      "text": "Locked: the reference homepage",
+      "kind": "title1",
+      "maxW": 1440,
+      "w": 240
+    }
+  },
+  "order": [
+    "Main.dc.html",
+    "A-engraved.dc.html",
+    "B-borehole.dc.html",
+    "C-horizon.dc.html",
+    "D-type.dc.html",
+    "E-schematic.dc.html",
+    "B1-open.dc.html",
+    "B2-block.dc.html",
+    "B3-dipping.dc.html",
+    "B4-quarry.dc.html",
+    "B5-quiet.dc.html",
+    "R3-panorama.dc.html",
+    "R3-transition.dc.html",
+    "R3-section.dc.html",
+    "R3-section-v2.dc.html",
+    "R3-v3-A.dc.html",
+    "R3-v3-B.dc.html",
+    "R3-v3-C.dc.html",
+    "R3-v4-base.dc.html",
+    "R3-v4-P1.dc.html",
+    "R3-v4-P2.dc.html",
+    "R3-v4-P3.dc.html",
+    "R3-v5-A.dc.html",
+    "R3-v5-B.dc.html",
+    "R3-v5-C.dc.html",
+    "R3-final.dc.html"
+  ],
+  "pages": [],
+  "title": "gridflow v4 — round 1"
+}

@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>B3: Dipping beds</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=Hanken+Grotesk:ital,wght@0,400;0,500;0,600;1,400&amp;family=Red+Hat+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.r-root{background:#155A6E;color:#1C2B22;font:400 16px/1.65 "Hanken Grotesk",sans-serif;font-variant-numeric:tabular-nums}
+.r-root a{color:inherit}
+.r-sky{position:absolute;top:0;left:0;width:1440px;height:470px;color:#F6F4EC}
+.r-mast{display:flex;justify-content:space-between;align-items:baseline;padding:26px 80px 0}
+.r-brand{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:22px;text-decoration:none}
+.r-mast ul{display:flex;gap:30px;list-style:none;margin:0;padding:0;font-size:14.5px}
+.r-mast ul a{text-decoration:none;color:#CFE0DC}
+.r-mast ul a:hover{color:#F6F4EC}
+.r-mast ul a[aria-current="page"]{color:#F6F4EC;box-shadow:inset 0 -2px 0 #AFC64E}
+.r-hero{padding:76px 80px 0;display:grid;grid-template-columns:minmax(0,1fr) 440px;gap:96px;align-items:end}
+.r-hero h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:68px;line-height:.98;letter-spacing:-.025em;margin:0;max-width:16ch}
+.r-lede{font-size:17px;color:#CFE0DC;margin:0 0 22px}
+.r-cta{display:flex;gap:22px;align-items:center;margin:0 0 20px}
+.r-cta .go{background:#AFC64E;color:#1C2B22;font-weight:600;padding:12px 20px;border-radius:4px;text-decoration:none}
+.r-cta .go:hover{background:#C3D86A}
+.r-cta .alt{font-weight:600;text-underline-offset:4px}
+.r-scope{font-size:14px;color:#A9C7C4;margin:0}
+.r-block{position:absolute}
+.r-block h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:36px;line-height:1.06;letter-spacing:-.015em;margin:0 0 14px}
+.r-block p{font-size:15.5px;margin:0 0 14px;max-width:54ch;color:#2E3B33}
+.r-two{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:72px;align-items:start}
+.r-tables{list-style:none;margin:6px 0 0;padding:0;font-family:"Red Hat Mono",monospace;font-size:14px}
+.r-tables li{padding:9px 0;border-bottom:1px solid rgba(28,43,34,.18)}
+.r-link{font-weight:600;text-underline-offset:4px;color:#1C2B22}
+.r-mixhead{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:21px;margin:0 0 8px;color:#1C2B22}
+.r-cap{font-size:13.5px;color:#4A5448;margin:4px 0 0}
+.r-vendors a{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid rgba(28,43,34,.2);text-decoration:none;font-size:15px}
+.r-vendors a:hover b{text-decoration:underline}
+.r-vendors span{color:#5C4A33;font-size:13.5px}
+
+</style>
+</helmet>
+<div class="r-root" style="width: 1440px; height: 1800px; overflow: hidden; position: relative; background: #155A6E">
+<svg width="1440" height="1204" viewBox="0 0 1440 1204" aria-hidden="true" style="position: absolute; top: 596px; left: 0">
+<defs>
+<pattern id="stip" width="9" height="9" patternUnits="userSpaceOnUse"><circle cx="2" cy="3" r="1" fill="#8A6F1E"></circle><circle cx="6.5" cy="7.5" r=".8" fill="#8A6F1E"></circle></pattern>
+<pattern id="diag" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M0 8 L8 0" stroke="#5E6E6B" stroke-width=".8"></path></pattern>
+<pattern id="brick" width="24" height="12" patternUnits="userSpaceOnUse"><path d="M0 11.5 H24 M12 0 V6 M0 6 H24 M0 6 V12" stroke="#7C5530" stroke-width=".8" fill="none"></path></pattern>
+</defs>
+<path d="M0 0 L360 -4 Q 720 -10 1080 -2 L1440 -6 V404 C 960 464, 480 534, 0 574 Z" fill="#E9DDAF"></path>
+<path d="M0 0 L360 -4 Q 720 -10 1080 -2 L1440 -6 V404 C 960 464, 480 534, 0 574 Z" fill="url(#stip)" opacity=".35"></path>
+<path d="M0 574 C 480 534, 960 464, 1440 404 V744 C 960 804, 480 874, 0 914 Z" fill="#DCE2DF"></path>
+<path d="M0 574 C 480 534, 960 464, 1440 404 V744 C 960 804, 480 874, 0 914 Z" fill="url(#diag)" opacity=".3"></path>
+<path d="M0 914 C 480 874, 960 804, 1440 744 V1204 H0 Z" fill="#E2CDB3"></path>
+<path d="M0 914 C 480 874, 960 804, 1440 744 V1204 H0 Z" fill="url(#brick)" opacity=".3"></path>
+<g stroke="#1C2B22" stroke-width="1" opacity=".22" fill="none">
+<path d="M0 460 C 480 420, 960 350, 1440 290 M0 340 C 480 300, 960 230, 1440 170 M0 220 C 480 180, 960 110, 1440 50"></path>
+<path d="M0 690 C 480 650, 960 580, 1440 520 M0 800 C 480 760, 960 690, 1440 630"></path>
+<path d="M0 1030 C 480 990, 960 920, 1440 860 M0 1140 C 480 1100, 960 1030, 1440 970"></path>
+</g>
+<path d="M0 574 C 480 534, 960 464, 1440 404 M0 914 C 480 874, 960 804, 1440 744" stroke="#1C2B22" stroke-width="1.6" fill="none"></path>
+<g font-family="Hanken Grotesk" font-style="italic" font-size="14" fill="#1C2B22">
+<text transform="translate(1250,414) rotate(-7)">gold</text><text transform="translate(1250,446) rotate(-7)">silver</text>
+<text transform="translate(1250,754) rotate(-7)">silver</text><text transform="translate(1250,786) rotate(-7)">bronze</text>
+</g>
+</svg>
+<svg width="1440" height="140" viewBox="0 0 1440 140" aria-hidden="true" style="position: absolute; top: 470px; left: 0">
+<rect x="0" y="0" width="1440" height="112" fill="#155A6E"></rect>
+<path d="M0 70 L200 62 Q 320 52 460 60 L700 50 Q 860 44 1000 54 L1200 46 Q 1330 42 1440 48 V112 H0 Z" fill="#3E8C97"></path>
+<g stroke="#F6F4EC" stroke-width="2.2" stroke-linecap="round" fill="none">
+<g transform="translate(600,56)"><path d="M0 0 V-36 M0 -36 L0 -52 M0 -36 L14 -28 M0 -36 L-14 -28"></path></g>
+<g transform="translate(840,52) scale(.8)"><path d="M0 0 V-36 M0 -36 L10 -50 M0 -36 L14 -26 M0 -36 L-16 -32"></path></g>
+<g transform="translate(1290,45) scale(.9)"><path d="M0 0 V-36 M0 -36 L-8 -52 M0 -36 L16 -34 M0 -36 L-6 -20"></path></g>
+</g>
+<path d="M0 104 L300 98 Q 520 92 760 100 L1100 94 Q 1300 90 1440 96 V140 H0 Z" fill="#AFC64E"></path>
+<g stroke="#1C2B22" fill="none" stroke-linecap="round" stroke-width="1.8">
+<g transform="translate(430,98) scale(.62)"><path vector-effect="non-scaling-stroke" d="M-18 0 L-5 -96 M18 0 L5 -96 M-5 -96 L-5 -118 M5 -96 L5 -118 M-5 -118 H5 M-14 -28 H14 M-11 -56 H11 M-8 -80 H8 M-30 -66 H30 M-24 -92 H24 M-14 -112 H14"></path></g>
+<g transform="translate(1010,95) scale(.52)"><path vector-effect="non-scaling-stroke" d="M-18 0 L-5 -96 M18 0 L5 -96 M-5 -96 L-5 -118 M5 -96 L5 -118 M-5 -118 H5 M-14 -28 H14 M-11 -56 H11 M-8 -80 H8 M-30 -66 H30 M-24 -92 H24 M-14 -112 H14"></path></g>
+<path d="M0 70 Q 210 92 411 57 M449 57 Q 720 94 994 61 M1026 61 Q 1240 88 1440 64" stroke-width="1.2"></path>
+</g>
+</svg>
+<div class="r-sky">
+<div class="r-mast">
+<a class="r-brand" href="#">gridflow</a>
+<nav aria-label="Primary">
+<ul>
+<li><a href="#" aria-current="page">Home</a></li>
+<li><a href="#">Data sources</a></li>
+<li><a href="#">Architecture</a></li>
+<li><a href="#">Models</a></li>
+<li><a href="#">About</a></li>
+</ul>
+</nav>
+</div>
+<div class="r-hero">
+<h1>A pipeline and catalogue for UK &amp; European energy data.</h1>
+<div>
+<p class="r-lede">Gridflow ingests, normalises and serves time-series data from seven public and authenticated vendors (electricity, gas, weather and carbon) into a single queryable warehouse. Models for demand, wind, solar and clearing prices sit one layer above.</p>
+<div class="r-cta"><a class="go" href="#">Explore the architecture</a><a class="alt" href="#">See a model</a></div>
+<p class="r-scope">Seven vendors, 165 datasets, four markets, seventeen years of history, three pipeline layers.</p>
+</div>
+</div>
+</div>
+<div class="r-block" style="top: 646px; left: 80px; width: 1120px">
+<p class="r-mixhead">Great Britain’s generation, 1 to 5 August 2026</p>
+<svg width="1120" height="150" viewBox="0 0 1120 150" role="img" aria-label="Core sample of GB generation by fuel, scaled in gigawatts: wind 6.4, CCGT 5.6, nuclear 3.6, imports 3.2, biomass 2.4, other 0.9; 22.1 GW in all">
+<g font-family="Hanken Grotesk" font-size="14" fill="#1C2B22">
+<text x="22" y="22" font-weight="600">Wind</text><text x="22" y="40">6.4 GW, 29%</text>
+<text x="294.5" y="22" font-weight="600">CCGT</text><text x="294.5" y="40">5.6 GW, 26%</text>
+<text x="534.3" y="22" font-weight="600">Nuclear</text><text x="534.3" y="40">3.6 GW, 16%</text>
+<text x="686.9" y="22" font-weight="600">Imports</text><text x="686.9" y="40">3.2 GW, 14%</text>
+<text x="821.9" y="22" font-weight="600">Biomass</text><text x="821.9" y="40">2.4 GW, 11%</text>
+<text x="974" y="76" font-weight="600">Other</text><text x="974" y="94">0.9 GW, 4%</text>
+</g>
+<rect x="20" y="50" width="272.5" height="64" fill="#3E8C97"></rect>
+<rect x="292.5" y="50" width="239.8" height="64" fill="#C77E3C"></rect>
+<rect x="532.3" y="50" width="152.6" height="64" fill="#155A6E"></rect>
+<rect x="684.9" y="50" width="135" height="64" fill="#66793B"></rect>
+<rect x="819.9" y="50" width="99.9" height="64" fill="#AFC64E"></rect>
+<rect x="919.8" y="50" width="39.5" height="64" fill="#A39A6A"></rect>
+<path d="M959.3 50 A9 32 0 0 1 959.3 114 Z" fill="#A39A6A"></path>
+<rect x="20" y="55" width="948" height="7" fill="#FFFFFF" opacity=".22"></rect>
+<rect x="20" y="102" width="948" height="12" fill="#000000" opacity=".13"></rect>
+<ellipse cx="20" cy="82" rx="9" ry="32" fill="#8FC0C6" stroke="#1C2B22" stroke-width="1"></ellipse>
+<g stroke="#E9DDAF" stroke-width="2.4" fill="none" stroke-linejoin="round">
+<path d="M292.5 50 L287 60 L296 71 L288 83 L297 95 L289 106 L292.5 114"></path>
+<path d="M532.3 50 L538 61 L529 72 L537 84 L528 96 L536 106 L532.3 114"></path>
+<path d="M684.9 50 L679 62 L688 74 L680 86 L689 98 L682 108 L684.9 114"></path>
+<path d="M819.9 50 L826 60 L817 72 L825 84 L816 96 L824 107 L819.9 114"></path>
+<path d="M919.8 50 L914 61 L923 73 L915 85 L924 97 L917 107 L919.8 114"></path>
+</g>
+<path d="M20 50 H959.3 M20 114 H959.3" stroke="#1C2B22" stroke-width="1"></path>
+<g stroke="#1C2B22" stroke-width="1"><path d="M20 128 H959.3 M20 124 V132 M232.6 124 V132 M445.3 124 V132 M657.9 124 V132 M870.6 124 V132"></path></g>
+<g font-family="Red Hat Mono" font-size="12" fill="#4A5448"><text x="20" y="146">0</text><text x="228" y="146">5</text><text x="438" y="146">10</text><text x="651" y="146">15</text><text x="864" y="146">20 GW</text></g>
+</svg>
+<p class="r-cap">Mean output across 240 settlement periods, 22.1 GW in all. Source: Elexon FUELHH. <a class="r-link" href="#">Open the fuelhh page</a></p>
+</div>
+<div class="r-block" style="top: 912px; left: 80px; width: 600px">
+<h2>Joined, analysis-ready views in gold.</h2>
+<p>Quantitative work built on the warehouse: probabilistic demand, wind, solar, and a fundamentals SMP forecaster.</p>
+<p><a class="r-link" href="#">See the demand model case study</a></p>
+</div>
+<div class="r-block" style="top: 912px; left: 720px; width: 220px">
+<ul class="r-tables" aria-label="Gold views"><li>gold.gb_dispatch</li><li>gold.eu_prices</li><li>gold.fundamentals</li><li>gold.daily_brief</li></ul>
+</div>
+<div class="r-block" style="top: 1196px; left: 80px; width: 380px">
+<ul class="r-tables" aria-label="Silver tables"><li>silver.fuelhh</li><li>silver.da_prices</li><li>silver.gas_storage</li><li>silver.weather_grid</li></ul>
+</div>
+<div class="r-block" style="top: 1116px; left: 760px; width: 600px">
+<h2>Cleaned, typed, deduped tables live in silver.</h2>
+<p>Everything is Hive-partitioned Parquet, queryable from DuckDB or the Python client. Schema changes are caught at parse time by Pydantic v2 contracts. Every row carries both event-time and ingestion-time, so point-in-time queries are trivial.</p>
+<p><a class="r-link" href="#">Read the design doc</a></p>
+</div>
+<div class="r-block" style="top: 1556px; left: 80px; width: 600px">
+<h2>Raw API responses land in bronze.</h2>
+<p>Append-only and SHA-256 hashed. Seven vendors across UK and EU power, gas, carbon and weather feed it: 165 datasets, each with schema, sample queries, and the caveats that bite.</p>
+<p><a class="r-link" href="#">Full catalogue</a></p>
+</div>
+<div class="r-block" style="top: 1466px; left: 760px; width: 420px">
+<div class="r-vendors">
+<a href="#"><b>Elexon BMRS</b><span>33 datasets, 5 min</span></a>
+<a href="#"><b>ENTSO-E</b><span>49 datasets, 15 min</span></a>
+<a href="#"><b>ENTSO-G</b><span>33 datasets, daily</span></a>
+<a href="#"><b>GIE AGSI and ALSI</b><span>8 datasets, daily</span></a>
+<a href="#"><b>Open-Meteo</b><span>6 datasets, hourly</span></a>
+<a href="#"><b>NESO</b><span>33 datasets, 30 min</span></a>
+<a href="#"><b>NESO Data Portal</b><span>3 datasets, 30 min</span></a>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1800}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

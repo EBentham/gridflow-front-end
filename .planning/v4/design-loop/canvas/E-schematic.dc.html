@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>E: Single-line diagram</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=B612:ital,wght@0,400;0,700;1,400&amp;family=B612+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.e-root{background:#E6EAE3;color:#1E2A2C;font:400 15.5px/1.6 "B612",sans-serif}
+.e-root a{color:#1E2A2C}
+.e-brand{position:absolute;left:80px;top:38px;font-weight:700;font-size:27px;letter-spacing:-.01em;text-decoration:none}
+.e-nav a{position:absolute;top:138px;width:130px;margin-left:-65px;text-align:center;font-size:14px;text-decoration:none}
+.e-nav a:hover{text-decoration:underline;text-underline-offset:4px}
+.e-nav a[aria-current="page"]{font-weight:700}
+.e-hero{position:absolute;left:80px;top:230px;width:540px}
+.e-hero h1{font-weight:700;font-size:44px;line-height:1.08;letter-spacing:-.015em;margin:0 0 22px}
+.e-lede{margin:0 0 26px;color:#3B4A4C;font-size:16px}
+.e-cta{display:flex;gap:14px;margin:0 0 28px}
+.e-cta a{font-weight:700;font-size:15px;padding:12px 18px;border:1.5px solid #1E2A2C;border-radius:2px;text-decoration:none}
+.e-cta a.go{background:#1E2A2C;color:#E6EAE3}
+.e-cta a.go:hover{background:#B3261E;border-color:#B3261E}
+.e-cta a:not(.go):hover{background:#D7DDD5}
+.e-scope{margin:0;color:#3B4A4C;font-size:14.5px}
+.e-mono{font-family:"B612 Mono",monospace}
+.e-title{position:absolute;left:940px;top:790px;width:420px;display:grid;grid-template-columns:96px minmax(0,1fr);border:1.5px solid #1E2A2C;font-size:13px}
+.e-title div{padding:6px 10px;border-bottom:1px solid #9AA59F}
+.e-title div:nth-child(odd){border-right:1px solid #9AA59F;color:#5B6865}
+.e-title div:nth-last-child(-n+2){border-bottom:0}
+.e-sec{position:absolute;left:80px;top:960px;width:1280px}
+.e-sec h2{font-weight:700;font-size:32px;line-height:1.1;margin:0 0 10px}
+.e-sec p{margin:0;color:#3B4A4C;max-width:84ch}
+.e-key{display:flex;gap:28px;font-size:13.5px;color:#3B4A4C;margin-top:8px}
+.e-key span{display:inline-flex;align-items:center;gap:8px}
+.e-key i{display:inline-block;width:12px;height:12px;border:1.2px solid #1E2A2C}
+</style>
+</helmet>
+<div class="e-root" style="width: 1440px; height: 1800px; overflow: hidden; position: relative">
+
+<svg width="1440" height="170" viewBox="0 0 1440 170" aria-hidden="true" style="position: absolute; top: 0; left: 0">
+<path d="M80 96 H1360" stroke="#1E2A2C" stroke-width="5"></path>
+<g stroke="#1E2A2C" stroke-width="1.6">
+<path d="M660 98 V110 M660 122 V132 M800 98 V110 M800 122 V132 M950 98 V110 M950 122 V132 M1100 98 V110 M1100 122 V132 M1240 98 V110 M1240 122 V132"></path>
+<rect x="654" y="110" width="12" height="12" fill="#B3261E"></rect>
+<rect x="794" y="110" width="12" height="12" fill="#2F7A4B"></rect>
+<rect x="944" y="110" width="12" height="12" fill="#2F7A4B"></rect>
+<rect x="1094" y="110" width="12" height="12" fill="#2F7A4B"></rect>
+<rect x="1234" y="110" width="12" height="12" fill="#2F7A4B"></rect>
+</g>
+</svg>
+<a class="e-brand" href="#">gridflow</a>
+<nav class="e-nav" aria-label="Primary">
+<a href="#" aria-current="page" style="left: 660px">Home</a>
+<a href="#" style="left: 800px">Data sources</a>
+<a href="#" style="left: 950px">Architecture</a>
+<a href="#" style="left: 1100px">Models</a>
+<a href="#" style="left: 1240px">About</a>
+</nav>
+
+<div class="e-hero">
+<h1>A pipeline and catalogue for UK &amp; European energy data.</h1>
+<p class="e-lede">Gridflow ingests, normalises and serves time-series data from seven public and authenticated vendors (electricity, gas, weather and carbon) into a single queryable warehouse. Models for demand, wind, solar and clearing prices sit one layer above.</p>
+<div class="e-cta"><a class="go" href="#">Explore the architecture</a><a href="#">See a model</a></div>
+<p class="e-scope">Seven vendors, 165 datasets, four markets, seventeen years of history, three pipeline layers.</p>
+</div>
+
+<svg width="660" height="520" viewBox="0 0 660 520" role="img" aria-label="Single-line diagram: six generation sources feed the GB transmission busbar through transformers and closed breakers. Wind 6,408 MW, CCGT 5,639, nuclear 3,589, imports 3,174 through an HVDC converter, biomass 2,350, other 929; 22.1 GW mean output, 1 to 5 August 2026" style="position: absolute; left: 700px; top: 200px">
+<g font-family="B612" font-size="13.5" fill="#1E2A2C" text-anchor="middle">
+<text x="60" y="16" font-weight="700">Wind</text><text x="60" y="34" font-family="B612 Mono" font-size="12">6,408 MW</text><text x="60" y="50" font-family="B612 Mono" font-size="12" fill="#5B6865">29%</text>
+<text x="170" y="16" font-weight="700">CCGT</text><text x="170" y="34" font-family="B612 Mono" font-size="12">5,639 MW</text><text x="170" y="50" font-family="B612 Mono" font-size="12" fill="#5B6865">26%</text>
+<text x="280" y="16" font-weight="700">Nuclear</text><text x="280" y="34" font-family="B612 Mono" font-size="12">3,589 MW</text><text x="280" y="50" font-family="B612 Mono" font-size="12" fill="#5B6865">16%</text>
+<text x="390" y="16" font-weight="700">Imports</text><text x="390" y="34" font-family="B612 Mono" font-size="12">3,174 MW</text><text x="390" y="50" font-family="B612 Mono" font-size="12" fill="#5B6865">14%</text>
+<text x="500" y="16" font-weight="700">Biomass</text><text x="500" y="34" font-family="B612 Mono" font-size="12">2,350 MW</text><text x="500" y="50" font-family="B612 Mono" font-size="12" fill="#5B6865">11%</text>
+<text x="610" y="16" font-weight="700">Other</text><text x="610" y="34" font-family="B612 Mono" font-size="12">929 MW</text><text x="610" y="50" font-family="B612 Mono" font-size="12" fill="#5B6865">4%</text>
+</g>
+<g stroke="#1E2A2C" fill="none">
+<path d="M60 106 V330" stroke-width="9"></path>
+<path d="M170 106 V330" stroke-width="7.9"></path>
+<path d="M280 106 V330" stroke-width="5"></path>
+<path d="M390 106 V330" stroke-width="4.5"></path>
+<path d="M500 106 V330" stroke-width="3.3"></path>
+<path d="M610 106 V330" stroke-width="1.5"></path>
+</g>
+<g stroke="#1E2A2C" stroke-width="1.8" fill="#E6EAE3">
+<circle cx="60" cy="84" r="22"></circle><circle cx="170" cy="84" r="22"></circle><circle cx="280" cy="84" r="22"></circle><circle cx="500" cy="84" r="22"></circle><circle cx="610" cy="84" r="22"></circle>
+<rect x="368" y="62" width="44" height="44"></rect>
+<circle cx="60" cy="162" r="11"></circle><circle cx="60" cy="178" r="11"></circle>
+<circle cx="170" cy="162" r="11"></circle><circle cx="170" cy="178" r="11"></circle>
+<circle cx="280" cy="162" r="11"></circle><circle cx="280" cy="178" r="11"></circle>
+<circle cx="390" cy="162" r="11"></circle><circle cx="390" cy="178" r="11"></circle>
+<circle cx="500" cy="162" r="11"></circle><circle cx="500" cy="178" r="11"></circle>
+<circle cx="610" cy="162" r="11"></circle><circle cx="610" cy="178" r="11"></circle>
+</g>
+<g stroke="#1E2A2C" stroke-width="1.6" fill="none" stroke-linecap="round">
+<path d="M49 84 q 5.5 -10 11 0 t 11 0 M159 84 q 5.5 -10 11 0 t 11 0 M269 84 q 5.5 -10 11 0 t 11 0 M489 84 q 5.5 -10 11 0 t 11 0 M599 84 q 5.5 -10 11 0 t 11 0"></path>
+<path d="M368 106 L412 62"></path>
+<path d="M373 74 q 3 -6 6 0 t 6 0 M396 92 h10 M396 97 h10"></path>
+</g>
+<g stroke="#1E2A2C" stroke-width="1.2">
+<rect x="51" y="221" width="18" height="18" fill="#B3261E"></rect><rect x="161" y="221" width="18" height="18" fill="#B3261E"></rect><rect x="271" y="221" width="18" height="18" fill="#B3261E"></rect><rect x="381" y="221" width="18" height="18" fill="#B3261E"></rect><rect x="491" y="221" width="18" height="18" fill="#B3261E"></rect><rect x="601" y="221" width="18" height="18" fill="#B3261E"></rect>
+</g>
+<path d="M20 330 H640" stroke="#1E2A2C" stroke-width="7"></path>
+<text x="20" y="358" font-family="B612" font-size="13.5" fill="#1E2A2C">GB transmission, 1 to 5 August 2026: 22.1 GW mean output</text>
+<path d="M540 334 V460" stroke="#1E2A2C" stroke-width="2"></path>
+<circle cx="540" cy="400" r="9" fill="none" stroke="#1E2A2C" stroke-width="1.6"></circle>
+<path d="M532 460 L548 460 L540 474 Z" fill="#1E2A2C"></path>
+<text x="524" y="396" font-family="B612" font-size="13" fill="#1E2A2C" text-anchor="end">Recorded in FUELHH:</text>
+<text x="524" y="413" font-family="B612" font-size="13" fill="#5B6865" text-anchor="end">half-hourly outturn by fuel type</text>
+</svg>
+<a href="#" style="position: absolute; left: 1170px; top: 684px; font-size: 14.5px; font-weight: 700; text-underline-offset: 4px">Open the fuelhh page</a>
+
+<div class="e-title">
+<div>Drawing</div><div>GB generation by fuel, mean output</div>
+<div>Period</div><div>1 to 5 August 2026, 240 settlement periods</div>
+<div>Source</div><div>Elexon FUELHH</div>
+<div>Sheet</div><div>1 of 2</div>
+</div>
+
+<section class="e-sec" aria-labelledby="e-pipe">
+<h2 id="e-pipe">The pipeline, drawn the same way.</h2>
+<p>Seven vendor feeds land in bronze. Parsing and validation step them down to silver; joins step them down to gold, where queries and models draw from.</p>
+<svg width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-label="Single-line diagram of the pipeline: seven vendor feeders into a bronze busbar, a transformer to silver, a transformer to gold, and loads for DuckDB, the Python client and five models, of which day-ahead demand is in service and four are planned" style="display: block; margin-top: 26px">
+<g font-family="B612" font-size="13.5" fill="#1E2A2C" text-anchor="middle">
+<text x="90" y="20" font-weight="700">Elexon BMRS</text><text x="90" y="38" font-family="B612 Mono" font-size="12">33 datasets</text>
+<text x="265" y="20" font-weight="700">ENTSO-E</text><text x="265" y="38" font-family="B612 Mono" font-size="12">49 datasets</text>
+<text x="440" y="20" font-weight="700">ENTSO-G</text><text x="440" y="38" font-family="B612 Mono" font-size="12">33 datasets</text>
+<text x="615" y="20" font-weight="700">GIE AGSI, ALSI</text><text x="615" y="38" font-family="B612 Mono" font-size="12">8 datasets</text>
+<text x="790" y="20" font-weight="700">Open-Meteo</text><text x="790" y="38" font-family="B612 Mono" font-size="12">6 datasets</text>
+<text x="965" y="20" font-weight="700">NESO</text><text x="965" y="38" font-family="B612 Mono" font-size="12">33 datasets</text>
+<text x="1140" y="20" font-weight="700">NESO Data Portal</text><text x="1140" y="38" font-family="B612 Mono" font-size="12">3 datasets</text>
+</g>
+<g stroke="#1E2A2C" fill="none">
+<path d="M90 77 V170" stroke-width="4"></path><path d="M265 77 V170" stroke-width="6"></path><path d="M440 77 V170" stroke-width="4"></path><path d="M615 77 V170" stroke-width="1.5"></path><path d="M790 77 V170" stroke-width="1.5"></path><path d="M965 77 V170" stroke-width="4"></path><path d="M1140 77 V170" stroke-width="1.5"></path>
+</g>
+<g stroke="#1E2A2C" stroke-width="1.6" fill="#E6EAE3">
+<circle cx="90" cy="64" r="8"></circle><circle cx="265" cy="64" r="8"></circle><circle cx="440" cy="64" r="8"></circle><circle cx="615" cy="64" r="8"></circle><circle cx="790" cy="64" r="8"></circle><circle cx="965" cy="64" r="8"></circle><circle cx="1140" cy="64" r="8"></circle>
+</g>
+<g stroke="#1E2A2C" stroke-width="1.2" fill="#B3261E">
+<rect x="82" y="110" width="16" height="16"></rect><rect x="257" y="110" width="16" height="16"></rect><rect x="432" y="110" width="16" height="16"></rect><rect x="607" y="110" width="16" height="16"></rect><rect x="782" y="110" width="16" height="16"></rect><rect x="957" y="110" width="16" height="16"></rect><rect x="1132" y="110" width="16" height="16"></rect>
+</g>
+<path d="M40 170 H1240" stroke="#9A6533" stroke-width="7"></path>
+<text x="40" y="198" font-family="B612" font-size="13.5" fill="#1E2A2C"><tspan font-weight="700">Bronze</tspan>: raw API responses, append-only, SHA-256 hashed</text>
+<path d="M640 174 V216 M640 260 V306" stroke="#1E2A2C" stroke-width="2.4"></path>
+<circle cx="640" cy="230" r="15" fill="none" stroke="#1E2A2C" stroke-width="1.8"></circle><circle cx="640" cy="246" r="15" fill="none" stroke="#1E2A2C" stroke-width="1.8"></circle>
+<text x="672" y="243" font-family="B612" font-size="13.5" fill="#1E2A2C">Parse and validate: Pydantic v2 contracts</text>
+<path d="M40 310 H1240" stroke="#7D8C8A" stroke-width="7"></path>
+<text x="40" y="338" font-family="B612" font-size="13.5" fill="#1E2A2C"><tspan font-weight="700">Silver</tspan>: typed, partitioned, deduped; Hive-partitioned Parquet</text>
+<path d="M640 314 V356 M640 400 V446" stroke="#1E2A2C" stroke-width="2.4"></path>
+<circle cx="640" cy="370" r="15" fill="none" stroke="#1E2A2C" stroke-width="1.8"></circle><circle cx="640" cy="386" r="15" fill="none" stroke="#1E2A2C" stroke-width="1.8"></circle>
+<text x="672" y="383" font-family="B612" font-size="13.5" fill="#1E2A2C">Join</text>
+<path d="M40 450 H1240" stroke="#A8862A" stroke-width="7"></path>
+<text x="40" y="478" font-family="B612" font-size="13.5" fill="#1E2A2C"><tspan font-weight="700">Gold</tspan>: joined, analysis-ready views</text>
+<g stroke="#1E2A2C" stroke-width="2">
+<path d="M560 454 V491 M560 509 V560"></path>
+<path d="M720 454 V491 M880 454 V491 M1040 454 V491 M1200 454 V491"></path>
+<path d="M150 490 V560 M320 490 V560"></path>
+</g>
+<path d="M150 454 V490 M320 454 V490" stroke="#1E2A2C" stroke-width="2"></path>
+<g stroke="#8A968F" stroke-width="2" stroke-dasharray="4 5"><path d="M720 509 V560 M880 509 V560 M1040 509 V560 M1200 509 V560"></path></g>
+<g stroke="#1E2A2C" stroke-width="1.2">
+<rect x="551" y="491" width="18" height="18" fill="#B3261E"></rect>
+<rect x="711" y="491" width="18" height="18" fill="#2F7A4B"></rect><rect x="871" y="491" width="18" height="18" fill="#2F7A4B"></rect><rect x="1031" y="491" width="18" height="18" fill="#2F7A4B"></rect><rect x="1191" y="491" width="18" height="18" fill="#2F7A4B"></rect>
+</g>
+<g fill="#1E2A2C"><path d="M142 560 L158 560 L150 574 Z M312 560 L328 560 L320 574 Z M552 560 L568 560 L560 574 Z"></path></g>
+<g fill="#8A968F"><path d="M712 560 L728 560 L720 574 Z M872 560 L888 560 L880 574 Z M1032 560 L1048 560 L1040 574 Z M1192 560 L1208 560 L1200 574 Z"></path></g>
+<g font-family="B612" font-size="13.5" fill="#1E2A2C" text-anchor="middle">
+<text x="150" y="598" font-weight="700">DuckDB</text><text x="150" y="616" fill="#5B6865">SQL queries</text>
+<text x="320" y="598" font-weight="700">Python client</text><text x="320" y="616" fill="#5B6865">GridflowClient</text>
+<text x="560" y="598" font-weight="700">Day-ahead demand</text><text x="560" y="616" fill="#5B6865">in service, case study</text>
+<text x="720" y="598" font-weight="700">Wind generation</text><text x="720" y="616" fill="#5B6865">planned</text>
+<text x="880" y="598" font-weight="700">Solar generation</text><text x="880" y="616" fill="#5B6865">planned</text>
+<text x="1040" y="598" font-weight="700">Merit-order curve</text><text x="1040" y="616" fill="#5B6865">planned</text>
+<text x="1200" y="598" font-weight="700">Fundamentals SMP</text><text x="1200" y="616" fill="#5B6865">planned</text>
+</g>
+</svg>
+<div class="e-key"><span><i style="background: #B3261E"></i>Breaker closed: in service</span><span><i style="background: #2F7A4B"></i>Breaker open: planned</span></div>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1800}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

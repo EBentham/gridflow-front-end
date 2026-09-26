@@ -16,11 +16,33 @@ You are the main Claude for the gridflow-front-end project. Your role:
 - Make orchestration decisions (which skill, which phase, which vendor to tackle next)
 - Update durable planning files after each significant decision
 
-You do **not** implement code directly. When implementation is needed, you dispatch it via the appropriate skill.
+**Front-end lane (OWNER 2026-09-26):** Opus 5.5 executes here. The seat builds directly or through Opus
+subagents; there is no Sol/Astra, no tiers and no plan or diff review. Deterministic gates run before
+every merge, and Bobbo validates visually. (This supersedes the old "you do not implement code
+directly" rule.)
 
 ---
 
-## v4 milestone — Full rebrand (ACTIVE, created 2026-08-02)
+## v5 milestone — Site rebuild in the locked design (ACTIVE, ratified 2026-09-26)
+
+**Cold-start order:**
+1. The newest `handovers/*pickup*.md`
+2. `v5/MILESTONE.md` (plan, evidence, D1-D7)
+3. `RULINGS.md`
+4. `v5-EFFORT-PLAN.md` (lane, agents, named unknowns, git discipline)
+5. `../DESIGN.md` (the locked design)
+6. `STATE.md` (position)
+
+**Phases:** 22 data truth ∥ 23 foundation + homepage ∥ 24 dataset page design loop, then 25 template +
+pilot, 26 dataset fan-out (Opus author + Opus objective reviewer per dataset), 27 top-page loops and
+builds, 28 cutover. All code goes to the integration branch `v5/site`; one cutover PR to `main`.
+
+**Not `/jarvis`:** jarvis drives the unit-pipeline (Sol/Astra), which the front-end lane replaced for
+this repo. Use a plain seat chat that starts with `/start-session` and ends with `/end-session`.
+
+---
+
+## v4 milestone — Full rebrand (CLOSED 2026-09-26 — identity locked; `v4/V4-CLOSE.md`)
 
 **Position:** Phase 17 (Identity directions) — **WAITING on user inspiration references**
 (user is gathering; log each into `.planning/v3/inspiration.md` as it arrives). Phase map:

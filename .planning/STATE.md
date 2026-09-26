@@ -1,8 +1,38 @@
 # State
 
-## v4 — Full rebrand (ACTIVE — created 2026-08-02)
+## v5 — Site rebuild in the locked design (ACTIVE — ratified 2026-09-26)
 
-**Phase 17 (Identity directions) — WAITING on user inspiration references.**
+**Position: overnight autonomous run next** (reordered OWNER 2026-09-27): 22, 23, 25a, and round 1 of
+the 24 and 27 loops, all without Bobbo. Morning: his rulings, looks and picks. Next chat, pickup in
+`handovers/2026-09-26-v5-pickup.md`). Plan `v5/MILESTONE.md` · lane and agents `v5-EFFORT-PLAN.md` ·
+rulings `RULINGS.md` · design `../DESIGN.md` + `../site/hifi/assets/tokens.css` · reference board `R3-final`
+on the canvas.
+
+- **22 Data truth:** not started. Background `claude` agent: provenance matrix, ingest of missing silver,
+  families (D5). The live drift check waits for Bobbo's "run it" (D7).
+- **23 Foundation + homepage:** not started. Background `claude` agent in a worktree on `v5/site`, after
+  the branch setup in `v5-EFFORT-PLAN.md` § Git discipline.
+- **24 Dataset page design loop:** not started. The seat with Bobbo, interactive.
+- **Uncommitted on `main` at handoff:** `DESIGN.md`, `site/hifi/assets/tokens.css`, the `CLAUDE.md` edit,
+  `.planning/v4/` (design-loop record, V4-CLOSE), `.planning/v5/`, `v5-EFFORT-PLAN.md`, `RULINGS.md`,
+  and this file. The next seat commits the docs to main and `tokens.css` on `v5/site`.
+
+## v4 — Full rebrand (CLOSED 2026-09-26 — identity locked; see `v4/V4-CLOSE.md`)
+
+**CORRECTION 2026-09-25 — this file was stale.** Phase 17 RAN on 2026-08-02: five directions →
+**electrified-landscape (panorama, `landscape-v1.html`) picked**, verdict *"still does not look amazing and
+requires further refinement"* → Phase 18 = craft (8-item refinement backlog in
+`DESIGN-electrified-landscape.md`). That output is committed on the UNMERGED branch
+`chore/v4-planning-wip` (85c7b4f, 2026-08-15: five `v4/DESIGN-*.md`, `v4/INSPIRATION-HANDOFF.md`,
+`site/hifi/v4-tiles/`), never on `main`. Phase 18 never started.
+
+**METHOD CHANGED 2026-09-25 (Bobbo):** Phase 18 onward runs as an interactive Opus 5.5 · high design loop
+with Bobbo (variants side by side → pick/mix → iterate → lock `DESIGN.md` + `tokens.css` + a real-HTML
+exemplar pair), no agents or pipeline until the lock; replaces the v4-EFFORT-PLAN Phase 17/18 method.
+**READ `v4/design-capability-research-2026-09-25.md` FIRST.** Skills same day: frontend-design refreshed
+(upstream 2026-09-03); impeccable kept at 4.0.4 (its `detect.mjs` gate).
+
+*(Superseded status, kept for history:)* Phase 17 — WAITING on user inspiration references.
 v3 closed superseded-partial 2026-08-02 (phases 12-13 delivered; 14-16 superseded by the
 full-rebrand decision) — see `v3/V3-CLOSE.md` · `ROADMAP.md § v4` · `v4-EFFORT-PLAN.md`.
 Identity fully open (palette/type/layout/name treatment); honesty rules + content/facts +

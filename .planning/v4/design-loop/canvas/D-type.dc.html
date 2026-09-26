@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>D: Type as instrument</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anybody:wdth,wght@50..150,300..900&amp;family=Martian+Mono:wdth,wght@75..112.5,400;75..112.5,500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.d-root{background:#E3E7E8;color:#101A22;font:400 16px/1.6 "Anybody",sans-serif;font-stretch:100%}
+.d-root a{color:#101A22;text-decoration:underline;text-decoration-color:#D98A00;text-decoration-thickness:2px;text-underline-offset:5px}
+.d-root a:hover{text-decoration-color:#101A22}
+.d-mast{display:flex;justify-content:space-between;align-items:baseline;padding:28px 80px}
+.d-brand{font-weight:800;font-stretch:150%;font-size:24px;letter-spacing:-.01em;text-decoration:none!important}
+.d-mast ul{display:flex;gap:30px;list-style:none;margin:0;padding:0;font-size:15px}
+.d-mast ul a{text-decoration:none}
+.d-mast ul a[aria-current="page"]{text-decoration:underline;text-decoration-color:#D98A00}
+.d-hero{display:grid;grid-template-columns:470px minmax(0,1fr);gap:90px;padding:44px 80px 0}
+.d-hero h1{font-weight:700;font-stretch:92%;font-size:46px;line-height:1.02;letter-spacing:-.02em;margin:0 0 24px}
+.d-lede{font-size:17px;color:#3A4852;margin:0 0 24px}
+.d-links{display:flex;gap:28px;font-weight:600;margin:0 0 28px}
+.d-scope{font-size:15px;color:#3A4852;margin:0}
+.d-bars{list-style:none;margin:0;padding:0}
+.d-bars li{display:flex;align-items:baseline;justify-content:space-between;gap:24px}
+.d-word{font-weight:800;line-height:.8;letter-spacing:-.03em}
+.d-val{font-family:"Martian Mono",monospace;font-size:14px;color:#3A4852;white-space:nowrap;font-stretch:87.5%}
+.d-val b{color:#101A22;font-weight:500}
+.d-cap{font-size:14px;color:#3A4852;margin:22px 0 0;max-width:70ch}
+.d-sec{position:absolute;top:900px;left:80px;right:80px}
+.d-sec h2{font-weight:700;font-stretch:112%;font-size:38px;line-height:1.05;letter-spacing:-.015em;margin:0 0 10px}
+.d-sec .sub{font-size:15px;color:#3A4852;margin:0 0 22px;max-width:80ch}
+.d-vendors{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:26px 40px;margin-top:10px}
+.d-vendors a{text-decoration:none!important;display:block}
+.d-vendors h3{font-weight:700;font-stretch:112%;font-size:19px;margin:0 0 2px}
+.d-vendors a:hover h3{text-decoration:underline;text-decoration-color:#D98A00}
+.d-vendors p{margin:0;font-size:14px;color:#3A4852;line-height:1.45}
+.d-vendors .n{font-size:14px;color:#101A22;margin-top:6px;font-weight:600}
+.d-vh{display:flex;justify-content:space-between;align-items:baseline;margin-top:52px}
+.d-vh h2{font-size:28px;margin:0}
+</style>
+</helmet>
+<div class="d-root" style="width: 1440px; height: 1800px; overflow: hidden; position: relative">
+
+<div class="d-mast">
+<a class="d-brand" href="#">gridflow</a>
+<nav aria-label="Primary">
+<ul>
+<li><a href="#" aria-current="page">Home</a></li>
+<li><a href="#">Data sources</a></li>
+<li><a href="#">Architecture</a></li>
+<li><a href="#">Models</a></li>
+<li><a href="#">About</a></li>
+</ul>
+</nav>
+</div>
+
+<div class="d-hero">
+<div>
+<h1>A pipeline and catalogue for UK &amp; European energy data.</h1>
+<p class="d-lede">Gridflow ingests, normalises and serves time-series data from seven public and authenticated vendors (electricity, gas, weather and carbon) into a single queryable warehouse. Models for demand, wind, solar and clearing prices sit one layer above.</p>
+<p class="d-links"><a href="#">Explore the architecture</a><a href="#">See a model</a></p>
+<p class="d-scope">Seven vendors, 165 datasets, four markets, seventeen years of history, three pipeline layers.</p>
+</div>
+<figure style="margin: 0" aria-label="GB generation by fuel, 1 to 5 August 2026, with each fuel name set at a size proportional to its share">
+<ul class="d-bars">
+<li><span class="d-word" style="font-size: 200px">Wind</span><span class="d-val"><b>6.4 GW</b> 29%</span></li>
+<li><span class="d-word" style="font-size: 179px">CCGT</span><span class="d-val"><b>5.6 GW</b> 26%</span></li>
+<li><span class="d-word" style="font-size: 110px">Nuclear</span><span class="d-val"><b>3.6 GW</b> 16%</span></li>
+<li><span class="d-word" style="font-size: 97px">Imports</span><span class="d-val"><b>3.2 GW</b> 14%</span></li>
+<li><span class="d-word" style="font-size: 76px">Biomass</span><span class="d-val"><b>2.4 GW</b> 11%</span></li>
+<li><span class="d-word" style="font-size: 28px; line-height: 1.2">Other</span><span class="d-val"><b>0.9 GW</b> 4%</span></li>
+</ul>
+<figcaption class="d-cap">Great Britain’s generation, 1 to 5 August 2026: mean output by fuel across 240 settlement periods, 22.1 GW in all. Each name is set at a size proportional to its share. Source: Elexon FUELHH. <a href="#">Open the fuelhh page</a></figcaption>
+</figure>
+</div>
+
+<section class="d-sec" aria-labelledby="d-gas">
+<h2 id="d-gas">Seventeen years of gas on the GB grid.</h2>
+<p class="sub">Gas share of generation in 120 sampled settlement periods, January 2009 to August 2026, from the NESO Data Portal’s historic generation mix. Single half-hours are noisy: read the trend, not the points.</p>
+<svg width="1280" height="340" viewBox="0 0 1280 340" role="img" aria-label="Line of gas share of GB generation, 2009 to 2026, ranging from 18 to 55 percent in the sample; 33.8 percent in the first sampled period and 24.5 percent in the last">
+<g stroke="#101A22" stroke-width=".6" opacity=".35"><path d="M60 10 H1240 M60 70 H1240 M60 130 H1240 M60 190 H1240 M60 250 H1240"></path></g>
+<g font-family="Martian Mono" font-size="12" fill="#3A4852"><text x="0" y="14">60%</text><text x="0" y="134">40%</text><text x="0" y="254">20%</text><text x="60" y="334">2009</text><text x="1204" y="334">2026</text></g>
+<g transform="translate(60,10)">
+<path d="M0.0 157.1 L9.9 122.5 L19.8 77.0 L29.7 76.1 L39.7 44.0 L49.6 57.7 L59.5 72.8 L69.4 90.5 L79.3 46.8 L89.2 29.4 L99.2 58.1 L109.1 60.3 L119.0 107.0 L128.9 137.6 L138.8 146.7 L148.7 101.8 L158.7 107.8 L168.6 81.4 L178.5 83.2 L188.4 168.9 L198.3 207.7 L208.2 213.2 L218.2 206.9 L228.1 184.6 L238.0 195.8 L247.9 230.9 L257.8 217.5 L267.7 238.4 L277.6 207.7 L287.6 220.3 L297.5 185.1 L307.4 229.5 L317.3 231.1 L327.2 226.7 L337.1 246.3 L347.1 236.3 L357.0 200.3 L366.9 125.7 L376.8 158.5 L386.7 190.2 L396.6 225.9 L406.6 228.9 L416.5 221.8 L426.4 193.3 L436.3 179.4 L446.2 163.1 L456.1 188.4 L466.1 184.4 L476.0 156.8 L485.9 113.4 L495.8 103.1 L505.7 113.3 L515.6 87.8 L525.5 80.6 L535.5 108.0 L545.4 140.6 L555.3 111.9 L565.2 133.2 L575.1 144.2 L585.0 130.9 L595.0 119.5 L604.9 115.9 L614.8 148.4 L624.7 124.6 L634.6 101.4 L644.5 145.5 L654.5 152.1 L664.4 142.8 L674.3 111.5 L684.2 132.2 L694.1 119.6 L704.0 99.4 L713.9 163.0 L723.9 132.2 L733.8 164.2 L743.7 193.7 L753.6 170.6 L763.5 170.4 L773.4 136.3 L783.4 111.3 L793.3 165.9 L803.2 128.9 L813.1 145.2 L823.0 122.3 L832.9 137.7 L842.9 132.5 L852.8 128.7 L862.7 164.8 L872.6 141.5 L882.5 205.1 L892.4 103.5 L902.4 113.5 L912.3 78.5 L922.2 121.9 L932.1 119.7 L942.0 217.0 L951.9 159.2 L961.8 150.2 L971.8 161.2 L981.7 141.9 L991.6 207.3 L1001.5 187.1 L1011.4 187.7 L1021.3 230.0 L1031.3 227.5 L1041.2 228.1 L1051.1 240.9 L1061.0 168.4 L1070.9 194.5 L1080.8 146.1 L1090.8 193.8 L1100.7 236.5 L1110.6 228.6 L1120.5 215.3 L1130.4 192.9 L1140.3 199.3 L1150.3 193.6 L1160.2 250.5 L1170.1 215.7 L1180.0 212.8 L1180 300 L0 300 Z" fill="#101A22" opacity=".08"></path>
+<path d="M0.0 157.1 L9.9 122.5 L19.8 77.0 L29.7 76.1 L39.7 44.0 L49.6 57.7 L59.5 72.8 L69.4 90.5 L79.3 46.8 L89.2 29.4 L99.2 58.1 L109.1 60.3 L119.0 107.0 L128.9 137.6 L138.8 146.7 L148.7 101.8 L158.7 107.8 L168.6 81.4 L178.5 83.2 L188.4 168.9 L198.3 207.7 L208.2 213.2 L218.2 206.9 L228.1 184.6 L238.0 195.8 L247.9 230.9 L257.8 217.5 L267.7 238.4 L277.6 207.7 L287.6 220.3 L297.5 185.1 L307.4 229.5 L317.3 231.1 L327.2 226.7 L337.1 246.3 L347.1 236.3 L357.0 200.3 L366.9 125.7 L376.8 158.5 L386.7 190.2 L396.6 225.9 L406.6 228.9 L416.5 221.8 L426.4 193.3 L436.3 179.4 L446.2 163.1 L456.1 188.4 L466.1 184.4 L476.0 156.8 L485.9 113.4 L495.8 103.1 L505.7 113.3 L515.6 87.8 L525.5 80.6 L535.5 108.0 L545.4 140.6 L555.3 111.9 L565.2 133.2 L575.1 144.2 L585.0 130.9 L595.0 119.5 L604.9 115.9 L614.8 148.4 L624.7 124.6 L634.6 101.4 L644.5 145.5 L654.5 152.1 L664.4 142.8 L674.3 111.5 L684.2 132.2 L694.1 119.6 L704.0 99.4 L713.9 163.0 L723.9 132.2 L733.8 164.2 L743.7 193.7 L753.6 170.6 L763.5 170.4 L773.4 136.3 L783.4 111.3 L793.3 165.9 L803.2 128.9 L813.1 145.2 L823.0 122.3 L832.9 137.7 L842.9 132.5 L852.8 128.7 L862.7 164.8 L872.6 141.5 L882.5 205.1 L892.4 103.5 L902.4 113.5 L912.3 78.5 L922.2 121.9 L932.1 119.7 L942.0 217.0 L951.9 159.2 L961.8 150.2 L971.8 161.2 L981.7 141.9 L991.6 207.3 L1001.5 187.1 L1011.4 187.7 L1021.3 230.0 L1031.3 227.5 L1041.2 228.1 L1051.1 240.9 L1061.0 168.4 L1070.9 194.5 L1080.8 146.1 L1090.8 193.8 L1100.7 236.5 L1110.6 228.6 L1120.5 215.3 L1130.4 192.9 L1140.3 199.3 L1150.3 193.6 L1160.2 250.5 L1170.1 215.7 L1180.0 212.8" fill="none" stroke="#101A22" stroke-width="1.6" stroke-linejoin="round"></path>
+<circle cx="0.0" cy="157.1" r="5" fill="#101A22"></circle>
+<circle cx="1180.0" cy="212.8" r="7" fill="#D98A00"></circle>
+</g>
+<g font-family="Anybody" font-size="15" font-weight="600" fill="#101A22"><text x="72" y="153.1">33.8%</text><text x="1226" y="206.8" text-anchor="end">24.5%</text></g>
+</svg>
+<div class="d-vh"><h2>Seven feeds, one warehouse.</h2><a href="#">Full catalogue</a></div>
+<div class="d-vendors">
+<a href="#"><h3>Elexon BMRS</h3><p>GB electricity: prices, generation, demand, balancing</p><div class="n">33 datasets, every 5 minutes</div></a>
+<a href="#"><h3>ENTSO-E</h3><p>European electricity transparency platform</p><div class="n">49 datasets, every 15 minutes</div></a>
+<a href="#"><h3>ENTSO-G</h3><p>European gas transmission flows at interconnection points</p><div class="n">33 datasets, daily</div></a>
+<a href="#"><h3>GIE AGSI and ALSI</h3><p>EU gas storage levels and LNG terminal send-out</p><div class="n">8 datasets, daily</div></a>
+<a href="#"><h3>Open-Meteo</h3><p>Weather: temperature, wind, radiation</p><div class="n">6 datasets, hourly</div></a>
+<a href="#"><h3>NESO</h3><p>GB grid carbon intensity, national and regional</p><div class="n">33 datasets, every 30 minutes</div></a>
+<a href="#"><h3>NESO Data Portal</h3><p>File catalogue: wind availability, embedded forecasts, generation mix from 2009</p><div class="n">3 datasets, every 30 minutes</div></a>
+</div>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1800}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

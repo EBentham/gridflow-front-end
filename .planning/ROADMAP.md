@@ -1,7 +1,7 @@
 # Roadmap
 
-**Milestone:** v4 full rebrand (**ACTIVE** — created 2026-08-02; § v4 Phases below) · v3 recruiter-grade revamp (**SUPERSEDED-PARTIAL** 2026-08-02 — phases 12-13 delivered, 14-16 superseded; § v3 record below) · v2 full-vendor-coverage (**COMPLETE + DEPLOYED 2026-06-07** — Phases 7–11; PRs #24 + #25 merged → GitHub Pages live) · v1 cleanup (Complete, historical record below)
-**Created:** 2026-05-17 (v1) · Extended 2026-05-18 (v2) · Rescoped 2026-05-19 (Phase 7 Reconciliation inserted; existing 7→8, 8→9, 9→10 per ADR-0001) · v3 2026-06-20 (planned in `phases/12-review-exemplar/12-BRIEF.md`, outside this file) · v4 2026-08-02 (full rebrand, § below)
+**Milestone:** v5 site rebuild in the locked design (**ACTIVE** — ratified 2026-09-26; § v5 Phases below) · v4 full rebrand (**CLOSED** 2026-09-26 — identity locked; phases 19-21 superseded by v5; § v4 below) · v3 recruiter-grade revamp (**SUPERSEDED-PARTIAL** 2026-08-02 — phases 12-13 delivered, 14-16 superseded; § v3 record below) · v2 full-vendor-coverage (**COMPLETE + DEPLOYED 2026-06-07** — Phases 7–11; PRs #24 + #25 merged → GitHub Pages live) · v1 cleanup (Complete, historical record below)
+**Created:** 2026-05-17 (v1) · Extended 2026-05-18 (v2) · Rescoped 2026-05-19 (Phase 7 Reconciliation inserted; existing 7→8, 8→9, 9→10 per ADR-0001) · v3 2026-06-20 (planned in `phases/12-review-exemplar/12-BRIEF.md`, outside this file) · v4 2026-08-02 (full rebrand, § below) · v5 2026-09-26 (site rebuild; plan in `v5/MILESTONE.md`)
 **Granularity:** standard
 **Parallelization:** enabled (sequential 7 → 8 → 9 → 10 recommended; Phase 8 — bug fix — is independent of Phase 7 per ADR-0001 D-03; see Phase Dependencies)
 **Coverage:** 31/31 v2 REQ-IDs mapped (5 RECON-* added with the Phase 7 rescope) + 50/50 v1 REQ-IDs delivered
@@ -14,7 +14,38 @@
 
 ---
 
-## v4 Phases (ACTIVE — Full rebrand)
+## v5 Phases (ACTIVE — site rebuild in the locked design, ratified 2026-09-26)
+
+**v5 milestone goal:** every page rebuilt in the locked "Above ground, below ground" design (`DESIGN.md`,
+`site/hifi/assets/tokens.css`, canvas board `R3-final`); every dataset page rebuilt from scratch on one
+new template and stating only what has been checked against gridflow code and real silver data.
+Full plan, evidence and decisions D1-D7: `v5/MILESTONE.md`. Lane and agents: `v5-EFFORT-PLAN.md`.
+Rulings: `RULINGS.md`. All code goes to the integration branch `v5/site`; one cutover PR to `main`.
+
+- [ ] **Phase 22: Data truth** — per-dataset provenance matrix (connector · silver schema · silver data ·
+  canonical vault note · mirror sync · chart series · override · stub), missing silver ingested,
+  families proposed (D5), page set ruled (D4). Live drift check only on Bobbo's "run it" (D7).
+- [ ] **Phase 23: Foundation + homepage** — new `theme.css` on `tokens.css`, new `site.js` chrome, strata
+  sections, the homepage from `R3-final`, responsive at 390/768/1440; one mobile look with Bobbo.
+- [ ] **Phase 24: Dataset page design loop** — round 1 of variants built overnight, then an interactive loop (fuelhh + three awkward specimens) →
+  locked content model and anatomy added to DESIGN.md.
+- [ ] **Phase 25: Template, chart pipeline, pilot** — 25a (overnight, design-independent): chart spec +
+  silver distil, vault page-field plumbing, seeded fallback and stub generator removed. 25b (after the 24
+  lock): new `dataset.html.j2`, overrides removed, the pinned agents, a 5-dataset pilot Bobbo reads.
+- [ ] **Phase 26: Dataset fan-out** — per dataset an Opus 5.5 author then an Opus 5.5 objective reviewer
+  (≤2 fix rounds), Workflow batches vendor by vendor (Elexon first), Bobbo samples ~3 pages per batch.
+- [ ] **Phase 27: Top pages** — round 1 of variants built overnight, then a design loop and build for: data-sources landing + vendor hub pattern,
+  architecture, models (landing + per-model pages).
+- [ ] **Phase 28: Cutover + ship** — site-wide gates, old theme/templates/`authored-pages/` deleted, one PR
+  `v5/site` → `main`, deploy, tag, close note.
+
+**Dependencies (reordered OWNER 2026-09-27):** overnight and autonomous: 22, 23, 25a, and round 1 of 24 and 27.
+With Bobbo: rule 22's families, look at 23's mobile homepage, lock 24, pick 27. Then 25b → pilot read → 26;
+27 builds need 23; 28 needs 26 + 27.
+
+---
+
+## v4 Phases (CLOSED 2026-09-26 — identity locked; 19-21 superseded by v5)
 
 **v4 milestone goal:** Replace the site's visual identity end-to-end — palette, typography, layout language, name treatment — with a distinctive, subject-grounded design that cannot be read as an AI default, while preserving the honest content, editorial values, recruiter-first positioning, and the vault → site build contract. Everything visual is on the table (D-V3-1 superseded 2026-08-02); content/facts and honesty rules (no fake-live, no SaaS framing) are unchanged. Seed theme: **"the electrified landscape"** — electrification and the renewables build-out told as an infrastructure/markets story (user constraint: optimism from the grid, not foliage — no eco-clichés). Background: `v3/design-capability-research.md` + `v3/inspiration.md`.
 
