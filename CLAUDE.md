@@ -1,6 +1,6 @@
 # Gridflow front-end — project guide
 
-Documentation static site for the [gridflow](https://github.com/EBentham/gridflow) ETL pipeline and gridflow-models. Editorial-quiet portfolio aimed at full-stack data-science recruiters in energy trading. **Not a product** — no fake live indicators, no SaaS-style KPIs, no dashboard chrome.
+Documentation static site for the [gridflow](https://github.com/EBentham/gridflow) ETL pipeline and gridflow-models. Portfolio aimed at full-stack data-science recruiters in energy trading. **Not a product** — no fake live indicators, no SaaS-style KPIs, no dashboard chrome.
 
 ## Session start
 
@@ -40,7 +40,7 @@ Cross-repo paths (Windows local): vault `C:\Users\Bobbo\OneDrive\Desktop\Learnin
 
 ## Locked decisions (don't relitigate)
 
-Editorial / quiet aesthetic (cream + forest-green, Fraunces + Inter + JetBrains Mono) · recruiter-first audience: full-stack data scientist in energy trading · core value: domain depth over polish · v1 Elexon scope **33 datasets** (matches connector + vault) · vault → site direction · templating: Python + Jinja2 (Option B + CI build) · ENTSO-E cross-vendor proof: Generation by PSR type · kill all "live" framing, charts are illustrative snapshots · license MIT.
+v4 design "Above ground, below ground" (petrol + daylight + chartreuse, Bricolage Grotesque + Hanken Grotesk + Red Hat Mono; spec in `DESIGN.md`, tokens in `site/hifi/assets/tokens.css`, locked 2026-09-26) · recruiter-first audience: full-stack data scientist in energy trading · core value: domain depth over polish · v1 Elexon scope **33 datasets** (matches connector + vault) · vault → site direction · templating: Python + Jinja2 (Option B + CI build) · ENTSO-E cross-vendor proof: Generation by PSR type · kill all "live" framing; charts show real data with dataset, unit and window, schematics carry no numbers · license MIT.
 
 ## Anti-goals
 
