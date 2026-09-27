@@ -46,8 +46,8 @@ def test_fuelhh_descends_through_the_strata_in_the_locked_order() -> None:
     html = _render(_doc("elexon", "fuelhh"))
     strata = re.findall(r'<section class="stratum stratum--(\w+)', html)
     assert strata == ["sky", "topsoil", "bronze", "silver", "gold", "deep"]
-    heads = re.findall(r'id="(what-h|chart-h|raw-h|sv-h|one-h|many-h|gd-h|rel-h)"', html)
-    assert heads == ["what-h", "chart-h", "raw-h", "sv-h", "one-h", "many-h", "gd-h", "rel-h"]
+    heads = re.findall(r'id="(what-h|chart-h|raw-h|sv-h|gd-h|rel-h)"', html)
+    assert heads == ["what-h", "chart-h", "raw-h", "sv-h", "gd-h", "rel-h"]
     assert html.count('class="chart chart--') == 2  # wide and narrow drawings
     assert "Open the demo notebook" in html and "Copy notebook" in html
     assert "caveats" not in html.lower()
@@ -66,10 +66,23 @@ def test_fuelhh_notebook_copy_is_the_executed_code() -> None:
         assert cell in code
 
 
-def test_fuelhh_record_marks_one_row_and_keys_its_columns() -> None:
+def test_fuelhh_frame_keys_its_columns_and_folds_the_pipeline() -> None:
     html = _render(_doc("elexon", "fuelhh"))
-    assert html.count('class="is-me"') == 1
-    assert html.count('class="ds-kq"') == 3  # settlement_date, settlement_period, fuel_type
+    silver = html.split('<section class="stratum stratum--silver"', 1)[1].split("</section>", 1)[0]
+    head = silver.split("<thead>", 1)[1].split("</thead>", 1)[0]
+    assert head.count('<span class="k"') == 3  # settlement_date, settlement_period, fuel_type
+    assert "shape: (8, 12)" in silver
+    assert (
+        '<input type="checkbox" class="fx sr-only" id="fx">' in silver
+    )  # `…` opens the folded columns
+    folded = re.findall(r'<th scope="col" id="c-(\w+)" class="fc">', head)
+    assert folded[0] == "ingested_at"
+    assert set(build.PIPELINE_COLUMNS) >= set(folded)
+    guide = re.findall(r'<dt><a href="#c-(\w+)">', silver)
+    assert guide[:3] == ["settlement_date", "settlement_period", "fuel_type"]
+    assert not set(guide) & build.PIPELINE_COLUMNS
+    assert "Relation" not in silver and "One row" not in silver and "Eight rows" not in silver
+    assert "&#34;BIOMASS&#34;" in silver and "datetime[μs, UTC]" in silver  # Polars' own printing
 
 
 def test_a_changed_row_selection_needs_a_new_sample() -> None:
@@ -96,7 +109,7 @@ def test_every_schema_column_needs_a_meaning() -> None:
     )
     arts, _ = build.check_artefacts(doc)
     assert arts.sample is not None
-    _, errors = build._record_view(doc, arts.sample)
+    _, errors = build._frame_view(doc, arts.sample)
     assert any("no meaning for ['published_at']" in e for e in errors)
 
 
@@ -139,7 +152,7 @@ def test_a_family_renders_one_page_and_points_its_members_at_it(tmp_path: Path) 
         assert "<main" in pointer
 
 
-@pytest.mark.parametrize("kind", ["power", "market", "gas", "units"])
+@pytest.mark.parametrize("kind", ["power", "market", "gas", "units", "sources", "elexon"])
 def test_landscape_scenery_is_never_cropped(kind: str) -> None:
     """Each hero drawing letterboxes (meet) instead of cropping, and its viewBox clears every rotor tip."""
     partial = (build.TEMPLATES_DIR / "_partials" / "landscape" / f"{kind}.svg.j2").read_text(
@@ -181,3 +194,48 @@ def test_every_new_template_page_renders() -> None:
             == []
         )
         _render(doc)
+
+
+def test_a_page_without_a_page_block_is_blank(tmp_path: Path) -> None:
+    """Ruling 30: the hero's breadcrumb, name and id, nothing else, and no planning words."""
+    build.build(DEFAULT_VAULT, tmp_path, frozenset({"elexon/agpt", "neso/carbon_intensity"}))
+    page = (tmp_path / "data-sources" / "elexon" / "agpt.html").read_text(encoding="utf-8")
+    assert re.findall(r'<section class="stratum stratum--(\w+)', page) == ["sky"]
+    assert '<h1 class="h-hero ds-hero__h" id="ds-h">Actual generation per type</h1>' in page
+    assert '<code class="ds-chip">elexon/agpt</code>' in page
+    assert 'href="../elexon.html"' in page and "ds-facts" not in page and "data-chart" not in page
+    assert not re.search(r"soon|planned|coming|placeholder|not yet", page, re.IGNORECASE)
+    family = (tmp_path / "data-sources" / "neso" / "national-carbon-intensity.html").read_text(
+        encoding="utf-8"
+    )
+    assert '<code class="ds-chip" id="intensity_fw48h">neso/intensity_fw48h</code>' in family
+    pointer = (tmp_path / "data-sources" / "neso" / "intensity_fw48h.html").read_text(
+        encoding="utf-8"
+    )
+    assert 'href="national-carbon-intensity.html#intensity_fw48h"' in pointer
+
+
+def test_the_page_set_is_149_datasets_on_73_pages() -> None:
+    """Rulings 12 to 14: families are one page each; the headline count is computed."""
+    manifests = [build.load_manifest(v) for v in build.REAL_VENDORS]
+    for vendor_id, m in zip(build.REAL_VENDORS, manifests, strict=True):
+        assert build.manifest_errors(vendor_id, m) == []
+    assert sum(build.manifest_total_count(m) for m in manifests) == 149
+    assert sum(len(g["pages"]) for m in manifests for g in m["groups"]) == 73
+
+
+def test_hubs_and_landing_link_every_page(tmp_path: Path) -> None:
+    build.build(DEFAULT_VAULT, tmp_path)
+    landing = (tmp_path / "data-sources.html").read_text(encoding="utf-8")
+    assert '<span class="hub-n">149 datasets</span>' in landing
+    for vendor_id in build.REAL_VENDORS:
+        assert f'href="data-sources/{vendor_id}.html"' in landing
+        hub = (tmp_path / "data-sources" / f"{vendor_id}.html").read_text(encoding="utf-8")
+        m = build.load_manifest(vendor_id)
+        for g in m["groups"]:
+            for page in g["pages"]:
+                assert f'href="{vendor_id}/{page}.html"' in hub
+                assert (tmp_path / "data-sources" / vendor_id / f"{page}.html").is_file()
+        assert f"<dt>Datasets</dt><dd>{build.manifest_total_count(m)}</dd>" in hub
+        assert "—" not in hub and not LOCAL_DATA.search(hub)
+    assert "—" not in landing and not LOCAL_DATA.search(landing)

@@ -16,16 +16,6 @@ def _doc(vendor: str, slug: str) -> build.DatasetDoc:
     return build.parse_vault_file(DEFAULT_VAULT / vendor / f"{slug}.md", vendor, cfg["label"])
 
 
-def test_legacy_page_without_series_has_no_chart_section() -> None:
-    doc = _doc("elexon", "agpt")
-    assert not doc.new_template
-    html = build.render_dataset(build.make_env(), doc, build.load_manifest("elexon"), chart=None)
-    assert "data-chart" not in html
-    assert 'id="snapshot-chart"' not in html
-    for marker in SEEDED_MARKERS:
-        assert marker not in html
-
-
 def test_stale_series_fails_the_chart_check(tmp_path, monkeypatch) -> None:
     site = tmp_path / "site"
     series_file = chart_spec.series_path(site, "elexon", "fuelhh")
