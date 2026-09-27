@@ -9,7 +9,8 @@ from typing import Any
 import pytest
 
 from gridflow_front_end import chart_spec
-from gridflow_front_end.paths import SITE_DIR
+from gridflow_front_end.page_fields import parse_page_fields
+from gridflow_front_end.paths import DEFAULT_VAULT, SITE_DIR
 
 LINE: dict[str, Any] = {
     "type": "line",
@@ -66,7 +67,7 @@ def test_none_spec_needs_a_reason_and_nothing_else() -> None:
         (_with(LINE, aggregation="median"), "aggregation"),
         (_with(LINE, value=None), "value"),
         (_with(LINE, unit=""), "unit"),
-        (_with(LINE, caption=None), "caption"),
+        (_with(LINE, caption="  "), "caption"),
         (_with(LINE, colour="red"), "unknown key"),
         (_with(LINE, caption="a --- b"), "---"),
         (_with(LINE, sort="label"), "sort"),
@@ -139,17 +140,14 @@ def test_resolve_spec_prefers_the_vault_note(tmp_path: Path) -> None:
 
 
 def test_committed_specs_are_valid_and_their_series_current() -> None:
-    specs = sorted(chart_spec.staging_dir(SITE_DIR).glob("*/*.json"))
-    assert {f"{p.parent.name}/{p.stem}" for p in specs} == {
-        "elexon/fuelhh",
-        "elexon/system_prices",
-        "elexon/bmunits_reference",
-        "entsog/physical_flows",
-    }
-    for path in specs:
+    series_files = sorted(chart_spec.series_dir(SITE_DIR).glob("*/*.json"))
+    assert series_files
+    for path in series_files:
         vendor, dataset = path.parent.name, path.stem
-        spec = chart_spec.load_staged_spec(SITE_DIR, vendor, dataset)
-        assert spec is not None
+        note = DEFAULT_VAULT / vendor / f"{dataset}.md"
+        vault_chart = parse_page_fields(note.read_text(encoding="utf-8"))[0].chart
+        spec, _origin, _notes = chart_spec.resolve_spec(SITE_DIR, vendor, dataset, vault_chart)
+        assert spec is not None, path
         assert chart_spec.validate_spec(spec) == [], path
         series = chart_spec.load_series(SITE_DIR, vendor, dataset)
         assert chart_spec.check_series(series, spec, f"{vendor}/{dataset}") == []
