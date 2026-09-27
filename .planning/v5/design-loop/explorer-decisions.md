@@ -37,3 +37,5 @@ screen demo "similar to the view of the notebook we had earlier on the home page
   speak.
 - Still to rule: the app's own "held locally" and "one local store" text inside the screenshots, and the
   "Explorer" nav item on every page.
+- **How it's built: B, "What it does"** (OWNER): three lines level with the drawing, each giving what a layer
+  does and then its technology; no code excerpt. Board `explorer-r1/2/2-built-b.dc.html` (and `-390`).
