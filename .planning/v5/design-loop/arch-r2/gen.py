@@ -86,7 +86,7 @@ def masthead() -> str:
 def footer() -> str:
     links = "".join(f'<li><a href="{h}">{n}</a></li>' for n, h in NAV[1:] + [("GitHub", GH_REPO)])
     return (f'<footer class="st st-deep" data-st="deep"><div class="foot"><a class="brand" href="index.html">gridflow'
-            f'</a><ul>{links}</ul><p>This site is MIT-licensed. gridflow is Apache-2.0.</p></div></footer>')
+            f'</a><ul>{links}</ul></div></footer>')
 
 
 # =============================================================== code wells
