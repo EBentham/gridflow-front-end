@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import dataclasses
 import re
+from pathlib import Path
 
 import pytest
 
@@ -13,7 +14,9 @@ from gridflow_front_end.paths import DEFAULT_VAULT
 
 # Phrases that describe our local copy instead of the vendor's data (DESIGN.md: no local-data
 # references anywhere on a dataset page).
-LOCAL_DATA = re.compile(r"held locally|locally held|our copy|local (silver|history|rows)|rows held", re.I)
+LOCAL_DATA = re.compile(
+    r"held locally|locally held|our copy|local (silver|history|rows)|rows held", re.IGNORECASE
+)
 
 
 def _doc(vendor: str, slug: str) -> build.DatasetDoc:
@@ -55,7 +58,7 @@ def test_fuelhh_descends_through_the_strata_in_the_locked_order() -> None:
 def test_fuelhh_notebook_copy_is_the_executed_code() -> None:
     doc = _doc("elexon", "fuelhh")
     html = _render(doc)
-    src = re.search(r'<textarea class="ds-nb-src"[^>]*>(.*?)</textarea>', html, re.S)
+    src = re.search(r'<textarea class="ds-nb-src"[^>]*>(.*?)</textarea>', html, re.DOTALL)
     assert src
     code = src.group(1).replace("&#34;", '"').replace("&quot;", '"')
     assert code.startswith(artefacts.SETUP_CELL)
@@ -88,7 +91,9 @@ def test_changed_cells_need_a_new_notebook_run() -> None:
 def test_every_schema_column_needs_a_meaning() -> None:
     doc = _doc("elexon", "fuelhh")
     fields = {k: v for k, v in doc.page.record.fields.items() if k != "published_at"}
-    doc.page = dataclasses.replace(doc.page, record=dataclasses.replace(doc.page.record, fields=fields))
+    doc.page = dataclasses.replace(
+        doc.page, record=dataclasses.replace(doc.page.record, fields=fields)
+    )
     arts, _ = build.check_artefacts(doc)
     assert arts.sample is not None
     _, errors = build._record_view(doc, arts.sample)
@@ -123,6 +128,17 @@ def test_nice_ticks_cover_the_range(lo: float, hi: float) -> None:
     assert ticks[0] <= lo and ticks[-1] >= hi and 3 <= len(ticks) <= 9
 
 
+def test_a_family_renders_one_page_and_points_its_members_at_it(tmp_path: Path) -> None:
+    build.build(DEFAULT_VAULT, tmp_path, frozenset({"elexon/indo"}))
+    out = tmp_path / "data-sources" / "elexon"
+    page = (out / "demand-outturn.html").read_text(encoding="utf-8")
+    for member in ("indo", "itsdo", "indod"):
+        assert f'id="{member}"' in page
+        pointer = (out / f"{member}.html").read_text(encoding="utf-8")
+        assert f'href="demand-outturn.html#{member}"' in pointer
+        assert "<main" in pointer
+
+
 def test_no_page_block_describes_local_data() -> None:
     for doc in _new_template_docs():
         text = (DEFAULT_VAULT / doc.vendor_id / f"{doc.slug}.md").read_text(encoding="utf-8")
@@ -135,7 +151,10 @@ def test_every_new_template_page_renders() -> None:
     docs = _new_template_docs()
     assert docs
     for doc in docs:
-        assert parse_page_fields(
-            (DEFAULT_VAULT / doc.vendor_id / f"{doc.slug}.md").read_text(encoding="utf-8")
-        )[1] == []
+        assert (
+            parse_page_fields(
+                (DEFAULT_VAULT / doc.vendor_id / f"{doc.slug}.md").read_text(encoding="utf-8")
+            )[1]
+            == []
+        )
         _render(doc)
