@@ -11,7 +11,8 @@
 .pl { border-collapse: separate; border-spacing: 0; background: var(--daylight); border: 1.5px solid var(--ink); border-radius: 3px; font: 400 13px/1.5 var(--mono); color: var(--ink); font-variant-numeric: tabular-nums; }
 .pl .fc { display: none; }
 .spec:has(.fx:checked) .pl .fc { display: table-cell; }
-.pl th, .pl td { box-sizing: border-box; padding: 0 8px; text-align: left; white-space: nowrap; }
+/* every cell is a containing block, so the visually hidden key note stays inside the scrolling frame */
+.pl th, .pl td { position: relative; box-sizing: border-box; padding: 0 8px; text-align: left; white-space: nowrap; }
 .pl tr > * + * { border-left: 1px dashed var(--sep); }
 .pl .nm th { font-weight: 500; padding-top: 10px; }
 .pl .dt td { color: var(--ink-2); padding-bottom: 8px; border-bottom: 3px double var(--ink); }
