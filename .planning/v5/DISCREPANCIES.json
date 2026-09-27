@@ -1,0 +1,4376 @@
+{
+ "datasets": [
+  {
+   "dataset": "elexon/agpt",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of generation_mw per timestamp_utc' from a one-off extract (2026-08-01..2026-08-05), averaging across a categorical dimension; not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "elexon/agws",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of generation_mw per timestamp_utc' from a one-off extract (2026-08-01..2026-08-05), averaging across a categorical dimension; not from silver"
+    },
+    {
+     "kind": "mirror-stale",
+     "where": "vault/elexon/agws.md",
+     "text": "mirror is behind canonical (+2/-0 lines; mirror last_verified 2026-05-08 vs canonical 2026-05-08). "
+    }
+   ]
+  },
+  {
+   "dataset": "elexon/atl",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "template (from mirror)",
+     "text": "page schema lists columns silver does not have: business_type"
+    },
+    {
+     "kind": "page-sample",
+     "where": "template (from mirror)",
+     "text": "sample-row columns not in silver: business_type"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of total_load_mw per timestamp_utc' from a one-off extract (2026-08-01..2026-08-05), not from silver"
+    },
+    {
+     "kind": "silver-vs-code",
+     "where": "local silver",
+     "text": "pydantic columns absent from local silver parquet (stale silver?): business_type"
+    }
+   ]
+  },
+  {
+   "dataset": "elexon/bmunits_reference",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    }
+   ]
+  },
+  {
+   "dataset": "elexon/boal",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "page schema lists columns silver does not have: bid_offer_acceptance_number"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    }
+   ]
+  },
+  {
+   "dataset": "elexon/disbsad",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `component` values never seen in silver (8,116 rows, 2026-08-01..2026-09-22): Ancillary, Constraint, Reserve, STOR; silver has 5 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of cost per timestamp_utc' from a one-off extract (2026-08-01..2026-08-05), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "elexon/fou2t14d",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "template (from mirror)",
+     "text": "page schema lists columns silver does not have: settlement_period"
+    },
+    {
+     "kind": "page-sample",
+     "where": "template (from mirror)",
+     "text": "sample-row columns not in silver: settlement_period"
+    },
+    {
+     "kind": "chart",
+     "where": "template (from mirror)",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "silver-vs-code",
+     "where": "local silver",
+     "text": "pydantic columns absent from local silver parquet (stale silver?): settlement_period"
+    }
+   ]
+  },
+  {
+   "dataset": "elexon/freq",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of frequency_hz per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-05 23:59:45+00:00), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "elexon/fuelhh",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `fuel_type` values never seen in silver (1,686,317 rows, 2021-09-01..2026-09-26): SOLAR; silver has 21 distinct"
+    },
+    {
+     "kind": "page-code-list",
+     "where": "authored override",
+     "text": "page says 'All 16 codes'; silver `fuel_type` has 21 distinct values: BIOMASS, CCGT, COAL, INTELE, INTELEC, INTEW, INTFR, INTGRNL, INTIFA2, INTIRL, INTNED, INTNEM, INTNSL, INTVKL, NPSHYD, NUCLEAR, OCGT, OIL, OTHER, PS, WIND"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of generation_mw per timestamp_utc' from a one-off extract (2026-08-01..2026-08-05), averaging across a categorical dimension; not from silver"
+    },
+    {
+     "kind": "mirror-stale",
+     "where": "vault/elexon/fuelhh.md",
+     "text": "mirror is behind canonical (+50/-2 lines; mirror last_verified 2026-05-21 vs canonical 2026-09-07). Canonical now says: \"Half-hourly generation outturn aggregated by fuel type (FUELHH) \u2014 the realised MWh in each settlement period split by fuel category (CCGT, coal, nuclear, wind, biomass, etc.). **FUELHH does not include solar** \u2014 structural exclusion confirmed by measurement an\""
+    }
+   ]
+  },
+  {
+   "dataset": "elexon/fuelinst",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of generation_mw per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-05 23:55:00+00:00), averaging across a categorical dimension; not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "elexon/imbalngc",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of indicated_imbalance per timestamp_utc' from a one-off extract (2026-08-01..2026-08-05), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "elexon/inddem",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of indicated_demand_mw per timestamp_utc' from a one-off extract (2026-08-01..2026-08-05), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "elexon/indgen",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of indicated_generation_mw per timestamp_utc' from a one-off extract (2026-08-01..2026-08-05), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "elexon/indo",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of initial_demand_outturn_mw per timestamp_utc' from a one-off extract (2026-08-01..2026-08-05), not from silver"
+    },
+    {
+     "kind": "mirror-stale",
+     "where": "vault/elexon/indo.md",
+     "text": "mirror is behind canonical (+1/-0 lines; mirror last_verified 2026-05-08 vs canonical 2026-05-08). "
+    }
+   ]
+  },
+  {
+   "dataset": "elexon/indod",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: published_at"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of initial_demand_outturn_mw per settlement_date' from a one-off extract (2026-08-01..2026-08-05), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "elexon/itsdo",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of initial_transmission_system_demand_outturn_mw per timestamp_utc' from a one-off extract (2026-08-01..2026-08-05), not from silver"
+    },
+    {
+     "kind": "mirror-stale",
+     "where": "vault/elexon/itsdo.md",
+     "text": "mirror is behind canonical (+4/-3 lines; mirror last_verified 2026-05-08 vs canonical 2026-07-30). Canonical now says: \"Initial Transmission System Demand Outturn (ITSDO) \u2014 the realised transmission-network demand per settlement period. ITSDO is **higher** than INDO, not lower: `ITSDO = INDO + embedded generation + interconnector exports + pump-storage pumping`. National Demand\""
+    }
+   ]
+  },
+  {
+   "dataset": "elexon/lolpdrm",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of derated_margin_mw per timestamp_utc' from a one-off extract (2026-08-01..2026-08-05), not from silver"
+    },
+    {
+     "kind": "mirror-stale",
+     "where": "vault/elexon/lolpdrm.md",
+     "text": "mirror is behind canonical (+5/-3 lines; mirror last_verified 2026-05-08 vs canonical 2026-07-30). "
+    }
+   ]
+  },
+  {
+   "dataset": "elexon/market_depth",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-sample",
+     "where": "template (from mirror)",
+     "text": "sample-row columns not in silver: total_adjustment_sell_volume_mwh, total_adjustment_buy_volume_mwh"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of indicated_imbalance_mwh per timestamp_utc' from a one-off extract (2026-08-01..2026-08-05), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "elexon/melngc",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of indicated_margin per timestamp_utc' from a one-off extract (2026-08-01..2026-08-05), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "elexon/mid",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of market_index_price per timestamp_utc' from a one-off extract (2026-08-01..2026-08-05), not from silver"
+    },
+    {
+     "kind": "mirror-stale",
+     "where": "vault/elexon/mid.md",
+     "text": "mirror is behind canonical (+74/-1 lines; mirror last_verified 2026-05-21 vs canonical 2026-09-07). Canonical now says: \"**Current identity `elexon-mid/vp-2026-09b`, lag 35 min from settlement-period\""
+    }
+   ]
+  },
+  {
+   "dataset": "elexon/ndf",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "template (from mirror)",
+     "text": "page schema lists columns silver does not have: transmission_demand_mw"
+    },
+    {
+     "kind": "page-sample",
+     "where": "template (from mirror)",
+     "text": "sample-row columns not in silver: transmission_demand_mw, issue_time"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of national_demand_mw per timestamp_utc' from a one-off extract (2026-08-01..2026-08-05), not from silver"
+    },
+    {
+     "kind": "mirror-stale",
+     "where": "vault/elexon/ndf.md",
+     "text": "mirror is behind canonical (+4/-2 lines; mirror last_verified 2026-05-08 vs canonical 2026-07-31). "
+    },
+    {
+     "kind": "silver-vs-code",
+     "where": "local silver",
+     "text": "pydantic columns absent from local silver parquet (stale silver?): transmission_demand_mw"
+    }
+   ]
+  },
+  {
+   "dataset": "elexon/ndfd",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "template (from mirror)",
+     "text": "page schema lists columns silver does not have: transmission_demand_mw"
+    },
+    {
+     "kind": "page-sample",
+     "where": "template (from mirror)",
+     "text": "sample-row columns not in silver: transmission_demand_mw, issue_time"
+    },
+    {
+     "kind": "chart",
+     "where": "template (from mirror)",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "silver-vs-code",
+     "where": "local silver",
+     "text": "pydantic columns absent from local silver parquet (stale silver?): transmission_demand_mw"
+    }
+   ]
+  },
+  {
+   "dataset": "elexon/netbsad",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "template (from mirror)",
+     "text": "page schema lists columns silver does not have: net_buy_price_adjustment, net_sell_price_adjustment, net_buy_volume_adjustment, net_sell_volume_adjustment"
+    },
+    {
+     "kind": "page-sample",
+     "where": "template (from mirror)",
+     "text": "sample-row columns not in silver: net_buy_price_adjustment, net_sell_price_adjustment, net_buy_volume_adjustment, net_sell_volume_adjustment"
+    },
+    {
+     "kind": "chart",
+     "where": "template (from mirror)",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "silver-vs-code",
+     "where": "local silver",
+     "text": "pydantic columns absent from local silver parquet (stale silver?): net_buy_price_adjustment, net_sell_price_adjustment, net_buy_volume_adjustment, net_sell_volume_adjustment"
+    }
+   ]
+  },
+  {
+   "dataset": "elexon/nonbm",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "template (from mirror)",
+     "text": "page carries a seeded (synthetic) chart"
+    }
+   ]
+  },
+  {
+   "dataset": "elexon/pn",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of level_from per timestamp_utc' from a one-off extract (2026-08-01..2026-08-05), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "elexon/remit",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of normal_capacity_mw per event_time' from a one-off extract (2026-08-01 06:03:08+00:00..2026-08-05 23:22:51+00:00), averaging across a categorical dimension; not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "elexon/soso",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "template (from mirror)",
+     "text": "page schema lists columns silver does not have: settlement_period"
+    },
+    {
+     "kind": "page-schema",
+     "where": "template (from mirror)",
+     "text": "silver columns missing from the page schema: published_at"
+    },
+    {
+     "kind": "page-sample",
+     "where": "template (from mirror)",
+     "text": "sample-row columns not in silver: settlement_period"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of trade_price per timestamp_utc' from a one-off extract (2026-08-01..2026-08-05), not from silver"
+    },
+    {
+     "kind": "silver-vs-code",
+     "where": "local silver",
+     "text": "pydantic columns absent from local silver parquet (stale silver?): settlement_period"
+    }
+   ]
+  },
+  {
+   "dataset": "elexon/system_prices",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: published_at"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of system_sell_price per timestamp_utc' from a one-off extract (2026-08-01..2026-08-05), not from silver"
+    },
+    {
+     "kind": "mirror-stale",
+     "where": "vault/elexon/system_prices.md",
+     "text": "mirror is behind canonical (+52/-1 lines; mirror last_verified 2026-07-25 vs canonical 2026-09-07). Canonical now says: \"**The premise of the previous section was false, and this is the correction.**\""
+    }
+   ]
+  },
+  {
+   "dataset": "elexon/temp",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "page schema lists columns silver does not have: normal_temperature, low_temperature, high_temperature"
+    },
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: measurement_date"
+    },
+    {
+     "kind": "page-sample",
+     "where": "authored override",
+     "text": "sample-row columns not in silver: normal_temperature, low_temperature, high_temperature"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of temperature per event_time' from a one-off extract (2026-08-01 15:45:00+00:00..2026-08-05 15:45:00+00:00), not from silver"
+    },
+    {
+     "kind": "silver-vs-code",
+     "where": "local silver",
+     "text": "pydantic columns absent from local silver parquet (stale silver?): normal_temperature, low_temperature, high_temperature"
+    }
+   ]
+  },
+  {
+   "dataset": "elexon/tsdf",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: published_at"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of forecast_demand_mw per timestamp_utc' from a one-off extract (2026-08-01..2026-08-05), not from silver"
+    },
+    {
+     "kind": "mirror-stale",
+     "where": "vault/elexon/tsdf.md",
+     "text": "mirror is behind canonical (+3/-1 lines; mirror last_verified 2026-05-08 vs canonical 2026-07-31). "
+    }
+   ]
+  },
+  {
+   "dataset": "elexon/tsdfd",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    }
+   ]
+  },
+  {
+   "dataset": "elexon/uou2t14d",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "template (from mirror)",
+     "text": "page schema lists columns silver does not have: settlement_period"
+    },
+    {
+     "kind": "page-sample",
+     "where": "template (from mirror)",
+     "text": "sample-row columns not in silver: settlement_period"
+    },
+    {
+     "kind": "chart",
+     "where": "template (from mirror)",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "silver-vs-code",
+     "where": "local silver",
+     "text": "pydantic columns absent from local silver parquet (stale silver?): settlement_period"
+    }
+   ]
+  },
+  {
+   "dataset": "elexon/windfor",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "template (from mirror)",
+     "text": "page schema lists columns silver does not have: settlement_date, settlement_period, initial_forecast_mw"
+    },
+    {
+     "kind": "page-sample",
+     "where": "template (from mirror)",
+     "text": "sample-row columns not in silver: settlement_date, settlement_period, initial_forecast_mw, issue_time"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of latest_forecast_mw per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-05 23:00:00+00:00), not from silver"
+    },
+    {
+     "kind": "silver-vs-code",
+     "where": "local silver",
+     "text": "pydantic columns absent from local silver parquet (stale silver?): settlement_date, settlement_period, initial_forecast_mw"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/activated_balancing_prices",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "template (from mirror)",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "no-silver",
+     "where": "template (from mirror)",
+     "text": "page shows sample rows but there is no local silver for this dataset"
+    },
+    {
+     "kind": "no-silver",
+     "where": "30-vendors/entsoe/datasets/activated_balancing_prices.md",
+     "text": "note claims silver coverage; no local silver rows exist"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/activated_balancing_qty",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "no-silver",
+     "where": "authored override",
+     "text": "page shows sample rows but there is no local silver for this dataset"
+    },
+    {
+     "kind": "no-silver",
+     "where": "30-vendors/entsoe/datasets/activated_balancing_qty.md",
+     "text": "note claims silver coverage; no local silver rows exist"
+    },
+    {
+     "kind": "registry",
+     "where": "gridflow vs vault",
+     "text": "partial: not in sources.yaml"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/actual_generation",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: resolution, published_at, ingested_at"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of generation_mw per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-05 23:45:00+00:00), averaging across a categorical dimension; not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/actual_generation_units",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: published_at"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `area_code` values never seen in silver (229,612 rows, 2026-08-01..2026-09-21): 10YGB----------A; silver has 3 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `unit_name` values never seen in silver (229,612 rows, 2026-08-01..2026-09-21): ABRBO; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of generation_mw per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-05 23:45:00+00:00), averaging across a categorical dimension; not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/actual_load",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: published_at"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `area_code` values never seen in silver (9,191 rows, 2026-08-01..2026-09-20): 10YGB----------A; silver has 4 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `resolution` values never seen in silver (9,191 rows, 2026-08-01..2026-09-20): PT30M, PT60M; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of load_mw per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-05 23:45:00+00:00), averaging across a categorical dimension; not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/aggregated_balancing_energy_bids",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: published_at"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `area_code` values never seen in silver (768 rows, 2026-09-22..2026-09-25): 10YGB----------A; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `business_type` values never seen in silver (768 rows, 2026-09-22..2026-09-25): B74; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `bid_mrid` values never seen in silver (768 rows, 2026-09-22..2026-09-25): agg-afrr-up-001, agg-mfrr-down-001, agg-mfrr-up-001; silver has 2 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `direction` values never seen in silver (768 rows, 2026-09-22..2026-09-25): down, up; silver has 2 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `standard_market_product` values never seen in silver (768 rows, 2026-09-22..2026-09-25): A02, A04; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `resolution` values never seen in silver (768 rows, 2026-09-22..2026-09-25): PT60M; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "mirror-stale",
+     "where": "vault/entsoe/aggregated_balancing_energy_bids.md",
+     "text": "mirror is behind canonical (+2/-0 lines; mirror last_verified 2026-05-08 vs canonical 2026-05-08). "
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/auction_revenue",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: published_at"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `out_area_code` values never seen in silver (1,296 rows, 2026-07-31..2026-09-22): 10YFR-RTE------C; silver has 2 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of amount_eur per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-05 23:00:00+00:00), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/balancing_energy_bids",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: published_at"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `area_code` values never seen in silver (81,563 rows, 2026-08-01..2026-09-21): 10YGB----------A; silver has 3 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `direction` values never seen in silver (81,563 rows, 2026-08-01..2026-09-21): down, up; silver has 2 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `original_market_product` values never seen in silver (81,563 rows, 2026-08-01..2026-09-21): mFRR-down, mFRR-up; silver has 2 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `standard_market_product` values never seen in silver (81,563 rows, 2026-08-01..2026-09-21): A04; silver has 3 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `resolution` values never seen in silver (81,563 rows, 2026-08-01..2026-09-21): PT60M; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of quantity_mw per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-05 21:45:00+00:00), averaging across a categorical dimension; not from silver"
+    },
+    {
+     "kind": "mirror-stale",
+     "where": "vault/entsoe/balancing_energy_bids.md",
+     "text": "mirror is behind canonical (+32/-0 lines; mirror last_verified 2026-05-08 vs canonical 2026-05-08). Canonical now says: \"> **\u26a0 The live envelope does NOT match the fixture below \u2014 live-probe verified\""
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/balancing_financial_expenses_income",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "template (from mirror)",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "no-silver",
+     "where": "template (from mirror)",
+     "text": "page shows sample rows but there is no local silver for this dataset"
+    },
+    {
+     "kind": "mirror-stale",
+     "where": "vault/entsoe/balancing_financial_expenses_income.md",
+     "text": "mirror is behind canonical (+14/-0 lines; mirror last_verified 2026-05-09 vs canonical 2026-05-09). Canonical now says: \"> **Vendor cadence is MONTHLY (`P1M`) \u2014 live-probe verified 2026-08-04.**\""
+    },
+    {
+     "kind": "no-silver",
+     "where": "30-vendors/entsoe/datasets/balancing_financial_expenses_income.md",
+     "text": "note claims silver coverage; no local silver rows exist"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/commercial_schedules",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: published_at"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `out_area_code` values never seen in silver (9,110 rows, 2026-08-01..2026-09-21): 10YGB----------A; silver has 5 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of quantity_mw per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-05 23:45:00+00:00), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/commercial_schedules_net_positions",
+   "stub": false,
+   "items": [
+    {
+     "kind": "registry",
+     "where": "gridflow vs vault",
+     "text": "vault only (gridflow has no config or transformer)"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/congestion_income",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "no-silver",
+     "where": "authored override",
+     "text": "page shows sample rows but there is no local silver for this dataset"
+    },
+    {
+     "kind": "no-silver",
+     "where": "30-vendors/entsoe/datasets/congestion_income.md",
+     "text": "note claims silver coverage; no local silver rows exist"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/congestion_management_costs",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: published_at"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `in_area_code` values never seen in silver (744 rows, 2026-06-30..2026-07-31): 10Y1001A1001A82H; silver has 3 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `out_area_code` values never seen in silver (744 rows, 2026-06-30..2026-07-31): 10Y1001A1001A82H; silver has 3 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `resolution` values never seen in silver (744 rows, 2026-06-30..2026-07-31): PT60M; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "mirror-stale",
+     "where": "vault/entsoe/congestion_management_costs.md",
+     "text": "mirror is behind canonical (+13/-0 lines; mirror last_verified 2026-05-08 vs canonical 2026-05-08). Canonical now says: \"> **Vendor cadence is MONTHLY (`P1M`) \u2014 live-probe verified 2026-08-04.**\""
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/contracted_reserves",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "no-silver",
+     "where": "authored override",
+     "text": "page shows sample rows but there is no local silver for this dataset"
+    },
+    {
+     "kind": "no-silver",
+     "where": "30-vendors/entsoe/datasets/contracted_reserves.md",
+     "text": "note claims silver coverage; no local silver rows exist"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/countertrading",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: published_at"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `in_area_code` values never seen in silver (12 rows, 2026-09-22..2026-09-25): 10Y1001A1001A82H; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `out_area_code` values never seen in silver (12 rows, 2026-09-22..2026-09-25): 10YNL----------L; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `business_type` values never seen in silver (12 rows, 2026-09-22..2026-09-25): A47; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `resolution` values never seen in silver (12 rows, 2026-09-22..2026-09-25): PT60M; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/cross_border_flows",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: published_at"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `out_area_code` values never seen in silver (10,855 rows, 2026-08-01..2026-09-20): 10YGB----------A; silver has 5 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of flow_mw per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-05 23:45:00+00:00), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/cross_zonal_balancing_capacity",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "no-silver",
+     "where": "authored override",
+     "text": "page shows sample rows but there is no local silver for this dataset"
+    },
+    {
+     "kind": "no-silver",
+     "where": "30-vendors/entsoe/datasets/cross_zonal_balancing_capacity.md",
+     "text": "note claims silver coverage; no local silver rows exist"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/current_balancing_state",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: published_at"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `area_code` values never seen in silver (9,414 rows, 2026-08-01..2026-08-25): 10YGB----------A; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `resolution` values never seen in silver (9,414 rows, 2026-08-01..2026-08-25): PT30M; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of quantity_mw per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-05 23:59:00+00:00), averaging across a categorical dimension; not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/day_ahead_prices",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "template (from mirror)",
+     "text": "silver columns missing from the page schema: published_at"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of price_eur_mwh per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-05 23:45:00+00:00), averaging across a categorical dimension; not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/dc_link_intraday_transfer_limits",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: published_at"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `business_type` values never seen in silver (24 rows, 2026-08-01..2026-08-05): A29; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of quantity_mw per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-05 23:00:00+00:00), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/forecast_margin",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: published_at"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `resolution` values never seen in silver (48 rows, 2025-12-31..2025-12-31): PT60M; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/generation_forecast",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: published_at"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `production_type` values never seen in silver (5,830 rows, 2026-08-01..2026-09-21): unknown; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of generation_forecast_mw per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-05 23:45:00+00:00), averaging across a categorical dimension; not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/generation_units_master_data",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/imbalance_prices",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "template (from mirror)",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "no-silver",
+     "where": "template (from mirror)",
+     "text": "page shows sample rows but there is no local silver for this dataset"
+    },
+    {
+     "kind": "no-silver",
+     "where": "30-vendors/entsoe/datasets/imbalance_prices.md",
+     "text": "note claims silver coverage; no local silver rows exist"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/imbalance_volume",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "no-silver",
+     "where": "authored override",
+     "text": "page shows sample rows but there is no local silver for this dataset"
+    },
+    {
+     "kind": "no-silver",
+     "where": "30-vendors/entsoe/datasets/imbalance_volume.md",
+     "text": "note claims silver coverage; no local silver rows exist"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/installed_capacity",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: published_at"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/installed_capacity_units",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: published_at"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/load_forecast",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: published_at"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `resolution` values never seen in silver (9,216 rows, 2026-08-01..2026-09-20): PT60M; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of load_forecast_mw per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-05 23:45:00+00:00), averaging across a categorical dimension; not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/load_forecast_monthly",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "template (from mirror)",
+     "text": "page carries a seeded (synthetic) chart"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/load_forecast_weekly",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: published_at"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `resolution` values never seen in silver (48 rows, 2026-07-31..2026-09-13): PT60M; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/load_forecast_yearly",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "template (from mirror)",
+     "text": "page carries a seeded (synthetic) chart"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/net_positions",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: published_at"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `resolution` values never seen in silver (5,376 rows, 2026-08-01..2026-09-21): PT60M; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of quantity_mw per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-05 23:45:00+00:00), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/net_transfer_capacity",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: published_at"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `in_area_code` values never seen in silver (2,736 rows, 2026-08-01..2026-09-21): 10YFR-RTE------C; silver has 2 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `out_area_code` values never seen in silver (2,736 rows, 2026-08-01..2026-09-21): 10YGB----------A; silver has 5 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of ntc_mw per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-05 23:00:00+00:00), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/offered_transfer_capacity_continuous",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "no-silver",
+     "where": "authored override",
+     "text": "page shows sample rows but there is no local silver for this dataset"
+    },
+    {
+     "kind": "no-silver",
+     "where": "30-vendors/entsoe/datasets/offered_transfer_capacity_continuous.md",
+     "text": "note claims silver coverage; no local silver rows exist"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/offered_transfer_capacity_explicit",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "no-silver",
+     "where": "authored override",
+     "text": "page shows sample rows but there is no local silver for this dataset"
+    },
+    {
+     "kind": "no-silver",
+     "where": "30-vendors/entsoe/datasets/offered_transfer_capacity_explicit.md",
+     "text": "note claims silver coverage; no local silver rows exist"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/offered_transfer_capacity_implicit",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "no-silver",
+     "where": "authored override",
+     "text": "page shows sample rows but there is no local silver for this dataset"
+    },
+    {
+     "kind": "no-silver",
+     "where": "30-vendors/entsoe/datasets/offered_transfer_capacity_implicit.md",
+     "text": "note claims silver coverage; no local silver rows exist"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/outages_consumption",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: published_at"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `outage_type` values never seen in silver (1,738 rows, 2026-08-01..2026-09-20): unplanned; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `business_type` values never seen in silver (1,738 rows, 2026-08-01..2026-09-20): A54; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `document_mrid` values never seen in silver (1,738 rows, 2026-08-01..2026-09-20): doc-101, doc-102; silver has 19 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `document_status` values never seen in silver (1,738 rows, 2026-08-01..2026-09-20): A05; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `timeseries_mrid` values never seen in silver (1,738 rows, 2026-08-01..2026-09-20): ts-001; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `resolution` values never seen in silver (1,738 rows, 2026-08-01..2026-09-20): PT60M; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/outages_generation",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: published_at"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `outage_type` values never seen in silver (11,011 rows, 2015-11-15..2069-06-26): unplanned; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `resolution` values never seen in silver (11,011 rows, 2015-11-15..2069-06-26): PT60M; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/outages_offshore_grid",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: published_at"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `area_code` values never seen in silver (4 rows, 2026-09-16..2026-09-16): 10Y1001A1001A82H; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `asset_mrid` values never seen in silver (4 rows, 2026-09-16..2026-09-16): DOGGER-BANK-A-CBL, HORNSEA-2-SUB; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `asset_name` values never seen in silver (4 rows, 2026-09-16..2026-09-16): Dogger Bank A export cable, Hornsea 2 substation; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `outage_type` values never seen in silver (4 rows, 2026-09-16..2026-09-16): planned; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `business_type` values never seen in silver (4 rows, 2026-09-16..2026-09-16): A53; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `document_mrid` values never seen in silver (4 rows, 2026-09-16..2026-09-16): doc-301, doc-302; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `document_status` values never seen in silver (4 rows, 2026-09-16..2026-09-16): A05; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `timeseries_mrid` values never seen in silver (4 rows, 2026-09-16..2026-09-16): ts-001; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `resolution` values never seen in silver (4 rows, 2026-09-16..2026-09-16): PT60M; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/outages_production",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "template (from mirror)",
+     "text": "silver columns missing from the page schema: published_at"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "template (from mirror)",
+     "text": "sample `unit_mrid` values never seen in silver (3,551 rows, 2024-12-31..2077-01-02): 11WD7--AAA-VATTI; silver has 46 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "template (from mirror)",
+     "text": "sample `unit_name` values never seen in silver (3,551 rows, 2024-12-31..2077-01-02): UNIT-XYZ; silver has 46 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "template (from mirror)",
+     "text": "sample `document_status` values never seen in silver (3,551 rows, 2024-12-31..2077-01-02): A05; silver has 2 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "template (from mirror)",
+     "text": "sample `resolution` values never seen in silver (3,551 rows, 2024-12-31..2077-01-02): 1:00:00; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of unavailable_mw per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-05 21:45:00+00:00), averaging across a categorical dimension; not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/outages_transmission",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: published_at"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `asset_mrid` values never seen in silver (3,981 rows, 2025-01-11..2052-10-08): BRITNED-1, IFA-CABLE-1; silver has 28 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `asset_name` values never seen in silver (3,981 rows, 2025-01-11..2052-10-08): BritNed Pole 1, IFA Pole 1; silver has 28 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `outage_type` values never seen in silver (3,981 rows, 2025-01-11..2052-10-08): unplanned; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `business_type` values never seen in silver (3,981 rows, 2025-01-11..2052-10-08): A54; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `document_status` values never seen in silver (3,981 rows, 2025-01-11..2052-10-08): A05; silver has 2 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `timeseries_mrid` values never seen in silver (3,981 rows, 2025-01-11..2052-10-08): ts-001; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `resolution` values never seen in silver (3,981 rows, 2025-01-11..2052-10-08): PT60M; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of unavailable_mw per event_time' from a one-off extract (2026-08-03 05:30:00+00:00..2026-08-05 22:00:00+00:00), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/procured_balancing_capacity",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: published_at"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `area_code` values never seen in silver (440 rows, 2026-08-01..2026-08-05): 10YGB----------A; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `market_agreement_type` values never seen in silver (440 rows, 2026-08-01..2026-08-05): A01, A02; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `resolution` values never seen in silver (440 rows, 2026-08-01..2026-08-05): PT60M; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of quantity_mw per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-05 21:45:00+00:00), averaging across a categorical dimension; not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/redispatching_cross_border",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: published_at"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `in_area_code` values never seen in silver (288 rows, 2026-07-06..2026-07-09): 10Y1001A1001A82H; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `out_area_code` values never seen in silver (288 rows, 2026-07-06..2026-07-09): 10YFR-RTE------C; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `resolution` values never seen in silver (288 rows, 2026-07-06..2026-07-09): PT60M; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/redispatching_internal",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: published_at"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `in_area_code` values never seen in silver (1,909 rows, 2026-08-01..2026-09-21): 10Y1001A1001A82H; silver has 2 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `out_area_code` values never seen in silver (1,909 rows, 2026-08-01..2026-09-21): 10Y1001A1001A82H; silver has 2 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `resolution` values never seen in silver (1,909 rows, 2026-08-01..2026-09-21): PT60M; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of quantity_mw per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-05 23:45:00+00:00), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/total_capacity_allocated",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: published_at"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `out_area_code` values never seen in silver (1,922 rows, 2026-08-01..2026-09-21): 10YFR-RTE------C; silver has 3 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of quantity_mw per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-05 23:00:00+00:00), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/total_nominated_capacity",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: published_at"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of quantity_mw per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-05 23:45:00+00:00), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/transfer_capacity_use",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "no-silver",
+     "where": "authored override",
+     "text": "page shows sample rows but there is no local silver for this dataset"
+    },
+    {
+     "kind": "no-silver",
+     "where": "30-vendors/entsoe/datasets/transfer_capacity_use.md",
+     "text": "note claims silver coverage; no local silver rows exist"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/water_reservoirs",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: published_at"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `area_code` values never seen in silver (18 rows, 2026-07-26..2026-09-13): 10YNO-1--------2; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    }
+   ]
+  },
+  {
+   "dataset": "entsoe/wind_solar_forecast",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "template (from mirror)",
+     "text": "silver columns missing from the page schema: ingested_at"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "template (from mirror)",
+     "text": "sample `resolution` values never seen in silver (22,665 rows, 2026-08-01..2026-09-20): 0:15:00; silver has 2 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of generation_forecast_mw per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-05 23:45:00+00:00), averaging across a categorical dimension; not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "entsog/aggregate_interconnections",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: operator_label, country_label, bz_label, bz_label_long"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `adjacent_systems_key` values never seen in silver (27 rows, 2026-09-27..2026-09-27): Final consumer, TransmissionBE---------; silver has 13 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `adjacent_systems_label` values never seen in silver (27 rows, 2026-09-27..2026-09-27): BE, Final consumer; silver has 13 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "mirror-stale",
+     "where": "vault/entsog/aggregate_interconnections.md",
+     "text": "mirror is behind canonical (+9/-1 lines; mirror last_verified 2026-05-08 vs canonical 2026-05-08). Canonical now says: \"**Point-in-time field**: **none \u2014 CORRECTED 2026-08-13.** The live payload\""
+    }
+   ]
+  },
+  {
+   "dataset": "entsog/aggregated_physical_flows",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: timestamp_utc, period_type, operator_label, country_label, data_set, data_set_label, bz_short, bz_long, adjacent_systems_label, day"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `country_key` values never seen in silver (42 rows, 2026-08-01..2026-09-21): DE, FR, NL; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `bz_short` values never seen in silver (42 rows, 2026-08-01..2026-09-21): DE, FR, NL; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `operator_key` values never seen in silver (42 rows, 2026-08-01..2026-09-21): DE-TSO-0011, FR-TSO-0001, NL-TSO-0001; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `direction_key` values never seen in silver (42 rows, 2026-08-01..2026-09-21): exit; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `adjacent_systems_key` values never seen in silver (42 rows, 2026-08-01..2026-09-21): Distribution; silver has 3 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `flow_status` values never seen in silver (42 rows, 2026-08-01..2026-09-21): Final; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of value per event_time' from a one-off extract (2026-08-01 04:00:00+00:00..2026-08-05 04:00:00+00:00), averaging across a categorical dimension; not from silver"
+    },
+    {
+     "kind": "vault-schema",
+     "where": "30-vendors/entsog/datasets/aggregated_physical_flows.md",
+     "text": "vault silver-schema table vs silver_parquet: missing ['timestamp_utc'], extra []"
+    }
+   ]
+  },
+  {
+   "dataset": "entsog/allocations",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: period_to, period_type, operator_label, tso_eic_code, point_label, data_set, tso_item_identifier, item_remarks, general_remarks, is_unlimited, flow_status, interruption_type, restoration_information, capacity_type, capacity_booking_status, is_na, original_period_from, is_cmp_relevant, booking_platform_key, booking_platform_label, booking_platform_url, interruption_calculation_remark, point_type, id_point_type, is_archived"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `point_label` values never seen in silver (98 rows, 2026-08-01..2026-09-21): Bacton (BBL), Bacton (IUK); silver has 4 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `operator_key` values never seen in silver (98 rows, 2026-08-01..2026-09-21): UK-TSO-0004; silver has 3 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of value per event_time' from a one-off extract (2026-08-01 03:00:00+00:00..2026-08-05 04:00:00+00:00), averaging across a categorical dimension; not from silver"
+    },
+    {
+     "kind": "vault-schema",
+     "where": "30-vendors/entsog/datasets/allocations.md",
+     "text": "vault silver-schema table vs silver_parquet: missing ['timestamp_utc', 'point_type', 'id_point_type', 'is_archived'], extra []"
+    }
+   ]
+  },
+  {
+   "dataset": "entsog/available_through_oversubscription",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: period_to, period_type, operator_label, tso_eic_code, point_key, point_label, direction_key, dataset, tso_item_identifier, item_remarks, general_remarks, is_unlimited, flow_status, interruption_type, restoration_information, capacity_type, capacity_booking_status, is_cam_relevant, is_na, original_period_from, is_default_sentence, default_sentence"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `unit` values never seen in silver (55 rows, 2026-07-31..2026-08-04): kWh/d; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "vault-schema",
+     "where": "30-vendors/entsog/datasets/available_through_oversubscription.md",
+     "text": "vault silver-schema table vs silver_parquet: missing ['timestamp_utc', 'dataset', 'is_default_sentence', 'default_sentence'], extra ['data_set', 'booking_platform_key', 'booking_platform_label', 'booking_platform_url', 'interruption_calculation_remark', 'point_type', 'id_point_type', 'is_archived']"
+    }
+   ]
+  },
+  {
+   "dataset": "entsog/available_through_surrender",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: period_to, period_type, operator_label, tso_eic_code, point_key, point_label, direction_key, dataset, tso_item_identifier, item_remarks, general_remarks, is_unlimited, flow_status, interruption_type, restoration_information, capacity_type, capacity_booking_status, is_cam_relevant, is_na, original_period_from, is_default_sentence, default_sentence"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `unit` values never seen in silver (55 rows, 2026-07-31..2026-08-04): kWh/d; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "vault-schema",
+     "where": "30-vendors/entsog/datasets/available_through_surrender.md",
+     "text": "vault silver-schema table vs silver_parquet: missing ['timestamp_utc', 'dataset', 'is_default_sentence', 'default_sentence'], extra ['data_set', 'booking_platform_key', 'booking_platform_label', 'booking_platform_url', 'interruption_calculation_remark', 'point_type', 'id_point_type', 'is_archived']"
+    }
+   ]
+  },
+  {
+   "dataset": "entsog/available_through_uioli_long_term",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: period_to, period_type, operator_label, tso_eic_code, point_key, point_label, direction_key, dataset, tso_item_identifier, item_remarks, general_remarks, is_unlimited, flow_status, interruption_type, restoration_information, capacity_type, capacity_booking_status, is_cam_relevant, is_na, original_period_from, is_default_sentence, default_sentence"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `unit` values never seen in silver (55 rows, 2026-07-31..2026-08-04): kWh/d; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "vault-schema",
+     "where": "30-vendors/entsog/datasets/available_through_uioli_long_term.md",
+     "text": "vault silver-schema table vs silver_parquet: missing ['timestamp_utc', 'dataset', 'is_default_sentence', 'default_sentence'], extra ['data_set', 'booking_platform_key', 'booking_platform_label', 'booking_platform_url', 'interruption_calculation_remark', 'point_type', 'id_point_type', 'is_archived']"
+    }
+   ]
+  },
+  {
+   "dataset": "entsog/available_through_uioli_short_term",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: period_to, period_type, operator_label, tso_eic_code, point_key, point_label, direction_key, dataset, tso_item_identifier, item_remarks, general_remarks, is_unlimited, flow_status, interruption_type, restoration_information, capacity_type, capacity_booking_status, is_cam_relevant, is_na, original_period_from, is_default_sentence, default_sentence"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `unit` values never seen in silver (55 rows, 2026-07-31..2026-08-04): kWh/d; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "vault-schema",
+     "where": "30-vendors/entsog/datasets/available_through_uioli_short_term.md",
+     "text": "vault silver-schema table vs silver_parquet: missing ['timestamp_utc'], extra []"
+    }
+   ]
+  },
+  {
+   "dataset": "entsog/balancing_zones",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: bz_label, tp_map_y, bz_label_long, bz_manager_label, replaced_by"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `bz_key` values never seen in silver (48 rows, 2026-09-27..2026-09-27): DE-MGAS----, FR---------; silver has 48 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `bz_label` values never seen in silver (48 rows, 2026-09-27..2026-09-27): France, THE, TTF; silver has 48 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `bz_label_long` values never seen in silver (48 rows, 2026-09-27..2026-09-27): France Balancing Zone, NetConnect Germany Balancing Zone, TTF Balancing Zone, Trading Hub Europe Balancing Zone; silver has 48 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `bz_manager_key` values never seen in silver (48 rows, 2026-09-27..2026-09-27): DE-BRP-0003, FR-BRP-0001, NL-BRP-0001, UK-BRP-0001, UK-BRP-0002; silver has 36 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `bz_eic_code` values never seen in silver (48 rows, 2026-09-27..2026-09-27): 21X-GB-A-A0A0A-7, 21X-NI-A-A0A0A-X, 21Y0000000000061, 21Y0000000000150, 21Y0000000000300, 25Z-PEG-NORD---H, 25Z-TTF-NL-----O; silver has 40 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `is_deactivated` values never seen in silver (48 rows, 2026-09-27..2026-09-27): 1; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "mirror-stale",
+     "where": "vault/entsog/balancing_zones.md",
+     "text": "mirror is behind canonical (+12/-1 lines; mirror last_verified 2026-05-08 vs canonical 2026-05-08). Canonical now says: \"**Point-in-time field**: **none \u2014 CORRECTED 2026-08-13.** The live payload\""
+    }
+   ]
+  },
+  {
+   "dataset": "entsog/cmp_auction_premiums",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: period_from, period_to, indicator, period_type, operator_label, tso_eic_code, point_key, point_label, direction_key, value, auction_to, capacity_to, tso_item_identifier, item_remarks, general_remarks, is_cam_relevant, booking_platform_key, booking_platform_label, booking_platform_url, data_set, is_unlimited, flow_status, interruption_type, restoration_information, capacity_type, capacity_booking_status, is_na, original_period_from, is_cmp_relevant"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `unit` values never seen in silver (5,035 rows, 2026-07-31..2026-08-04): EUR; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "vault-schema",
+     "where": "30-vendors/entsog/datasets/cmp_auction_premiums.md",
+     "text": "vault silver-schema table vs silver_parquet: missing ['timestamp_utc'], extra ['point_type', 'id_point_type', 'interruption_calculation_remark', 'is_archived']"
+    }
+   ]
+  },
+  {
+   "dataset": "entsog/cmp_unavailable_firm_capacity",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "page schema lists columns silver does not have: capacity_from, unavailable_capacity, available_capacity, technical_capacity"
+    },
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: period_from, period_to, indicator, period_type, operator_label, tso_eic_code, point_key, point_label, direction_key, value, tso_item_identifier, allocation_process, auction_start_date, item_remarks, general_remarks, dataset, is_unlimited, flow_status, interruption_type, restoration_information, capacity_type, capacity_booking_status, is_na, original_period_from, is_cmp_relevant"
+    },
+    {
+     "kind": "page-sample",
+     "where": "authored override",
+     "text": "sample-row columns not in silver: capacity_from, capacity_to, unavailable_capacity, available_capacity, technical_capacity"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `direction_key` values never seen in silver (2,920 rows, 2026-07-31..2026-08-04): Entry, Exit; silver has 2 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `unit` values never seen in silver (2,920 rows, 2026-07-31..2026-08-04): kWh/d; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "vault-schema",
+     "where": "30-vendors/entsog/datasets/cmp_unavailable_firm_capacity.md",
+     "text": "vault silver-schema table vs silver_parquet: missing ['timestamp_utc', 'dataset'], extra ['point_type', 'id_point_type', 'data_set', 'booking_platform_key', 'booking_platform_label', 'booking_platform_url', 'interruption_calculation_remark', 'is_archived']"
+    }
+   ]
+  },
+  {
+   "dataset": "entsog/cmp_unsuccessful_requests",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: period_from, period_to, indicator, period_type, operator_label, tso_eic_code, point_key, point_label, direction_key, value, auction_to, capacity_to, tso_item_identifier, item_remarks, general_remarks, is_unlimited, flow_status, interruption_type, restoration_information, capacity_type, capacity_booking_status, dataset, is_na, original_period_from, is_cmp_relevant"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `direction_key` values never seen in silver (5,197 rows, ..): Exit; silver has 3 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "vault-schema",
+     "where": "30-vendors/entsog/datasets/cmp_unsuccessful_requests.md",
+     "text": "vault silver-schema table vs silver_parquet: missing ['timestamp_utc', 'dataset'], extra ['point_type', 'id_point_type', 'data_set', 'booking_platform_key', 'booking_platform_label', 'booking_platform_url', 'interruption_calculation_remark', 'is_archived']"
+    }
+   ]
+  },
+  {
+   "dataset": "entsog/connection_points",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: point_label, tp_map_y, import_from_country_label, virtual_point_key, virtual_point_label, is_interconnection, is_import, infrastructure_label, is_cross_border, is_invalid, is_macro_point, is_pipe_in_pipe, is_cmp_relevant"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "mirror-stale",
+     "where": "vault/entsog/connection_points.md",
+     "text": "mirror is behind canonical (+13/-1 lines; mirror last_verified 2026-05-08 vs canonical 2026-05-08). Canonical now says: \"**Point-in-time field**: **none \u2014 CORRECTED 2026-08-13.** The live payload\""
+    }
+   ]
+  },
+  {
+   "dataset": "entsog/firm_available",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: period_to, period_type, operator_label, tso_eic_code, point_key, point_label, direction_key, data_set, tso_item_identifier, item_remarks, general_remarks, flow_status, interruption_type, restoration_information, capacity_booking_status, is_cam_relevant, is_na, original_period_from, is_cmp_relevant, booking_platform_key, booking_platform_label, booking_platform_url, interruption_calculation_remark, point_type, id_point_type, is_archived"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of value per event_time' from a one-off extract (2026-08-01 03:00:00+00:00..2026-08-05 04:00:00+00:00), averaging across a categorical dimension; not from silver"
+    },
+    {
+     "kind": "vault-schema",
+     "where": "30-vendors/entsog/datasets/firm_available.md",
+     "text": "vault silver-schema table vs silver_parquet: missing ['timestamp_utc'], extra []"
+    }
+   ]
+  },
+  {
+   "dataset": "entsog/firm_booked",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: period_to, period_type, operator_label, tso_eic_code, point_key, point_label, direction_key, data_set, tso_item_identifier, item_remarks, general_remarks, is_unlimited, flow_status, interruption_type, restoration_information, is_na, original_period_from, is_cmp_relevant, booking_platform_label, booking_platform_url, interruption_calculation_remark, point_type, id_point_type, is_archived"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `booking_platform_key` values never seen in silver (59 rows, 2026-08-01..2026-09-21): PRISMA; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of value per event_time' from a one-off extract (2026-08-01 03:00:00+00:00..2026-08-05 04:00:00+00:00), averaging across a categorical dimension; not from silver"
+    },
+    {
+     "kind": "vault-schema",
+     "where": "30-vendors/entsog/datasets/firm_booked.md",
+     "text": "vault silver-schema table vs silver_parquet: missing ['timestamp_utc'], extra []"
+    }
+   ]
+  },
+  {
+   "dataset": "entsog/firm_technical",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: period_to, period_type, operator_label, tso_eic_code, point_key, point_label, direction_key, data_set, tso_item_identifier, item_remarks, general_remarks, is_unlimited, flow_status, interruption_type, restoration_information, capacity_booking_status, is_cam_relevant, is_na, original_period_from, is_cmp_relevant, booking_platform_key, booking_platform_label, booking_platform_url, interruption_calculation_remark"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `point_key` values never seen in silver (28 rows, 2026-08-01..2026-09-21): ITP-00005, ITP-00063, ITP-00495; silver has 2 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "vault-schema",
+     "where": "30-vendors/entsog/datasets/firm_technical.md",
+     "text": "vault silver-schema table vs silver_parquet: missing ['timestamp_utc'], extra ['point_type', 'id_point_type', 'is_archived']"
+    }
+   ]
+  },
+  {
+   "dataset": "entsog/gcv",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: period_to, period_type, operator_label, tso_eic_code, point_key, point_label, direction_key, data_set, tso_item_identifier, item_remarks, general_remarks, is_unlimited, interruption_type, restoration_information, capacity_type, capacity_booking_status, is_cam_relevant, is_na, original_period_from, is_cmp_relevant, booking_platform_key, booking_platform_label, booking_platform_url, interruption_calculation_remark, point_type, id_point_type, is_archived"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `point_key` values never seen in silver (98 rows, 2026-08-01..2026-09-21): ITP-00090; silver has 4 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `point_label` values never seen in silver (98 rows, 2026-08-01..2026-09-21): Bacton (BBL), Bacton (IUK), Moffat, Moffat (IE); silver has 4 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `unit` values never seen in silver (98 rows, 2026-08-01..2026-09-21): kWh/Nm\u00b3; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of value per event_time' from a one-off extract (2026-08-01 03:00:00+00:00..2026-08-05 04:00:00+00:00), averaging across a categorical dimension; not from silver"
+    },
+    {
+     "kind": "vault-schema",
+     "where": "30-vendors/entsog/datasets/gcv.md",
+     "text": "vault silver-schema table vs silver_parquet: missing ['timestamp_utc'], extra []"
+    }
+   ]
+  },
+  {
+   "dataset": "entsog/hydrogen_content",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: period_to, period_type, operator_label, tso_eic_code, point_key, point_label, direction_key, data_set, tso_item_identifier, item_remarks, general_remarks, is_unlimited, flow_status, interruption_type, restoration_information, capacity_type, capacity_booking_status, is_cam_relevant, is_na, original_period_from, is_cmp_relevant, booking_platform_key, booking_platform_label, booking_platform_url, interruption_calculation_remark, point_type, id_point_type, is_archived"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `point_key` values never seen in silver (28 rows, 2026-08-01..2026-09-21): ITP-00007, ITP-00207, ITP-00495; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `point_label` values never seen in silver (28 rows, 2026-08-01..2026-09-21): Bacton (BBL), Bacton (IUK), Moffat (IE), Uberackern SUDAL; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `unit` values never seen in silver (28 rows, 2026-08-01..2026-09-21): mol%; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of value per event_time' from a one-off extract (2026-08-01 04:00:00+00:00..2026-08-05 04:00:00+00:00), averaging across a categorical dimension; not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "entsog/interconnections",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: timestamp_utc, point_label, point_tp_map_y, from_country_label, from_bz_key, from_bz_label, from_bz_label_long, from_operator_label, from_operator_long_label, from_point_label, from_is_cmp, from_booking_platform_key, from_booking_platform_label, from_booking_platform_url, to_is_cam, to_is_cmp, to_booking_platform_key, to_booking_platform_label, to_booking_platform_url, from_tso_item_identifier, from_tso_point_label, from_direction_key, from_has_data, to_system_label, to_infrastructure_type_label, to_country_label, to_bz_key, to_bz_label, to_bz_label_long, to_operator_label, to_operator_long_label, to_point_key, to_point_label, to_direction_key, to_has_data, to_tso_item_identifier, to_tso_point_label, exit_tp_ne_mo_usage"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `from_country_key` values never seen in silver (194 rows, ..): AL, DE, FR; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `from_bz_label_long` values never seen in silver (194 rows, ..): (Albania), NCG Balancing Zone, NI Balancing Zone, Trading Region France; silver has 3 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `to_country_key` values never seen in silver (194 rows, ..): (null), AT, IT; silver has 4 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `to_bz_label_long` values never seen in silver (194 rows, ..): (Distribution), Austrian Balancing Zone, Belgium, PSV Balancing Zone, Republic of Ireland Balancing Zone, TTF Balancing Zone; silver has 6 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `from_direction_key` values never seen in silver (194 rows, ..): entry; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `to_direction_key` values never seen in silver (194 rows, ..): (null), exit; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "vault-schema",
+     "where": "30-vendors/entsog/datasets/interconnections.md",
+     "text": "vault silver-schema table vs silver_parquet: missing ['timestamp_utc'], extra []"
+    }
+   ]
+  },
+  {
+   "dataset": "entsog/interruptible_available",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: period_to, period_type, operator_label, tso_eic_code, point_key, point_label, direction_key, data_set, tso_item_identifier, item_remarks, general_remarks, is_unlimited, flow_status, interruption_type, restoration_information, capacity_booking_status, is_cam_relevant, is_na, original_period_from, is_cmp_relevant, booking_platform_key, booking_platform_label, booking_platform_url, interruption_calculation_remark"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `point_key` values never seen in silver (21 rows, 2026-08-01..2026-09-21): ITP-00207; silver has 3 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "vault-schema",
+     "where": "30-vendors/entsog/datasets/interruptible_available.md",
+     "text": "vault silver-schema table vs silver_parquet: missing ['timestamp_utc'], extra ['point_type', 'id_point_type', 'is_archived']"
+    }
+   ]
+  },
+  {
+   "dataset": "entsog/interruptible_booked",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: period_to, period_type, operator_label, tso_eic_code, point_key, point_label, direction_key, data_set, tso_item_identifier, item_remarks, general_remarks, is_unlimited, flow_status, interruption_type, restoration_information, is_cam_relevant, is_na, original_period_from, is_cmp_relevant, booking_platform_label, booking_platform_url, interruption_calculation_remark"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `point_key` values never seen in silver (20 rows, 2026-08-01..2026-09-21): ITP-00005, ITP-00207; silver has 2 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `booking_platform_key` values never seen in silver (20 rows, 2026-08-01..2026-09-21): PRISMA, RBP; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "vault-schema",
+     "where": "30-vendors/entsog/datasets/interruptible_booked.md",
+     "text": "vault silver-schema table vs silver_parquet: missing ['timestamp_utc'], extra ['point_type', 'id_point_type', 'is_archived']"
+    }
+   ]
+  },
+  {
+   "dataset": "entsog/interruptible_total",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: period_to, period_type, operator_label, tso_eic_code, point_key, point_label, direction_key, data_set, tso_item_identifier, item_remarks, general_remarks, is_unlimited, flow_status, interruption_type, restoration_information, capacity_booking_status, is_cam_relevant, is_na, original_period_from, is_cmp_relevant, booking_platform_key, booking_platform_label, booking_platform_url, interruption_calculation_remark"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `point_key` values never seen in silver (21 rows, 2026-08-01..2026-09-21): ITP-00207; silver has 3 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "vault-schema",
+     "where": "30-vendors/entsog/datasets/interruptible_total.md",
+     "text": "vault silver-schema table vs silver_parquet: missing ['timestamp_utc'], extra ['point_type', 'id_point_type', 'is_archived']"
+    }
+   ]
+  },
+  {
+   "dataset": "entsog/interruptions",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "no-silver",
+     "where": "30-vendors/entsog/datasets/interruptions.md",
+     "text": "note claims silver coverage; no local silver rows exist"
+    }
+   ]
+  },
+  {
+   "dataset": "entsog/methane_content",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: period_to, period_type, operator_label, tso_eic_code, point_key, point_label, direction_key, data_set, tso_item_identifier, item_remarks, general_remarks, is_unlimited, flow_status, interruption_type, restoration_information, capacity_type, capacity_booking_status, is_cam_relevant, is_na, original_period_from, is_cmp_relevant, booking_platform_key, booking_platform_label, booking_platform_url, interruption_calculation_remark, point_type, id_point_type, is_archived"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `point_key` values never seen in silver (42 rows, 2026-08-01..2026-09-21): ITP-00007, ITP-00207; silver has 2 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `point_label` values never seen in silver (42 rows, 2026-08-01..2026-09-21): Bacton (BBL), Bacton (IUK), Moffat (IE), Uberackern SUDAL; silver has 2 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `unit` values never seen in silver (42 rows, 2026-08-01..2026-09-21): mol%; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of value per event_time' from a one-off extract (2026-08-01 04:00:00+00:00..2026-08-05 04:00:00+00:00), averaging across a categorical dimension; not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "entsog/nominations",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: period_to, operator_label, tso_eic_code, point_label, data_set, tso_item_identifier, item_remarks, general_remarks, is_unlimited, interruption_type, restoration_information, capacity_type, capacity_booking_status, is_na, is_cmp_relevant, booking_platform_label, booking_platform_url, interruption_calculation_remark, point_type, id_point_type, is_archived"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `point_label` values never seen in silver (98 rows, 2026-08-01..2026-09-21): Bacton (BBL), Bacton (IUK); silver has 4 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `operator_key` values never seen in silver (98 rows, 2026-08-01..2026-09-21): UK-TSO-0004; silver has 3 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `flow_status` values never seen in silver (98 rows, 2026-08-01..2026-09-21): (empty); silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of value per event_time' from a one-off extract (2026-08-01 04:00:00+00:00..2026-08-05 04:00:00+00:00), averaging across a categorical dimension; not from silver"
+    },
+    {
+     "kind": "vault-schema",
+     "where": "30-vendors/entsog/datasets/nominations.md",
+     "text": "vault silver-schema table vs silver_parquet: missing ['timestamp_utc'], extra []"
+    }
+   ]
+  },
+  {
+   "dataset": "entsog/operator_point_directions",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "page schema lists columns silver does not have: annual"
+    },
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: timestamp_utc, operator_label, point_label, valid_to, is_virtualized_commercially, virtualized_commercially_since, is_virtualized_operationally, virtualized_operationally_since, is_pipe_in_pipe, related_operators, related_points, pipe_in_pipe_with_tso_key, pipe_in_pipe_with_tso_label, is_double_reporting, double_reporting_with_tso_key, double_reporting_with_tso_label, tso_item_identifier, tp_tso_item_label, tp_tso_valid_from, tp_tso_valid_to, tp_tso_remarks, tp_tso_conversion_factor, tp_rmk_grid_conversion_factor_capacity_default, tp_tso_gcv_max, tp_tso_gcv_remarks, tp_tso_gcv_unit, tp_tso_entry_exit_type, multi_annual_contracts_is_available, multi_annual_contracts_remarks, annual_contracts_is_available, annual_contracts_remarks, half_annual_contracts_is_available, half_annual_contracts_remarks, quarterly_contracts_is_available, quarterly_contracts_remarks, monthly_contracts_is_available, monthly_contracts_remarks, daily_contracts_is_available, daily_contracts_remarks, day_ahead_contracts_is_available, day_ahead_contracts_remarks, available_contracts_remarks, sentence_cmp_unavailable, sentence_cmp_auction, sentence_cmp_made_available, is_invalid, is_cmp_relevant, booking_platform_key, booking_platform_label, booking_platform_url, virtual_reverse_flow, virtual_reverse_flow_remark, t_so_balancing_zone, e_u_relationship, connected_operators, adjacent_operator_key, adjacent_country, point_type, id_point_type, adjacent_zones, data_set"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `t_so_country` values never seen in silver (1,225 rows, ..): AL; silver has 27 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `t_so_balancing_zone` values never seen in silver (1,225 rows, ..): AL, DE, IE, NL; silver has 31 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "vault-schema",
+     "where": "30-vendors/entsog/datasets/operator_point_directions.md",
+     "text": "vault silver-schema table vs silver_parquet: missing ['timestamp_utc'], extra []"
+    }
+   ]
+  },
+  {
+   "dataset": "entsog/operators",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: timestamp_utc, tso_eic_code, id, operator_label_long, operator_country_label, operator_type_label_long, participates, membership_label, tso_display_name, tso_short_name, tso_long_name, tso_street, tso_building_number, tso_post_office_box, tso_zip_code, tso_city, tso_contact_name, tso_contact_phone, tso_contact_email, tso_contact_url, tso_contact_remarks, tso_general_website_url, tso_general_website_url_remarks, tso_tariff_information_url, tso_tariff_information_url_remarks, tso_tariff_calculator_url, tso_tariff_calculator_url_remarks, tso_capacity_information_url, tso_capacity_information_url_remarks, tso_gas_quality_url, tso_gas_quality_url_remarks, tso_access_conditions_url, tso_access_conditions_url_remarks, tso_contract_documents_url, tso_contract_documents_url_remarks, tso_maintainance_url, tso_maintainance_url_remarks, gas_day_start_hour, gas_day_start_hour_remarks, multi_annual_contracts_is_available, multi_annual_contracts_remarks, annual_contracts_is_available, annual_contracts_remarks, half_annual_contracts_is_available, half_annual_contracts_remarks, quarterly_contracts_is_available, quarterly_contracts_remarks, monthly_contracts_is_available, monthly_contracts_remarks, daily_contracts_is_available, daily_contracts_remarks, within_day_contracts_is_available, within_day_contracts_remarks, available_contracts_remarks, firm_capacity_tariff_is_applied, firm_capacity_tariff_unit, firm_capacity_tariff_remarks, interruptible_capacity_tariff_is_applied, interruptible_capacity_tariff_unit, interruptible_capacity_tariff_remarks, auction_is_applied, auction_tariff_is_applied, auction_capacity_tariff_unit, auction_remarks, commodity_tariff_is_applied, commodity_tariff_unit, commodity_tariff_price, commodity_tariff_remarks, others_tariff_is_applied, others_tariff_remarks, general_tariff_information_remarks, general_capacity_remark, first_come_first_served_is_applied, first_come_first_served_remarks, open_subscription_window_is_applied, open_subscription_window_remarks, firm_technical_remark, firm_booked_remark, firm_available_remark, interruptible_total_remark, interruptible_booked_remark, interruptible_available_remark, tso_general_remarks, balancing_model, b_m_hourly_imbalance_tolerance_is_applied, b_m_hourly_imbalance_tolerance_is_information, b_m_hourly_imbalance_tolerance_is_remarks, b_m_daily_imbalance_tolerance_is_applied, b_m_daily_imbalance_tolerance_is_information, b_m_daily_imbalance_tolerance_is_remarks, b_m_additional_daily_imbalance_tolerance_is_applied, b_m_additional_daily_imbalance_tolerance_is_information, b_m_additional_daily_imbalance_tolerance_is_remarks, b_m_cumulated_imbalance_tolerance_is_applied, b_m_cumulated_imbalance_tolerance_is_information, b_m_cumulated_imbalance_tolerance_is_remarks, b_m_additional_cumulated_imbalance_tolerance_is_applied, b_m_additional_cumulated_imbalance_tolerance_is_information, b_m_additional_cumulated_imbalance_tolerance_is_remarks, b_m_status_information, b_m_status_information_frequency, b_m_penalties, b_m_cash_out_regime, b_m_remarks, grid_transport_model_type, grid_transport_model_type_remarks, grid_conversion_factor_capacity_default, grid_conversion_factor_capacity_default_remaks, grid_gross_calorific_value_default_value, grid_gross_calorific_value_default_value_to, grid_gross_calorific_value_default_unit, grid_gross_calorific_value_default_remarks, grid_gas_source_default, last_update_date_time, transparency_information_url, transparency_information_url_remarks, transparency_guidelines_information_url, transparency_guidelines_information_url_remarks, tso_umm_rss_feed_url_gas, tso_umm_rss_feed_url_other, include_umm_in_acer_rss_feed, data_set"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "vault-schema",
+     "where": "30-vendors/entsog/datasets/operators.md",
+     "text": "vault silver-schema table vs silver_parquet: missing ['timestamp_utc'], extra []"
+    }
+   ]
+  },
+  {
+   "dataset": "entsog/oxygen_content",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: period_to, period_type, operator_label, tso_eic_code, point_key, point_label, direction_key, data_set, tso_item_identifier, item_remarks, general_remarks, is_unlimited, flow_status, interruption_type, restoration_information, capacity_type, capacity_booking_status, is_cam_relevant, is_na, original_period_from, is_cmp_relevant, booking_platform_key, booking_platform_label, booking_platform_url, interruption_calculation_remark, point_type, id_point_type, is_archived"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `point_key` values never seen in silver (28 rows, 2026-08-01..2026-09-21): ITP-00090, ITP-00207, ITP-00495; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `point_label` values never seen in silver (28 rows, 2026-08-01..2026-09-21): Bacton (BBL), Bacton (IUK), Moffat, Moffat (IE); silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `unit` values never seen in silver (28 rows, 2026-08-01..2026-09-21): mol%; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    }
+   ]
+  },
+  {
+   "dataset": "entsog/physical_flows",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `unit` values never seen in silver (13,764 rows, 2026-07-31..2026-09-21): kWh/d; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of flow_gwh_per_day per event_time' from a one-off extract (2026-08-01 02:00:00+00:00..2026-08-05 21:00:00+00:00), averaging across a categorical dimension; not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "entsog/renominations",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: period_to, period_type, operator_label, tso_eic_code, point_label, data_set, tso_item_identifier, item_remarks, general_remarks, is_unlimited, flow_status, interruption_type, restoration_information, capacity_type, capacity_booking_status, is_cam_relevant, is_na, is_cmp_relevant, booking_platform_key, booking_platform_label, booking_platform_url, interruption_calculation_remark, point_type, id_point_type, is_archived"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of value per event_time' from a one-off extract (2026-08-01 04:00:00+00:00..2026-08-05 04:00:00+00:00), averaging across a categorical dimension; not from silver"
+    },
+    {
+     "kind": "vault-schema",
+     "where": "30-vendors/entsog/datasets/renominations.md",
+     "text": "vault silver-schema table vs silver_parquet: missing ['timestamp_utc'], extra []"
+    }
+   ]
+  },
+  {
+   "dataset": "entsog/tariff_simulations",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: period_to, indicator, period_type, operator_key, operator_label, tso_eic_code, point_key, point_label, unit, value, connection_remarks, to_bz, tariff_capacity_unit, tariff_capacity_remarks, product_simulation_cost_remarks, remarks, tariff_period_remarks, display_order, point_type, id_point_type, is_archived, data_set, tso_item_identifier, direction, item_remarks, general_remarks, is_unlimited, interruption_type, restoration_information, capacity_type, capacity_booking_status, flow_status"
+    },
+    {
+     "kind": "page-sample",
+     "where": "authored override",
+     "text": "sample-row columns not in silver: cost_in_euro"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `operator` values never seen in silver (13,910 rows, 2025-10-01..2026-04-01): Interconnector; silver has 35 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "vault-schema",
+     "where": "30-vendors/entsog/datasets/tariff_simulations.md",
+     "text": "vault silver-schema table vs silver_parquet: missing ['timestamp_utc'], extra []"
+    }
+   ]
+  },
+  {
+   "dataset": "entsog/tariffs",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "page schema lists columns silver does not have: valid_from"
+    },
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: period_from, period_to, indicator, period_type, operator_key, operator_label, tso_eic_code, point_key, point_label, connection_remarks, to_bz, product_period_to, tariff_capacity_unit, product_type, multiplier, multiplier_factor_remarks, discount_for_interruptible_capacity_value, discount_for_interruptible_capacity_remarks, seasonal_factor, seasonal_factor_remarks, applicable_tariff_per_local_currency_k_wh_d_value, applicable_tariff_per_local_currency_k_wh_d_unit, applicable_tariff_per_local_currency_k_wh_h_value, applicable_tariff_per_local_currency_k_wh_h_unit, applicable_tariff_per_eurk_wh_d_value, applicable_tariff_per_eurk_wh_d_unit, applicable_tariff_per_eurk_wh_h_value, applicable_tariff_per_eurk_wh_h_unit, applicable_tariff_remarks, applicable_tariff_in_common_unit_value, applicable_tariff_in_common_unit_unit, applicable_tariff_in_common_unit_remarks, applicable_commodity_tariff_local_currency, applicable_commodity_tariff_euro, applicable_commodity_tariff_remarks, tariff_period_remarks, display_order, point_type, id_point_type, is_archived, data_set, tso_item_identifier, direction, item_remarks, general_remarks, last_update_date_time, is_unlimited, interruption_type, restoration_information, capacity_type, capacity_booking_status, flow_status"
+    },
+    {
+     "kind": "page-sample",
+     "where": "authored override",
+     "text": "sample-row columns not in silver: valid_from, valid_to"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `operator` values never seen in silver (61,220 rows, 2025-10-01..2026-04-01): Gas Networks Ireland; silver has 37 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "vault-schema",
+     "where": "30-vendors/entsog/datasets/tariffs.md",
+     "text": "vault silver-schema table vs silver_parquet: missing ['timestamp_utc'], extra []"
+    }
+   ]
+  },
+  {
+   "dataset": "entsog/urgent_market_messages",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: market_participant_eic, market_participant_name, message_type, thread_id, event_type, event_stop, unavailability_reason, balancing_zone_eic, balancing_zone_name, affected_asset_eic, direction, available_capacity, technical_capacity, last_update_date_time, share_point_point_id, share_point_publication_id, is_archived"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `market_participant_name` values never seen in silver (133 rows, 2021-01-07..2026-09-22): Gas Networks Ireland, National Gas TSO, Snam Rete Gas, Transgaz; silver has 22 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `event_status` values never seen in silver (133 rows, 2021-01-07..2026-09-22): Closed; silver has 3 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `unit_measure` values never seen in silver (133 rows, 2021-01-07..2026-09-22): (null); silver has 2 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "vault-schema",
+     "where": "30-vendors/entsog/datasets/urgent_market_messages.md",
+     "text": "vault silver-schema table vs silver_parquet: missing ['timestamp_utc'], extra []"
+    }
+   ]
+  },
+  {
+   "dataset": "entsog/wobbe_index",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: period_to, period_type, operator_label, tso_eic_code, point_key, point_label, direction_key, data_set, tso_item_identifier, item_remarks, general_remarks, is_unlimited, interruption_type, restoration_information, capacity_type, capacity_booking_status, is_cam_relevant, is_na, original_period_from, is_cmp_relevant, booking_platform_key, booking_platform_label, booking_platform_url, interruption_calculation_remark, point_type, id_point_type, is_archived"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `point_label` values never seen in silver (126 rows, 2026-08-01..2026-09-21): Bacton (BBL), Bacton (IUK); silver has 5 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `unit` values never seen in silver (126 rows, 2026-08-01..2026-09-21): kWh/Nm\u00b3; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of value per event_time' from a one-off extract (2026-08-01 02:00:00+00:00..2026-08-05 04:00:00+00:00), averaging across a categorical dimension; not from silver"
+    },
+    {
+     "kind": "vault-schema",
+     "where": "30-vendors/entsog/datasets/wobbe_index.md",
+     "text": "vault silver-schema table vs silver_parquet: missing ['timestamp_utc', 'point_type', 'id_point_type', 'is_archived'], extra []"
+    }
+   ]
+  },
+  {
+   "dataset": "gie/about_listing",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-sample",
+     "where": "authored override",
+     "text": "sample-row columns not in silver: operational_start_date, operational_end_date"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    }
+   ]
+  },
+  {
+   "dataset": "gie/about_summary",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `operational_start_date` values never seen in silver (1,665 rows, 2026-09-27..2026-09-27): 2012-04-01, 2014-04-01, 2014-06-01; silver has 22 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    }
+   ]
+  },
+  {
+   "dataset": "gie/lng",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "page schema lists columns silver does not have: lng_in_storage_gwh, injection_gwh, dtrs_pct_full, trend"
+    },
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: dtrs, dtmi_lng, dtmi_gwh"
+    },
+    {
+     "kind": "page-sample",
+     "where": "authored override",
+     "text": "sample-row columns not in silver: lng_in_storage_gwh, injection_gwh, dtrs_pct_full, trend"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `country_name` values never seen in silver (120 rows, 2026-08-01..2026-09-22): United Kingdom; silver has 8 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of send_out_gwh per event_time' from a one-off extract (2026-08-01 06:00:00+00:00..2026-08-05 06:00:00+00:00), not from silver"
+    },
+    {
+     "kind": "silver-vs-code",
+     "where": "local silver",
+     "text": "pydantic columns absent from local silver parquet (stale silver?): lng_in_storage_gwh, injection_gwh, lng_pct_full, trend"
+    }
+   ]
+  },
+  {
+   "dataset": "gie/news",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "no-silver",
+     "where": "authored override",
+     "text": "page shows sample rows but there is no local silver for this dataset"
+    },
+    {
+     "kind": "no-silver",
+     "where": "30-vendors/gie/datasets/news.md",
+     "text": "note claims silver coverage; no local silver rows exist"
+    }
+   ]
+  },
+  {
+   "dataset": "gie/news_item",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "no-silver",
+     "where": "30-vendors/gie/datasets/news_item.md",
+     "text": "note claims silver coverage; no local silver rows exist"
+    }
+   ]
+  },
+  {
+   "dataset": "gie/storage",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of gas_in_storage_gwh per event_time' from a one-off extract (2026-08-01 06:00:00+00:00..2026-08-05 06:00:00+00:00), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "gie/storage_reports",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `entity_level` values never seen in silver (15 rows, 2026-08-01..2026-09-22): company, country, facility; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `entity_code` values never seen in silver (15 rows, 2026-08-01..2026-09-22): 21X0000000011756, 25W-SPHAID-GAZ-M, 25X-GSALLC-----E, 37W000000000002O, DE, EU, FR, GB; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `entity_name` values never seen in silver (15 rows, 2026-08-01..2026-09-22): EWE Gasspeicher, EWE H-Gas Zone, European Union, France, GSA LLC, Germany, UGS Haidach (GSA), United Kingdom (Pre-Brexit); silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `country_code` values never seen in silver (15 rows, 2026-08-01..2026-09-22): AT, DE, EU, FR, GB; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `status` values never seen in silver (15 rows, 2026-08-01..2026-09-22): N; silver has 2 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of gas_in_storage_gwh per event_time' from a one-off extract (2026-08-01 06:00:00+00:00..2026-08-05 06:00:00+00:00), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "gie/unavailability",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-sample",
+     "where": "authored override",
+     "text": "sample-row columns not in silver: country (eic-name), facility (eic-name)"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `volume` values never seen in silver (1,705 rows, 2026-08-16..2026-08-16): 0.310, 0.420, 0.815, 1.420, 1.640, 18.5, 2.110, 3.004; silver has 8 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    }
+   ]
+  },
+  {
+   "dataset": "neso/carbon_intensity",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `intensity_index` values never seen in silver (674 rows, 2026-07-31..2026-09-21): very low; silver has 3 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of forecast_gco2_kwh per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-05 23:30:00+00:00), not from silver"
+    },
+    {
+     "kind": "mirror-stale",
+     "where": "vault/neso/carbon_intensity.md",
+     "text": "mirror is behind canonical (+2/-2 lines; mirror last_verified 2026-05-08 vs canonical 2026-05-08). Canonical now says: \"**Joins**: `silver_elexon_system_prices_latest` LEFT JOIN `silver_neso_carbon_intensity` on `timestamp_utc` (source-qualified names; the single-token aliases are deprecated)\""
+    }
+   ]
+  },
+  {
+   "dataset": "neso/generation",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of generation_percentage per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-05 23:30:00+00:00), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "neso/generation_current",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    }
+   ]
+  },
+  {
+   "dataset": "neso/generation_pt24h",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    }
+   ]
+  },
+  {
+   "dataset": "neso/intensity_at",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `intensity_index` values never seen in silver (1 rows, 2026-07-31..2026-07-31): high, low, very low; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    }
+   ]
+  },
+  {
+   "dataset": "neso/intensity_current",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `intensity_index` values never seen in silver (1 rows, 2026-09-26..2026-09-26): low, very low; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    }
+   ]
+  },
+  {
+   "dataset": "neso/intensity_date",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `intensity_index` values never seen in silver (240 rows, 2026-07-31..2026-08-05): very low; silver has 3 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of forecast_gco2_kwh per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-05 22:30:00+00:00), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "neso/intensity_factors",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    }
+   ]
+  },
+  {
+   "dataset": "neso/intensity_fw24h",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `intensity_index` values never seen in silver (49 rows, 2026-07-31..2026-08-01): very low; silver has 3 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of forecast_gco2_kwh per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-01 23:30:00+00:00), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "neso/intensity_fw48h",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `intensity_index` values never seen in silver (97 rows, 2026-07-31..2026-08-02): very low; silver has 3 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of forecast_gco2_kwh per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-02 23:30:00+00:00), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "neso/intensity_period",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `intensity_index` values never seen in silver (240 rows, 2026-07-31..2026-08-05): very low; silver has 3 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of forecast_gco2_kwh per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-05 22:30:00+00:00), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "neso/intensity_pt24h",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `intensity_index` values never seen in silver (49 rows, 2026-07-30..2026-07-31): very low; silver has 3 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    }
+   ]
+  },
+  {
+   "dataset": "neso/intensity_stats",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `intensity_index` values never seen in silver (1 rows, 2026-08-01..2026-08-01): low; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    }
+   ]
+  },
+  {
+   "dataset": "neso/intensity_stats_block",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `intensity_index` values never seen in silver (14 rows, 2026-08-01..2026-09-21): very low; silver has 2 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of max_gco2_kwh per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-05 00:00:00+00:00), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "neso/intensity_today",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `intensity_index` values never seen in silver (48 rows, 2026-09-26..2026-09-27): very low; silver has 2 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    }
+   ]
+  },
+  {
+   "dataset": "neso/regional_current",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    }
+   ]
+  },
+  {
+   "dataset": "neso/regional_england",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `intensity_index` values never seen in silver (9 rows, 2026-09-27..2026-09-27): high; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    }
+   ]
+  },
+  {
+   "dataset": "neso/regional_intensity",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of forecast_gco2_kwh per event_time across 14 DNO regions' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-05 23:30:00+00:00), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "neso/regional_intensity_fw24h",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of forecast_gco2_kwh per event_time across 14 DNO regions' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-01 23:30:00+00:00), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "neso/regional_intensity_fw24h_postcode",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `postcode` values never seen in silver (441 rows, 2026-07-31..2026-08-01): RG41; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of forecast_gco2_kwh per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-01 23:30:00+00:00), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "neso/regional_intensity_fw24h_regionid",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of forecast_gco2_kwh per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-01 23:30:00+00:00), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "neso/regional_intensity_fw48h",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of forecast_gco2_kwh per event_time across 14 DNO regions' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-02 23:30:00+00:00), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "neso/regional_intensity_fw48h_postcode",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `postcode` values never seen in silver (873 rows, 2026-07-31..2026-08-02): RG41; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `intensity_index` values never seen in silver (873 rows, 2026-07-31..2026-08-02): very low; silver has 4 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of forecast_gco2_kwh per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-02 23:30:00+00:00), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "neso/regional_intensity_fw48h_regionid",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `intensity_index` values never seen in silver (873 rows, 2026-07-31..2026-08-02): very low; silver has 4 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of forecast_gco2_kwh per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-02 23:30:00+00:00), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "neso/regional_intensity_postcode",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `postcode` values never seen in silver (2,169 rows, 2026-07-31..2026-08-05): RG41; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of forecast_gco2_kwh per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-05 23:30:00+00:00), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "neso/regional_intensity_pt24h",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    }
+   ]
+  },
+  {
+   "dataset": "neso/regional_intensity_pt24h_postcode",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `postcode` values never seen in silver (441 rows, 2026-07-30..2026-07-31): RG41; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    }
+   ]
+  },
+  {
+   "dataset": "neso/regional_intensity_pt24h_regionid",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    }
+   ]
+  },
+  {
+   "dataset": "neso/regional_intensity_regionid",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of forecast_gco2_kwh per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-05 23:30:00+00:00), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "neso/regional_postcode",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `postcode` values never seen in silver (9 rows, 2026-09-27..2026-09-27): RG41; silver has 1 distinct"
+    },
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `intensity_index` values never seen in silver (9 rows, 2026-09-27..2026-09-27): high; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    }
+   ]
+  },
+  {
+   "dataset": "neso/regional_regionid",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    }
+   ]
+  },
+  {
+   "dataset": "neso/regional_scotland",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    }
+   ]
+  },
+  {
+   "dataset": "neso/regional_wales",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-sample-value",
+     "where": "authored override",
+     "text": "sample `intensity_index` values never seen in silver (9 rows, 2026-09-27..2026-09-27): very high; silver has 1 distinct"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page carries a seeded (synthetic) chart"
+    }
+   ]
+  },
+  {
+   "dataset": "neso_data_portal/aahedc_tariffs",
+   "stub": true,
+   "items": [
+    {
+     "kind": "registry",
+     "where": "gridflow vs vault",
+     "text": "site only (no vault note, not in gridflow)"
+    }
+   ]
+  },
+  {
+   "dataset": "neso_data_portal/bsuos_fixed_tariffs",
+   "stub": true,
+   "items": [
+    {
+     "kind": "registry",
+     "where": "gridflow vs vault",
+     "text": "site only (no vault note, not in gridflow)"
+    }
+   ]
+  },
+  {
+   "dataset": "neso_data_portal/constraint_cost_forecast_24_months_ahead",
+   "stub": true,
+   "items": [
+    {
+     "kind": "registry",
+     "where": "gridflow vs vault",
+     "text": "site only (no vault note, not in gridflow)"
+    }
+   ]
+  },
+  {
+   "dataset": "neso_data_portal/contract_transfer_of_obligation",
+   "stub": true,
+   "items": [
+    {
+     "kind": "registry",
+     "where": "gridflow vs vault",
+     "text": "site only (no vault note, not in gridflow)"
+    }
+   ]
+  },
+  {
+   "dataset": "neso_data_portal/country_carbon_intensity_forecast",
+   "stub": true,
+   "items": [
+    {
+     "kind": "registry",
+     "where": "gridflow vs vault",
+     "text": "site only (no vault note, not in gridflow)"
+    }
+   ]
+  },
+  {
+   "dataset": "neso_data_portal/daily_opmr",
+   "stub": true,
+   "items": [
+    {
+     "kind": "registry",
+     "where": "gridflow vs vault",
+     "text": "site only (no vault note, not in gridflow)"
+    }
+   ]
+  },
+  {
+   "dataset": "neso_data_portal/daily_wind_availability",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of availability_mw per event_time' from a one-off extract (2026-08-21 23:00:00+00:00..2026-09-02 23:00:00+00:00), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "neso_data_portal/day_ahead_half_hourly_demand_forecast_performance",
+   "stub": true,
+   "items": [
+    {
+     "kind": "registry",
+     "where": "gridflow vs vault",
+     "text": "site only (no vault note, not in gridflow)"
+    }
+   ]
+  },
+  {
+   "dataset": "neso_data_portal/demand_profile_dates",
+   "stub": true,
+   "items": [
+    {
+     "kind": "registry",
+     "where": "gridflow vs vault",
+     "text": "site only (no vault note, not in gridflow)"
+    }
+   ]
+  },
+  {
+   "dataset": "neso_data_portal/dynamic_moderation_requirements",
+   "stub": true,
+   "items": [
+    {
+     "kind": "registry",
+     "where": "gridflow vs vault",
+     "text": "site only (no vault note, not in gridflow)"
+    }
+   ]
+  },
+  {
+   "dataset": "neso_data_portal/dynamic_regulation_requirements",
+   "stub": true,
+   "items": [
+    {
+     "kind": "registry",
+     "where": "gridflow vs vault",
+     "text": "site only (no vault note, not in gridflow)"
+    }
+   ]
+  },
+  {
+   "dataset": "neso_data_portal/embedded_register",
+   "stub": true,
+   "items": [
+    {
+     "kind": "registry",
+     "where": "gridflow vs vault",
+     "text": "site only (no vault note, not in gridflow)"
+    }
+   ]
+  },
+  {
+   "dataset": "neso_data_portal/embedded_wind_solar_forecast",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of embedded_wind_forecast per settlement_date' from a one-off extract (2026-08-20..2026-09-02), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "neso_data_portal/gb_system_inertia_bid_and_offer_costs",
+   "stub": true,
+   "items": [
+    {
+     "kind": "registry",
+     "where": "gridflow vs vault",
+     "text": "site only (no vault note, not in gridflow)"
+    }
+   ]
+  },
+  {
+   "dataset": "neso_data_portal/historic_generation_mix",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "template (from mirror)",
+     "text": "page schema lists columns silver does not have: gas`, gas_pct`"
+    },
+    {
+     "kind": "page-schema",
+     "where": "template (from mirror)",
+     "text": "silver columns missing from the page schema: gas, coal, nuclear, wind, wind_emb, hydro, imports, biomass, other, solar, storage, generation, carbon_intensity, low_carbon, zero_carbon, renewable, fossil, gas_pct, coal_pct, nuclear_pct, wind_pct, wind_emb_pct, hydro_pct, imports_pct, biomass_pct, other_pct, solar_pct, storage_pct, generation_pct, low_carbon_pct, zero_carbon_pct, renewable_pct, fossil_pct"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of gas_pct per event_time' from a one-off extract (2009-01-01 00:00:00+00:00..2026-08-20 20:00:00+00:00), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "neso_data_portal/interconnector_register",
+   "stub": true,
+   "items": [
+    {
+     "kind": "registry",
+     "where": "gridflow vs vault",
+     "text": "site only (no vault note, not in gridflow)"
+    }
+   ]
+  },
+  {
+   "dataset": "neso_data_portal/long_term_2_52_weeks_ahead_national_demand_forecast",
+   "stub": true,
+   "items": [
+    {
+     "kind": "registry",
+     "where": "gridflow vs vault",
+     "text": "site only (no vault note, not in gridflow)"
+    }
+   ]
+  },
+  {
+   "dataset": "neso_data_portal/long_term_forecasts_for_dc_dm_dr_requirements",
+   "stub": true,
+   "items": [
+    {
+     "kind": "registry",
+     "where": "gridflow vs vault",
+     "text": "site only (no vault note, not in gridflow)"
+    }
+   ]
+  },
+  {
+   "dataset": "neso_data_portal/obp_non_bm_physical_notifications",
+   "stub": true,
+   "items": [
+    {
+     "kind": "registry",
+     "where": "gridflow vs vault",
+     "text": "site only (no vault note, not in gridflow)"
+    }
+   ]
+  },
+  {
+   "dataset": "neso_data_portal/obp_non_bm_reserve_instructions",
+   "stub": true,
+   "items": [
+    {
+     "kind": "registry",
+     "where": "gridflow vs vault",
+     "text": "site only (no vault note, not in gridflow)"
+    }
+   ]
+  },
+  {
+   "dataset": "neso_data_portal/obp_reserve_availability_utilisation_price",
+   "stub": true,
+   "items": [
+    {
+     "kind": "registry",
+     "where": "gridflow vs vault",
+     "text": "site only (no vault note, not in gridflow)"
+    }
+   ]
+  },
+  {
+   "dataset": "neso_data_portal/operational_transparency_forum_network_congestion_data",
+   "stub": true,
+   "items": [
+    {
+     "kind": "registry",
+     "where": "gridflow vs vault",
+     "text": "site only (no vault note, not in gridflow)"
+    }
+   ]
+  },
+  {
+   "dataset": "neso_data_portal/quick_reserve_auction_requirement_forecast",
+   "stub": true,
+   "items": [
+    {
+     "kind": "registry",
+     "where": "gridflow vs vault",
+     "text": "site only (no vault note, not in gridflow)"
+    }
+   ]
+  },
+  {
+   "dataset": "neso_data_portal/short_term_operating_reserve_stor_day_ahead_auction_results",
+   "stub": true,
+   "items": [
+    {
+     "kind": "registry",
+     "where": "gridflow vs vault",
+     "text": "site only (no vault note, not in gridflow)"
+    }
+   ]
+  },
+  {
+   "dataset": "neso_data_portal/slow_reserve_requirement_forecast",
+   "stub": true,
+   "items": [
+    {
+     "kind": "registry",
+     "where": "gridflow vs vault",
+     "text": "site only (no vault note, not in gridflow)"
+    }
+   ]
+  },
+  {
+   "dataset": "neso_data_portal/stability_midterm_y_1_utilisation_report",
+   "stub": true,
+   "items": [
+    {
+     "kind": "registry",
+     "where": "gridflow vs vault",
+     "text": "site only (no vault note, not in gridflow)"
+    }
+   ]
+  },
+  {
+   "dataset": "neso_data_portal/static_firm_frequency_response_requirement",
+   "stub": true,
+   "items": [
+    {
+     "kind": "registry",
+     "where": "gridflow vs vault",
+     "text": "site only (no vault note, not in gridflow)"
+    }
+   ]
+  },
+  {
+   "dataset": "neso_data_portal/stor_windows",
+   "stub": true,
+   "items": [
+    {
+     "kind": "registry",
+     "where": "gridflow vs vault",
+     "text": "site only (no vault note, not in gridflow)"
+    }
+   ]
+  },
+  {
+   "dataset": "neso_data_portal/transmission_entry_capacity_tec_register",
+   "stub": true,
+   "items": [
+    {
+     "kind": "registry",
+     "where": "gridflow vs vault",
+     "text": "site only (no vault note, not in gridflow)"
+    }
+   ]
+  },
+  {
+   "dataset": "neso_data_portal/upcoming_trades",
+   "stub": true,
+   "items": [
+    {
+     "kind": "registry",
+     "where": "gridflow vs vault",
+     "text": "site only (no vault note, not in gridflow)"
+    }
+   ]
+  },
+  {
+   "dataset": "neso_data_portal/weekly_opmr",
+   "stub": true,
+   "items": [
+    {
+     "kind": "registry",
+     "where": "gridflow vs vault",
+     "text": "site only (no vault note, not in gridflow)"
+    }
+   ]
+  },
+  {
+   "dataset": "neso_data_portal/weekly_wind_availability",
+   "stub": true,
+   "items": [
+    {
+     "kind": "registry",
+     "where": "gridflow vs vault",
+     "text": "site only (no vault note, not in gridflow)"
+    }
+   ]
+  },
+  {
+   "dataset": "openmeteo/forecast_demand",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "page schema lists columns silver does not have: event_time,"
+    },
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: longitude"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of temperature_2m_c per event_time across location=london' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-05 23:00:00+00:00), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "openmeteo/forecast_solar",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of temperature_2m_c per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-05 23:00:00+00:00), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "openmeteo/forecast_wind",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of wind_speed_10m_mps per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-05 23:00:00+00:00), not from silver"
+    }
+   ]
+  },
+  {
+   "dataset": "openmeteo/historical_demand",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "page schema lists columns silver does not have: event_time,"
+    },
+    {
+     "kind": "page-schema",
+     "where": "authored override",
+     "text": "silver columns missing from the page schema: longitude"
+    },
+    {
+     "kind": "chart",
+     "where": "authored override",
+     "text": "page labels its chart or sample 'illustrative'"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of temperature_2m_c per event_time across location=london' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-05 23:00:00+00:00), not from silver"
+    },
+    {
+     "kind": "mirror-stale",
+     "where": "vault/openmeteo/historical_demand.md",
+     "text": "mirror is behind canonical (+17/-0 lines; mirror last_verified 2026-06-03 vs canonical 2026-06-03). Canonical now says: \"ERA5 archive rows emit no vendor `published_at`. gridflow v0.20 declares a\""
+    }
+   ]
+  },
+  {
+   "dataset": "openmeteo/historical_solar",
+   "stub": false,
+   "items": [
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of temperature_2m_c per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-05 23:00:00+00:00), not from silver"
+    },
+    {
+     "kind": "mirror-stale",
+     "where": "vault/openmeteo/historical_solar.md",
+     "text": "mirror is behind canonical (+17/-0 lines; mirror last_verified 2026-06-04 vs canonical 2026-06-04). Canonical now says: \"ERA5 archive rows emit no vendor `published_at`. gridflow v0.20 declares a\""
+    }
+   ]
+  },
+  {
+   "dataset": "openmeteo/historical_wind",
+   "stub": false,
+   "items": [
+    {
+     "kind": "page-schema",
+     "where": "template (from mirror)",
+     "text": "page schema lists columns silver does not have: wind_speed_80m_mps, wind_speed_120m_mps, wind_speed_180m_mps, wind_direction_80m_deg, wind_direction_120m_deg, wind_direction_180m_deg"
+    },
+    {
+     "kind": "chart",
+     "where": "chart-series.json",
+     "text": "series is 'mean of wind_speed_10m_mps per event_time' from a one-off extract (2026-08-01 00:00:00+00:00..2026-08-05 23:00:00+00:00), not from silver"
+    },
+    {
+     "kind": "mirror-stale",
+     "where": "vault/openmeteo/historical_wind.md",
+     "text": "mirror is behind canonical (+17/-0 lines; mirror last_verified 2026-06-03 vs canonical 2026-06-03). Canonical now says: \"ERA5 archive rows emit no vendor `published_at`. gridflow v0.20 declares a\""
+    },
+    {
+     "kind": "silver-vs-code",
+     "where": "local silver",
+     "text": "pydantic columns absent from local silver parquet (stale silver?): wind_speed_80m_mps, wind_speed_120m_mps, wind_speed_180m_mps, wind_direction_80m_deg, wind_direction_120m_deg, wind_direction_180m_deg"
+    }
+   ]
+  }
+ ],
+ "systemic": {
+  "vault silver-schema table omits `published_at`/`ingested_at` (bitemporal columns added to code after 2026-06-15)": [
+   "elexon/indod",
+   "elexon/soso",
+   "elexon/system_prices",
+   "elexon/tsdf",
+   "entsoe/activated_balancing_prices",
+   "entsoe/activated_balancing_qty",
+   "entsoe/actual_generation",
+   "entsoe/actual_generation_units",
+   "entsoe/actual_load",
+   "entsoe/aggregated_balancing_energy_bids",
+   "entsoe/auction_revenue",
+   "entsoe/balancing_energy_bids",
+   "entsoe/balancing_financial_expenses_income",
+   "entsoe/commercial_schedules",
+   "entsoe/congestion_income",
+   "entsoe/congestion_management_costs",
+   "entsoe/contracted_reserves",
+   "entsoe/cross_border_flows",
+   "entsoe/cross_zonal_balancing_capacity",
+   "entsoe/current_balancing_state",
+   "entsoe/day_ahead_prices",
+   "entsoe/dc_link_intraday_transfer_limits",
+   "entsoe/forecast_margin",
+   "entsoe/imbalance_prices",
+   "entsoe/imbalance_volume",
+   "entsoe/installed_capacity",
+   "entsoe/installed_capacity_units",
+   "entsoe/load_forecast",
+   "entsoe/load_forecast_monthly",
+   "entsoe/load_forecast_weekly",
+   "entsoe/load_forecast_yearly",
+   "entsoe/net_transfer_capacity",
+   "entsoe/outages_consumption",
+   "entsoe/outages_generation",
+   "entsoe/outages_offshore_grid",
+   "entsoe/outages_production",
+   "entsoe/outages_transmission",
+   "entsoe/procured_balancing_capacity",
+   "entsoe/water_reservoirs",
+   "gie/lng",
+   "gie/storage",
+   "neso/carbon_intensity",
+   "neso/generation",
+   "neso/generation_current",
+   "neso/generation_pt24h",
+   "neso/intensity_at",
+   "neso/intensity_current",
+   "neso/intensity_date",
+   "neso/intensity_factors",
+   "neso/intensity_fw24h",
+   "neso/intensity_fw48h",
+   "neso/intensity_period",
+   "neso/intensity_pt24h",
+   "neso/intensity_stats",
+   "neso/intensity_stats_block",
+   "neso/intensity_today",
+   "neso/regional_current",
+   "neso/regional_england",
+   "neso/regional_intensity",
+   "neso/regional_intensity_fw24h",
+   "neso/regional_intensity_fw24h_postcode",
+   "neso/regional_intensity_fw24h_regionid",
+   "neso/regional_intensity_fw48h",
+   "neso/regional_intensity_fw48h_postcode",
+   "neso/regional_intensity_fw48h_regionid",
+   "neso/regional_intensity_postcode",
+   "neso/regional_intensity_pt24h",
+   "neso/regional_intensity_pt24h_postcode",
+   "neso/regional_intensity_pt24h_regionid",
+   "neso/regional_intensity_regionid",
+   "neso/regional_postcode",
+   "neso/regional_regionid",
+   "neso/regional_scotland",
+   "neso/regional_wales"
+  ],
+  "curl example not passing at the 2026-06-15 validator run": [
+   "entsoe/actual_generation (failed_auth)",
+   "entsoe/actual_generation_units (failed_auth)",
+   "entsoe/aggregated_balancing_energy_bids (failed_auth)",
+   "entsoe/auction_revenue (failed_auth)",
+   "entsoe/balancing_energy_bids (failed_auth)",
+   "entsoe/balancing_financial_expenses_income (failed_auth)",
+   "entsoe/congestion_income (failed_auth)",
+   "entsoe/congestion_management_costs (failed_auth)",
+   "entsoe/countertrading (failed_auth)",
+   "entsoe/cross_border_flows (failed_auth)",
+   "entsoe/cross_zonal_balancing_capacity (failed_auth)",
+   "entsoe/current_balancing_state (failed_auth)",
+   "entsoe/dc_link_intraday_transfer_limits (failed_auth)",
+   "entsoe/generation_forecast (failed_auth)",
+   "entsoe/generation_units_master_data (failed_auth)",
+   "entsoe/installed_capacity (failed_auth)",
+   "entsoe/installed_capacity_units (failed_auth)",
+   "entsoe/net_positions (failed_auth)",
+   "entsoe/net_transfer_capacity (failed_auth)",
+   "entsoe/offered_transfer_capacity_continuous (failed_auth)",
+   "entsoe/offered_transfer_capacity_explicit (failed_auth)",
+   "entsoe/offered_transfer_capacity_implicit (failed_auth)",
+   "entsoe/outages_consumption (failed_auth)",
+   "entsoe/outages_generation (failed_auth)",
+   "entsoe/outages_offshore_grid (failed_auth)",
+   "entsoe/outages_production (failed_auth)",
+   "entsoe/outages_transmission (failed_auth)",
+   "entsoe/procured_balancing_capacity (failed_auth)",
+   "entsoe/redispatching_cross_border (failed_auth)",
+   "entsoe/redispatching_internal (failed_auth)",
+   "entsoe/total_capacity_allocated (failed_auth)",
+   "entsoe/total_nominated_capacity (failed_auth)",
+   "entsoe/transfer_capacity_use (failed_auth)",
+   "entsoe/water_reservoirs (failed_auth)",
+   "entsoe/wind_solar_forecast (failed_auth)",
+   "entsog/hydrogen_content (failed)",
+   "entsog/interruptions (failed)",
+   "entsog/methane_content (failed)",
+   "entsog/oxygen_content (failed)"
+  ],
+  "vault note has no Silver layer section": [
+   "entsoe/commercial_schedules_net_positions"
+  ],
+  "vault note has a Silver layer section but no silver-schema table": [
+   "entsoe/countertrading",
+   "entsoe/net_positions",
+   "entsoe/offered_transfer_capacity_continuous",
+   "entsoe/offered_transfer_capacity_explicit",
+   "entsoe/offered_transfer_capacity_implicit",
+   "entsoe/redispatching_cross_border",
+   "entsoe/redispatching_internal",
+   "entsoe/total_capacity_allocated",
+   "entsoe/total_nominated_capacity",
+   "entsoe/transfer_capacity_use",
+   "entsog/hydrogen_content",
+   "entsog/interruptions",
+   "entsog/methane_content",
+   "entsog/oxygen_content"
+  ]
+ }
+}

@@ -2,20 +2,21 @@
 
 ## v5 — Site rebuild in the locked design (ACTIVE — ratified 2026-09-26)
 
-**Position: overnight autonomous run next** (reordered OWNER 2026-09-27): 22, 23, 25a, and round 1 of
-the 24 and 27 loops, all without Bobbo. Morning: his rulings, looks and picks. Next chat, pickup in
-`handovers/2026-09-26-v5-pickup.md`). Plan `v5/MILESTONE.md` · lane and agents `v5-EFFORT-PLAN.md` ·
-rulings `RULINGS.md` · design `../DESIGN.md` + `../site/hifi/assets/tokens.css` · reference board `R3-final`
-on the canvas.
+**Position: overnight run done (2026-09-27); waiting on Bobbo's morning rulings, look and picks.**
+Report: `handovers/2026-09-27-morning.md`. Plan `v5/MILESTONE.md` · lane `v5-EFFORT-PLAN.md` · rulings
+`RULINGS.md` (#9-11 tonight) · design `../DESIGN.md` + `../site/hifi/assets/tokens.css`.
 
-- **22 Data truth:** not started. Background `claude` agent: provenance matrix, ingest of missing silver,
-  families (D5). The live drift check waits for Bobbo's "run it" (D7).
-- **23 Foundation + homepage:** not started. Background `claude` agent in a worktree on `v5/site`, after
-  the branch setup in `v5-EFFORT-PLAN.md` § Git discipline.
-- **24 Dataset page design loop:** not started. The seat with Bobbo, interactive.
-- **Uncommitted on `main` at handoff:** `DESIGN.md`, `site/hifi/assets/tokens.css`, the `CLAUDE.md` edit,
-  `.planning/v4/` (design-loop record, V4-CLOSE), `.planning/v5/`, `v5-EFFORT-PLAN.md`, `RULINGS.md`,
-  and this file. The next seat commits the docs to main and `tokens.css` on `v5/site`.
+- **22 Data truth:** done. `v5/DATA-MATRIX.*`, `PROPOSALS.md` (23 families; 149 datasets on 73 pages),
+  `DISCREPANCIES.*`, 39 ingest receipts; silver 149/165. Waiting: Bobbo rules families + page set. Live
+  drift check still waits for his "run it" (D7).
+- **23 Foundation + homepage:** PR #41 into `v5/site`, gates green, waiting for his phone look and copy
+  approvals. Generator backup `v5/p23-homepage/`.
+- **24 Dataset page loop:** round 1 on canvas https://claude.ai/artifact/7tkS1ydY8QWLvhC8LXbcsT (A-E × 4
+  specimens); waiting for picks. Backup `v5/design-loop/p24-r1/`.
+- **25a Chart pipeline:** merged into `v5/site` (PR #40, c9da254). 25b waits for the 24 lock.
+- **27 Top pages:** round 1 on canvas https://claude.ai/artifact/9eYp9RZFV2PV6qmocNWYvj (A-E × 4 pages);
+  waiting for picks. Backup `v5/design-loop/p27-r1/`.
+- `v5/site` = b3b4892 (tokens) + c9da254 (25a). Nothing merged to `main` but docs.
 
 ## v4 — Full rebrand (CLOSED 2026-09-26 — identity locked; see `v4/V4-CLOSE.md`)
 

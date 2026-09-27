@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Elexon BMRS</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&amp;family=Hanken+Grotesk:ital,wght@0,400..700;1,400..600&amp;family=Red+Hat+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.root{background:#155A6E;color:#1C2B22;font:400 16px/1.6 "Hanken Grotesk",sans-serif;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+.root a{color:inherit;text-decoration-thickness:1.5px;text-underline-offset:4px}
+.root a:focus-visible{outline:2px solid #AFC64E;outline-offset:3px;border-radius:2px}
+.root h1,.root h2,.root h3{font-family:"Bricolage Grotesque",sans-serif;margin:0;font-optical-sizing:auto}
+.root code{font-family:"Red Hat Mono",monospace;font-size:.9em}
+.layer{position:absolute;left:0;top:0}
+.blk{position:absolute}
+.mast{position:absolute;top:26px;left:80px;right:80px;display:flex;justify-content:space-between;align-items:baseline;color:#F6F4EC}
+.brand{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:24px;letter-spacing:-.01em;text-decoration:none}
+.mast ul{display:flex;gap:30px;list-style:none;margin:0;padding:0;font-size:15px}
+.mast ul a{text-decoration:none;color:#CFE0DC}
+.mast ul a:hover{color:#F6F4EC}
+.mast ul a[aria-current="page"]{color:#F6F4EC;box-shadow:inset 0 -2px 0 #AFC64E}
+.hero h1{color:#F6F4EC;font-weight:760;font-stretch:84%;font-size:86px;line-height:.94;letter-spacing:-.022em}
+.lede{color:#F6F4EC}
+.lede p{margin:0;font-size:17.5px;line-height:1.6;color:#CFE0DC}
+.cta{display:flex;gap:26px;align-items:center;margin:26px 0 22px}
+.go{background:#AFC64E;color:#1C2B22;font-weight:600;padding:12px 20px;border-radius:3px;text-decoration:none}
+.root .go{color:#1C2B22;text-decoration:none}
+.go:hover{background:#C3D86A}
+.alt{font-weight:600;color:#F6F4EC;text-decoration-color:#AFC64E}
+.lede .scope{font-size:15px;color:#A9C7C4}
+.key h2{color:#F6F4EC;font-size:21px;font-weight:650;font-stretch:92%;letter-spacing:-.005em;margin:0 0 16px}
+.key ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:34px}
+.key a{display:block;text-decoration:none;color:#F6F4EC}
+.key svg{display:block;margin:0 0 12px}
+.key h3{font-size:20px;font-weight:700;font-stretch:90%;margin:0 0 4px;text-decoration:underline;text-decoration-color:rgba(175,198,78,.0);text-underline-offset:4px}
+.key a:hover h3{text-decoration-color:#AFC64E}
+.key p{margin:0;font-size:14.5px;line-height:1.5;color:#CFE0DC}
+.land-svg text{font-family:"Hanken Grotesk",sans-serif;font-style:italic;font-size:13.5px}
+.coreblk h2{font-size:30px;font-weight:700;font-stretch:90%;letter-spacing:-.012em;margin:0 0 6px}
+.coreblk svg{display:block}
+.coreblk .cap{margin:8px 0 0;font-size:14.5px;line-height:1.55;color:#3F4A3B;max-width:66ch}
+.sec h2{font-size:42px;font-weight:720;font-stretch:88%;line-height:1.02;letter-spacing:-.018em;margin:0 0 16px}
+.sec p{margin:0 0 14px;font-size:16px;line-height:1.62;color:#3F4A3B;max-width:58ch}
+.sec .more{font-weight:600;color:#1C2B22;text-decoration-color:#66793B}
+.vend .land{margin:0 0 10px;height:18px;font-size:13px;line-height:18px;transform:translateY(-9px);color:#1C2B22}
+.vend h3{font-size:23px;font-weight:720;font-stretch:90%;line-height:1.1;letter-spacing:-.01em;margin:0 0 6px}
+.vend h3 a{text-decoration-color:rgba(28,43,34,.0)}
+.vend h3 a:hover{text-decoration-color:#66793B}
+.vend .vd{margin:0;font-size:14.5px;line-height:1.45;color:#3F4A3B;min-height:42px}
+.vend .vm{margin:6px 0 12px;font-size:14.5px;font-weight:600;color:#1C2B22}
+.vend svg{display:block}
+.vend .sc{margin:8px 0 0;font-size:13px;line-height:1.45;color:#3F4A3B}
+.vend .sc code{color:#1C2B22;font-size:13px}
+.note{font-size:14px;line-height:1.55;color:#3F4A3B;margin:0}
+.tables{list-style:none;margin:0;padding:0}
+.tables li{font-family:"Red Hat Mono",monospace;font-size:16px;height:44px;line-height:44px;border-bottom:1px solid rgba(28,43,34,.22);color:#1C2B22}
+.views{list-style:none;margin:0;padding:0;display:flex}
+.views li{position:absolute;top:0;font-family:"Red Hat Mono",monospace;font-size:15.5px;color:#1C2B22}
+.why h2{font-size:52px;font-weight:740;font-stretch:84%;line-height:1;letter-spacing:-.02em;margin:0 0 22px}
+.why .intro{margin:0;font-size:21px;line-height:1.5;color:#1C2B22;max-width:36ch}
+.why-body p{margin:0 0 14px;font-size:16px;line-height:1.62;color:#3F4A3B}
+.why-body .aim{color:#1C2B22;font-weight:600}
+.orig-t{margin:0 0 4px;font-family:"Bricolage Grotesque",sans-serif;font-size:20px;font-weight:700;font-stretch:90%;line-height:1.1;color:#1C2B22}
+.orig-d{margin:0;font-size:14px;line-height:1.45;color:#3F4A3B}
+.model h3{font-size:23px;font-weight:720;font-stretch:90%;line-height:1.1;letter-spacing:-.01em;margin:0 0 6px}
+.model p{margin:0;font-size:14.5px;line-height:1.5;color:#3F4A3B}
+.model .mq{margin:8px 0 0;font-size:14px;color:#1C2B22}
+.model .more{font-weight:600;color:#1C2B22;text-decoration-color:#66793B}
+.model.smp h3{font-size:32px;font-stretch:86%;line-height:1.02;margin:0 0 10px}
+.model.smp p{font-size:15.5px}
+.foot{font-size:14.5px;color:#3F4A3B;margin:0}
+.wb h2{margin-bottom:18px}
+.wb .sec p code{font-size:.86em;color:#1C2B22}
+.wb-grid{display:grid;grid-template-columns:360px minmax(0,1fr);gap:64px;align-items:start}
+.nb{margin:0;background:#F6F4EC;border:1.5px solid #1C2B22;border-radius:4px;overflow:hidden}
+.nb-bar{display:flex;justify-content:space-between;align-items:flex-end;height:40px;background:#1C2B22;padding:0 18px 0 12px;font:500 13.5px/1 "Red Hat Mono",monospace}
+.nb-tab{background:#F6F4EC;color:#1C2B22;padding:11px 18px 12px;border-radius:3px 3px 0 0}
+.nb-kern{color:#CFE0DC;align-self:center}
+.nb-body{position:relative;padding:16px 24px 176px 8px}
+.cell{display:grid;grid-template-columns:52px minmax(0,1fr);column-gap:10px;margin:0 0 9px;position:relative}
+.cell.out{margin:-3px 0 12px}
+.pr{font:400 13px/1 "Red Hat Mono",monospace;color:#5d6a55;text-align:right;padding-top:12px}
+.in{margin:0;background:#ECE8DA;border:1px solid rgba(28,43,34,.18);border-radius:3px;padding:8px 12px;font:400 14.5px/1.6 "Red Hat Mono",monospace;color:#1C2B22;white-space:pre;overflow:hidden}
+.in .k,.lc .k{color:#155A6E;font-weight:500}
+.in .s,.lc .s{color:#7C5530}
+.act .in{background:#F6F4EC;border-color:#1C2B22}
+.caret{display:inline-block;width:1.5px;height:1.2em;background:#1C2B22;vertical-align:-.25em}
+.cmp{position:absolute;top:100%;left:167px;margin:-2px 0 0;padding:4px 0;list-style:none;width:176px;background:#F6F4EC;border:1px solid #1C2B22;border-radius:2px;font:400 14px/22px "Red Hat Mono",monospace;color:#1C2B22}
+.cmp li{padding:0 12px}
+.cmp .sel{background:#1C2B22;color:#F6F4EC}
+.card{max-width:600px;border:1px solid rgba(28,43,34,.34);border-radius:3px;overflow:hidden;background:#F6F4EC}
+.card-h{margin:0;padding:9px 14px;background:#ECE8DA;border-bottom:1px solid rgba(28,43,34,.2);font:500 15px/1.2 "Red Hat Mono",monospace;color:#155A6E}
+.card dl{margin:0;padding:7px 8px 1px}
+.card dl div{display:grid;grid-template-columns:136px minmax(0,1fr);gap:14px;padding:2px 8px;border-radius:2px}
+.card dl div:nth-child(odd){background:#EFEBDF}
+.card dt{font:400 13.5px/1.5 "Red Hat Mono",monospace;color:#155A6E}
+.card dd{margin:0;font-size:14px;line-height:1.45;color:#1C2B22}
+.card-f{margin:5px 14px 10px;padding-top:8px;border-top:1px solid rgba(28,43,34,.2);font-size:13.5px;color:#3F4A3B}
+.card-f code{font-size:13px;color:#1C2B22;background:#ECE8DA;padding:1px 5px;border-radius:2px}
+.df{justify-self:start;border-collapse:collapse;margin:3px 0 0;font:400 13.5px/1 "Hanken Grotesk",sans-serif;font-variant-numeric:tabular-nums;color:#1C2B22}
+.df th,.df td{padding:6px 12px;text-align:right;white-space:nowrap}
+.df thead th{font-weight:600;border-bottom:1px solid #1C2B22;vertical-align:bottom}
+.df tbody th{font-weight:600}
+.df tbody tr:nth-child(odd){background:#EFEBDF}
+.wbB-head{display:grid;grid-template-columns:620px minmax(0,1fr);gap:92px;align-items:start}
+.wbB-head p:last-child{margin-bottom:0}
+.wb svg{display:block}
+.lc{list-style:none;margin:0;padding:0;border-bottom:1px solid rgba(28,43,34,.25)}
+.lc li{display:grid;grid-template-columns:240px minmax(0,1fr);gap:36px;padding:26px 0 28px;border-top:1px solid rgba(28,43,34,.25)}
+.lc h3{font-size:23px;font-weight:720;font-stretch:90%;line-height:1.1;letter-spacing:-.01em;margin:0 0 7px}
+.lc p{margin:0;font-size:14.5px;line-height:1.5;color:#3F4A3B}
+.lc p code{font-size:13.5px;color:#1C2B22}
+.lc pre{margin:2px 0 0;font:400 14px/1.85 "Red Hat Mono",monospace;color:#1C2B22;white-space:pre}
+.about{color:#F6F4EC}
+.about h2{font-size:56px;font-weight:760;font-stretch:84%;line-height:1;letter-spacing:-.02em;margin:0 0 10px}
+.about .role{margin:0 0 26px;font-size:16px;color:#A9C7C4}
+.about .intro{margin:0 0 18px;font-size:21px;line-height:1.5;color:#F6F4EC;max-width:34ch}
+.about .body{margin:0 0 30px;font-size:15.5px;line-height:1.7;color:#CFE0DC;max-width:62ch}
+.links{display:flex;flex-wrap:wrap;gap:12px}
+.links a{font-weight:600;padding:10px 18px;border-radius:3px;text-decoration:none;border:1.5px solid rgba(207,224,220,.55);color:#F6F4EC}
+.links a:hover{border-color:#F6F4EC}
+.root .links a.primary{background:#AFC64E;border-color:#AFC64E;color:#1C2B22}
+.skills h3{font-size:22px;font-weight:700;font-stretch:90%;margin:0 0 12px;color:#F6F4EC}
+.skills dl{margin:0}
+.skills div{display:grid;grid-template-columns:150px minmax(0,1fr);gap:18px;padding:11px 0;border-top:1px solid rgba(207,224,220,.22)}
+.skills dt{font-weight:600;font-size:14.5px;color:#F6F4EC}
+.skills dd{margin:0;font-size:14.5px;line-height:1.5;color:#CFE0DC}
+.rot{transform-box:fill-box;transform-origin:center;animation:spin 17s linear infinite}
+.sp2{animation-duration:13s}
+.sp3{animation-duration:21s}
+@keyframes spin{to{transform:rotate(360deg)} }
+@media (prefers-reduced-motion: reduce){.rot{animation:none} }
+.root{background:#ECE8DA}
+.band{position:relative}
+.band-in{position:relative;z-index:2;padding:0 80px}
+.ground{position:absolute;left:0;top:-26px;height:calc(100% + 26px);z-index:1;display:block}
+.sky{background:#155A6E;z-index:1}
+.d-mast{position:relative;z-index:2;padding:26px 80px 0;display:flex;justify-content:space-between;align-items:baseline;color:#F6F4EC}
+.d-mast ul{display:flex;gap:30px;list-style:none;margin:0;padding:0;font-size:15px}
+.d-mast ul a{text-decoration:none;color:#CFE0DC}
+.d-mast ul a:hover{color:#F6F4EC}
+.d-mast ul a[aria-current="page"]{color:#F6F4EC;box-shadow:inset 0 -2px 0 #AFC64E}
+.d-hero{position:relative;z-index:2;display:grid;grid-template-columns:minmax(0,860px) 374px;justify-content:space-between;align-items:start;padding:52px 80px 0}
+.d-hero h1{color:#F6F4EC;font-weight:760;font-stretch:84%;font-size:86px;line-height:.94;letter-spacing:-.022em}
+.crumb{margin:0 0 18px;font-size:15px;color:#CFE0DC}
+.crumb a{color:#F6F4EC;text-decoration-color:#AFC64E}
+.d-lede{padding-top:12px}
+.d-lede p{margin:0 0 12px;font-size:17.5px;line-height:1.6;color:#CFE0DC}
+.d-lede code{color:#F6F4EC;font-size:.88em}
+.strip{display:block;position:relative;z-index:1;margin-top:-6px}
+.g-topsoil,.g-bronze,.g-silver,.g-gold{color:#1C2B22}
+.d-grid{display:grid;grid-template-columns:minmax(0,1fr) 800px;column-gap:60px;align-items:start}
+.d-grid.w7{grid-template-columns:minmax(0,1fr) 720px;column-gap:64px}
+.d-grid.hub{grid-template-columns:minmax(0,1fr) 576px;column-gap:64px}
+.d-grid.half{grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:64px}
+.grps{margin-top:30px}
+.d-h2{font-size:42px;font-weight:720;font-stretch:88%;line-height:1.02;letter-spacing:-.018em;margin:0 0 16px}
+.d-p{margin:0 0 14px;font-size:16px;line-height:1.62;color:#3F4A3B;max-width:58ch}
+.d-p code,.d-cap code,.ent code,.facts code,.d-list code{font-size:.88em;color:#1C2B22}
+.d-p a,.d-cap a{font-weight:600;color:#1C2B22;text-decoration-color:#66793B}
+.ents{list-style:none;margin:30px 0 0;padding:0}
+.ent{margin:0 0 30px}
+.ent h3{font-size:23px;font-weight:720;font-stretch:90%;line-height:1.1;letter-spacing:-.01em;margin:0}
+.ent h3 a{text-decoration-color:rgba(28,43,34,0)}
+.ent h3 a:hover{text-decoration-color:#66793B}
+.ent .hd{margin:3px 0 6px;font:400 13.5px/1.45 "Red Hat Mono",monospace;color:#155A6E}
+.ent .hd code{font-size:13.5px;color:#155A6E}
+.ent .de{margin:0;font-size:14.5px;line-height:1.5;color:#3F4A3B;max-width:62ch}
+.ent .fa{margin:6px 0 0;font-size:14.5px;line-height:1.5;font-weight:600;color:#1C2B22}
+.ent .fa2{margin:3px 0 0;font-size:14px;line-height:1.5;color:#3F4A3B}
+.ent.mk{display:grid;grid-template-columns:30px minmax(0,1fr);column-gap:16px}
+.ent.mk svg{display:block;margin-top:4px}
+.d-cap{margin:12px 0 0;font-size:14.5px;line-height:1.55;color:#3F4A3B;max-width:66ch}
+.after{margin-top:40px}
+.after h3,.facts h3{font-size:23px;font-weight:720;font-stretch:90%;line-height:1.1;letter-spacing:-.01em;margin:0 0 10px}
+.card.wide{max-width:700px}
+.card.wide dl div{grid-template-columns:184px minmax(0,1fr)}
+.card.wide dd{font-size:13.5px}
+.nb-body{padding:16px 24px 18px 8px}
+.stream{margin:0;font:400 14px/1.6 "Red Hat Mono",monospace;color:#1C2B22;white-space:pre-wrap;padding:6px 0 0 2px}
+.plot{display:block;margin:6px 0 0}
+.facts dl{margin:0;border-top:1px solid rgba(28,43,34,.22)}
+.facts dl div{display:grid;grid-template-columns:120px minmax(0,1fr);gap:18px;padding:10px 0;border-bottom:1px solid rgba(28,43,34,.22)}
+.facts dt{font-weight:600;font-size:14.5px}
+.facts dd{margin:0;font-size:14.5px;line-height:1.5;color:#3F4A3B}
+.grp{margin:0 0 34px}
+.grp h3{font-size:23px;font-weight:720;font-stretch:90%;line-height:1.1;letter-spacing:-.01em;margin:0 0 8px}
+.d-list{list-style:none;margin:0;padding:0;border-top:1px solid rgba(28,43,34,.22)}
+.d-list li{display:grid;grid-template-columns:168px minmax(0,1fr);column-gap:18px;align-items:baseline;padding:10px 0 9px;border-bottom:1px solid rgba(28,43,34,.22)}
+.d-list .k{font:400 16px/1.5 "Red Hat Mono",monospace;color:#1C2B22}
+.d-list .k a{text-decoration-color:rgba(102,121,59,.0)}
+.d-list .k a:hover{text-decoration-color:#66793B}
+.d-list .v{font-size:14.5px;line-height:1.5;color:#3F4A3B}
+.path{margin:18px 0 0;padding:12px 14px;background:rgba(246,244,236,.55);border:1px solid rgba(28,43,34,.3);border-radius:3px;font:400 14px/1.65 "Red Hat Mono",monospace;color:#1C2B22;white-space:pre;overflow:hidden}
+.path .t{color:#7C5530}
+.fields{margin:14px 0 0;font-size:14.5px;line-height:1.55;color:#3F4A3B;max-width:62ch}
+.fields code{font-size:.88em;color:#1C2B22}
+.lyr{display:grid;grid-template-columns:minmax(0,1fr) 680px;column-gap:80px;align-items:start}
+.lyr-cells{position:relative}
+.lyr .cell{grid-template-columns:44px minmax(0,1fr)}
+.lyr .df{background:#F6F4EC}
+.tap{position:absolute;left:-58px;top:0;display:block}
+.cable{position:absolute;top:-26px;bottom:0;left:0;width:1440px;height:calc(100% + 26px);z-index:1;pointer-events:none}
+.g-deep{color:#F6F4EC}
+.g-deep .d-h2{color:#F6F4EC}
+.g-deep .d-p{color:#CFE0DC}
+.g-deep .d-p code,.g-deep .d-list code{color:#F6F4EC}
+.g-deep .d-list{border-top-color:rgba(207,224,220,.22)}
+.g-deep .d-list li{border-bottom-color:rgba(207,224,220,.22)}
+.g-deep .d-list .k{color:#F6F4EC}
+.g-deep .d-list .v{color:#CFE0DC}
+.g-deep h3{color:#F6F4EC;font-size:23px;font-weight:720;font-stretch:90%;line-height:1.1;letter-spacing:-.01em;margin:0 0 8px}
+.deep-grid{display:grid;grid-template-columns:minmax(0,640px) minmax(0,520px);justify-content:space-between;align-items:start}
+.foot-band{padding:0}
+.ground.flat{top:0;height:100%}
+.joined .d-foot{padding-top:10px;border-top:1px solid rgba(207,224,220,.22);margin:0 80px;padding-left:0;padding-right:0}
+.d-foot{display:grid;grid-template-columns:auto minmax(0,560px) auto;justify-content:space-between;align-items:baseline;gap:40px;padding-top:58px;padding-bottom:56px;color:#F6F4EC}
+.d-foot .brand{margin:0;font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:24px}
+.d-fnote{margin:0;font-size:14.5px;line-height:1.55;color:#CFE0DC}
+.d-fnote code{color:#F6F4EC;font-size:.9em}
+.d-foot ul{display:flex;gap:24px;list-style:none;margin:0;padding:0;font-size:14.5px}
+.d-foot a{color:#CFE0DC;text-decoration:none}
+.d-foot a:hover{color:#F6F4EC}
+.pad{padding-top:74px;padding-bottom:96px}
+.pad-s{padding-top:46px;padding-bottom:70px}
+.thin .band-in{height:64px}
+.top-main .pad{padding-top:58px}
+.hc{max-width:620px}
+.hc-h{padding:9px 14px;background:#ECE8DA;border-bottom:1px solid rgba(28,43,34,.2)}
+.hc-n{margin:0;font:500 15px/1.2 "Red Hat Mono",monospace;color:#155A6E}
+.hc-s{margin:5px 0 0;font-size:14px;line-height:1.4;color:#3F4A3B}
+.hc-b{padding:10px 14px 12px}
+.hc-sig{margin:0 0 10px;padding:7px 10px;background:#ECE8DA;border-radius:3px;font:400 13px/1.5 "Red Hat Mono",monospace;color:#1C2B22;white-space:pre-wrap}
+.hc-sec{margin:0 0 5px;font-size:13.5px;font-weight:600;color:#3F4A3B}
+.hc-sec.rt{margin-top:10px;padding-top:9px;border-top:1px solid rgba(28,43,34,.2)}
+.hc dl{margin:0;padding:0}
+.hc dl div{grid-template-columns:150px minmax(0,1fr)}
+.hc dt span{color:#5d6a55}
+.hc-r{margin:0;font-size:14px;line-height:1.45;color:#1C2B22}
+.d-list.v2 li{grid-template-columns:250px minmax(0,1fr)}
+.d-list.v2 .k{font-size:14.5px}
+.d-list.wide li{grid-template-columns:270px minmax(0,1fr)}
+.d-list.wide .k{font-size:14.5px}
+.d-list.cli li{grid-template-columns:120px minmax(0,1fr);padding:8px 0 7px}
+.d-list.cli .k{font-size:15px}
+.after-s{margin-top:18px}
+.chk{padding-top:8px}
+.chk h3{margin-top:22px}
+.chk h3:first-child{margin-top:0}
+.lyr .d-cap{margin-left:54px}
+.g-gold .facts dl{border-top-color:rgba(28,43,34,.3)}
+</style>
+</helmet>
+<div class="root" style="width: 1440px; height: 2805px; overflow: hidden; position: relative">
+<main>
+<section class="band sky" aria-labelledby="h1"><header class="d-mast"><a class="brand" href="#">gridflow</a><nav aria-label="Primary"><ul><li><a href="#">Home</a></li><li><a href="#" aria-current="page">Data sources</a></li><li><a href="#">Architecture</a></li><li><a href="#">Models</a></li><li><a href="#">About</a></li></ul></nav></header><div class="d-hero"><div><p class="crumb"><a href="#">Data sources</a><span aria-hidden="true"> / </span>Elexon BMRS</p><h1 id="h1">Elexon BMRS</h1></div><div class="d-lede"><p>GB balancing-mechanism data from Elexon&#8217;s Insights API: system prices, generation outturn, BM-unit data, and demand and wind forecasts. [n] datasets, and no API key is needed.</p></div></div><svg class="strip land-svg" width="1440" height="216" viewBox="0 736 1440 216" aria-hidden="true"><path d="M-20 832 C6.7 828.7 83.3 813.7 140 812 C196.7 810.3 260 823.3 320 822 C380 820.7 440 804.7 500 804 C560 803.3 623.3 812 680 818 C736.7 824 793.3 834.3 840 840 C886.7 845.7 916.7 851 960 852 C1003.3 853 1053.3 848.7 1100 846 C1146.7 843.3 1193.3 835.7 1240 836 C1286.7 836.3 1341.7 847 1380 848 C1418.3 849 1455 843 1470 842 L1470 952 L-20 952 Z" fill="#3E8C97" opacity=".5"></path>
+<path d="M-20 858 C1.7 854.7 66.7 842.7 110 838 C153.3 833.3 195 829.3 240 830 C285 830.7 333.3 841.3 380 842 C426.7 842.7 473.3 833 520 834 C566.7 835 613.3 842.3 660 848 C706.7 853.7 760 861 800 868 C840 875 883.3 886.3 900 890 L900 952 L-20 952 Z" fill="#3E8C97"></path>
+<path d="M108.4 841 L109.3 787 L110.7 787 L111.6 841 Z" fill="#F6F4EC"></path><rect x="108.9" y="785.6" width="5" height="2.6" rx="1" fill="#F6F4EC"></rect><g transform="translate(108.7,786.9)"><g class="rot sp2"><circle r="27" fill="none"></circle><path d="M-1.1 0 C-2.3 -8.1 -0.9 -20.5 0 -27 C0.6 -19.4 2.5 -8.1 1.1 0 Z" transform="rotate(10)" fill="#F6F4EC"></path><path d="M-1.1 0 C-2.3 -8.1 -0.9 -20.5 0 -27 C0.6 -19.4 2.5 -8.1 1.1 0 Z" transform="rotate(130)" fill="#F6F4EC"></path><path d="M-1.1 0 C-2.3 -8.1 -0.9 -20.5 0 -27 C0.6 -19.4 2.5 -8.1 1.1 0 Z" transform="rotate(250)" fill="#F6F4EC"></path><circle r="1.4" fill="#F6F4EC"></circle></g></g>
+<path d="M378.6 845 L379.3 795 L380.7 795 L381.4 845 Z" fill="#F6F4EC"></path><rect x="379" y="793.8" width="4.6" height="2.4" rx="0.9" fill="#F6F4EC"></rect><g transform="translate(378.8,794.9)"><g class="rot sp3"><circle r="25" fill="none"></circle><path d="M-1 0 C-2.2 -7.5 -0.8 -19 0 -25 C0.6 -18 2.3 -7.5 1 0 Z" transform="rotate(90)" fill="#F6F4EC"></path><path d="M-1 0 C-2.2 -7.5 -0.8 -19 0 -25 C0.6 -18 2.3 -7.5 1 0 Z" transform="rotate(210)" fill="#F6F4EC"></path><path d="M-1 0 C-2.2 -7.5 -0.8 -19 0 -25 C0.6 -18 2.3 -7.5 1 0 Z" transform="rotate(330)" fill="#F6F4EC"></path><circle r="1.3" fill="#F6F4EC"></circle></g></g>
+<path d="M518.2 837 L519.2 775 L520.8 775 L521.8 837 Z" fill="#F6F4EC"></path><rect x="518.8" y="773.5" width="5.7" height="2.9" rx="1.2" fill="#F6F4EC"></rect><g transform="translate(518.5,774.9)"><g class="rot sp2"><circle r="31" fill="none"></circle><path d="M-1.3 0 C-2.7 -9.3 -1 -23.6 0 -31 C0.7 -22.3 2.9 -9.3 1.3 0 Z" transform="rotate(130)" fill="#F6F4EC"></path><path d="M-1.3 0 C-2.7 -9.3 -1 -23.6 0 -31 C0.7 -22.3 2.9 -9.3 1.3 0 Z" transform="rotate(250)" fill="#F6F4EC"></path><path d="M-1.3 0 C-2.7 -9.3 -1 -23.6 0 -31 C0.7 -22.3 2.9 -9.3 1.3 0 Z" transform="rotate(370)" fill="#F6F4EC"></path><circle r="1.6" fill="#F6F4EC"></circle></g></g>
+<path d="M658.4 851 L659.3 795 L660.7 795 L661.6 851 Z" fill="#F6F4EC"></path><rect x="658.9" y="793.6" width="5.2" height="2.7" rx="1" fill="#F6F4EC"></rect><g transform="translate(658.7,794.9)"><g class="rot sp1"><circle r="28" fill="none"></circle><path d="M-1.2 0 C-2.4 -8.4 -0.9 -21.3 0 -28 C0.6 -20.2 2.6 -8.4 1.2 0 Z" transform="rotate(170)" fill="#F6F4EC"></path><path d="M-1.2 0 C-2.4 -8.4 -0.9 -21.3 0 -28 C0.6 -20.2 2.6 -8.4 1.2 0 Z" transform="rotate(290)" fill="#F6F4EC"></path><path d="M-1.2 0 C-2.4 -8.4 -0.9 -21.3 0 -28 C0.6 -20.2 2.6 -8.4 1.2 0 Z" transform="rotate(410)" fill="#F6F4EC"></path><circle r="1.5" fill="#F6F4EC"></circle></g></g>
+<path d="M-20 884 C16.7 883 126.7 877.7 200 878 C273.3 878.3 346.7 885.7 420 886 C493.3 886.3 566.7 879 640 880 C713.3 881 790 888.3 860 892 C930 895.7 993.3 899.7 1060 902 C1126.7 904.3 1193.3 904.7 1260 906 C1326.7 907.3 1426.7 909.3 1460 910 L1460 943.5 L1440 944.3 L1420 945 L1400 945.5 L1380 946 L1360 946.3 L1340 946.4 L1320 946.3 L1300 946 L1280 945.6 L1260 945 L1240 944.3 L1220 943.4 L1200 942.5 L1180 941.5 L1160 940.6 L1140 939.7 L1120 938.9 L1100 938.1 L1080 937.5 L1060 937.1 L1040 936.8 L1020 936.6 L1000 936.6 L980 936.7 L960 936.9 L940 937.2 L920 937.5 L900 937.8 L880 938.1 L860 938.3 L840 938.5 L820 938.5 L800 938.5 L780 938.4 L760 938.2 L740 937.9 L720 937.5 L700 937.1 L680 936.7 L660 936.4 L640 936.1 L620 935.8 L600 935.7 L580 935.8 L560 936 L540 936.3 L520 936.8 L500 937.5 L480 938.3 L460 939.2 L440 940.1 L420 941.1 L400 942.1 L380 943 L360 943.9 L340 944.7 L320 945.3 L300 945.7 L280 946 L260 946.1 L240 946 L220 945.7 L200 945.3 L180 944.8 L160 944.2 L140 943.5 L120 942.8 L100 942.1 L80 941.5 L60 940.9 L40 940.5 L20 940.1 L0 939.8 L-20 939.7 Z" fill="#AFC64E"></path>
+<path d="M-20 900 C50 899.3 263.3 895 400 896 C536.7 897 666.7 902.3 800 906 C933.3 909.7 1090 915.3 1200 918 C1310 920.7 1416.7 921.3 1460 922 M-20 918 C66.7 917.7 336.7 914.7 500 916 C663.3 917.3 800 923.3 960 926 C1120 928.7 1376.7 931 1460 932" stroke="#66793B" stroke-width="1" fill="none" opacity=".45"></path>
+<rect x="240.9" y="841.5" width="4.3" height="37.2" fill="#F6F4EC" stroke="#1C2B22" stroke-width=".9" ></rect>
+<rect x="253.3" y="836.6" width="4.3" height="42.2" fill="#F6F4EC" stroke="#1C2B22" stroke-width=".9" ></rect>
+<path d="M240.9 845.2 h4.3 M253.3 840.3 h4.3" stroke="#C77E3C" stroke-width="1.9"></path>
+<rect x="238.4" y="877.5" width="9.3" height="28.5" fill="#C77E3C" stroke="#1C2B22" stroke-width=".9" ></rect>
+<rect x="250.8" y="877.5" width="9.3" height="28.5" fill="#C77E3C" stroke="#1C2B22" stroke-width=".9" ></rect>
+<rect x="200" y="886.2" width="38.4" height="19.8" fill="#C77E3C" stroke="#1C2B22" stroke-width=".9" ></rect>
+<rect x="185.1" y="896.1" width="14.9" height="9.9" fill="#F6F4EC" stroke="#1C2B22" stroke-width=".9" ></rect>
+<path d="M202.5 892.4 H236 M202.5 898.6 H236" stroke="#F6F4EC" stroke-width=".8" stroke-dasharray="3 3" opacity=".8"></path>
+<path d="M200 886.2 L219.2 882.4 L238.4 886.2" fill="#C77E3C" stroke="#1C2B22" stroke-width=".9" stroke-linejoin="round"></path>
+<g transform="translate(900 937) scale(1.1) translate(-900 -937)"><path d="M900 937 V887 M936 937 V887 M897 887 H939 M900 887 L936 913 M936 887 L900 913 M900 913 H936 M948 937 V887 M984 937 V887 M945 887 H987 M948 887 L984 913 M984 887 L948 913 M948 913 H984 M908 887 v6 M918 887 v6 M928 887 v6 M956 887 v6 M966 887 v6 M976 887 v6 M908 893 H976" stroke="#1C2B22" stroke-width="1.2" fill="none"></path>
+<rect x="906" y="920" width="22" height="17" fill="#A39A6A" stroke="#1C2B22" stroke-width=".9"></rect>
+<path d="M909 923 V934 M912 923 V934 M915 923 V934 M918 923 V934 M921 923 V934 M924 923 V934 M911 920 v-6 M917 920 v-7 M923 920 v-6" stroke="#1C2B22" stroke-width=".7"></path>
+<rect x="956" y="920" width="22" height="17" fill="#A39A6A" stroke="#1C2B22" stroke-width=".9"></rect>
+<path d="M959 923 V934 M962 923 V934 M965 923 V934 M968 923 V934 M971 923 V934 M974 923 V934 M961 920 v-6 M967 920 v-7 M973 920 v-6" stroke="#1C2B22" stroke-width=".7"></path>
+<path d="M890 937 v-12 M902 937 v-12 M914 937 v-12 M926 937 v-12 M938 937 v-12 M950 937 v-12 M962 937 v-12 M974 937 v-12 M986 937 v-12 M890 926 H996" stroke="#1C2B22" stroke-width=".6" opacity=".65"></path></g>
+<g stroke="#1C2B22" fill="none" stroke-linecap="round" stroke-width="1.35"><g transform="translate(420,902) scale(0.44)"><path vector-effect="non-scaling-stroke" d="M-18 0 L-5 -96 M18 0 L5 -96 M-5 -96 L-5 -118 M5 -96 L5 -118 M-5 -118 H5 M-14 -28 H14 M-11 -56 H11 M-8 -80 H8 M-16 -14 L14 -28 M16 -14 L-14 -28 M-13 -42 L11 -56 M13 -42 L-11 -56 M-10 -68 L8 -80 M10 -68 L-8 -80 M-30 -66 H30 M-24 -92 H24 M-14 -112 H14 M-30 -66 L-5 -60 M30 -66 L5 -60 M-24 -92 L-5 -86 M24 -92 L5 -86"></path></g><g transform="translate(640,910) scale(0.5)"><path vector-effect="non-scaling-stroke" d="M-18 0 L-5 -96 M18 0 L5 -96 M-5 -96 L-5 -118 M5 -96 L5 -118 M-5 -118 H5 M-14 -28 H14 M-11 -56 H11 M-8 -80 H8 M-16 -14 L14 -28 M16 -14 L-14 -28 M-13 -42 L11 -56 M13 -42 L-11 -56 M-10 -68 L8 -80 M10 -68 L-8 -80 M-30 -66 H30 M-24 -92 H24 M-14 -112 H14 M-30 -66 L-5 -60 M30 -66 L5 -60 M-24 -92 L-5 -86 M24 -92 L5 -86"></path></g></g>
+<path d="M-20 874 Q193.4 880 406.8 873 M-20 864 Q194.7 870 409.4 861.5 M-20 856 Q196.9 862 413.8 852.7 M433.2 873 Q529.1 887 625 877 M430.6 861.5 Q529.3 874 628 864 M426.2 852.7 Q529.6 864 633 854 M655 877 Q775.9 890 896.7 882 M652 864 Q780.4 896.6 908.8 888.6 M647 854 Q783.4 896.6 919.8 888.6" stroke="#1C2B22" stroke-width=".8" fill="none" opacity=".85"></path>
+<g transform="translate(1110 941.1) scale(1.15) translate(-1110 -941.1)"><rect x="1115" y="922.1" width="20" height="9" fill="#A39A6A" stroke="#1C2B22" stroke-width=".8"></rect>
+<path d="M1122 923.6 V929.6 M1127 924.6 h5" stroke="#1C2B22" stroke-width=".6" opacity=".7"></path>
+<rect x="1138" y="922.1" width="20" height="9" fill="#A39A6A" stroke="#1C2B22" stroke-width=".8"></rect>
+<path d="M1145 923.6 V929.6 M1150 924.6 h5" stroke="#1C2B22" stroke-width=".6" opacity=".7"></path>
+<rect x="1161" y="922.1" width="20" height="9" fill="#A39A6A" stroke="#1C2B22" stroke-width=".8"></rect>
+<path d="M1168 923.6 V929.6 M1173 924.6 h5" stroke="#1C2B22" stroke-width=".6" opacity=".7"></path>
+<rect x="1184" y="922.1" width="20" height="9" fill="#A39A6A" stroke="#1C2B22" stroke-width=".8"></rect>
+<path d="M1191 923.6 V929.6 M1196 924.6 h5" stroke="#1C2B22" stroke-width=".6" opacity=".7"></path>
+<rect x="1110" y="931.1" width="20" height="10" fill="#A39A6A" stroke="#1C2B22" stroke-width=".8"></rect>
+<path d="M1117 932.6 V939.6 M1122 933.6 h5" stroke="#1C2B22" stroke-width=".6" opacity=".7"></path>
+<rect x="1133" y="931.1" width="20" height="10" fill="#A39A6A" stroke="#1C2B22" stroke-width=".8"></rect>
+<path d="M1140 932.6 V939.6 M1145 933.6 h5" stroke="#1C2B22" stroke-width=".6" opacity=".7"></path>
+<rect x="1156" y="931.1" width="20" height="10" fill="#A39A6A" stroke="#1C2B22" stroke-width=".8"></rect>
+<path d="M1163 932.6 V939.6 M1168 933.6 h5" stroke="#1C2B22" stroke-width=".6" opacity=".7"></path>
+<rect x="1179" y="931.1" width="20" height="10" fill="#A39A6A" stroke="#1C2B22" stroke-width=".8"></rect>
+<path d="M1186 932.6 V939.6 M1191 933.6 h5" stroke="#1C2B22" stroke-width=".6" opacity=".7"></path>
+<rect x="1208" y="927.1" width="12" height="14" fill="#F6F4EC" stroke="#1C2B22" stroke-width=".8"></rect>
+<path d="M1102 941.1 v-13 M1114 941.1 v-13 M1126 941.1 v-13 M1138 941.1 v-13 M1150 941.1 v-13 M1162 941.1 v-13 M1174 941.1 v-13 M1186 941.1 v-13 M1198 941.1 v-13 M1210 941.1 v-13 M1222 941.1 v-13 M1102 929.1 H1226" stroke="#1C2B22" stroke-width=".6" opacity=".65"></path></g>
+<path d="M1320 859.5 L1290 945.8 M1320 859.5 L1348 946.4 M1320 817.5 L1276 945.5" stroke="#1C2B22" stroke-width=".6" opacity=".55"></path>
+<path d="M1316.4 946.3 L1318.8 806.3 M1323.6 946.3 L1321.2 806.3 M1316.4 946.3 L1322.3 937.3 L1317.8 928.3 L1322.1 919.3 L1318 910.3 L1321.9 901.3 L1318.2 892.3 L1321.8 883.3 L1318.3 874.3 L1321.6 865.3 L1318.5 856.3 L1321.4 847.3 L1318.7 838.3 L1321.2 829.3 L1318.9 820.3 L1321 811.3" stroke="#1C2B22" stroke-width=".9" fill="none"></path>
+<path d="M1320 865.1 H1336 M1320 865.1 H1308 M1320 834.3 H1336 M1320 834.3 H1308 M1320 806.3 H1336 M1320 806.3 H1308 M1320 806.3 V796.3 M1320 798.3 L1311 800.3" stroke="#1C2B22" stroke-width="1.1"></path>
+<circle cx="1333.8" cy="863.1" r="1.5" fill="#1C2B22"></circle><circle cx="1338.2" cy="863.1" r="1.5" fill="#1C2B22"></circle><circle cx="1333.8" cy="832.3" r="1.5" fill="#1C2B22"></circle><circle cx="1338.2" cy="832.3" r="1.5" fill="#1C2B22"></circle><circle cx="1333.8" cy="804.3" r="1.5" fill="#1C2B22"></circle><circle cx="1338.2" cy="804.3" r="1.5" fill="#1C2B22"></circle><text x="236" y="826" fill="#E4EFEC" text-anchor="middle">gas-fired power station</text><text x="953" y="868" fill="#E4EFEC" text-anchor="middle">substation</text><text x="1173" y="910" fill="#1C2B22" text-anchor="middle">battery storage</text><text x="1308" y="830" fill="#E4EFEC" text-anchor="end">met mast</text></svg></section>
+<section class="band g-topsoil thin"><svg class="ground" width="1440" height="100%" aria-hidden="true"><defs><pattern id="p-stip" width="9" height="9" patternUnits="userSpaceOnUse"><circle cx="2" cy="3" r="1" fill="#8A6F1E"></circle><circle cx="6.5" cy="7.5" r=".8" fill="#8A6F1E"></circle></pattern>
+<pattern id="p-diag" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M0 8 L8 0" stroke="#5E6E6B" stroke-width=".8"></path></pattern>
+<pattern id="p-brick" width="24" height="12" patternUnits="userSpaceOnUse"><path d="M0 11.5 H24 M12 0 V6 M0 6 H24 M0 6 V12" stroke="#7C5530" stroke-width=".8" fill="none"></path></pattern>
+<pattern id="p-soil" width="23" height="17" patternUnits="userSpaceOnUse"><circle cx="4" cy="5" r=".9" fill="#A39A6A"></circle><circle cx="15" cy="12" r="1.1" fill="#A39A6A"></circle><path d="M17 3 h3" stroke="#A39A6A" stroke-width=".9"></path></pattern>
+<pattern id="p-granite" width="46" height="40" patternUnits="userSpaceOnUse"><path d="M8 8 h8 M12 4 v8 M30 26 h8 M34 22 v8 M20 34 h6 M23 31 v6 M40 6 h5 M42.5 3.5 v5" stroke="#3E8C97" stroke-width="1.1"></path></pattern></defs><path d="M-40 13.7 L-20 13.7 L0 13.8 L20 14.1 L40 14.5 L60 14.9 L80 15.5 L100 16.1 L120 16.8 L140 17.5 L160 18.2 L180 18.8 L200 19.3 L220 19.7 L240 20 L260 20.1 L280 20 L300 19.7 L320 19.3 L340 18.7 L360 17.9 L380 17 L400 16.1 L420 15.1 L440 14.1 L460 13.2 L480 12.3 L500 11.5 L520 10.8 L540 10.3 L560 10 L580 9.8 L600 9.7 L620 9.8 L640 10.1 L660 10.4 L680 10.7 L700 11.1 L720 11.5 L740 11.9 L760 12.2 L780 12.4 L800 12.5 L820 12.5 L840 12.5 L860 12.3 L880 12.1 L900 11.8 L920 11.5 L940 11.2 L960 10.9 L980 10.7 L1000 10.6 L1020 10.6 L1040 10.8 L1060 11.1 L1080 11.5 L1100 12.1 L1120 12.9 L1140 13.7 L1160 14.6 L1180 15.5 L1200 16.5 L1220 17.4 L1240 18.3 L1260 19 L1280 19.6 L1300 20 L1320 20.3 L1340 20.4 L1360 20.3 L1380 20 L1400 19.5 L1420 19 L1440 18.3 L1460 17.5 L1480 16.7 L1480 9000 L-40 9000 Z" fill="#ECE8DA"></path><path d="M-40 13.7 L-20 13.7 L0 13.8 L20 14.1 L40 14.5 L60 14.9 L80 15.5 L100 16.1 L120 16.8 L140 17.5 L160 18.2 L180 18.8 L200 19.3 L220 19.7 L240 20 L260 20.1 L280 20 L300 19.7 L320 19.3 L340 18.7 L360 17.9 L380 17 L400 16.1 L420 15.1 L440 14.1 L460 13.2 L480 12.3 L500 11.5 L520 10.8 L540 10.3 L560 10 L580 9.8 L600 9.7 L620 9.8 L640 10.1 L660 10.4 L680 10.7 L700 11.1 L720 11.5 L740 11.9 L760 12.2 L780 12.4 L800 12.5 L820 12.5 L840 12.5 L860 12.3 L880 12.1 L900 11.8 L920 11.5 L940 11.2 L960 10.9 L980 10.7 L1000 10.6 L1020 10.6 L1040 10.8 L1060 11.1 L1080 11.5 L1100 12.1 L1120 12.9 L1140 13.7 L1160 14.6 L1180 15.5 L1200 16.5 L1220 17.4 L1240 18.3 L1260 19 L1280 19.6 L1300 20 L1320 20.3 L1340 20.4 L1360 20.3 L1380 20 L1400 19.5 L1420 19 L1440 18.3 L1460 17.5 L1480 16.7 L1480 9000 L-40 9000 Z" fill="url(#p-soil)" opacity=".5"></path><path d="M-40 13.7 L-20 13.7 L0 13.8 L20 14.1 L40 14.5 L60 14.9 L80 15.5 L100 16.1 L120 16.8 L140 17.5 L160 18.2 L180 18.8 L200 19.3 L220 19.7 L240 20 L260 20.1 L280 20 L300 19.7 L320 19.3 L340 18.7 L360 17.9 L380 17 L400 16.1 L420 15.1 L440 14.1 L460 13.2 L480 12.3 L500 11.5 L520 10.8 L540 10.3 L560 10 L580 9.8 L600 9.7 L620 9.8 L640 10.1 L660 10.4 L680 10.7 L700 11.1 L720 11.5 L740 11.9 L760 12.2 L780 12.4 L800 12.5 L820 12.5 L840 12.5 L860 12.3 L880 12.1 L900 11.8 L920 11.5 L940 11.2 L960 10.9 L980 10.7 L1000 10.6 L1020 10.6 L1040 10.8 L1060 11.1 L1080 11.5 L1100 12.1 L1120 12.9 L1140 13.7 L1160 14.6 L1180 15.5 L1200 16.5 L1220 17.4 L1240 18.3 L1260 19 L1280 19.6 L1300 20 L1320 20.3 L1340 20.4 L1360 20.3 L1380 20 L1400 19.5 L1420 19 L1440 18.3 L1460 17.5 L1480 16.7 L1480 25.7 L1460 26.5 L1440 27.3 L1420 28 L1400 28.5 L1380 29 L1360 29.3 L1340 29.4 L1320 29.3 L1300 29 L1280 28.6 L1260 28 L1240 27.3 L1220 26.4 L1200 25.5 L1180 24.5 L1160 23.6 L1140 22.7 L1120 21.9 L1100 21.1 L1080 20.5 L1060 20.1 L1040 19.8 L1020 19.6 L1000 19.6 L980 19.7 L960 19.9 L940 20.2 L920 20.5 L900 20.8 L880 21.1 L860 21.3 L840 21.5 L820 21.5 L800 21.5 L780 21.4 L760 21.2 L740 20.9 L720 20.5 L700 20.1 L680 19.7 L660 19.4 L640 19.1 L620 18.8 L600 18.7 L580 18.8 L560 19 L540 19.3 L520 19.8 L500 20.5 L480 21.3 L460 22.2 L440 23.1 L420 24.1 L400 25.1 L380 26 L360 26.9 L340 27.7 L320 28.3 L300 28.7 L280 29 L260 29.1 L240 29 L220 28.7 L200 28.3 L180 27.8 L160 27.2 L140 26.5 L120 25.8 L100 25.1 L80 24.5 L60 23.9 L40 23.5 L20 23.1 L0 22.8 L-20 22.7 L-40 22.7 Z" fill="#66793B"></path><path d="M-40 13.7 L-20 13.7 L0 13.8 L20 14.1 L40 14.5 L60 14.9 L80 15.5 L100 16.1 L120 16.8 L140 17.5 L160 18.2 L180 18.8 L200 19.3 L220 19.7 L240 20 L260 20.1 L280 20 L300 19.7 L320 19.3 L340 18.7 L360 17.9 L380 17 L400 16.1 L420 15.1 L440 14.1 L460 13.2 L480 12.3 L500 11.5 L520 10.8 L540 10.3 L560 10 L580 9.8 L600 9.7 L620 9.8 L640 10.1 L660 10.4 L680 10.7 L700 11.1 L720 11.5 L740 11.9 L760 12.2 L780 12.4 L800 12.5 L820 12.5 L840 12.5 L860 12.3 L880 12.1 L900 11.8 L920 11.5 L940 11.2 L960 10.9 L980 10.7 L1000 10.6 L1020 10.6 L1040 10.8 L1060 11.1 L1080 11.5 L1100 12.1 L1120 12.9 L1140 13.7 L1160 14.6 L1180 15.5 L1200 16.5 L1220 17.4 L1240 18.3 L1260 19 L1280 19.6 L1300 20 L1320 20.3 L1340 20.4 L1360 20.3 L1380 20 L1400 19.5 L1420 19 L1440 18.3 L1460 17.5 L1480 16.7" stroke="#1C2B22" stroke-width="1.5" fill="none"></path></svg><div class="band-in"></div></section>
+<section class="band g-bronze" aria-labelledby="ds-h"><svg class="ground" width="1440" height="100%" aria-hidden="true"><defs><pattern id="p-stip" width="9" height="9" patternUnits="userSpaceOnUse"><circle cx="2" cy="3" r="1" fill="#8A6F1E"></circle><circle cx="6.5" cy="7.5" r=".8" fill="#8A6F1E"></circle></pattern>
+<pattern id="p-diag" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M0 8 L8 0" stroke="#5E6E6B" stroke-width=".8"></path></pattern>
+<pattern id="p-brick" width="24" height="12" patternUnits="userSpaceOnUse"><path d="M0 11.5 H24 M12 0 V6 M0 6 H24 M0 6 V12" stroke="#7C5530" stroke-width=".8" fill="none"></path></pattern>
+<pattern id="p-soil" width="23" height="17" patternUnits="userSpaceOnUse"><circle cx="4" cy="5" r=".9" fill="#A39A6A"></circle><circle cx="15" cy="12" r="1.1" fill="#A39A6A"></circle><path d="M17 3 h3" stroke="#A39A6A" stroke-width=".9"></path></pattern>
+<pattern id="p-granite" width="46" height="40" patternUnits="userSpaceOnUse"><path d="M8 8 h8 M12 4 v8 M30 26 h8 M34 22 v8 M20 34 h6 M23 31 v6 M40 6 h5 M42.5 3.5 v5" stroke="#3E8C97" stroke-width="1.1"></path></pattern></defs><path d="M-40 20.1 C-20 19.6 40 17.4 80 16.8 C120 16.1 160 16.2 200 16.2 C240 16.3 280 17.9 320 17.3 C360 16.7 400 14.4 440 12.6 C480 10.7 520 7.1 560 6 C600 5 640 5.7 680 6.4 C720 7.1 760 9.5 800 10.1 C840 10.7 880 9.9 920 9.9 C960 9.9 1000 9.1 1040 10.1 C1080 11.2 1120 14.3 1160 16.2 C1200 18 1240 20.7 1280 21.1 C1320 21.5 1360 19.5 1400 18.5 C1440 17.5 1500 15.6 1520 15 L1480 9000 L-40 9000 Z" fill="#E2CDB3"></path><path d="M-40 20.1 C-20 19.6 40 17.4 80 16.8 C120 16.1 160 16.2 200 16.2 C240 16.3 280 17.9 320 17.3 C360 16.7 400 14.4 440 12.6 C480 10.7 520 7.1 560 6 C600 5 640 5.7 680 6.4 C720 7.1 760 9.5 800 10.1 C840 10.7 880 9.9 920 9.9 C960 9.9 1000 9.1 1040 10.1 C1080 11.2 1120 14.3 1160 16.2 C1200 18 1240 20.7 1280 21.1 C1320 21.5 1360 19.5 1400 18.5 C1440 17.5 1500 15.6 1520 15 L1480 9000 L-40 9000 Z" fill="url(#p-brick)" opacity=".15"></path><path d="M-40 20.1 C-20 19.6 40 17.4 80 16.8 C120 16.1 160 16.2 200 16.2 C240 16.3 280 17.9 320 17.3 C360 16.7 400 14.4 440 12.6 C480 10.7 520 7.1 560 6 C600 5 640 5.7 680 6.4 C720 7.1 760 9.5 800 10.1 C840 10.7 880 9.9 920 9.9 C960 9.9 1000 9.1 1040 10.1 C1080 11.2 1120 14.3 1160 16.2 C1200 18 1240 20.7 1280 21.1 C1320 21.5 1360 19.5 1400 18.5 C1440 17.5 1500 15.6 1520 15" stroke="#1C2B22" stroke-width="1.5" fill="none"></path><text x="1360" y="56" text-anchor="end" font-family="Hanken Grotesk" font-style="italic" font-size="14" fill="#1C2B22">bronze</text></svg><div class="band-in"><div class="d-grid hub pad"><div><h2 class="d-h2" id="ds-h">Datasets by theme</h2><p class="d-p">Each name is the gridflow key: the page, the silver view <code>silver_elexon_&lt;key&gt;</code> and the notebook call all use it.</p><div class="grps"><div class="grp"><h3 id="g0">Prices and balancing</h3><ul class="d-list" aria-labelledby="g0"><li><span class="k"><a href="#">system_prices</a></span><span class="v">System sell price and system buy price per settlement period</span></li><li><span class="k"><a href="#">market_depth</a></span><span class="v">Settlement market depth per settlement period</span></li><li><span class="k"><a href="#">mid</a></span><span class="v">Market index data; its APXMIDP provider is the GB day-ahead benchmark</span></li><li><span class="k"><a href="#">boal</a></span><span class="v">Bid/offer acceptance levels (BOALF; replaces the deprecated BOAL)</span></li><li><span class="k"><a href="#">pn</a></span><span class="v">Physical notifications, per BM unit and settlement period</span></li><li><span class="k"><a href="#">disbsad</a></span><span class="v">Disaggregated balancing services adjustment data</span></li><li><span class="k"><a href="#">netbsad</a></span><span class="v">Net balancing services adjustment data</span></li><li><span class="k"><a href="#">soso</a></span><span class="v">SO-SO prices (cross-border interconnector trading)</span></li></ul></div><div class="grp"><h3 id="g1">Generation and availability</h3><ul class="d-list" aria-labelledby="g1"><li><span class="k"><a href="#">fuelhh</a></span><span class="v">Half-hourly generation outturn by fuel type (no solar)</span></li><li><span class="k"><a href="#">fuelinst</a></span><span class="v">Instantaneous generation outturn by fuel type</span></li><li><span class="k"><a href="#">agpt</a></span><span class="v">Actual aggregated generation per type (B1620)</span></li><li><span class="k"><a href="#">agws</a></span><span class="v">Actual or estimated wind and solar generation (B1630)</span></li><li><span class="k"><a href="#">windfor</a></span><span class="v">Wind generation forecast</span></li><li><span class="k"><a href="#">fou2t14d</a></span><span class="v">Generation availability by fuel type, 2 to 14 days ahead</span></li><li><span class="k"><a href="#">uou2t14d</a></span><span class="v">Generation availability by BM unit, 2 to 14 days ahead</span></li><li><span class="k"><a href="#">nonbm</a></span><span class="v">Non-BM STOR generation</span></li></ul></div><div class="grp"><h3 id="g2">Demand</h3><ul class="d-list" aria-labelledby="g2"><li><span class="k"><a href="#">indo</a></span><span class="v">Initial national demand outturn</span></li><li><span class="k"><a href="#">itsdo</a></span><span class="v">Initial transmission system demand outturn</span></li><li><span class="k"><a href="#">indod</a></span><span class="v">Initial national demand outturn, daily total</span></li><li><span class="k"><a href="#">atl</a></span><span class="v">Actual total load per bidding zone (B0610)</span></li><li><span class="k"><a href="#">ndf</a></span><span class="v">National demand forecast, day ahead</span></li><li><span class="k"><a href="#">ndfd</a></span><span class="v">National demand forecast, 2 to 14 days ahead</span></li><li><span class="k"><a href="#">tsdf</a></span><span class="v">Transmission system demand forecast</span></li><li><span class="k"><a href="#">tsdfd</a></span><span class="v">Transmission system demand forecast, 2 to 14 days ahead</span></li><li><span class="k"><a href="#">inddem</a></span><span class="v">Day and day-ahead indicated demand</span></li></ul></div><div class="grp"><h3 id="g3">System indicators</h3><ul class="d-list" aria-labelledby="g3"><li><span class="k"><a href="#">indgen</a></span><span class="v">Day and day-ahead indicated generation</span></li><li><span class="k"><a href="#">imbalngc</a></span><span class="v">Indicated imbalance</span></li><li><span class="k"><a href="#">melngc</a></span><span class="v">Indicated margin</span></li><li><span class="k"><a href="#">lolpdrm</a></span><span class="v">Loss of load probability and de-rated margin</span></li><li><span class="k"><a href="#">freq</a></span><span class="v">System frequency</span></li><li><span class="k"><a href="#">temp</a></span><span class="v">Temperature data</span></li></ul></div><div class="grp"><h3 id="g4">Reference and messages</h3><ul class="d-list" aria-labelledby="g4"><li><span class="k"><a href="#">bmunits_reference</a></span><span class="v">All BM unit reference data</span></li><li><span class="k"><a href="#">remit</a></span><span class="v">REMIT outage and unavailability messages</span></li></ul></div></div></div><div><figure class="nb" aria-label="A notebook, elexon.ipynb, on the gridflow_models kernel. Cell 2 shows the data.elexon help card with its seven verbs: list_datasets, refresh, describe, backfill, query, tail and coverage. Cell 3 queries fuelhh from 1 September 2021 to 31 August 2026; cell 4 groups the wind rows by month and plots the mean."><div class="nb-bar"><span class="nb-tab">elexon.ipynb</span><span class="nb-kern">gridflow_models</span></div><div class="nb-body"><div class="cell"><span class="pr">[1]:</span><pre class="in"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
+data, models, common = setup_notebook()</pre></div><div class="cell"><span class="pr">[2]:</span><pre class="in">data.elexon</pre></div><div class="cell out"><span class="pr">[2]:</span><div class="card"><p class="card-h">data.elexon</p><dl><div><dt>list_datasets</dt><dd>List every dataset this source provides.</dd></div><div><dt>refresh</dt><dd>Fetch the latest rows for this source, topping up what you have.</dd></div><div><dt>describe</dt><dd>Show a dataset's columns, sample values, and freshness.</dd></div><div><dt>backfill</dt><dd>Download history for a dataset and store it locally.</dd></div><div><dt>query</dt><dd>Read stored rows for a dataset over a date range.</dd></div><div><dt>tail</dt><dd>Read the most recent rows of a dataset.</dd></div><div><dt>coverage</dt><dd>Show how up to date each dataset on this source is.</dd></div></dl><p class="card-f">Discover datasets: <code>data.elexon.list_datasets()</code></p></div></div><div class="cell"><span class="pr">[3]:</span><pre class="in">df = data.elexon.query(
+    <span class="s">"fuelhh"</span>, <span class="s">"2021-09-01"</span>, <span class="s">"2026-08-31"</span>)</pre></div><div class="cell"><span class="pr">[4]:</span><pre class="in">wind = df[df.fuel_type == <span class="s">"WIND"</span>]
+day = common.pd.to_datetime(wind.settlement_date)
+by_month = wind.groupby(day.dt.to_period(<span class="s">"M"</span>))
+by_month.generation_mw.mean().plot(ylabel=<span class="s">"MW"</span>)</pre></div><div class="cell out"><span class="pr">[4]:</span><div><p class="stream">&lt;Axes: xlabel=&#x27;settlement_date&#x27;, ylabel=&#x27;MW&#x27;&gt;</p><svg class="plot" width="478" height="280" viewBox="0 0 478 280" role="img" aria-label="Line plot of monthly mean wind generation_mw from Elexon FUELHH, September 2021 to August 2026, in MW: it swings between about 3,700 MW in summer months and about 11,600 MW in winter, highest in January 2026."><path d="M66 202.7 L72.7 112 L79.5 118.5 L86.2 125.4 L93 106.3 L99.7 31.9 L106.5 153.7 L113.2 160.1 L120 157 L126.7 180.6 L133.5 190.9 L140.2 214.2 L146.9 153.8 L153.7 77.1 L160.4 71.6 L167.2 95.9 L173.9 48.4 L180.7 96.5 L187.4 111.9 L194.2 158.7 L200.9 196.4 L207.7 201.3 L214.4 151.8 L221.2 178.6 L227.9 166.2 L234.6 101.8 L241.4 98.1 L248.1 34.8 L254.9 66.2 L261.6 74.7 L268.4 97.9 L275.1 91.2 L281.9 198.9 L288.6 171.2 L295.4 188.8 L302.1 133.5 L308.8 158.4 L315.6 118.3 L322.3 126.2 L329.1 49.9 L335.8 105.9 L342.6 74.4 L349.3 132 L356.1 172.8 L362.8 151.9 L369.6 122 L376.3 195.1 L383.1 159 L389.8 90.1 L396.5 88.4 L403.3 38.6 L410 36.2 L416.8 24.8 L423.5 29.8 L430.3 68.6 L437 110.7 L443.8 155.5 L450.5 142.6 L457.3 168.5 L464 169.2" fill="none" stroke="#3E8C97" stroke-width="1.6" stroke-linejoin="round"></path><rect x="66" y="10" width="398" height="220" fill="none" stroke="#1C2B22" stroke-width="1"></rect><g font-family="Hanken Grotesk" font-size="12.5" fill="#1C2B22"><path d="M62 206.1 H66" stroke="#1C2B22" stroke-width="1"></path><text x="58" y="210.6" text-anchor="end">4000</text><path d="M62 158.3 H66" stroke="#1C2B22" stroke-width="1"></path><text x="58" y="162.8" text-anchor="end">6000</text><path d="M62 110.4 H66" stroke="#1C2B22" stroke-width="1"></path><text x="58" y="114.9" text-anchor="end">8000</text><path d="M62 62.6 H66" stroke="#1C2B22" stroke-width="1"></path><text x="58" y="67.1" text-anchor="end">10000</text><path d="M62 14.8 H66" stroke="#1C2B22" stroke-width="1"></path><text x="58" y="19.3" text-anchor="end">12000</text><path d="M93 230 v4" stroke="#1C2B22" stroke-width="1"></path><text x="93" y="249" text-anchor="middle">2022</text><path d="M173.9 230 v4" stroke="#1C2B22" stroke-width="1"></path><text x="173.9" y="249" text-anchor="middle">2023</text><path d="M254.9 230 v4" stroke="#1C2B22" stroke-width="1"></path><text x="254.9" y="249" text-anchor="middle">2024</text><path d="M335.8 230 v4" stroke="#1C2B22" stroke-width="1"></path><text x="335.8" y="249" text-anchor="middle">2025</text><path d="M416.8 230 v4" stroke="#1C2B22" stroke-width="1"></path><text x="416.8" y="249" text-anchor="middle">2026</text><text x="265.0" y="274" text-anchor="middle">settlement_date</text><text transform="translate(16 120.0) rotate(-90)" text-anchor="middle">MW</text></g></svg></div></div></div></figure><p class="d-cap">The plot in [4]: monthly mean of the half-hourly wind rows in <code>elexon/fuelhh</code> (<code>generation_mw</code>, MW), September 2021 to August 2026. It is a mean per row, not total output.</p><div class="facts after"><h3 id="feed-h">The feed</h3><dl aria-labelledby="feed-h"><div><dt>API</dt><dd><code>https://data.elexon.co.uk/bmrs/api/v1</code>, no key</dd></div><div><dt>Market</dt><dd>GB electricity</dd></div><div><dt>Grain</dt><dd>Half-hourly settlement periods, 1 to 50 a day (46 or 50 when the clocks change). FUELINST is instantaneous, every 5 minutes; some datasets are daily publications or 2 to 14-day forecasts.</dd></div><div><dt>Prices</dt><dd><code>system_prices</code> carries a single imbalance price: SSP equals SBP on every latest-vintage row from 1 September 2021 to 22 September 2026.</dd></div><div><dt>Benchmark</dt><dd>The APXMIDP provider in <code>mid</code> is the GB day-ahead benchmark, read through <code>gold_gb_day_ahead_benchmark</code>.</dd></div><div><dt>Solar</dt><dd>FUELHH has no solar rows. GB solar outturn is in the NESO Data Portal&#8217;s <code>historic_generation_mix</code>.</dd></div></dl></div></div></div></div></section>
+</main>
+<footer class="band g-deep foot-band"><svg class="ground" width="1440" height="100%" aria-hidden="true"><defs><pattern id="p-stip" width="9" height="9" patternUnits="userSpaceOnUse"><circle cx="2" cy="3" r="1" fill="#8A6F1E"></circle><circle cx="6.5" cy="7.5" r=".8" fill="#8A6F1E"></circle></pattern>
+<pattern id="p-diag" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M0 8 L8 0" stroke="#5E6E6B" stroke-width=".8"></path></pattern>
+<pattern id="p-brick" width="24" height="12" patternUnits="userSpaceOnUse"><path d="M0 11.5 H24 M12 0 V6 M0 6 H24 M0 6 V12" stroke="#7C5530" stroke-width=".8" fill="none"></path></pattern>
+<pattern id="p-soil" width="23" height="17" patternUnits="userSpaceOnUse"><circle cx="4" cy="5" r=".9" fill="#A39A6A"></circle><circle cx="15" cy="12" r="1.1" fill="#A39A6A"></circle><path d="M17 3 h3" stroke="#A39A6A" stroke-width=".9"></path></pattern>
+<pattern id="p-granite" width="46" height="40" patternUnits="userSpaceOnUse"><path d="M8 8 h8 M12 4 v8 M30 26 h8 M34 22 v8 M20 34 h6 M23 31 v6 M40 6 h5 M42.5 3.5 v5" stroke="#3E8C97" stroke-width="1.1"></path></pattern></defs><path d="M-40 20.7 C-36.7 20.9 -26.7 21.1 -20 21.7 C-13.3 22.3 -6.7 23.6 0 24.4 C6.7 25.2 13.3 26.3 20 26.4 C26.7 26.6 33.3 26.1 40 25.2 C46.7 24.3 53.3 22.4 60 20.9 C66.7 19.5 73.3 17.6 80 16.6 C86.7 15.6 93.3 15 100 15 C106.7 14.9 113.3 15.8 120 16.3 C126.7 16.8 133.3 17.8 140 18 C146.7 18.3 153.3 18.1 160 17.6 C166.7 17.2 173.3 16 180 15.3 C186.7 14.6 193.3 13.6 200 13.5 C206.7 13.4 213.3 13.8 220 14.6 C226.7 15.4 233.3 17.1 240 18.3 C246.7 19.5 253.3 21 260 21.6 C266.7 22.1 273.3 22.2 280 21.7 C286.7 21.2 293.3 19.7 300 18.7 C306.7 17.6 313.3 16 320 15.2 C326.7 14.4 333.3 13.9 340 13.8 C346.7 13.7 353.3 14.3 360 14.3 C366.7 14.4 373.3 14.7 380 14.2 C386.7 13.7 393.3 12.6 400 11.2 C406.7 9.8 413.3 7.6 420 6 C426.7 4.3 433.3 2.4 440 1.5 C446.7 0.6 453.3 0.3 460 0.5 C466.7 0.7 473.3 1.9 480 2.7 C486.7 3.5 493.3 4.8 500 5.3 C506.7 5.9 513.3 6 520 5.9 C526.7 5.8 533.3 5 540 4.8 C546.7 4.6 553.3 4.1 560 4.5 C566.7 4.9 573.3 5.9 580 7.1 C586.7 8.4 593.3 10.5 600 12 C606.7 13.5 613.3 15.3 620 16.1 C626.7 16.8 633.3 17 640 16.7 C646.7 16.4 653.3 15.2 660 14.4 C666.7 13.7 673.3 12.5 680 12.1 C686.7 11.7 693.3 11.8 700 12.2 C706.7 12.5 713.3 13.6 720 14.2 C726.7 14.8 733.3 15.6 740 15.6 C746.7 15.6 753.3 15 760 14.3 C766.7 13.6 773.3 12 780 11.1 C786.7 10.3 793.3 9.2 800 9.1 C806.7 9.1 813.3 9.7 820 10.7 C826.7 11.7 833.3 13.6 840 15.1 C846.7 16.5 853.3 18.3 860 19.3 C866.7 20.2 873.3 20.7 880 20.9 C886.7 21 893.3 20.4 900 20.3 C906.7 20.2 913.3 19.9 920 20.3 C926.7 20.7 933.3 21.6 940 22.7 C946.7 23.7 953.3 25.5 960 26.5 C966.7 27.6 973.3 28.7 980 28.8 C986.7 28.9 993.3 28.3 1000 27.3 C1006.7 26.3 1013.3 24.4 1020 22.9 C1026.7 21.5 1033.3 19.7 1040 18.8 C1046.7 17.8 1053.3 17.4 1060 17.2 C1066.7 17 1073.3 17.5 1080 17.5 C1086.7 17.6 1093.3 17.8 1100 17.2 C1106.7 16.7 1113.3 15.6 1120 14.4 C1126.7 13.2 1133.3 11.2 1140 10 C1146.7 8.9 1153.3 7.6 1160 7.3 C1166.7 7 1173.3 7.4 1180 8.2 C1186.7 8.9 1193.3 10.5 1200 11.6 C1206.7 12.6 1213.3 13.9 1220 14.4 C1226.7 14.8 1233.3 14.7 1240 14.3 C1246.7 14 1253.3 12.8 1260 12.2 C1266.7 11.6 1273.3 10.8 1280 10.7 C1286.7 10.6 1293.3 11.1 1300 11.7 C1306.7 12.3 1313.3 13.5 1320 14 C1326.7 14.6 1333.3 15.1 1340 14.8 C1346.7 14.4 1353.3 13.3 1360 12 C1366.7 10.8 1373.3 8.6 1380 7.1 C1386.7 5.7 1393.3 4.1 1400 3.3 C1406.7 2.6 1413.3 2.6 1420 2.8 C1426.7 3 1433.3 4 1440 4.5 C1446.7 5 1453.3 5.8 1460 5.8 C1466.7 5.9 1476.7 5.1 1480 4.9 L1480 9000 L-40 9000 Z" fill="#155A6E"></path><path d="M-40 20.7 C-36.7 20.9 -26.7 21.1 -20 21.7 C-13.3 22.3 -6.7 23.6 0 24.4 C6.7 25.2 13.3 26.3 20 26.4 C26.7 26.6 33.3 26.1 40 25.2 C46.7 24.3 53.3 22.4 60 20.9 C66.7 19.5 73.3 17.6 80 16.6 C86.7 15.6 93.3 15 100 15 C106.7 14.9 113.3 15.8 120 16.3 C126.7 16.8 133.3 17.8 140 18 C146.7 18.3 153.3 18.1 160 17.6 C166.7 17.2 173.3 16 180 15.3 C186.7 14.6 193.3 13.6 200 13.5 C206.7 13.4 213.3 13.8 220 14.6 C226.7 15.4 233.3 17.1 240 18.3 C246.7 19.5 253.3 21 260 21.6 C266.7 22.1 273.3 22.2 280 21.7 C286.7 21.2 293.3 19.7 300 18.7 C306.7 17.6 313.3 16 320 15.2 C326.7 14.4 333.3 13.9 340 13.8 C346.7 13.7 353.3 14.3 360 14.3 C366.7 14.4 373.3 14.7 380 14.2 C386.7 13.7 393.3 12.6 400 11.2 C406.7 9.8 413.3 7.6 420 6 C426.7 4.3 433.3 2.4 440 1.5 C446.7 0.6 453.3 0.3 460 0.5 C466.7 0.7 473.3 1.9 480 2.7 C486.7 3.5 493.3 4.8 500 5.3 C506.7 5.9 513.3 6 520 5.9 C526.7 5.8 533.3 5 540 4.8 C546.7 4.6 553.3 4.1 560 4.5 C566.7 4.9 573.3 5.9 580 7.1 C586.7 8.4 593.3 10.5 600 12 C606.7 13.5 613.3 15.3 620 16.1 C626.7 16.8 633.3 17 640 16.7 C646.7 16.4 653.3 15.2 660 14.4 C666.7 13.7 673.3 12.5 680 12.1 C686.7 11.7 693.3 11.8 700 12.2 C706.7 12.5 713.3 13.6 720 14.2 C726.7 14.8 733.3 15.6 740 15.6 C746.7 15.6 753.3 15 760 14.3 C766.7 13.6 773.3 12 780 11.1 C786.7 10.3 793.3 9.2 800 9.1 C806.7 9.1 813.3 9.7 820 10.7 C826.7 11.7 833.3 13.6 840 15.1 C846.7 16.5 853.3 18.3 860 19.3 C866.7 20.2 873.3 20.7 880 20.9 C886.7 21 893.3 20.4 900 20.3 C906.7 20.2 913.3 19.9 920 20.3 C926.7 20.7 933.3 21.6 940 22.7 C946.7 23.7 953.3 25.5 960 26.5 C966.7 27.6 973.3 28.7 980 28.8 C986.7 28.9 993.3 28.3 1000 27.3 C1006.7 26.3 1013.3 24.4 1020 22.9 C1026.7 21.5 1033.3 19.7 1040 18.8 C1046.7 17.8 1053.3 17.4 1060 17.2 C1066.7 17 1073.3 17.5 1080 17.5 C1086.7 17.6 1093.3 17.8 1100 17.2 C1106.7 16.7 1113.3 15.6 1120 14.4 C1126.7 13.2 1133.3 11.2 1140 10 C1146.7 8.9 1153.3 7.6 1160 7.3 C1166.7 7 1173.3 7.4 1180 8.2 C1186.7 8.9 1193.3 10.5 1200 11.6 C1206.7 12.6 1213.3 13.9 1220 14.4 C1226.7 14.8 1233.3 14.7 1240 14.3 C1246.7 14 1253.3 12.8 1260 12.2 C1266.7 11.6 1273.3 10.8 1280 10.7 C1286.7 10.6 1293.3 11.1 1300 11.7 C1306.7 12.3 1313.3 13.5 1320 14 C1326.7 14.6 1333.3 15.1 1340 14.8 C1346.7 14.4 1353.3 13.3 1360 12 C1366.7 10.8 1373.3 8.6 1380 7.1 C1386.7 5.7 1393.3 4.1 1400 3.3 C1406.7 2.6 1413.3 2.6 1420 2.8 C1426.7 3 1433.3 4 1440 4.5 C1446.7 5 1453.3 5.8 1460 5.8 C1466.7 5.9 1476.7 5.1 1480 4.9 L1480 9000 L-40 9000 Z" fill="url(#p-granite)" opacity=".5"></path><path d="M-40 20.7 C-36.7 20.9 -26.7 21.1 -20 21.7 C-13.3 22.3 -6.7 23.6 0 24.4 C6.7 25.2 13.3 26.3 20 26.4 C26.7 26.6 33.3 26.1 40 25.2 C46.7 24.3 53.3 22.4 60 20.9 C66.7 19.5 73.3 17.6 80 16.6 C86.7 15.6 93.3 15 100 15 C106.7 14.9 113.3 15.8 120 16.3 C126.7 16.8 133.3 17.8 140 18 C146.7 18.3 153.3 18.1 160 17.6 C166.7 17.2 173.3 16 180 15.3 C186.7 14.6 193.3 13.6 200 13.5 C206.7 13.4 213.3 13.8 220 14.6 C226.7 15.4 233.3 17.1 240 18.3 C246.7 19.5 253.3 21 260 21.6 C266.7 22.1 273.3 22.2 280 21.7 C286.7 21.2 293.3 19.7 300 18.7 C306.7 17.6 313.3 16 320 15.2 C326.7 14.4 333.3 13.9 340 13.8 C346.7 13.7 353.3 14.3 360 14.3 C366.7 14.4 373.3 14.7 380 14.2 C386.7 13.7 393.3 12.6 400 11.2 C406.7 9.8 413.3 7.6 420 6 C426.7 4.3 433.3 2.4 440 1.5 C446.7 0.6 453.3 0.3 460 0.5 C466.7 0.7 473.3 1.9 480 2.7 C486.7 3.5 493.3 4.8 500 5.3 C506.7 5.9 513.3 6 520 5.9 C526.7 5.8 533.3 5 540 4.8 C546.7 4.6 553.3 4.1 560 4.5 C566.7 4.9 573.3 5.9 580 7.1 C586.7 8.4 593.3 10.5 600 12 C606.7 13.5 613.3 15.3 620 16.1 C626.7 16.8 633.3 17 640 16.7 C646.7 16.4 653.3 15.2 660 14.4 C666.7 13.7 673.3 12.5 680 12.1 C686.7 11.7 693.3 11.8 700 12.2 C706.7 12.5 713.3 13.6 720 14.2 C726.7 14.8 733.3 15.6 740 15.6 C746.7 15.6 753.3 15 760 14.3 C766.7 13.6 773.3 12 780 11.1 C786.7 10.3 793.3 9.2 800 9.1 C806.7 9.1 813.3 9.7 820 10.7 C826.7 11.7 833.3 13.6 840 15.1 C846.7 16.5 853.3 18.3 860 19.3 C866.7 20.2 873.3 20.7 880 20.9 C886.7 21 893.3 20.4 900 20.3 C906.7 20.2 913.3 19.9 920 20.3 C926.7 20.7 933.3 21.6 940 22.7 C946.7 23.7 953.3 25.5 960 26.5 C966.7 27.6 973.3 28.7 980 28.8 C986.7 28.9 993.3 28.3 1000 27.3 C1006.7 26.3 1013.3 24.4 1020 22.9 C1026.7 21.5 1033.3 19.7 1040 18.8 C1046.7 17.8 1053.3 17.4 1060 17.2 C1066.7 17 1073.3 17.5 1080 17.5 C1086.7 17.6 1093.3 17.8 1100 17.2 C1106.7 16.7 1113.3 15.6 1120 14.4 C1126.7 13.2 1133.3 11.2 1140 10 C1146.7 8.9 1153.3 7.6 1160 7.3 C1166.7 7 1173.3 7.4 1180 8.2 C1186.7 8.9 1193.3 10.5 1200 11.6 C1206.7 12.6 1213.3 13.9 1220 14.4 C1226.7 14.8 1233.3 14.7 1240 14.3 C1246.7 14 1253.3 12.8 1260 12.2 C1266.7 11.6 1273.3 10.8 1280 10.7 C1286.7 10.6 1293.3 11.1 1300 11.7 C1306.7 12.3 1313.3 13.5 1320 14 C1326.7 14.6 1333.3 15.1 1340 14.8 C1346.7 14.4 1353.3 13.3 1360 12 C1366.7 10.8 1373.3 8.6 1380 7.1 C1386.7 5.7 1393.3 4.1 1400 3.3 C1406.7 2.6 1413.3 2.6 1420 2.8 C1426.7 3 1433.3 4 1440 4.5 C1446.7 5 1453.3 5.8 1460 5.8 C1466.7 5.9 1476.7 5.1 1480 4.9" stroke="#1C2B22" stroke-width="2" fill="none" stroke-linejoin="round"></path></svg><div class="band-in d-foot"><p class="brand">gridflow</p><p class="d-fnote">An open-source pipeline for UK and European power, gas, weather and carbon data, under the Apache-2.0 licence. The models live in <code>gridflow-models</code>.</p><nav aria-label="Footer"><ul><li><a href="#">Home</a></li><li><a href="#">Data sources</a></li><li><a href="#">Architecture</a></li><li><a href="#">Models</a></li><li><a href="#">About</a></li></ul></nav></div></footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2805}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

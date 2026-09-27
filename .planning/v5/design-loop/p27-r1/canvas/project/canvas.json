@@ -1,0 +1,268 @@
+{
+ "v": 3,
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-09-27T07:20:32Z"
+ },
+ "title": "v5 top pages loop",
+ "launch": {
+  "view": "canvas"
+ },
+ "pages": [],
+ "boards": {
+  "A-data-sources.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1440,
+   "h": 2589,
+   "title": "A data-sources"
+  },
+  "A-vendor-elexon.dc.html": {
+   "x": 1520,
+   "y": 0,
+   "w": 1440,
+   "h": 3736,
+   "title": "A vendor-elexon"
+  },
+  "A-architecture.dc.html": {
+   "x": 3040,
+   "y": 0,
+   "w": 1440,
+   "h": 3800,
+   "title": "A architecture"
+  },
+  "A-models.dc.html": {
+   "x": 4560,
+   "y": 0,
+   "w": 1440,
+   "h": 2699,
+   "title": "A models"
+  },
+  "B-data-sources.dc.html": {
+   "x": 0,
+   "y": 4320,
+   "w": 1440,
+   "h": 2654,
+   "title": "B data-sources"
+  },
+  "B-vendor-elexon.dc.html": {
+   "x": 1520,
+   "y": 4320,
+   "w": 1440,
+   "h": 4056,
+   "title": "B vendor-elexon"
+  },
+  "B-architecture.dc.html": {
+   "x": 3040,
+   "y": 4320,
+   "w": 1440,
+   "h": 4359,
+   "title": "B architecture"
+  },
+  "B-models.dc.html": {
+   "x": 4560,
+   "y": 4320,
+   "w": 1440,
+   "h": 4429,
+   "title": "B models"
+  },
+  "C-data-sources.dc.html": {
+   "x": 0,
+   "y": 9269,
+   "w": 1440,
+   "h": 5482,
+   "title": "C data-sources"
+  },
+  "C-vendor-elexon.dc.html": {
+   "x": 1520,
+   "y": 9269,
+   "w": 1440,
+   "h": 3828,
+   "title": "C vendor-elexon"
+  },
+  "C-architecture.dc.html": {
+   "x": 3040,
+   "y": 9269,
+   "w": 1440,
+   "h": 5706,
+   "title": "C architecture"
+  },
+  "C-models.dc.html": {
+   "x": 4560,
+   "y": 9269,
+   "w": 1440,
+   "h": 4666,
+   "title": "C models"
+  },
+  "D-data-sources.dc.html": {
+   "x": 0,
+   "y": 15495,
+   "w": 1440,
+   "h": 2154,
+   "title": "D data-sources"
+  },
+  "D-vendor-elexon.dc.html": {
+   "x": 1520,
+   "y": 15495,
+   "w": 1440,
+   "h": 2805,
+   "title": "D vendor-elexon"
+  },
+  "D-architecture.dc.html": {
+   "x": 3040,
+   "y": 15495,
+   "w": 1440,
+   "h": 3394,
+   "title": "D architecture"
+  },
+  "D-models.dc.html": {
+   "x": 4560,
+   "y": 15495,
+   "w": 1440,
+   "h": 2658,
+   "title": "D models"
+  },
+  "E-data-sources.dc.html": {
+   "x": 0,
+   "y": 19409,
+   "w": 1440,
+   "h": 5265,
+   "title": "E data-sources"
+  },
+  "E-vendor-elexon.dc.html": {
+   "x": 1520,
+   "y": 19409,
+   "w": 1440,
+   "h": 5551,
+   "title": "E vendor-elexon"
+  },
+  "E-architecture.dc.html": {
+   "x": 3040,
+   "y": 19409,
+   "w": 1440,
+   "h": 5043,
+   "title": "E architecture"
+  },
+  "E-models.dc.html": {
+   "x": 4560,
+   "y": 19409,
+   "w": 1440,
+   "h": 5485,
+   "title": "E models"
+  }
+ },
+ "order": [
+  "A-data-sources.dc.html",
+  "A-vendor-elexon.dc.html",
+  "A-architecture.dc.html",
+  "A-models.dc.html",
+  "B-data-sources.dc.html",
+  "B-vendor-elexon.dc.html",
+  "B-architecture.dc.html",
+  "B-models.dc.html",
+  "C-data-sources.dc.html",
+  "C-vendor-elexon.dc.html",
+  "C-architecture.dc.html",
+  "C-models.dc.html",
+  "D-data-sources.dc.html",
+  "D-vendor-elexon.dc.html",
+  "D-architecture.dc.html",
+  "D-models.dc.html",
+  "E-data-sources.dc.html",
+  "E-vendor-elexon.dc.html",
+  "E-architecture.dc.html",
+  "E-models.dc.html"
+ ],
+ "notes": {
+  "tA": {
+   "x": 0,
+   "y": -300,
+   "text": "A: Sections",
+   "kind": "title1",
+   "maxW": 5920
+  },
+  "mA": {
+   "x": -800,
+   "y": 0,
+   "text": "A: Sections\nEach top page is its own geological section under the homepage sky; a cable runs from each drawn asset down through the strata to the entry it feeds. Data sources: a west-to-east section through GB, the North Sea and the continent, vendors staggered along their cables in bronze. Architecture: four feeds spliced into one trunk, real paths per layer, build and gates in the deep. Models: input taps in silver, the five models in gold.",
+   "w": 680,
+   "maxH": 1200,
+   "size": "m",
+   "fill": "teal"
+  },
+  "tB": {
+   "x": 0,
+   "y": 4020,
+   "text": "B: Keyed atlas",
+   "kind": "title1",
+   "maxW": 5920
+  },
+  "mB": {
+   "x": -800,
+   "y": 4320,
+   "text": "B: Keyed atlas\nOne large drawing of the real system per page, with a narrow keyed index whose marks are copied from the parts they name and set level with them. Data sources: Ireland to the Continent keyed to 7 vendors. Elexon: a GB panorama keyed to 5 groups, then all 33 listed. Architecture: a cutaway of the store keyed to 10 paths and commands. Models: the merit order as terraces flooded by residual demand.",
+   "w": 680,
+   "maxH": 1200,
+   "size": "m",
+   "fill": "teal"
+  },
+  "tC": {
+   "x": 0,
+   "y": 8969,
+   "text": "C: Field guide",
+   "kind": "title1",
+   "maxW": 5920
+  },
+  "mC": {
+   "x": -800,
+   "y": 9269,
+   "text": "C: Field guide\nTypographic reference docs: entries set like species accounts and dense ruled table lists carry the identity; drawing held to a shallow horizon strip and one plate per page. Data sources: seven vendor accounts, the dataset key in four groups (power, gas, weather, carbon). Architecture: a precise written walk with real names in mono. Models: five entries with target, method, horizon and status as it stands.",
+   "w": 680,
+   "maxH": 1200,
+   "size": "m",
+   "fill": "teal"
+  },
+  "tD": {
+   "x": 0,
+   "y": 15195,
+   "text": "D: From the workbench",
+   "kind": "title1",
+   "maxW": 5920
+  },
+  "mD": {
+   "x": -800,
+   "y": 15495,
+   "text": "D: From the workbench\nEach page opens the gridflow-models notebook at the first cell a practitioner would run, with the plain-English account beside it. Data sources: the data handle's help card beside vendor entries. Elexon: data.elexon's card beside the grouped list. Architecture: system_prices followed down the strata, one cell per layer. Models: print(models) and the demand band plot beside five entries.",
+   "w": 680,
+   "maxH": 1200,
+   "size": "m",
+   "fill": "teal"
+  },
+  "tE": {
+   "x": 0,
+   "y": 19109,
+   "text": "E: Survey sheets",
+   "kind": "title1",
+   "maxW": 5920
+  },
+  "mE": {
+   "x": -800,
+   "y": 19409,
+   "text": "E: Survey sheets\nEvery top page is one survey sheet with the same grounds holding the same blocks: sky (title, answer line), topsoil plate (keyed index + drawing, ends by ~930 px), bronze register, silver specimen, gold (reach it from code, how it is checked), deep (limits, sources). Data sources plate: one day cut at each vendor's publication grain.",
+   "w": 680,
+   "maxH": 1200,
+   "size": "m",
+   "fill": "teal"
+  },
+  "intro": {
+   "x": -800,
+   "y": -1100,
+   "w": 680,
+   "maxH": 700,
+   "size": "m",
+   "fill": "orange",
+   "text": "Round 1 of the top pages (no picks made). Five directions, each drawn for the data-sources landing, the vendor-hub pattern (Elexon), architecture and a five-model landing. Facts come from one verified pack. [N datasets] and [n] are placeholders until the page-set ruling. The Elexon grouping by theme is a proposal. All prose is new copy awaiting approval."
+  }
+ },
+ "designSystems": []
+}

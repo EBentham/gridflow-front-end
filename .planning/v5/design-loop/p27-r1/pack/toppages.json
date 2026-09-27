@@ -1,0 +1,4743 @@
+{
+ "generated": "2026-09-27T00:20Z",
+ "snapshot_warning": "Local silver was being updated by another agent while this pack was built (e.g. elexon/agws gained 2021-2026 history between two scans). Silver counts and windows are a snapshot at about 2026-09-27T00:10Z.",
+ "data_sources": {
+  "vendors": [
+   {
+    "vendor": "Elexon BMRS (Insights API)",
+    "hub_slug": "elexon",
+    "vault_dir": "30-vendors/elexon",
+    "source_keys": [
+     "elexon"
+    ],
+    "publishes": "GB electricity balancing mechanism data: system prices, generation outturn, BM-unit data, demand and wind forecasts (vault README).",
+    "market": "GB electricity",
+    "auth_required": false,
+    "auth_evidence": "config/sources.yaml api_key_env ''; vault README: every dataset returned HTTP 200 with no key (verified 2026-05-08)",
+    "base_url": "https://data.elexon.co.uk/bmrs/api/v1",
+    "connector": [
+     "src/gridflow/connectors/elexon/client.py:377 (register_connector)",
+     "src/gridflow/connectors/elexon/endpoints.py:56 (ENDPOINTS)"
+    ],
+    "grain": "Half-hourly settlement periods (1..50 per day, 46/50 on clock-change days); FUELINST is instantaneous (5-minute) outturn; some datasets are daily publications or 2-14 day forecasts.",
+    "history_evidence": "Local silver reaches back to 2021-08-31/09-01 for fuelhh, indo, mid, system_prices, windfor and agws; the other 27 datasets hold data from about 2026-08-01 (nonbm holds 5 rows, bmunits_reference is a single reference snapshot). Vendor-side history depth is not stated in the vault.",
+    "representative": [
+     [
+      "system_prices",
+      "System sell and buy price per settlement period (SSP equals SBP on all 88,694 latest-vintage rows 2021-09-01..2026-09-22: a single imbalance price)."
+     ],
+     [
+      "fuelhh",
+      "Half-hourly generation outturn by fuel type; contains no SOLAR fuel type (zero rows 2021-08-31 to 2026-09-26)."
+     ],
+     [
+      "indo",
+      "Initial National Demand Outturn, half-hourly; the target of the demand model."
+     ],
+     [
+      "mid",
+      "Market Index Data; its APXMIDP provider is the GB day-ahead benchmark used by gridflow and the SMP model."
+     ],
+     [
+      "remit",
+      "REMIT outage and unavailability messages."
+     ]
+    ],
+    "counts": {
+     "configured_in_gridflow": 33,
+     "vault_dataset_notes": 33,
+     "rendered_pages_on_current_site": 33,
+     "local_silver_present": 33,
+     "note": "Headline count will change after the page-set ruling (families + dropping non-ingested stubs). Do not hard-code a number into a design."
+    },
+    "datasets": [
+     {
+      "key": "system_prices",
+      "source_key": "elexon",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/balancing/settlement/system-prices",
+      "local_silver": true,
+      "silver_rows": 96793,
+      "event_time_min": "2021-08-31 23:00",
+      "event_time_max": "2026-09-22 22:30",
+      "silver_view": "silver_elexon_system_prices"
+     },
+     {
+      "key": "boal",
+      "source_key": "elexon",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/datasets/BOALF",
+      "local_silver": true,
+      "silver_rows": 199565,
+      "event_time_min": "2026-08-01 00:00",
+      "event_time_max": "2026-09-22 00:00",
+      "silver_view": "silver_elexon_boal"
+     },
+     {
+      "key": "disbsad",
+      "source_key": "elexon",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/datasets/DISBSAD",
+      "local_silver": true,
+      "silver_rows": 8116,
+      "event_time_min": "2026-08-01 00:00",
+      "event_time_max": "2026-09-22 00:00",
+      "silver_view": "silver_elexon_disbsad"
+     },
+     {
+      "key": "freq",
+      "source_key": "elexon",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/datasets/FREQ",
+      "local_silver": true,
+      "silver_rows": 80654,
+      "event_time_min": "2026-08-01 00:00",
+      "event_time_max": "2026-09-22 00:00",
+      "silver_view": "silver_elexon_freq"
+     },
+     {
+      "key": "fuelhh",
+      "source_key": "elexon",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/datasets/FUELHH",
+      "local_silver": true,
+      "silver_rows": 1682517,
+      "event_time_min": "2021-08-31 23:30",
+      "event_time_max": "2026-09-26 22:30",
+      "silver_view": "silver_elexon_fuelhh"
+     },
+     {
+      "key": "fuelinst",
+      "source_key": "elexon",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/datasets/FUELINST",
+      "local_silver": true,
+      "silver_rows": 80920,
+      "event_time_min": "2026-08-01 00:00",
+      "event_time_max": "2026-09-22 00:00",
+      "silver_view": "silver_elexon_fuelinst"
+     },
+     {
+      "key": "imbalngc",
+      "source_key": "elexon",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/datasets/IMBALNGC",
+      "local_silver": true,
+      "silver_rows": 1442,
+      "event_time_min": "2026-08-01 00:30",
+      "event_time_max": "2026-09-23 03:30",
+      "silver_view": "silver_elexon_imbalngc"
+     },
+     {
+      "key": "mid",
+      "source_key": "elexon",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/datasets/MID",
+      "local_silver": true,
+      "silver_rows": 176286,
+      "event_time_min": "2021-09-01 00:00",
+      "event_time_max": "2026-09-22 00:00",
+      "silver_view": "silver_elexon_mid"
+     },
+     {
+      "key": "netbsad",
+      "source_key": "elexon",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/datasets/NETBSAD",
+      "local_silver": true,
+      "silver_rows": 686,
+      "event_time_min": "2026-08-01 00:00",
+      "event_time_max": "2026-09-22 00:00",
+      "silver_view": "silver_elexon_netbsad"
+     },
+     {
+      "key": "ndf",
+      "source_key": "elexon",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/datasets/NDF",
+      "local_silver": true,
+      "silver_rows": 39424,
+      "event_time_min": "2026-08-01 00:30",
+      "event_time_max": "2026-09-23 03:30",
+      "silver_view": "silver_elexon_ndf"
+     },
+     {
+      "key": "ndfd",
+      "source_key": "elexon",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/datasets/NDFD",
+      "local_silver": true,
+      "silver_rows": 156,
+      "event_time_min": "2026-08-02 23:00",
+      "event_time_max": "2026-10-04 23:00",
+      "silver_view": "silver_elexon_ndfd"
+     },
+     {
+      "key": "pn",
+      "source_key": "elexon",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/datasets/PN",
+      "local_silver": true,
+      "silver_rows": 1850886,
+      "event_time_min": "2026-07-31 23:00",
+      "event_time_max": "2026-09-22 22:30",
+      "silver_view": "silver_elexon_pn"
+     },
+     {
+      "key": "melngc",
+      "source_key": "elexon",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/datasets/MELNGC",
+      "local_silver": true,
+      "silver_rows": 1442,
+      "event_time_min": "2026-08-01 00:30",
+      "event_time_max": "2026-09-23 03:30",
+      "silver_view": "silver_elexon_melngc"
+     },
+     {
+      "key": "fou2t14d",
+      "source_key": "elexon",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/datasets/FOU2T14D",
+      "local_silver": true,
+      "silver_rows": 83239,
+      "event_time_min": "2026-08-03 00:00",
+      "event_time_max": "2026-10-06 00:00",
+      "silver_view": "silver_elexon_fou2t14d"
+     },
+     {
+      "key": "uou2t14d",
+      "source_key": "elexon",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/datasets/UOU2T14D",
+      "local_silver": true,
+      "silver_rows": 92232,
+      "event_time_min": "2026-08-03 00:00",
+      "event_time_max": "2026-10-06 00:00",
+      "silver_view": "silver_elexon_uou2t14d"
+     },
+     {
+      "key": "windfor",
+      "source_key": "elexon",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/datasets/WINDFOR",
+      "local_silver": true,
+      "silver_rows": 839107,
+      "event_time_min": "2021-09-01 20:00",
+      "event_time_max": "2026-09-28 20:00",
+      "silver_view": "silver_elexon_windfor"
+     },
+     {
+      "key": "temp",
+      "source_key": "elexon",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/datasets/TEMP",
+      "local_silver": true,
+      "silver_rows": 14,
+      "event_time_min": "2026-08-01 15:45",
+      "event_time_max": "2026-09-21 15:45",
+      "silver_view": "silver_elexon_temp"
+     },
+     {
+      "key": "agpt",
+      "source_key": "elexon",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/datasets/AGPT",
+      "local_silver": true,
+      "silver_rows": 7392,
+      "event_time_min": "2026-07-31 22:00",
+      "event_time_max": "2026-09-21 21:30",
+      "silver_view": "silver_elexon_agpt"
+     },
+     {
+      "key": "agws",
+      "source_key": "elexon",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/datasets/AGWS",
+      "local_silver": true,
+      "silver_rows": 251556,
+      "event_time_min": "2021-08-31 22:00",
+      "event_time_max": "2026-09-26 21:00",
+      "silver_view": "silver_elexon_agws"
+     },
+     {
+      "key": "atl",
+      "source_key": "elexon",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/datasets/ATL",
+      "local_silver": true,
+      "silver_rows": 403,
+      "event_time_min": "2026-08-01 00:00",
+      "event_time_max": "2026-09-21 22:00",
+      "silver_view": "silver_elexon_atl"
+     },
+     {
+      "key": "indo",
+      "source_key": "elexon",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/datasets/INDO",
+      "local_silver": true,
+      "silver_rows": 88315,
+      "event_time_min": "2021-08-30 23:30",
+      "event_time_max": "2026-09-21 23:30",
+      "silver_view": "silver_elexon_indo"
+     },
+     {
+      "key": "itsdo",
+      "source_key": "elexon",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/datasets/ITSDO",
+      "local_silver": true,
+      "silver_rows": 674,
+      "event_time_min": "2026-07-31 23:30",
+      "event_time_max": "2026-09-21 23:30",
+      "silver_view": "silver_elexon_itsdo"
+     },
+     {
+      "key": "indod",
+      "source_key": "elexon",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/datasets/INDOD",
+      "local_silver": true,
+      "silver_rows": 14,
+      "event_time_min": "2026-07-31 23:00",
+      "event_time_max": "2026-09-20 23:00",
+      "silver_view": "silver_elexon_indod"
+     },
+     {
+      "key": "nonbm",
+      "source_key": "elexon",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/datasets/NONBM",
+      "local_silver": true,
+      "silver_rows": 5,
+      "event_time_min": "2026-04-01 09:30",
+      "event_time_max": "2026-04-01 09:30",
+      "silver_view": "silver_elexon_nonbm"
+     },
+     {
+      "key": "inddem",
+      "source_key": "elexon",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/datasets/INDDEM",
+      "local_silver": true,
+      "silver_rows": 25956,
+      "event_time_min": "2026-08-01 00:30",
+      "event_time_max": "2026-09-23 03:30",
+      "silver_view": "silver_elexon_inddem"
+     },
+     {
+      "key": "indgen",
+      "source_key": "elexon",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/datasets/INDGEN",
+      "local_silver": true,
+      "silver_rows": 25956,
+      "event_time_min": "2026-08-01 00:30",
+      "event_time_max": "2026-09-23 03:30",
+      "silver_view": "silver_elexon_indgen"
+     },
+     {
+      "key": "tsdf",
+      "source_key": "elexon",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/datasets/TSDF",
+      "local_silver": true,
+      "silver_rows": 25956,
+      "event_time_min": "2026-08-01 00:30",
+      "event_time_max": "2026-09-23 03:30",
+      "silver_view": "silver_elexon_tsdf"
+     },
+     {
+      "key": "tsdfd",
+      "source_key": "elexon",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/datasets/TSDFD",
+      "local_silver": true,
+      "silver_rows": 156,
+      "event_time_min": "2026-08-03 00:00",
+      "event_time_max": "2026-10-05 00:00",
+      "silver_view": "silver_elexon_tsdfd"
+     },
+     {
+      "key": "lolpdrm",
+      "source_key": "elexon",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/datasets/LOLPDRM",
+      "local_silver": true,
+      "silver_rows": 1428,
+      "event_time_min": "2026-08-01 01:00",
+      "event_time_max": "2026-09-23 03:30",
+      "silver_view": "silver_elexon_lolpdrm"
+     },
+     {
+      "key": "remit",
+      "source_key": "elexon",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/datasets/REMIT",
+      "local_silver": true,
+      "silver_rows": 2291,
+      "event_time_min": "2026-08-01 00:50",
+      "event_time_max": "2026-09-21 23:13",
+      "silver_view": "silver_elexon_remit"
+     },
+     {
+      "key": "soso",
+      "source_key": "elexon",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/datasets/SOSO",
+      "local_silver": true,
+      "silver_rows": 20256,
+      "event_time_min": "2026-08-01 02:00",
+      "event_time_max": "2026-09-22 01:00",
+      "silver_view": "silver_elexon_soso"
+     },
+     {
+      "key": "market_depth",
+      "source_key": "elexon",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/balancing/settlement/market-depth",
+      "local_silver": true,
+      "silver_rows": 768,
+      "event_time_min": "2026-07-31 23:00",
+      "event_time_max": "2026-09-22 22:30",
+      "silver_view": "silver_elexon_market_depth"
+     },
+     {
+      "key": "bmunits_reference",
+      "source_key": "elexon",
+      "declared_schedule_hint": "weekly",
+      "endpoint": "/reference/bmunits/all",
+      "local_silver": true,
+      "silver_rows": 3014,
+      "event_time_min": "2026-09-26 00:00",
+      "event_time_max": "2026-09-26 00:00",
+      "silver_view": "silver_elexon_bmunits_reference"
+     }
+    ]
+   },
+   {
+    "vendor": "ENTSO-E Transparency Platform",
+    "hub_slug": "entsoe",
+    "vault_dir": "30-vendors/entsoe",
+    "source_keys": [
+     "entsoe"
+    ],
+    "publishes": "EU electricity: day-ahead prices, actual and forecast load, generation per type, cross-border flows, outages, installed capacity, transmission and capacity allocation, balancing (vault README).",
+    "market": "EU electricity (configured zones GB, FR, NL, BE, DE-LU, IE-SEM; control area GB)",
+    "auth_required": true,
+    "auth_evidence": "ENTSOE_API_KEY, sent as the securityToken query parameter (sources.yaml; vault README)",
+    "base_url": "https://web-api.tp.entsoe.eu",
+    "connector": [
+     "src/gridflow/connectors/entsoe/client.py:585 (register_connector)",
+     "src/gridflow/connectors/entsoe/endpoints.py (DOC_TYPES, DEFAULT_ZONES)"
+    ],
+    "grain": "XML time series; day_ahead_prices silver holds 15-minute rows for DE-LU, BE, FR, NL and hourly rows for IE-SEM.",
+    "history_evidence": "Vault README: vendor history 'about 5 years on most datasets'. Local silver mostly from 2026-08-01 (outage datasets carry event times from 2015 to 2077 because they describe planned unavailability windows).",
+    "gb_caveat": "Local day_ahead_prices silver has no GB rows (area codes present: DE-LU, BE, FR, NL, IE-SEM). gold/views/gb_day_ahead_benchmark.sql uses Elexon MID APXMIDP because ENTSO-E GB day-ahead is empty post-Brexit. Do not show GB prices sourced from ENTSO-E.",
+    "representative": [
+     [
+      "day_ahead_prices",
+      "Day-ahead prices (EUR/MWh) per bidding zone."
+     ],
+     [
+      "actual_generation",
+      "Actual generation per production type."
+     ],
+     [
+      "actual_load",
+      "Actual total load."
+     ],
+     [
+      "cross_border_flows",
+      "Physical cross-border flows."
+     ],
+     [
+      "wind_solar_forecast",
+      "Day-ahead wind and solar forecast."
+     ]
+    ],
+    "counts": {
+     "configured_in_gridflow": 47,
+     "vault_dataset_notes": 49,
+     "rendered_pages_on_current_site": 49,
+     "local_silver_present": 31,
+     "note": "Headline count will change after the page-set ruling (families + dropping non-ingested stubs). Do not hard-code a number into a design."
+    },
+    "datasets": [
+     {
+      "key": "day_ahead_prices",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": true,
+      "silver_rows": 10054,
+      "event_time_min": "2026-08-01 00:00",
+      "event_time_max": "2026-09-21 23:45",
+      "silver_view": "silver_entsoe_day_ahead_prices"
+     },
+     {
+      "key": "actual_load",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": true,
+      "silver_rows": 9191,
+      "event_time_min": "2026-08-01 00:00",
+      "event_time_max": "2026-09-20 23:45",
+      "silver_view": "silver_entsoe_actual_load"
+     },
+     {
+      "key": "load_forecast",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": true,
+      "silver_rows": 9216,
+      "event_time_min": "2026-08-01 00:00",
+      "event_time_max": "2026-09-20 23:45",
+      "silver_view": "silver_entsoe_load_forecast"
+     },
+     {
+      "key": "actual_generation",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": true,
+      "silver_rows": 100831,
+      "event_time_min": "2026-08-01 00:00",
+      "event_time_max": "2026-09-20 23:45",
+      "silver_view": "silver_entsoe_actual_generation"
+     },
+     {
+      "key": "wind_solar_forecast",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": true,
+      "silver_rows": 22665,
+      "event_time_min": "2026-08-01 00:00",
+      "event_time_max": "2026-09-20 23:45",
+      "silver_view": "silver_entsoe_wind_solar_forecast"
+     },
+     {
+      "key": "cross_border_flows",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": true,
+      "silver_rows": 10855,
+      "event_time_min": "2026-08-01 00:00",
+      "event_time_max": "2026-09-20 23:45",
+      "silver_view": "silver_entsoe_cross_border_flows"
+     },
+     {
+      "key": "outages_generation",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": true,
+      "silver_rows": 11011,
+      "event_time_min": "2015-11-15 00:00",
+      "event_time_max": "2069-06-26 11:00",
+      "silver_view": "silver_entsoe_outages_generation"
+     },
+     {
+      "key": "outages_consumption",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": true,
+      "silver_rows": 1738,
+      "event_time_min": "2026-08-01 00:00",
+      "event_time_max": "2026-09-20 23:45",
+      "silver_view": "silver_entsoe_outages_consumption"
+     },
+     {
+      "key": "outages_transmission",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": true,
+      "silver_rows": 3981,
+      "event_time_min": "2025-01-11 06:30",
+      "event_time_max": "2052-10-08 03:00",
+      "silver_view": "silver_entsoe_outages_transmission"
+     },
+     {
+      "key": "outages_offshore_grid",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": false,
+      "silver_rows": null,
+      "event_time_min": null,
+      "event_time_max": null,
+      "silver_view": null
+     },
+     {
+      "key": "outages_production",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": true,
+      "silver_rows": 3551,
+      "event_time_min": "2024-12-31 23:00",
+      "event_time_max": "2077-01-02 23:00",
+      "silver_view": "silver_entsoe_outages_production"
+     },
+     {
+      "key": "installed_capacity",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "weekly",
+      "endpoint": null,
+      "local_silver": true,
+      "silver_rows": 804,
+      "event_time_min": "2025-12-31 23:00",
+      "event_time_max": "2025-12-31 23:00",
+      "silver_view": "silver_entsoe_installed_capacity"
+     },
+     {
+      "key": "installed_capacity_units",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "yearly",
+      "endpoint": null,
+      "local_silver": true,
+      "silver_rows": 7668,
+      "event_time_min": "2025-12-31 23:00",
+      "event_time_max": "2025-12-31 23:00",
+      "silver_view": "silver_entsoe_installed_capacity_units"
+     },
+     {
+      "key": "generation_forecast",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": true,
+      "silver_rows": 5830,
+      "event_time_min": "2026-08-01 00:00",
+      "event_time_max": "2026-09-21 23:45",
+      "silver_view": "silver_entsoe_generation_forecast"
+     },
+     {
+      "key": "actual_generation_units",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": true,
+      "silver_rows": 229612,
+      "event_time_min": "2026-08-01 00:00",
+      "event_time_max": "2026-09-21 23:45",
+      "silver_view": "silver_entsoe_actual_generation_units"
+     },
+     {
+      "key": "water_reservoirs",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": true,
+      "silver_rows": 18,
+      "event_time_min": "2026-07-26 22:00",
+      "event_time_max": "2026-09-13 22:00",
+      "silver_view": "silver_entsoe_water_reservoirs"
+     },
+     {
+      "key": "generation_units_master_data",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "weekly",
+      "endpoint": null,
+      "local_silver": true,
+      "silver_rows": 1317,
+      "event_time_min": "2026-08-01 00:00",
+      "event_time_max": "2026-09-08 00:00",
+      "silver_view": "silver_entsoe_generation_units_master_data"
+     },
+     {
+      "key": "load_forecast_weekly",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "weekly",
+      "endpoint": null,
+      "local_silver": true,
+      "silver_rows": 48,
+      "event_time_min": "2026-07-31 22:00",
+      "event_time_max": "2026-09-13 22:00",
+      "silver_view": "silver_entsoe_load_forecast_weekly"
+     },
+     {
+      "key": "load_forecast_monthly",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "monthly",
+      "endpoint": null,
+      "local_silver": true,
+      "silver_rows": 48,
+      "event_time_min": "2026-07-26 22:00",
+      "event_time_max": "2026-09-13 22:00",
+      "silver_view": "silver_entsoe_load_forecast_monthly"
+     },
+     {
+      "key": "load_forecast_yearly",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "yearly",
+      "endpoint": null,
+      "local_silver": true,
+      "silver_rows": 48,
+      "event_time_min": "2026-07-26 22:00",
+      "event_time_max": "2026-09-13 22:00",
+      "silver_view": "silver_entsoe_load_forecast_yearly"
+     },
+     {
+      "key": "forecast_margin",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "yearly",
+      "endpoint": null,
+      "local_silver": true,
+      "silver_rows": 48,
+      "event_time_min": "2025-12-31 23:00",
+      "event_time_max": "2025-12-31 23:00",
+      "silver_view": "silver_entsoe_forecast_margin"
+     },
+     {
+      "key": "net_transfer_capacity",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": true,
+      "silver_rows": 2736,
+      "event_time_min": "2026-08-01 00:00",
+      "event_time_max": "2026-09-21 23:00",
+      "silver_view": "silver_entsoe_net_transfer_capacity"
+     },
+     {
+      "key": "dc_link_intraday_transfer_limits",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": true,
+      "silver_rows": 24,
+      "event_time_min": "2026-08-01 00:00",
+      "event_time_max": "2026-08-05 23:00",
+      "silver_view": "silver_entsoe_dc_link_intraday_transfer_limits"
+     },
+     {
+      "key": "commercial_schedules",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": true,
+      "silver_rows": 9110,
+      "event_time_min": "2026-08-01 00:00",
+      "event_time_max": "2026-09-21 23:45",
+      "silver_view": "silver_entsoe_commercial_schedules"
+     },
+     {
+      "key": "redispatching_cross_border",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": false,
+      "silver_rows": null,
+      "event_time_min": null,
+      "event_time_max": null,
+      "silver_view": null
+     },
+     {
+      "key": "redispatching_internal",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": true,
+      "silver_rows": 1909,
+      "event_time_min": "2026-08-01 00:00",
+      "event_time_max": "2026-09-21 23:45",
+      "silver_view": "silver_entsoe_redispatching_internal"
+     },
+     {
+      "key": "countertrading",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": false,
+      "silver_rows": null,
+      "event_time_min": null,
+      "event_time_max": null,
+      "silver_view": null
+     },
+     {
+      "key": "congestion_management_costs",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": false,
+      "silver_rows": null,
+      "event_time_min": null,
+      "event_time_max": null,
+      "silver_view": null
+     },
+     {
+      "key": "offered_transfer_capacity_continuous",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": false,
+      "silver_rows": null,
+      "event_time_min": null,
+      "event_time_max": null,
+      "silver_view": null
+     },
+     {
+      "key": "offered_transfer_capacity_implicit",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": false,
+      "silver_rows": null,
+      "event_time_min": null,
+      "event_time_max": null,
+      "silver_view": null
+     },
+     {
+      "key": "offered_transfer_capacity_explicit",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": false,
+      "silver_rows": null,
+      "event_time_min": null,
+      "event_time_max": null,
+      "silver_view": null
+     },
+     {
+      "key": "auction_revenue",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": true,
+      "silver_rows": 1296,
+      "event_time_min": "2026-07-31 22:00",
+      "event_time_max": "2026-09-22 21:00",
+      "silver_view": "silver_entsoe_auction_revenue"
+     },
+     {
+      "key": "transfer_capacity_use",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": false,
+      "silver_rows": null,
+      "event_time_min": null,
+      "event_time_max": null,
+      "silver_view": null
+     },
+     {
+      "key": "total_nominated_capacity",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": true,
+      "silver_rows": 2352,
+      "event_time_min": "2026-08-01 00:00",
+      "event_time_max": "2026-09-21 23:45",
+      "silver_view": "silver_entsoe_total_nominated_capacity"
+     },
+     {
+      "key": "total_capacity_allocated",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": true,
+      "silver_rows": 1922,
+      "event_time_min": "2026-08-01 00:00",
+      "event_time_max": "2026-09-21 23:00",
+      "silver_view": "silver_entsoe_total_capacity_allocated"
+     },
+     {
+      "key": "congestion_income",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": false,
+      "silver_rows": null,
+      "event_time_min": null,
+      "event_time_max": null,
+      "silver_view": null
+     },
+     {
+      "key": "net_positions",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": true,
+      "silver_rows": 5376,
+      "event_time_min": "2026-08-01 00:00",
+      "event_time_max": "2026-09-21 23:45",
+      "silver_view": "silver_entsoe_net_positions"
+     },
+     {
+      "key": "imbalance_prices",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": false,
+      "silver_rows": null,
+      "event_time_min": null,
+      "event_time_max": null,
+      "silver_view": null
+     },
+     {
+      "key": "imbalance_volume",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": false,
+      "silver_rows": null,
+      "event_time_min": null,
+      "event_time_max": null,
+      "silver_view": null
+     },
+     {
+      "key": "activated_balancing_prices",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": false,
+      "silver_rows": null,
+      "event_time_min": null,
+      "event_time_max": null,
+      "silver_view": null
+     },
+     {
+      "key": "contracted_reserves",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": false,
+      "silver_rows": null,
+      "event_time_min": null,
+      "event_time_max": null,
+      "silver_view": null
+     },
+     {
+      "key": "current_balancing_state",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": true,
+      "silver_rows": 9414,
+      "event_time_min": "2026-08-01 00:00",
+      "event_time_max": "2026-08-25 08:15",
+      "silver_view": "silver_entsoe_current_balancing_state"
+     },
+     {
+      "key": "balancing_energy_bids",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": true,
+      "silver_rows": 81563,
+      "event_time_min": "2026-08-01 00:00",
+      "event_time_max": "2026-09-21 21:45",
+      "silver_view": "silver_entsoe_balancing_energy_bids"
+     },
+     {
+      "key": "aggregated_balancing_energy_bids",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": false,
+      "silver_rows": null,
+      "event_time_min": null,
+      "event_time_max": null,
+      "silver_view": null
+     },
+     {
+      "key": "procured_balancing_capacity",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": true,
+      "silver_rows": 440,
+      "event_time_min": "2026-08-01 00:00",
+      "event_time_max": "2026-08-05 21:45",
+      "silver_view": "silver_entsoe_procured_balancing_capacity"
+     },
+     {
+      "key": "cross_zonal_balancing_capacity",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "daily",
+      "endpoint": null,
+      "local_silver": false,
+      "silver_rows": null,
+      "event_time_min": null,
+      "event_time_max": null,
+      "silver_view": null
+     },
+     {
+      "key": "balancing_financial_expenses_income",
+      "source_key": "entsoe",
+      "declared_schedule_hint": "monthly",
+      "endpoint": null,
+      "local_silver": false,
+      "silver_rows": null,
+      "event_time_min": null,
+      "event_time_max": null,
+      "silver_view": null
+     }
+    ]
+   },
+   {
+    "vendor": "ENTSO-G Transparency Platform",
+    "hub_slug": "entsog",
+    "vault_dir": "30-vendors/entsog",
+    "source_keys": [
+     "entsog"
+    ],
+    "publishes": "European gas physical flows, nominations, allocations, contractual capacities, gas-quality measures, CMP outcomes, interruptions, tariffs, urgent market messages and reference inventory (vault README).",
+    "market": "EU gas (default point directions are UK TSO interconnection points)",
+    "auth_required": false,
+    "auth_evidence": "Vault README: 'None - fully public'; sources.yaml api_key_env ''",
+    "base_url": "https://transparency.entsog.eu/api/v1",
+    "connector": [
+     "src/gridflow/connectors/entsog/client.py:174 (register_connector)",
+     "src/gridflow/connectors/entsog/endpoints.py (ENDPOINTS)"
+    ],
+    "grain": "Daily (periodType 'day', gas day) for operational data; tariffs and CMP data are periodic.",
+    "history_evidence": "Local silver from 2026-07-31/08-01 (tariffs from 2025-10-01). Vendor-side depth not stated in the vault README.",
+    "representative": [
+     [
+      "physical_flows",
+      "Operational data: physical flow at interconnection points."
+     ],
+     [
+      "nominations",
+      "Operational data: nominations."
+     ],
+     [
+      "firm_technical",
+      "Operational data: firm technical capacity."
+     ],
+     [
+      "gcv",
+      "Gas quality: gross calorific value."
+     ],
+     [
+      "tariffs",
+      "Tariff types and components (country UK)."
+     ]
+    ],
+    "counts": {
+     "configured_in_gridflow": 33,
+     "vault_dataset_notes": 33,
+     "rendered_pages_on_current_site": 33,
+     "local_silver_present": 25,
+     "note": "Headline count will change after the page-set ruling (families + dropping non-ingested stubs). Do not hard-code a number into a design."
+    },
+    "datasets": [
+     {
+      "key": "physical_flows",
+      "source_key": "entsog",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/operationalData",
+      "local_silver": true,
+      "silver_rows": 13764,
+      "event_time_min": "2026-07-31 22:00",
+      "event_time_max": "2026-09-21 21:00",
+      "silver_view": "silver_entsog_physical_flows"
+     },
+     {
+      "key": "nominations",
+      "source_key": "entsog",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/operationalData",
+      "local_silver": true,
+      "silver_rows": 98,
+      "event_time_min": "2026-08-01 04:00",
+      "event_time_max": "2026-09-21 04:00",
+      "silver_view": "silver_entsog_nominations"
+     },
+     {
+      "key": "allocations",
+      "source_key": "entsog",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/operationalData",
+      "local_silver": true,
+      "silver_rows": 98,
+      "event_time_min": "2026-08-01 03:00",
+      "event_time_max": "2026-09-21 04:00",
+      "silver_view": "silver_entsog_allocations"
+     },
+     {
+      "key": "renominations",
+      "source_key": "entsog",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/operationalData",
+      "local_silver": true,
+      "silver_rows": 98,
+      "event_time_min": "2026-08-01 04:00",
+      "event_time_max": "2026-09-21 04:00",
+      "silver_view": "silver_entsog_renominations"
+     },
+     {
+      "key": "firm_available",
+      "source_key": "entsog",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/operationalData",
+      "local_silver": true,
+      "silver_rows": 59,
+      "event_time_min": "2026-08-01 03:00",
+      "event_time_max": "2026-09-21 04:00",
+      "silver_view": "silver_entsog_firm_available"
+     },
+     {
+      "key": "firm_booked",
+      "source_key": "entsog",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/operationalData",
+      "local_silver": true,
+      "silver_rows": 59,
+      "event_time_min": "2026-08-01 03:00",
+      "event_time_max": "2026-09-21 04:00",
+      "silver_view": "silver_entsog_firm_booked"
+     },
+     {
+      "key": "firm_technical",
+      "source_key": "entsog",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/operationalData",
+      "local_silver": true,
+      "silver_rows": 28,
+      "event_time_min": "2026-08-01 03:00",
+      "event_time_max": "2026-09-21 03:00",
+      "silver_view": "silver_entsog_firm_technical"
+     },
+     {
+      "key": "interruptible_available",
+      "source_key": "entsog",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/operationalData",
+      "local_silver": true,
+      "silver_rows": 21,
+      "event_time_min": "2026-08-01 03:00",
+      "event_time_max": "2026-09-21 03:00",
+      "silver_view": "silver_entsog_interruptible_available"
+     },
+     {
+      "key": "interruptible_booked",
+      "source_key": "entsog",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/operationalData",
+      "local_silver": true,
+      "silver_rows": 20,
+      "event_time_min": "2026-08-01 03:00",
+      "event_time_max": "2026-09-21 03:00",
+      "silver_view": "silver_entsog_interruptible_booked"
+     },
+     {
+      "key": "interruptible_total",
+      "source_key": "entsog",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/operationalData",
+      "local_silver": true,
+      "silver_rows": 21,
+      "event_time_min": "2026-08-01 03:00",
+      "event_time_max": "2026-09-21 03:00",
+      "silver_view": "silver_entsog_interruptible_total"
+     },
+     {
+      "key": "gcv",
+      "source_key": "entsog",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/operationalData",
+      "local_silver": true,
+      "silver_rows": 98,
+      "event_time_min": "2026-08-01 03:00",
+      "event_time_max": "2026-09-21 04:00",
+      "silver_view": "silver_entsog_gcv"
+     },
+     {
+      "key": "wobbe_index",
+      "source_key": "entsog",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/operationalData",
+      "local_silver": true,
+      "silver_rows": 126,
+      "event_time_min": "2026-08-01 02:00",
+      "event_time_max": "2026-09-21 04:00",
+      "silver_view": "silver_entsog_wobbe_index"
+     },
+     {
+      "key": "methane_content",
+      "source_key": "entsog",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/operationalData",
+      "local_silver": true,
+      "silver_rows": 42,
+      "event_time_min": "2026-08-01 04:00",
+      "event_time_max": "2026-09-21 04:00",
+      "silver_view": "silver_entsog_methane_content"
+     },
+     {
+      "key": "hydrogen_content",
+      "source_key": "entsog",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/operationalData",
+      "local_silver": true,
+      "silver_rows": 28,
+      "event_time_min": "2026-08-01 04:00",
+      "event_time_max": "2026-09-21 04:00",
+      "silver_view": "silver_entsog_hydrogen_content"
+     },
+     {
+      "key": "oxygen_content",
+      "source_key": "entsog",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/operationalData",
+      "local_silver": true,
+      "silver_rows": 28,
+      "event_time_min": "2026-08-01 04:00",
+      "event_time_max": "2026-09-21 04:00",
+      "silver_view": "silver_entsog_oxygen_content"
+     },
+     {
+      "key": "available_through_oversubscription",
+      "source_key": "entsog",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/operationalData",
+      "local_silver": true,
+      "silver_rows": 55,
+      "event_time_min": "2026-07-31 22:00",
+      "event_time_max": "2026-08-04 22:00",
+      "silver_view": "silver_entsog_available_through_oversubscription"
+     },
+     {
+      "key": "available_through_surrender",
+      "source_key": "entsog",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/operationalData",
+      "local_silver": true,
+      "silver_rows": 55,
+      "event_time_min": "2026-07-31 22:00",
+      "event_time_max": "2026-08-04 22:00",
+      "silver_view": "silver_entsog_available_through_surrender"
+     },
+     {
+      "key": "available_through_uioli_long_term",
+      "source_key": "entsog",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/operationalData",
+      "local_silver": true,
+      "silver_rows": 55,
+      "event_time_min": "2026-07-31 22:00",
+      "event_time_max": "2026-08-04 22:00",
+      "silver_view": "silver_entsog_available_through_uioli_long_term"
+     },
+     {
+      "key": "available_through_uioli_short_term",
+      "source_key": "entsog",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/operationalData",
+      "local_silver": true,
+      "silver_rows": 55,
+      "event_time_min": "2026-07-31 22:00",
+      "event_time_max": "2026-08-04 22:00",
+      "silver_view": "silver_entsog_available_through_uioli_short_term"
+     },
+     {
+      "key": "cmp_unsuccessful_requests",
+      "source_key": "entsog",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/cmpUnsuccessfulRequests",
+      "local_silver": true,
+      "silver_rows": 5197,
+      "event_time_min": null,
+      "event_time_max": null,
+      "silver_view": "silver_entsog_cmp_unsuccessful_requests"
+     },
+     {
+      "key": "cmp_unavailable_firm_capacity",
+      "source_key": "entsog",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/cmpUnavailables",
+      "local_silver": true,
+      "silver_rows": 2920,
+      "event_time_min": "2026-07-31 22:00",
+      "event_time_max": "2026-08-04 22:00",
+      "silver_view": "silver_entsog_cmp_unavailable_firm_capacity"
+     },
+     {
+      "key": "cmp_auction_premiums",
+      "source_key": "entsog",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/cmpAuctions",
+      "local_silver": true,
+      "silver_rows": 5035,
+      "event_time_min": "2026-07-31 22:00",
+      "event_time_max": "2026-08-04 22:00",
+      "silver_view": "silver_entsog_cmp_auction_premiums"
+     },
+     {
+      "key": "interruptions",
+      "source_key": "entsog",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/interruptions",
+      "local_silver": false,
+      "silver_rows": null,
+      "event_time_min": null,
+      "event_time_max": null,
+      "silver_view": null
+     },
+     {
+      "key": "aggregated_physical_flows",
+      "source_key": "entsog",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/aggregatedData",
+      "local_silver": true,
+      "silver_rows": 42,
+      "event_time_min": "2026-08-01 04:00",
+      "event_time_max": "2026-09-21 04:00",
+      "silver_view": "silver_entsog_aggregated_physical_flows"
+     },
+     {
+      "key": "tariffs",
+      "source_key": "entsog",
+      "declared_schedule_hint": "monthly",
+      "endpoint": "/tariffsFulls",
+      "local_silver": true,
+      "silver_rows": 61220,
+      "event_time_min": "2025-10-01 04:00",
+      "event_time_max": "2026-04-01 04:00",
+      "silver_view": "silver_entsog_tariffs"
+     },
+     {
+      "key": "tariff_simulations",
+      "source_key": "entsog",
+      "declared_schedule_hint": "monthly",
+      "endpoint": "/tariffsSimulations",
+      "local_silver": true,
+      "silver_rows": 13910,
+      "event_time_min": "2025-10-01 04:00",
+      "event_time_max": "2026-04-01 04:00",
+      "silver_view": "silver_entsog_tariff_simulations"
+     },
+     {
+      "key": "urgent_market_messages",
+      "source_key": "entsog",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/urgentMarketMessages",
+      "local_silver": false,
+      "silver_rows": null,
+      "event_time_min": null,
+      "event_time_max": null,
+      "silver_view": null
+     },
+     {
+      "key": "connection_points",
+      "source_key": "entsog",
+      "declared_schedule_hint": "weekly",
+      "endpoint": "/connectionPoints",
+      "local_silver": false,
+      "silver_rows": null,
+      "event_time_min": null,
+      "event_time_max": null,
+      "silver_view": null
+     },
+     {
+      "key": "operators",
+      "source_key": "entsog",
+      "declared_schedule_hint": "weekly",
+      "endpoint": "/operators",
+      "local_silver": false,
+      "silver_rows": null,
+      "event_time_min": null,
+      "event_time_max": null,
+      "silver_view": null
+     },
+     {
+      "key": "balancing_zones",
+      "source_key": "entsog",
+      "declared_schedule_hint": "weekly",
+      "endpoint": "/balancingZones",
+      "local_silver": false,
+      "silver_rows": null,
+      "event_time_min": null,
+      "event_time_max": null,
+      "silver_view": null
+     },
+     {
+      "key": "operator_point_directions",
+      "source_key": "entsog",
+      "declared_schedule_hint": "weekly",
+      "endpoint": "/operatorPointDirections",
+      "local_silver": false,
+      "silver_rows": null,
+      "event_time_min": null,
+      "event_time_max": null,
+      "silver_view": null
+     },
+     {
+      "key": "interconnections",
+      "source_key": "entsog",
+      "declared_schedule_hint": "weekly",
+      "endpoint": "/interconnections",
+      "local_silver": false,
+      "silver_rows": null,
+      "event_time_min": null,
+      "event_time_max": null,
+      "silver_view": null
+     },
+     {
+      "key": "aggregate_interconnections",
+      "source_key": "entsog",
+      "declared_schedule_hint": "weekly",
+      "endpoint": "/aggregateInterconnections",
+      "local_silver": false,
+      "silver_rows": null,
+      "event_time_min": null,
+      "event_time_max": null,
+      "silver_view": null
+     }
+    ]
+   },
+   {
+    "vendor": "GIE AGSI+ (gas storage) and ALSI (LNG)",
+    "hub_slug": "gie",
+    "vault_dir": "30-vendors/gie",
+    "source_keys": [
+     "gie_agsi",
+     "gie_alsi"
+    ],
+    "publishes": "EU underground gas-storage levels and flows (AGSI+) and LNG terminal inventory and send-out (ALSI) (vault README).",
+    "market": "EU gas storage and LNG (AGSI countries AT BE DE ES FR GB IT NL PL; ALSI BE ES FR GB IT NL PL PT)",
+    "auth_required": true,
+    "auth_evidence": "GIE_API_KEY in the lowercase x-key header; one key works for both APIs (vault README; sources.yaml)",
+    "base_url": "https://agsi.gie.eu and https://alsi.gie.eu",
+    "connector": [
+     "src/gridflow/connectors/gie/client.py:443-444 (register_connector gie_agsi, gie_alsi)",
+     "src/gridflow/connectors/gie/endpoints.py (ENDPOINTS)"
+    ],
+    "grain": "Daily (gas day).",
+    "history_evidence": "Local silver from 2026-08-01. Vendor-side depth not stated in the vault README.",
+    "representative": [
+     [
+      "storage",
+      "AGSI gas storage levels by country and day (feeds the gold_eu_gas_storage view)."
+     ],
+     [
+      "storage_reports",
+      "AGSI storage reports by aggregate type, country, company or facility."
+     ],
+     [
+      "unavailability",
+      "AGSI storage unavailability reports."
+     ],
+     [
+      "lng",
+      "ALSI LNG terminal data."
+     ]
+    ],
+    "counts": {
+     "configured_in_gridflow": 8,
+     "vault_dataset_notes": 8,
+     "rendered_pages_on_current_site": 8,
+     "local_silver_present": 4,
+     "note": "Headline count will change after the page-set ruling (families + dropping non-ingested stubs). Do not hard-code a number into a design."
+    },
+    "datasets": [
+     {
+      "key": "storage_reports",
+      "source_key": "gie_agsi",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/api",
+      "local_silver": true,
+      "silver_rows": 15,
+      "event_time_min": "2026-08-01 06:00",
+      "event_time_max": "2026-09-22 06:00",
+      "silver_view": "silver_gie_agsi_storage_reports"
+     },
+     {
+      "key": "storage",
+      "source_key": "gie_agsi",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/api",
+      "local_silver": true,
+      "silver_rows": 135,
+      "event_time_min": "2026-08-01 06:00",
+      "event_time_max": "2026-09-22 06:00",
+      "silver_view": "silver_gie_agsi_storage"
+     },
+     {
+      "key": "about_summary",
+      "source_key": "gie_agsi",
+      "declared_schedule_hint": "weekly",
+      "endpoint": "/api/about",
+      "local_silver": false,
+      "silver_rows": null,
+      "event_time_min": null,
+      "event_time_max": null,
+      "silver_view": null
+     },
+     {
+      "key": "about_listing",
+      "source_key": "gie_agsi",
+      "declared_schedule_hint": "weekly",
+      "endpoint": "/api/about",
+      "local_silver": false,
+      "silver_rows": null,
+      "event_time_min": null,
+      "event_time_max": null,
+      "silver_view": null
+     },
+     {
+      "key": "news",
+      "source_key": "gie_agsi",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/api/news",
+      "local_silver": false,
+      "silver_rows": null,
+      "event_time_min": null,
+      "event_time_max": null,
+      "silver_view": null
+     },
+     {
+      "key": "news_item",
+      "source_key": "gie_agsi",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/api/news",
+      "local_silver": false,
+      "silver_rows": null,
+      "event_time_min": null,
+      "event_time_max": null,
+      "silver_view": null
+     },
+     {
+      "key": "unavailability",
+      "source_key": "gie_agsi",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/api/unavailability",
+      "local_silver": true,
+      "silver_rows": 1705,
+      "event_time_min": "2026-08-01 00:00",
+      "event_time_max": "2026-08-05 00:00",
+      "silver_view": "silver_gie_agsi_unavailability"
+     },
+     {
+      "key": "lng",
+      "source_key": "gie_alsi",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/api",
+      "local_silver": true,
+      "silver_rows": 120,
+      "event_time_min": "2026-08-01 06:00",
+      "event_time_max": "2026-09-22 06:00",
+      "silver_view": "silver_gie_alsi_lng"
+     }
+    ]
+   },
+   {
+    "vendor": "NESO Carbon Intensity API",
+    "hub_slug": "neso",
+    "vault_dir": "30-vendors/neso",
+    "source_keys": [
+     "neso"
+    ],
+    "publishes": "GB national and regional electricity carbon intensity (actual and forecast), national statistics, fuel emission factors and generation mix (vault README).",
+    "market": "GB electricity carbon intensity",
+    "auth_required": false,
+    "auth_evidence": "Vault README: 'None. The API is public'; sources.yaml api_key_env ''",
+    "base_url": "https://api.carbonintensity.org.uk",
+    "connector": [
+     "src/gridflow/connectors/neso/carbon_intensity.py:180 (register_connector)",
+     "src/gridflow/connectors/neso/endpoints.py (ENDPOINTS)"
+    ],
+    "grain": "Half-hourly.",
+    "history_evidence": "Local silver windows are short (about 2026-07-30 to 2026-09-21 at most; many route variants hold 1 to 5 days).",
+    "families_per_vault": "33 route variants in five families: intensity (national), factors, stats, generation, regional (vault README table 'Family' column).",
+    "representative": [
+     [
+      "carbon_intensity",
+      "National carbon intensity records for a datetime range."
+     ],
+     [
+      "regional_intensity",
+      "Regional intensity for all regions in a datetime range."
+     ],
+     [
+      "generation",
+      "National generation mix for a datetime range."
+     ],
+     [
+      "intensity_factors",
+      "Static generation fuel emission factors."
+     ],
+     [
+      "intensity_fw48h",
+      "National carbon intensity forecast 48 hours forward."
+     ]
+    ],
+    "counts": {
+     "configured_in_gridflow": 33,
+     "vault_dataset_notes": 33,
+     "rendered_pages_on_current_site": 33,
+     "local_silver_present": 24,
+     "note": "Headline count will change after the page-set ruling (families + dropping non-ingested stubs). Do not hard-code a number into a design."
+    },
+    "datasets": [
+     {
+      "key": "intensity_current",
+      "source_key": "neso",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/intensity",
+      "local_silver": false,
+      "silver_rows": null,
+      "event_time_min": null,
+      "event_time_max": null,
+      "silver_view": null
+     },
+     {
+      "key": "intensity_today",
+      "source_key": "neso",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/intensity/date",
+      "local_silver": false,
+      "silver_rows": null,
+      "event_time_min": null,
+      "event_time_max": null,
+      "silver_view": null
+     },
+     {
+      "key": "intensity_date",
+      "source_key": "neso",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/intensity/date/{date}",
+      "local_silver": true,
+      "silver_rows": 240,
+      "event_time_min": "2026-07-31 23:00",
+      "event_time_max": "2026-08-05 22:30",
+      "silver_view": "silver_neso_intensity_date"
+     },
+     {
+      "key": "intensity_period",
+      "source_key": "neso",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/intensity/date/{date}/{period}",
+      "local_silver": true,
+      "silver_rows": 240,
+      "event_time_min": "2026-07-31 23:00",
+      "event_time_max": "2026-08-05 22:30",
+      "silver_view": "silver_neso_intensity_period"
+     },
+     {
+      "key": "intensity_factors",
+      "source_key": "neso",
+      "declared_schedule_hint": "weekly",
+      "endpoint": "/intensity/factors",
+      "local_silver": true,
+      "silver_rows": 14,
+      "event_time_min": "2026-09-26 00:00",
+      "event_time_max": "2026-09-26 00:00",
+      "silver_view": "silver_neso_intensity_factors"
+     },
+     {
+      "key": "intensity_at",
+      "source_key": "neso",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/intensity/{from}",
+      "local_silver": true,
+      "silver_rows": 1,
+      "event_time_min": "2026-07-31 23:30",
+      "event_time_max": "2026-07-31 23:30",
+      "silver_view": "silver_neso_intensity_at"
+     },
+     {
+      "key": "intensity_fw24h",
+      "source_key": "neso",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/intensity/{from}/fw24h",
+      "local_silver": true,
+      "silver_rows": 49,
+      "event_time_min": "2026-07-31 23:30",
+      "event_time_max": "2026-08-01 23:30",
+      "silver_view": "silver_neso_intensity_fw24h"
+     },
+     {
+      "key": "intensity_fw48h",
+      "source_key": "neso",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/intensity/{from}/fw48h",
+      "local_silver": true,
+      "silver_rows": 97,
+      "event_time_min": "2026-07-31 23:30",
+      "event_time_max": "2026-08-02 23:30",
+      "silver_view": "silver_neso_intensity_fw48h"
+     },
+     {
+      "key": "intensity_pt24h",
+      "source_key": "neso",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/intensity/{from}/pt24h",
+      "local_silver": true,
+      "silver_rows": 49,
+      "event_time_min": "2026-07-30 23:30",
+      "event_time_max": "2026-07-31 23:30",
+      "silver_view": "silver_neso_intensity_pt24h"
+     },
+     {
+      "key": "carbon_intensity",
+      "source_key": "neso",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/intensity",
+      "local_silver": true,
+      "silver_rows": 674,
+      "event_time_min": "2026-07-31 23:30",
+      "event_time_max": "2026-09-21 23:30",
+      "silver_view": "silver_neso_carbon_intensity"
+     },
+     {
+      "key": "intensity_stats",
+      "source_key": "neso",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/intensity/stats/{from}/{to}",
+      "local_silver": true,
+      "silver_rows": 1,
+      "event_time_min": "2026-08-01 00:00",
+      "event_time_max": "2026-08-01 00:00",
+      "silver_view": "silver_neso_intensity_stats"
+     },
+     {
+      "key": "intensity_stats_block",
+      "source_key": "neso",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/intensity/stats/{from}/{to}/{block}",
+      "local_silver": true,
+      "silver_rows": 14,
+      "event_time_min": "2026-08-01 00:00",
+      "event_time_max": "2026-09-21 00:00",
+      "silver_view": "silver_neso_intensity_stats_block"
+     },
+     {
+      "key": "generation_current",
+      "source_key": "neso",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/generation",
+      "local_silver": false,
+      "silver_rows": null,
+      "event_time_min": null,
+      "event_time_max": null,
+      "silver_view": null
+     },
+     {
+      "key": "generation_pt24h",
+      "source_key": "neso",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/generation/{from}/pt24h",
+      "local_silver": true,
+      "silver_rows": 441,
+      "event_time_min": "2026-07-30 23:30",
+      "event_time_max": "2026-07-31 23:30",
+      "silver_view": "silver_neso_generation_pt24h"
+     },
+     {
+      "key": "generation",
+      "source_key": "neso",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/generation/{from}/{to}",
+      "local_silver": true,
+      "silver_rows": 6066,
+      "event_time_min": "2026-07-31 23:30",
+      "event_time_max": "2026-09-21 23:30",
+      "silver_view": "silver_neso_generation"
+     },
+     {
+      "key": "regional_current",
+      "source_key": "neso",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/regional",
+      "local_silver": false,
+      "silver_rows": null,
+      "event_time_min": null,
+      "event_time_max": null,
+      "silver_view": null
+     },
+     {
+      "key": "regional_england",
+      "source_key": "neso",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/regional/england",
+      "local_silver": false,
+      "silver_rows": null,
+      "event_time_min": null,
+      "event_time_max": null,
+      "silver_view": null
+     },
+     {
+      "key": "regional_scotland",
+      "source_key": "neso",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/regional/scotland",
+      "local_silver": false,
+      "silver_rows": null,
+      "event_time_min": null,
+      "event_time_max": null,
+      "silver_view": null
+     },
+     {
+      "key": "regional_wales",
+      "source_key": "neso",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/regional/wales",
+      "local_silver": false,
+      "silver_rows": null,
+      "event_time_min": null,
+      "event_time_max": null,
+      "silver_view": null
+     },
+     {
+      "key": "regional_postcode",
+      "source_key": "neso",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/regional/postcode/{postcode}",
+      "local_silver": false,
+      "silver_rows": null,
+      "event_time_min": null,
+      "event_time_max": null,
+      "silver_view": null
+     },
+     {
+      "key": "regional_regionid",
+      "source_key": "neso",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/regional/regionid/{regionid}",
+      "local_silver": false,
+      "silver_rows": null,
+      "event_time_min": null,
+      "event_time_max": null,
+      "silver_view": null
+     },
+     {
+      "key": "regional_intensity_fw24h",
+      "source_key": "neso",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/regional/intensity/{from}/fw24h",
+      "local_silver": true,
+      "silver_rows": 7938,
+      "event_time_min": "2026-07-31 23:30",
+      "event_time_max": "2026-08-01 23:30",
+      "silver_view": "silver_neso_regional_intensity_fw24h"
+     },
+     {
+      "key": "regional_intensity_fw24h_postcode",
+      "source_key": "neso",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/regional/intensity/{from}/fw24h/postcode/{postcode}",
+      "local_silver": true,
+      "silver_rows": 441,
+      "event_time_min": "2026-07-31 23:30",
+      "event_time_max": "2026-08-01 23:30",
+      "silver_view": "silver_neso_regional_intensity_fw24h_postcode"
+     },
+     {
+      "key": "regional_intensity_fw24h_regionid",
+      "source_key": "neso",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/regional/intensity/{from}/fw24h/regionid/{regionid}",
+      "local_silver": true,
+      "silver_rows": 441,
+      "event_time_min": "2026-07-31 23:30",
+      "event_time_max": "2026-08-01 23:30",
+      "silver_view": "silver_neso_regional_intensity_fw24h_regionid"
+     },
+     {
+      "key": "regional_intensity_fw48h",
+      "source_key": "neso",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/regional/intensity/{from}/fw48h",
+      "local_silver": true,
+      "silver_rows": 15714,
+      "event_time_min": "2026-07-31 23:30",
+      "event_time_max": "2026-08-02 23:30",
+      "silver_view": "silver_neso_regional_intensity_fw48h"
+     },
+     {
+      "key": "regional_intensity_fw48h_postcode",
+      "source_key": "neso",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/regional/intensity/{from}/fw48h/postcode/{postcode}",
+      "local_silver": true,
+      "silver_rows": 873,
+      "event_time_min": "2026-07-31 23:30",
+      "event_time_max": "2026-08-02 23:30",
+      "silver_view": "silver_neso_regional_intensity_fw48h_postcode"
+     },
+     {
+      "key": "regional_intensity_fw48h_regionid",
+      "source_key": "neso",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/regional/intensity/{from}/fw48h/regionid/{regionid}",
+      "local_silver": true,
+      "silver_rows": 873,
+      "event_time_min": "2026-07-31 23:30",
+      "event_time_max": "2026-08-02 23:30",
+      "silver_view": "silver_neso_regional_intensity_fw48h_regionid"
+     },
+     {
+      "key": "regional_intensity_pt24h",
+      "source_key": "neso",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/regional/intensity/{from}/pt24h",
+      "local_silver": true,
+      "silver_rows": 7938,
+      "event_time_min": "2026-07-30 23:30",
+      "event_time_max": "2026-07-31 23:30",
+      "silver_view": "silver_neso_regional_intensity_pt24h"
+     },
+     {
+      "key": "regional_intensity_pt24h_postcode",
+      "source_key": "neso",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/regional/intensity/{from}/pt24h/postcode/{postcode}",
+      "local_silver": true,
+      "silver_rows": 441,
+      "event_time_min": "2026-07-30 23:30",
+      "event_time_max": "2026-07-31 23:30",
+      "silver_view": "silver_neso_regional_intensity_pt24h_postcode"
+     },
+     {
+      "key": "regional_intensity_pt24h_regionid",
+      "source_key": "neso",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/regional/intensity/{from}/pt24h/regionid/{regionid}",
+      "local_silver": true,
+      "silver_rows": 441,
+      "event_time_min": "2026-07-30 23:30",
+      "event_time_max": "2026-07-31 23:30",
+      "silver_view": "silver_neso_regional_intensity_pt24h_regionid"
+     },
+     {
+      "key": "regional_intensity",
+      "source_key": "neso",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/regional/intensity/{from}/{to}",
+      "local_silver": true,
+      "silver_rows": 109188,
+      "event_time_min": "2026-07-31 23:30",
+      "event_time_max": "2026-09-21 23:30",
+      "silver_view": "silver_neso_regional_intensity"
+     },
+     {
+      "key": "regional_intensity_postcode",
+      "source_key": "neso",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/regional/intensity/{from}/{to}/postcode/{postcode}",
+      "local_silver": true,
+      "silver_rows": 2169,
+      "event_time_min": "2026-07-31 23:30",
+      "event_time_max": "2026-08-05 23:30",
+      "silver_view": "silver_neso_regional_intensity_postcode"
+     },
+     {
+      "key": "regional_intensity_regionid",
+      "source_key": "neso",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "/regional/intensity/{from}/{to}/regionid/{regionid}",
+      "local_silver": true,
+      "silver_rows": 2169,
+      "event_time_min": "2026-07-31 23:30",
+      "event_time_max": "2026-08-05 23:30",
+      "silver_view": "silver_neso_regional_intensity_regionid"
+     }
+    ]
+   },
+   {
+    "vendor": "NESO Open Data Portal (CKAN)",
+    "hub_slug": "neso_data_portal",
+    "vault_dir": "30-vendors/neso-data-portal",
+    "source_keys": [
+     "neso_data_portal"
+    ],
+    "publishes": "NESO's open-data catalogue: a CKAN file-download API; gridflow ingests three CSV resources (vault README).",
+    "market": "GB electricity (system operator data)",
+    "auth_required": false,
+    "auth_evidence": "Vault README: 'None observed'; sources.yaml api_key_env ''",
+    "base_url": "https://api.neso.energy",
+    "connector": [
+     "src/gridflow/connectors/neso_data_portal/client.py:1492 (register_connector)",
+     "src/gridflow/connectors/neso_data_portal/endpoints.py (DATASETS)"
+    ],
+    "grain": "Half-hourly (historic_generation_mix, embedded_wind_solar_forecast); daily per BM unit (daily_wind_availability).",
+    "history_evidence": "historic_generation_mix silver runs 2009-01-01 to 2026-09-26 (verified). The portal serves only its current file, so backfill and historical windows are refused by design (vault README).",
+    "representative": [
+     [
+      "historic_generation_mix",
+      "Half-hourly GB generation mix by fuel since 2009, including SOLAR and embedded wind."
+     ],
+     [
+      "embedded_wind_solar_forecast",
+      "Embedded (distribution-connected) wind and solar forecast per settlement period."
+     ],
+     [
+      "daily_wind_availability",
+      "Daily wind availability per BM unit (MW)."
+     ]
+    ],
+    "counts": {
+     "configured_in_gridflow": 3,
+     "vault_dataset_notes": 3,
+     "rendered_pages_on_current_site": 32,
+     "local_silver_present": 3,
+     "note": "Headline count will change after the page-set ruling (families + dropping non-ingested stubs). Do not hard-code a number into a design."
+    },
+    "datasets": [
+     {
+      "key": "daily_wind_availability",
+      "source_key": "neso_data_portal",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/api/3/action/package_show",
+      "local_silver": true,
+      "silver_rows": 3589,
+      "event_time_min": "2026-08-21 23:00",
+      "event_time_max": "2026-09-02 23:00",
+      "silver_view": "silver_neso_data_portal_daily_wind_availability"
+     },
+     {
+      "key": "historic_generation_mix",
+      "source_key": "neso_data_portal",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/api/3/action/package_show",
+      "local_silver": true,
+      "silver_rows": 930023,
+      "event_time_min": "2009-01-01 00:00",
+      "event_time_max": "2026-09-26 17:00",
+      "silver_view": "silver_neso_data_portal_historic_generation_mix"
+     },
+     {
+      "key": "embedded_wind_solar_forecast",
+      "source_key": "neso_data_portal",
+      "declared_schedule_hint": "daily",
+      "endpoint": "/api/3/action/package_show",
+      "local_silver": true,
+      "silver_rows": 628,
+      "event_time_min": "2026-08-20 21:00",
+      "event_time_max": "2026-09-02 22:30",
+      "silver_view": "silver_neso_data_portal_embedded_wind_solar_forecast"
+     }
+    ]
+   },
+   {
+    "vendor": "Open-Meteo",
+    "hub_slug": "openmeteo",
+    "vault_dir": "30-vendors/open-meteo",
+    "source_keys": [
+     "open_meteo"
+    ],
+    "publishes": "Weather: ERA5 archive and NWP forecasts at three role-keyed location lists for demand, wind and solar modelling (vault README).",
+    "market": "Weather inputs for GB power modelling",
+    "auth_required": false,
+    "auth_evidence": "Vault README: 'None - public'; gridflow runs under the free tier",
+    "base_url": "https://archive-api.open-meteo.com/v1 (historical_*) and https://api.open-meteo.com/v1 (forecast_*)",
+    "connector": [
+     "src/gridflow/connectors/openmeteo/client.py:152 (register_connector)",
+     "src/gridflow/connectors/openmeteo/endpoints.py (DATASET_SPECS, *_LOCATIONS)"
+    ],
+    "grain": "Hourly.",
+    "locations": {
+     "demand (7 cities)": "london, birmingham, manchester, leeds, glasgow, cardiff, belfast",
+     "wind (12 sites)": "dogger_bank, hornsea, east_anglia, triton_knoll, walney, gwynt_y_mor, beatrice, seagreen, highland_central, borders_crystalrig, whitelee, pen_y_cymoedd",
+     "solar (6 sites)": "east_anglia_norfolk, wiltshire_somerset, kent, cornwall, sussex, oxfordshire"
+    },
+    "history_evidence": "historical_demand/wind/solar silver from 2021-09-01 to 2026-09-22/26; forecast_* from 2026-08-01.",
+    "representative": [
+     [
+      "historical_demand",
+      "ERA5 archive weather at 7 demand cities."
+     ],
+     [
+      "historical_wind",
+      "ERA5 archive at 12 GB wind sites (10 m and 100 m wind)."
+     ],
+     [
+      "historical_solar",
+      "ERA5 archive at 6 GB solar sites (GHI / DNI / DHI / GTI)."
+     ],
+     [
+      "forecast_demand",
+      "NWP forecast weather at the 7 demand cities."
+     ]
+    ],
+    "counts": {
+     "configured_in_gridflow": 6,
+     "vault_dataset_notes": 6,
+     "rendered_pages_on_current_site": 6,
+     "local_silver_present": 6,
+     "note": "Headline count will change after the page-set ruling (families + dropping non-ingested stubs). Do not hard-code a number into a design."
+    },
+    "datasets": [
+     {
+      "key": "historical_demand",
+      "source_key": "open_meteo",
+      "declared_schedule_hint": "daily",
+      "endpoint": "archive",
+      "local_silver": true,
+      "silver_rows": 308784,
+      "event_time_min": "2021-09-01 00:00",
+      "event_time_max": "2026-09-22 23:00",
+      "silver_view": "silver_open_meteo_historical_demand"
+     },
+     {
+      "key": "forecast_demand",
+      "source_key": "open_meteo",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "forecast",
+      "local_silver": true,
+      "silver_rows": 6048,
+      "event_time_min": "2026-08-01 00:00",
+      "event_time_max": "2026-09-22 23:00",
+      "silver_view": "silver_open_meteo_forecast_demand"
+     },
+     {
+      "key": "historical_wind",
+      "source_key": "open_meteo",
+      "declared_schedule_hint": "daily",
+      "endpoint": "archive",
+      "local_silver": true,
+      "silver_rows": 530208,
+      "event_time_min": "2021-09-01 00:00",
+      "event_time_max": "2026-09-26 23:00",
+      "silver_view": "silver_open_meteo_historical_wind"
+     },
+     {
+      "key": "forecast_wind",
+      "source_key": "open_meteo",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "forecast",
+      "local_silver": true,
+      "silver_rows": 4320,
+      "event_time_min": "2026-08-01 00:00",
+      "event_time_max": "2026-09-22 23:00",
+      "silver_view": "silver_open_meteo_forecast_wind"
+     },
+     {
+      "key": "historical_solar",
+      "source_key": "open_meteo",
+      "declared_schedule_hint": "daily",
+      "endpoint": "archive",
+      "local_silver": true,
+      "silver_rows": 265104,
+      "event_time_min": "2021-09-01 00:00",
+      "event_time_max": "2026-09-26 23:00",
+      "silver_view": "silver_open_meteo_historical_solar"
+     },
+     {
+      "key": "forecast_solar",
+      "source_key": "open_meteo",
+      "declared_schedule_hint": "hourly",
+      "endpoint": "forecast",
+      "local_silver": true,
+      "silver_rows": 2160,
+      "event_time_min": "2026-08-01 00:00",
+      "event_time_max": "2026-09-22 23:00",
+      "silver_view": "silver_open_meteo_forecast_solar"
+     }
+    ]
+   }
+  ],
+  "totals": {
+   "registered_source_keys": 8,
+   "configured_datasets": 163,
+   "vault_dataset_notes": 165,
+   "rendered_dataset_pages_current_site": 194,
+   "local_silver_present": 126,
+   "headline_note": "The current site headline '165 datasets' counts vault notes. D4/D5 will change it (drop non-ingested stubs, fold variants into families). Designs must not hard-code a count."
+  },
+  "must_not_appear": {
+   "neso_data_portal_stub_pages": [
+    "aahedc_tariffs",
+    "bsuos_fixed_tariffs",
+    "constraint_cost_forecast_24_months_ahead",
+    "contract_transfer_of_obligation",
+    "country_carbon_intensity_forecast",
+    "daily_opmr",
+    "day_ahead_half_hourly_demand_forecast_performance",
+    "demand_profile_dates",
+    "dynamic_moderation_requirements",
+    "dynamic_regulation_requirements",
+    "embedded_register",
+    "gb_system_inertia_bid_and_offer_costs",
+    "interconnector_register",
+    "long_term_2_52_weeks_ahead_national_demand_forecast",
+    "long_term_forecasts_for_dc_dm_dr_requirements",
+    "obp_non_bm_physical_notifications",
+    "obp_non_bm_reserve_instructions",
+    "obp_reserve_availability_utilisation_price",
+    "operational_transparency_forum_network_congestion_data",
+    "quick_reserve_auction_requirement_forecast",
+    "short_term_operating_reserve_stor_day_ahead_auction_results",
+    "slow_reserve_requirement_forecast",
+    "stability_midterm_y_1_utilisation_report",
+    "static_firm_frequency_response_requirement",
+    "stor_windows",
+    "transmission_entry_capacity_tec_register",
+    "upcoming_trades",
+    "weekly_opmr",
+    "weekly_wind_availability"
+   ],
+   "entsoe_not_ingestable": {
+    "activated_balancing_qty": "silver transformer only; not in DOC_TYPES or sources.yaml, the CLI never fetches it (vault note status silver-only)",
+    "commercial_schedules_net_positions": "deprecated; removed in gridflow V2 (ADR-019), duplicate of commercial_schedules"
+   },
+   "gie_deferred": {
+    "news": "implementation_phase 'deferred' in gie/endpoints.py",
+    "news_item": "implementation_phase 'deferred' in gie/endpoints.py"
+   },
+   "elexon_excluded_by_code": {
+    "bod": "Excluded from active inventory because BOD availability has been unstable; requires a dedicated schema pass before activation.",
+    "generation_by_fuel": "Duplicate of fuelhh; both use /datasets/FUELHH.",
+    "indicative_imbalance_volumes": "Removed by Elexon; use active imbalance datasets instead."
+   }
+  },
+  "configured_no_local_silver": {
+   "entsoe": [
+    "outages_offshore_grid",
+    "redispatching_cross_border",
+    "countertrading",
+    "congestion_management_costs",
+    "offered_transfer_capacity_continuous",
+    "offered_transfer_capacity_implicit",
+    "offered_transfer_capacity_explicit",
+    "transfer_capacity_use",
+    "congestion_income",
+    "imbalance_prices",
+    "imbalance_volume",
+    "activated_balancing_prices",
+    "contracted_reserves",
+    "aggregated_balancing_energy_bids",
+    "cross_zonal_balancing_capacity",
+    "balancing_financial_expenses_income"
+   ],
+   "gie_agsi": [
+    "about_summary",
+    "about_listing",
+    "news",
+    "news_item"
+   ],
+   "entsog": [
+    "interruptions",
+    "urgent_market_messages",
+    "connection_points",
+    "operators",
+    "balancing_zones",
+    "operator_point_directions",
+    "interconnections",
+    "aggregate_interconnections"
+   ],
+   "neso": [
+    "intensity_current",
+    "intensity_today",
+    "generation_current",
+    "regional_current",
+    "regional_england",
+    "regional_scotland",
+    "regional_wales",
+    "regional_postcode",
+    "regional_regionid"
+   ]
+  },
+  "configured_no_local_silver_note": "Connector-wired and configured, but no local silver at snapshot. Phase 22 decides whether these are ingestable; this pack does not classify them.",
+  "elexon_hub": {
+   "grouping_source": "vault 30-vendors/elexon/endpoints.md groups the 33 datasets by API parameter style only; dataset notes carry no category field. The current site's Generation / Prices & Balancing / Demand & Forecasts / System & Reference grouping is site-authored. 'proposed_theme' below is a PROPOSED pack grouping, not canonical.",
+   "datasets": [
+    {
+     "key": "system_prices",
+     "source_key": "elexon",
+     "declared_schedule_hint": "hourly",
+     "endpoint": "/balancing/settlement/system-prices",
+     "local_silver": true,
+     "silver_rows": 96793,
+     "event_time_min": "2021-08-31 23:00",
+     "event_time_max": "2026-09-22 22:30",
+     "silver_view": "silver_elexon_system_prices",
+     "vault_group": "Settlement-date style",
+     "proposed_theme": "Prices and balancing",
+     "api_path": "/balancing/settlement/system-prices",
+     "bmrs_code": null,
+     "code_description": "System Sell Price and System Buy Price per settlement period",
+     "param_style": "date_path"
+    },
+    {
+     "key": "market_depth",
+     "source_key": "elexon",
+     "declared_schedule_hint": "daily",
+     "endpoint": "/balancing/settlement/market-depth",
+     "local_silver": true,
+     "silver_rows": 768,
+     "event_time_min": "2026-07-31 23:00",
+     "event_time_max": "2026-09-22 22:30",
+     "silver_view": "silver_elexon_market_depth",
+     "vault_group": "Settlement-date style",
+     "proposed_theme": "Prices and balancing",
+     "api_path": "/balancing/settlement/market-depth",
+     "bmrs_code": null,
+     "code_description": "Settlement Market Depth per Settlement Period",
+     "param_style": "date_path"
+    },
+    {
+     "key": "pn",
+     "source_key": "elexon",
+     "declared_schedule_hint": "hourly",
+     "endpoint": "/datasets/PN",
+     "local_silver": true,
+     "silver_rows": 1850886,
+     "event_time_min": "2026-07-31 23:00",
+     "event_time_max": "2026-09-22 22:30",
+     "silver_view": "silver_elexon_pn",
+     "vault_group": "Settlement-date style",
+     "proposed_theme": "Prices and balancing",
+     "api_path": "/datasets/PN",
+     "bmrs_code": "PN",
+     "code_description": "Physical Notifications",
+     "param_style": "settlement_date_period"
+    },
+    {
+     "key": "boal",
+     "source_key": "elexon",
+     "declared_schedule_hint": "hourly",
+     "endpoint": "/datasets/BOALF",
+     "local_silver": true,
+     "silver_rows": 199565,
+     "event_time_min": "2026-08-01 00:00",
+     "event_time_max": "2026-09-22 00:00",
+     "silver_view": "silver_elexon_boal",
+     "vault_group": "Settlement-date style",
+     "proposed_theme": "Prices and balancing",
+     "api_path": "/datasets/BOALF",
+     "bmrs_code": "BOALF",
+     "code_description": "Bid/Offer Acceptance Levels Final (replaces deprecated BOAL)",
+     "param_style": "publish_datetime"
+    },
+    {
+     "key": "disbsad",
+     "source_key": "elexon",
+     "declared_schedule_hint": "daily",
+     "endpoint": "/datasets/DISBSAD",
+     "local_silver": true,
+     "silver_rows": 8116,
+     "event_time_min": "2026-08-01 00:00",
+     "event_time_max": "2026-09-22 00:00",
+     "silver_view": "silver_elexon_disbsad",
+     "vault_group": "Settlement-date style",
+     "proposed_theme": "Prices and balancing",
+     "api_path": "/datasets/DISBSAD",
+     "bmrs_code": "DISBSAD",
+     "code_description": "Disaggregated Balancing Services Adjustment Data",
+     "param_style": "publish_datetime"
+    },
+    {
+     "key": "mid",
+     "source_key": "elexon",
+     "declared_schedule_hint": "hourly",
+     "endpoint": "/datasets/MID",
+     "local_silver": true,
+     "silver_rows": 176286,
+     "event_time_min": "2021-09-01 00:00",
+     "event_time_max": "2026-09-22 00:00",
+     "silver_view": "silver_elexon_mid",
+     "vault_group": "Settlement-date style",
+     "proposed_theme": "Prices and balancing",
+     "api_path": "/datasets/MID",
+     "bmrs_code": "MID",
+     "code_description": "Market Index Data",
+     "param_style": "publish_datetime"
+    },
+    {
+     "key": "netbsad",
+     "source_key": "elexon",
+     "declared_schedule_hint": "daily",
+     "endpoint": "/datasets/NETBSAD",
+     "local_silver": true,
+     "silver_rows": 686,
+     "event_time_min": "2026-08-01 00:00",
+     "event_time_max": "2026-09-22 00:00",
+     "silver_view": "silver_elexon_netbsad",
+     "vault_group": "Settlement-date style",
+     "proposed_theme": "Prices and balancing",
+     "api_path": "/datasets/NETBSAD",
+     "bmrs_code": "NETBSAD",
+     "code_description": "Net Balancing Services Adjustment Data",
+     "param_style": "publish_datetime"
+    },
+    {
+     "key": "freq",
+     "source_key": "elexon",
+     "declared_schedule_hint": "hourly",
+     "endpoint": "/datasets/FREQ",
+     "local_silver": true,
+     "silver_rows": 80654,
+     "event_time_min": "2026-08-01 00:00",
+     "event_time_max": "2026-09-22 00:00",
+     "silver_view": "silver_elexon_freq",
+     "vault_group": "Publish-datetime style",
+     "proposed_theme": "System indicators",
+     "api_path": "/datasets/FREQ",
+     "bmrs_code": "FREQ",
+     "code_description": "System Frequency",
+     "param_style": "publish_datetime"
+    },
+    {
+     "key": "fuelhh",
+     "source_key": "elexon",
+     "declared_schedule_hint": "hourly",
+     "endpoint": "/datasets/FUELHH",
+     "local_silver": true,
+     "silver_rows": 1682517,
+     "event_time_min": "2021-08-31 23:30",
+     "event_time_max": "2026-09-26 22:30",
+     "silver_view": "silver_elexon_fuelhh",
+     "vault_group": "Publish-datetime style",
+     "proposed_theme": "Generation and availability",
+     "api_path": "/datasets/FUELHH",
+     "bmrs_code": "FUELHH",
+     "code_description": "Half-hourly Generation Outturn by Fuel Type",
+     "param_style": "publish_datetime"
+    },
+    {
+     "key": "fuelinst",
+     "source_key": "elexon",
+     "declared_schedule_hint": "hourly",
+     "endpoint": "/datasets/FUELINST",
+     "local_silver": true,
+     "silver_rows": 80920,
+     "event_time_min": "2026-08-01 00:00",
+     "event_time_max": "2026-09-22 00:00",
+     "silver_view": "silver_elexon_fuelinst",
+     "vault_group": "Publish-datetime style",
+     "proposed_theme": "Generation and availability",
+     "api_path": "/datasets/FUELINST",
+     "bmrs_code": "FUELINST",
+     "code_description": "Instantaneous Generation Outturn by Fuel Type",
+     "param_style": "publish_datetime"
+    },
+    {
+     "key": "imbalngc",
+     "source_key": "elexon",
+     "declared_schedule_hint": "hourly",
+     "endpoint": "/datasets/IMBALNGC",
+     "local_silver": true,
+     "silver_rows": 1442,
+     "event_time_min": "2026-08-01 00:30",
+     "event_time_max": "2026-09-23 03:30",
+     "silver_view": "silver_elexon_imbalngc",
+     "vault_group": "Publish-datetime style",
+     "proposed_theme": "System indicators",
+     "api_path": "/datasets/IMBALNGC",
+     "bmrs_code": "IMBALNGC",
+     "code_description": "Indicated Imbalance",
+     "param_style": "publish_datetime"
+    },
+    {
+     "key": "ndf",
+     "source_key": "elexon",
+     "declared_schedule_hint": "daily",
+     "endpoint": "/datasets/NDF",
+     "local_silver": true,
+     "silver_rows": 39424,
+     "event_time_min": "2026-08-01 00:30",
+     "event_time_max": "2026-09-23 03:30",
+     "silver_view": "silver_elexon_ndf",
+     "vault_group": "Publish-datetime style",
+     "proposed_theme": "Demand",
+     "api_path": "/datasets/NDF",
+     "bmrs_code": "NDF",
+     "code_description": "National Demand Forecast (Day-ahead)",
+     "param_style": "publish_datetime"
+    },
+    {
+     "key": "ndfd",
+     "source_key": "elexon",
+     "declared_schedule_hint": "daily",
+     "endpoint": "/datasets/NDFD",
+     "local_silver": true,
+     "silver_rows": 156,
+     "event_time_min": "2026-08-02 23:00",
+     "event_time_max": "2026-10-04 23:00",
+     "silver_view": "silver_elexon_ndfd",
+     "vault_group": "Publish-datetime style",
+     "proposed_theme": "Demand",
+     "api_path": "/datasets/NDFD",
+     "bmrs_code": "NDFD",
+     "code_description": "National Demand Forecast (2-14 days ahead)",
+     "param_style": "publish_datetime"
+    },
+    {
+     "key": "melngc",
+     "source_key": "elexon",
+     "declared_schedule_hint": "hourly",
+     "endpoint": "/datasets/MELNGC",
+     "local_silver": true,
+     "silver_rows": 1442,
+     "event_time_min": "2026-08-01 00:30",
+     "event_time_max": "2026-09-23 03:30",
+     "silver_view": "silver_elexon_melngc",
+     "vault_group": "Publish-datetime style",
+     "proposed_theme": "System indicators",
+     "api_path": "/datasets/MELNGC",
+     "bmrs_code": "MELNGC",
+     "code_description": "Indicated Margin",
+     "param_style": "publish_datetime"
+    },
+    {
+     "key": "fou2t14d",
+     "source_key": "elexon",
+     "declared_schedule_hint": "daily",
+     "endpoint": "/datasets/FOU2T14D",
+     "local_silver": true,
+     "silver_rows": 83239,
+     "event_time_min": "2026-08-03 00:00",
+     "event_time_max": "2026-10-06 00:00",
+     "silver_view": "silver_elexon_fou2t14d",
+     "vault_group": "Publish-datetime style",
+     "proposed_theme": "Generation and availability",
+     "api_path": "/datasets/FOU2T14D",
+     "bmrs_code": "FOU2T14D",
+     "code_description": "2-14 Day Ahead Generation Availability by Fuel Type",
+     "param_style": "publish_datetime"
+    },
+    {
+     "key": "uou2t14d",
+     "source_key": "elexon",
+     "declared_schedule_hint": "daily",
+     "endpoint": "/datasets/UOU2T14D",
+     "local_silver": true,
+     "silver_rows": 92232,
+     "event_time_min": "2026-08-03 00:00",
+     "event_time_max": "2026-10-06 00:00",
+     "silver_view": "silver_elexon_uou2t14d",
+     "vault_group": "Publish-datetime style",
+     "proposed_theme": "Generation and availability",
+     "api_path": "/datasets/UOU2T14D",
+     "bmrs_code": "UOU2T14D",
+     "code_description": "2-14 Day Ahead Generation Availability by BM Unit",
+     "param_style": "publish_datetime"
+    },
+    {
+     "key": "windfor",
+     "source_key": "elexon",
+     "declared_schedule_hint": "hourly",
+     "endpoint": "/datasets/WINDFOR",
+     "local_silver": true,
+     "silver_rows": 839107,
+     "event_time_min": "2021-09-01 20:00",
+     "event_time_max": "2026-09-28 20:00",
+     "silver_view": "silver_elexon_windfor",
+     "vault_group": "Publish-datetime style",
+     "proposed_theme": "Generation and availability",
+     "api_path": "/datasets/WINDFOR",
+     "bmrs_code": "WINDFOR",
+     "code_description": "Wind Generation Forecast",
+     "param_style": "publish_datetime"
+    },
+    {
+     "key": "temp",
+     "source_key": "elexon",
+     "declared_schedule_hint": "daily",
+     "endpoint": "/datasets/TEMP",
+     "local_silver": true,
+     "silver_rows": 14,
+     "event_time_min": "2026-08-01 15:45",
+     "event_time_max": "2026-09-21 15:45",
+     "silver_view": "silver_elexon_temp",
+     "vault_group": "Publish-datetime style",
+     "proposed_theme": "System indicators",
+     "api_path": "/datasets/TEMP",
+     "bmrs_code": "TEMP",
+     "code_description": "Temperature Data",
+     "param_style": "publish_datetime"
+    },
+    {
+     "key": "agpt",
+     "source_key": "elexon",
+     "declared_schedule_hint": "daily",
+     "endpoint": "/datasets/AGPT",
+     "local_silver": true,
+     "silver_rows": 7392,
+     "event_time_min": "2026-07-31 22:00",
+     "event_time_max": "2026-09-21 21:30",
+     "silver_view": "silver_elexon_agpt",
+     "vault_group": "Publish-datetime style",
+     "proposed_theme": "Generation and availability",
+     "api_path": "/datasets/AGPT",
+     "bmrs_code": "AGPT",
+     "code_description": "Actual Aggregated Generation Per Type (B1620)",
+     "param_style": "publish_datetime"
+    },
+    {
+     "key": "agws",
+     "source_key": "elexon",
+     "declared_schedule_hint": "daily",
+     "endpoint": "/datasets/AGWS",
+     "local_silver": true,
+     "silver_rows": 251556,
+     "event_time_min": "2021-08-31 22:00",
+     "event_time_max": "2026-09-26 21:00",
+     "silver_view": "silver_elexon_agws",
+     "vault_group": "Publish-datetime style",
+     "proposed_theme": "Generation and availability",
+     "api_path": "/datasets/AGWS",
+     "bmrs_code": "AGWS",
+     "code_description": "Actual or Estimated Wind and Solar Power Generation (B1630)",
+     "param_style": "publish_datetime"
+    },
+    {
+     "key": "atl",
+     "source_key": "elexon",
+     "declared_schedule_hint": "daily",
+     "endpoint": "/datasets/ATL",
+     "local_silver": true,
+     "silver_rows": 403,
+     "event_time_min": "2026-08-01 00:00",
+     "event_time_max": "2026-09-21 22:00",
+     "silver_view": "silver_elexon_atl",
+     "vault_group": "Publish-datetime style",
+     "proposed_theme": "Demand",
+     "api_path": "/datasets/ATL",
+     "bmrs_code": "ATL",
+     "code_description": "Actual Total Load Per Bidding Zone (B0610)",
+     "param_style": "publish_datetime"
+    },
+    {
+     "key": "indo",
+     "source_key": "elexon",
+     "declared_schedule_hint": "hourly",
+     "endpoint": "/datasets/INDO",
+     "local_silver": true,
+     "silver_rows": 88315,
+     "event_time_min": "2021-08-30 23:30",
+     "event_time_max": "2026-09-21 23:30",
+     "silver_view": "silver_elexon_indo",
+     "vault_group": "Publish-datetime style",
+     "proposed_theme": "Demand",
+     "api_path": "/datasets/INDO",
+     "bmrs_code": "INDO",
+     "code_description": "Initial National Demand Outturn",
+     "param_style": "publish_datetime"
+    },
+    {
+     "key": "itsdo",
+     "source_key": "elexon",
+     "declared_schedule_hint": "hourly",
+     "endpoint": "/datasets/ITSDO",
+     "local_silver": true,
+     "silver_rows": 674,
+     "event_time_min": "2026-07-31 23:30",
+     "event_time_max": "2026-09-21 23:30",
+     "silver_view": "silver_elexon_itsdo",
+     "vault_group": "Publish-datetime style",
+     "proposed_theme": "Demand",
+     "api_path": "/datasets/ITSDO",
+     "bmrs_code": "ITSDO",
+     "code_description": "Initial Transmission System Demand Outturn",
+     "param_style": "publish_datetime"
+    },
+    {
+     "key": "indod",
+     "source_key": "elexon",
+     "declared_schedule_hint": "daily",
+     "endpoint": "/datasets/INDOD",
+     "local_silver": true,
+     "silver_rows": 14,
+     "event_time_min": "2026-07-31 23:00",
+     "event_time_max": "2026-09-20 23:00",
+     "silver_view": "silver_elexon_indod",
+     "vault_group": "Publish-datetime style",
+     "proposed_theme": "Demand",
+     "api_path": "/datasets/INDOD",
+     "bmrs_code": "INDOD",
+     "code_description": "Initial National Demand Outturn (Daily Total)",
+     "param_style": "publish_datetime"
+    },
+    {
+     "key": "nonbm",
+     "source_key": "elexon",
+     "declared_schedule_hint": "daily",
+     "endpoint": "/datasets/NONBM",
+     "local_silver": true,
+     "silver_rows": 5,
+     "event_time_min": "2026-04-01 09:30",
+     "event_time_max": "2026-04-01 09:30",
+     "silver_view": "silver_elexon_nonbm",
+     "vault_group": "Publish-datetime style",
+     "proposed_theme": "Generation and availability",
+     "api_path": "/datasets/NONBM",
+     "bmrs_code": "NONBM",
+     "code_description": "Non-BM STOR Generation",
+     "param_style": "publish_datetime"
+    },
+    {
+     "key": "inddem",
+     "source_key": "elexon",
+     "declared_schedule_hint": "daily",
+     "endpoint": "/datasets/INDDEM",
+     "local_silver": true,
+     "silver_rows": 25956,
+     "event_time_min": "2026-08-01 00:30",
+     "event_time_max": "2026-09-23 03:30",
+     "silver_view": "silver_elexon_inddem",
+     "vault_group": "Publish-datetime style",
+     "proposed_theme": "Demand",
+     "api_path": "/datasets/INDDEM",
+     "bmrs_code": "INDDEM",
+     "code_description": "Day and Day-Ahead Indicated Demand",
+     "param_style": "publish_datetime"
+    },
+    {
+     "key": "indgen",
+     "source_key": "elexon",
+     "declared_schedule_hint": "daily",
+     "endpoint": "/datasets/INDGEN",
+     "local_silver": true,
+     "silver_rows": 25956,
+     "event_time_min": "2026-08-01 00:30",
+     "event_time_max": "2026-09-23 03:30",
+     "silver_view": "silver_elexon_indgen",
+     "vault_group": "Publish-datetime style",
+     "proposed_theme": "System indicators",
+     "api_path": "/datasets/INDGEN",
+     "bmrs_code": "INDGEN",
+     "code_description": "Day and Day-Ahead Indicated Generation",
+     "param_style": "publish_datetime"
+    },
+    {
+     "key": "tsdf",
+     "source_key": "elexon",
+     "declared_schedule_hint": "daily",
+     "endpoint": "/datasets/TSDF",
+     "local_silver": true,
+     "silver_rows": 25956,
+     "event_time_min": "2026-08-01 00:30",
+     "event_time_max": "2026-09-23 03:30",
+     "silver_view": "silver_elexon_tsdf",
+     "vault_group": "Publish-datetime style",
+     "proposed_theme": "Demand",
+     "api_path": "/datasets/TSDF",
+     "bmrs_code": "TSDF",
+     "code_description": "Transmission System Demand Forecast",
+     "param_style": "publish_datetime"
+    },
+    {
+     "key": "tsdfd",
+     "source_key": "elexon",
+     "declared_schedule_hint": "daily",
+     "endpoint": "/datasets/TSDFD",
+     "local_silver": true,
+     "silver_rows": 156,
+     "event_time_min": "2026-08-03 00:00",
+     "event_time_max": "2026-10-05 00:00",
+     "silver_view": "silver_elexon_tsdfd",
+     "vault_group": "Publish-datetime style",
+     "proposed_theme": "Demand",
+     "api_path": "/datasets/TSDFD",
+     "bmrs_code": "TSDFD",
+     "code_description": "2-14 Day Ahead Transmission System Demand Forecast",
+     "param_style": "publish_datetime"
+    },
+    {
+     "key": "lolpdrm",
+     "source_key": "elexon",
+     "declared_schedule_hint": "daily",
+     "endpoint": "/datasets/LOLPDRM",
+     "local_silver": true,
+     "silver_rows": 1428,
+     "event_time_min": "2026-08-01 01:00",
+     "event_time_max": "2026-09-23 03:30",
+     "silver_view": "silver_elexon_lolpdrm",
+     "vault_group": "Publish-datetime style",
+     "proposed_theme": "System indicators",
+     "api_path": "/datasets/LOLPDRM",
+     "bmrs_code": "LOLPDRM",
+     "code_description": "Loss of Load Probability and De-rated Margin",
+     "param_style": "publish_datetime"
+    },
+    {
+     "key": "remit",
+     "source_key": "elexon",
+     "declared_schedule_hint": "daily",
+     "endpoint": "/datasets/REMIT",
+     "local_silver": true,
+     "silver_rows": 2291,
+     "event_time_min": "2026-08-01 00:50",
+     "event_time_max": "2026-09-21 23:13",
+     "silver_view": "silver_elexon_remit",
+     "vault_group": "Publish-datetime style",
+     "proposed_theme": "Reference and messages",
+     "api_path": "/datasets/REMIT",
+     "bmrs_code": "REMIT",
+     "code_description": "REMIT Outage and Unavailability Messages",
+     "param_style": "publish_datetime"
+    },
+    {
+     "key": "soso",
+     "source_key": "elexon",
+     "declared_schedule_hint": "daily",
+     "endpoint": "/datasets/SOSO",
+     "local_silver": true,
+     "silver_rows": 20256,
+     "event_time_min": "2026-08-01 02:00",
+     "event_time_max": "2026-09-22 01:00",
+     "silver_view": "silver_elexon_soso",
+     "vault_group": "Publish-datetime style",
+     "proposed_theme": "Prices and balancing",
+     "api_path": "/datasets/SOSO",
+     "bmrs_code": "SOSO",
+     "code_description": "SO-SO Prices (Cross-Border Interconnector Trading)",
+     "param_style": "publish_datetime"
+    },
+    {
+     "key": "bmunits_reference",
+     "source_key": "elexon",
+     "declared_schedule_hint": "weekly",
+     "endpoint": "/reference/bmunits/all",
+     "local_silver": true,
+     "silver_rows": 3014,
+     "event_time_min": "2026-09-26 00:00",
+     "event_time_max": "2026-09-26 00:00",
+     "silver_view": "silver_elexon_bmunits_reference",
+     "vault_group": "No params (reference data)",
+     "proposed_theme": "Reference and messages",
+     "api_path": "/reference/bmunits/all",
+     "bmrs_code": null,
+     "code_description": "All BM Unit reference data",
+     "param_style": "no_params"
+    }
+   ]
+  }
+ },
+ "series": {
+  "data_sources_landing": {
+   "title": "GB system price, daily mean",
+   "dataset": "elexon/system_prices (silver)",
+   "column": "system_sell_price (equals system_buy_price on 100% of rows)",
+   "unit": "GBP/MWh",
+   "aggregation": "latest vintage per (settlement_date, settlement_period) via gridflow select_latest_vintage (run_type is null on every row, so the rank map is moot and selection falls to available_at DESC); mean of 48 periods per settlement date",
+   "window": "2026-05-26 to 2026-09-22 (120 settlement dates, each with 48 periods)",
+   "points": [
+    [
+     "2026-05-26",
+     121.88
+    ],
+    [
+     "2026-05-27",
+     100.81
+    ],
+    [
+     "2026-05-28",
+     68.48
+    ],
+    [
+     "2026-05-29",
+     97.07
+    ],
+    [
+     "2026-05-30",
+     110.25
+    ],
+    [
+     "2026-05-31",
+     105.05
+    ],
+    [
+     "2026-06-01",
+     114.23
+    ],
+    [
+     "2026-06-02",
+     121.85
+    ],
+    [
+     "2026-06-03",
+     108.14
+    ],
+    [
+     "2026-06-04",
+     35.36
+    ],
+    [
+     "2026-06-05",
+     88.03
+    ],
+    [
+     "2026-06-06",
+     90.89
+    ],
+    [
+     "2026-06-07",
+     39.46
+    ],
+    [
+     "2026-06-08",
+     106.96
+    ],
+    [
+     "2026-06-09",
+     98.16
+    ],
+    [
+     "2026-06-10",
+     101.38
+    ],
+    [
+     "2026-06-11",
+     120.3
+    ],
+    [
+     "2026-06-12",
+     76.76
+    ],
+    [
+     "2026-06-13",
+     20.93
+    ],
+    [
+     "2026-06-14",
+     46.3
+    ],
+    [
+     "2026-06-15",
+     103.5
+    ],
+    [
+     "2026-06-16",
+     111.46
+    ],
+    [
+     "2026-06-17",
+     125.13
+    ],
+    [
+     "2026-06-18",
+     108.31
+    ],
+    [
+     "2026-06-19",
+     89.63
+    ],
+    [
+     "2026-06-20",
+     105.62
+    ],
+    [
+     "2026-06-21",
+     112.86
+    ],
+    [
+     "2026-06-22",
+     101.89
+    ],
+    [
+     "2026-06-23",
+     204.23
+    ],
+    [
+     "2026-06-24",
+     107.8
+    ],
+    [
+     "2026-06-25",
+     105.25
+    ],
+    [
+     "2026-06-26",
+     115.28
+    ],
+    [
+     "2026-06-27",
+     79.26
+    ],
+    [
+     "2026-06-28",
+     56.04
+    ],
+    [
+     "2026-06-29",
+     112.3
+    ],
+    [
+     "2026-06-30",
+     110.42
+    ],
+    [
+     "2026-07-01",
+     97.45
+    ],
+    [
+     "2026-07-02",
+     42.6
+    ],
+    [
+     "2026-07-03",
+     105.32
+    ],
+    [
+     "2026-07-04",
+     62.98
+    ],
+    [
+     "2026-07-05",
+     100.13
+    ],
+    [
+     "2026-07-06",
+     70.06
+    ],
+    [
+     "2026-07-07",
+     102.48
+    ],
+    [
+     "2026-07-08",
+     117.7
+    ],
+    [
+     "2026-07-09",
+     113.44
+    ],
+    [
+     "2026-07-10",
+     125.14
+    ],
+    [
+     "2026-07-11",
+     116.42
+    ],
+    [
+     "2026-07-12",
+     66.83
+    ],
+    [
+     "2026-07-13",
+     110.74
+    ],
+    [
+     "2026-07-14",
+     114.07
+    ],
+    [
+     "2026-07-15",
+     117.86
+    ],
+    [
+     "2026-07-16",
+     120.81
+    ],
+    [
+     "2026-07-17",
+     118.19
+    ],
+    [
+     "2026-07-18",
+     117.08
+    ],
+    [
+     "2026-07-19",
+     75.19
+    ],
+    [
+     "2026-07-20",
+     114.89
+    ],
+    [
+     "2026-07-21",
+     146.96
+    ],
+    [
+     "2026-07-22",
+     148.11
+    ],
+    [
+     "2026-07-23",
+     118.12
+    ],
+    [
+     "2026-07-24",
+     129.11
+    ],
+    [
+     "2026-07-25",
+     64.71
+    ],
+    [
+     "2026-07-26",
+     56.5
+    ],
+    [
+     "2026-07-27",
+     112.46
+    ],
+    [
+     "2026-07-28",
+     104.08
+    ],
+    [
+     "2026-07-29",
+     125.11
+    ],
+    [
+     "2026-07-30",
+     132.8
+    ],
+    [
+     "2026-07-31",
+     135.17
+    ],
+    [
+     "2026-08-01",
+     116.17
+    ],
+    [
+     "2026-08-02",
+     133.58
+    ],
+    [
+     "2026-08-03",
+     122.33
+    ],
+    [
+     "2026-08-04",
+     114.12
+    ],
+    [
+     "2026-08-05",
+     88.45
+    ],
+    [
+     "2026-08-06",
+     126.36
+    ],
+    [
+     "2026-08-07",
+     97.24
+    ],
+    [
+     "2026-08-08",
+     82.38
+    ],
+    [
+     "2026-08-09",
+     95.95
+    ],
+    [
+     "2026-08-10",
+     118.68
+    ],
+    [
+     "2026-08-11",
+     126.1
+    ],
+    [
+     "2026-08-12",
+     122.89
+    ],
+    [
+     "2026-08-13",
+     150.36
+    ],
+    [
+     "2026-08-14",
+     139.92
+    ],
+    [
+     "2026-08-15",
+     153.62
+    ],
+    [
+     "2026-08-16",
+     156.34
+    ],
+    [
+     "2026-08-17",
+     162.79
+    ],
+    [
+     "2026-08-18",
+     169.41
+    ],
+    [
+     "2026-08-19",
+     156.48
+    ],
+    [
+     "2026-08-20",
+     150.34
+    ],
+    [
+     "2026-08-21",
+     131.01
+    ],
+    [
+     "2026-08-22",
+     73.34
+    ],
+    [
+     "2026-08-23",
+     104.75
+    ],
+    [
+     "2026-08-24",
+     119.64
+    ],
+    [
+     "2026-08-25",
+     140.0
+    ],
+    [
+     "2026-08-26",
+     149.11
+    ],
+    [
+     "2026-08-27",
+     178.94
+    ],
+    [
+     "2026-08-28",
+     136.15
+    ],
+    [
+     "2026-08-29",
+     133.35
+    ],
+    [
+     "2026-08-30",
+     159.83
+    ],
+    [
+     "2026-08-31",
+     147.44
+    ],
+    [
+     "2026-09-01",
+     117.59
+    ],
+    [
+     "2026-09-02",
+     170.89
+    ],
+    [
+     "2026-09-03",
+     124.38
+    ],
+    [
+     "2026-09-04",
+     81.61
+    ],
+    [
+     "2026-09-05",
+     54.59
+    ],
+    [
+     "2026-09-06",
+     80.42
+    ],
+    [
+     "2026-09-07",
+     138.95
+    ],
+    [
+     "2026-09-08",
+     153.18
+    ],
+    [
+     "2026-09-09",
+     160.48
+    ],
+    [
+     "2026-09-10",
+     144.13
+    ],
+    [
+     "2026-09-11",
+     175.56
+    ],
+    [
+     "2026-09-12",
+     113.82
+    ],
+    [
+     "2026-09-13",
+     211.2
+    ],
+    [
+     "2026-09-14",
+     193.19
+    ],
+    [
+     "2026-09-15",
+     149.47
+    ],
+    [
+     "2026-09-16",
+     147.47
+    ],
+    [
+     "2026-09-17",
+     94.37
+    ],
+    [
+     "2026-09-18",
+     56.11
+    ],
+    [
+     "2026-09-19",
+     22.39
+    ],
+    [
+     "2026-09-20",
+     53.44
+    ],
+    [
+     "2026-09-21",
+     165.96
+    ],
+    [
+     "2026-09-22",
+     161.88
+    ]
+   ]
+  },
+  "elexon_hub": {
+   "title": "GB transmission-metered wind generation, monthly mean",
+   "dataset": "elexon/fuelhh (silver), fuel_type = WIND",
+   "column": "generation_mw",
+   "unit": "MW (mean half-hourly output)",
+   "aggregation": "dedupe (settlement_date, settlement_period, fuel_type) keeping latest published_at (0 duplicates found); mean per calendar month of settlement_date",
+   "window": "2021-09 to 2026-08 (60 complete months; 2026-09 excluded as partial)",
+   "points": [
+    [
+     "2021-09",
+     4141.0
+    ],
+    [
+     "2021-10",
+     7934.0
+    ],
+    [
+     "2021-11",
+     7661.0
+    ],
+    [
+     "2021-12",
+     7374.0
+    ],
+    [
+     "2022-01",
+     8174.0
+    ],
+    [
+     "2022-02",
+     11284.0
+    ],
+    [
+     "2022-03",
+     6192.0
+    ],
+    [
+     "2022-04",
+     5924.0
+    ],
+    [
+     "2022-05",
+     6052.0
+    ],
+    [
+     "2022-06",
+     5064.0
+    ],
+    [
+     "2022-07",
+     4637.0
+    ],
+    [
+     "2022-08",
+     3661.0
+    ],
+    [
+     "2022-09",
+     6187.0
+    ],
+    [
+     "2022-10",
+     9396.0
+    ],
+    [
+     "2022-11",
+     9625.0
+    ],
+    [
+     "2022-12",
+     8608.0
+    ],
+    [
+     "2023-01",
+     10593.0
+    ],
+    [
+     "2023-02",
+     8582.0
+    ],
+    [
+     "2023-03",
+     7938.0
+    ],
+    [
+     "2023-04",
+     5981.0
+    ],
+    [
+     "2023-05",
+     4406.0
+    ],
+    [
+     "2023-06",
+     4201.0
+    ],
+    [
+     "2023-07",
+     6271.0
+    ],
+    [
+     "2023-08",
+     5151.0
+    ],
+    [
+     "2023-09",
+     5666.0
+    ],
+    [
+     "2023-10",
+     8360.0
+    ],
+    [
+     "2023-11",
+     8515.0
+    ],
+    [
+     "2023-12",
+     11163.0
+    ],
+    [
+     "2024-01",
+     9849.0
+    ],
+    [
+     "2024-02",
+     9494.0
+    ],
+    [
+     "2024-03",
+     8523.0
+    ],
+    [
+     "2024-04",
+     8806.0
+    ],
+    [
+     "2024-05",
+     4299.0
+    ],
+    [
+     "2024-06",
+     5460.0
+    ],
+    [
+     "2024-07",
+     4724.0
+    ],
+    [
+     "2024-08",
+     7037.0
+    ],
+    [
+     "2024-09",
+     5996.0
+    ],
+    [
+     "2024-10",
+     7673.0
+    ],
+    [
+     "2024-11",
+     7342.0
+    ],
+    [
+     "2024-12",
+     10530.0
+    ],
+    [
+     "2025-01",
+     8188.0
+    ],
+    [
+     "2025-02",
+     9505.0
+    ],
+    [
+     "2025-03",
+     7097.0
+    ],
+    [
+     "2025-04",
+     5394.0
+    ],
+    [
+     "2025-05",
+     6266.0
+    ],
+    [
+     "2025-06",
+     7516.0
+    ],
+    [
+     "2025-07",
+     4461.0
+    ],
+    [
+     "2025-08",
+     5968.0
+    ],
+    [
+     "2025-09",
+     8852.0
+    ],
+    [
+     "2025-10",
+     8922.0
+    ],
+    [
+     "2025-11",
+     11004.0
+    ],
+    [
+     "2025-12",
+     11103.0
+    ],
+    [
+     "2026-01",
+     11581.0
+    ],
+    [
+     "2026-02",
+     11373.0
+    ],
+    [
+     "2026-03",
+     9751.0
+    ],
+    [
+     "2026-04",
+     7989.0
+    ],
+    [
+     "2026-05",
+     6117.0
+    ],
+    [
+     "2026-06",
+     6655.0
+    ],
+    [
+     "2026-07",
+     5573.0
+    ],
+    [
+     "2026-08",
+     5542.0
+    ]
+   ]
+  },
+  "architecture": null,
+  "architecture_note": "No time series recommended. If a figure is wanted, use counts as a table: 8 registered source keys, 163 configured datasets, 164 registered silver transformers, 126 datasets with local silver, 258 silver views (126 base + 6 _latest + aliases), 8 gold views (3 gridflow SQL + 5 gridflow_models output globs), 3 metadata tables.",
+  "models_landing_demand": {
+   "title": "Day-ahead demand forecast vs outturn (2 days)",
+   "dataset": "gold/forecasts, run_id a55a829bc51c40b2, model day_ahead.lgbm_demand.v1 (walk-forward fold 12, vintage_kind issued)",
+   "columns": [
+    "delivery_time_utc",
+    "actual_mw",
+    "q05_mw",
+    "q50_mw",
+    "q95_mw"
+   ],
+   "unit": "MW",
+   "window": "2026-08-20T00:00Z to 2026-08-21T23:30Z (96 half-hours)",
+   "points": [
+    [
+     "2026-08-20T00:00Z",
+     20863.0,
+     19866.0,
+     22097.0,
+     24436.0
+    ],
+    [
+     "2026-08-20T00:30Z",
+     20761.0,
+     19416.0,
+     21777.0,
+     24200.0
+    ],
+    [
+     "2026-08-20T01:00Z",
+     20548.0,
+     19178.0,
+     21638.0,
+     23587.0
+    ],
+    [
+     "2026-08-20T01:30Z",
+     20058.0,
+     18582.0,
+     21014.0,
+     23062.0
+    ],
+    [
+     "2026-08-20T02:00Z",
+     19133.0,
+     18162.0,
+     20543.0,
+     22743.0
+    ],
+    [
+     "2026-08-20T02:30Z",
+     19589.0,
+     17968.0,
+     20486.0,
+     22413.0
+    ],
+    [
+     "2026-08-20T03:00Z",
+     19326.0,
+     17960.0,
+     19806.0,
+     21986.0
+    ],
+    [
+     "2026-08-20T03:30Z",
+     18986.0,
+     17964.0,
+     19806.0,
+     21728.0
+    ],
+    [
+     "2026-08-20T04:00Z",
+     19019.0,
+     17894.0,
+     19617.0,
+     21820.0
+    ],
+    [
+     "2026-08-20T04:30Z",
+     19307.0,
+     17943.0,
+     20048.0,
+     22250.0
+    ],
+    [
+     "2026-08-20T05:00Z",
+     20942.0,
+     18879.0,
+     21077.0,
+     23428.0
+    ],
+    [
+     "2026-08-20T05:30Z",
+     22038.0,
+     20249.0,
+     22319.0,
+     25079.0
+    ],
+    [
+     "2026-08-20T06:00Z",
+     24038.0,
+     21433.0,
+     24273.0,
+     26924.0
+    ],
+    [
+     "2026-08-20T06:30Z",
+     23934.0,
+     21550.0,
+     24870.0,
+     27350.0
+    ],
+    [
+     "2026-08-20T07:00Z",
+     24507.0,
+     22538.0,
+     25865.0,
+     28067.0
+    ],
+    [
+     "2026-08-20T07:30Z",
+     24406.0,
+     22044.0,
+     25564.0,
+     28069.0
+    ],
+    [
+     "2026-08-20T08:00Z",
+     24619.0,
+     22221.0,
+     26145.0,
+     28382.0
+    ],
+    [
+     "2026-08-20T08:30Z",
+     23631.0,
+     21636.0,
+     25596.0,
+     28074.0
+    ],
+    [
+     "2026-08-20T09:00Z",
+     23295.0,
+     20464.0,
+     24722.0,
+     27594.0
+    ],
+    [
+     "2026-08-20T09:30Z",
+     23001.0,
+     20251.0,
+     24456.0,
+     27207.0
+    ],
+    [
+     "2026-08-20T10:00Z",
+     22564.0,
+     19048.0,
+     23808.0,
+     27049.0
+    ],
+    [
+     "2026-08-20T10:30Z",
+     22531.0,
+     19043.0,
+     23641.0,
+     27063.0
+    ],
+    [
+     "2026-08-20T11:00Z",
+     22489.0,
+     18954.0,
+     23265.0,
+     27084.0
+    ],
+    [
+     "2026-08-20T11:30Z",
+     22071.0,
+     18966.0,
+     23175.0,
+     27169.0
+    ],
+    [
+     "2026-08-20T12:00Z",
+     21804.0,
+     18507.0,
+     22691.0,
+     26914.0
+    ],
+    [
+     "2026-08-20T12:30Z",
+     21772.0,
+     18507.0,
+     22576.0,
+     27018.0
+    ],
+    [
+     "2026-08-20T13:00Z",
+     21821.0,
+     18708.0,
+     22291.0,
+     27032.0
+    ],
+    [
+     "2026-08-20T13:30Z",
+     22150.0,
+     18863.0,
+     22242.0,
+     27082.0
+    ],
+    [
+     "2026-08-20T14:00Z",
+     22304.0,
+     19502.0,
+     22515.0,
+     27061.0
+    ],
+    [
+     "2026-08-20T14:30Z",
+     23229.0,
+     19922.0,
+     22838.0,
+     27332.0
+    ],
+    [
+     "2026-08-20T15:00Z",
+     23635.0,
+     21041.0,
+     23472.0,
+     28167.0
+    ],
+    [
+     "2026-08-20T15:30Z",
+     24754.0,
+     22541.0,
+     25366.0,
+     29012.0
+    ],
+    [
+     "2026-08-20T16:00Z",
+     25684.0,
+     23709.0,
+     26218.0,
+     29631.0
+    ],
+    [
+     "2026-08-20T16:30Z",
+     26868.0,
+     24849.0,
+     27358.0,
+     30228.0
+    ],
+    [
+     "2026-08-20T17:00Z",
+     27233.0,
+     25481.0,
+     28033.0,
+     30695.0
+    ],
+    [
+     "2026-08-20T17:30Z",
+     27913.0,
+     25921.0,
+     28469.0,
+     31266.0
+    ],
+    [
+     "2026-08-20T18:00Z",
+     28443.0,
+     26735.0,
+     29033.0,
+     31583.0
+    ],
+    [
+     "2026-08-20T18:30Z",
+     28471.0,
+     26618.0,
+     28730.0,
+     31451.0
+    ],
+    [
+     "2026-08-20T19:00Z",
+     27414.0,
+     26452.0,
+     29114.0,
+     31390.0
+    ],
+    [
+     "2026-08-20T19:30Z",
+     27505.0,
+     26642.0,
+     29141.0,
+     31324.0
+    ],
+    [
+     "2026-08-20T20:00Z",
+     27082.0,
+     26352.0,
+     28453.0,
+     31196.0
+    ],
+    [
+     "2026-08-20T20:30Z",
+     26084.0,
+     25108.0,
+     27107.0,
+     30490.0
+    ],
+    [
+     "2026-08-20T21:00Z",
+     25170.0,
+     23933.0,
+     25879.0,
+     29099.0
+    ],
+    [
+     "2026-08-20T21:30Z",
+     24059.0,
+     22928.0,
+     24991.0,
+     27942.0
+    ],
+    [
+     "2026-08-20T22:00Z",
+     23394.0,
+     20929.0,
+     23476.0,
+     26236.0
+    ],
+    [
+     "2026-08-20T22:30Z",
+     22678.0,
+     19989.0,
+     22574.0,
+     25414.0
+    ],
+    [
+     "2026-08-20T23:00Z",
+     22880.0,
+     19610.0,
+     22564.0,
+     24623.0
+    ],
+    [
+     "2026-08-20T23:30Z",
+     22462.0,
+     19477.0,
+     21611.0,
+     24602.0
+    ],
+    [
+     "2026-08-21T00:00Z",
+     21913.0,
+     19342.0,
+     21485.0,
+     24017.0
+    ],
+    [
+     "2026-08-21T00:30Z",
+     21142.0,
+     19205.0,
+     21330.0,
+     23787.0
+    ],
+    [
+     "2026-08-21T01:00Z",
+     20470.0,
+     19125.0,
+     21146.0,
+     23690.0
+    ],
+    [
+     "2026-08-21T01:30Z",
+     20263.0,
+     18757.0,
+     20597.0,
+     23319.0
+    ],
+    [
+     "2026-08-21T02:00Z",
+     19872.0,
+     17493.0,
+     19697.0,
+     22223.0
+    ],
+    [
+     "2026-08-21T02:30Z",
+     19940.0,
+     17572.0,
+     19776.0,
+     22339.0
+    ],
+    [
+     "2026-08-21T03:00Z",
+     19727.0,
+     17470.0,
+     19474.0,
+     21749.0
+    ],
+    [
+     "2026-08-21T03:30Z",
+     19054.0,
+     17466.0,
+     19277.0,
+     21524.0
+    ],
+    [
+     "2026-08-21T04:00Z",
+     19025.0,
+     17475.0,
+     19345.0,
+     21438.0
+    ],
+    [
+     "2026-08-21T04:30Z",
+     19553.0,
+     17503.0,
+     19538.0,
+     21808.0
+    ],
+    [
+     "2026-08-21T05:00Z",
+     20768.0,
+     18935.0,
+     21359.0,
+     23198.0
+    ],
+    [
+     "2026-08-21T05:30Z",
+     21629.0,
+     19734.0,
+     21689.0,
+     24192.0
+    ],
+    [
+     "2026-08-21T06:00Z",
+     23433.0,
+     20921.0,
+     23624.0,
+     26552.0
+    ],
+    [
+     "2026-08-21T06:30Z",
+     23814.0,
+     21305.0,
+     24200.0,
+     26842.0
+    ],
+    [
+     "2026-08-21T07:00Z",
+     24034.0,
+     21722.0,
+     24859.0,
+     27405.0
+    ],
+    [
+     "2026-08-21T07:30Z",
+     23265.0,
+     21632.0,
+     24753.0,
+     27382.0
+    ],
+    [
+     "2026-08-21T08:00Z",
+     22447.0,
+     21715.0,
+     24726.0,
+     27593.0
+    ],
+    [
+     "2026-08-21T08:30Z",
+     21164.0,
+     20829.0,
+     23899.0,
+     26983.0
+    ],
+    [
+     "2026-08-21T09:00Z",
+     20830.0,
+     19813.0,
+     23035.0,
+     26531.0
+    ],
+    [
+     "2026-08-21T09:30Z",
+     20512.0,
+     19572.0,
+     22938.0,
+     25896.0
+    ],
+    [
+     "2026-08-21T10:00Z",
+     20437.0,
+     19164.0,
+     22381.0,
+     25075.0
+    ],
+    [
+     "2026-08-21T10:30Z",
+     20511.0,
+     18605.0,
+     21889.0,
+     24812.0
+    ],
+    [
+     "2026-08-21T11:00Z",
+     20939.0,
+     18469.0,
+     21667.0,
+     24798.0
+    ],
+    [
+     "2026-08-21T11:30Z",
+     20826.0,
+     18429.0,
+     21126.0,
+     24582.0
+    ],
+    [
+     "2026-08-21T12:00Z",
+     20920.0,
+     18193.0,
+     20820.0,
+     25366.0
+    ],
+    [
+     "2026-08-21T12:30Z",
+     20787.0,
+     18193.0,
+     20585.0,
+     25290.0
+    ],
+    [
+     "2026-08-21T13:00Z",
+     20632.0,
+     18174.0,
+     20583.0,
+     25404.0
+    ],
+    [
+     "2026-08-21T13:30Z",
+     21171.0,
+     18181.0,
+     20709.0,
+     25360.0
+    ],
+    [
+     "2026-08-21T14:00Z",
+     21303.0,
+     18348.0,
+     20693.0,
+     25663.0
+    ],
+    [
+     "2026-08-21T14:30Z",
+     22076.0,
+     18742.0,
+     21394.0,
+     25838.0
+    ],
+    [
+     "2026-08-21T15:00Z",
+     22242.0,
+     19442.0,
+     21992.0,
+     26199.0
+    ],
+    [
+     "2026-08-21T15:30Z",
+     23628.0,
+     20444.0,
+     22994.0,
+     26912.0
+    ],
+    [
+     "2026-08-21T16:00Z",
+     24718.0,
+     21764.0,
+     24416.0,
+     27852.0
+    ],
+    [
+     "2026-08-21T16:30Z",
+     25340.0,
+     23552.0,
+     25808.0,
+     28999.0
+    ],
+    [
+     "2026-08-21T17:00Z",
+     26070.0,
+     24211.0,
+     26509.0,
+     29281.0
+    ],
+    [
+     "2026-08-21T17:30Z",
+     26518.0,
+     25009.0,
+     27068.0,
+     29631.0
+    ],
+    [
+     "2026-08-21T18:00Z",
+     27010.0,
+     25193.0,
+     27877.0,
+     30457.0
+    ],
+    [
+     "2026-08-21T18:30Z",
+     27147.0,
+     25083.0,
+     27945.0,
+     30272.0
+    ],
+    [
+     "2026-08-21T19:00Z",
+     27223.0,
+     25043.0,
+     27998.0,
+     30111.0
+    ],
+    [
+     "2026-08-21T19:30Z",
+     26983.0,
+     25010.0,
+     27431.0,
+     29504.0
+    ],
+    [
+     "2026-08-21T20:00Z",
+     27210.0,
+     24788.0,
+     27465.0,
+     29722.0
+    ],
+    [
+     "2026-08-21T20:30Z",
+     25684.0,
+     24227.0,
+     26230.0,
+     29080.0
+    ],
+    [
+     "2026-08-21T21:00Z",
+     24660.0,
+     22812.0,
+     25286.0,
+     27818.0
+    ],
+    [
+     "2026-08-21T21:30Z",
+     23652.0,
+     21607.0,
+     23899.0,
+     26606.0
+    ],
+    [
+     "2026-08-21T22:00Z",
+     22780.0,
+     19667.0,
+     22767.0,
+     25331.0
+    ],
+    [
+     "2026-08-21T22:30Z",
+     22170.0,
+     19359.0,
+     22085.0,
+     24411.0
+    ],
+    [
+     "2026-08-21T23:00Z",
+     22126.0,
+     18464.0,
+     21859.0,
+     24014.0
+    ],
+    [
+     "2026-08-21T23:30Z",
+     21659.0,
+     18416.0,
+     21446.0,
+     23697.0
+    ]
+   ]
+  },
+  "models_landing_demand_folds": {
+   "title": "Demand v1: median pinball loss per walk-forward fold",
+   "dataset": "gold/forecast_metrics, run_id a55a829bc51c40b2, scope fold, metric pinball_q0.5",
+   "unit": "MW (pinball loss at q=0.5 = half the mean absolute error of the median forecast)",
+   "window": "12 validation folds of 30 days, 2024-09-01 to 2026-08-22",
+   "points": [
+    [
+     1,
+     "2024-09-01",
+     647.43
+    ],
+    [
+     2,
+     "2024-11-03",
+     729.54
+    ],
+    [
+     3,
+     "2025-01-04",
+     816.03
+    ],
+    [
+     4,
+     "2025-03-08",
+     825.33
+    ],
+    [
+     5,
+     "2025-05-10",
+     644.96
+    ],
+    [
+     6,
+     "2025-07-11",
+     551.93
+    ],
+    [
+     7,
+     "2025-09-12",
+     670.94
+    ],
+    [
+     8,
+     "2025-11-14",
+     794.05
+    ],
+    [
+     9,
+     "2026-01-15",
+     693.64
+    ],
+    [
+     10,
+     "2026-03-19",
+     892.32
+    ],
+    [
+     11,
+     "2026-05-21",
+     695.15
+    ],
+    [
+     12,
+     "2026-07-23",
+     571.2
+    ]
+   ]
+  },
+  "models_landing_smp": {
+   "title": "Fundamentals SMP clearing price vs APXMIDP, daily mean",
+   "dataset": "gold_stack_clearing (run_id 41de423cfc0b421e, policy smp_headline_perfect_prog_v2) joined to gold_gb_day_ahead_benchmark on (settlement_date, settlement_period)",
+   "unit": "GBP/MWh",
+   "window": "2026-08-18 to 2026-09-03 (17 days, 816 periods, all matched)",
+   "caveat": "Perfect-prognosis backtest; fuel and carbon prices are synthetic (card: provenance synthetic 35e4d8d, seed 20240507); -500 GBP/MWh price floor pulls daily means negative. Must be captioned as such.",
+   "columns": [
+    "settlement_date",
+    "model_clearing_gbp_mwh",
+    "apxmidp_gbp_mwh"
+   ],
+   "points": [
+    [
+     "2026-08-18",
+     70.65,
+     153.87
+    ],
+    [
+     "2026-08-19",
+     66.4,
+     157.96
+    ],
+    [
+     "2026-08-20",
+     47.58,
+     146.16
+    ],
+    [
+     "2026-08-21",
+     -44.67,
+     137.0
+    ],
+    [
+     "2026-08-22",
+     -136.04,
+     89.65
+    ],
+    [
+     "2026-08-23",
+     -131.4,
+     110.51
+    ],
+    [
+     "2026-08-24",
+     -69.34,
+     137.16
+    ],
+    [
+     "2026-08-25",
+     -89.21,
+     134.18
+    ],
+    [
+     "2026-08-26",
+     -0.19,
+     147.4
+    ],
+    [
+     "2026-08-27",
+     65.09,
+     164.2
+    ],
+    [
+     "2026-08-28",
+     25.9,
+     136.05
+    ],
+    [
+     "2026-08-29",
+     31.8,
+     127.57
+    ],
+    [
+     "2026-08-30",
+     37.15,
+     157.52
+    ],
+    [
+     "2026-08-31",
+     -86.53,
+     132.3
+    ],
+    [
+     "2026-09-01",
+     -60.27,
+     121.45
+    ],
+    [
+     "2026-09-02",
+     78.44,
+     166.81
+    ],
+    [
+     "2026-09-03",
+     -45.73,
+     120.46
+    ]
+   ]
+  }
+ },
+ "architecture": {
+  "repo": "gridflow (Python 3.11+, Polars, DuckDB, Pydantic v2, httpx, Typer; licence Apache-2.0 per LICENSE)",
+  "data_root": "configurable: GRIDFLOW_DATA_DIR / GRIDFLOW_DUCKDB_PATH (README); this machine uses C:/gridflow-data",
+  "layers": [
+   {
+    "layer": "bronze",
+    "what": "Raw API response bytes, written once, never rewritten; one JSON metadata sidecar per body",
+    "format": "json / xml / csv / bin by content type",
+    "path": "bronze/{source}/{dataset}/{YYYY}/{MM}/{DD}/raw_{fetched_at:%Y%m%dT%H%M%SZ}_{sha256[:8]}.{ext} + same stem .meta.json",
+    "partition": "data date when known, else fetch date",
+    "refs": [
+     "src/gridflow/bronze/writer.py:38-48 (partition dirs)",
+     "src/gridflow/bronze/writer.py:57 (body filename)",
+     "src/gridflow/bronze/writer.py:67-84 (sidecar fields)",
+     "src/gridflow/bronze/writer.py:85 (sidecar filename)",
+     "src/gridflow/storage/paths.py:23-38"
+    ],
+    "sidecar_fields": [
+     "source",
+     "dataset",
+     "fetched_at",
+     "written_at",
+     "data_date",
+     "request_url (credentials masked)",
+     "request_params (masked)",
+     "api_version",
+     "http_status",
+     "content_type",
+     "body_sha256",
+     "body_size_bytes",
+     "page",
+     "total_pages"
+    ]
+   },
+   {
+    "layer": "silver",
+    "what": "Typed, validated (Pydantic row models), deduplicated, UTC-normalised tables; one transformer per (source, dataset)",
+    "format": "Parquet, zstd compression by default",
+    "path": "silver/{source}/{dataset}/year={YYYY}/month={MM}/{dataset}_{YYYYMMDD}.parquet",
+    "append_only_variant": "{dataset}_{YYYYMMDD}_run{available_at ISO}.parquet for APPEND_ONLY transformers: elexon system_prices, remit, fou2t14d; neso_data_portal daily_wind_availability, historic_generation_mix, embedded_wind_solar_forecast",
+    "standard_columns_observed": [
+     "event_time",
+     "available_at",
+     "published_at",
+     "ingested_at",
+     "source_run_id",
+     "dataset_version"
+    ],
+    "refs": [
+     "src/gridflow/storage/paths.py:50-73",
+     "src/gridflow/silver/base.py:2610-2640 (_write_silver, _run suffix at 2635)",
+     "src/gridflow/silver/base.py:936 (run: bronze -> silver for one date)",
+     "src/gridflow/silver/base.py:1337 (unique on dedup key)",
+     "src/gridflow/silver/base.py:2046 (schema.model_validate per row)",
+     "src/gridflow/storage/parquet.py:38 (compression default zstd)",
+     "src/gridflow/silver/registry.py"
+    ],
+    "counts": "164 registered transformers (entsoe 48, elexon 33, entsog 33, neso 33, gie_agsi 7, open_meteo 6, neso_data_portal 3, gie_alsi 1)"
+   },
+   {
+    "layer": "gold (gridflow)",
+    "what": "One Python builder, system_marginal_price (latest-vintage system prices + spread, abs imbalance, calendar features), plus three SQL views",
+    "format": "Parquet",
+    "path": "gold/{gold_dataset}/year={YYYY}/{gold_dataset}_{YYYYMMDD}.parquet",
+    "local_state": "No gridflow-built gold parquet exists under C:/gridflow-data/gold (system_marginal_price has never been built locally).",
+    "sql_views": {
+     "gold_uk_imbalance_context": "Elexon system prices (latest vintage) joined with NESO carbon intensity, half-hourly (gold/views/uk_imbalance_context.sql)",
+     "gold_gb_day_ahead_benchmark": "Elexon MID APXMIDP, one row per settlement date/period, GBP/MWh (gold/views/gb_day_ahead_benchmark.sql)",
+     "gold_eu_gas_storage": "Country-level daily gas storage from GIE AGSI+ (gold/views/eu_gas_storage.sql)"
+    },
+    "refs": [
+     "src/gridflow/gold/system_marginal_price.py:26 (gold_dataset)",
+     "src/gridflow/gold/registry.py",
+     "src/gridflow/storage/paths.py:96-101",
+     "src/gridflow/storage/duckdb.py:465 (_register_gold_views runs gold/views/*.sql)"
+    ]
+   },
+   {
+    "layer": "gold (written by gridflow_models into the same root)",
+    "what": "Model outputs: forecasts, forecast_metrics, stack_clearing, stack_residual_demand, stack_supply_curve_points",
+    "path": "gold/{table}/model_slug={slug}/{prefix}_{YYYYMMDDTHHMMSSZ}_{run_id}.parquet",
+    "note": "Different partitioning convention (model_slug=) from gridflow's builder (year=). gridflow registers them as gold_{table} glob views on init."
+   }
+  ],
+  "duckdb_catalogue": {
+   "file": "{data_root}/gridflow.duckdb",
+   "metadata_tables": [
+    "pipeline_runs",
+    "pipeline_watermarks",
+    "quality_reports"
+   ],
+   "view_naming": {
+    "silver_{source}_{dataset}": "one per silver dataset directory (storage/duckdb.py:179)",
+    "silver_{source}_{dataset}_latest": "latest-vintage projection, only where LATEST_VIEW_SPECS has an entry: elexon system_prices, remit, fou2t14d; neso_data_portal x3 (storage/duckdb.py:186; silver/latest_views.py:94)",
+    "silver_{dataset}": "deprecated single-token alias, skipped when two sources share a dataset name (storage/duckdb.py:265)",
+    "gold_{name}": "one per gold directory (storage/duckdb.py:207) plus the three SQL views"
+   },
+   "observed_2026_09_27": "269 relations: 266 views (258 silver_*, 8 gold_*) + 3 tables. Gold views: gold_eu_gas_storage, gold_forecast_metrics, gold_forecasts, gold_gb_day_ahead_benchmark, gold_stack_clearing, gold_stack_residual_demand, gold_stack_supply_curve_points, gold_uk_imbalance_context.",
+   "refs": [
+    "src/gridflow/storage/duckdb.py:92-158 (init_catalogue, tables at 106/124/134)",
+    "src/gridflow/storage/duckdb.py:161-209 (_register_views)",
+    "src/gridflow/storage/duckdb.py:495 (refresh_views)"
+   ]
+  },
+  "cli": {
+   "entry_point": "gridflow = gridflow.cli:app (pyproject.toml:34)",
+   "verbs": {
+    "init": "cli.py:1209 - initialise DuckDB catalogue and register views",
+    "ingest": "cli.py:186 - API -> bronze",
+    "transform": "cli.py:261 - bronze -> silver (normalised, validated, deduplicated)",
+    "build": "cli.py:306 - silver -> gold",
+    "pipeline": "cli.py:485 - ingest -> transform (-> build with --gold)",
+    "backfill": "cli.py:346 - historical data in chunks",
+    "export-csv": "cli.py:438 - silver Parquet -> CSV",
+    "status": "cli.py:584 - run history and quality summary",
+    "quality": "cli.py:677 - run quality checks, write report",
+    "reset": "cli.py:796 - delete bronze/silver/gold data and reset the catalogue",
+    "prune": "cli.py:972 - delete partitions older than a retention cutoff"
+   }
+  },
+  "quality_checks": {
+   "names": [
+    "null_rate",
+    "time_series_gaps",
+    "range_check",
+    "row_count",
+    "duplicates"
+   ],
+   "ref": "src/gridflow/quality/checks.py:23,67,120,154,171"
+  },
+  "query_client": "gridflow.serving.client.GridflowClient (read-only query client, README)",
+  "does_not_do": [
+   "No scheduler or orchestrator: runs are CLI invocations. The 'schedule' field in config/sources.yaml is declared at src/gridflow/config/settings.py:60 and read nowhere else in src/.",
+   "No cloud, object store, warehouse, streaming, multi-tenancy or cluster (vault 10-projects/gridflow/architecture.md 'Out of scope' + 'Storage stack').",
+   "No web service or public API; no hosted database. Local files plus an embedded DuckDB file.",
+   "No live or real-time feed claims: data lands when someone runs ingest.",
+   "Does not build connectors for the NESO Data Portal's other catalogue packages (only 3 of the portal's packages are implemented).",
+   "No ENTSO-E GB day-ahead prices (none in local silver; the GB benchmark comes from Elexon MID).",
+   "No modelling, forecasts or trading: models live in the separate gridflow_models repo; gridflow_models 'does not produce orders' (vault gridflow-models README).",
+   "No backfill for the NESO Data Portal datasets (current file only, refused by design)."
+  ],
+  "site_build_and_gates": {
+   "repo": "gridflow-front-end",
+   "commands": {
+    "gridflow-serve": "stdlib dev server",
+    "gridflow-build": "render vault .md -> site/hifi/data-sources/ (Jinja2)",
+    "gridflow-build --check": "idempotence / content audit",
+    "gridflow-drift-check": "vault live-API validator (never run without explicit owner yes)",
+    "gridflow-staleness-check": "authored-page staleness check"
+   },
+   "ci_yml": "on pull_request and push to main: staleness check, baseline ratchet, gridflow-build --check",
+   "deploy_yml": "on push to main and workflow_dispatch: gridflow-build, gridflow-build --check, htmlhint, lychee internal links, deploy to GitHub Pages",
+   "gridflow_ci": "gridflow repo ci.yml on push and pull_request: uv lock --check, ruff check, ruff format --check, mypy, pytest -m 'not live'",
+   "v5_extra_gates": "Phase 23/28 gates per MILESTONE.md: impeccable detector [], htmlhint, lychee, AA contrast, no horizontal overflow at 390px"
+  }
+ },
+ "models": {
+  "status_rule": "Render 'observed_state'. 'readme_status' is quoted verbatim for provenance only; notebooks/README.md was last edited 2026-05-31 and is stale for wind and solar.",
+  "metric_definitions": {
+   "pinball_q0.5": "mean quantile (pinball) loss at q=0.5 over scored rows; equals half the mean absolute error of the median forecast; unit = target unit (MW for demand). gridflow_models/validation/metrics.py:15",
+   "coverage_90": "share of actuals inside [q_0.05, q_0.95], bounds inclusive. validation/metrics.py:24, validation/record.py:70-80",
+   "crps": "approximated as the mean pinball loss over the 7 quantiles. validation/metrics.py:32",
+   "gates": "pinball_q0.5 <= 1500; coverage_nominal90 within 0.90 +/- 0.05; monotonicity = 0 crossing rows (card v2 gate lines; validation/gates.py)",
+   "smp_bias": "mean(clearing_price - APXMIDP) over scored periods, GBP/MWh (reproduced: -151.8012 over 816 periods; MAE 151.8012; median difference -95.34; every period under-predicts)"
+  },
+  "workbench": {
+   "bootstrap": "data, models, common = setup_notebook()  (from gridflow_models import setup_notebook)",
+   "data": "research/handles/data.py:94 class Data - one SourceClient per configured gridflow source (8: elexon, open_meteo, entsoe, gie_agsi, gie_alsi, entsog, neso, neso_data_portal) with list_datasets / refresh / describe / backfill / query / tail / coverage (source.py:188-491); top-level verbs list_data_sources, list_tables, list_freshness, sql, refresh_all, training_set (data.py:55-62); cross-source readers imbalance_context, gb_day_ahead_benchmark",
+   "models": "research/handles/models.py - one client per configs/models/**/*.yaml by workbench_nature: predictive -> PredictiveModelClient, stack -> StackModelClient, smp -> SmpModelClient; models.list() returns model_id, family, version, status, last_trained",
+   "predictive_client_verbs": "train, validate, show_folds, gold_dataset, feature_matrix, predict, predict_raw, check_data_freshness, features_at, predict_range, predictions, backtest_predictions, register, versions, model_card, retire (model.py:300-1327)",
+   "stack_client_verbs": "check_data_freshness, build_raw, build(as_of), clear(as_of, demand_mw) (model.py:1357-1398)",
+   "smp_client_verbs": "check_data_freshness, predictions, assemble_raw, assemble, assemble_range, components, backtest (model.py:1478-1647)",
+   "common": "common.py:37 - date, datetime, timedelta, utc, pl, features; pd / plt / sns / plots when installed; window(year)",
+   "readme_drift": "README says 6 source sub-clients and 5 cross-source verbs; code has 8 source clients and 6 top-level verbs."
+  },
+  "models": [
+   {
+    "name": "Day-ahead demand",
+    "model_ids": [
+     "day_ahead.lgbm_demand.v1",
+     "day_ahead.lgbm_demand.v2"
+    ],
+    "workbench": [
+     "models.demand_forecast (v1)",
+     "models.demand_forecast_v2 (v2)"
+    ],
+    "target": "GB national demand outturn, half-hourly, MW: elexon/indo column initial_demand_outturn_mw",
+    "method": "LightGBM quantile regression, one model per quantile (0.05..0.95, 7 levels), output row-sorted to be monotone; conformal calibration (CQR) of the outer band; v2 adds weather (open_meteo/historical_demand) and calendar covariates",
+    "horizon": "24h ahead",
+    "readme_status": "\"`day_ahead.lgbm_demand.v1` (trained; full lifecycle: backfill -> build gold -> train/load -> inspect)\" (notebooks/README.md, 01_demand_forecast)",
+    "observed_state": "Manifest (data/gridflow_models.duckdb model_manifest): 21 v1 versions and 1 v2 version, all status 'validated'. Gold forecast_metrics hold 4 v1 runs and 1 v2 run; gold forecasts hold the same backtests plus one live issued v2 run (1e5e904884c74bb9, 72 half-hours, 2026-09-04 23:30 to 2026-09-06 11:00 UTC).",
+    "metrics": [
+     {
+      "run_id": "a55a829bc51c40b2",
+      "model": "v1",
+      "source": "gold forecast_metrics scope=run + model card v1",
+      "window": "12 x 30-day folds, 2024-09-01 12:00 to 2026-08-22 00:00 UTC; 17,279 scored half-hours; training 2021-09-01 to 2026-08-22 on a 1095-day rolling window",
+      "pinball_q0.5_mw": 711.04,
+      "coverage_90": 0.8933,
+      "monotonicity": 0,
+      "gates_passed": true,
+      "vintage": "issued, policy v1_day_anchored_noon_d1",
+      "card_label": "the headline, fit-honest"
+     },
+     {
+      "run_id": "b367a742aa544f8f",
+      "model": "v2",
+      "source": "gold forecast_metrics scope=run + model card v2",
+      "window": "same 12 folds and 17,279 half-hours",
+      "pinball_q0.5_mw": 599.72,
+      "coverage_90": 0.883,
+      "monotonicity": 0,
+      "gates_passed": true,
+      "vintage": "perfect_prog (actual ERA5 weather used as if forecast)",
+      "card_label": "backtest only; optimistic by the unmeasured weather-forecast error; one run, no significance claim"
+     }
+    ],
+    "superseded_runs_in_gold": "ca69785f80f34408 (6 folds, 808.04), 91f7f21e7d5d4554 (669.25, retired: leaky features), b66a3e3ff0604376 (714.15, pre-E-2 protocol). Do not quote these as current.",
+    "card": "docs/MODEL_CARDS/day_ahead_lgbm_demand_v1.md, day_ahead_lgbm_demand_v2.md"
+   },
+   {
+    "name": "Wind generation",
+    "model_ids": [
+     "wind.lgbm_quantile.v1"
+    ],
+    "workbench": [
+     "models.wind_forecast"
+    ],
+    "target": "GB national wind generation outturn, half-hourly, MW: elexon/fuelhh where fuel_type = WIND, column generation_mw",
+    "method": "LightGBM quantile regression (7 quantiles), per-site weather from open_meteo/historical_wind (12 sites); benchmark WINDFOR",
+    "horizon": "24h ahead",
+    "readme_status": "\"`wind.lgbm_quantile.v1` + `solar.lgbm_quantile.v1` combined (trained; parallel sections ...)\" (notebooks/README.md, 02_wind_solar_forecast)",
+    "observed_state": "No manifest entry, no gold forecasts, no gold metrics. Card (2026-09-01): 'never been trained, gated or published'; every Validation Results row is pending. A gold training dataset file exists at data/models/wind_lgbm_quantile_v1/gold/dataset.parquet. Latest gridflow_models commit (2026-09-27) records an agreed wind and solar training plan.",
+    "metrics": [],
+    "card": "docs/MODEL_CARDS/wind_lgbm_quantile_v1.md"
+   },
+   {
+    "name": "Solar generation",
+    "model_ids": [
+     "solar.lgbm_quantile.v1"
+    ],
+    "workbench": [
+     "models.solar_forecast"
+    ],
+    "target": "Configured: elexon/fuelhh where fuel_type = SOLAR, generation_mw. That target is empty (FUELHH has no SOLAR rows). Card: owner ruling B-2 authorises neso_data_portal/historic_generation_mix.solar as the successor target; config not yet changed.",
+    "method": "LightGBM quantile regression (7 quantiles), per-site weather from open_meteo/historical_solar (6 sites); benchmark persistence",
+    "horizon": "24h ahead",
+    "readme_status": "same line as wind: \"(trained; ...)\"",
+    "observed_state": "No manifest entry, no gold forecasts, no gold metrics. Card (2026-09-01): 'never been trained, gated or published, and today it cannot be' because the configured target is empty.",
+    "metrics": [],
+    "card": "docs/MODEL_CARDS/solar_lgbm_quantile_v1.md"
+   },
+   {
+    "name": "GB merit-order stack",
+    "model_ids": [
+     "stack.gb.v1"
+    ],
+    "workbench": [
+     "models.stack"
+    ],
+    "target": "GB merit-order supply curve at a target settlement period (SupplyCurve: units ranked by short-run marginal cost, cumulative MW, GBP/MWh, floor -500)",
+    "method": "Constructive (no training): plant inventory elexon/bmunits_reference, availability from elexon/remit (FOU2T14D derating optional), fuel/carbon prices from data/manual/commodities.csv, per-technology parameters from configs/engineering/plant_technology.yaml",
+    "horizon": "Point-in-time build for a decision time as_of and a target settlement period",
+    "readme_status": "\"`stack.gb.v1` (constructive; backfill -> `GBStackModel.build(as_of)` -> inspect `SupplyCurve`. No gold or training sections.)\" (notebooks/README.md, 03_stack_inspector)",
+    "observed_state": "No manifest entry (constructive, no training). Published supply-curve points in gold_stack_supply_curve_points as part of the SMP runs (headline run 41de423cfc0b421e: 87,678 points).",
+    "metrics": [],
+    "metrics_note": "No standalone accuracy metric; it is scored through the Fundamentals SMP composite.",
+    "card": "docs/MODEL_CARDS/stack_gb_v1.md"
+   },
+   {
+    "name": "Fundamentals SMP",
+    "model_ids": [
+     "fundamentals_smp.gb.v1"
+    ],
+    "workbench": [
+     "models.fundamentals_smp"
+    ],
+    "target": "GB day-ahead system marginal price, half-hourly, GBP/MWh; backtest target elexon/mid APXMIDP",
+    "method": "Hybrid composite: the stack cleared against realised residual demand (INDO - WIND - solar - signed netting) under a perfect-prognosis policy; no-op fit",
+    "horizon": "Day-ahead, half-hourly",
+    "readme_status": "\"`fundamentals_smp.gb.v1` (hybrid; loads four component models from the manifest, skips with a one-line message if a component is missing)\" (notebooks/README.md, 04_fundamentals_smp)",
+    "observed_state": "No manifest entry. Published v2.0 headline run in gold_stack_clearing / gold_stack_residual_demand / gold_stack_supply_curve_points; 13 monthly diagnostic runs.",
+    "metrics": [
+     {
+      "run_id": "41de423cfc0b421e",
+      "policy": "smp_headline_perfect_prog_v2",
+      "source": "model card fundamentals_smp_gb_v1 'v2.0 published headline' + reproduced from gold",
+      "window": "2026-08-18 to 2026-09-03, 816 settlement periods",
+      "mean_bias_gbp_mwh": -151.8012,
+      "mae_gbp_mwh": 151.8012
+     },
+     {
+      "run_id": "13 monthly runs",
+      "policy": "smp_diagnostic_perfect_prog_v2",
+      "source": "model card",
+      "window": "2025-05-05 to 2026-05-04, 17,520 periods",
+      "mean_bias_gbp_mwh": -69.811,
+      "mae_gbp_mwh": 72.8412
+     }
+    ],
+    "caveats_must_show": [
+     "perfect-prognosis (realised inputs, not forecasts)",
+     "fuel and carbon prices synthetic (provenance: synthetic 35e4d8d, seed 20240507)",
+     "APXMIDP is a day-ahead/intraday volume-weighted mix, not one auction",
+     "-500 GBP/MWh floor; vault: about 46% of the v1.9 bias came from the 12% of periods where clearing hit the floor",
+     "realised component quantiles are degenerate, so coverage does not show calibration"
+    ],
+    "card": "docs/MODEL_CARDS/fundamentals_smp_gb_v1.md"
+   }
+  ]
+ },
+ "report": {
+  "model_id": "claude-opus-5-5",
+  "status": "complete; REPORT.md not written because the harness refuses report files from subagents, so the report lives here and in the final message",
+  "conflicts": [
+   "Wind/solar status: notebooks/README.md (last commit 2026-05-31) says 'trained'; model cards (2026-09-01) say 'never been trained, gated or published'; manifest has no wind/solar rows; gold has no wind/solar forecasts or metrics. Recommended ruling: render observed_state; fix the README in gridflow_models as a separate unit. The cards' B4 weather-floor blocker no longer holds locally (open_meteo historical_wind/solar now from 2021-09-01); gridflow_models commit of 2026-09-27 records an agreed wind/solar training plan.",
+   "README lists demand v1 only; configs also hold day_ahead.lgbm_demand.v2 (manifest version, perfect-prog backtest in gold, one live issued vintage). Pack presents demand as one model with two versions.",
+   "Counts: config 163, vault notes 165 (2 ENTSO-E not ingestable), rendered pages 194 (29 NDP stubs), local silver 126 vs MILESTONE's 125 (NESO 24 vs 23; which dataset differs is unverified). Phase 22 ingest was running while this pack was built.",
+   "gridflow README stale: 7 sources (omits neso_data_portal); silver filename omits the _run{available_at} suffix for APPEND_ONLY datasets; shows system_marginal_price gold, but no gridflow-built gold exists locally (all local gold is gridflow_models output partitioned model_slug=).",
+   "SMP card S-5 says 'Median bias -149.1144' with identical MAE; reproduction of the v2 headline gives mean -151.8012, median -95.34, MAE 151.8012, so the card's 'median' is a mean.",
+   "BOALF: code 'Bid/Offer Acceptance Levels Final' vs vault 'Flagged'.",
+   "Vault elexon/endpoints.md puts boal, disbsad, mid, netbsad under 'Settlement-date style' while code ParamStyle is PUBLISH_DATETIME.",
+   "Front-end CLAUDE.md says 'no PR-triggered CI'; .github/workflows/ci.yml has on: pull_request (deploy.yml is main-only).",
+   "gridflow pyproject 0.16.0 vs vault v0.18-v0.21 references: omit versions. gridflow is Apache-2.0; the site's MIT is the site's own.",
+   "Workbench README says 6 source sub-clients and 5 cross-source verbs; code has 8 source clients and 6 top-level verbs (adds training_set)."
+  ],
+  "could_not_establish": [
+   "Vendor-side history depth for Elexon, ENTSO-G, GIE, NESO Carbon Intensity and Open-Meteo (vault silent); only ENTSO-E 'about 5 years' (vault) and NDP historic_generation_mix from 2009 (verified).",
+   "Why GB solar is absent from FUELHH (card marks the hypothesis UNVERIFIED); only the measured absence is stated.",
+   "Standard columns beyond event_time on all 126 datasets (event_time checked on all 126; others on 3).",
+   "Page-set outcome: DATA-MATRIX.json and PROPOSALS.md absent from .planning/v5/ at 2026-09-27T00:21Z (scripts/ and ingest-receipts/ present).",
+   "Any standalone stack-model metric (none exists; scored only through SMP)."
+  ]
+ }
+}

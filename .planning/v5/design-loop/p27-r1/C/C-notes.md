@@ -1,0 +1,625 @@
+claude-opus-5-5
+
+# Designer C, "The field guide": Phase 27 round 1 notes
+
+## Boards (this folder; generator gen_C.py + draw_c.py + c.css; static copies in static\; checks in measure.py)
+- C-data-sources.dc.html, 1440 x 5482
+- C-vendor-elexon.dc.html, 1440 x 3828
+- C-architecture.dc.html, 1440 x 5706
+- C-models.dc.html, 1440 x 4666
+
+## The idea
+The site read as a field guide: species-account entries and dense ruled table lists carry the identity in type, the drawing
+is held to a shallow horizon strip, one small plate per page and a stratified footing, and the footing's three strata are
+the site's three sections (bronze = Data sources, silver = Architecture, gold = Models, as on the homepage key).
+
+## Content model (ordered blocks)
+- Data sources: sky (h1, on-this-page list of the seven vendors + the measure key, lede with the [N datasets] slot, find
+  field) / The seven vendors: seven accounts (drawn identification mark, name, source key(s) in mono, [n] datasets link;
+  one-sentence account, four facts Market / Access / Grain / History held, one "Reached at" line) / By what it measures:
+  Power, Gas, Weather, Carbon, each a ruled table list (italic sub-label, key, what it holds, vendor) / How the catalogue
+  is organised: three plain statements + the system_prices plate / strata footing (bronze current) / deep footer.
+- Elexon hub: sky (breadcrumb, h1, field marks Source key / Access / Grain, lede, find field) / Every Elexon dataset:
+  arrangement switch + column labels, five groups (head + one-line scope), 33 rows (key, one line, endpoint, held from) /
+  About the feed: facts (base URL, connector, rate limit, history), Read before using (four caveats), the FUELHH wind plate
+  / footing (bronze current) / footer.
+- Architecture: sky (h1, on-this-page list, lede) / In brief: data-root note, six facts, plate "What lands on disk" /
+  Bronze, Silver, Gold: swatch + layer name + one line; "Written by gridflow <verb>"; prose with real names; path well;
+  sidecar fields or column or view table list; "In the code" references / The catalogue: tables, view names, client /
+  Commands: eleven verbs in two ruled lists, quality checks in the margin / The build and the gates: gridflow CI (five),
+  this site (four) / What it does not do (six) / footing (silver current) / footer.
+- Models: sky (h1, on-this-page list, lede) / Reading the scores: five definitions / The five models: five accounts
+  (name, model id(s), workbench handle; Target / Method / Horizon / As it stands); demand carries the plate, the two-run
+  score table and the per-fold strip; SMP carries its two backtests and all five required caveats; wind, solar and stack
+  carry no score / In the workbench: handles + a four-cell notebook (inputs only) / footing (gold current) / footer.
+
+## Decisions the brief left to me
+- Counts: [N datasets] in the landing lede; Elexon prints 33 (the brief and the locked scope fix it); every other vendor
+  shows [n]. NESO keeps "in five families" (vault). No group counts on the hub.
+- Hub grouping: the pack's thematic grouping (Prices and balancing, Generation and availability, Demand, System
+  indicators, Reference and messages). The pack marks it PROPOSED, so it needs Bobbo's OK. The canonical vault grouping
+  (by request style: settlement date 7, publish datetime 25, no params 1) is the second option of the visible
+  "Arranged by" switch, and the endpoint column shows each row's request path either way. Note the pack's flag: boal,
+  disbsad, mid and netbsad sit under settlement-date style in the vault but are publish-datetime in code.
+- A vendor with 3 datasets (the NESO Data Portal): the same page, shorter. Sky unchanged (breadcrumb, name, field marks,
+  lede); the find field is dropped under about ten rows; the list becomes one ungrouped ruled list with the same row
+  anatomy (key, one line, endpoint, held from; here /api/3/action/package_show for all three and "Jan 2009" for the
+  generation mix); About the feed keeps facts and caveats (current file only, no backfill) and takes a plate only where a
+  deep series exists (historic_generation_mix since 2009 could supply one; none is computed in the pack, so none is
+  drawn). GIE, with two source keys, groups its rows by key (AGSI+ storage, ALSI LNG).
+- Vendor marks: one drawn asset per vendor, from the homepage's set: pylon (Elexon), converter station (ENTSO-E),
+  substation (NESO Data Portal), gas-fired station (NESO Carbon Intensity), a pipeline with a valve (ENTSO-G), storage
+  tanks (GIE), met mast (Open-Meteo). Framing only; they imply no dataset.
+- Charts: three real series from the pack, each captioned with dataset, unit and window (system_prices daily mean;
+  FUELHH WIND monthly mean; demand v1 fold 12 band vs outturn). The SMP series is not drawn; its scores are set as a table
+  with every required caveat. Architecture has no chart: its plate is a drawing with no numbers.
+- Punctuation: no em dashes; ranges written "2 to 14".
+
+## Verification
+- Detector (static copies, from the repo root): [] on all four boards.
+- Layout: my Browser-pane tab could not open (tab cap reached by other sessions), so I drove headless Chrome myself
+  (measure.py, http.server on port 9637, stopped afterwards). At 1440: content bottom == root height == $preview on all
+  four; 0 text blocks clipped or outside the 80 px margins; 0 table-list rows wrapped past 46 px; 0 label collisions or
+  labels outside their plate. Segment screenshots reviewed for each board.
+- 390 px (root forced to 390): every page collapses to one column with no text past the 16 px gutters; the path wells
+  and the two score tables scroll inside themselves.
+
+## Could not do
+- The Browser pane itself (tab cap), so no in-pane screenshots; all checks are headless Chrome.
+- A phone rendering of the plates beyond scaling: at 390 the plates scale to width and stay legible but small.
+
+## NEW COPY (verbatim, extracted from the rendered pages; facts come from the pack, wording is mine)
+
+### Data sources
+- Data sources
+- Elexon BMRS
+- ENTSO-E
+- NESO Data Portal
+- NESO Carbon Intensity
+- ENTSO-G
+- GIE AGSI+ and ALSI
+- Open-Meteo
+- By what it measures
+- gridflow ingests [N datasets] from seven vendors: GB and European power, gas, weather and carbon. Each vendor’s page lists all it supplies, and each dataset has a page of its own.
+- Find a dataset
+- (search placeholder) A key, a code or a word: fuelhh, INDO, storage
+- The seven vendors
+- Grain is the vendor’s own publication grain. gridflow has no scheduler: data lands when gridflow ingest runs.
+- Elexon BMRS
+- elexon
+- 33 datasets
+- Great Britain’s balancing-mechanism data: system prices, generation outturn, BM-unit data, and demand and wind forecasts.
+- Market
+- GB electricity
+- Access
+- Public, no key
+- Grain
+- Half-hourly settlement periods; FUELINST is 5-minute
+- History held
+- From September 2021 for six datasets, August 2026 for the rest
+- Reached at data.elexon.co.uk/bmrs/api/v1, through connectors/elexon/client.py.
+- ENTSO-E Transparency Platform
+- entsoe
+- [n] datasets
+- European electricity: day-ahead prices, load, generation by type, cross-border flows, outages, capacity, transmission allocation and balancing. Its GB day-ahead rows are empty; the GB benchmark comes from Elexon MID.
+- Market
+- EU electricity: GB, FR, NL, BE, DE-LU and IE-SEM
+- Access
+- Key ENTSOE_API_KEY, as securityToken
+- Grain
+- 15-minute or hourly by zone, as XML
+- History held
+- From August 2026; the vendor keeps about five years
+- Reached at web-api.tp.entsoe.eu, through connectors/entsoe/client.py.
+- NESO Data Portal
+- neso_data_portal
+- [n] datasets
+- The system operator’s open-data catalogue, served as files through CKAN rather than as a query API. gridflow reads three of its packages.
+- Market
+- GB electricity, from the system operator
+- Access
+- Public, no key
+- Grain
+- Half-hourly; wind availability daily, per BM unit
+- History held
+- Generation mix from January 2009; current file only, no backfill
+- Reached at api.neso.energy, through connectors/neso_data_portal/client.py.
+- NESO Carbon Intensity
+- neso
+- [n] datasets, in five families
+- GB carbon intensity, national and regional, actual and forecast, with statistics, fuel emission factors and the generation mix.
+- Market
+- GB electricity carbon intensity
+- Access
+- Public, no key
+- Grain
+- Half-hourly
+- History held
+- Short windows, the longest 30 July to 21 September 2026
+- Reached at api.carbonintensity.org.uk, through connectors/neso/carbon_intensity.py.
+- ENTSO-G Transparency Platform
+- entsog
+- [n] datasets
+- European gas: physical flows, nominations, allocations, capacities, gas quality, congestion outcomes, interruptions, tariffs, urgent market messages and the reference inventory.
+- Market
+- EU gas; the UK’s interconnection points by default
+- Access
+- Public, no key
+- Grain
+- Daily, by gas day; tariffs and congestion data periodic
+- History held
+- From August 2026; tariffs from October 2025
+- Reached at transparency.entsog.eu/api/v1, through connectors/entsog/client.py.
+- GIE AGSI+ and ALSI
+- gie_agsi gie_alsi
+- [n] datasets
+- Underground gas storage across Europe, levels and flows (AGSI+), and LNG terminal data (ALSI).
+- Market
+- Storage in 9 countries, LNG in 8; GB in both
+- Access
+- Key GIE_API_KEY in the x-key header, for both
+- Grain
+- Daily, by gas day
+- History held
+- From August 2026
+- Reached at agsi.gie.eu and alsi.gie.eu, through connectors/gie/client.py.
+- Open-Meteo
+- open_meteo
+- [n] datasets
+- Weather for GB power modelling: the ERA5 archive and forecasts, at 7 demand cities, 12 wind sites and 6 solar sites.
+- Market
+- Weather inputs for GB power
+- Access
+- Public, free tier
+- Grain
+- Hourly
+- History held
+- Archive from September 2021; forecasts from August 2026
+- Reached at archive-api.open-meteo.com/v1 and api.open-meteo.com/v1, through connectors/openmeteo/client.py.
+- By what it measures
+- A selection from every vendor, sorted into power, gas, weather and carbon. Each vendor’s page lists all of its datasets.
+- Power
+- GB and European electricity: prices, generation, demand, flows, forecasts and outages.
+- pricessystem_pricesImbalance price per settlement period; sell and buy are equalElexon
+- midMarket index; its APXMIDP provider is the GB day-ahead benchmarkElexon
+- day_ahead_pricesDay-ahead prices by bidding zone, EUR/MWh; no GB rowsENTSO-E
+- generationfuelhhHalf-hourly generation by fuel type; no solarElexon
+- historic_generation_mixGB generation mix by fuel since 2009, solar includedNESO Data Portal
+- actual_generationActual generation per production typeENTSO-E
+- demandindoInitial national demand outturn, half-hourlyElexon
+- actual_loadActual total loadENTSO-E
+- flowscross_border_flowsPhysical flows across bordersENTSO-E
+- forecastswindforWind generation forecastElexon
+- wind_solar_forecastDay-ahead wind and solar forecastENTSO-E
+- embedded_wind_solar_forecastEmbedded wind and solar, per settlement periodNESO Data Portal
+- outagesremitREMIT outage and unavailability messagesElexon
+- Gas
+- European transmission, storage and LNG, by gas day.
+- flowsphysical_flowsPhysical flow at interconnection pointsENTSO-G
+- nominationsNominations at interconnection pointsENTSO-G
+- capacityfirm_technicalFirm technical capacityENTSO-G
+- qualitygcvGross calorific valueENTSO-G
+- tariffstariffsTariff types and components, UKENTSO-G
+- storagestorageStorage levels by country and gas dayGIE AGSI+
+- unavailabilityStorage unavailability reportsGIE AGSI+
+- LNGlngLNG terminal dataGIE ALSI
+- Weather
+- Hourly, at the locations each model needs.
+- archivehistorical_demandERA5 archive at 7 demand citiesOpen-Meteo
+- historical_windERA5 archive at 12 wind sites, 10 m and 100 m windOpen-Meteo
+- historical_solarERA5 archive at 6 solar sites: GHI, DNI, DHI and GTIOpen-Meteo
+- forecastforecast_demandForecast weather at the 7 demand citiesOpen-Meteo
+- forecast_windForecast weather at the 12 wind sitesOpen-Meteo
+- forecast_solarForecast weather at the 6 solar sitesOpen-Meteo
+- Carbon
+- GB carbon intensity, half-hourly.
+- nationalcarbon_intensityNational carbon intensity over a date rangeNESO
+- intensity_fw48hNational intensity forecast, 48 hours forwardNESO
+- regionalregional_intensityIntensity for every regionNESO
+- mixgenerationNational generation mixNESO
+- factorsintensity_factorsEmission factor for each fuelNESO
+- How the catalogue is organised
+- Vendor, then dataset
+- Every dataset has a source key and a dataset key, such as elexon and fuelhh. Most Elexon keys are the BMRS code in lower case.
+- A page for each dataset
+- What it is, its facts and caveats, the vendor endpoint, the silver schema, sample rows and the call that reads it, with a chart of its own data where the data allows.
+- A view for each dataset
+- In DuckDB every dataset is a view named silver_{source}_{dataset}. Datasets that keep every vintage also get a _latest view.
+- From the system_prices page: GB system price, daily mean
+- 0
+- 100
+- 200
+- £/MWh
+- June
+- July
+- August
+- September
+- 13 September, 211.20
+- 13 June, 20.93
+- Source elexon/system_prices, silver, the latest vintage of each settlement period; the mean of the 48 periods in each settlement day, £/MWh, 26 May to 22 September 2026. The sell and buy prices are equal on every row, so one line carries both.
+
+### Elexon hub
+- Data sources/Elexon BMRSElexon BMRS
+- Source key
+- elexon
+- Access
+- Public, no key
+- Grain
+- Half-hourly settlement periods
+- Great Britain’s balancing-mechanism data, from Elexon’s Insights API: system prices, generation outturn, BM-unit data, and demand and wind forecasts. gridflow takes 33 datasets from it.
+- Find an Elexon dataset
+- (search placeholder) A key or a BMRS code: fuelhh, INDO, BOALF
+- Every Elexon dataset gridflow takes
+- Each row is one dataset: its key, what it holds, the endpoint gridflow calls, and how far back the local store reaches.
+- Arranged by what it measuresrequest style
+- EndpointHeld from
+- Prices and balancing
+- Imbalance prices and the market index, BM unit notifications and acceptances, and balancing adjustments.
+- system_pricesSystem sell price and system buy price per settlement period/balancing/settlement/system-prices/{date}Sep 2021
+- midMarket index data; APXMIDP is the GB day-ahead benchmark/datasets/MIDSep 2021
+- market_depthSettlement market depth per settlement period/balancing/settlement/market-depth/{date}Aug 2026
+- boalBid/offer acceptance levels (BOALF; replaces the deprecated BOAL)/datasets/BOALFAug 2026
+- pnPhysical notifications, per BM unit and period/datasets/PNAug 2026
+- disbsadDisaggregated balancing services adjustment data/datasets/DISBSADAug 2026
+- netbsadNet balancing services adjustment data/datasets/NETBSADAug 2026
+- sosoSO-SO prices: cross-border interconnector trading/datasets/SOSOAug 2026
+- Generation and availability
+- Outturn by fuel and by type, the wind forecast, and availability 2 to 14 days ahead.
+- fuelhhHalf-hourly generation outturn by fuel type (no solar)/datasets/FUELHHSep 2021
+- fuelinstInstantaneous generation outturn by fuel type/datasets/FUELINSTAug 2026
+- agptActual aggregated generation per type (B1620)/datasets/AGPTAug 2026
+- agwsActual or estimated wind and solar generation (B1630)/datasets/AGWSSep 2021
+- windforWind generation forecast/datasets/WINDFORSep 2021
+- fou2t14dGeneration availability by fuel type, 2 to 14 days ahead/datasets/FOU2T14DAug 2026
+- uou2t14dGeneration availability by BM unit, 2 to 14 days ahead/datasets/UOU2T14DAug 2026
+- nonbmNon-BM STOR generation/datasets/NONBMApr 2026
+- Demand
+- National and transmission demand: outturn and forecasts.
+- indoInitial national demand outturn/datasets/INDOSep 2021
+- itsdoInitial transmission system demand outturn/datasets/ITSDOAug 2026
+- indodInitial national demand outturn, daily total/datasets/INDODAug 2026
+- atlActual total load per bidding zone (B0610)/datasets/ATLAug 2026
+- ndfNational demand forecast, day-ahead/datasets/NDFAug 2026
+- ndfdNational demand forecast, 2 to 14 days ahead/datasets/NDFDAug 2026
+- tsdfTransmission system demand forecast/datasets/TSDFAug 2026
+- tsdfdTransmission system demand forecast, 2 to 14 days ahead/datasets/TSDFDAug 2026
+- inddemDay and day-ahead indicated demand/datasets/INDDEMAug 2026
+- System indicators
+- Frequency, temperature, margin, imbalance and the loss-of-load probability.
+- freqSystem frequency/datasets/FREQAug 2026
+- tempTemperature data/datasets/TEMPAug 2026
+- melngcIndicated margin/datasets/MELNGCAug 2026
+- imbalngcIndicated imbalance/datasets/IMBALNGCAug 2026
+- indgenDay and day-ahead indicated generation/datasets/INDGENAug 2026
+- lolpdrmLoss of load probability and de-rated margin/datasets/LOLPDRMAug 2026
+- Reference and messages
+- The BM unit register and REMIT messages.
+- bmunits_referenceAll BM unit reference data/reference/bmunits/allsnapshot
+- remitREMIT outage and unavailability messages/datasets/REMITAug 2026
+- About the feed
+- Base URL
+- https://data.elexon.co.uk/bmrs/api/v1
+- Connector
+- connectors/elexon/client.py; endpoints in endpoints.py
+- Rate limit
+- 2 requests a second, retried, as set in config/sources.yaml
+- History held
+- From September 2021 for system_prices, mid, fuelhh, indo, windfor and agws; from August 2026 for the rest
+- Read before using
+- FUELHH has no solar
+- No solar fuel type, from 2021 on. GB solar outturn is in the NESO Data Portal’s historic_generation_mix.
+- One imbalance price
+- The system sell and buy prices are equal on every latest-vintage row since September 2021.
+- The GB day-ahead benchmark
+- MID’s APXMIDP provider. ENTSO-E has no GB day-ahead rows, so gridflow and the price model both use MID.
+- Some datasets keep every vintage
+- system_prices, remit and fou2t14d keep each capture; read their _latest views.
+- GB wind generation, monthly mean, September 2021 to August 2026
+- 0
+- 4,000
+- 8,000
+- 12,000
+- MW
+- 2022
+- 2023
+- 2024
+- 2025
+- 2026
+- January 2026, 11,581
+- August 2022, 3,661
+- Source elexon/fuelhh, fuel type WIND, generation_mw: the mean half-hourly output of each calendar month, MW. Transmission-metered output only.
+
+### Architecture
+- Architecture
+- In brief
+- Bronze
+- Silver
+- Gold
+- The catalogue
+- Commands
+- The build and the gates
+- What it does not do
+- gridflow is a local-first Python pipeline. Every run is a command on one machine: raw responses land in bronze, typed tables in silver, and views in gold, all read through one DuckDB file. There is no server and no scheduler.
+- In brief
+- The data root is set by GRIDFLOW_DATA_DIR; every path below is relative to it and built by PathBuilder in storage/paths.py.
+- Language
+- Python 3.11 or later
+- Libraries
+- Polars, DuckDB, Pydantic v2, httpx and Typer
+- Command
+- gridflow, from gridflow.cli:app
+- Catalogue
+- {data_root}/gridflow.duckdb, or GRIDFLOW_DUCKDB_PATH
+- Sources
+- 8 source keys for 7 vendors, in connectors/registry.py
+- Licence
+- Apache-2.0
+- What lands on disk
+- the body, bytes as the vendor sent them
+- its sidecar: request and hash
+- typed columns, stored in row groups
+- the schema in the footer
+- one file per data date, by year and month
+- gridflow.duckdb
+- views read the Parquet in place;
+- the catalogue holds no copies
+- A bronze body with its sidecar; a silver Parquet file, one of a set partitioned by year and month; and gridflow.duckdb, whose views read the Parquet files where they lie.
+- Bronze
+- The response as it arrived: written once, never rewritten.
+- Written by gridflow ingest
+- Each source has an async connector, connectors/<source>/client.py, with the rate limits and retries set in config/sources.yaml: Elexon at 2 requests a second, ENTSO-E at 1. BronzeWriter.write stores the body, then a sidecar, each through a temporary file and os.replace. The body keeps its content type: .json, .xml, .csv or .bin. The partition is the data date when it is known, else the fetch date.
+- bronze/{source}/{dataset}/{YYYY}/{MM}/{DD}/ raw_{fetched_at:%Y%m%dT%H%M%SZ}_{sha256[:8]}.{ext} raw_{fetched_at:%Y%m%dT%H%M%SZ}_{sha256[:8]}.meta.json
+- The sidecar’s fields, with credentials masked in the request URL and parameters:
+- source, dataset, fetched_at, written_at, data_date, request_url, request_params, api_version, http_status, content_type, body_sha256, body_size_bytes, page, total_pages.
+- In the code: bronze/writer.py:38-48 (partitions), :57 (the body), :67-85 (the sidecar), and storage/paths.py:23-38.
+- Silver
+- Typed, validated, deduplicated tables, in UTC.
+- Written by gridflow transform
+- One BaseSilverTransformer for each source and dataset, 164 of them in silver/registry.py. Its run() reads one date’s bronze, parses it, validates every row against the Pydantic schema in schemas/, normalises time to UTC, deduplicates on the dataset’s key and writes Parquet, zstd-compressed, atomically.
+- Six datasets keep every capture instead: system_prices, remit and fou2t14d from Elexon, and the three from the NESO Data Portal. Their files carry the vintage in the name, and LATEST_VIEW_SPECS in silver/latest_views.py sets the business key and precedence that picks the latest.
+- silver/{source}/{dataset}/year={YYYY}/month={MM}/{dataset}_{YYYYMMDD}.parquet keeps every capture: {dataset}_{YYYYMMDD}_run{available_at}.parquet
+- event_timeThe time the value is for; on every silver table
+- available_atWhen the value could first be known: the basis for as-of reads
+- published_atWhen the vendor published it
+- ingested_atWhen gridflow fetched it
+- source_run_idThe run that wrote the row
+- dataset_versionThe transformer’s schema version
+- In the code: silver/base.py:936 (the run), :2046 (validation), :1337 (deduplication) and :2635 (the vintage suffix).
+- Gold
+- Joined and derived tables, read as DuckDB views.
+- Written by gridflow build
+- gridflow registers one gold builder, system_marginal_price, in gold/registry.py: latest-vintage system prices with the spread, the absolute imbalance and calendar features. Three SQL views in gold/views/ register with the catalogue.
+- gridflow-models writes its outputs into the same root, partitioned by model rather than by year: forecasts, forecast_metrics, stack_clearing, stack_residual_demand and stack_supply_curve_points.
+- gold/{name}/year={YYYY}/{name}_{YYYYMMDD}.parquet from gridflow-models: gold/{table}/model_slug={slug}/{prefix}_{YYYYMMDDTHHMMSSZ}_{run_id}.parquet
+- gold_uk_imbalance_contextElexon system prices with NESO carbon intensity, half-hourly
+- gold_gb_day_ahead_benchmarkElexon MID APXMIDP, one row per settlement period, GBP/MWh
+- gold_eu_gas_storageGIE AGSI+ storage by country and day
+- The catalogue
+- One DuckDB file, {data_root}/gridflow.duckdb. gridflow init registers a view for every directory it finds, so a new dataset is queryable as soon as it has silver.
+- Tables
+- pipeline_runs, pipeline_watermarks and quality_reports.
+- storage/duckdb.py:106-209, 465
+- silver_{source}_{dataset}One for each silver dataset
+- silver_{source}_{dataset}_latestThe latest vintage, for the six datasets that keep every capture
+- gold_{name}One for each gold directory, and the three SQL views
+- silver_{dataset}An older short alias, skipped when two sources share a dataset name
+- Read it from DuckDB, or from Python with the read-only gridflow.serving.client.GridflowClient.
+- Commands
+- Each is a Typer command, run as gridflow <verb>. Nothing runs on a timer.
+- Quality checks
+- null_rate, time_series_gaps, range_check, row_count and duplicates, run by gridflow quality.
+- quality/checks.py
+- initCreate the catalogue and register its views
+- ingestAPI to bronze
+- transformBronze to silver, validated and deduplicated
+- buildSilver to gold
+- pipelineIngest, then transform; build too with --gold
+- backfillFetch history in chunks
+- export-csvSilver Parquet to CSV
+- statusRun history and a quality summary
+- qualityRun the quality checks and write a report
+- resetDelete every layer and reset the catalogue
+- pruneDelete partitions past a retention cutoff
+- The build and the gates
+- Two repositories, each with its own checks in GitHub Actions.
+- gridflow
+- The pipeline’s own CI, on every push and pull request.
+- uv lock --checkThe lockfile matches the project
+- ruff checkLint
+- ruff format --checkFormatting
+- mypyTypes
+- pytest -m "not live"The test suite, without calls to vendor APIs
+- This site
+- gridflow-build renders each vault note into a dataset page with Jinja2.
+- ci.ymlOn pull requests and pushes to main: the staleness check, a baseline ratchet and the build check
+- deploy.ymlOn pushes to main: build, --check, htmlhint, lychee link checks, then GitHub Pages
+- gridflow-build --checkA second build changes nothing: the build is idempotent
+- gridflow-drift-checkChecks pages against the vendors’ live APIs, so it runs only by hand
+- What it does not do
+- No scheduler
+- Every run is a command. The schedule field in sources.yaml is declared and read nowhere else.
+- No live feed
+- Data lands when someone runs gridflow ingest.
+- No server
+- No web service, public API or hosted database: local files and one embedded DuckDB file.
+- No cloud
+- No object store, warehouse, streaming, cluster or multi-tenancy.
+- No models
+- Forecasts live in gridflow-models, a separate repository, which does not produce orders.
+- Not every package
+- Three NESO Data Portal packages, current file only, and no GB day-ahead prices from ENTSO-E.
+
+### Models
+- Models
+- Reading the scores
+- Day-ahead demand
+- Wind generation
+- Solar generation
+- GB merit-order stack
+- Fundamentals SMP
+- In the workbench
+- gridflow-models is a separate library that reads gridflow’s catalogue and Parquet. It holds five models: forecasters for demand, wind and solar, a merit-order supply stack, and a fundamentals model that prices each half-hour from the stack. It does not produce orders.
+- Reading the scores
+- Scores appear only where a run has produced them. Every figure below is read from the gold forecast_metrics and stack tables, or the model card that publishes it.
+- Definitions
+- From validation/metrics.py and the model cards.
+- pinball q0.5The mean quantile loss at 0.5, in MW: half the mean absolute error of the median forecast
+- coverage_90The share of outturns inside the band from q0.05 to q0.95, bounds included
+- crossingsRows where a higher quantile falls below a lower one
+- gatesPinball q0.5 at most 1,500 MW; coverage within 0.90 ± 0.05; no crossings
+- mean biasThe mean of the modelled price less APXMIDP, GBP/MWh
+- The five models
+- Demand, wind and solar forecast the inputs; the stack turns plant into a supply curve; the fundamentals model clears one against the other.
+- Day-ahead demand
+- day_ahead.lgbm_demand.v1day_ahead.lgbm_demand.v2
+- In the workbench, models.demand_forecast and models.demand_forecast_v2
+- Target
+- GB national demand outturn, half-hourly, MW: elexon/indo, initial_demand_outturn_mw
+- Method
+- LightGBM quantile regression, one model per quantile from 0.05 to 0.95, sorted to stay monotone, with a conformal outer band. Version 2 adds weather and calendar features
+- Horizon
+- 24 hours ahead
+- As it stands
+- 21 version-1 entries and one version-2 entry in the manifest; walk-forward backtests in gold; one issued version-2 forecast, 4 to 6 September 2026
+- Version 1 against outturn, 20 and 21 August 2026
+- 18,000
+- 22,000
+- 26,000
+- 30,000
+- MW
+- 20 August, 00:00
+- 12:00
+- 21 August, 00:00
+- 12:00
+- q0.95
+- outturn
+- median forecast, q0.5
+- q0.05
+- Source gold forecasts, run a55a829bc51c40b2, walk-forward fold 12, issued vintage: the median and the band from q0.05 to q0.95 against the outturn, MW, 96 half-hours in UTC.
+- Version
+- Run
+- Pinball q0.5
+- coverage_90
+- Crossings
+- Read it as
+- 1
+- a55a829bc51c40b2
+- 711.04 MW
+- 0.893
+- 0
+- Issued forecasts, as they would have been made. Passes every gate.
+- 2
+- b367a742aa544f8f
+- 599.72 MW
+- 0.883
+- 0
+- Perfect prognosis: actual ERA5 weather used as if forecast, so optimistic. The card calls its 15.7% gain an upper bound, from one run. Passes every gate.
+- Both runs: 12 walk-forward folds of 30 days, 1 September 2024 to 22 August 2026, 17,279 scored half-hours; each fold fits on a rolling 1,095-day window.
+- Pinball q0.5 by fold, version 1, MW
+- Fold
+- 1
+- 2
+- 3
+- 4
+- 5
+- 6
+- 7
+- 8
+- 9
+- 10
+- 11
+- 12
+- Pinball
+- 647
+- 730
+- 816
+- 825
+- 645
+- 552
+- 671
+- 794
+- 694
+- 892
+- 695
+- 571
+- Wind generation
+- wind.lgbm_quantile.v1
+- In the workbench, models.wind_forecast
+- Target
+- GB wind outturn, half-hourly, MW: elexon/fuelhh where the fuel type is WIND
+- Method
+- LightGBM quantile regression, seven quantiles, on weather at 12 wind sites; WINDFOR is the benchmark
+- Horizon
+- 24 hours ahead
+- As it stands
+- A configuration, a model card and a training dataset. No registered versions, forecasts or scores
+- Solar generation
+- solar.lgbm_quantile.v1
+- In the workbench, models.solar_forecast
+- Target
+- Configured as elexon/fuelhh SOLAR, which holds no rows. The model card names the solar column of neso_data_portal/historic_generation_mix as its successor
+- Method
+- LightGBM quantile regression, seven quantiles, on weather at 6 solar sites; persistence is the benchmark
+- Horizon
+- 24 hours ahead
+- As it stands
+- A configuration and a model card. No registered versions, forecasts or scores
+- GB merit-order stack
+- stack.gb.v1
+- In the workbench, models.stack
+- Target
+- The GB supply curve for a settlement period: units ranked by short-run marginal cost, cumulative MW against GBP/MWh, floored at −500
+- Method
+- Constructed, nothing fitted: plant from elexon/bmunits_reference, availability from elexon/remit, fuel and carbon prices from data/manual/commodities.csv, technology from plant_technology.yaml
+- Horizon
+- A point in time: a decision time as_of and a target period
+- As it stands
+- Supply-curve points published in gold with each fundamentals run, 87,678 in the headline run. It has no score of its own; it is scored through the fundamentals model
+- Fundamentals SMP
+- fundamentals_smp.gb.v1
+- In the workbench, models.fundamentals_smp
+- Target
+- GB day-ahead system marginal price, half-hourly, GBP/MWh, scored against elexon/mid APXMIDP
+- Method
+- The stack cleared against residual demand: INDO less wind, less solar, less signed netting. Nothing is fitted
+- Horizon
+- Day-ahead, half-hourly
+- As it stands
+- A headline backtest and 13 monthly diagnostic runs, published in gold_stack_clearing, gold_stack_residual_demand and gold_stack_supply_curve_points
+- Backtest
+- Window
+- Mean bias
+- MAE
+- Headline, run 41de423cfc0b421e
+- 18 August to 3 September 2026, 816 periods
+- −151.80
+- 151.80
+- Diagnostic, 13 monthly runs
+- 5 May 2025 to 4 May 2026, 17,520 periods
+- −69.81
+- 72.84
+- GBP/MWh, against APXMIDP. In the headline run every period is below the benchmark.
+- Perfect prognosis
+- Realised demand, wind and solar go in, not forecasts.
+- Synthetic fuel and carbon prices
+- Provenance synthetic 35e4d8d, seed 20240507.
+- A mixed benchmark
+- APXMIDP is volume-weighted across day-ahead and intraday trades, not one auction.
+- A −500 GBP/MWh floor
+- In an earlier version about 46% of the bias came from the 12% of periods where clearing hit the floor.
+- No calibration read
+- The realised inputs have degenerate quantiles, so coverage says nothing here.
+- In the workbench
+- Notebooks are call sites only; the model logic lives in the library. models.list() returns each model’s id, family, version, status and last training time.
+- Handles
+- demand_forecast, demand_forecast_v2, wind_forecast, solar_forecast, stack and fundamentals_smp.
+- models.ipynbPython 3
+- In [1]:from gridflow_models import setup_notebook data, models, common = setup_notebook()
+- In [2]:models.list()
+- In [3]:models.demand_forecast.model_card()
+- In [4]:as_of = common.datetime(2026, 8, 1, tzinfo=common.utc) curve = models.stack.build(as_of)
+
+### Footing (all pages)
+- Data sources: Every vendor gridflow ingests and every dataset it takes, found by vendor or by what it measures.
+- Architecture: Bronze, silver and gold on disk, the DuckDB catalogue, the commands, the build and its checks.
+- Models: Five models that read the warehouse: demand, wind, solar, the merit-order stack and a fundamentals price.
