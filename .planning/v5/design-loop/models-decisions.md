@@ -42,3 +42,9 @@ Picker: https://claude.ai/artifact/MpySKZLbpbe6VmCz4pcuzV ("Models page (as it s
   so the petrol sky looked like it sat in front of them. Boards now set `.dr{overflow:visible}` (models-r2 and
   arch-r2). When building the real pages, give the drawing top room in its viewBox instead, so nothing relies on
   overflow and no ridge wider than the page can cause sideways scroll.
+
+## LOCKED (OWNER, 2026-09-27)
+
+- `models-r2/models-r2.dc.html` (1440) and `models-r2-390.dc.html` locked as they stand ("looks good"),
+  including the turbine fix. Generator `models-r2/gen.py`. The opening keeps "It produces forecasts and prices
+  for research." Next: build as `site/hifi/models.html` on a branch into `v5/site` (phase 27).
