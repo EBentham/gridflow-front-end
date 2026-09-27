@@ -1,0 +1,183 @@
+{
+ "dataset": "elexon/fuelhh",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "ee09ba770c8cb947520231c27c8b29f30f902a279bb1ec299afb5ef9a2f696dd",
+ "silver": "elexon/fuelhh",
+ "columns": [
+  {
+   "name": "settlement_date",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "settlement_period",
+   "dtype": "Int32",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "fuel_type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "generation_mw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "data_provider",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "ingested_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2026-09-26",
+   "25",
+   "2026-09-26 11:00:00 UTC",
+   "BIOMASS",
+   "1272.0",
+   "2026-09-26 11:30:00 UTC",
+   "elexon",
+   "2026-09-27 00:09:46.728839 UTC",
+   "2026-09-26 11:00:00 UTC",
+   "2026-09-26 11:30:00 UTC",
+   "9005ed5a-25a9-4003-9ac4-a42ad3eb6648",
+   "2.0.0"
+  ],
+  [
+   "2026-09-26",
+   "25",
+   "2026-09-26 11:00:00 UTC",
+   "CCGT",
+   "2139.0",
+   "2026-09-26 11:30:00 UTC",
+   "elexon",
+   "2026-09-27 00:09:46.728839 UTC",
+   "2026-09-26 11:00:00 UTC",
+   "2026-09-26 11:30:00 UTC",
+   "9005ed5a-25a9-4003-9ac4-a42ad3eb6648",
+   "2.0.0"
+  ],
+  [
+   "2026-09-26",
+   "25",
+   "2026-09-26 11:00:00 UTC",
+   "INTFR",
+   "1000.0",
+   "2026-09-26 11:30:00 UTC",
+   "elexon",
+   "2026-09-27 00:09:46.728839 UTC",
+   "2026-09-26 11:00:00 UTC",
+   "2026-09-26 11:30:00 UTC",
+   "9005ed5a-25a9-4003-9ac4-a42ad3eb6648",
+   "2.0.0"
+  ],
+  [
+   "2026-09-26",
+   "25",
+   "2026-09-26 11:00:00 UTC",
+   "NPSHYD",
+   "264.0",
+   "2026-09-26 11:30:00 UTC",
+   "elexon",
+   "2026-09-27 00:09:46.728839 UTC",
+   "2026-09-26 11:00:00 UTC",
+   "2026-09-26 11:30:00 UTC",
+   "9005ed5a-25a9-4003-9ac4-a42ad3eb6648",
+   "2.0.0"
+  ],
+  [
+   "2026-09-26",
+   "25",
+   "2026-09-26 11:00:00 UTC",
+   "NUCLEAR",
+   "4020.0",
+   "2026-09-26 11:30:00 UTC",
+   "elexon",
+   "2026-09-27 00:09:46.728839 UTC",
+   "2026-09-26 11:00:00 UTC",
+   "2026-09-26 11:30:00 UTC",
+   "9005ed5a-25a9-4003-9ac4-a42ad3eb6648",
+   "2.0.0"
+  ],
+  [
+   "2026-09-26",
+   "25",
+   "2026-09-26 11:00:00 UTC",
+   "OTHER",
+   "575.0",
+   "2026-09-26 11:30:00 UTC",
+   "elexon",
+   "2026-09-27 00:09:46.728839 UTC",
+   "2026-09-26 11:00:00 UTC",
+   "2026-09-26 11:30:00 UTC",
+   "9005ed5a-25a9-4003-9ac4-a42ad3eb6648",
+   "2.0.0"
+  ],
+  [
+   "2026-09-26",
+   "25",
+   "2026-09-26 11:00:00 UTC",
+   "PS",
+   "-1454.0",
+   "2026-09-26 11:30:00 UTC",
+   "elexon",
+   "2026-09-27 00:09:46.728839 UTC",
+   "2026-09-26 11:00:00 UTC",
+   "2026-09-26 11:30:00 UTC",
+   "9005ed5a-25a9-4003-9ac4-a42ad3eb6648",
+   "2.0.0"
+  ],
+  [
+   "2026-09-26",
+   "25",
+   "2026-09-26 11:00:00 UTC",
+   "WIND",
+   "6094.0",
+   "2026-09-26 11:30:00 UTC",
+   "elexon",
+   "2026-09-27 00:09:46.728839 UTC",
+   "2026-09-26 11:00:00 UTC",
+   "2026-09-26 11:30:00 UTC",
+   "9005ed5a-25a9-4003-9ac4-a42ad3eb6648",
+   "2.0.0"
+  ]
+ ],
+ "mark": 6
+}
