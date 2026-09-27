@@ -1,19 +1,19 @@
 {
   "dataset": "elexon/bmunits_reference",
   "generated_by": "gridflow-distil",
-  "spec_origin": "staging",
-  "spec_sha256": "1d9fe1cc29b4d9085dd93943285d0aff4bc9f3ae51a53da3f9995a20354fd827",
+  "spec_origin": "vault",
+  "spec_sha256": "73f6526d6584b2823ed213ea759c5013bdbfa1b1559ff2fb14c21672eb30da65",
   "type": "bar",
-  "unit": "MW",
-  "caption": "Registered capacity summed by fuel type, over the BM units that declare a fuel type.",
-  "value_column": "registered_capacity_mw",
-  "aggregation": "sum",
+  "unit": "BM units",
+  "caption": "",
+  "value_column": null,
+  "aggregation": "count",
   "window": null,
-  "provenance": {"files": 1, "null_values_dropped": 0, "rows_matched": 499, "rows_read": 3014, "rows_used": 499, "silver": "elexon/bmunits_reference"},
-  "spec": {"aggregation": "sum", "caption": "Registered capacity summed by fuel type, over the BM units that declare a fuel type.", "filter": [{"column": "fuel_type", "op": "not_null"}], "group": "fuel_type", "silver": "elexon/bmunits_reference", "sort": "value_desc", "type": "bar", "unit": "MW", "value": "registered_capacity_mw"},
+  "provenance": {"files": 1, "rows_matched": 3014, "rows_read": 3014, "rows_used": 3014, "silver": "elexon/bmunits_reference"},
+  "spec": {"aggregation": "count", "group": "fuel_type", "group_map": {"BIOMASS": "biomass", "CCGT": "gas", "COAL": "coal", "INTELEC": "interconnectors", "INTEW": "interconnectors", "INTFR": "interconnectors", "INTGRNL": "interconnectors", "INTIFA2": "interconnectors", "INTIRL": "interconnectors", "INTNED": "interconnectors", "INTNEM": "interconnectors", "INTNSL": "interconnectors", "INTVKL": "interconnectors", "NPSHYD": "hydro", "NUCLEAR": "nuclear", "OCGT": "gas", "OTHER": "other", "PS": "hydro", "WIND": "wind"}, "group_null": "no_fuel", "silver": "elexon/bmunits_reference", "sort": "value_desc", "type": "bar", "unit": "BM units"},
   "x_kind": "category",
-  "x": ["CCGT", "WIND", "NUCLEAR", "OTHER", "BIOMASS", "COAL", "PS", "INTELEC", "INTFR", "INTNED", "INTGRNL", "INTNSL", "INTVKL", "OCGT", "NPSHYD", "INTIFA2", "INTNEM", "INTEW", "INTIRL"],
+  "x": ["no_fuel", "wind", "other", "gas", "hydro", "nuclear", "biomass", "interconnectors", "coal"],
   "series": [
-    {"key": "registered_capacity_mw", "values": [32217.328, 30740.086, 7430.072, 5285.148, 3674.573, 3269.7, 3057.99, 2075.0, 2013.945, 1478.2, 1400.0, 1400.0, 1400.0, 1378.296, 1105.634, 1100.0, 1020.0, 530.92, 401.7]}
+    {"key": "count", "values": [2515, 234, 92, 83, 38, 16, 15, 11, 10]}
   ]
 }
