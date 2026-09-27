@@ -27,3 +27,13 @@ screen demo "similar to the view of the notebook we had earlier on the home page
 - Pack: `explorer-pack/` (screenshots 1440 wide, light and dark, from the explorer's own shoot tool;
   code excerpts). Left out: the power stack view, which states model misses and failed runs (RULINGS #21,
   the site stays high level on models).
+
+## Round 1 pick (OWNER, 2026-09-27 late)
+
+- **Design 2, "The tour"** (`explorer-r1/2/`). Keep the drawing that carries the request down through the
+  ground layers (browser, FastAPI, GridflowClient, DuckDB over silver and gold).
+- Rework the "How it's built" wording to be higher level. Bobbo is unsure how, so there are three wording
+  variations of that section with the same designer: A plain, B what each layer does, C let the drawing
+  speak.
+- Still to rule: the app's own "held locally" and "one local store" text inside the screenshots, and the
+  "Explorer" nav item on every page.
