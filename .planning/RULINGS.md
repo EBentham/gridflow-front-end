@@ -17,3 +17,8 @@ Earlier milestones keep their decisions phase-local (`phases/`, `docs/adr/`).
 | 9 | 2026-09-27T00:31Z | 25a | PROXY-SOURCED (class 2, delegated merge) | PR #40 chart pipeline squash-merged into v5/site (c9da254) after seat re-ran the gates green. Detail: v5/P25A-MERGE.md |
 | 10 | 2026-09-27T06:17Z | 22 | PROXY-SOURCED (class 2, data op) | Live gridflow ingest of 39 datasets without silver: 23 ok, 12 vendor-empty, 2 unconfigured, 2 GIE news 0 rows; silver 126 to 149/165; nothing overwritten. Receipts: v5/ingest-receipts/ |
 | 11 | 2026-09-27T06:17Z | 22 | PROXY-SOURCED (class 1, gate) | Seat spot-checked five DATA-MATRIX rows against silver, code and vault; all match. Matrix handed to Bobbo with PROPOSALS.md for family and page-set rulings. |
+| 12 | 2026-09-27T11:41Z | D5 | OWNER | Families: accept all 23 proposed in v5/PROPOSALS.md; each family is one page listing its variants. |
+| 13 | 2026-09-27T11:41Z | D4 | OWNER | Page set: the site documents only datasets gridflow ingests with local data; NESO Data Portal stubs, empty and unconfigured datasets dropped, GIE news held. |
+| 14 | 2026-09-27T11:41Z | D4 | OWNER | Headline dataset count is computed by the build from the pages it renders (149 today), never hand-typed. |
+| 15 | 2026-09-27T11:41Z | 27 | OWNER | Wind and solar models are shown as they stand (never trained); the gridflow_models README fix is separate work. |
+| 16 | 2026-09-27T11:41Z | gridflow | OWNER | gridflow adds all 29 NESO Data Portal packages (separate gridflow work, not blocking v5); each gets a page once its data lands. |
