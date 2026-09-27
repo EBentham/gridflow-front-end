@@ -29,7 +29,6 @@
         <div>
           <div class="row gap-8 mb-16" style="align-items:center;">
             <span class="eyebrow">Vendor · {{ vendor_meta.region }} · {{ vendor_meta.domain }}</span>
-            <span class="chip" style="font-size: 11px;">Illustrative snapshot</span>
           </div>
           <h1 class="display-2" style="margin-bottom: 18px;">
             {{ vendor_meta.heading_prefix }} <span class="italic">{{ vendor_meta.heading_italic }}</span>
@@ -148,8 +147,8 @@
         Pages are regenerated from the
         <a href="https://github.com/EBentham/gridflow" target="_blank" rel="noopener" class="link">gridflow</a>
         ETL pipeline's vault content via <code class="mono">gridflow-build</code>. Schemas align with
-        <code class="mono">gridflow.schemas.{{ vendor_id }}</code>; values shown in charts are illustrative
-        deterministic snapshots, not live {{ vendor_label }} responses.
+        <code class="mono">gridflow.schemas.{{ vendor_id }}</code>. Charts plot gridflow silver data
+        for the window stated beside each one.
       </p>
     </div>
   </section>
