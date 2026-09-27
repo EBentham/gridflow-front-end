@@ -1232,7 +1232,10 @@ def _record_view(doc: DatasetDoc, sample: dict[str, Any]) -> tuple[dict[str, Any
     differ = [
         i
         for i, c in enumerate(cols)
-        if not c["lineage"] and len({row[i] for row in sample["rows"]}) > 1
+        # ingested_at differs only by transform batch: pipeline noise, not data the reader compares.
+        if not c["lineage"]
+        and c["name"] != "ingested_at"
+        and len({row[i] for row in sample["rows"]}) > 1
     ]
     if not differ:
         differ = [names.index(k) for k in rec.key if k in names]
