@@ -38,3 +38,7 @@ Picker: https://claude.ai/artifact/MpySKZLbpbe6VmCz4pcuzV ("Models page (as it s
      one line).
   3. Remove "This site is MIT-licensed. gridflow is Apache-2.0." (site-wide, asked twice: no licence line on
      any page; it also sits in `site.js` on v5/site and on the locked architecture boards).
+- Fix (2026-09-27, Bobbo spotted it): the distant turbines' blades were clipped at the drawing SVG's top edge,
+  so the petrol sky looked like it sat in front of them. Boards now set `.dr{overflow:visible}` (models-r2 and
+  arch-r2). When building the real pages, give the drawing top room in its viewBox instead, so nothing relies on
+  overflow and no ridge wider than the page can cause sideways scroll.

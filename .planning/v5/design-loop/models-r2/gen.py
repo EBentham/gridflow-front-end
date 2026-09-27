@@ -664,7 +664,7 @@ CSS = """.sky{position:relative;box-sizing:border-box;padding:0 80px 18px;backgr
 .hero h1 .nw{white-space:nowrap}
 .lede{padding-top:10px}
 .drawing{position:relative;background:#155A6E}
-.dr{display:block}
+.dr{display:block;overflow:visible}
 .dr .lab text{font-family:"Hanken Grotesk",sans-serif;font-style:italic;font-size:13.5px;fill:#1C2B22}
 .dr .lab text.m{font-family:"Red Hat Mono",monospace;font-style:normal;font-size:12.5px}
 .dr .lab.sky text{font-size:13.5px}

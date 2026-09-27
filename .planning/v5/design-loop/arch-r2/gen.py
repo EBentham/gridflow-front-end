@@ -1338,7 +1338,7 @@ CSS = """.sky{position:relative;box-sizing:border-box;padding:0 80px 30px;backgr
 .dhead p{margin:0;font-size:15px;line-height:1.5;color:#CFE0DC;max-width:58ch}
 .dgrid{display:grid;grid-template-columns:1440px}
 .dgrid>svg,.dgrid>.dov{grid-area:1 / 1}
-.dr{display:block}
+.dr{display:block;overflow:visible}
 .dr .lab text,.tl .lab text{font-family:"Hanken Grotesk",sans-serif;font-style:italic;font-size:13.5px;fill:#1C2B22}
 .dr .lab text.v{font-size:14px;font-weight:500}
 .dr .lab text.m,.tl .lab text.m,.tl .lab tspan.m{font-family:"Red Hat Mono",monospace;font-style:normal;font-size:12.5px}
