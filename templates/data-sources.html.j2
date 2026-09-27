@@ -1,0 +1,85 @@
+{#- The Data sources landing, direction A "Sections" (p27 round 1, ruling 31). The sky holds the headline
+    and the section from Great Britain across the North Sea to the continent; bronze holds the seven vendors,
+    each on its own terminal, staggered along their cables; silver follows one dataset through its names.
+    On wide screens hubs.js runs one cable from each drawn asset down to its vendor's terminal.
+    `v` is the view model built by build.landing_view(); the counts are the build's. -#}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Data sources: gridflow</title>
+  <meta name="description" content="Every dataset gridflow documents, {{ v.n }} in all, traced to the vendor that publishes it.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&amp;family=Hanken+Grotesk:ital,wght@0,400..700;1,400..600&amp;family=Red+Hat+Mono:wght@400;500&amp;display=swap">
+  <link rel="stylesheet" href="assets/theme.css">
+  <link rel="stylesheet" href="assets/hubs.css">
+</head>
+<body data-page="sources" data-root="" data-screen-label="02 Data sources">
+  <main id="main" class="hub hub--landing" data-cable="feeds">
+    <section class="stratum stratum--sky" aria-labelledby="src-h">
+      <div class="wrap hub-hero hub-hero--landing">
+        <h1 class="h-hero hub-hero__h" id="src-h">Every dataset, traced to the vendor that publishes it</h1>
+        <div class="hub-lede">
+          <p class="hub-lede__lead">gridflow reads seven vendors across GB and EU electricity, EU gas, carbon intensity and weather. The catalogue holds <span class="hub-n">{{ v.n }} datasets</span>, organised by vendor.</p>
+          <p>Each cable in the drawing runs from the part of the system a vendor reports on down to the directory where gridflow keeps that vendor’s raw responses.</p>
+          <p><a class="link-alt" href="architecture.html">How the layers work</a></p>
+        </div>
+      </div>
+      <figure class="landscape hub-land">
+        {% include "_partials/landscape/sources.svg.j2" %}
+      </figure>
+    </section>
+    <div class="stratum stratum--topsoil stratum--flush hub-soil hub-soil--deep" aria-hidden="true"></div>
+
+    <section class="stratum stratum--bronze" aria-label="The seven vendors">
+      <p class="stratum__name" aria-hidden="true">bronze</p>
+      <div class="wrap">
+        <ul class="vgrid">
+          {%- for d in v.vendors %}
+          <li class="vend vend--r{{ d.row }}" style="--c: {{ d.col }}; --r: {{ d.row }}" data-vendor="{{ d.id }}">
+            <p class="vend__dir"><span class="term" aria-hidden="true"></span><code>{{ d.bronze }}</code></p>
+            <h2 class="vend__n"><a href="data-sources/{{ d.id }}.html">{{ d.name }}</a></h2>
+            <p class="vend__d">{{ d.desc }}</p>
+            <p class="vend__m">{{ d.fact }}</p>
+            <ul class="reps" aria-label="{{ d.name }}: datasets to start with">
+              {%- for s in d.start %}
+              <li><a href="{{ s.href }}"><code>{{ s.code }}</code></a><span>{{ s.gloss }}</span></li>
+              {%- endfor %}
+            </ul>
+          </li>
+          {%- endfor %}
+          <li class="vnote"><p>The path beside each terminal is where gridflow keeps that vendor’s raw responses. The linked datasets are places to start: each vendor’s hub lists all of them, in groups.</p></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="stratum stratum--silver" aria-labelledby="find-h">
+      <p class="stratum__name" aria-hidden="true">silver</p>
+      <div class="wrap find{% if not v.chart %} find--solo{% endif %}">
+        <div class="find__l">
+          <h2 class="h-sec" id="find-h">Find a dataset</h2>
+          <p>Search a vendor’s hub, or use the dataset’s gridflow key: it names the dataset in every layer, from the raw files to the notebook. Here is <code>system_prices</code> under each of its names.</p>
+          <dl class="names">
+            {%- for label, name in v.names %}
+            <div><dt>{{ label }}</dt><dd><code>{{ name }}</code></dd></div>
+            {%- endfor %}
+          </dl>
+        </div>
+        {%- if v.chart %}
+        <figure class="find__r" aria-labelledby="find-c">
+          <figcaption>
+            <h3 class="h-entry" id="find-c">{{ v.chart.title }}</h3>
+          </figcaption>
+          <div class="ds-chart__plot">{{ v.chart.wide }}{{ v.chart.narrow }}</div>
+          <p class="caption">{{ v.chart.caption | md_inline | safe }} <a href="data-sources/elexon/system_prices.html">The <code>system_prices</code> page</a> has the rest.</p>
+        </figure>
+        {%- endif %}
+      </div>
+    </section>
+  </main>
+  <script src="assets/site.js"></script>
+  <script src="assets/hubs.js"></script>
+</body>
+</html>

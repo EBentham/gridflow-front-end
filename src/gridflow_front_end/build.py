@@ -45,6 +45,7 @@ from __future__ import annotations
 import argparse
 import filecmp
 import json
+import math
 import re
 import shutil
 import sys
@@ -84,209 +85,20 @@ REAL_VENDORS: dict[str, dict] = {
     "elexon": {
         "label": "Elexon BMRS",
         "vendor_doc_base": "https://bmrs.elexon.co.uk/api-documentation/endpoint/datasets/",
-        "vendor_meta": {
-            "region": "United Kingdom",
-            "domain": "Electricity",
-            "heading_prefix": "Elexon",
-            "heading_italic": "BMRS.",
-            "lede": (
-                "The British electricity Balancing Mechanism Reporting Service. Settlement "
-                "prices, generation by fuel, demand outturn, balancing actions, and BM unit "
-                "metadata — documented as a static reference site over the gridflow ETL "
-                "pipeline."
-            ),
-            "vendor_docs_url": "https://bmrs.elexon.co.uk/",
-            "base_url": "data.elexon.co.uk/bmrs/api/v1",
-            "auth": "Public · no key required",
-            "rate_limit": "2 req/s · project default",
-            "format": "JSON · ISO-8601 · UTC",
-            "earliest": "2014-04-01",
-            "timezone": "UTC · SP 1–50",
-            "stat_three_value": "7",
-            "stat_three_label": "Settlement runs · II → DF",
-            "stat_four_value": "11y",
-            "stat_four_label": "History",
-        },
     },
-    "entsoe": {
-        "label": "ENTSO-E Transparency",
-        "vendor_doc_base": "https://transparency.entsoe.eu/",
-        "vendor_meta": {
-            "region": "European Union",
-            "domain": "Electricity",
-            "heading_prefix": "ENTSO-E",
-            "heading_italic": "Transparency.",
-            "lede": (
-                "The pan-European transmission system operators' Transparency Platform. "
-                "Day-ahead prices, actual generation per production type, cross-border flows, "
-                "forecasts, and outages across EU bidding zones — cross-vendor proof for the "
-                "documentation template."
-            ),
-            "vendor_docs_url": "https://transparency.entsoe.eu/",
-            "base_url": "web-api.tp.entsoe.eu",
-            "auth": "API key · query param securityToken",
-            "rate_limit": "~1 req/s · polite default",
-            "format": "XML · GL_MarketDocument",
-            "earliest": "2014-12-05",
-            "timezone": "UTC · PT15M / PT30M / PT60M",
-            "stat_three_value": "B25",
-            "stat_three_label": "PSR types · production codes",
-            "stat_four_value": "EU",
-            "stat_four_label": "Bidding zones",
-        },
-    },
-    "entsog": {
-        "label": "ENTSO-G Transparency",
-        "vendor_doc_base": "https://transparency.entsog.eu/",
-        "vendor_meta": {
-            "region": "European Union",
-            "domain": "Gas",
-            "heading_prefix": "ENTSO-G",
-            "heading_italic": "Transparency.",
-            "lede": (
-                "The European Network of Transmission System Operators for Gas "
-                "Transparency Platform. Point-level operational flows, nominations, "
-                "capacities, CMP data, and network topology for European gas "
-                "interconnections — public API, no authentication, 33 endpoints "
-                "covering GB interconnection points (Bacton IUK/BBL, Moffat)."
-            ),
-            "vendor_docs_url": "https://transparency.entsog.eu/",
-            "base_url": "transparency.entsog.eu/api/v1",
-            "auth": "Public · no key required",
-            "rate_limit": "5 req/s · project default",
-            "format": "JSON · ISO-8601 · timeZone:UCT",
-            "earliest": "2010",
-            "timezone": "UCT · day periods",
-            "stat_three_value": "9",
-            "stat_three_label": "GB interconnection points",
-            "stat_four_value": "1",
-            "stat_four_label": "Typed schema · 32 dynamic",
-        },
-    },
-    "gie": {
-        "label": "GIE",
-        "vendor_doc_base": "https://agsi.gie.eu/",
-        "vendor_meta": {
-            "region": "European Union",
-            "domain": "Gas storage · LNG",
-            "heading_prefix": "GIE",
-            "heading_italic": "Storage.",
-            "lede": (
-                "Gas Infrastructure Europe — the trade association for European gas "
-                "storage and LNG operators. AGSI+ publishes daily underground storage "
-                "levels by country and facility from 2011; ALSI publishes daily LNG "
-                "terminal inventories and send-out across the same footprint. Both "
-                "share a single x-key authentication model on separate hosts."
-            ),
-            "vendor_docs_url": "https://agsi.gie.eu/",
-            "base_url": "agsi.gie.eu · alsi.gie.eu",
-            "auth": "API key · x-key request header",
-            "rate_limit": "1 req/s · 60 req/min cap",
-            "format": "JSON · gas day (06:00 UTC)",
-            "earliest": "2011-01-01",
-            "timezone": "UTC · daily gas-day grain",
-            "stat_three_value": "9",
-            "stat_three_label": "AGSI countries",
-            "stat_four_value": "2011",
-            "stat_four_label": "Storage depth",
-        },
-    },
+    "entsoe": {"label": "ENTSO-E", "vendor_doc_base": "https://transparency.entsoe.eu/"},
+    "entsog": {"label": "ENTSO-G", "vendor_doc_base": "https://transparency.entsog.eu/"},
+    "gie": {"label": "GIE AGSI+ and ALSI", "vendor_doc_base": "https://agsi.gie.eu/"},
     "neso": {
         "label": "NESO Carbon Intensity",
         "vendor_doc_base": "https://carbonintensity.org.uk/",
-        "vendor_meta": {
-            "region": "United Kingdom",
-            "domain": "Carbon",
-            "heading_prefix": "NESO",
-            "heading_italic": "Carbon.",
-            "lede": (
-                "The National Energy System Operator's Carbon Intensity API (formerly "
-                "National Grid ESO), built with the Environmental Defense Fund Europe "
-                "and University of Oxford. Half-hourly forecast and actual carbon "
-                "intensity of the GB grid in gCO₂/kWh, with national, statistical, "
-                "generation-mix, and regional (DNO / postcode) breakdowns. Public, "
-                "no key required."
-            ),
-            "vendor_docs_url": "https://carbonintensity.org.uk/",
-            "base_url": "api.carbonintensity.org.uk",
-            "auth": "Public · no key required",
-            "rate_limit": "10 req/s · project default",
-            "format": "JSON · ISO-8601 · UTC",
-            "earliest": "2018-01",
-            "timezone": "UTC · 30-min settlement periods",
-            "stat_three_value": "48h",
-            "stat_three_label": "Forecast horizon",
-            "stat_four_value": "gCO₂/kWh",
-            "stat_four_label": "Reporting unit",
-        },
     },
-    "openmeteo": {
-        "label": "Open-Meteo",
-        "vendor_doc_base": "https://open-meteo.com/en/docs",
-        "vendor_meta": {
-            "region": "Global",
-            "domain": "Weather",
-            "heading_prefix": "Open-Meteo",
-            "heading_italic": "Weather.",
-            "lede": (
-                "An open-source weather API aggregating ECMWF, GFS, and ERA5 "
-                "reanalysis into a single columnar JSON interface. No authentication "
-                "required for non-commercial use. Six datasets covering hourly "
-                "temperature, wind, and solar irradiance across GB population centres "
-                "and capacity-weighted generation sites — 1–16-day forecasts and "
-                "ERA5-backed archive to 1940."
-            ),
-            "vendor_docs_url": "https://open-meteo.com/en/docs",
-            "base_url": "api.open-meteo.com/v1 · archive-api.open-meteo.com/v1",
-            "auth": "Public · no key required",
-            "rate_limit": "5 req/s · ~10 000 req/day",
-            "format": "JSON · ISO-8601 · UTC",
-            "earliest": "1940-01-01 · ERA5",
-            "timezone": "UTC · hourly resolution",
-            "stat_three_value": "1940",
-            "stat_three_label": "ERA5 depth",
-            "stat_four_value": "25",
-            "stat_four_label": "GB sites",
-        },
-    },
+    "openmeteo": {"label": "Open-Meteo", "vendor_doc_base": "https://open-meteo.com/en/docs"},
     "neso_data_portal": {
         "label": "NESO Data Portal",
         "vendor_doc_base": "https://www.neso.energy/data-portal/api-guidance",
-        "vendor_meta": {
-            "region": "United Kingdom",
-            "domain": "Electricity",
-            "heading_prefix": "NESO",
-            "heading_italic": "Data Portal.",
-            # v5 D4: the site documents only what gridflow ingests, so the hub
-            # names the three ingested packages and counts nothing else.
-            "lede": (
-                "The National Energy System Operator's general open-data catalogue, a "
-                "CKAN file-download platform separate from the NESO Carbon Intensity "
-                "API. gridflow ingests three of its packages: per-BMU wind availability "
-                "forecasts, embedded (sub-transmission) wind and solar generation "
-                "forecasts, and a half-hourly GB generation-mix archive back to 2009."
-            ),
-            "vendor_docs_url": "https://www.neso.energy/data-portal/api-guidance",
-            "base_url": "api.neso.energy/api/3/action",
-            "auth": "Public · no key required",
-            "rate_limit": "1 req/s · CKAN action API (IP-block enforced)",
-            "format": "CKAN JSON metadata → CSV file download",
-            "earliest": "2009-01-01 · historic_generation_mix",
-            "timezone": "UTC · daily / half-hourly grain",
-            "stat_three_value": "CKAN",
-            "stat_three_label": "File catalogue · CSV downloads",
-            "stat_four_value": "3",
-            "stat_four_label": "Packages ingested",
-        },
     },
 }
-
-
-# Vendors whose authored `_landing.html` is NOT used, so the hub renders from
-# the manifest instead. neso_data_portal's authored landing is a catalogue of
-# 29 packages gridflow does not ingest, each linking a "Planned" stub page;
-# v5 D4 drops those stubs, and the landing would otherwise link 29 dead pages.
-_TEMPLATE_HUB_VENDORS = frozenset({"neso_data_portal"})
 
 
 # ──────────────────────────────────────────────────────────────────────
@@ -495,7 +307,7 @@ def _all_manifest_slugs() -> dict[str, set[str]]:
             except FileNotFoundError:
                 cache[vendor_id] = set()
                 continue
-            cache[vendor_id] = {d["id"] for g in manifest["groups"] for d in g["datasets"]}
+            cache[vendor_id] = set(manifest_datasets(manifest))
         _MANIFEST_SLUGS_CACHE = cache
     return _MANIFEST_SLUGS_CACHE
 
@@ -1014,33 +826,59 @@ def parse_vault_file(
 
 
 def load_manifest(vendor_id: str = "elexon") -> dict:
+    """A vendor's page set and hub content, ``site/hifi/data/<vendor>.json``.
+
+    ``groups`` list the vendor's pages in hub order; a page is a dataset slug or a family slug.
+    ``families`` name each family's members, the lead first; ``names`` give each single dataset
+    the plain name its hub row and blank page carry. Datasets in ``dropped`` have no page.
+    """
     path = SITE_DIR / "data" / f"{vendor_id}.json"
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def manifest_index(manifest: dict) -> dict[str, dict]:
-    """Map slug → manifest entry (with group injected)."""
-    index = {}
-    for group in manifest["groups"]:
-        for ds in group["datasets"]:
-            entry = dict(ds)
-            entry["group"] = group["name"]
-            entry["group_blurb"] = group["blurb"]
-            index[ds["id"]] = entry
-    return index
+def manifest_families(manifest: dict) -> dict[str, dict]:
+    """Family slug → the family entry (``slug``, ``title``, ``members``, lead first)."""
+    return {f["slug"]: f for f in manifest.get("families", [])}
 
 
-def manifest_siblings(manifest: dict, slug: str) -> list[dict]:
-    """Return sibling dataset entries in the same group as slug (incl. slug itself)."""
+def manifest_datasets(manifest: dict) -> list[str]:
+    """Every dataset slug in the vendor's page set, in hub order (family members in family order)."""
+    fams = manifest_families(manifest)
+    out: list[str] = []
     for group in manifest["groups"]:
-        ids = [d["id"] for d in group["datasets"]]
-        if slug in ids:
-            return list(group["datasets"])
-    return []
+        for page in group["pages"]:
+            out.extend(fams[page]["members"] if page in fams else [page])
+    return out
 
 
 def manifest_total_count(manifest: dict) -> int:
-    return sum(len(g["datasets"]) for g in manifest["groups"])
+    """The number of datasets the vendor's pages document (ruling: computed, never hand-typed)."""
+    return len(manifest_datasets(manifest))
+
+
+def manifest_errors(vendor_id: str, manifest: dict) -> list[str]:
+    """Structural checks on a vendor's page set."""
+    errors: list[str] = []
+    fams = manifest_families(manifest)
+    pages = [p for g in manifest["groups"] for p in g["pages"]]
+    if len(pages) != len(set(pages)):
+        errors.append(f"{vendor_id}: a page is listed in two groups")
+    for slug in fams:
+        if slug not in pages:
+            errors.append(f"{vendor_id}: family {slug!r} is in no group")
+    datasets = manifest_datasets(manifest)
+    if len(datasets) != len(set(datasets)):
+        errors.append(f"{vendor_id}: a dataset is in two families or listed twice")
+    clash = sorted(set(fams) & set(datasets))
+    if clash:
+        errors.append(f"{vendor_id}: family slug(s) {clash} are also dataset slugs")
+    for page in pages:
+        if page not in fams and page not in manifest.get("names", {}):
+            errors.append(f"{vendor_id}: {page!r} has no plain name in `names`")
+    dropped = sorted(set(manifest.get("dropped", {})) & set(datasets))
+    if dropped:
+        errors.append(f"{vendor_id}: {dropped} are both dropped and on a page")
+    return errors
 
 
 # ──────────────────────────────────────────────────────────────────────
@@ -1080,43 +918,10 @@ def chart_opts_json(chart: dict[str, Any]) -> str:
     )
 
 
-def render_dataset(
-    env: Environment, doc: DatasetDoc, manifest: dict, chart: dict[str, Any] | None = None
-) -> str:
-    """Render one dataset page.
-
-    ``chart`` is the committed series distilled from this dataset's chart
-    spec, or ``None``. With ``None`` the page has no chart section at all:
-    there is no seeded or placeholder chart.
-    """
-    template = env.get_template("dataset-legacy.html.j2")
-    siblings = manifest_siblings(manifest, doc.slug)
-    manifest_entry = manifest_index(manifest).get(doc.slug, {})
-    return template.render(
-        doc=doc,
-        manifest=manifest_entry,
-        siblings=siblings,
-        all_groups=manifest["groups"],
-        manifest_total=manifest_total_count(manifest),
-        chart=chart,
-        chart_opts=chart_opts_json(chart) if chart else "",
-    )
-
-
 # ──────────────────────────────────────────────────────────────────────
 # The dataset page template (locked anatomy, v5 Phase 25b)
 # ──────────────────────────────────────────────────────────────────────
 
-# Template copy for the lineage columns (schema option 4, verbatim).
-LINEAGE_MEANINGS = {
-    "event_time": "The row’s time column; for a table without one, the transform’s target date",
-    "available_at": "When the row became knowable: `published_at`, else the transform time",
-    "source_run_id": "Id of the pipeline run that wrote the row",
-    "dataset_version": "Transformer version stamped on the row",
-    "vintage_policy": "Which rule produced `available_at`",
-}
-_NUMERIC_DTYPES = re.compile(r"^(U?Int\d+|Float\d+|Decimal.*|Date|Datetime.*|Duration.*|Time)$")
-_CODE_VALUE = re.compile(r"^[A-Z0-9_\-/.]+$")
 _KW = re.compile(
     r"\b(from|import|as|def|return|for|in|if|else|lambda|not|and|or|None|True|False)\b"
 )
@@ -1199,77 +1004,124 @@ def check_artefacts(doc: DatasetDoc) -> tuple[PageArtefacts, list[str]]:
     return arts, errors
 
 
-def _record_view(doc: DatasetDoc, sample: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
+# Columns every silver table carries; the frame shows them, the guide gives them no line.
+PIPELINE_COLUMNS = frozenset({"data_provider", "ingested_at", *artefacts.LINEAGE_COLUMNS})
+
+# The frame's width budget, as silver prints it (the locked schema board): Red Hat Mono's advance at
+# 13 px, cell padding, the key square and Polars' `…` column. Past 1280 px, columns fold into `…`.
+_FRAME_BUDGET = 1280
+_FRAME_CH = 7.8
+_FRAME_PAD = 16
+_FRAME_KEY_W = 14
+_FRAME_EL_W = 30
+_POLARS_DTYPES = {
+    "Boolean": "bool",
+    "Date": "date",
+    "Float32": "f32",
+    "Float64": "f64",
+    "Int8": "i8",
+    "Int16": "i16",
+    "Int32": "i32",
+    "Int64": "i64",
+    "UInt8": "u8",
+    "UInt16": "u16",
+    "UInt32": "u32",
+    "UInt64": "u64",
+    "String": "str",
+    "Time": "time",
+}
+_DATETIME_DTYPE = re.compile(r"^Datetime\((ns|us|ms)(?:, (.+))?\)$")
+_NUMERIC_POLARS = re.compile(r"^[iuf]\d+$")
+
+
+def polars_dtype(label: str) -> str:
+    """A committed sample's dtype label as Polars prints it over a column (``datetime[μs, UTC]``)."""
+    if label in _POLARS_DTYPES:
+        return _POLARS_DTYPES[label]
+    m = _DATETIME_DTYPE.match(label)
+    if m:
+        unit = "μs" if m.group(1) == "us" else m.group(1)
+        return f"datetime[{unit}, {m.group(2)}]" if m.group(2) else f"datetime[{unit}]"
+    return label.lower()
+
+
+def _frame_view(doc: DatasetDoc, sample: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
+    """The silver section: the sample rows as a Polars frame, then the column guide beneath.
+
+    Every column is in the frame. Columns past the width budget (from ``ingested_at`` on, then more
+    while the frame is wider than 1280 px) fold behind Polars' ``…`` column, which a visually hidden
+    checkbox opens in place. The guide has one line per column that is not a pipeline column, key
+    columns first, each group in frame order.
+    """
     key = f"{doc.vendor_id}/{doc.slug}"
     rec = doc.page.record
     errors: list[str] = []
     cols = sample["columns"]
     names = [c["name"] for c in cols]
-    mark = sample["rows"][sample["mark"]]
-    schema_cols = [c for c in cols if not c["lineage"]]
-    missing = [c["name"] for c in schema_cols if c["name"] not in rec.fields]
+    pipeline = {c["name"] for c in cols if c["lineage"]} | (PIPELINE_COLUMNS & set(names))
+    guided = [n for n in names if n not in pipeline]
+    missing = [n for n in guided if n not in rec.fields]
     if missing:
         errors.append(f"{key}: page.record.fields has no meaning for {missing}")
-    extra = sorted(set(rec.fields) - {c["name"] for c in schema_cols})
+    extra = sorted(set(rec.fields) - set(names))
     if extra:
         errors.append(f"{key}: page.record.fields names columns silver does not have: {extra}")
     bad_key = [k for k in rec.key if k not in names]
     if bad_key:
         errors.append(f"{key}: page.record.key names columns silver does not have: {bad_key}")
-    fields_v = []
-    lineage_v = []
-    for i, c in enumerate(cols):
-        item = {
-            "name": c["name"],
-            "value": mark[i],
-            "dtype": c["dtype"],
-            "key": c["name"] in rec.key,
+
+    dtypes = [polars_dtype(c["dtype"]) for c in cols]
+
+    def cell(i: int, value: str | None) -> str | None:
+        if value is None:
+            return None
+        return f'"{value}"' if dtypes[i] == "str" else value
+
+    rows = [[cell(i, v) for i, v in enumerate(row)] for row in sample["rows"]]
+
+    def width(i: int) -> int:
+        chars = max(len(names[i]), len(dtypes[i]), *(len(r[i] or "null") for r in rows))
+        w = math.ceil(chars * _FRAME_CH) + _FRAME_PAD + 1
+        if names[i] in rec.key:
+            w = max(w, math.ceil(len(names[i]) * _FRAME_CH) + _FRAME_KEY_W + _FRAME_PAD + 1)
+        return w
+
+    cut = names.index("ingested_at") if "ingested_at" in names else len(names)
+    while cut > 1 and sum(width(i) for i in range(cut)) + _FRAME_EL_W + 3 > _FRAME_BUDGET:
+        cut -= 1
+    folded = names[cut:]
+    columns = [
+        {
+            "name": n,
+            "dtype": dtypes[i],
+            "key": n in rec.key,
+            "folded": i >= cut,
+            "num": bool(_NUMERIC_POLARS.match(dtypes[i])),
         }
-        if c["lineage"]:
-            lineage_v.append({**item, "meaning": LINEAGE_MEANINGS.get(c["name"], "")})
-        else:
-            fields_v.append({**item, "meaning": rec.fields.get(c["name"], "")})
-    differ = [
-        i
-        for i, c in enumerate(cols)
-        # ingested_at differs only by transform batch: pipeline noise, not data the reader compares.
-        if not c["lineage"]
-        and c["name"] != "ingested_at"
-        and len({row[i] for row in sample["rows"]}) > 1
+        for i, n in enumerate(names)
     ]
-    if not differ:
-        differ = [names.index(k) for k in rec.key if k in names]
 
-    def cls(i: int) -> str:
-        if _NUMERIC_DTYPES.match(cols[i]["dtype"]):
-            return "n"
-        vals = [row[i] for row in sample["rows"] if row[i] is not None]
-        return "c" if vals and all(_CODE_VALUE.match(v) for v in vals) else "s"
+    def entry(n: str) -> dict[str, Any]:
+        return {
+            "name": n,
+            "k": names.index(n) + 1,
+            "folded": n in folded,
+            "meaning": rec.fields.get(n, ""),
+        }
 
-    table = {
-        "columns": [{"name": names[i], "align": cls(i)} for i in differ],
-        "rows": [
-            {"me": r == sample["mark"], "cells": [{"value": row[i], "cls": cls(i)} for i in differ]}
-            for r, row in enumerate(sample["rows"])
-        ],
-    }
     relation = f"silver_{sample['silver'].replace('/', '_')}"
-    line = f"Relation <code>{html_escape(relation)}</code>"
-    if doc.pydantic_schema_wired:
-        module, _, cls_name = doc.pydantic_schema.rpartition(".")
-        line += (
-            f", typed by <code>{html_escape(cls_name)}</code> in "
-            f"<code>{html_escape(module.replace('.', '/'))}.py</code>"
-        )
-    if "dataset_version" in names and mark[names.index("dataset_version")]:
-        line += f"; transformer version {html_escape(mark[names.index('dataset_version')])}"
     view = {
-        "relation_line": Markup(line + "."),
-        "fields": fields_v,
-        "lineage": lineage_v,
+        "shape": f"({len(rows)}, {len(names)})",
         "caption": rec.caption,
-        "table": table,
-        "narrow": len(differ) <= 3,
+        "columns": columns,
+        "rows": rows,
+        "n_folded": len(folded),
+        "aria": (
+            f"Sample rows from {relation}: {len(rows)} rows of {len(names)} columns"
+            + (f", the last {len(folded)} folded." if folded else ".")
+        ),
+        "keyed": [entry(n) for n in guided if n in rec.key],
+        "others": [entry(n) for n in guided if n not in rec.key],
     }
     return view, errors
 
@@ -1399,7 +1251,7 @@ def page_view(
 
     record_v: dict[str, Any] = {}
     if arts.sample is not None:
-        record_v, rec_errors = _record_view(doc, arts.sample)
+        record_v, rec_errors = _frame_view(doc, arts.sample)
         errors.extend(rec_errors)
 
     related = []
@@ -1431,7 +1283,8 @@ def page_view(
         "vendor_id": doc.vendor_id,
         "vendor_label": doc.vendor_label,
         "key": key,
-        "chips": [v["key"] for v in variants] or [key],
+        "blank": False,
+        "chips": [{"key": v["key"], "id": None} for v in variants] or [{"key": key, "id": None}],
         "title": p.title,
         "summary": p.summary,
         "summary_plain": (p.summary or "").replace("`", ""),
@@ -1468,17 +1321,226 @@ def render_redirect(env: Environment, key: str, href: str, family_title: str) ->
     )
 
 
-def render_vendor_hub(
-    env: Environment, manifest: dict, vendor_id: str, vendor_label: str, vendor_meta: dict
-) -> str:
-    template = env.get_template("vendor-hub.html.j2")
-    return template.render(
-        vendor_id=vendor_id,
-        vendor_label=vendor_label,
-        vendor_meta=vendor_meta,
-        manifest=manifest,
-        manifest_total=manifest_total_count(manifest),
+def blank_view(
+    vendor_id: str, vendor_label: str, page: str, title: str, members: list[str]
+) -> dict[str, Any]:
+    """A page in the page set whose note has no ``page:`` block yet: the hero's name and id only.
+
+    A family's blank page carries one chip per member, each with the member's id, so the members'
+    old addresses (``<member>.html`` → ``<family>.html#<member>``) land on their own chip.
+    """
+    chips = (
+        [{"key": f"{vendor_id}/{m}", "id": m} for m in members]
+        if members
+        else [{"key": f"{vendor_id}/{page}", "id": None}]
     )
+    return {
+        "blank": True,
+        "vendor_id": vendor_id,
+        "vendor_label": vendor_label,
+        "key": f"{vendor_id}/{page}",
+        "chips": chips,
+        "title": title,
+        "summary_plain": f"{title}, from {vendor_label}: {', '.join(c['key'] for c in chips)}.",
+        "landscape": _DEFAULT_LANDSCAPE.get(vendor_id, "power"),
+    }
+
+
+_COUNT_WORDS = ["no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
+
+
+def _count_word(n: int) -> str:
+    return _COUNT_WORDS[n] if n < len(_COUNT_WORDS) else str(n)
+
+
+def _hub_rows(
+    vendor_id: str, manifest: dict, docs: dict[str, DatasetDoc], pages: list[str]
+) -> list[dict[str, Any]]:
+    fams = manifest_families(manifest)
+    rows = []
+    for page in pages:
+        fam = fams.get(page)
+        if fam:
+            lead = docs[fam["members"][0]]
+            rows.append(
+                {
+                    "href": f"{vendor_id}/{page}.html",
+                    "codes": fam["members"],
+                    "title": lead.page.title
+                    if lead.new_template and lead.page.title
+                    else fam["title"],
+                    "path": "",
+                }
+            )
+        else:
+            doc = docs[page]
+            rows.append(
+                {
+                    "href": f"{vendor_id}/{page}.html",
+                    "codes": [page],
+                    "title": manifest["names"][page],
+                    "path": doc.api_path if doc.api_path.startswith("/") else "",
+                }
+            )
+    return rows
+
+
+def hub_view(vendor_id: str, manifest: dict, docs: dict[str, DatasetDoc]) -> dict[str, Any]:
+    """The vendor hub (direction A, "Sections"): hero and facts, the grouped datasets, silver, gold."""
+    n = manifest_total_count(manifest)
+    facts = [(k, Markup(_markdown_inline(v, vendor_id))) for k, v in manifest["facts"]]
+    facts.append(("Datasets", Markup(str(n))))
+    groups = []
+    for i, g in enumerate(manifest["groups"]):
+        groups.append(
+            {
+                "id": f"g{i + 1}",
+                "name": g["name"],
+                "blurb": g["blurb"],
+                "rows": _hub_rows(vendor_id, manifest, docs, g["pages"]),
+            }
+        )
+    keys = manifest["source_keys"]
+    views = " or ".join(f"<code>silver_{k}_{{dataset}}</code>" for k in keys)
+    latest = manifest.get("latest_views", [])
+    if latest:
+        how_many = (
+            f"All {_count_word(n)}" if len(latest) == n else _count_word(len(latest)).capitalize()
+        )
+        silver = {
+            "title": "In silver, every capture is kept",
+            "text": Markup(
+                f"Each dataset is one DuckDB view, {views}. {how_many} are append-only: a later "
+                "publication never overwrites an earlier one, each capture is its own "
+                "<code>_run{available_at}</code> file, and a <code>_latest</code> view returns the "
+                "newest capture for each key."
+            ),
+            "views": [f"silver_{keys[0]}_{d}_latest" for d in latest],
+        }
+    else:
+        silver = {
+            "title": "In silver, one view per dataset",
+            "text": Markup(
+                f"Each dataset is one DuckDB view, {views}: typed, validated and deduplicated on "
+                "the dataset’s key."
+            ),
+            "views": [],
+        }
+    nb = manifest["notebook"]
+    well = Markup(
+        highlight(
+            f"data.{nb['source']}.list_datasets()\n"
+            f'df = data.{nb["source"]}.query("{nb["dataset"]}", start, end)'
+        )
+    )
+    return {
+        "vendor_id": vendor_id,
+        "name": manifest["name"],
+        "intro": manifest["intro"],
+        "facts": facts,
+        "landscape": manifest["landscape"],
+        "land_class": "hub-land" if manifest["landscape"] == "elexon" else "ds-land",
+        "n": n,
+        "groups": groups,
+        "groups_title": (
+            f"The datasets, in {_count_word(len(groups))} groups"
+            if len(groups) > 1
+            else "The datasets"
+        ),
+        "groups_note": manifest.get("groups_note", ""),
+        "silver": silver,
+        "well": well,
+    }
+
+
+def render_hub(env: Environment, view: dict[str, Any]) -> str:
+    """Render one vendor hub."""
+    return env.get_template("hub.html.j2").render(v=view)
+
+
+# The names of one dataset through the layers (direction A board, verbatim).
+_LANDING_NAMES = [
+    ("vendor endpoint", "/balancing/settlement/system-prices/{date}"),
+    ("raw responses", "bronze/elexon/system_prices/"),
+    ("typed Parquet", "silver/elexon/system_prices/"),
+    ("DuckDB view", "silver_elexon_system_prices_latest"),
+    ("notebook", 'data.elexon.query("system_prices", start, end)'),
+]
+# Where each vendor sits on the landing's grid (column, row), in cable order west to east.
+_LANDING_GRID = {
+    "elexon": (1, 1),
+    "neso": (2, 2),
+    "neso_data_portal": (2, 1),
+    "openmeteo": (3, 2),
+    "gie": (3, 1),
+    "entsog": (4, 2),
+    "entsoe": (4, 1),
+}
+
+
+def _page_href(vendor_id: str, manifest: dict, slug: str) -> str:
+    """The address of a dataset's page from the site root's data-sources/ directory."""
+    for fam in manifest_families(manifest).values():
+        if slug in fam["members"]:
+            return f"data-sources/{vendor_id}/{fam['slug']}.html#{slug}"
+    return f"data-sources/{vendor_id}/{slug}.html"
+
+
+def landing_view(manifests: dict[str, dict], chart: dict[str, Any] | None) -> dict[str, Any]:
+    """The Data sources landing: every vendor, a few datasets to start with, one dataset's names."""
+    vendors = []
+    for vendor_id, m in manifests.items():
+        land = m["landing"]
+        col, row = _LANDING_GRID[vendor_id]
+        vendors.append(
+            {
+                "id": vendor_id,
+                "order": land["order"],
+                "name": m["name"],
+                "bronze": land["bronze"],
+                "desc": land["desc"],
+                "fact": f"{manifest_total_count(m)} datasets, {land['fact']}",
+                "col": col,
+                "row": row,
+                "start": [
+                    {"href": _page_href(vendor_id, m, k), "code": k, "gloss": g}
+                    for k, g in land["start"]
+                ],
+            }
+        )
+    vendors.sort(key=lambda v: v["order"])
+    n = sum(manifest_total_count(m) for m in manifests.values())
+    return {
+        "n": n,
+        "vendors": vendors,
+        "names": _LANDING_NAMES,
+        "chart": chart,
+    }
+
+
+def landing_chart(vault_path: Path) -> dict[str, Any] | None:
+    """The system_prices page's own chart, drawn again beside its names on the landing."""
+    note = vault_path / "elexon" / "system_prices.md"
+    if not note.is_file():
+        return None
+    doc = parse_vault_file(note, vendor_id="elexon", vendor_label=REAL_VENDORS["elexon"]["label"])
+    chart, errors, _ = resolve_chart(doc)
+    if chart is None or errors or not doc.new_template:
+        return None
+    if chart_svg.check_view(chart, doc.page.chart_view):
+        return None
+    wide, narrow = chart_svg.render(chart, doc.page.chart_view, "lc")
+    return {
+        "title": doc.page.chart_view.title,
+        "caption": doc.page.chart_view.caption,
+        "wide": Markup(wide),
+        "narrow": Markup(narrow),
+    }
+
+
+def render_landing(env: Environment, view: dict[str, Any]) -> str:
+    """Render the Data sources landing."""
+    return env.get_template("data-sources.html.j2").render(v=view)
 
 
 # ──────────────────────────────────────────────────────────────────────
@@ -1564,18 +1626,17 @@ def build_vendor(
     vault_path: Path,
     out_root: Path,
     only: frozenset[str] = frozenset(),
-) -> tuple[int, int]:
-    """Render one vendor's dataset pages + hub.
+) -> tuple[int, int, int]:
+    """Render one vendor's pages, family pointers and hub.
 
-    ``only`` (``<vendor>/<dataset>`` keys) renders just those pages, for a
-    fast look at one page: no hub, no pruning, and every other page untouched.
+    Every page in the vendor's page set renders: on the dataset template when its note (a family's
+    lead note) has a ``page:`` block, else blank (the hero's name and id only). ``only``
+    (``<vendor>/<dataset>`` keys) renders just those pages: no hub, no pruning.
 
-    Returns ``(dataset_page_count, chart_page_count)``. Chart specs and series
-    are checked for every dataset, authored overrides included, so a stale
-    series fails the build even while an override hides the template.
+    Returns ``(datasets_documented, pages_written, chart_pages)``.
     """
-    vendor_cfg = REAL_VENDORS[vendor_id]
-    vendor_label = vendor_cfg["label"]
+    manifest = load_manifest(vendor_id)
+    vendor_label = manifest["name"]
     vendor_dir = vault_path / vendor_id
     if not vendor_dir.is_dir():
         sys.exit(
@@ -1583,30 +1644,30 @@ def build_vendor(
             f"  Set --vault-path or $GRIDFLOW_VAULT_PATH, or vendor vault content into "
             f"{DEFAULT_VAULT.relative_to(REPO_ROOT)}/."
         )
+    errors = manifest_errors(vendor_id, manifest)
+    if errors:
+        _fail(vendor_id, "page set", errors)
     out_dataset_dir = out_root / "data-sources" / vendor_id
     out_dataset_dir.mkdir(parents=True, exist_ok=True)
-    manifest = load_manifest(vendor_id)
-    manifest_slugs = {d["id"] for g in manifest["groups"] for d in g["datasets"]}
-
-    vault_files = sorted(vendor_dir.glob("*.md"))
-    vault_slugs = {p.stem for p in vault_files}
-
-    missing_in_vault = manifest_slugs - vault_slugs
+    fams = manifest_families(manifest)
+    datasets = manifest_datasets(manifest)
+    vault_slugs = {p.stem for p in vendor_dir.glob("*.md")}
+    missing_in_vault = sorted(set(datasets) - vault_slugs)
     if missing_in_vault:
         sys.exit(
-            f"[gridflow-build] ERROR: manifest declares datasets without vault files: {sorted(missing_in_vault)}"
+            f"[gridflow-build] ERROR: the page set names datasets without vault notes: {missing_in_vault}"
         )
-
-    docs: list[tuple[Path, DatasetDoc]] = []
-    for path in vault_files:
-        slug = path.stem
-        if slug not in manifest_slugs:
-            print(f"  skip (not in manifest): {vendor_id}/{slug}")
-            continue
-        docs.append((path, parse_vault_file(path, vendor_id=vendor_id, vendor_label=vendor_label)))
+    for slug in sorted(vault_slugs - set(datasets)):
+        print(f"  skip (not in the page set): {vendor_id}/{slug}")
+    docs = {
+        slug: parse_vault_file(
+            vendor_dir / f"{slug}.md", vendor_id=vendor_id, vendor_label=vendor_label
+        )
+        for slug in datasets
+    }
 
     # VAULT-03 audit
-    warnings, errors = audit_vault_content([d for _, d in docs])
+    warnings, errors = audit_vault_content(list(docs.values()))
     if warnings:
         print(f"[gridflow-build] {vendor_id}: {len(warnings)} content warning(s):", file=sys.stderr)
         for w in warnings:
@@ -1616,7 +1677,7 @@ def build_vendor(
 
     charts: dict[str, dict[str, Any]] = {}
     chart_errors: list[str] = []
-    for _path, doc in docs:
+    for doc in docs.values():
         chart, errs, notes = resolve_chart(doc)
         chart_errors.extend(errs)
         for note in notes:
@@ -1626,99 +1687,81 @@ def build_vendor(
     if chart_errors:
         _fail(vendor_id, "chart", chart_errors)
 
-    # Family pages (v5 D5): the lead note's page lists every member; each
-    # member's own address becomes a pointer to its section there.
-    by_slug = {doc.slug: doc for _, doc in docs}
-    family_of: dict[str, tuple[DatasetDoc, str]] = {}
+    # Families (ruling: each family is one page): the page set names them; a lead note's
+    # page.family, once written, must agree with it.
+    family_of = {m: fam for fam in fams.values() for m in fam["members"]}
     page_errors: list[str] = []
-    for _path, doc in docs:
-        fam = doc.page.family if doc.new_template else None
+    for doc in docs.values():
+        if not doc.new_template:
+            continue
+        fam = family_of.get(doc.slug)
+        declared = doc.page.family
         if fam is None:
-            continue
-        if fam.slug in by_slug:
-            page_errors.append(f"{doc.slug}: family slug {fam.slug!r} is also a dataset slug")
-        for mem in fam.members:
-            if mem.dataset not in by_slug:
-                page_errors.append(f"{doc.slug}: family member {mem.dataset!r} has no vault note")
-            elif mem.dataset in family_of:
-                page_errors.append(f"{doc.slug}: {mem.dataset!r} is in two families")
-            elif by_slug[mem.dataset].new_template and mem.dataset != doc.slug:
-                page_errors.append(f"{mem.dataset}: a family member cannot have its own page block")
-            else:
-                family_of[mem.dataset] = (doc, fam.slug)
-        if doc.slug not in {m.dataset for m in fam.members}:
-            page_errors.append(f"{doc.slug}: a family's lead note must list itself as a member")
-    if only:
-        # Rendering a family lead also rewrites its members' pointers.
-        only = only | {
-            f"{vendor_id}/{member}"
-            for member, (lead, _) in family_of.items()
-            if f"{vendor_id}/{lead.slug}" in only
-        }
-
-    written: set[str] = set()
-    n_charts = 0
-    views: dict[str, tuple[DatasetDoc, dict[str, Any]]] = {}
-    for _path, doc in docs:
-        if not doc.new_template or (only and f"{vendor_id}/{doc.slug}" not in only):
-            continue
-        if (AUTHORED_DIR / vendor_id / f"{doc.slug}.html").exists():
+            if declared is not None:
+                page_errors.append(
+                    f"{doc.slug}: page.family names a family the page set does not have"
+                )
+        elif doc.slug != fam["members"][0]:
             page_errors.append(
-                f"{doc.slug}: the note is on the dataset template; delete its authored override"
+                f"{doc.slug}: only the lead note of family {fam['slug']!r} "
+                f"({fam['members'][0]}) carries a page block"
             )
-        arts, errs = check_artefacts(doc)
-        arts.chart = charts.get(doc.slug)
-        if doc.page.chart and doc.page.chart.get("type") != "none" and arts.chart is None:
-            errs.append(f"{doc.slug}: page.chart has no committed series")
-        members = []
-        if doc.page.family is not None:
-            members = [by_slug[m.dataset] for m in doc.page.family.members if m.dataset in by_slug]
+        elif declared is None:
+            page_errors.append(
+                f"{doc.slug}: leads family {fam['slug']!r}; its page block needs page.family"
+            )
+        elif declared.slug != fam["slug"] or {m.dataset for m in declared.members} != set(
+            fam["members"]
+        ):
+            page_errors.append(
+                f"{doc.slug}: page.family must match the page set: slug {fam['slug']!r}, "
+                f"members {fam['members']}"
+            )
+    if page_errors:
+        _fail(vendor_id, "dataset page", page_errors)
+
+    pages = [p for g in manifest["groups"] for p in g["pages"]]
+    views: dict[str, dict[str, Any]] = {}
+    for page in pages:
+        fam = fams.get(page)
+        members = fam["members"] if fam else [page]
+        if only and not any(f"{vendor_id}/{m}" in only for m in members):
+            continue
+        lead = docs[members[0]]
+        if not lead.new_template:
+            title = fam["title"] if fam else manifest["names"][page]
+            views[page] = blank_view(vendor_id, vendor_label, page, title, members if fam else [])
+            continue
+        arts, errs = check_artefacts(lead)
+        arts.chart = charts.get(lead.slug)
+        if lead.page.chart and lead.page.chart.get("type") != "none" and arts.chart is None:
+            errs.append(f"{lead.slug}: page.chart has no committed series")
         if not errs:
-            view, errs = page_view(doc, arts, members)
-            views[doc.slug] = (doc, view)
+            view, errs = page_view(lead, arts, [docs[m] for m in members] if fam else [])
+            views[page] = view
         page_errors.extend(errs)
     if page_errors:
         _fail(vendor_id, "dataset page", page_errors)
 
-    for slug, (doc, view) in views.items():
-        fam = doc.page.family
-        out_name = f"{fam.slug}.html" if fam else f"{slug}.html"
+    written: set[str] = set()
+    n_charts = 0
+    for page, view in views.items():
+        out_name = f"{page}.html"
         (out_dataset_dir / out_name).write_text(render_page(env, view), encoding="utf-8")
         written.add(out_name)
-        n_charts += 1 if view["chart"] else 0
-        print(f"  wrote: data-sources/{vendor_id}/{out_name} (dataset template)")
-
-    for _path, doc in docs:
-        if only and f"{vendor_id}/{doc.slug}" not in only:
-            continue
-        out_path = out_dataset_dir / f"{doc.slug}.html"
-        authored = AUTHORED_DIR / vendor_id / f"{doc.slug}.html"
-        if doc.slug in family_of:
-            lead, fam_slug = family_of[doc.slug]
-            href = f"{fam_slug}.html#{doc.slug}"
-            out_path.write_text(
-                render_redirect(env, f"{vendor_id}/{doc.slug}", href, lead.page.title or fam_slug),
-                encoding="utf-8",
+        n_charts += 1 if view.get("chart") else 0
+        kind = "blank" if view.get("blank") else "dataset template"
+        print(f"  wrote: data-sources/{vendor_id}/{out_name} ({kind})")
+        fam = fams.get(page)
+        for member in fam["members"] if fam else []:
+            href = f"{page}.html#{member}"
+            (out_dataset_dir / f"{member}.html").write_text(
+                render_redirect(env, f"{vendor_id}/{member}", href, view["title"]), encoding="utf-8"
             )
-            print(f"  wrote: data-sources/{vendor_id}/{doc.slug}.html (points to {href})")
-        elif doc.new_template:
-            continue
-        elif authored.exists():
-            # Authored pages carry their own markup verbatim, charts included;
-            # they retire in Phase 25b, when the new template renders them.
-            shutil.copy(authored, out_path)
-            print(f"  wrote: data-sources/{vendor_id}/{doc.slug}.html (authored)")
-        else:
-            chart = charts.get(doc.slug)
-            out_path.write_text(render_dataset(env, doc, manifest, chart=chart), encoding="utf-8")
-            suffix = f" (chart: {chart['type']}, {len(chart['series'])} series)" if chart else ""
-            print(f"  wrote: data-sources/{vendor_id}/{doc.slug}.html{suffix}")
-            if chart:
-                n_charts += 1
-        written.add(out_path.name)
+            written.add(f"{member}.html")
 
     if only:
-        return len(docs), n_charts
+        return len(datasets), len(views), n_charts
 
     # The vendor directory is wholly generated (gitignored), so any page this
     # run did not write is left over from an earlier build: a dropped dataset
@@ -1729,17 +1772,9 @@ def build_vendor(
             print(f"  removed stale: data-sources/{vendor_id}/{stale.name}")
 
     hub_path = out_root / "data-sources" / f"{vendor_id}.html"
-    authored_hub = AUTHORED_DIR / vendor_id / "_landing.html"
-    if authored_hub.exists() and vendor_id not in _TEMPLATE_HUB_VENDORS:
-        shutil.copy(authored_hub, hub_path)
-        print(f"  wrote: data-sources/{vendor_id}.html (authored hub)")
-    else:
-        hub_html = render_vendor_hub(
-            env, manifest, vendor_id, vendor_label, vendor_cfg["vendor_meta"]
-        )
-        hub_path.write_text(hub_html, encoding="utf-8")
-        print(f"  wrote: data-sources/{vendor_id}.html")
-    return len(docs), n_charts
+    hub_path.write_text(render_hub(env, hub_view(vendor_id, manifest, docs)), encoding="utf-8")
+    print(f"  wrote: data-sources/{vendor_id}.html (hub)")
+    return len(datasets), len(views), n_charts
 
 
 def orphan_chart_files(vault_path: Path) -> list[str]:
@@ -1749,11 +1784,10 @@ def orphan_chart_files(vault_path: Path) -> list[str]:
     left behind after a dataset is dropped would otherwise sit unnoticed.
     """
     known = {
-        (vendor_id, d["id"])
+        (vendor_id, d)
         for vendor_id in REAL_VENDORS
         if (vault_path / vendor_id).is_dir()
-        for g in load_manifest(vendor_id)["groups"]
-        for d in g["datasets"]
+        for d in manifest_datasets(load_manifest(vendor_id))
     }
     orphans: list[str] = []
     for root in (chart_spec.staging_dir(SITE_DIR), chart_spec.series_dir(SITE_DIR)):
@@ -1790,10 +1824,10 @@ def orphan_artefacts(pages: set[tuple[str, str]]) -> list[str]:
 def build(
     vault_path: Path, output_dir: Path | None = None, only: frozenset[str] = frozenset()
 ) -> tuple[int, int, int]:
-    """Render all vendor pages.
+    """Render every vendor's pages and hub, then the Data sources landing.
 
-    Returns ``(n_dataset_pages, n_hubs, n_chart_pages)``; the last counts
-    template-rendered pages that carry a distilled chart.
+    Returns ``(n_datasets, n_pages, n_hubs)``: the datasets the pages document, the pages
+    written (family pointers not counted) and the hubs.
     """
     env = make_env()
     out_root = output_dir or SITE_DIR
@@ -1809,19 +1843,28 @@ def build(
     if orphans:
         _fail("pages", "orphan artefact", [f"{o}: no dataset-template page" for o in orphans])
 
+    n_datasets = 0
     n_pages = 0
     n_hubs = 0
     n_charts = 0
+    manifests: dict[str, dict] = {}
     for vendor_id in REAL_VENDORS:
         if not (vault_path / vendor_id).is_dir():
             print(f"  skip vendor (no vault dir): {vendor_id}")
             continue
         if only and not any(k.startswith(f"{vendor_id}/") for k in only):
             continue
-        pages, chart_pages = build_vendor(env, vendor_id, vault_path, out_root, only)
+        datasets, pages, chart_pages = build_vendor(env, vendor_id, vault_path, out_root, only)
+        manifests[vendor_id] = load_manifest(vendor_id)
+        n_datasets += datasets
         n_pages += pages
         n_charts += chart_pages
-        n_hubs += 1
+        n_hubs += 0 if only else 1
+
+    if not only and len(manifests) == len(REAL_VENDORS):
+        landing = landing_view(manifests, landing_chart(vault_path))
+        (out_root / "data-sources.html").write_text(render_landing(env, landing), encoding="utf-8")
+        print(f"  wrote: data-sources.html (landing: {landing['n']} datasets)")
 
     print(
         f"[gridflow-build] charts: {n_charts} template page(s) carry a distilled series; "
@@ -1839,39 +1882,37 @@ def build(
             "grammar and were dropped from rendered output",
             file=sys.stderr,
         )
-    return n_pages, n_hubs, n_charts
+    return n_datasets, n_pages, n_hubs
+
+
+def _generated(root: Path) -> list[Path]:
+    """Every file the build writes under ``root`` (a site root or a snapshot of one)."""
+    out = sorted((root / "data-sources").rglob("*.html"))
+    landing = root / "data-sources.html"
+    return [*out, landing] if landing.exists() else out
 
 
 def _snapshot_outputs(temp_dir: Path) -> None:
     """Copy current generated outputs into temp_dir for diff comparison."""
-    src = SITE_DIR / "data-sources"
-    dst = temp_dir / "data-sources"
-    if dst.exists():
-        shutil.rmtree(dst)
-    dst.mkdir(parents=True, exist_ok=True)
-    for path in src.rglob("*.html"):
-        rel = path.relative_to(src)
-        out = dst / rel
+    if (temp_dir / "data-sources").exists():
+        shutil.rmtree(temp_dir / "data-sources")
+    for path in _generated(SITE_DIR):
+        out = temp_dir / path.relative_to(SITE_DIR)
         out.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(path, out)
 
 
 def _diff_outputs(temp_dir: Path) -> list[str]:
     """Compare the snapshot in temp_dir against current outputs. Return list of differing paths."""
-    src = SITE_DIR / "data-sources"
-    snap = temp_dir / "data-sources"
     differing: list[str] = []
-    for path in src.rglob("*.html"):
-        rel = path.relative_to(src)
-        snap_path = snap / rel
-        if not snap_path.exists():
+    for path in _generated(SITE_DIR):
+        rel = path.relative_to(SITE_DIR)
+        snap_path = temp_dir / rel
+        if not snap_path.exists() or not filecmp.cmp(str(path), str(snap_path), shallow=False):
             differing.append(str(rel))
-            continue
-        if not filecmp.cmp(str(path), str(snap_path), shallow=False):
-            differing.append(str(rel))
-    for path in snap.rglob("*.html"):
-        if not (src / path.relative_to(snap)).exists():
-            differing.append(f"{path.relative_to(snap)} (removed by the second build)")
+    for path in _generated(temp_dir):
+        if not (SITE_DIR / path.relative_to(temp_dir)).exists():
+            differing.append(f"{path.relative_to(temp_dir)} (removed by the second build)")
     return differing
 
 
@@ -1907,8 +1948,11 @@ def main(argv: list[str] | None = None) -> int:
         print(f"[gridflow-build] rendered only {sorted(args.only)}")
         return 0
 
-    n_pages, n_hubs, _ = build(vault_path)
-    print(f"[gridflow-build] wrote {n_pages} dataset pages + {n_hubs} vendor hub(s)")
+    n_datasets, n_pages, n_hubs = build(vault_path)
+    print(
+        f"[gridflow-build] wrote {n_pages} dataset pages ({n_datasets} datasets) "
+        f"+ {n_hubs} vendor hub(s) + the landing"
+    )
 
     if args.check:
         with tempfile.TemporaryDirectory(prefix="gridflow-build-check-") as tmp:
