@@ -5,6 +5,7 @@ Usage:
     gridflow-serve --port 9000  # custom port
     gridflow-serve --no-open    # skip browser launch
 """
+
 from __future__ import annotations
 
 import argparse
@@ -16,7 +17,6 @@ import time
 import webbrowser
 from pathlib import Path
 
-
 # Root of the static site relative to this package, resolved at import time.
 _PACKAGE_DIR = Path(__file__).parent
 _PROJECT_ROOT = _PACKAGE_DIR.parent.parent  # src/gridflow_front_end -> src -> project root
@@ -26,11 +26,11 @@ _SITE_DIR = _PROJECT_ROOT / "site" / "hifi"
 class _SilentHandler(http.server.SimpleHTTPRequestHandler):
     """SimpleHTTPRequestHandler that suppresses per-request log lines."""
 
-    def log_message(self, format: str, *args: object) -> None:  # noqa: A002
+    def log_message(self, format: str, *args: object) -> None:
         # Silence the default "GET /index.html 200 -" noise.
         pass
 
-    def log_error(self, format: str, *args: object) -> None:  # noqa: A002
+    def log_error(self, format: str, *args: object) -> None:
         # Still surface real errors.
         sys.stderr.write(f"[gridflow-serve] ERROR: {format % args}\n")
 
@@ -40,6 +40,7 @@ def _open_browser(url: str, delay: float = 0.5) -> None:
 
     The delay gives the server socket time to bind before the browser hits it.
     """
+
     def _go() -> None:
         time.sleep(delay)
         webbrowser.open(url)

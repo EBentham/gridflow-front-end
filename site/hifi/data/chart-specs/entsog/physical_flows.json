@@ -1,0 +1,17 @@
+{
+  "type": "line",
+  "silver": "entsog/physical_flows",
+  "time": "timestamp_utc",
+  "value": "flow_gwh_per_day",
+  "filter": [
+    {"column": "operator_key", "op": "eq", "value": "UK-TSO-0001"},
+    {"column": "point_key", "op": "in", "value": ["ITP-00005", "ITP-00090", "ITP-00207"]},
+    {"column": "direction_key", "op": "eq", "value": "exit"}
+  ],
+  "group": "point_label",
+  "time_bucket": "1d",
+  "aggregation": "sum",
+  "window": {"last": "14d"},
+  "unit": "GWh/d",
+  "caption": "Daily physical flow reported by National Gas TSO in the exit direction at its three interconnection points: Bacton (BBL), Bacton (IUK) and Moffat."
+}

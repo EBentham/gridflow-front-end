@@ -7,8 +7,15 @@ under `templates/`. Also rebuilds the vendor hub (`site/hifi/data-sources/elexon
 from the manifest at `site/hifi/data/elexon.json`.
 
 Build inputs (single source of truth):
-- vault/<vendor>/<slug>.md       — authored content (frontmatter + sections)
+- vault/<vendor>/<slug>.md       — authored content (frontmatter + sections);
+                                   the front matter's `page:` block carries the
+                                   page fields and chart spec (see page_fields)
 - site/hifi/data/<vendor>.json   — structural manifest (id/title/freq/lag/rows)
+- site/hifi/data/series/<vendor>/<slug>.json — distilled chart series, written
+                                   by `gridflow-distil` from local silver and
+                                   committed (see chart_spec, distil)
+- site/hifi/data/chart-specs/<vendor>/<slug>.json — staged chart specs, until
+                                   Phase 26 moves them into the vault notes
 
 Build outputs (gitignored, regenerated on every run):
 - site/hifi/data-sources/<vendor>/<slug>.html
@@ -28,14 +35,9 @@ Vault path resolution order:
     2. $GRIDFLOW_VAULT_PATH env var
     3. <repo>/vault/ (vendored fallback)
 
-Snapshot-chart data is a separate, occasional step:
-
-    gridflow-build --refresh-chart-data          # re-distil site/hifi/data/chart-series.json
-
-That command reads a local gridflow extract and rewrites the committed
-``site/hifi/data/chart-series.json``; ordinary builds only ever read that file.
-See ``chart_data`` for why the read is split in two — CI builds from a bare
-checkout and cannot see the extract.
+Charts: a dataset page shows a chart only when its dataset has a chart spec
+and a committed series distilled from exactly that spec. No spec, no chart:
+there is no seeded or placeholder fallback (v5 decision D3).
 """
 
 from __future__ import annotations
@@ -43,7 +45,6 @@ from __future__ import annotations
 import argparse
 import filecmp
 import json
-import os
 import re
 import shutil
 import sys
@@ -51,16 +52,26 @@ import tempfile
 from dataclasses import dataclass, field
 from html import escape as html_escape
 from pathlib import Path
+from typing import Any
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
-from gridflow_front_end import chart_data
+from gridflow_front_end import chart_spec
+from gridflow_front_end.page_fields import PageFields, parse_page_fields
+from gridflow_front_end.paths import DEFAULT_VAULT, REPO_ROOT, SITE_DIR, resolve_vault_path
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
 TEMPLATES_DIR = REPO_ROOT / "templates"
-SITE_DIR = REPO_ROOT / "site" / "hifi"
-DEFAULT_VAULT = REPO_ROOT / "vault"
 AUTHORED_DIR = REPO_ROOT / "authored-pages"
+
+__all__ = [
+    "AUTHORED_DIR",
+    "DEFAULT_VAULT",
+    "REAL_VENDORS",
+    "REPO_ROOT",
+    "SITE_DIR",
+    "parse_vault_file",
+    "resolve_vault_path",
+]
 
 
 # ──────────────────────────────────────────────────────────────────────
@@ -245,13 +256,14 @@ REAL_VENDORS: dict[str, dict] = {
             "domain": "Electricity",
             "heading_prefix": "NESO",
             "heading_italic": "Data Portal.",
+            # v5 D4: the site documents only what gridflow ingests, so the hub
+            # names the three ingested packages and counts nothing else.
             "lede": (
-                "The National Energy System Operator's general open-data catalogue — a "
-                "CKAN file-download platform distinct from the existing NESO Carbon "
-                "Intensity API. Per-BMU wind availability forecasts, embedded (sub-"
-                "transmission) wind/solar generation forecasts, and a half-hourly GB "
-                "generation-mix archive back to 2009. The portal publishes 129 packages; "
-                "3 are implemented so far, with 29 more documented and ready to add next."
+                "The National Energy System Operator's general open-data catalogue, a "
+                "CKAN file-download platform separate from the NESO Carbon Intensity "
+                "API. gridflow ingests three of its packages: per-BMU wind availability "
+                "forecasts, embedded (sub-transmission) wind and solar generation "
+                "forecasts, and a half-hourly GB generation-mix archive back to 2009."
             ),
             "vendor_docs_url": "https://www.neso.energy/data-portal/api-guidance",
             "base_url": "api.neso.energy/api/3/action",
@@ -260,26 +272,20 @@ REAL_VENDORS: dict[str, dict] = {
             "format": "CKAN JSON metadata → CSV file download",
             "earliest": "2009-01-01 · historic_generation_mix",
             "timezone": "UTC · daily / half-hourly grain",
-            "stat_three_value": "129",
-            "stat_three_label": "CKAN packages catalogued",
+            "stat_three_value": "CKAN",
+            "stat_three_label": "File catalogue · CSV downloads",
             "stat_four_value": "3",
-            "stat_four_label": "Implemented so far",
+            "stat_four_label": "Packages ingested",
         },
     },
 }
 
 
-# All seven vendors ship real documentation (Phase 10 closed the v2 milestone;
-# T-23 added neso_data_portal): elexon, entsoe, entsog, gie, neso, openmeteo,
-# neso_data_portal all live in REAL_VENDORS above. Six of them are documented at
-# full fidelity — every dataset their landing page links to is implemented.
-# neso_data_portal is the exception: it links 29 eligible-but-unbuilt CKAN
-# packages, so build_dataset_stubs_from_landings is ACTIVE (see
-# _PARTIAL_CONNECTOR_VENDORS below, which keeps those stubs from claiming the
-# pipeline already ingests them). This list stays empty — the VENDOR-level
-# coming-soon machinery (build_coming_soon_stubs) is retained, dormant,
-# for any future vendor that ships ahead of its documentation.
-COMING_SOON_VENDORS: list[dict] = []
+# Vendors whose authored `_landing.html` is NOT used, so the hub renders from
+# the manifest instead. neso_data_portal's authored landing is a catalogue of
+# 29 packages gridflow does not ingest, each linking a "Planned" stub page;
+# v5 D4 drops those stubs, and the landing would otherwise link 29 dead pages.
+_TEMPLATE_HUB_VENDORS = frozenset({"neso_data_portal"})
 
 
 # ──────────────────────────────────────────────────────────────────────
@@ -327,6 +333,8 @@ class DatasetDoc:
     sample_raw: str = ""
     caveats: list[Caveat] = field(default_factory=list)
     bronze_path: str = ""
+    page: PageFields = field(default_factory=PageFields)
+    page_errors: list[str] = field(default_factory=list)
 
     @property
     def vendor_doc_url(self) -> str:
@@ -371,6 +379,11 @@ def _parse_frontmatter(text: str) -> tuple[dict[str, str], str]:
     body = text[end + 4 :].lstrip("\n")
     frontmatter: dict[str, str] = {}
     for line in fm_text.splitlines():
+        # Top-level scalars only. Nested YAML (v2_fix_history, the `page:`
+        # block) is indented; letting it through would let a nested key
+        # overwrite a top-level one. `page:` is read by page_fields with YAML.
+        if line[:1].isspace() or line.lstrip().startswith("-"):
+            continue
         if ":" in line:
             k, v = line.split(":", 1)
             frontmatter[k.strip()] = v.strip()
@@ -414,14 +427,13 @@ def _reset_md_link_stats() -> None:
     _MD_LINK_STATS["fragment_dropped"] = 0
 
 
-# Section ids that actually exist on a generated dataset page
+# Section ids that exist on EVERY generated dataset page
 # (templates/dataset.html.j2) — the only fragments a resolved `.md` link may
 # carry, because the deploy gate link-checks fragments (`lychee
 # --include-fragments`): an anchor to a heading that only exists in the vault
-# source would 404 the fragment and block deployment.
-_GENERATED_SECTION_IDS = frozenset(
-    {"overview", "snapshot-chart", "schema", "sample", "api", "caveats", "related"}
-)
+# source would 404 the fragment and block deployment. The chart section is
+# not listed: a page without a chart spec has no chart section at all.
+_GENERATED_SECTION_IDS = frozenset({"overview", "schema", "sample", "api", "caveats", "related"})
 
 # Vault heading slugs whose content demonstrably lands in a specific generated
 # section. Anything not listed here (e.g. `#changelog`, ad-hoc subsection
@@ -949,6 +961,7 @@ def parse_vault_file(
     # Detect whether the pydantic schema is wired: must look like a dotted module path
     raw_schema = silver_meta.get("pydantic schema", "").strip("`")
     pydantic_wired = bool(re.match(r"^[\w]+(\.[\w]+)+$", raw_schema))
+    page, page_errors = parse_page_fields(text)
 
     return DatasetDoc(
         slug=slug,
@@ -974,6 +987,8 @@ def parse_vault_file(
         sample_raw=sample_raw,
         caveats=caveats,
         bronze_path=bronze_meta.get("path pattern", "").strip("`"),
+        page=page,
+        page_errors=page_errors,
     )
 
 
@@ -1030,14 +1045,33 @@ def make_env() -> Environment:
     return env
 
 
+def chart_opts_json(chart: dict[str, Any]) -> str:
+    """The ``data-opts`` payload ``charts.js`` needs to draw one series file.
+
+    Only what the renderer reads: identity, provenance and the spec stay in the
+    committed JSON, not in every page.
+    """
+    return json.dumps(
+        {
+            "type": chart["type"],
+            "unit": chart["unit"],
+            "x_kind": chart["x_kind"],
+            "x": chart["x"],
+            "series": [{"key": s["key"], "values": s["values"]} for s in chart["series"]],
+        },
+        separators=(",", ":"),
+        ensure_ascii=False,
+    )
+
+
 def render_dataset(
-    env: Environment, doc: DatasetDoc, manifest: dict, chart: dict | None = None
+    env: Environment, doc: DatasetDoc, manifest: dict, chart: dict[str, Any] | None = None
 ) -> str:
     """Render one dataset page.
 
-    ``chart`` is the distilled real series for this page, or ``None`` when the
-    page has no extracted data — in which case the template renders its seeded
-    snapshot and the "illustrative, seeded" caption that goes with it.
+    ``chart`` is the committed series distilled from this dataset's chart
+    spec, or ``None``. With ``None`` the page has no chart section at all:
+    there is no seeded or placeholder chart.
     """
     template = env.get_template("dataset.html.j2")
     siblings = manifest_siblings(manifest, doc.slug)
@@ -1049,12 +1083,7 @@ def render_dataset(
         all_groups=manifest["groups"],
         manifest_total=manifest_total_count(manifest),
         chart=chart,
-        chart_opts=json.dumps(
-            {"width": 900, "height": 280, "n": chart["points"], "values": chart["values"]},
-            separators=(",", ":"),
-        )
-        if chart
-        else "",
+        chart_opts=chart_opts_json(chart) if chart else "",
     )
 
 
@@ -1071,32 +1100,9 @@ def render_vendor_hub(
     )
 
 
-def render_coming_soon_stub(env: Environment, vendor_cfg: dict) -> str:
-    template = env.get_template("vendor-coming-soon.html.j2")
-    return template.render(
-        vendor_id=vendor_cfg["vendor_id"],
-        vendor_label=vendor_cfg["vendor_label"],
-        region=vendor_cfg["region"],
-        domain=vendor_cfg["domain"],
-        stage_chip=vendor_cfg["stage_chip"],
-        connector_state=vendor_cfg["connector_state"],
-        vendor_docs_url=vendor_cfg.get("vendor_docs_url"),
-        planned_items=vendor_cfg["planned_items"],
-    )
-
-
 # ──────────────────────────────────────────────────────────────────────
 # Driver
 # ──────────────────────────────────────────────────────────────────────
-
-
-def resolve_vault_path(cli_arg: str | None) -> Path:
-    if cli_arg:
-        return Path(cli_arg).expanduser().resolve()
-    env_path = os.environ.get("GRIDFLOW_VAULT_PATH")
-    if env_path:
-        return Path(env_path).expanduser().resolve()
-    return DEFAULT_VAULT
 
 
 def audit_vault_content(docs: list[DatasetDoc]) -> tuple[list[str], list[str]]:
@@ -1104,7 +1110,8 @@ def audit_vault_content(docs: list[DatasetDoc]) -> tuple[list[str], list[str]]:
 
     Returns (warnings, errors). Errors fail the build; warnings are surfaced
     on stderr but don't block. Critical-vs-soft thresholds:
-      ERROR (build-blocking): no overview, no api endpoint base URL, no slug
+      ERROR (build-blocking): no overview, no api endpoint base URL, no slug,
+                              a malformed `page:` block in the front matter
       WARN  (surfaced):       schema rows empty, sample empty, caveats empty,
                               pydantic class not declared
     """
@@ -1115,6 +1122,7 @@ def audit_vault_content(docs: list[DatasetDoc]) -> tuple[list[str], list[str]]:
             errors.append(f"{d.slug}: vault file has no Overview content")
         if not d.base_url and not d.api_path:
             errors.append(f"{d.slug}: vault file declares no API endpoint")
+        errors.extend(f"{d.slug}: {e}" for e in d.page_errors)
         if not d.schema_rows:
             warnings.append(f"{d.slug}: silver schema rows empty (table will render placeholder)")
         if not (d.sample_rows or d.sample_raw):
@@ -1129,22 +1137,55 @@ def audit_vault_content(docs: list[DatasetDoc]) -> tuple[list[str], list[str]]:
     return warnings, errors
 
 
+def resolve_chart(doc: DatasetDoc) -> tuple[dict[str, Any] | None, list[str], list[str]]:
+    """The committed series for one dataset, after checking it against its spec.
+
+    Returns:
+        ``(chart, errors, notes)``. ``chart`` is ``None`` when the dataset has
+        no spec, a ``none`` spec, or any error. Errors fail the build: an
+        invalid spec, a spec without a series, a series without a spec, or a
+        series distilled from a different spec than the one found today.
+    """
+    key = f"{doc.vendor_id}/{doc.slug}"
+    try:
+        spec, _origin, notes = chart_spec.resolve_spec(
+            SITE_DIR, doc.vendor_id, doc.slug, doc.page.chart
+        )
+        series = chart_spec.load_series(SITE_DIR, doc.vendor_id, doc.slug)
+    except (ValueError, TypeError) as exc:
+        return None, [str(exc)], []
+    if spec is not None:
+        problems = chart_spec.validate_spec(spec)
+        if problems:
+            return None, [f"{key}: chart spec: {p}" for p in problems], notes
+    errors = chart_spec.check_series(series, spec, key)
+    if errors or spec is None or spec.get("type") == "none":
+        return None, errors, notes
+    return series, [], notes
+
+
+def _fail(vendor_id: str, kind: str, errors: list[str]) -> None:
+    print(
+        f"[gridflow-build] {vendor_id}: {len(errors)} {kind} error(s) - failing build:",
+        file=sys.stderr,
+    )
+    for e in errors:
+        print(f"  ERROR: {e}", file=sys.stderr)
+    sys.exit(1)
+
+
 def build_vendor(
     env: Environment,
     vendor_id: str,
     vault_path: Path,
     out_root: Path,
-    chart_series: dict[str, dict] | None = None,
-) -> tuple[int, int, int]:
+) -> tuple[int, int]:
     """Render one vendor's dataset pages + hub.
 
-    Returns ``(dataset_page_count, template_page_count, real_chart_count)``.
-    ``chart_series`` is the committed distilled series keyed
-    ``"<vendor>/<slug>"``; a page with no entry renders its seeded chart. Only
-    template-rendered pages can receive an injected series, so the second count
-    is the denominator for the third.
+    Returns ``(dataset_page_count, chart_page_count)``. Chart specs and series
+    are checked for every dataset, authored overrides included, so a stale
+    series fails the build even while an override hides the template.
     """
-    chart_series = chart_series or {}
     vendor_cfg = REAL_VENDORS[vendor_id]
     vendor_label = vendor_cfg["label"]
     vendor_dir = vault_path / vendor_id
@@ -1183,40 +1224,50 @@ def build_vendor(
         for w in warnings:
             print(f"  WARN: {w}", file=sys.stderr)
     if errors:
-        print(
-            f"[gridflow-build] {vendor_id}: {len(errors)} content error(s) - failing build:",
-            file=sys.stderr,
-        )
-        for e in errors:
-            print(f"  ERROR: {e}", file=sys.stderr)
-        sys.exit(1)
+        _fail(vendor_id, "content", errors)
 
-    n_pages = 0
-    n_template_pages = 0
-    n_real_charts = 0
+    charts: dict[str, dict[str, Any]] = {}
+    chart_errors: list[str] = []
+    for _path, doc in docs:
+        chart, errs, notes = resolve_chart(doc)
+        chart_errors.extend(errs)
+        for note in notes:
+            print(f"  NOTE: {note}", file=sys.stderr)
+        if chart is not None:
+            charts[doc.slug] = chart
+    if chart_errors:
+        _fail(vendor_id, "chart", chart_errors)
+
+    written: set[str] = set()
+    n_charts = 0
     for _path, doc in docs:
         out_path = out_dataset_dir / f"{doc.slug}.html"
         authored = AUTHORED_DIR / vendor_id / f"{doc.slug}.html"
         if authored.exists():
-            # Authored pages carry their own markup verbatim, charts included —
-            # they are not template-rendered, so chart injection does not reach
-            # them. Subsuming their baked-in values is a separate change.
+            # Authored pages carry their own markup verbatim, charts included;
+            # they retire in Phase 25b, when the new template renders them.
             shutil.copy(authored, out_path)
             print(f"  wrote: data-sources/{vendor_id}/{doc.slug}.html (authored)")
         else:
-            chart = chart_series.get(f"{vendor_id}/{doc.slug}")
-            html = render_dataset(env, doc, manifest, chart=chart)
-            out_path.write_text(html, encoding="utf-8")
-            suffix = f" (real: {chart['column']})" if chart else ""
+            chart = charts.get(doc.slug)
+            out_path.write_text(render_dataset(env, doc, manifest, chart=chart), encoding="utf-8")
+            suffix = f" (chart: {chart['type']}, {len(chart['series'])} series)" if chart else ""
             print(f"  wrote: data-sources/{vendor_id}/{doc.slug}.html{suffix}")
-            n_template_pages += 1
             if chart:
-                n_real_charts += 1
-        n_pages += 1
+                n_charts += 1
+        written.add(out_path.name)
+
+    # The vendor directory is wholly generated (gitignored), so any page this
+    # run did not write is left over from an earlier build: a dropped dataset
+    # or a retired stub. Removing it keeps local output equal to a CI build.
+    for stale in sorted(out_dataset_dir.glob("*.html")):
+        if stale.name not in written:
+            stale.unlink()
+            print(f"  removed stale: data-sources/{vendor_id}/{stale.name}")
 
     hub_path = out_root / "data-sources" / f"{vendor_id}.html"
     authored_hub = AUTHORED_DIR / vendor_id / "_landing.html"
-    if authored_hub.exists():
+    if authored_hub.exists() and vendor_id not in _TEMPLATE_HUB_VENDORS:
         shutil.copy(authored_hub, hub_path)
         print(f"  wrote: data-sources/{vendor_id}.html (authored hub)")
     else:
@@ -1225,200 +1276,63 @@ def build_vendor(
         )
         hub_path.write_text(hub_html, encoding="utf-8")
         print(f"  wrote: data-sources/{vendor_id}.html")
-    return n_pages, n_template_pages, n_real_charts
+    return len(docs), n_charts
 
 
-def build_coming_soon_stubs(env: Environment, out_root: Path) -> int:
-    """Render coming-soon vendor hub stubs for any deferred vendors.
+def orphan_chart_files(vault_path: Path) -> list[str]:
+    """Staged specs and series files naming a dataset the site does not build.
 
-    For each entry in ``COMING_SOON_VENDORS`` (currently empty — every one of the
-    seven vendors ships a real landing page), copies
-    ``authored-pages/<vendor_id>/_landing.html`` verbatim if present, else renders
-    ``vendor-coming-soon.html.j2``. Dormant after v2; retained for any future
-    vendor that ships ahead of its documentation.
+    ``build_vendor`` only checks datasets in a manifest, so a spec or series
+    left behind after a dataset is dropped would otherwise sit unnoticed.
     """
-    n = 0
-    for cfg in COMING_SOON_VENDORS:
-        vendor_id = cfg["vendor_id"]
-        out_path = out_root / "data-sources" / f"{vendor_id}.html"
-        out_path.parent.mkdir(parents=True, exist_ok=True)
-        authored_hub = AUTHORED_DIR / vendor_id / "_landing.html"
-        if authored_hub.exists():
-            shutil.copy(authored_hub, out_path)
-            print(f"  wrote: data-sources/{vendor_id}.html (authored hub)")
-        else:
-            html = render_coming_soon_stub(env, cfg)
-            out_path.write_text(html, encoding="utf-8")
-            print(f"  wrote: data-sources/{vendor_id}.html (stub)")
-        n += 1
-    return n
-
-
-def copy_authored_dataset_pages_for_coming_soon(out_root: Path) -> int:
-    """Copy authored per-dataset HTML files for COMING_SOON vendor folders.
-
-    REAL_VENDORS (including ``gie`` since the v2 close-out) get their per-dataset
-    authored pages via ``build_vendor`` (manifest-driven). This covers only the
-    manifest-less COMING_SOON vendors — currently none, so this is a no-op after
-    v2. ``_landing.html`` is excluded (it's the hub, handled by
-    ``build_coming_soon_stubs``). Retained for future coming-soon vendors.
-    """
-    n = 0
-    coming_soon_folders = {cfg["vendor_id"] for cfg in COMING_SOON_VENDORS}
-    for vendor_folder in sorted(coming_soon_folders):
-        src_dir = AUTHORED_DIR / vendor_folder
-        if not src_dir.is_dir():
+    known = {
+        (vendor_id, d["id"])
+        for vendor_id in REAL_VENDORS
+        if (vault_path / vendor_id).is_dir()
+        for g in load_manifest(vendor_id)["groups"]
+        for d in g["datasets"]
+    }
+    orphans: list[str] = []
+    for root in (chart_spec.staging_dir(SITE_DIR), chart_spec.series_dir(SITE_DIR)):
+        if not root.is_dir():
             continue
-        dst_dir = out_root / "data-sources" / vendor_folder
-        for src in sorted(src_dir.glob("*.html")):
-            if src.name == "_landing.html":
-                continue
-            dst_dir.mkdir(parents=True, exist_ok=True)
-            dst = dst_dir / src.name
-            shutil.copy(src, dst)
-            n += 1
-            print(f"  wrote: data-sources/{vendor_folder}/{src.name} (authored dataset)")
-    return n
+        for path in sorted(root.glob("*/*.json")):
+            if (path.parent.name, path.stem) not in known:
+                orphans.append(str(path.relative_to(REPO_ROOT)).replace("\\", "/"))
+    return orphans
 
 
-# REAL_VENDORS whose gridflow connector does NOT cover every dataset the
-# vendor's landing page links to. Every other REAL_VENDOR is documented at
-# full fidelity — every linked dataset is already ingested, so its Planned
-# stubs (if any) may truthfully say so. neso_data_portal links its full
-# implemented + eligible-but-not-yet-built catalogue from one landing page
-# (T-23): the "shipping" stub copy ("the gridflow ETL pipeline already
-# ingests it") would be false for the ~29 not-yet-implemented packages —
-# exactly the "Shipping badge on unfinished work" front-end CLAUDE.md bans.
-_PARTIAL_CONNECTOR_VENDORS = frozenset({"neso_data_portal"})
-
-
-def _vendor_stub_metadata() -> dict[str, dict[str, str | None]]:
-    """Lookup table: vendor folder → {label, docs_url, connector_state}.
-
-    Drives ``build_dataset_stubs_from_landings``. Covers all REAL_VENDORS (the
-    seven documented vendors, including the unified ``gie``) plus any
-    COMING_SOON_VENDORS (currently none). Vendors in
-    ``_PARTIAL_CONNECTOR_VENDORS`` report ``connector_state="planned"`` so their
-    stubs never claim the pipeline already ingests them.
-    """
-    meta: dict[str, dict[str, str | None]] = {}
-    for vendor_id, cfg in REAL_VENDORS.items():
-        meta[vendor_id] = {
-            "label": cfg["label"],
-            "docs_url": cfg["vendor_meta"].get("vendor_docs_url"),
-            "connector_state": (
-                "planned" if vendor_id in _PARTIAL_CONNECTOR_VENDORS else "shipping"
-            ),
-        }
-    for cfg in COMING_SOON_VENDORS:
-        meta[cfg["vendor_id"]] = {
-            "label": cfg["vendor_label"],
-            "docs_url": cfg.get("vendor_docs_url"),
-            "connector_state": cfg.get("connector_state", "planned"),
-        }
-    return meta
-
-
-_LANDING_DATASET_LINK_RE = re.compile(r'href="([a-z][a-z0-9_]*)/([a-z][a-z0-9_]*)\.html"')
-
-
-def build_dataset_stubs_from_landings(env: Environment, out_root: Path) -> int:
-    """Render per-dataset coming-soon stubs for landing links with no real page.
-
-    Scans every ``authored-pages/<vendor>/_landing.html`` for outgoing links of
-    the form ``href="<vendor>/<slug>.html"``. For each target that does not yet
-    exist under ``data-sources/<vendor>/<slug>.html`` after the manifest-driven
-    and authored-copy passes have run, renders a depth-2 stub from
-    ``dataset-coming-soon.html.j2``. Skips Elexon (full per-dataset coverage
-    already authored).
-
-    Must run AFTER ``build_vendor`` and ``copy_authored_dataset_pages_for_coming_soon``
-    so the existence check correctly identifies real pages. Idempotent: a second
-    invocation finds the stubs already on disk and skips them; ``filecmp`` in
-    ``--check`` sees identical content because the template has no time-varying
-    fields.
-    """
-    template = env.get_template("dataset-coming-soon.html.j2")
-    vendor_meta = _vendor_stub_metadata()
-    n = 0
-    for landing in sorted(AUTHORED_DIR.glob("*/_landing.html")):
-        vendor_folder = landing.parent.name
-        if vendor_folder == "elexon":
-            continue
-        meta = vendor_meta.get(vendor_folder)
-        if not meta:
-            print(f"  skip stubs for {vendor_folder} (no vendor metadata)")
-            continue
-        text = landing.read_text(encoding="utf-8")
-        targets = {
-            slug
-            for vendor, slug in _LANDING_DATASET_LINK_RE.findall(text)
-            if vendor == vendor_folder
-        }
-        out_dir = out_root / "data-sources" / vendor_folder
-        for slug in sorted(targets):
-            out_path = out_dir / f"{slug}.html"
-            if out_path.exists():
-                continue
-            out_dir.mkdir(parents=True, exist_ok=True)
-            html = template.render(
-                vendor_id=vendor_folder,
-                vendor_label=meta["label"],
-                vendor_docs_url=meta["docs_url"],
-                connector_state=meta["connector_state"],
-                slug=slug,
-            )
-            out_path.write_text(html, encoding="utf-8")
-            n += 1
-            print(f"  wrote: data-sources/{vendor_folder}/{slug}.html (coming-soon stub)")
-    return n
-
-
-def build(vault_path: Path, output_dir: Path | None = None) -> tuple[int, int, int, int]:
+def build(vault_path: Path, output_dir: Path | None = None) -> tuple[int, int, int]:
     """Render all vendor pages.
 
-    Returns ``(n_dataset_pages, n_real_hubs, n_hub_stubs, n_dataset_stubs)``.
-    ``n_dataset_pages`` covers manifest-rendered + authored-copied dataset pages;
-    ``n_dataset_stubs`` is the coming-soon fallback for unfinished slugs linked
-    from a vendor landing.
+    Returns ``(n_dataset_pages, n_hubs, n_chart_pages)``; the last counts
+    template-rendered pages that carry a distilled chart.
     """
     env = make_env()
     out_root = output_dir or SITE_DIR
     _reset_md_link_stats()
     _reset_caveat_stats()
 
-    chart_series = chart_data.load_series(SITE_DIR)
+    orphans = orphan_chart_files(vault_path)
+    if orphans:
+        _fail("charts", "orphan chart file", [f"{o}: no such dataset page" for o in orphans])
 
     n_pages = 0
     n_hubs = 0
-    n_template_pages = 0
-    n_real_charts = 0
+    n_charts = 0
     for vendor_id in REAL_VENDORS:
         if not (vault_path / vendor_id).is_dir():
             print(f"  skip vendor (no vault dir): {vendor_id}")
             continue
-        pages, template_pages, real_charts = build_vendor(
-            env, vendor_id, vault_path, out_root, chart_series
-        )
+        pages, chart_pages = build_vendor(env, vendor_id, vault_path, out_root)
         n_pages += pages
-        n_template_pages += template_pages
-        n_real_charts += real_charts
+        n_charts += chart_pages
         n_hubs += 1
 
-    n_hub_stubs = build_coming_soon_stubs(env, out_root)
-    n_pages += copy_authored_dataset_pages_for_coming_soon(out_root)
-    n_dataset_stubs = build_dataset_stubs_from_landings(env, out_root)
-    if chart_series:
-        print(
-            f"[gridflow-build] snapshot charts: {n_real_charts} real series injected from "
-            f"{chart_data.series_path(SITE_DIR).name}, "
-            f"{n_template_pages - n_real_charts} template page(s) seeded"
-        )
-    else:
-        print(
-            "[gridflow-build] snapshot charts: no chart-series.json — all template pages "
-            "seeded (run --refresh-chart-data against a local gridflow extract)"
-        )
+    print(
+        f"[gridflow-build] charts: {n_charts} template page(s) carry a distilled series; "
+        "every other page has no chart section"
+    )
     print(
         f"[gridflow-build] vault-relative .md links: {_MD_LINK_STATS['resolved']} resolved, "
         f"{_MD_LINK_STATS['plain_text']} rendered as plain text (no published page), "
@@ -1431,7 +1345,7 @@ def build(vault_path: Path, output_dir: Path | None = None) -> tuple[int, int, i
             "grammar and were dropped from rendered output",
             file=sys.stderr,
         )
-    return n_pages, n_hubs, n_hub_stubs, n_dataset_stubs
+    return n_pages, n_hubs, n_charts
 
 
 def _snapshot_outputs(temp_dir: Path) -> None:
@@ -1461,43 +1375,10 @@ def _diff_outputs(temp_dir: Path) -> list[str]:
             continue
         if not filecmp.cmp(str(path), str(snap_path), shallow=False):
             differing.append(str(rel))
+    for path in snap.rglob("*.html"):
+        if not (src / path.relative_to(snap)).exists():
+            differing.append(f"{path.relative_to(snap)} (removed by the second build)")
     return differing
-
-
-def refresh_chart_data(cli_path: str | None) -> int:
-    """Re-distil the committed chart-series file from a local gridflow extract.
-
-    Local-only: the extract lives outside the repo, so this is run by hand after
-    a re-extract and the resulting JSON is committed. Every dataset that did NOT
-    become a chart is reported with its reason — a silently short list would read
-    as "the extract had nothing", which is exactly the failure this guards.
-    """
-    extract_root = chart_data.resolve_extract_path(cli_path)
-    print(f"[gridflow-build] chart extract: {extract_root}")
-    try:
-        payload, notes, problems = chart_data.distil(extract_root)
-    except FileNotFoundError as exc:
-        print(f"[gridflow-build] ERROR: {exc}", file=sys.stderr)
-        return 1
-    out_path = chart_data.write_series(payload, SITE_DIR)
-    for note in notes:
-        print(f"  seeded: {note}")
-    if problems:
-        print(
-            f"[gridflow-build] {len(problems)} column-choice divergence(s) from the extract's "
-            "charts-manifest:",
-            file=sys.stderr,
-        )
-        for problem in problems:
-            print(f"  NOTE: {problem}", file=sys.stderr)
-    print(
-        f"[gridflow-build] wrote {out_path.relative_to(REPO_ROOT)}: "
-        f"{payload['count']} real series over {payload['window_label']}, "
-        f"{len(notes)} dataset(s) left seeded"
-    )
-    print("[gridflow-build] commit that file — CI builds from a bare checkout and cannot")
-    print("                 see the extract, so an uncommitted refresh never reaches the site.")
-    return 0
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -1513,38 +1394,19 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Build twice and exit non-zero if any output changes between builds (idempotence check).",
     )
-    parser.add_argument(
-        "--refresh-chart-data",
-        action="store_true",
-        help="Re-distil site/hifi/data/chart-series.json from a local gridflow extract "
-        "and exit without building. Run this after a re-extract, then commit the file.",
-    )
-    parser.add_argument(
-        "--chart-extract-path",
-        default=None,
-        help="Path to the gridflow chart-data extract (containing manifest.json). "
-        "Defaults to $GRIDFLOW_CHART_EXTRACT_PATH, then "
-        f"{chart_data.DEFAULT_EXTRACT}. Only used by --refresh-chart-data.",
-    )
     args = parser.parse_args(argv)
-
-    if args.refresh_chart_data:
-        return refresh_chart_data(args.chart_extract_path)
 
     vault_path = resolve_vault_path(args.vault_path)
     print(f"[gridflow-build] vault: {vault_path}")
 
-    n_pages, n_hubs, n_hub_stubs, n_dataset_stubs = build(vault_path)
-    print(
-        f"[gridflow-build] wrote {n_pages} dataset pages + {n_hubs} vendor hub(s) + "
-        f"{n_hub_stubs} coming-soon hub(s) + {n_dataset_stubs} coming-soon dataset stub(s)"
-    )
+    n_pages, n_hubs, _ = build(vault_path)
+    print(f"[gridflow-build] wrote {n_pages} dataset pages + {n_hubs} vendor hub(s)")
 
     if args.check:
         with tempfile.TemporaryDirectory(prefix="gridflow-build-check-") as tmp:
             tmp_path = Path(tmp)
             _snapshot_outputs(tmp_path)
-            _, _, _, _ = build(vault_path)
+            build(vault_path)
             differing = _diff_outputs(tmp_path)
             if differing:
                 print(
@@ -1553,10 +1415,7 @@ def main(argv: list[str] | None = None) -> int:
                 for p in differing:
                     print(f"    {p}")
                 return 1
-            print(
-                f"[gridflow-build] OK: idempotent across {n_pages} pages + "
-                f"{n_hubs + n_hub_stubs} hubs + {n_dataset_stubs} dataset stubs."
-            )
+            print(f"[gridflow-build] OK: idempotent across {n_pages} pages + {n_hubs} hubs.")
 
     return 0
 

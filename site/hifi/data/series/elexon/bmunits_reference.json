@@ -1,0 +1,19 @@
+{
+  "dataset": "elexon/bmunits_reference",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "staging",
+  "spec_sha256": "1d9fe1cc29b4d9085dd93943285d0aff4bc9f3ae51a53da3f9995a20354fd827",
+  "type": "bar",
+  "unit": "MW",
+  "caption": "Registered capacity summed by fuel type, over the BM units that declare a fuel type.",
+  "value_column": "registered_capacity_mw",
+  "aggregation": "sum",
+  "window": null,
+  "provenance": {"files": 1, "null_values_dropped": 0, "rows_matched": 499, "rows_read": 3014, "rows_used": 499, "silver": "elexon/bmunits_reference"},
+  "spec": {"aggregation": "sum", "caption": "Registered capacity summed by fuel type, over the BM units that declare a fuel type.", "filter": [{"column": "fuel_type", "op": "not_null"}], "group": "fuel_type", "silver": "elexon/bmunits_reference", "sort": "value_desc", "type": "bar", "unit": "MW", "value": "registered_capacity_mw"},
+  "x_kind": "category",
+  "x": ["CCGT", "WIND", "NUCLEAR", "OTHER", "BIOMASS", "COAL", "PS", "INTELEC", "INTFR", "INTNED", "INTGRNL", "INTNSL", "INTVKL", "OCGT", "NPSHYD", "INTIFA2", "INTNEM", "INTEW", "INTIRL"],
+  "series": [
+    {"key": "registered_capacity_mw", "values": [32217.328, 30740.086, 7430.072, 5285.148, 3674.573, 3269.7, 3057.99, 2075.0, 2013.945, 1478.2, 1400.0, 1400.0, 1400.0, 1378.296, 1105.634, 1100.0, 1020.0, 530.92, 401.7]}
+  ]
+}

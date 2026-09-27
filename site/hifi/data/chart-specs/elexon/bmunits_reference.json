@@ -1,0 +1,11 @@
+{
+  "type": "bar",
+  "silver": "elexon/bmunits_reference",
+  "value": "registered_capacity_mw",
+  "filter": [{"column": "fuel_type", "op": "not_null"}],
+  "group": "fuel_type",
+  "aggregation": "sum",
+  "sort": "value_desc",
+  "unit": "MW",
+  "caption": "Registered capacity summed by fuel type, over the BM units that declare a fuel type."
+}
