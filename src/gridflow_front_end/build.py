@@ -1109,8 +1109,8 @@ def render_dataset(
 
 # Template copy for the lineage columns (schema option 4, verbatim).
 LINEAGE_MEANINGS = {
-    "event_time": "Event instant: the row’s time column, else the target date",
-    "available_at": "When the row became knowable: `published_at`, else the ingest time",
+    "event_time": "The row’s time column; for a table without one, the transform’s target date",
+    "available_at": "When the row became knowable: `published_at`, else the transform time",
     "source_run_id": "Id of the pipeline run that wrote the row",
     "dataset_version": "Transformer version stamped on the row",
     "vintage_policy": "Which rule produced `available_at`",
