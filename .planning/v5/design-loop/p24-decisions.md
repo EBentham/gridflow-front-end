@@ -65,3 +65,15 @@ Picker: https://claude.ai/artifact/MpySKZLbpbe6VmCz4pcuzV · round-1 canvas http
 
 - Keep A's for both: quick facts in the petrol hero under the one-liner; the raw feed and CLI in bronze and
   the workbench call in gold, plus the demo-notebook button.
+
+## Decision 6: schema reopened (OWNER, 2026-09-27 evening)
+
+- Built on the real pages, option 4 read as cluttered, faint and hard to follow. Bobbo now prefers option 3,
+  "As the data scientist sees it": the rows as a Polars frame, as they look in silver. The annotation is
+  the part to rethink ("not too cluttered, easy to read and understand").
+- Round 3, three variations of option 3 (brief `<scratch>\p24\r3-schema\BRIEF.md`):
+  1. a clean frame with a column guide beneath;
+  2. grouped header bands with a short line per column;
+  3. one row read aloud as a sentence, then a slim list.
+- Standing review check: nothing clipped or overlapping at any width (turbine tops, scene edges, the
+  silver corner label on fuelhh).
