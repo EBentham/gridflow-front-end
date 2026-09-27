@@ -1,4 +1,4 @@
-/* gridflow Architecture page: "The specimen" (arch-r2, locked 2026-09-27).
+/* gridflow Architecture page: "The specimen" (locked 2026-09-27).
    Layout from the locked boards at 1440 and 390; every colour, font and size token comes from tokens.css.
 
    The section drawing has two compositions, both generated from the locked boards with their measured band
@@ -44,7 +44,7 @@
 .dcomp--w { --u: min(1px, calc(100cqw / 1440)); }
 .dcomp--n { --u: min(1.25px, calc(100cqw / 390)); display: none; }
 .dcomp .dr { display: block; width: 100%; overflow: hidden; }
-.dcomp--w .dr { height: calc(1741 * var(--u)); }
+.dcomp--w .dr { height: calc(1771 * var(--u)); }
 .dcomp--n .dr { height: calc(2499 * var(--u)); }
 @media (max-width: 1279.98px) {
   .dcomp--w { display: none; }
