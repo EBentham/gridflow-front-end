@@ -1641,6 +1641,13 @@ def build_vendor(
                 family_of[mem.dataset] = (doc, fam.slug)
         if doc.slug not in {m.dataset for m in fam.members}:
             page_errors.append(f"{doc.slug}: a family's lead note must list itself as a member")
+    if only:
+        # Rendering a family lead also rewrites its members' pointers.
+        only = only | {
+            f"{vendor_id}/{member}"
+            for member, (lead, _) in family_of.items()
+            if f"{vendor_id}/{lead.slug}" in only
+        }
 
     written: set[str] = set()
     n_charts = 0
