@@ -110,7 +110,7 @@ page:
     caption: "All eight rows are settlement date 2026-09-26, period 25: 8 of its 20 codes."
     fields:
       settlement_date: GB settlement date, recomputed from the vendor start time
-      settlement_period: Half-hour of the day, 1 to 50 (46 or 50 on clock-change days)
+      settlement_period: Half-hour of the day, 1 to 48; 46 or 50 on clock-change days
       timestamp_utc: Start of the half-hour, from the vendor start time
       fuel_type: Elexon fuel-type code, uppercase as sent
       generation_mw: MW for the period; interconnectors and PS are signed
