@@ -9,3 +9,5 @@ Canvas: https://claude.ai/artifact/9eYp9RZFV2PV6qmocNWYvj (round 1, five directi
   locked design (the A top-page language for consistency), one step at a time.
 - **Models: A "Sections"** (OWNER): keep the cables from each input source (e.g. solar) down to the model
   that uses it. It needs polish; Bobbo is not happy with the overall design. Iterate after architecture.
+- **Architecture: LOCKED 2026-09-27** (OWNER), round 2 of "The specimen" built from the verified content pack.
+  Record: `arch-decisions.md`; boards `arch-r2/`.
