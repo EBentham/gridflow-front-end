@@ -1,174 +1,116 @@
-/* Shared site chrome: nav + footer, injected per page.
-   Each page sets <body data-page="home|architecture|sources|vendor|dataset|model|about">
-   and we mark the active link. data-root is the path back to /hifi root. */
+/* gridflow site chrome: the masthead, the primary nav and the footer, injected on every page.
+
+   Page contract (set on <body>):
+     data-page          which nav entry is current: home | sources | vendor | dataset | architecture | model | about
+     data-root          the relative path back to the site root: "" at the root, "../" one level down, "../../" two
+     data-screen-label  a human label for the page, kept as page metadata; the chrome does not read it
+
+   Every page carries its own <main id="main">. The masthead goes in before it, the footer after it.
+   The small behaviours at the end (tabs, copy buttons, the sidebar scroll-spy) are shared by the
+   generated dataset and vendor pages. */
 
 (function () {
-  const page = document.body.dataset.page || "";
-  const root = document.body.dataset.root || ""; // e.g. "" on root, "../" on /data-sources/, "../../" on /data-sources/elexon/
+  "use strict";
 
-  const navHTML = `
-    <nav class="nav" aria-label="Primary navigation">
-      <div class="nav-inner">
-        <a href="${root}index.html" class="nav-logo">
-          <span class="mark" aria-hidden="true"></span>
-          <span>Gridflow</span>
-        </a>
-        <div class="nav-links" id="nav-links">
-          <a href="${root}architecture.html"          data-key="architecture">Architecture</a>
-          <a href="${root}data-sources.html"          data-key="sources">Catalogue</a>
-          <a href="${root}models/demand-forecast.html" data-key="model">Models</a>
-          <a href="${root}index.html#about"           data-key="about">About</a>
-        </div>
-        <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
-          <svg width="16" height="14" viewBox="0 0 16 14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-            <line x1="0" y1="1" x2="16" y2="1"></line>
-            <line x1="0" y1="7" x2="16" y2="7"></line>
-            <line x1="0" y1="13" x2="16" y2="13"></line>
-          </svg>
-          <span style="font-size:12px;font-weight:500;">Menu</span>
-        </button>
-      </div>
-    </nav>
-  `;
+  var body = document.body;
+  var page = body.getAttribute("data-page") || "";
+  var root = body.getAttribute("data-root") || "";
 
-  const footerHTML = `
-    <footer class="footer">
-      <div class="footer-inner">
-        <div class="footer-grid">
-          <div>
-            <a href="${root}index.html" class="nav-logo" style="margin-bottom:14px">
-              <span class="mark"></span>
-              <span>Gridflow</span>
-            </a>
-            <p class="small" style="max-width:340px">
-              A personal research platform for European power markets.
-              Built around a bronze–silver–gold data warehouse and a
-              probabilistic modelling stack.
-            </p>          </div>
-          <div>
-            <h4>Project</h4>
-            <a href="${root}architecture.html">Architecture</a>
-            <a href="${root}data-sources.html">Catalogue</a>
-            <a href="${root}models/demand-forecast.html">Models</a>
-            <a href="${root}index.html#about">About</a>
-          </div>
-          <div>
-            <h4>Catalogue</h4>
-            <a href="${root}data-sources.html#electricity">Electricity</a>
-            <a href="${root}data-sources.html#gas">Gas</a>
-            <a href="${root}data-sources.html#weather">Weather</a>
-            <a href="${root}data-sources.html#carbon">Carbon</a>
-          </div>
-          <div>
-            <h4>Code</h4>
-            <a href="https://github.com/EBentham/gridflow" target="_blank" rel="noopener">gridflow ↗</a>
-            <a href="https://github.com/EBentham/gridflow-models" target="_blank" rel="noopener">gridflow-models ↗</a>
-            <a href="https://github.com/EBentham/gridflow-front-end" target="_blank" rel="noopener">gridflow-front-end ↗</a>
-          </div>
-        </div>
-        <div class="footer-bottom">
-          <span>© 2026 E. Bentham · Personal project · MIT</span>
-          <span class="mono tiny">Static documentation · 6 vendors · 162 datasets</span>
-        </div>
-      </div>
-    </footer>
-  `;
+  var NAV = [
+    { key: "home", label: "Home", href: "index.html" },
+    { key: "sources", label: "Data sources", href: "data-sources.html" },
+    { key: "architecture", label: "Architecture", href: "architecture.html" },
+    { key: "model", label: "Models", href: "models/demand-forecast.html" },
+    { key: "about", label: "About", href: "index.html#about" }
+  ];
+  // vendor hubs and dataset pages live under Data sources
+  var CURRENT = { home: "home", sources: "sources", vendor: "sources", dataset: "sources",
+                  architecture: "architecture", model: "model", about: "about" }[page];
 
-  // inject
-  document.body.insertAdjacentHTML("afterbegin", navHTML);
-  document.body.insertAdjacentHTML("beforeend", footerHTML);
-
-  // mark active
-  if (page) {
-    const map = {
-      home: null, // home doesn't highlight any nav item (logo only)
-      architecture: "architecture",
-      sources: "sources",
-      vendor: "sources",
-      dataset: "sources",
-      model: "model",
-      about: "about",
-    };
-    const key = map[page];
-    if (key) {
-      const link = document.querySelector(`.nav-links a[data-key="${key}"]`);
-      if (link) {
-        link.classList.add("active");
-        link.setAttribute("aria-current", "page");
-      }
-    }
+  function links(current) {
+    return NAV.map(function (item) {
+      var here = current && item.key === current ? ' aria-current="page"' : "";
+      return '<li><a href="' + root + item.href + '"' + here + ">" + item.label + "</a></li>";
+    }).join("");
   }
 
-  // mobile menu toggle
-  const toggle = document.getElementById("nav-toggle");
-  const links = document.getElementById("nav-links");
-  if (toggle && links) {
-    toggle.addEventListener("click", () => {
-      const open = links.classList.toggle("open");
-      toggle.setAttribute("aria-expanded", open ? "true" : "false");
-    });
-    // close menu when an in-page anchor is clicked
-    links.addEventListener("click", (e) => {
-      if (e.target.tagName === "A") {
-        links.classList.remove("open");
-        toggle.setAttribute("aria-expanded", "false");
-      }
-    });
+  var masthead =
+    '<a class="skip" href="#main">Skip to content</a>' +
+    '<header class="masthead">' +
+      '<div class="wrap masthead__in">' +
+        '<a class="brand" href="' + root + 'index.html">gridflow</a>' +
+        '<nav class="nav" aria-label="Primary"><ul>' + links(CURRENT) + "</ul></nav>" +
+      "</div>" +
+    "</header>";
+
+  var footer =
+    '<footer class="site-foot stratum stratum--deep">' +
+      '<div class="wrap site-foot__in">' +
+        '<a class="brand" href="' + root + 'index.html">gridflow</a>' +
+        '<nav aria-label="Footer"><ul>' + links(null) + "</ul></nav>" +
+        '<ul aria-label="Source code on GitHub">' +
+          '<li><a href="https://github.com/EBentham/gridflow">gridflow</a></li>' +
+          '<li><a href="https://github.com/EBentham/gridflow-models">gridflow-models</a></li>' +
+          '<li><a href="https://github.com/EBentham/gridflow-front-end">gridflow-front-end</a></li>' +
+        "</ul>" +
+        '<p class="site-foot__line">Elliot Bentham, 2026. MIT licence.</p>' +
+      "</div>" +
+    "</footer>";
+
+  body.insertAdjacentHTML("afterbegin", masthead);
+  var main = document.querySelector("main");
+  if (main) {
+    main.insertAdjacentHTML("afterend", footer);
+  } else {
+    body.insertAdjacentHTML("beforeend", footer);
   }
 
-  // copy buttons
-  document.querySelectorAll(".code-wrap").forEach((wrap) => {
+  // ---------------------------------------------------------------- shared page behaviours
+
+  // copy buttons on code blocks
+  document.querySelectorAll(".code-wrap").forEach(function (wrap) {
     if (wrap.querySelector(".copy")) return;
-    const btn = document.createElement("button");
+    var btn = document.createElement("button");
+    btn.type = "button";
     btn.className = "copy";
     btn.textContent = "Copy";
-    btn.addEventListener("click", () => {
-      const code = wrap.querySelector("pre, code");
-      if (!code) return;
-      navigator.clipboard?.writeText(code.textContent || "");
-      btn.textContent = "Copied";
-      btn.classList.add("copied");
-      setTimeout(() => { btn.textContent = "Copy"; btn.classList.remove("copied"); }, 1200);
+    btn.addEventListener("click", function () {
+      var code = wrap.querySelector("pre, code");
+      if (!code || !navigator.clipboard) return;
+      navigator.clipboard.writeText(code.textContent || "").then(function () {
+        btn.textContent = "Copied";
+        setTimeout(function () { btn.textContent = "Copy"; }, 1200);
+      });
     });
     wrap.appendChild(btn);
   });
 
-  // tabs — selector covers both index.html's stripped .tabs row and the
-  // dataset-page chip-strip variant wrapped in .tab-buttons
-  document.querySelectorAll("[data-tabs]").forEach((group) => {
-    const buttons = group.querySelectorAll(".tabs button, .tab-buttons button");
-    const panels = group.querySelectorAll(".tab-panel");
-    buttons.forEach((b, i) => {
-      b.addEventListener("click", () => {
-        buttons.forEach((x) => x.classList.remove("active"));
-        panels.forEach((x) => x.classList.remove("active"));
+  // tab groups: [data-tabs] holding buttons and .tab-panel siblings, matched by order
+  document.querySelectorAll("[data-tabs]").forEach(function (group) {
+    var buttons = group.querySelectorAll(".tabs button, .tab-buttons button");
+    var panels = group.querySelectorAll(".tab-panel");
+    buttons.forEach(function (b, i) {
+      b.addEventListener("click", function () {
+        buttons.forEach(function (x) { x.classList.remove("active"); x.setAttribute("aria-selected", "false"); });
+        panels.forEach(function (x) { x.classList.remove("active"); });
         b.classList.add("active");
-        panels[i]?.classList.add("active");
+        b.setAttribute("aria-selected", "true");
+        if (panels[i]) panels[i].classList.add("active");
       });
     });
   });
 
-  // scroll-spy — highlight the active in-page anchor in any sticky sidebar.
-  // Gated by selector presence so it generalises to future pages (vendor
-  // hubs etc.) without needing data-page checks.
-  if (document.querySelector('.sidebar a[href^="#"]')) {
-    const sections = document.querySelectorAll("section[id]");
-    const anchors = document.querySelectorAll('.sidebar a[href^="#"]');
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((e) => {
-        if (e.isIntersecting) {
-          anchors.forEach((l) => {
-            l.classList.remove("active");
-            l.removeAttribute("aria-current");
-          });
-          const match = document.querySelector('.sidebar a[href="#' + e.target.id + '"]');
-          if (match) {
-            match.classList.add("active");
-            match.setAttribute("aria-current", "location");
-          }
-        }
+  // sidebar scroll-spy: marks the in-page anchor for the section in view
+  var anchors = document.querySelectorAll('.sidebar a[href^="#"]');
+  if (anchors.length && "IntersectionObserver" in window) {
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        anchors.forEach(function (l) { l.classList.remove("active"); l.removeAttribute("aria-current"); });
+        var match = document.querySelector('.sidebar a[href="#' + e.target.id + '"]');
+        if (match) { match.classList.add("active"); match.setAttribute("aria-current", "location"); }
       });
     }, { rootMargin: "-20% 0px -70% 0px" });
-    sections.forEach((s) => observer.observe(s));
+    document.querySelectorAll("section[id]").forEach(function (s) { observer.observe(s); });
   }
 })();
