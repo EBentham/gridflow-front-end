@@ -65,6 +65,21 @@ mirror copies in `vault/` come from that unmerged vault branch.
 - Local-data grep over the five built pages ("locally", "our copy", row counts, "since 20xx", em
   dash): no hits.
 
+## After Bobbo's look (2026-09-27)
+
+- **Hero scenery:**
+  - Causes: rotor tips sat 3 units under the viewBox top; `slice` with a capped height cut turbines
+    on wide screens and side objects on narrow ones; a tower ran through the power-station label.
+  - Fix: a wide drawing with top room plus a narrow window below 760px, both using `meet`; the ground
+    is drawn past the viewBox, so letterboxing shows more land.
+  - Checked: every object whole and no label collision at 360 to 2560. The generator is scratch
+    `make_land2.py`.
+- **Silver corner label:** did not reproduce at 390 to 2560. Silver's contact wave dips about 23px
+  right above it, the least clearance of any stratum, so the label now sits 10px lower in silver
+  only.
+- The rubric and the brief now carry a standing "nothing clipped or overlapping" check on rendered
+  screenshots.
+
 ## Flags carried in
 
 - **Licence line (site-wide ruling):** removed from the shared footer in `site/hifi/assets/site.js`.
