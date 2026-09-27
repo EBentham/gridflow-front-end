@@ -41,10 +41,11 @@ one key (v5 decision D2). The fields follow the locked page anatomy
       # 4. silver
       record:
         select: {filter: [...], dedup: {...}, order_by: [...]}   # picks exactly eight rows
-        mark: {fuel_type: PS}                    # which of the eight is laid out field by field
+        mark: {fuel_type: PS}                    # optional, unused by the page since the frame (3a) lock
         key: [settlement_date, settlement_period, fuel_type]
         caption: ...                             # 16 words or fewer
-        fields: {settlement_date: ..., ...}      # one meaning per schema column, 14 words or fewer
+        fields: {settlement_date: ..., ...}      # one meaning per column, 14 words or fewer; none for the
+                                                 # pipeline columns (data_provider, ingested_at, lineage)
       # 5. gold
       notebook:
         lead: ...                                # 35 words or fewer
@@ -704,8 +705,6 @@ def anatomy_errors(fields: PageFields) -> list[str]:
             extra = set(rec.select) - {"silver", "filter", "dedup", "order_by"}
             if extra:
                 e.append(f"{p}.record.select: unknown key(s) {sorted(extra)}")
-        if not rec.mark:
-            e.append(f"{p}.record.mark: missing (the row laid out field by field)")
         if not rec.key:
             e.append(f"{p}.record.key: missing (the columns that identify a row)")
         for col in rec.key:
@@ -716,7 +715,9 @@ def anatomy_errors(fields: PageFields) -> list[str]:
         else:
             _budget(e, f"{p}.record.caption", rec.caption, "record_caption")
         if not rec.fields:
-            e.append(f"{p}.record.fields: missing (a meaning for every schema column)")
+            e.append(
+                f"{p}.record.fields: missing (a meaning for every column but the pipeline ones)"
+            )
         for col, meaning in rec.fields.items():
             _budget(e, f"{p}.record.fields.{col}", meaning, "meaning")
 

@@ -131,7 +131,7 @@ def build_payload(
         for r in range(df.height)
         if all(k in df.columns and rows[r][df.columns.index(k)] == str(v) for k, v in mark.items())
     ]
-    if len(marked) != 1:
+    if mark and len(marked) != 1:
         raise SampleError(
             f"record.mark {dict(mark)} matches {len(marked)} of the eight rows; needs 1"
         )
@@ -149,7 +149,7 @@ def build_payload(
             for name, dtype in df.schema.items()
         ],
         "rows": rows,
-        "mark": marked[0],
+        "mark": marked[0] if mark else None,
     }
 
 

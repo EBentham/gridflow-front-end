@@ -1,9 +1,10 @@
 {#- The dataset page, from the locked anatomy (DESIGN.md "Dataset page anatomy", locked 2026-09-27).
     One template for every dataset page and every family page. The page descends through the strata:
-    petrol hero, topsoil (what it is, how it is used, the chart), bronze (the raw feed), silver (one record,
-    then eight rows), gold (the workbench call and the demo notebook), deep (related datasets).
+    petrol hero, topsoil (what it is, how it is used, the chart), bronze (the raw feed), silver (the frame
+    and its guide), gold (the workbench call and the demo notebook), deep (related datasets).
     `v` is the view model built by build.page_view(); every word on the page comes from the vault note's
-    `page:` block or from the fixed template copy below. -#}
+    `page:` block or from the fixed template copy below. A page whose note has no `page:` block yet is
+    blank (`v.blank`, from build.blank_view()): the hero's breadcrumb, name and id, nothing else. -#}
 <!doctype html>
 <html lang="en">
 <head>
@@ -15,6 +16,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&amp;family=Hanken+Grotesk:ital,wght@0,400..700;1,400..600&amp;family=Red+Hat+Mono:wght@400;500&amp;display=swap">
   <link rel="stylesheet" href="../../assets/theme.css">
+  <link rel="stylesheet" href="../../assets/dataset.css">
 </head>
 <body data-page="dataset" data-root="../../" data-screen-label="Dataset {{ v.key }}">
   <main id="main" class="ds">
@@ -24,8 +26,9 @@
         <div class="ds-hero__id">
           <nav class="ds-crumb" aria-label="Breadcrumb"><a href="../../data-sources.html">Data sources</a> / <a href="../{{ v.vendor_id }}.html">{{ v.vendor_label }}</a></nav>
           <h1 class="h-hero ds-hero__h" id="ds-h">{{ v.title }}</h1>
-          <p class="ds-keys">{% for k in v.chips %}<code class="ds-chip">{{ k }}</code>{% endfor %}</p>
+          <p class="ds-keys">{% for c in v.chips %}<code class="ds-chip"{% if c.id %} id="{{ c.id }}"{% endif %}>{{ c.key }}</code>{% endfor %}</p>
         </div>
+        {%- if not v.blank %}
         <div class="ds-hero__facts">
           <p class="ds-one">{{ v.summary | md_inline | safe }}</p>
           <dl class="ds-facts">
@@ -34,11 +37,13 @@
             {%- endfor %}
           </dl>
         </div>
+        {%- endif %}
       </div>
       <figure class="landscape ds-land">
         {% include "_partials/landscape/" ~ v.landscape ~ ".svg.j2" %}
       </figure>
     </section>
+    {%- if not v.blank %}
 
     {#- 2. topsoil: what it is, how it is used, then the chart with its key beside it -#}
     <section class="stratum stratum--topsoil stratum--flush" aria-labelledby="what-h">
@@ -104,41 +109,54 @@
       </div>
     </section>
 
-    {#- 4. silver: one record laid out field by field is the schema; then eight rows -#}
+    {#- 4. silver: the sample rows as a Polars frame (folded columns open behind `…`), then the column guide -#}
+    {%- set r = v.record %}
     <section class="stratum stratum--silver" aria-labelledby="sv-h">
       <p class="stratum__name" aria-hidden="true">silver, typed and validated</p>
       <div class="wrap">
-        <div class="ds-sv-head">
-          <h2 class="h-fig" id="sv-h">Schema and sample rows</h2>
-          <p>{{ v.record.relation_line | safe }}</p>
-        </div>
-        <div class="ds-one-rec">
-          <div class="ds-one-rec__h"><h3 class="h-entry" id="one-h">One row, field by field</h3><p class="ds-kn">A square marks the columns that identify a row.</p></div>
-          <dl class="ds-rec" aria-labelledby="one-h">
-            {%- for f in v.record.fields %}
-            <div class="ds-f{% if f.key %} is-key{% endif %}"><dt><code>{{ f.name }}</code>{% if f.key %}<span class="ds-kq" aria-hidden="true"></span><span class="sr-only"> (identifies a row)</span>{% endif %}</dt><dd class="ds-v"><code>{% if f.value is none %}<span class="ds-nl">null</span>{% else %}{{ f.value }}{% endif %}</code></dd><dd class="ds-t"><code>{{ f.dtype }}</code></dd><dd class="ds-m">{{ f.meaning | md_inline | safe }}</dd></div>
-            {%- endfor %}
-          </dl>
-          {%- if v.record.lineage %}
-          <p class="ds-lin-l">Added to every row by the silver base transformer; <code>query()</code> leaves these out.</p>
-          <dl class="ds-rec ds-lin" aria-label="Lineage columns of the same row">
-            {%- for f in v.record.lineage %}
-            <div class="ds-f"><dt><code>{{ f.name }}</code></dt><dd class="ds-v"><code>{% if f.value is none %}<span class="ds-nl">null</span>{% else %}{{ f.value }}{% endif %}</code></dd><dd class="ds-t"><code>{{ f.dtype }}</code></dd><dd class="ds-m">{{ f.meaning | md_inline | safe }}</dd></div>
-            {%- endfor %}
-          </dl>
-          {%- endif %}
-        </div>
-        <div class="ds-many{% if v.record.narrow %} ds-many--side{% endif %}">
-          <h3 class="h-entry" id="many-h">Eight rows</h3>
-          <p class="caption ds-many__c" id="many-c">{{ v.record.caption | md_inline | safe }} Only the schema columns that differ between rows are shown. The marked row is the one above.</p>
-          <div class="ds-dfs"><div class="ds-dfw"><table class="ds-df" aria-labelledby="many-h" aria-describedby="many-c">
-            <thead><tr>{% for c in v.record.table.columns %}<th scope="col" class="{{ c.align }}">{{ c.name }}</th>{% endfor %}</tr></thead>
-            <tbody>
-              {%- for row in v.record.table.rows %}
-              <tr{% if row.me %} class="is-me"{% endif %}>{% for cell in row.cells %}<td class="{{ cell.cls }}">{% if loop.first and row.me %}<span class="sr-only">Marked row: </span>{% endif %}{% if cell.value is none %}<span class="ds-nl">null</span>{% else %}{{ cell.value }}{% endif %}</td>{% endfor %}</tr>
-              {%- endfor %}
-            </tbody>
-          </table></div></div>
+        <h2 class="h-fig" id="sv-h">Schema and sample rows</h2>
+        <div class="spec">
+          <p class="spec__cap"><code class="spec__shape">shape: {{ r.shape }}</code> <span>{{ r.caption | md_inline | safe }}</span></p>
+          <div class="fw" role="region" tabindex="0" aria-label="{{ r.aria }}">
+            <table class="pl">
+              <thead>
+                <tr class="nm">
+                  {%- for c in r.columns %}
+                  <th scope="col" id="c-{{ c.name }}"{% if c.folded %} class="fc"{% endif %}>{{ c.name }}{% if c.key %}<span class="k" aria-hidden="true"></span><span class="sr-only"> (identifies a row)</span>{% endif %}</th>
+                  {%- endfor %}
+                  {%- if r.n_folded %}
+                  <th scope="col" class="el"><input type="checkbox" class="fx sr-only" id="fx"><label for="fx"><span aria-hidden="true">…</span><span class="sr-only">Show {{ r.n_folded }} more columns</span></label></th>
+                  {%- endif %}
+                </tr>
+                <tr class="dt">{% for c in r.columns %}<td{% if c.folded %} class="fc"{% endif %}>{{ c.dtype }}</td>{% endfor %}{% if r.n_folded %}<td class="el"><label for="fx" aria-hidden="true"></label></td>{% endif %}</tr>
+              </thead>
+              <tbody>
+                {%- for row in r.rows %}
+                <tr>{% for c in r.columns %}{% set val = row[loop.index0] %}<td{% if c.num or c.folded %} class="{{ 'num' if c.num }}{{ ' ' if c.num and c.folded }}{{ 'fc' if c.folded }}"{% endif %}>{% if val is none %}<span class="nl">null</span>{% else %}{{ val }}{% endif %}</td>{% endfor %}{% if r.n_folded %}<td class="el"><label for="fx" aria-hidden="true">…</label></td>{% endif %}</tr>
+                {%- endfor %}
+              </tbody>
+            </table>
+          </div>
+          <div class="guide" role="group" aria-label="Column guide">
+            <div class="g-grp">
+              <p class="g-h" id="gk"><span class="k" aria-hidden="true"></span>Identifies a row</p>
+              <dl aria-labelledby="gk">
+                {%- for e in r.keyed %}
+                <div class="g-r" data-k="{{ e.k }}"{% if e.folded %} data-f=""{% endif %}><dt><a href="#c-{{ e.name }}">{{ e.name }}</a></dt><dd>{{ e.meaning | md_inline | safe }}</dd></div>
+                {%- endfor %}
+              </dl>
+            </div>
+            {%- if r.others %}
+            <div class="g-grp">
+              <p class="g-h" id="go">Other columns</p>
+              <dl aria-labelledby="go">
+                {%- for e in r.others %}
+                <div class="g-r" data-k="{{ e.k }}"{% if e.folded %} data-f=""{% endif %}><dt><a href="#c-{{ e.name }}">{{ e.name }}</a></dt><dd>{{ e.meaning | md_inline | safe }}</dd></div>
+                {%- endfor %}
+              </dl>
+            </div>
+            {%- endif %}
+          </div>
         </div>
       </div>
     </section>
@@ -197,6 +215,7 @@
         </ul>
       </div>
     </section>
+    {%- endif %}
   </main>
   <script src="../../assets/site.js"></script>
 </body>
