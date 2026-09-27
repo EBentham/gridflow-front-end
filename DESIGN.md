@@ -127,10 +127,14 @@ decisions and their reasons: `.planning/v5/design-loop/p24-decisions.md`.
    codes the palette doesn't cover are drawn unpainted with distinct ink hatches; khaki means only the vendor
    code OTHER. A caveat that matters for reading the chart goes in its caption.
 3. **Bronze: the raw feed,** the vendor's raw URL and the gridflow CLI call that ingests it.
-4. **Silver: schema and sample rows, "one record, then many":** one real row laid out field by field (name,
-   value, dtype, meaning; key columns marked; the row's lineage columns under one label) is the schema; then
-   "Eight rows", a compact table of only the schema columns that differ between rows, with the record's row
-   marked. Values formatted by Polars.
+4. **Silver: schema and sample rows, "the frame and its guide"** (re-locked 2026-09-27, replacing "one record,
+   then many"): the real sample rows as a Polars frame, exactly as silver prints them (shape line, column
+   name over dtype, Polars box drawing), key columns marked with a small square. Columns that do not fit
+   fold into Polars' `…` column; clicking `…` unfolds them in place (keyboard reachable; the frame scrolls
+   inside its own box). Beneath, a column guide: one plain line per column, key columns first, in frame
+   order. No lines for the pipeline columns every dataset shares (`data_provider`, `ingested_at`,
+   `event_time`, `available_at`, `source_run_id`, `dataset_version`), no relation line, no fold note, no
+   filler. Reference boards: `.planning/v5/design-loop/p24-r3-schema/3a/`.
 5. **Gold: the workbench call,** then the "Open the demo notebook" button. It reveals, in place, a notebook
    in the homepage notebook style: `setup_notebook()`, the source's help card, `data.<source>.query(...)`,
    `.head()` of the key columns, one plot (a register with no time axis reads the table with `data.sql(...)`

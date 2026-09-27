@@ -1,0 +1,66 @@
+body{margin:0}
+.root{--ink:#1C2B22;--ink-2:#3F4A3B;--daylight:#F6F4EC;--chartreuse:#AFC64E;--olive:#66793B;--hair:rgba(28,43,34,.24);--sep:rgba(28,43,34,.5);--lit:rgba(175,198,78,.42);background:#DCE2DF;color:var(--ink);font:400 16px/1.6 "Hanken Grotesk",sans-serif;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+.root code{font-family:"Red Hat Mono",monospace;font-size:.9em;color:var(--ink)}
+.layer{position:absolute;left:0;top:0}
+main{position:relative;container-type:inline-size}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+
+.st{position:relative;box-sizing:border-box;padding:0 80px}
+.st .inner{padding-top:66px}
+.st h2{font-family:"Bricolage Grotesque",sans-serif;font-optical-sizing:auto;font-size:30px;font-weight:700;font-stretch:90%;line-height:1.1;letter-spacing:-.012em;margin:0;color:var(--ink)}
+
+/* the frame, as silver prints it */
+.spec{margin-top:22px}
+.cap{margin:0 0 12px;font-size:14.5px;line-height:1.5;color:var(--ink-2)}
+.root .cap .shape{font-size:13.5px;color:var(--ink);margin-right:10px}
+.fw{overflow-x:auto;padding-bottom:10px}
+.fw:focus-visible{outline:2px solid var(--chartreuse);outline-offset:3px}
+.pl{border-collapse:separate;border-spacing:0;background:var(--daylight);border:1.5px solid var(--ink);border-radius:3px;font:400 13px/1.5 "Red Hat Mono",monospace;color:var(--ink)}
+.pl .fc{display:none}
+.spec:has(.fx:checked) .pl .fc{display:table-cell}
+.pl th,.pl td{box-sizing:border-box;padding:0 8px;text-align:left;white-space:nowrap}
+.pl tr > * + *{border-left:1px dashed var(--sep)}
+.pl .nm th{font-weight:500;padding-top:10px}
+.pl .dt td{color:var(--ink-2);padding-bottom:8px;border-bottom:3px double var(--ink)}
+.pl tbody td{padding-top:5px;padding-bottom:5px}
+.pl tbody tr:first-child td{padding-top:10px}
+.pl tbody tr:last-child td{padding-bottom:11px}
+.pl td.num{text-align:right}
+.pl .nl{color:var(--ink-2)}
+.pl .el{position:relative;text-align:center;padding:0;color:var(--ink-2)}
+.pl .el label{display:block;min-width:30px;cursor:pointer}
+.pl th.el label{padding-top:10px;color:var(--ink);font-weight:500}
+.pl th.el:has(.fx:checked){background:var(--ink)}
+.pl th.el:has(.fx:checked) label{color:var(--daylight)}
+.pl th.el:has(.fx:focus-visible){outline:2px solid var(--chartreuse);outline-offset:-4px;box-shadow:inset 0 0 0 5px var(--ink)}
+.pl th .k{display:inline-block;width:7px;height:7px;background:var(--ink);margin-left:7px;vertical-align:middle;position:relative;top:-1px}
+
+/* the guide beneath */
+.guide{margin-top:30px;display:grid;grid-template-columns:fit-content(620px) minmax(0,1fr);column-gap:56px;row-gap:18px}
+.g-h{margin:0 0 8px;font-size:14.5px;font-weight:600;line-height:1.4;color:var(--ink)}
+.g-h .k{display:inline-block;width:7px;height:7px;background:var(--ink);margin-right:9px;vertical-align:middle;position:relative;top:-1px}
+.guide dl{margin:0;display:grid;grid-template-columns:max-content minmax(0,1fr);column-gap:20px;row-gap:2px}
+.g-r{grid-column:1 / -1;display:grid;grid-template-columns:subgrid;align-items:baseline;padding:3px 0}
+.g-r dt{font:500 13.5px/1.45 "Red Hat Mono",monospace}
+.g-r dd{margin:0;font-size:14.5px;line-height:1.45;color:var(--ink-2)}
+.guide a{color:var(--ink);text-decoration:none}
+.g-r dt a{font-weight:500}
+.guide a:hover,.guide a:focus-visible{text-decoration:underline;text-decoration-color:var(--olive);text-decoration-thickness:1.5px;text-underline-offset:4px}
+.guide a:focus-visible{outline:2px solid var(--chartreuse);outline-offset:3px;border-radius:1px}
+.g-r:is(:hover,:focus-within){background:var(--lit);outline:6px solid var(--lit)}
+
+@container (max-width: 1100px){
+.guide{grid-template-columns:minmax(0,1fr);row-gap:22px}
+}
+@container (max-width: 700px){
+.st{padding:0 16px}
+.st .inner{padding-top:60px}
+.st h2{font-size:28px}
+.spec{margin-top:18px}
+.root .cap .shape{display:block;margin:0 0 2px}
+.fw{margin:0 -16px;padding:0 16px 10px}
+.guide{grid-template-columns:minmax(0,1fr);row-gap:22px;margin-top:26px}
+.guide dl{grid-template-columns:minmax(0,1fr);row-gap:8px}
+.g-r{padding:2px 0}
+.g-r dd{font-size:14.5px}
+}

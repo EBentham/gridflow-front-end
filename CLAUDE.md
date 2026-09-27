@@ -49,7 +49,7 @@ Looking like a SaaS product or dashboard · fake live indicators (timestamps, "X
 ## Conventions
 
 - HTML filenames: kebab-case slugs, except Elexon dataset codes keep BMRS underscores (`system_prices.html`).
-- Dataset page anatomy (locked 2026-09-27): petrol hero with quick facts → topsoil prose and chart → bronze raw feed → silver schema and sample ("one record, then many") → gold workbench call and demo notebook → related datasets. Spec: `DESIGN.md` "Dataset page anatomy".
+- Dataset page anatomy (locked 2026-09-27): petrol hero with quick facts → topsoil prose and chart → bronze raw feed → silver sample rows as a Polars frame with a column guide beneath → gold workbench call and demo notebook → related datasets. Spec: `DESIGN.md` "Dataset page anatomy".
 - Every page carries `<meta name="viewport" content="width=device-width, initial-scale=1">`.
 - A11y minimums: `<main>` landmark, `aria-current="page"` on the active nav, distinguishing `aria-label` on the dual `<nav>` (top + sidebar), `aria-hidden="true"` on decorative icons.
 

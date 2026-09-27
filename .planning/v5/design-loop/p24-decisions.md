@@ -88,3 +88,6 @@ Picker: https://claude.ai/artifact/MpySKZLbpbe6VmCz4pcuzV · round-1 canvas http
 - **Note for the build (OWNER):** the pages look well sized inside the artifact viewer but not when the HTML
   is opened directly in a browser, on every page. Assess and fix during implementation: check at real
   browser widths such as 1280, 1440, 1920 and 390, not only inside the picker's scaled frames.
+- **LOCKED (OWNER, 2026-09-27 late):** 3a revised ("looks good, lock it"). Boards are in `p24-r3-schema/3a/`, and
+  `DESIGN.md` §Dataset page anatomy item 4 is updated. The pilot template (PR #42) still renders option 4
+  and must switch to 3a before the rollout.
