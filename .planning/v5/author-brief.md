@@ -46,6 +46,11 @@ checks it against `review-rubric.md`. You write only your own dataset's files.
 - No em dashes (use commas, colons, parentheses). No planning labels (planned, shipped, phase codes).
   No "live", "now", "real-time". No marketing words.
 - Plain, specific English. British spelling. Code, columns, codes and dataset keys in backticks.
+- **Nothing clipped or overlapping.** Every drawing, label and caption is fully visible at 1440, 1024,
+  768 and 390 in light and dark, in particular scenery tops (turbines), scene edges and
+  section-corner labels. Check rendered screenshots of your page at those widths (headless browser, or
+  your own preview tab on a free port in 9700-9799), not only the HTML; a long label of yours (a key
+  note, a code, a related dataset key) is the usual cause.
 
 ## Field notes (what the pilot learned)
 

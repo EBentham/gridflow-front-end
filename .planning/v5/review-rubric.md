@@ -60,7 +60,16 @@ evidence (file:line, or the Polars expression you ran and its output).
 - [ ] The notebook JSON was written by `scripts/run_notebooks.py`, every cell is read-only (no
       `refresh`, `backfill`, ingest), outputs have no errors, and `plot_alt` describes the real plot.
 
-## 5. Leakage and filler (major)
+## 5. Nothing clipped or overlapping (major; look at rendered screenshots, not only the HTML)
+
+- [ ] Nothing clipped or overlapping. Every drawing, label and caption is fully visible at 1440, 1024,
+      768 and 390 in light and dark, in particular scenery tops (turbines), scene edges and
+      section-corner labels.
+- [ ] Take the screenshots yourself (a headless browser or your own preview tab on a free port) and
+      look at each one: the hero scenery, the chart, the eight rows, the notebook panel and each
+      stratum's corner label. A passing detector or HTML check does not replace looking.
+
+## 6. Leakage and filler (major)
 
 - [ ] No planning labels, phase codes, "coming soon", counts of future work.
 - [ ] No filler captions (restating the heading, explaining an obvious method), no marketing words, no
@@ -68,7 +77,7 @@ evidence (file:line, or the Polars expression you ran and its output).
 - [ ] No em dashes; no middle-dot strings; no "→".
 - [ ] `related` notes say how the datasets relate, in 12 words or fewer.
 
-## 6. Vault body edits (major)
+## 7. Vault body edits (major)
 
 - [ ] Each body correction the author made cites evidence and fixes the smallest span. No unrelated
       rewrites; the curl example is only changed if it is wrong for the vendor.
