@@ -1,0 +1,114 @@
+<title>Dataset page picker</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,600..800&family=Hanken+Grotesk:wght@400;500;600&family=Red+Hat+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --petrol:#155A6E; --ink:#1C2B22; --ink-2:#34443A; --muted:#5d6a55;
+  --daylight:#F6F4EC; --rule:#DFDACA; --chartreuse:#AFC64E; --on-petrol:#EAF1EE; --on-petrol-2:#C9DCD8;
+  color-scheme: light;
+}
+*{box-sizing:border-box}
+body{background:var(--daylight);color:var(--ink);font:400 15px/1.55 "Hanken Grotesk",Helvetica,sans-serif;font-variant-numeric:tabular-nums;padding-inline:24px;padding-block:0 48px}
+header.band{background:var(--petrol);color:var(--on-petrol);margin-inline:-24px;padding:28px 24px 24px}
+.band h1{font:750 34px/1.05 "Bricolage Grotesque",Georgia,sans-serif;font-variation-settings:"wdth" 86;margin:0 0 8px;text-wrap:balance}
+.band p{margin:0;max-width:72ch;color:var(--on-petrol-2)}
+.band .step{font-weight:600;color:var(--on-petrol)}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:20px 0 18px}
+.controls span{color:var(--muted);margin-right:4px}
+.controls button{font:500 14px "Hanken Grotesk",sans-serif;padding:8px 14px;border:1.5px solid var(--ink);background:transparent;color:var(--ink);border-radius:3px;cursor:pointer;min-height:40px}
+.controls button[aria-pressed="true"]{background:var(--ink);color:var(--daylight)}
+.controls button:focus-visible,.open:focus-visible,.close:focus-visible{outline:2px solid var(--chartreuse);outline-offset:3px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px 24px;align-items:start}
+.col.base h2::after{content:" (your layout pick)";font:500 14px "Hanken Grotesk",sans-serif;color:var(--muted)}
+.col h2{font:750 22px/1.1 "Bricolage Grotesque",Georgia,sans-serif;font-variation-settings:"wdth" 86;margin:0 0 4px}
+.col p{margin:0 0 10px;font-size:13.5px;color:var(--ink-2);min-height:4.6em}
+.frame{position:relative;overflow:hidden;border:1.5px solid var(--ink);border-radius:3px;background:#fff}
+.frame iframe{position:absolute;top:0;left:0;width:1440px;border:0;transform-origin:0 0;pointer-events:none}
+.open{display:inline-block;margin:10px 0 0;font:600 14px "Hanken Grotesk",sans-serif;color:var(--ink);background:none;border:0;padding:4px 0;cursor:pointer;text-decoration:underline;text-decoration-color:#66793B;text-decoration-thickness:1.5px;text-underline-offset:4px}
+.frame-btn{display:block;width:100%;padding:0;border:0;background:none;cursor:zoom-in}
+.how{margin-top:26px;max-width:72ch;color:var(--ink-2)}
+.how code{font:500 14px "Red Hat Mono",monospace}
+.overlay{position:fixed;inset:0;background:rgba(21,90,110,.94);display:flex;flex-direction:column;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));padding-top:calc(12px + env(safe-area-inset-top,0px));z-index:10}
+.overlay .bar{display:flex;justify-content:space-between;align-items:center;color:var(--on-petrol);font:600 16px "Hanken Grotesk",sans-serif;margin-bottom:10px;gap:12px}
+.close{font:600 14px "Hanken Grotesk",sans-serif;padding:8px 14px;border:1.5px solid var(--on-petrol-2);background:transparent;color:var(--on-petrol);border-radius:3px;cursor:pointer;min-height:40px}
+.viewport{flex:1;overflow:auto;background:#fff;border-radius:3px}
+.viewport iframe{width:1440px;border:0;display:block}
+@media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:560px){.grid{grid-template-columns:minmax(0,1fr)}.band h1{font-size:28px}}
+</style>
+
+<header class="band">
+  <h1>Dataset page: pick the chart</h1>
+  <p><span class="step">Decision 2.</span> Layout is decided: A, the section. Here is only the chart from each direction, cut out of its page, so you can compare how each one draws the data. Switch the dataset above the charts to see how each copes with prices crossing zero, a sparse gas series with a gap, and a table with no time axis.</p>
+</header>
+
+<div class="controls" role="group" aria-label="Dataset shown">
+  <span>Show them for</span>
+  <button type="button" data-spec="fuelhh" aria-pressed="true">Generation by fuel (fuelhh)</button>
+  <button type="button" data-spec="system-prices" aria-pressed="false">System prices</button>
+  <button type="button" data-spec="physical-flows" aria-pressed="false">Gas flows (ENTSO-G)</button>
+  <button type="button" data-spec="bmunits-reference" aria-pressed="false">BM units (no time axis)</button>
+</div>
+
+<main class="grid" id="grid"></main>
+
+<p class="how">Click any chart to open its whole page full size. Then tell me in chat which chart treatment to use on A, for example <code>C</code>, or a mix such as <code>C's plate with B's side panels for interconnectors</code>. Comments on a chart now pin to that option.</p>
+
+<div class="overlay" id="overlay" hidden>
+  <div class="bar"><span id="ovTitle"></span><button type="button" class="close" id="close">Close</button></div>
+  <div class="viewport"><iframe id="ovFrame" title="Full-size page"></iframe></div>
+</div>
+
+<script>
+const H={"A-fuelhh":3718,"A-system-prices":3712,"A-physical-flows":3582,"A-bmunits-reference":3578,"B-fuelhh":3808,"B-system-prices":3572,"B-physical-flows":3757,"B-bmunits-reference":3587,"C-fuelhh":4413,"C-system-prices":4246,"C-physical-flows":4354,"C-bmunits-reference":4295,"D-fuelhh":3483,"D-system-prices":3156,"D-physical-flows":3269,"D-bmunits-reference":3170,"E-fuelhh":3095,"E-system-prices":3112,"E-physical-flows":3164,"E-bmunits-reference":3010};
+const V=[
+ ["A","The section","Chart in the topsoil with a key beside it; signed series stacked above and hanging below zero; uncovered codes drawn unpainted with ink hatches."],
+ ["B","Reference manual","Chart with a named key; interconnectors and pumped storage split into their own panels below, at the same MW scale."],
+ ["C","The plate","A full-width plate with labels drawn on the series (no legend); each code split by sign, positives up and exports down."],
+ ["D","Notebook first","The chart as a matplotlib-style plot output under the code cell that makes it; bands named by the codes they sum."],
+ ["E","Datasheet","A fixed-size figure frame beside the key facts; the zero line drawn as the ground, negatives hanging below it."]
+];
+function cropOf(d){
+  const svgs=[...d.querySelectorAll("svg")].map(e=>e.getBoundingClientRect()).filter(r=>r.width>500&&r.width<=1300&&r.height>150&&r.height<1100);
+  if(!svgs.length) return null;
+  const r=svgs[0]; return {top:Math.max(0,r.top-110), bottom:r.bottom+90};
+}
+let spec="fuelhh";
+const grid=document.getElementById("grid");
+function render(){
+  grid.innerHTML="";
+  for(const [L,name,desc] of V){
+    const key=L+"-"+spec, h=H[key];
+    const col=document.createElement("section"); col.className="col"+(L==="A"?" base":"");
+    col.innerHTML=`<h2>${L}: ${name}</h2><p>${desc}</p><button type="button" class="frame-btn" aria-label="Open ${L} full size"><div class="frame"><iframe tabindex="-1" aria-hidden="true" src="boards/${key}.html" style="height:${h}px"></iframe></div></button><button type="button" class="open">Open ${L}'s whole page</button>`;
+    const ifr=col.querySelector("iframe");
+    ifr.addEventListener("load",()=>{ try{ ifr._crop=cropOf(ifr.contentDocument); }catch(e){ ifr._crop=null } fit(); });
+    const open=()=>openFull(L,name,key,h);
+    col.querySelector(".frame-btn").addEventListener("click",open);
+    col.querySelector(".open").addEventListener("click",open);
+    grid.appendChild(col);
+  }
+  fit();
+}
+function fit(){
+  for(const col of grid.children){
+    const fr=col.querySelector(".frame"), ifr=fr.querySelector("iframe");
+    const s=fr.clientWidth/1440, h=parseInt(ifr.style.height,10), c=ifr._crop;
+    if(c){ ifr.style.transform=`scale(${s}) translateY(${-c.top}px)`; fr.style.height=Math.round((c.bottom-c.top)*s)+"px"; }
+    else { ifr.style.transform=`scale(${s})`; fr.style.height=Math.round(Math.min(h,900)*s)+"px"; }
+  }
+}
+const ov=document.getElementById("overlay"), ovF=document.getElementById("ovFrame");
+function openFull(L,name,key,h){
+  document.getElementById("ovTitle").textContent=`${L}: ${name}`;
+  ovF.style.height=h+"px"; ovF.src="boards/"+key+".html"; ov.hidden=false;
+  document.getElementById("close").focus();
+}
+document.getElementById("close").addEventListener("click",()=>{ov.hidden=true;ovF.src="about:blank"});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!ov.hidden){ov.hidden=true;ovF.src="about:blank"}});
+document.querySelectorAll(".controls button").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll(".controls button").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));
+  spec=b.dataset.spec; render();
+}));
+addEventListener("resize",fit);
+render();
+</script>
