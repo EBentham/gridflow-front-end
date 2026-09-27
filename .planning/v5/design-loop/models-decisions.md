@@ -28,3 +28,13 @@ Picker: https://claude.ai/artifact/MpySKZLbpbe6VmCz4pcuzV ("Models page (as it s
   #15's "never trained" wording.
 - Status follows the code and the manifest, not `notebooks/README.md` (RULINGS #22).
 - Designers launched the same evening (not after the weekly reset): three directions, `models-r1/`.
+
+## Round 1 pick (OWNER, 2026-09-27)
+
+- **Design 2, "Converging cables"** (`models-r1/2/`), with three changes:
+  1. Remove the line saying it does not produce orders, positions or P&L.
+  2. Remove the notebook section at the bottom; in its place a short line along the lines of "this is still
+     in development" (his explicit wording choice, overriding DESIGN.md's no-planning-leakage default for this
+     one line).
+  3. Remove "This site is MIT-licensed. gridflow is Apache-2.0." (site-wide, asked twice: no licence line on
+     any page; it also sits in `site.js` on v5/site and on the locked architecture boards).
