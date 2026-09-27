@@ -32,3 +32,4 @@ Earlier milestones keep their decisions phase-local (`phases/`, `docs/adr/`).
 | 24 | 2026-09-27T20:10Z | 27 | OWNER | Models page design locked ('looks good'): round 2 of 'Converging cables', desktop and phone boards in models-r2, turbine clipping fixed. |
 | 25 | 2026-09-27T20:45Z | 25b | OWNER | Dataset rollout cost accepted: about $7 per page for the author, plus an Opus reviewer, for the remaining pages. |
 | 26 | 2026-09-27T20:45Z | 25b | OWNER | Imbalance-volume sign: an Opus agent investigates (Elexon docs, gridflow code, the rows) and concludes; pages state no sign until then. |
+| 27 | 2026-09-27T20:49Z | 25b | PROXY-SOURCED (class 1, Opus investigator) | Imbalance volume: positive NIV = system short, negative = long (Elexon N0430 and imbalance pricing page; gridflow passes it through; a year of rows fits). Vault domain note corrected on the pilot's vault branch; system_prices page states it. |
