@@ -1,0 +1,23 @@
+[
+ "Read the model cards",
+ "How the models connect",
+ "Model",
+ "What it does",
+ "Fed by",
+ "The models, in chain order",
+ "weather, version 2",
+ "Version 1, from stored walk-forward backtests, 1 September 2024 to 22 August 2026.",
+ "median pinball",
+ "90% coverage",
+ "outturn",
+ "median",
+ "Line chart of GB national demand for 20 and 21 August 2026, in MW: the version 1 forecast median inside its 5 to 95% band, with the outturn from elexon/indo. Values run from 17,466 to 31,583 MW.",
+ "weather",
+ "recorded wind",
+ "residual demand",
+ "substation",
+ "wind farm",
+ "solar farm",
+ "power stations",
+ "The four things the models are about, drawn small: pylons into a substation, a wind farm, a solar farm and power stations. A cable runs down from each to the model that reads its data."
+]

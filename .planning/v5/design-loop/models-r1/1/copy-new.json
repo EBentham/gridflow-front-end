@@ -1,0 +1,11 @@
+[
+ "Version 1: median pinball 711.04 MW in walk-forward backtests.",
+ "Median pinball, 1 September 2024 to 22 August 2026: version 1 711.04 MW, version 2 599.72 MW.",
+ "In a notebook:",
+ "How it works",
+ "Read the model cards",
+ "The datasets each model reads from silver",
+ "The models, in the order of the chain",
+ "Residual demand, from the recorded datasets",
+ "Published run, 18 August to 3 September 2026: mean bias -151.80 GBP/MWh and MAE 151.80 GBP/MWh against elexon/mid (APXMIDP)."
+]
