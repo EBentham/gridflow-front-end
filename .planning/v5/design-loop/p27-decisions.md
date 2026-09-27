@@ -11,3 +11,9 @@ Canvas: https://claude.ai/artifact/9eYp9RZFV2PV6qmocNWYvj (round 1, five directi
   that uses it. It needs polish; Bobbo is not happy with the overall design. Iterate after architecture.
 - **Architecture: LOCKED 2026-09-27** (OWNER), round 2 of "The specimen" built from the verified content pack.
   Record: `arch-decisions.md`; boards `arch-r2/`.
+
+## New top page requested (OWNER, 2026-09-27; to revisit shortly)
+
+- **A new top-level page (in the top nav) that tells readers about the gridflow explorer app.** Scope, content
+  and design not yet discussed; Bobbo will come back to it. Related: PR #34 (cross-link the gridflow-explorer
+  app, open since 2026-08-15, listed in MILESTONE.md loose ends) and the explorer repo's own design loop.
