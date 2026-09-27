@@ -43,7 +43,10 @@ Picker: https://claude.ai/artifact/MpySKZLbpbe6VmCz4pcuzV · round-1 canvas http
   `github.com/EBentham/gridflow-models` is PRIVATE, and gridflow-models resolves gridflow as a sibling path
   (`[tool.uv.sources] gridflow = { path = "../gridflow" }`). "Paste it and it runs" for a reader needs the
   repo public and setup cells (clone both side by side, `uv sync`, `gridflow init`, an ingest of the window).
-  Bobbo to decide on making gridflow-models public. Panel visual design (three options) still to come.
+  Bobbo's ruling: keep links pointing at gridflow-models on GitHub even though it is private for now. He
+  will soon split the notebook module into its own PUBLIC repo (gridflow-models stays private); the demo
+  notebook's setup cells then install from that repo. Until its name exists, setup cells are written against
+  the current package and flagged for a one-line update. Panel visual design (three options) still to come.
 
 ## Decision 2b: facts and how to get it (OWNER)
 
