@@ -46,7 +46,10 @@ Picker: https://claude.ai/artifact/MpySKZLbpbe6VmCz4pcuzV · round-1 canvas http
   Bobbo's ruling: keep links pointing at gridflow-models on GitHub even though it is private for now. He
   will soon split the notebook module into its own PUBLIC repo (gridflow-models stays private); the demo
   notebook's setup cells then install from that repo. Until its name exists, setup cells are written against
-  the current package and flagged for a one-line update. Panel visual design (three options) still to come.
+  the current package and flagged for a one-line update.
+- Later the same day (OWNER): **no setup cells at all** (no clone, uv, init or ingest); the notebook starts at
+  `setup_notebook()`. One designer drafts it ("it's not difficult"): the inline drawer in the gold stratum,
+  `<scratch>\p24\r2-notebook\1\`. The sheet and recipe directions were stopped.
 
 ## Decision 2b: facts and how to get it (OWNER)
 
