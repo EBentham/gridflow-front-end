@@ -22,3 +22,4 @@ Earlier milestones keep their decisions phase-local (`phases/`, `docs/adr/`).
 | 14 | 2026-09-27T11:41Z | D4 | OWNER | Headline dataset count is computed by the build from the pages it renders (149 today), never hand-typed. |
 | 15 | 2026-09-27T11:41Z | 27 | OWNER | Wind and solar models are shown as they stand (never trained); the gridflow_models README fix is separate work. |
 | 16 | 2026-09-27T11:41Z | gridflow | OWNER | gridflow adds all 29 NESO Data Portal packages (separate gridflow work, not blocking v5); each gets a page once its data lands. |
+| 17 | 2026-09-27T11:46Z | 23 | OWNER | Homepage approved on desktop ('looks amazing, I am happy with it'), copy as written; PR #41 squash-merged into v5/site (18e98b2) after seat re-ran gates on the merge result. Phone look not possible; mobile rough edges queued. |
