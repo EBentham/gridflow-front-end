@@ -246,6 +246,7 @@ pre.out {
 
 /* ================================================================ below the 1440 board */
 @media (max-width: 1439.98px) {
+  .jh { grid-template-columns: minmax(0, 600fr) minmax(0, 420fr); column-gap: 60px; }
   .stop { grid-template-columns: 80px minmax(0, 300fr) 32px minmax(0, 860fr); }
   .well { font-size: 13.5px; }
   .well.sm { font-size: 12.5px; }
