@@ -33,6 +33,18 @@ Picker: https://claude.ai/artifact/MpySKZLbpbe6VmCz4pcuzV · round-1 canvas http
   by Polars. Open from its notes: A's "equal to SSP on every row" on system_prices needs checking before
   round 2; the 390 px reflow is written but untested.
 
+## Decision 4: demo notebook content (OWNER, 2026-09-27)
+
+- **Option 2: through gridflow and the gridflow_models notebook module** ("to show off my notebooks
+  module"): `from gridflow_models import setup_notebook`, `data, models, common = setup_notebook()`,
+  `data.<vendor>.query("<dataset>", start, end)` returning pandas, as on the architecture page. Chosen over
+  raw vendor API cells and over two tabs.
+- Constraint found 2026-09-27: `github.com/EBentham/gridflow` is public (branch master), but
+  `github.com/EBentham/gridflow-models` is PRIVATE, and gridflow-models resolves gridflow as a sibling path
+  (`[tool.uv.sources] gridflow = { path = "../gridflow" }`). "Paste it and it runs" for a reader needs the
+  repo public and setup cells (clone both side by side, `uv sync`, `gridflow init`, an ingest of the window).
+  Bobbo to decide on making gridflow-models public. Panel visual design (three options) still to come.
+
 ## Decision 2b: facts and how to get it (OWNER)
 
 - Keep A's for both: quick facts in the petrol hero under the one-liner; the raw feed and CLI in bronze and
