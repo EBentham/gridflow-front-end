@@ -53,7 +53,7 @@
           '<li><a href="https://github.com/EBentham/gridflow-models">gridflow-models</a></li>' +
           '<li><a href="https://github.com/EBentham/gridflow-front-end">gridflow-front-end</a></li>' +
         "</ul>" +
-        '<p class="site-foot__line">Elliot Bentham, 2026. MIT licence.</p>' +
+        '<p class="site-foot__line">Elliot Bentham, 2026.</p>' +
       "</div>" +
     "</footer>";
 
