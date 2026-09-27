@@ -1274,11 +1274,18 @@ def _record_view(doc: DatasetDoc, sample: dict[str, Any]) -> tuple[dict[str, Any
     return view, errors
 
 
+_LOCAL_STORAGE = re.compile(r"\blocally\b|\blocal (copy|store|storage|disk)\b", re.IGNORECASE)
+
+
 def _output_html(out: dict[str, Any], vendor_id: str, handle: str, alt: str) -> Markup:
     kind = out["kind"]
     if kind == "card":
+        # The site never describes local storage (DESIGN.md), and the gridflow_models help text
+        # for `backfill` does; the row is left out rather than reworded, so every shown word is real.
         dl = "".join(
-            f"<div><dt>{html_escape(n)}</dt><dd>{html_escape(d)}</dd></div>" for n, d in out["rows"]
+            f"<div><dt>{html_escape(n)}</dt><dd>{html_escape(d)}</dd></div>"
+            for n, d in out["rows"]
+            if not _LOCAL_STORAGE.search(d)
         )
         foot = out["foot"]
         return Markup(

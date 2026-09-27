@@ -15,7 +15,7 @@ from gridflow_front_end.paths import DEFAULT_VAULT
 # Phrases that describe our local copy instead of the vendor's data (DESIGN.md: no local-data
 # references anywhere on a dataset page).
 LOCAL_DATA = re.compile(
-    r"held locally|locally held|our copy|local (silver|history|rows)|rows held", re.IGNORECASE
+    r"\blocally\b|our copy|local (silver|history|rows|copy|store)|rows held", re.IGNORECASE
 )
 
 
