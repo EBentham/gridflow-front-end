@@ -201,6 +201,8 @@ def test_a_page_without_a_page_block_is_blank(tmp_path: Path) -> None:
     build.build(DEFAULT_VAULT, tmp_path, frozenset({"elexon/agpt", "neso/carbon_intensity"}))
     page = (tmp_path / "data-sources" / "elexon" / "agpt.html").read_text(encoding="utf-8")
     assert re.findall(r'<section class="stratum stratum--(\w+)', page) == ["sky"]
+    # not `.ds`, which ends in its own deep band: site.js gives a blank page the site footer
+    assert '<main id="main" class="ds-blank">' in page
     assert '<h1 class="h-hero ds-hero__h" id="ds-h">Actual generation per type</h1>' in page
     assert '<code class="ds-chip">elexon/agpt</code>' in page
     assert 'href="../elexon.html"' in page and "ds-facts" not in page and "data-chart" not in page

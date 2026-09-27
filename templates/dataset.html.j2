@@ -19,7 +19,8 @@
   <link rel="stylesheet" href="../../assets/dataset.css">
 </head>
 <body data-page="dataset" data-root="../../" data-screen-label="Dataset {{ v.key }}">
-  <main id="main" class="ds">
+  {#- a blank page has no deep band of its own, so it is not `.ds` and site.js gives it the site footer -#}
+  <main id="main" class="{{ 'ds-blank' if v.blank else 'ds' }}">
     {#- 1. petrol hero -#}
     <section class="stratum stratum--sky" aria-labelledby="ds-h">
       <div class="wrap ds-hero">
@@ -43,7 +44,10 @@
         {% include "_partials/landscape/" ~ v.landscape ~ ".svg.j2" %}
       </figure>
     </section>
-    {%- if not v.blank %}
+    {%- if v.blank %}
+    {#- the drawing's ground runs on into a band of topsoil, so the footer's wave never reaches it -#}
+    <div class="stratum stratum--topsoil stratum--flush ds-blank__soil" aria-hidden="true"></div>
+    {%- else %}
 
     {#- 2. topsoil: what it is, how it is used, then the chart with its key beside it -#}
     <section class="stratum stratum--topsoil stratum--flush" aria-labelledby="what-h">

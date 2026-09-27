@@ -3,6 +3,11 @@
    column, which a visually hidden checkbox opens in place. The guide beneath lights its column.
    The last block (one rule per column index) is generated; columns are numbered from 1. */
 
+/* a blank page (hero only) is `main.ds-blank`; its id chip keeps the dataset page's code size */
+.ds-blank code { font-size: .9em; }
+.ds-blank__soil { height: 110px; padding: 0; }
+@media (max-width: 1099.98px) { .ds-blank__soil { height: 72px; } }
+
 .spec { --lit: rgba(175, 198, 78, .42); --sep: rgba(28, 43, 34, .5); margin-top: 22px; min-width: 0; }
 .spec__cap { margin: 0 0 12px; font-size: 14.5px; line-height: 1.5; color: var(--ink-2); max-width: 66ch; }
 .spec__cap .spec__shape { font-family: var(--mono); font-size: 13.5px; color: var(--ink); margin-right: 10px; }
