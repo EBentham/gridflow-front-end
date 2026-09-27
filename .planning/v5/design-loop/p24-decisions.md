@@ -24,6 +24,15 @@ Picker: https://claude.ai/artifact/MpySKZLbpbe6VmCz4pcuzV · round-1 canvas http
   above zero when positive and hang below when negative. Fuel codes the palette doesn't cover are drawn
   unpainted with distinct ink hatches, and khaki means only the vendor code OTHER.
 
+## Decision 3: schema and sample rows (OWNER)
+
+- **4, "One record, then many"** (`<scratch>\p24\r2-schema\4\`, generator `gen4.py`, `content4.py`,
+  `s4.css`, notes `4-notes.md`): one real row laid out field by field (name, value, dtype, meaning, key
+  squares; the row's lineage columns under one label) is the schema; then "Eight rows" as a compact table
+  showing only the schema columns that differ between rows, with the record's row marked. Values formatted
+  by Polars. Open from its notes: A's "equal to SSP on every row" on system_prices needs checking before
+  round 2; the 390 px reflow is written but untested.
+
 ## Decision 2b: facts and how to get it (OWNER)
 
 - Keep A's for both: quick facts in the petrol hero under the one-liner; the raw feed and CLI in bronze and
