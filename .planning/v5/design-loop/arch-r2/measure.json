@@ -1,0 +1,220 @@
+{
+ "desktop": {
+  "m1": {
+   "g": {
+    "sky": 142,
+    "top": 199,
+    "bronze": 209,
+    "silver": 353,
+    "gold": 231,
+    "readers": 192
+   },
+   "secs": {
+    "opening": [
+     0,
+     392
+    ],
+    "drawing": [
+     392,
+     1745
+    ],
+    "journey": [
+     2138,
+     4787
+    ],
+    "correct": [
+     6925,
+     949
+    ],
+    "look": [
+     7918,
+     610
+    ]
+   },
+   "H": 8704,
+   "over": [],
+   "outside": [],
+   "scrolls": [],
+   "docW": 1440,
+   "rootSW": 1440
+  },
+  "m2": {
+   "g": {
+    "sky": 142,
+    "top": 199,
+    "bronze": 209,
+    "silver": 353,
+    "gold": 231,
+    "readers": 192
+   },
+   "secs": {
+    "opening": [
+     0,
+     392
+    ],
+    "drawing": [
+     392,
+     1888
+    ],
+    "journey": [
+     2281,
+     4787
+    ],
+    "correct": [
+     7068,
+     949
+    ],
+    "look": [
+     8061,
+     610
+    ]
+   },
+   "H": 8847,
+   "over": [],
+   "outside": [],
+   "scrolls": [],
+   "docW": 1440,
+   "rootSW": 1440
+  },
+  "bands": {
+   "C1": 536,
+   "C2": 771,
+   "C3": 1150,
+   "G0": 1407,
+   "R": 1465,
+   "RX": 1487,
+   "BOT": 1715,
+   "Hd": 1741
+  },
+  "H": 8847
+ },
+ "phone": {
+  "m1": {
+   "g": {
+    "sky": 165,
+    "top": 252,
+    "bronze": 316,
+    "silver": 655,
+    "gold": 396,
+    "readers": 514
+   },
+   "secs": {
+    "opening": [
+     0,
+     477
+    ],
+    "drawing": [
+     477,
+     2371
+    ],
+    "journey": [
+     2847,
+     7167
+    ],
+    "correct": [
+     10014,
+     1609
+    ],
+    "look": [
+     11667,
+     1129
+    ]
+   },
+   "H": 13024,
+   "over": [],
+   "outside": [],
+   "scrolls": [
+    "well :297",
+    "well sm:417",
+    "well sm:42",
+    "well sm:72",
+    "well sm:537",
+    "well :242",
+    "well join:242",
+    "res :882",
+    "well :305",
+    "well q:164",
+    "res side:250",
+    "well q:149",
+    "res side:378",
+    "well :274",
+    "well :289",
+    "res :543",
+    "well :367",
+    "out:448",
+    "well sm:77"
+   ],
+   "docW": 485,
+   "rootSW": 390
+  },
+  "m2": {
+   "g": {
+    "sky": 165,
+    "top": 252,
+    "bronze": 316,
+    "silver": 655,
+    "gold": 396,
+    "readers": 514
+   },
+   "secs": {
+    "opening": [
+     0,
+     477
+    ],
+    "drawing": [
+     477,
+     2864
+    ],
+    "journey": [
+     3340,
+     7167
+    ],
+    "correct": [
+     10507,
+     1609
+    ],
+    "look": [
+     12160,
+     1129
+    ]
+   },
+   "H": 13517,
+   "over": [],
+   "outside": [],
+   "scrolls": [
+    "well :297",
+    "well sm:417",
+    "well sm:42",
+    "well sm:72",
+    "well sm:537",
+    "well :242",
+    "well join:242",
+    "res :882",
+    "well :305",
+    "well q:164",
+    "res side:250",
+    "well q:149",
+    "res side:378",
+    "well :274",
+    "well :289",
+    "res :543",
+    "well :367",
+    "out:448",
+    "well sm:77"
+   ],
+   "docW": 485,
+   "rootSW": 390
+  },
+  "bands": {
+   "C1": 430,
+   "C2": 764,
+   "C3": 1437,
+   "G0": 1877,
+   "R": 1911,
+   "RX": 1933,
+   "BOT": 2477,
+   "Hd": 2499
+  },
+  "H": 13517
+ }
+}
