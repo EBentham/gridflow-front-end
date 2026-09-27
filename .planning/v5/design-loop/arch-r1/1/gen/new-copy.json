@@ -1,0 +1,22 @@
+[
+ "How gridflow is built",
+ "One section through gridflow",
+ "Sources on the grid above, their cables down through bronze, silver and gold, and the readers at the foot. Each part is keyed to its file on GitHub.",
+ "One row, from a command to a DataFrame",
+ "What was known, and when",
+ "Elexon system_prices, settlement date 2026-09-08, period 37: each version of system_sell_price from its available_at, 8 to 10 September 2026, UTC. Buy and sell are equal in both versions.",
+ "How it stays correct",
+ "Where to look in the code",
+ "excerpt",
+ "Read as of 2026-09-09 12:00",
+ "The view, as gridflow registers it",
+ "Read the <code>_latest</code> view",
+ "as of 2026-09-09 12:00, the read returns",
+ "returns",
+ "Timeline of the two versions of Elexon system_prices for settlement date 2026-09-08, period 37. 9.56 is available from 2026-09-08 17:48:45 UTC and 110.00 from 2026-09-09 17:44:29 UTC; both are kept. A read as of 2026-09-09 12:00 returns 9.56; the _latest view returns 110.00.",
+ "For",
+ "This site is MIT-licensed. gridflow is Apache-2.0.",
+ "training and backtests read silver directly",
+ "A section through gridflow. Above ground, eight sources stand on the grid: Elexon (a substation), NESO carbon intensity (a gas-fired power station), the NESO Data Portal (a solar farm), Open-Meteo (a met mast), GIE ALSI (an LNG terminal), GIE AGSI (gas storage), ENTSO-G (a gas pipeline point) and ENTSO-E (an interconnector converter station). A cable runs down from each, through a joint bay in the topsoil (the connector), into bronze, where raw responses lie with their sidecars by date; through a transformer into silver; to a view on the gridflow.duckdb busbar. The Elexon cable also feeds the system_marginal_price builder in gold. From the busbar, cables run to the gridflow command and GridflowClient, and on to notebooks; gridflow_models taps the silver cables directly.",
+ "topsoil"
+]

@@ -1,0 +1,96 @@
+{
+ "m1": {
+  "g": {
+   "sky": 142,
+   "top": 199,
+   "bronze": 209,
+   "silver": 353,
+   "gold": 231,
+   "readers": 152
+  },
+  "secs": {
+   "opening": [
+    0,
+    392
+   ],
+   "drawing": [
+    392,
+    1745
+   ],
+   "journey": [
+    2138,
+    4839
+   ],
+   "correct": [
+    6977,
+    949
+   ],
+   "look": [
+    7970,
+    584
+   ]
+  },
+  "H": 8731,
+  "over": [
+   "WIDE stop :1440:1at the foot: a commandOne com",
+   "WIDE stop :1440:2in the connector: a requestTh",
+   "WIDE stop :1440:3in bronze: a file and its sid",
+   "WIDE stop :1440:4in silver: two typed rowsSilv",
+   "WIDE stop hero:1440:5in the catalogue: the latest ",
+   "WIDE stop :1440:6in gold: a gold rowGold adds ",
+   "WIDE stop :1440:7at the foot: a Polars DataFra"
+  ]
+ },
+ "m2": {
+  "g": {
+   "sky": 142,
+   "top": 199,
+   "bronze": 209,
+   "silver": 353,
+   "gold": 231,
+   "readers": 152
+  },
+  "secs": {
+   "opening": [
+    0,
+    392
+   ],
+   "drawing": [
+    392,
+    1848
+   ],
+   "journey": [
+    2241,
+    4839
+   ],
+   "correct": [
+    7080,
+    949
+   ],
+   "look": [
+    8073,
+    584
+   ]
+  },
+  "H": 8834,
+  "over": [
+   "WIDE stop :1440:1at the foot: a commandOne com",
+   "WIDE stop :1440:2in the connector: a requestTh",
+   "WIDE stop :1440:3in bronze: a file and its sid",
+   "WIDE stop :1440:4in silver: two typed rowsSilv",
+   "WIDE stop hero:1440:5in the catalogue: the latest ",
+   "WIDE stop :1440:6in gold: a gold rowGold adds ",
+   "WIDE stop :1440:7at the foot: a Polars DataFra"
+  ]
+ },
+ "bands": {
+  "C1": 536,
+  "C2": 771,
+  "C3": 1150,
+  "G0": 1407,
+  "R": 1465,
+  "RX": 1487,
+  "BOT": 1675,
+  "Hd": 1701
+ }
+}
