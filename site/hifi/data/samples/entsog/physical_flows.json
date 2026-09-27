@@ -1,0 +1,209 @@
+{
+ "dataset": "entsog/physical_flows",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "d08dce4418889caaffe841fc8f43175ba862721b1ed9c0346fad260ab1890eb4",
+ "silver": "entsog/physical_flows",
+ "columns": [
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "point_key",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "point_label",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "operator_key",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "operator_label",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "direction_key",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "flow_gwh_per_day",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "unit",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "data_provider",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "ingested_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2026-09-21 04:00:00 UTC",
+   "ITP-00005",
+   "Bacton (IUK)",
+   "UK-TSO-0001",
+   "National Gas TSO",
+   "exit",
+   "175.165952",
+   "GWh/d",
+   "entsog",
+   "2026-09-26 17:46:49.526383 UTC",
+   "2026-09-21 04:00:00 UTC",
+   "2026-09-26 17:46:49.514382 UTC",
+   "06355ce0-8ec8-4dea-99b9-32978c8e049d",
+   "1.0.0"
+  ],
+  [
+   "2026-09-21 04:00:00 UTC",
+   "ITP-00005",
+   "Bacton (IUK)",
+   "UK-TSO-0003",
+   "Interconnector",
+   "entry",
+   "175.165952",
+   "GWh/d",
+   "entsog",
+   "2026-09-26 17:46:49.526383 UTC",
+   "2026-09-21 04:00:00 UTC",
+   "2026-09-26 17:46:49.514382 UTC",
+   "06355ce0-8ec8-4dea-99b9-32978c8e049d",
+   "1.0.0"
+  ],
+  [
+   "2026-09-21 04:00:00 UTC",
+   "ITP-00005",
+   "Bacton (IUK)",
+   "UK-TSO-0003",
+   "Interconnector",
+   "exit",
+   "0.0",
+   "GWh/d",
+   "entsog",
+   "2026-09-26 17:46:49.526383 UTC",
+   "2026-09-21 04:00:00 UTC",
+   "2026-09-26 17:46:49.514382 UTC",
+   "06355ce0-8ec8-4dea-99b9-32978c8e049d",
+   "1.0.0"
+  ],
+  [
+   "2026-09-21 04:00:00 UTC",
+   "ITP-00090",
+   "Moffat",
+   "UK-TSO-0001",
+   "National Gas TSO",
+   "exit",
+   "179.722875",
+   "GWh/d",
+   "entsog",
+   "2026-09-26 17:46:49.526383 UTC",
+   "2026-09-21 04:00:00 UTC",
+   "2026-09-26 17:46:49.514382 UTC",
+   "06355ce0-8ec8-4dea-99b9-32978c8e049d",
+   "1.0.0"
+  ],
+  [
+   "2026-09-21 04:00:00 UTC",
+   "ITP-00207",
+   "Bacton (BBL)",
+   "UK-TSO-0001",
+   "National Gas TSO",
+   "exit",
+   "64.358734",
+   "GWh/d",
+   "entsog",
+   "2026-09-26 17:46:49.526383 UTC",
+   "2026-09-21 04:00:00 UTC",
+   "2026-09-26 17:46:49.514382 UTC",
+   "06355ce0-8ec8-4dea-99b9-32978c8e049d",
+   "1.0.0"
+  ],
+  [
+   "2026-09-21 04:00:00 UTC",
+   "ITP-00207",
+   "Bacton (BBL)",
+   "UK-TSO-0004",
+   "BBL company",
+   "entry",
+   "64.358734",
+   "GWh/d",
+   "entsog",
+   "2026-09-26 17:46:49.526383 UTC",
+   "2026-09-21 04:00:00 UTC",
+   "2026-09-26 17:46:49.514382 UTC",
+   "06355ce0-8ec8-4dea-99b9-32978c8e049d",
+   "1.0.0"
+  ],
+  [
+   "2026-09-21 04:00:00 UTC",
+   "ITP-00207",
+   "Bacton (BBL)",
+   "UK-TSO-0004",
+   "BBL company",
+   "exit",
+   "0.0",
+   "GWh/d",
+   "entsog",
+   "2026-09-26 17:46:49.526383 UTC",
+   "2026-09-21 04:00:00 UTC",
+   "2026-09-26 17:46:49.514382 UTC",
+   "06355ce0-8ec8-4dea-99b9-32978c8e049d",
+   "1.0.0"
+  ],
+  [
+   "2026-09-21 04:00:00 UTC",
+   "ITP-00495",
+   "Moffat (IE)",
+   "IE-TSO-0002",
+   "GNI",
+   "entry",
+   "179.902778",
+   "GWh/d",
+   "entsog",
+   "2026-09-26 17:46:49.526383 UTC",
+   "2026-09-21 04:00:00 UTC",
+   "2026-09-26 17:46:49.514382 UTC",
+   "06355ce0-8ec8-4dea-99b9-32978c8e049d",
+   "1.0.0"
+  ]
+ ],
+ "mark": 7
+}
