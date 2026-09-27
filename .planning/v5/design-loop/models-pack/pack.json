@@ -1,0 +1,1338 @@
+{
+  "meta": {
+    "built": "2026-09-27",
+    "model": "claude-opus-5-5",
+    "gridflow_models": {
+      "repo": "https://github.com/EBentham/gridflow-models",
+      "default_branch": "main",
+      "commit": "1404300601dac6c28f107fea5152f8cb3ca4e88e",
+      "private": true
+    },
+    "gridflow": {
+      "repo": "https://github.com/EBentham/gridflow",
+      "default_branch": "master",
+      "commit": "2822d38952937ebb7ebad3d0f92abda644514408"
+    },
+    "limits": {
+      "job_words": 20
+    },
+    "copy_fields": "headline, lede, chain_line, published_run_line, optional_capability_line, scope, job, method, status_line, output.copy, window_copy, note_copy, caveat_copy, title_copy, caption_copy, READING.copy, heading_copy"
+  },
+  "opening": {
+    "headline": "From demand to a day-ahead price",
+    "lede": "gridflow-models is a separate Python library that reads gridflow's silver tables. It forecasts GB demand, wind and solar, builds the GB supply stack, and clears demand against that stack for a day-ahead price.",
+    "chain_line": "Demand less wind and solar is residual demand; the price is where residual demand meets the supply stack.",
+    "published_run_line": "The published price run uses recorded demand, wind and solar rather than the forecasts, so it gives one price per half-hour.",
+    "optional_capability_line": "The price model also accepts the three forecasts in place of the recorded values.",
+    "scope": "It produces forecasts and prices for research. It does not produce orders, positions or P&L.",
+    "notes": [
+      "Headline drops the count on purpose: Bobbo asked for the chain, not five siblings (models-decisions.md).",
+      "optional_capability_line describes code that exists (EstimatorInputConfig) but has never run; use it only if the page needs to explain why the forecast models sit above the price. Leave it out if in doubt."
+    ],
+    "evidence": [
+      {
+        "repo": "gridflow_models",
+        "path": "src/gridflow_models/data/gridflow_source.py",
+        "lines": "1-46",
+        "note": "training and backtests read gridflow silver Parquet directly, without importing gridflow",
+        "url": "https://github.com/EBentham/gridflow-models/blob/main/src/gridflow_models/data/gridflow_source.py",
+        "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/src/gridflow_models/data/gridflow_source.py#L1-L46"
+      },
+      {
+        "repo": "gridflow_models",
+        "path": "src/gridflow_models/research/_pandas_client.py",
+        "lines": "1-26",
+        "note": "the notebook data surface wraps gridflow's GridflowClient over gridflow.duckdb",
+        "url": "https://github.com/EBentham/gridflow-models/blob/main/src/gridflow_models/research/_pandas_client.py",
+        "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/src/gridflow_models/research/_pandas_client.py#L1-L26"
+      },
+      {
+        "repo": "gridflow_models",
+        "path": "CONTEXT.md",
+        "lines": "248-251",
+        "note": "the workbench produces forecasts and stack outputs; it does not produce orders, positions or P&L",
+        "url": "https://github.com/EBentham/gridflow-models/blob/main/CONTEXT.md",
+        "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/CONTEXT.md#L248-L251"
+      },
+      {
+        "repo": "gridflow_models",
+        "path": "src/gridflow_models/estimators/fundamentals_smp/sampler.py",
+        "lines": "121-124",
+        "note": "residual = demand minus wind minus solar",
+        "url": "https://github.com/EBentham/gridflow-models/blob/main/src/gridflow_models/estimators/fundamentals_smp/sampler.py",
+        "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/src/gridflow_models/estimators/fundamentals_smp/sampler.py#L121-L124"
+      },
+      {
+        "repo": "gridflow_models",
+        "path": "configs/models/fundamentals_smp/gb_v1.yaml",
+        "lines": "45-62",
+        "note": "published config: demand, wind and solar are kind: realised",
+        "url": "https://github.com/EBentham/gridflow-models/blob/main/configs/models/fundamentals_smp/gb_v1.yaml",
+        "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/configs/models/fundamentals_smp/gb_v1.yaml#L45-L62"
+      },
+      {
+        "repo": "gridflow_models",
+        "path": "src/gridflow_models/backtest/smp_config.py",
+        "lines": "55-76",
+        "note": "a component may be realised or a registered estimator (model_id, version)",
+        "url": "https://github.com/EBentham/gridflow-models/blob/main/src/gridflow_models/backtest/smp_config.py",
+        "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/src/gridflow_models/backtest/smp_config.py#L55-L76"
+      }
+    ]
+  },
+  "chain": {
+    "summary": "Designed chain (code): demand, wind and solar forecasts, sampled into residual demand, cleared through the stack for a probabilistic price. Published run: the three recorded outturns replace the forecasts, so the price is one value per half-hour.",
+    "drawing_rule": "Draw only edges with exercised_in_published_run true. The SMP residual-demand cable branches off the same three datasets the forecast models learn from (elexon/indo, elexon/fuelhh, neso_data_portal/historic_generation_mix), not off the models. No dashed 'not yet' edges (DESIGN.md).",
+    "exercised_meaning": "exercised_in_published_run: for edges into the SMP (residual demand, stack, benchmark), whether published run 41de423cfc0b421e used it; for every other edge, whether the model's stored scored run used it (demand in gold; wind and solar in -FAILED records).",
+    "nodes": [
+      {
+        "id": "src_demand",
+        "type": "source_image",
+        "label": "Substation",
+        "drawing": "pylons into a substation"
+      },
+      {
+        "id": "src_wind",
+        "type": "source_image",
+        "label": "Wind farm",
+        "drawing": "wind farm"
+      },
+      {
+        "id": "src_solar",
+        "type": "source_image",
+        "label": "Solar farm",
+        "drawing": "solar farm"
+      },
+      {
+        "id": "src_fleet",
+        "type": "source_image",
+        "label": "Power stations",
+        "drawing": "biomass, nuclear, CCGT, OCGT"
+      },
+      {
+        "id": "ds_indo",
+        "type": "dataset",
+        "label": "elexon/indo",
+        "gridflow_view": "silver_elexon_indo"
+      },
+      {
+        "id": "ds_hist_demand",
+        "type": "dataset",
+        "label": "open_meteo/historical_demand",
+        "gridflow_view": "silver_open_meteo_historical_demand"
+      },
+      {
+        "id": "ds_fuelhh",
+        "type": "dataset",
+        "label": "elexon/fuelhh",
+        "gridflow_view": "silver_elexon_fuelhh"
+      },
+      {
+        "id": "ds_hist_wind",
+        "type": "dataset",
+        "label": "open_meteo/historical_wind",
+        "gridflow_view": "silver_open_meteo_historical_wind"
+      },
+      {
+        "id": "ds_hgm",
+        "type": "dataset",
+        "label": "neso_data_portal/historic_generation_mix",
+        "gridflow_view": "silver_neso_data_portal_historic_generation_mix"
+      },
+      {
+        "id": "ds_hist_solar",
+        "type": "dataset",
+        "label": "open_meteo/historical_solar",
+        "gridflow_view": "silver_open_meteo_historical_solar"
+      },
+      {
+        "id": "ds_bmu",
+        "type": "dataset",
+        "label": "elexon/bmunits_reference",
+        "gridflow_view": "silver_elexon_bmunits_reference"
+      },
+      {
+        "id": "ds_remit",
+        "type": "dataset",
+        "label": "elexon/remit",
+        "gridflow_view": "silver_elexon_remit"
+      },
+      {
+        "id": "ds_fou",
+        "type": "dataset",
+        "label": "elexon/fou2t14d",
+        "gridflow_view": "silver_elexon_fou2t14d"
+      },
+      {
+        "id": "ds_mid",
+        "type": "dataset",
+        "label": "elexon/mid (APXMIDP)",
+        "gridflow_view": "silver_elexon_mid; gold_gb_day_ahead_benchmark"
+      },
+      {
+        "id": "ext_fuel",
+        "type": "non_gridflow_input",
+        "label": "Fuel and carbon prices (synthetic)",
+        "gridflow_view": ""
+      },
+      {
+        "id": "m_demand",
+        "type": "model",
+        "label": "Day-ahead demand",
+        "status": "validated"
+      },
+      {
+        "id": "m_wind",
+        "type": "model",
+        "label": "Wind generation",
+        "status": "unregistered"
+      },
+      {
+        "id": "m_solar",
+        "type": "model",
+        "label": "Solar generation",
+        "status": "unregistered"
+      },
+      {
+        "id": "m_stack",
+        "type": "model",
+        "label": "GB merit-order stack",
+        "status": "constructive"
+      },
+      {
+        "id": "step_residual",
+        "type": "step",
+        "label": "Residual demand"
+      },
+      {
+        "id": "m_smp",
+        "type": "model",
+        "label": "Fundamentals SMP",
+        "status": "no-op fit"
+      }
+    ],
+    "edges": [
+      {
+        "from": "src_demand",
+        "to": "ds_indo",
+        "label": "national demand outturn",
+        "kind": "cable",
+        "exercised_in_published_run": true,
+        "note": ""
+      },
+      {
+        "from": "src_demand",
+        "to": "ds_hist_demand",
+        "label": "weather at seven city sites",
+        "kind": "cable",
+        "exercised_in_published_run": true,
+        "note": "version 2 only"
+      },
+      {
+        "from": "src_wind",
+        "to": "ds_fuelhh",
+        "label": "metered wind",
+        "kind": "cable",
+        "exercised_in_published_run": true,
+        "note": ""
+      },
+      {
+        "from": "src_wind",
+        "to": "ds_hist_wind",
+        "label": "weather at twelve sites",
+        "kind": "cable",
+        "exercised_in_published_run": true,
+        "note": ""
+      },
+      {
+        "from": "src_solar",
+        "to": "ds_hgm",
+        "label": "embedded solar estimate",
+        "kind": "cable",
+        "exercised_in_published_run": true,
+        "note": ""
+      },
+      {
+        "from": "src_solar",
+        "to": "ds_hist_solar",
+        "label": "weather at six sites",
+        "kind": "cable",
+        "exercised_in_published_run": true,
+        "note": ""
+      },
+      {
+        "from": "src_fleet",
+        "to": "ds_bmu",
+        "label": "unit register",
+        "kind": "cable",
+        "exercised_in_published_run": true,
+        "note": ""
+      },
+      {
+        "from": "src_fleet",
+        "to": "ds_remit",
+        "label": "outage notices",
+        "kind": "cable",
+        "exercised_in_published_run": true,
+        "note": ""
+      },
+      {
+        "from": "src_fleet",
+        "to": "ds_fou",
+        "label": "fuel-level availability",
+        "kind": "cable",
+        "exercised_in_published_run": true,
+        "note": ""
+      },
+      {
+        "from": "ds_indo",
+        "to": "m_demand",
+        "label": "target and lags",
+        "kind": "feeds",
+        "exercised_in_published_run": true,
+        "note": "gold run a55a829bc51c40b2 (v1)"
+      },
+      {
+        "from": "ds_hist_demand",
+        "to": "m_demand",
+        "label": "weather (version 2)",
+        "kind": "feeds",
+        "exercised_in_published_run": true,
+        "note": "gold run b367a742aa544f8f (v2)"
+      },
+      {
+        "from": "ds_fuelhh",
+        "to": "m_wind",
+        "label": "target (WIND)",
+        "kind": "feeds",
+        "exercised_in_published_run": true,
+        "note": "scored run failed the coverage gate; nothing in gold"
+      },
+      {
+        "from": "ds_hist_wind",
+        "to": "m_wind",
+        "label": "weather",
+        "kind": "feeds",
+        "exercised_in_published_run": true,
+        "note": "as above"
+      },
+      {
+        "from": "ds_hgm",
+        "to": "m_solar",
+        "label": "target (solar)",
+        "kind": "feeds",
+        "exercised_in_published_run": true,
+        "note": "scored run failed the coverage gate; nothing in gold"
+      },
+      {
+        "from": "ds_hist_solar",
+        "to": "m_solar",
+        "label": "weather",
+        "kind": "feeds",
+        "exercised_in_published_run": true,
+        "note": "as above"
+      },
+      {
+        "from": "ds_bmu",
+        "to": "m_stack",
+        "label": "units",
+        "kind": "feeds",
+        "exercised_in_published_run": true,
+        "note": ""
+      },
+      {
+        "from": "ds_remit",
+        "to": "m_stack",
+        "label": "availability",
+        "kind": "feeds",
+        "exercised_in_published_run": true,
+        "note": ""
+      },
+      {
+        "from": "ds_fou",
+        "to": "m_stack",
+        "label": "derating",
+        "kind": "feeds",
+        "exercised_in_published_run": true,
+        "note": "published run only; covers part of the window"
+      },
+      {
+        "from": "ext_fuel",
+        "to": "m_stack",
+        "label": "marginal cost",
+        "kind": "feeds",
+        "exercised_in_published_run": true,
+        "note": "not a gridflow dataset; keep in text, not as a silver tap"
+      },
+      {
+        "from": "ds_indo",
+        "to": "step_residual",
+        "label": "recorded demand",
+        "kind": "feeds",
+        "exercised_in_published_run": true,
+        "note": ""
+      },
+      {
+        "from": "ds_fuelhh",
+        "to": "step_residual",
+        "label": "recorded wind and signed netting",
+        "kind": "feeds",
+        "exercised_in_published_run": true,
+        "note": ""
+      },
+      {
+        "from": "ds_hgm",
+        "to": "step_residual",
+        "label": "recorded solar",
+        "kind": "feeds",
+        "exercised_in_published_run": true,
+        "note": ""
+      },
+      {
+        "from": "m_demand",
+        "to": "step_residual",
+        "label": "demand forecast",
+        "kind": "forecast_route",
+        "exercised_in_published_run": false,
+        "note": "supported by code (EstimatorInputConfig); never run. Do not draw."
+      },
+      {
+        "from": "m_wind",
+        "to": "step_residual",
+        "label": "wind forecast",
+        "kind": "forecast_route",
+        "exercised_in_published_run": false,
+        "note": "cannot run: no registered version. Do not draw."
+      },
+      {
+        "from": "m_solar",
+        "to": "step_residual",
+        "label": "solar forecast",
+        "kind": "forecast_route",
+        "exercised_in_published_run": false,
+        "note": "cannot run: no registered version. Do not draw."
+      },
+      {
+        "from": "step_residual",
+        "to": "m_smp",
+        "label": "residual demand",
+        "kind": "feeds",
+        "exercised_in_published_run": true,
+        "note": "1,000 draws; identical in the published run"
+      },
+      {
+        "from": "m_stack",
+        "to": "m_smp",
+        "label": "supply curve per half-hour",
+        "kind": "feeds",
+        "exercised_in_published_run": true,
+        "note": ""
+      },
+      {
+        "from": "ds_mid",
+        "to": "m_smp",
+        "label": "scored against",
+        "kind": "scored_against",
+        "exercised_in_published_run": true,
+        "note": ""
+      }
+    ],
+    "confirmed": {
+      "stack_constructive_no_learning": true,
+      "smp_no_op_fit": true,
+      "forecasts_to_residual_to_stack_to_probabilistic_smp": "true as the code path; false for the published run"
+    }
+  },
+  "models": [
+    {
+      "id": "demand",
+      "name": "Day-ahead demand",
+      "model_ids": [
+        "day_ahead.lgbm_demand.v1",
+        "day_ahead.lgbm_demand.v2"
+      ],
+      "drawing": "substation and pylons",
+      "job": "Forecasts GB national demand for every half-hour of the next day, as a spread of quantiles in MW.",
+      "method": "LightGBM quantile regression, one model per quantile from 0.05 to 0.95, with a conformal widening of the outer band. Version 1 uses calendar terms and demand already published at issue time; version 2 adds weather.",
+      "status_code": {
+        "manifest_status": "validated (v1: 21 versions, latest 20260829T184619Z; v2: 1 version, 20260903T202038Z)",
+        "models_list": "validated",
+        "kind": "probabilistic estimator, fitted per walk-forward fold"
+      },
+      "status_line": "Both versions pass their gates and are validated. The scores come from stored walk-forward backtests.",
+      "inputs": [
+        {
+          "dataset": "elexon/indo",
+          "gridflow_view": "silver_elexon_indo",
+          "column": "initial_demand_outturn_mw",
+          "role": "target, and demand lags published by noon the day before",
+          "versions": "v1, v2",
+          "cable": true
+        },
+        {
+          "dataset": "open_meteo/historical_demand",
+          "gridflow_view": "silver_open_meteo_historical_demand",
+          "column": "temperature_2m_c, wind_speed_10m_mps",
+          "role": "observed weather at seven city sites (Belfast weighted zero), standing in for a forecast",
+          "versions": "v2",
+          "cable": true
+        },
+        {
+          "dataset": "open_meteo/forecast_demand",
+          "gridflow_view": "silver_open_meteo_forecast_demand",
+          "column": "temperature_2m_c, wind_speed_10m_mps",
+          "role": "forecast weather used only when v2 issues a forecast; not used by any score",
+          "versions": "v2",
+          "cable": false
+        }
+      ],
+      "output": {
+        "copy": "Seven quantiles of demand per half-hour, in MW.",
+        "gold_views": [
+          "gold_forecasts",
+          "gold_forecast_metrics"
+        ]
+      },
+      "handles": [
+        "models.demand_forecast",
+        "models.demand_forecast_v2"
+      ],
+      "scores": [
+        {
+          "label": "Version 1",
+          "pinball_q0_5_mw": 711.04,
+          "coverage_90": 0.893,
+          "gates": "pass",
+          "window_copy": "12 thirty-day test windows between 1 September 2024 and 22 August 2026",
+          "provenance": {
+            "store": "gold forecast_metrics, scope run",
+            "run_id": "a55a829bc51c40b2",
+            "exact": {
+              "pinball_q0.5": 711.043568003626,
+              "coverage_nominal90": 0.8933414890742027
+            },
+            "vintage_kind": "issued",
+            "vintage_policy_id": "v1_day_anchored_noon_d1",
+            "manifest_version": "20260827T081123Z (20260829T184619Z re-registers identical metrics)",
+            "record": "data/models/day_ahead_lgbm_demand_v1/20260827T081123Z/validation_record.json"
+          }
+        },
+        {
+          "label": "Version 2",
+          "pinball_q0_5_mw": 599.72,
+          "coverage_90": 0.883,
+          "gates": "pass",
+          "window_copy": "the same 12 test windows",
+          "caveat_copy": "Version 2 is scored with observed weather standing in for the forecast, so its score is optimistic.",
+          "provenance": {
+            "store": "gold forecast_metrics, scope run",
+            "run_id": "b367a742aa544f8f",
+            "exact": {
+              "pinball_q0.5": 599.7244473831543,
+              "coverage_nominal90": 0.8830351340308341
+            },
+            "vintage_kind": "perfect_prog",
+            "vintage_policy_id": "v2_perfect_prog_day_anchored_noon_d1",
+            "note": "The registered v2 version 20260903T202038Z scores 584.89 / 0.890 in its own record; the card derives no metric from it. Show 599.72."
+          }
+        }
+      ],
+      "held": [],
+      "evidence": [
+        {
+          "repo": "gridflow_models",
+          "path": "configs/models/day_ahead/lgbm_demand_v1.yaml",
+          "lines": "10-38",
+          "note": "target elexon/indo; quantiles 0.05 to 0.95; CQR calibration",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/configs/models/day_ahead/lgbm_demand_v1.yaml",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/configs/models/day_ahead/lgbm_demand_v1.yaml#L10-L38"
+        },
+        {
+          "repo": "gridflow_models",
+          "path": "configs/models/day_ahead/lgbm_demand_v1.yaml",
+          "lines": "77-84",
+          "note": "gates: pinball q0.5 at most 1500 MW, coverage 0.90 within 0.05, monotonicity",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/configs/models/day_ahead/lgbm_demand_v1.yaml",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/configs/models/day_ahead/lgbm_demand_v1.yaml#L77-L84"
+        },
+        {
+          "repo": "gridflow_models",
+          "path": "configs/models/day_ahead/lgbm_demand_v2.yaml",
+          "lines": "16-49",
+          "note": "adds open_meteo/historical_demand (scored) and open_meteo/forecast_demand (issuing)",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/configs/models/day_ahead/lgbm_demand_v2.yaml",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/configs/models/day_ahead/lgbm_demand_v2.yaml#L16-L49"
+        },
+        {
+          "repo": "gridflow_models",
+          "path": "docs/MODEL_CARDS/day_ahead_lgbm_demand_v1.md",
+          "lines": "16-40",
+          "note": "v1 features: calendar and issue-legal demand lags, no weather",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/docs/MODEL_CARDS/day_ahead_lgbm_demand_v1.md",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/docs/MODEL_CARDS/day_ahead_lgbm_demand_v1.md#L16-L40"
+        },
+        {
+          "repo": "gridflow_models",
+          "path": "docs/MODEL_CARDS/day_ahead_lgbm_demand_v1.md",
+          "lines": "246-285",
+          "note": "711.043568 / 0.893341 is the headline, published as gold run a55a829bc51c40b2",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/docs/MODEL_CARDS/day_ahead_lgbm_demand_v1.md",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/docs/MODEL_CARDS/day_ahead_lgbm_demand_v1.md#L246-L285"
+        },
+        {
+          "repo": "gridflow_models",
+          "path": "docs/MODEL_CARDS/day_ahead_lgbm_demand_v2.md",
+          "lines": "20-53",
+          "note": "perfect-prognosis caveat; 599.724447 / 0.883035, run b367a742aa544f8f",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/docs/MODEL_CARDS/day_ahead_lgbm_demand_v2.md",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/docs/MODEL_CARDS/day_ahead_lgbm_demand_v2.md#L20-L53"
+        },
+        {
+          "repo": "gridflow_models",
+          "path": "docs/MODEL_CARDS/day_ahead_lgbm_demand_v2.md",
+          "lines": "74-100",
+          "note": "v2 additions: population-weighted weather, effective temperature, season term",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/docs/MODEL_CARDS/day_ahead_lgbm_demand_v2.md",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/docs/MODEL_CARDS/day_ahead_lgbm_demand_v2.md#L74-L100"
+        },
+        {
+          "repo": "gridflow_models",
+          "path": "src/gridflow_models/estimators/day_ahead/weather_assembly.py",
+          "lines": "72",
+          "note": "WEATHER_SITES: seven sites",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/src/gridflow_models/estimators/day_ahead/weather_assembly.py",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/src/gridflow_models/estimators/day_ahead/weather_assembly.py#L72"
+        },
+        {
+          "repo": "local (gitignored, read only)",
+          "path": "data/models/day_ahead_lgbm_demand_v1/20260827T081123Z/validation_record.json",
+          "lines": "",
+          "note": "711.043568, 0.893341, gates pass",
+          "url": "",
+          "permalink": ""
+        },
+        {
+          "repo": "local (gitignored, read only)",
+          "path": "C:/gridflow-data/gold/forecast_metrics/",
+          "lines": "",
+          "note": "runs a55a829bc51c40b2 and b367a742aa544f8f, scope run",
+          "url": "",
+          "permalink": ""
+        }
+      ]
+    },
+    {
+      "id": "wind",
+      "name": "Wind generation",
+      "model_ids": [
+        "wind.lgbm_quantile.v1"
+      ],
+      "drawing": "wind farm",
+      "job": "Forecasts GB metered wind output for every half-hour of the next day, from weather at twelve wind farm sites.",
+      "method": "LightGBM quantile regression on hub-height wind speed, direction and air density at twelve sites, scored against a fitted power-curve baseline. Elexon's WINDFOR forecast is kept as a reference.",
+      "status_code": {
+        "manifest_status": "none (no manifest row)",
+        "models_list": "unregistered",
+        "kind": "probabilistic estimator; one fitting run on 2026-09-27 failed the coverage gate (-FAILED artefact)"
+      },
+      "status_line": "Scored once in a walk-forward backtest. Its 90% band was too narrow to pass the coverage gate, so no version is registered.",
+      "status_line_note": "Pending Bobbo's re-ruling of #15 (its 'never trained' premise is now false). See models-content-check.md, finding A.",
+      "inputs": [
+        {
+          "dataset": "elexon/fuelhh",
+          "gridflow_view": "silver_elexon_fuelhh",
+          "column": "generation_mw",
+          "filter": "fuel_type = WIND",
+          "role": "target: metered, post-curtailment GB wind",
+          "cable": true
+        },
+        {
+          "dataset": "open_meteo/historical_wind",
+          "gridflow_view": "silver_open_meteo_historical_wind",
+          "column": "10 m and 100 m wind speed, 100 m direction, air density",
+          "role": "observed weather at twelve sites (eight offshore, four onshore), standing in for a forecast",
+          "cable": true
+        },
+        {
+          "dataset": "elexon/windfor",
+          "gridflow_view": "silver_elexon_windfor",
+          "column": "latest_forecast_mw",
+          "role": "reference only: Elexon's own wind forecast, compared in the evidence report, never a model input",
+          "cable": false
+        }
+      ],
+      "output": {
+        "copy": "Seven quantiles of wind output per half-hour, in MW.",
+        "gold_views": []
+      },
+      "handles": [
+        "models.wind_forecast"
+      ],
+      "scores": [],
+      "held": [
+        {
+          "why_held": "gate-failing run, not registered, nothing in gold; ruling #15 needs re-ruling first",
+          "pinball_q0_5_mw": 416.7,
+          "coverage_90": 0.722,
+          "skill_crps_vs_baseline": 0.161,
+          "gates": "skill pass, median pinball pass (limit 500), coverage FAIL (0.90 within 0.05), monotonicity pass",
+          "window": "8 thirty-day folds, 2 October 2021 to 25 September 2026, perfect prognosis",
+          "record": "data/models/wind_lgbm_quantile_v1/20260927T145057Z-FAILED/validation_record.json"
+        }
+      ],
+      "evidence": [
+        {
+          "repo": "gridflow_models",
+          "path": "configs/models/wind/lgbm_quantile_v1.yaml",
+          "lines": "10-37",
+          "note": "target elexon/fuelhh WIND; features open_meteo/historical_wind",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/configs/models/wind/lgbm_quantile_v1.yaml",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/configs/models/wind/lgbm_quantile_v1.yaml#L10-L37"
+        },
+        {
+          "repo": "gridflow_models",
+          "path": "configs/models/wind/lgbm_quantile_v1.yaml",
+          "lines": "56-60",
+          "note": "baseline: binned power curve on fleet_v100adj_mean",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/configs/models/wind/lgbm_quantile_v1.yaml",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/configs/models/wind/lgbm_quantile_v1.yaml#L56-L60"
+        },
+        {
+          "repo": "gridflow_models",
+          "path": "configs/models/wind/lgbm_quantile_v1.yaml",
+          "lines": "80-99",
+          "note": "gates (skill, pinball 500, coverage, monotonicity); WINDFOR under benchmarks",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/configs/models/wind/lgbm_quantile_v1.yaml",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/configs/models/wind/lgbm_quantile_v1.yaml#L80-L99"
+        },
+        {
+          "repo": "gridflow_models",
+          "path": "src/gridflow_models/features/generation_sites.py",
+          "lines": "29",
+          "note": "WIND_SITES: twelve sites",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/src/gridflow_models/features/generation_sites.py",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/src/gridflow_models/features/generation_sites.py#L29"
+        },
+        {
+          "repo": "gridflow_models",
+          "path": "docs/MODEL_CARDS/wind_lgbm_quantile_v1.md",
+          "lines": "21-46",
+          "note": "results: failed on coverage only, no manifest row; WINDFOR not like-for-like",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/docs/MODEL_CARDS/wind_lgbm_quantile_v1.md",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/docs/MODEL_CARDS/wind_lgbm_quantile_v1.md#L21-L46"
+        },
+        {
+          "repo": "gridflow_models",
+          "path": ".planning/phases/v2.3-H-2-wind-trained/receipts/WIND-TRAIN.md",
+          "lines": "",
+          "note": "seat receipt of the real-store run",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/.planning/phases/v2.3-H-2-wind-trained/receipts/WIND-TRAIN.md",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/.planning/phases/v2.3-H-2-wind-trained/receipts/WIND-TRAIN.md"
+        },
+        {
+          "repo": "gridflow_models",
+          "path": "src/gridflow_models/research/handles/models.py",
+          "lines": "176-222",
+          "note": "models.list(): no manifest entry means status 'unregistered'",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/src/gridflow_models/research/handles/models.py",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/src/gridflow_models/research/handles/models.py#L176-L222"
+        },
+        {
+          "repo": "local (gitignored, read only)",
+          "path": "data/models/wind_lgbm_quantile_v1/20260927T145057Z-FAILED/validation_record.json",
+          "lines": "",
+          "note": "416.70, 0.7220, skill 0.1612; passes_gates false",
+          "url": "",
+          "permalink": ""
+        }
+      ]
+    },
+    {
+      "id": "solar",
+      "name": "Solar generation",
+      "model_ids": [
+        "solar.lgbm_quantile.v1"
+      ],
+      "drawing": "solar farm",
+      "job": "Forecasts GB embedded solar output for every half-hour of the next day, from weather at six solar sites.",
+      "method": "LightGBM quantile regression on irradiance, cloud and sun position at six sites, fitted and scored on daylight half-hours against an irradiance-curve baseline. The target is NESO's estimate of embedded solar, not every GB solar generator.",
+      "status_code": {
+        "manifest_status": "none (no manifest row)",
+        "models_list": "unregistered",
+        "kind": "probabilistic estimator; one fitting run on 2026-09-27 failed the coverage gate (-FAILED artefact)"
+      },
+      "status_line": "Scored once in a walk-forward backtest. Its 90% band was too narrow to pass the coverage gate, so no version is registered.",
+      "status_line_note": "Pending Bobbo's re-ruling of #15. See models-content-check.md, finding A.",
+      "inputs": [
+        {
+          "dataset": "neso_data_portal/historic_generation_mix",
+          "gridflow_view": "silver_neso_data_portal_historic_generation_mix (also silver_neso_data_portal_historic_generation_mix_latest)",
+          "column": "solar",
+          "filter": "one pinned capture (published_at 2026-09-26T18:19:36Z)",
+          "role": "target: NESO's embedded solar estimate",
+          "cable": true
+        },
+        {
+          "dataset": "open_meteo/historical_solar",
+          "gridflow_view": "silver_open_meteo_historical_solar",
+          "column": "irradiance (GHI, DNI, diffuse, GTI), temperature, cloud cover",
+          "role": "observed weather at six sites, standing in for a forecast",
+          "cable": true
+        }
+      ],
+      "output": {
+        "copy": "Seven quantiles of solar output per half-hour, in MW.",
+        "gold_views": []
+      },
+      "handles": [
+        "models.solar_forecast"
+      ],
+      "scores": [],
+      "held": [
+        {
+          "why_held": "gate-failing run, not registered, nothing in gold; ruling #15 needs re-ruling first",
+          "pinball_q0_5_mw": 290.4,
+          "coverage_90": 0.712,
+          "skill_crps_vs_baseline": 0.193,
+          "gates": "skill pass, median pinball pass (limit 300, daylight rows), coverage FAIL, monotonicity pass",
+          "window": "8 thirty-day folds, 2 October 2021 to 25 September 2026, daylight rows only, perfect prognosis",
+          "record": "data/models/solar_lgbm_quantile_v1/20260927T183348Z-FAILED/validation_record.json"
+        }
+      ],
+      "evidence": [
+        {
+          "repo": "gridflow_models",
+          "path": "configs/models/solar/lgbm_quantile_v1.yaml",
+          "lines": "16-45",
+          "note": "target neso_data_portal/historic_generation_mix solar, pinned; open_meteo/historical_solar",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/configs/models/solar/lgbm_quantile_v1.yaml",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/configs/models/solar/lgbm_quantile_v1.yaml#L16-L45"
+        },
+        {
+          "repo": "gridflow_models",
+          "path": "configs/models/solar/lgbm_quantile_v1.yaml",
+          "lines": "61-69",
+          "note": "daylight scoring mask; binned irradiance-curve baseline",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/configs/models/solar/lgbm_quantile_v1.yaml",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/configs/models/solar/lgbm_quantile_v1.yaml#L61-L69"
+        },
+        {
+          "repo": "gridflow_models",
+          "path": "configs/models/solar/lgbm_quantile_v1.yaml",
+          "lines": "89-99",
+          "note": "gates: skill, pinball 300, coverage, monotonicity; no benchmarks block",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/configs/models/solar/lgbm_quantile_v1.yaml",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/configs/models/solar/lgbm_quantile_v1.yaml#L89-L99"
+        },
+        {
+          "repo": "gridflow_models",
+          "path": "src/gridflow_models/features/generation_sites.py",
+          "lines": "50",
+          "note": "SOLAR_SITES: six sites",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/src/gridflow_models/features/generation_sites.py",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/src/gridflow_models/features/generation_sites.py#L50"
+        },
+        {
+          "repo": "gridflow_models",
+          "path": "docs/MODEL_CARDS/solar_lgbm_quantile_v1.md",
+          "lines": "1-20",
+          "note": "status and target provenance; NESO series is embedded solar",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/docs/MODEL_CARDS/solar_lgbm_quantile_v1.md",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/docs/MODEL_CARDS/solar_lgbm_quantile_v1.md#L1-L20"
+        },
+        {
+          "repo": "gridflow_models",
+          "path": "docs/MODEL_CARDS/solar_lgbm_quantile_v1.md",
+          "lines": "86-120",
+          "note": "results: failed on coverage only, no manifest row",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/docs/MODEL_CARDS/solar_lgbm_quantile_v1.md",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/docs/MODEL_CARDS/solar_lgbm_quantile_v1.md#L86-L120"
+        },
+        {
+          "repo": "gridflow_models",
+          "path": ".planning/phases/v2.3-H-3-solar-trained/receipts/SOLAR-TRAIN.md",
+          "lines": "",
+          "note": "seat receipt of the real-store run",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/.planning/phases/v2.3-H-3-solar-trained/receipts/SOLAR-TRAIN.md",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/.planning/phases/v2.3-H-3-solar-trained/receipts/SOLAR-TRAIN.md"
+        },
+        {
+          "repo": "local (gitignored, read only)",
+          "path": "data/models/solar_lgbm_quantile_v1/20260927T183348Z-FAILED/validation_record.json",
+          "lines": "",
+          "note": "290.37, 0.7124, skill 0.1930; passes_gates false",
+          "url": "",
+          "permalink": ""
+        }
+      ]
+    },
+    {
+      "id": "stack",
+      "name": "GB merit-order stack",
+      "model_ids": [
+        "stack.gb.v1"
+      ],
+      "drawing": "the plant fleet: biomass, nuclear, CCGT, OCGT",
+      "job": "Builds the GB supply curve for one half-hour: available plant ranked by short-run marginal cost, in cumulative MW.",
+      "method": "Built on request from the unit register, outage notices and fuel prices, with nothing to fit. Fuel and carbon prices are synthetic. Clearing prices are floored at −500 GBP/MWh.",
+      "status_code": {
+        "manifest_status": "none (constructive models are not registered)",
+        "models_list": "unregistered",
+        "kind": "constructive (ConstructiveModel: build(), no fit_one_fold)"
+      },
+      "status_line": "Constructive: it is rebuilt for each half-hour and has no parameters to fit.",
+      "inputs": [
+        {
+          "dataset": "elexon/bmunits_reference",
+          "gridflow_view": "silver_elexon_bmunits_reference",
+          "role": "unit register: identity, technology and capacity",
+          "cable": true
+        },
+        {
+          "dataset": "elexon/remit",
+          "gridflow_view": "silver_elexon_remit (also silver_elexon_remit_latest)",
+          "role": "outage notices known at decision time, which cut unit availability",
+          "cable": true
+        },
+        {
+          "dataset": "elexon/fou2t14d",
+          "gridflow_view": "silver_elexon_fou2t14d (also silver_elexon_fou2t14d_latest)",
+          "role": "fuel-level availability, used to derate units in the published run where it covers the period",
+          "cable": true
+        },
+        {
+          "dataset": "entsoe/installed_capacity_units",
+          "gridflow_view": "silver_entsoe_installed_capacity_units",
+          "role": "logged cross-check only; its keys do not match Elexon units, so it never shapes the curve",
+          "cable": false
+        },
+        {
+          "dataset": "data/manual/commodities.csv (not a gridflow dataset)",
+          "gridflow_view": "",
+          "role": "gas, coal and carbon prices, synthetic",
+          "cable": false
+        },
+        {
+          "dataset": "configs/engineering/plant_technology.yaml (not a gridflow dataset)",
+          "gridflow_view": "",
+          "role": "efficiency, emissions and fuel per technology",
+          "cable": false
+        }
+      ],
+      "output": {
+        "copy": "A supply curve: each unit's available MW and marginal cost, sorted, with cumulative MW.",
+        "gold_views": [
+          "gold_stack_supply_curve_points (written with the published SMP run)"
+        ]
+      },
+      "handles": [
+        "models.stack.build(as_of)",
+        "models.stack.clear(as_of, demand_mw)"
+      ],
+      "scores": [],
+      "scores_note": "No score of its own. It is scored only through the SMP model.",
+      "held": [],
+      "evidence": [
+        {
+          "repo": "gridflow_models",
+          "path": "src/gridflow_models/estimators/stack/model.py",
+          "lines": "1-16",
+          "note": "constructive merit-order supply curve",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/src/gridflow_models/estimators/stack/model.py",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/src/gridflow_models/estimators/stack/model.py#L1-L16"
+        },
+        {
+          "repo": "gridflow_models",
+          "path": "src/gridflow_models/estimators/stack/model.py",
+          "lines": "126-146",
+          "note": "build: plant universe, fuel prices, marginal cost, sort and cumsum",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/src/gridflow_models/estimators/stack/model.py",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/src/gridflow_models/estimators/stack/model.py#L126-L146"
+        },
+        {
+          "repo": "gridflow_models",
+          "path": "src/gridflow_models/core/protocols.py",
+          "lines": "47-55",
+          "note": "ConstructiveModel: built from inputs, no fit_one_fold",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/src/gridflow_models/core/protocols.py",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/src/gridflow_models/core/protocols.py#L47-L55"
+        },
+        {
+          "repo": "gridflow_models",
+          "path": "configs/models/stack/gb_v1.yaml",
+          "lines": "9-43",
+          "note": "floor −500; inputs; commodity prices labelled synthetic; zero fuel for biomass and nuclear",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/configs/models/stack/gb_v1.yaml",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/configs/models/stack/gb_v1.yaml#L9-L43"
+        },
+        {
+          "repo": "gridflow_models",
+          "path": "src/gridflow_models/estimators/stack/plant_universe.py",
+          "lines": "1-10",
+          "note": "four datasets read",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/src/gridflow_models/estimators/stack/plant_universe.py",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/src/gridflow_models/estimators/stack/plant_universe.py#L1-L10"
+        },
+        {
+          "repo": "gridflow_models",
+          "path": "src/gridflow_models/estimators/stack/plant_universe.py",
+          "lines": "1078-1100",
+          "note": "ENTSO-E cross-check is log-only and cannot match keys",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/src/gridflow_models/estimators/stack/plant_universe.py",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/src/gridflow_models/estimators/stack/plant_universe.py#L1078-L1100"
+        },
+        {
+          "repo": "gridflow_models",
+          "path": "configs/backtest/price_formation_ladder_v2.yaml",
+          "lines": "31-37",
+          "note": "FOU2T14D derating profile used by the published headline",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/configs/backtest/price_formation_ladder_v2.yaml",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/configs/backtest/price_formation_ladder_v2.yaml#L31-L37"
+        },
+        {
+          "repo": "gridflow_models",
+          "path": "docs/MODEL_CARDS/stack_gb_v1.md",
+          "lines": "251-260",
+          "note": "publication is opt-in with --publish",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/docs/MODEL_CARDS/stack_gb_v1.md",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/docs/MODEL_CARDS/stack_gb_v1.md#L251-L260"
+        },
+        {
+          "repo": "gridflow_models",
+          "path": "src/gridflow_models/research/handles/model.py",
+          "lines": "1389-1398",
+          "note": "workbench build(as_of) and clear(as_of, demand_mw)",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/src/gridflow_models/research/handles/model.py",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/src/gridflow_models/research/handles/model.py#L1389-L1398"
+        }
+      ]
+    },
+    {
+      "id": "smp",
+      "name": "Fundamentals SMP",
+      "model_ids": [
+        "fundamentals_smp.gb.v1"
+      ],
+      "drawing": "stack crossed by a demand line (the draft's smp mark)",
+      "job": "Clears residual demand against the stack every half-hour for a GB day-ahead price, scored against Elexon's market index.",
+      "method": "Residual demand is demand less wind and solar, less signed hydro, interconnector, OTHER and pumped storage flows. The price is the marginal cost where that demand meets the stack, floored at −500 GBP/MWh.",
+      "status_code": {
+        "manifest_status": "none",
+        "models_list": "unregistered",
+        "kind": "hybrid probabilistic estimator with a no-op fit; published backtest runs in gold"
+      },
+      "status_line": "It has nothing to fit. Its published run clears recorded demand, wind and solar, so each half-hour gets one price, not a spread.",
+      "inputs": [
+        {
+          "dataset": "elexon/indo",
+          "gridflow_view": "silver_elexon_indo",
+          "column": "initial_demand_outturn_mw",
+          "role": "recorded demand",
+          "cable": true
+        },
+        {
+          "dataset": "elexon/fuelhh",
+          "gridflow_view": "silver_elexon_fuelhh",
+          "column": "generation_mw",
+          "role": "recorded wind, plus signed hydro, ten interconnectors, OTHER and pumped storage",
+          "cable": true
+        },
+        {
+          "dataset": "neso_data_portal/historic_generation_mix",
+          "gridflow_view": "silver_neso_data_portal_historic_generation_mix (also silver_neso_data_portal_historic_generation_mix_latest)",
+          "column": "solar",
+          "role": "recorded embedded solar",
+          "cable": true
+        },
+        {
+          "dataset": "stack.gb.v1 (model)",
+          "gridflow_view": "",
+          "role": "supply curve for each half-hour",
+          "cable": true
+        },
+        {
+          "dataset": "elexon/mid",
+          "gridflow_view": "silver_elexon_mid; gold_gb_day_ahead_benchmark",
+          "column": "market_index_price",
+          "filter": "data_provider_id = APXMIDP",
+          "role": "the price it is scored against",
+          "cable": true
+        }
+      ],
+      "output": {
+        "copy": "A price per half-hour in GBP/MWh, as seven quantiles; in the published run all seven are equal.",
+        "gold_views": [
+          "gold_stack_clearing",
+          "gold_stack_residual_demand",
+          "gold_stack_supply_curve_points"
+        ]
+      },
+      "handles": [
+        "models.fundamentals_smp.backtest(...)"
+      ],
+      "scores": [
+        {
+          "label": "Published run",
+          "mean_bias_gbp_mwh": -151.8,
+          "mae_gbp_mwh": 151.8,
+          "window_copy": "18 August to 3 September 2026, every half-hour",
+          "note_copy": "Every half-hour clears below the market index.",
+          "caveat_copy": [
+            "A perfect-prognosis backtest: recorded demand, wind and solar stand in for forecasts.",
+            "Fuel and carbon prices are synthetic.",
+            "APXMIDP mixes day-ahead and intraday trades.",
+            "Clearing is floored at −500 GBP/MWh, which pulls some daily means below zero."
+          ],
+          "provenance": {
+            "store": "gold stack_clearing joined to silver elexon/mid APXMIDP (latest per period)",
+            "run_id": "41de423cfc0b421e",
+            "vintage_policy_id": "smp_headline_perfect_prog_v2",
+            "exact": {
+              "mean_bias": -151.8012,
+              "mae": 151.8012,
+              "median_bias": -95.3409
+            },
+            "periods_scored": 816,
+            "periods_below_benchmark": 816,
+            "floor_binding_periods": 98,
+            "card": "docs/MODEL_CARDS/fundamentals_smp_gb_v1.md:443-453"
+          }
+        },
+        {
+          "label": "Year diagnostic",
+          "mean_bias_gbp_mwh": -69.81,
+          "mae_gbp_mwh": 72.84,
+          "window_copy": "5 May 2025 to 4 May 2026, in monthly runs",
+          "caveat_copy": [
+            "A diagnostic that sees almost no outages and uses one fixed plant register for the whole year, so it is not the headline."
+          ],
+          "use": "optional; recommended cut to declutter, or show only with its caveat",
+          "provenance": {
+            "store": "gold stack_clearing, 13 runs",
+            "vintage_policy_id": "smp_diagnostic_perfect_prog_v2",
+            "exact": {
+              "mean_bias": -69.8117,
+              "mae": 72.8413
+            },
+            "periods_scored": 17520,
+            "results": ".planning/milestones/v2.0-RESULTS.md:190-197"
+          }
+        }
+      ],
+      "held": [],
+      "evidence": [
+        {
+          "repo": "gridflow_models",
+          "path": "src/gridflow_models/estimators/fundamentals_smp/model.py",
+          "lines": "1-18",
+          "note": "combines demand, wind, solar and stack; no-op fit (ADR-038)",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/src/gridflow_models/estimators/fundamentals_smp/model.py",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/src/gridflow_models/estimators/fundamentals_smp/model.py#L1-L18"
+        },
+        {
+          "repo": "gridflow_models",
+          "path": "src/gridflow_models/estimators/fundamentals_smp/model.py",
+          "lines": "115-131",
+          "note": "fit_one_fold records component hashes only",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/src/gridflow_models/estimators/fundamentals_smp/model.py",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/src/gridflow_models/estimators/fundamentals_smp/model.py#L115-L131"
+        },
+        {
+          "repo": "gridflow_models",
+          "path": "src/gridflow_models/estimators/fundamentals_smp/model.py",
+          "lines": "137-146",
+          "note": "predict: component quantiles, N residual draws, stack per period, clear, quantiles",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/src/gridflow_models/estimators/fundamentals_smp/model.py",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/src/gridflow_models/estimators/fundamentals_smp/model.py#L137-L146"
+        },
+        {
+          "repo": "gridflow_models",
+          "path": "src/gridflow_models/estimators/fundamentals_smp/model.py",
+          "lines": "217-285",
+          "note": "the inference loop",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/src/gridflow_models/estimators/fundamentals_smp/model.py",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/src/gridflow_models/estimators/fundamentals_smp/model.py#L217-L285"
+        },
+        {
+          "repo": "gridflow_models",
+          "path": "src/gridflow_models/estimators/fundamentals_smp/sampler.py",
+          "lines": "1-11",
+          "note": "Monte Carlo residual demand under marginal independence",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/src/gridflow_models/estimators/fundamentals_smp/sampler.py",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/src/gridflow_models/estimators/fundamentals_smp/sampler.py#L1-L11"
+        },
+        {
+          "repo": "gridflow_models",
+          "path": "src/gridflow_models/estimators/fundamentals_smp/sampler.py",
+          "lines": "125-177",
+          "note": "inverse-CDF sampling; flat quantiles give identical draws",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/src/gridflow_models/estimators/fundamentals_smp/sampler.py",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/src/gridflow_models/estimators/fundamentals_smp/sampler.py#L125-L177"
+        },
+        {
+          "repo": "gridflow_models",
+          "path": "src/gridflow_models/estimators/fundamentals_smp/realised.py",
+          "lines": "36-79",
+          "note": "realised adapter: every quantile equals the observed value",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/src/gridflow_models/estimators/fundamentals_smp/realised.py",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/src/gridflow_models/estimators/fundamentals_smp/realised.py#L36-L79"
+        },
+        {
+          "repo": "gridflow_models",
+          "path": "src/gridflow_models/backtest/smp_runtime.py",
+          "lines": "778-808",
+          "note": "realised roles use the adapter; estimator roles need a registered bundle",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/src/gridflow_models/backtest/smp_runtime.py",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/src/gridflow_models/backtest/smp_runtime.py#L778-L808"
+        },
+        {
+          "repo": "gridflow_models",
+          "path": "configs/models/fundamentals_smp/gb_v1.yaml",
+          "lines": "45-122",
+          "note": "realised components, 1,000 draws, signed netting, APXMIDP target",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/configs/models/fundamentals_smp/gb_v1.yaml",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/configs/models/fundamentals_smp/gb_v1.yaml#L45-L122"
+        },
+        {
+          "repo": "gridflow_models",
+          "path": "docs/MODEL_CARDS/fundamentals_smp_gb_v1.md",
+          "lines": "21-35",
+          "note": "headline route is all-realised and opens no manifest",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/docs/MODEL_CARDS/fundamentals_smp_gb_v1.md",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/docs/MODEL_CARDS/fundamentals_smp_gb_v1.md#L21-L35"
+        },
+        {
+          "repo": "gridflow_models",
+          "path": "docs/MODEL_CARDS/fundamentals_smp_gb_v1.md",
+          "lines": "71-73",
+          "note": "degenerate quantiles: coverage does not establish calibration",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/docs/MODEL_CARDS/fundamentals_smp_gb_v1.md",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/docs/MODEL_CARDS/fundamentals_smp_gb_v1.md#L71-L73"
+        },
+        {
+          "repo": "gridflow_models",
+          "path": "docs/MODEL_CARDS/fundamentals_smp_gb_v1.md",
+          "lines": "443-477",
+          "note": "v2.0 published headline and limitations",
+          "url": "https://github.com/EBentham/gridflow-models/blob/main/docs/MODEL_CARDS/fundamentals_smp_gb_v1.md",
+          "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/docs/MODEL_CARDS/fundamentals_smp_gb_v1.md#L443-L477"
+        },
+        {
+          "repo": "gridflow",
+          "path": "src/gridflow/gold/views/gb_day_ahead_benchmark.sql",
+          "lines": "1-24",
+          "note": "gold view over Elexon MID APXMIDP",
+          "url": "https://github.com/EBentham/gridflow/blob/master/src/gridflow/gold/views/gb_day_ahead_benchmark.sql",
+          "permalink": "https://github.com/EBentham/gridflow/blob/2822d38952937ebb7ebad3d0f92abda644514408/src/gridflow/gold/views/gb_day_ahead_benchmark.sql#L1-L24"
+        },
+        {
+          "repo": "local (gitignored, read only)",
+          "path": "C:/gridflow-data/gold/stack_clearing/",
+          "lines": "",
+          "note": "run 41de423cfc0b421e and 13 diagnostic runs, reproduced",
+          "url": "",
+          "permalink": ""
+        }
+      ]
+    }
+  ],
+  "reading_scores": {
+    "heading": "Reading the scores",
+    "copy": "Every score here is a backtest held in gold. Pinball loss at the median is half the mean absolute error of the median forecast, in MW. Coverage is the share of outturns inside the 5 to 95% band. A demand version passes when median pinball is at most 1,500 MW, coverage is within 0.05 of 0.90 and no quantiles cross. Price scores are in GBP/MWh against Elexon's APXMIDP market index.",
+    "evidence": [
+      {
+        "repo": "gridflow_models",
+        "path": "src/gridflow_models/validation/metrics.py",
+        "lines": "15",
+        "note": "pinball_loss",
+        "url": "https://github.com/EBentham/gridflow-models/blob/main/src/gridflow_models/validation/metrics.py",
+        "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/src/gridflow_models/validation/metrics.py#L15"
+      },
+      {
+        "repo": "gridflow_models",
+        "path": "configs/models/day_ahead/lgbm_demand_v1.yaml",
+        "lines": "77-84",
+        "note": "demand gates",
+        "url": "https://github.com/EBentham/gridflow-models/blob/main/configs/models/day_ahead/lgbm_demand_v1.yaml",
+        "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/configs/models/day_ahead/lgbm_demand_v1.yaml#L77-L84"
+      }
+    ]
+  },
+  "charts": [
+    {
+      "id": "demand_band",
+      "title_copy": "Demand forecast against outturn, 20 and 21 August 2026",
+      "caption_copy": "Version 1: the median inside its 5 to 95% band, and the outturn from elexon/indo. Issued at noon UTC the day before.",
+      "dataset": "gold forecasts, run a55a829bc51c40b2, fold 12",
+      "unit": "MW",
+      "window": "2026-08-20T00:00Z to 2026-08-21T23:30Z",
+      "points": 96,
+      "verified": "96 rows; values 17,466 to 31,583 MW; issued_at 12:00 UTC on the previous day",
+      "series_source": "p27-r1/pack/toppages.json series.models_landing_demand"
+    },
+    {
+      "id": "smp_daily",
+      "title_copy": "Daily mean price, 18 August to 3 September 2026",
+      "caption_copy": "Model clearing against APXMIDP, daily means of every half-hour in the published run. Recorded demand, wind and solar stand in for forecasts; fuel and carbon prices are synthetic; APXMIDP mixes day-ahead and intraday trades; the −500 GBP/MWh floor pulls some daily means below zero.",
+      "dataset": "gold stack_clearing run 41de423cfc0b421e joined to silver elexon/mid APXMIDP",
+      "unit": "GBP/MWh",
+      "window": "2026-08-18 to 2026-09-03",
+      "points": 17,
+      "verified": "model daily means −136.0 to 78.4; APXMIDP 89.7 to 166.8",
+      "series_source": "p27-r1/pack/toppages.json series.models_landing_smp"
+    }
+  ],
+  "workbench": {
+    "heading_copy": "In a notebook",
+    "code": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()\nmodels.list()",
+    "note": "models.list() shows demand v1 and v2 as validated and the other four as unregistered, which matches this pack.",
+    "evidence": [
+      {
+        "repo": "gridflow_models",
+        "path": "src/gridflow_models/research/notebook_setup.py",
+        "lines": "278",
+        "note": "setup_notebook",
+        "url": "https://github.com/EBentham/gridflow-models/blob/main/src/gridflow_models/research/notebook_setup.py",
+        "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/src/gridflow_models/research/notebook_setup.py#L278"
+      },
+      {
+        "repo": "gridflow_models",
+        "path": "src/gridflow_models/__init__.py",
+        "lines": "5",
+        "note": "exported at package top level",
+        "url": "https://github.com/EBentham/gridflow-models/blob/main/src/gridflow_models/__init__.py",
+        "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/src/gridflow_models/__init__.py#L5"
+      },
+      {
+        "repo": "gridflow_models",
+        "path": "src/gridflow_models/research/handles/models.py",
+        "lines": "176-222",
+        "note": "models.list() columns and status rule",
+        "url": "https://github.com/EBentham/gridflow-models/blob/main/src/gridflow_models/research/handles/models.py",
+        "permalink": "https://github.com/EBentham/gridflow-models/blob/1404300601dac6c28f107fea5152f8cb3ca4e88e/src/gridflow_models/research/handles/models.py#L176-L222"
+      }
+    ]
+  },
+  "needs_ruling": [
+    {
+      "question": "DESIGN.md says model status truth lives in gridflow_models notebooks/README.md, but its model lines (last edited 2026-05-31) are stale: wind and solar 'trained', SMP 'loads four component models from the manifest'. This pack takes status from the manifest and models.list() instead. Let code and manifest win until the README is fixed?",
+      "recommended": "yes",
+      "copy_if_yes": "No copy change; the status lines in this pack already follow the code.",
+      "evidence": "models-content-check.md, last section; DESIGN.md content rules"
+    },
+    {
+      "question": "Ruling #15 says wind and solar are shown as never trained. Since 2026-09-27 15:46 both were fitted and scored once and failed the coverage gate (no manifest row, nothing in gold). Show them as unregistered, scored once, with the scores held off the page?",
+      "recommended": "yes",
+      "copy_if_yes": "Scored once in a walk-forward backtest. Its 90% band was too narrow to pass the coverage gate, so no version is registered.",
+      "evidence": "models-content-check.md finding A; gridflow_models RULINGS #1001, #1006, #1007"
+    }
+  ],
+  "unverified": [
+    "APXMIDP's exact vendor definition (the SMP card says its contemporary definition is unverified). Say only that it mixes day-ahead and intraday trades.",
+    "That NESO's embedded solar series is PV_Live-derived: a deduction in the solar card, not a vendor statement. Keep it off the page.",
+    "How well twelve wind sites and six solar sites represent the GB fleet: the cards call it unestablished. No representativeness claim.",
+    "FOU2T14D and REMIT historical reach depends on a vendor backfill the SMP card calls unverified. Do not claim full outage coverage.",
+    "The v2 demand gain (about 15.7%) is one run with no significance test and is an upper bound under perfect prognosis. Do not print it as an improvement figure.",
+    "notebooks/README.md model lines (last edited 2026-05-31) say wind and solar are 'trained' and SMP 'loads four component models from the manifest'. Both are stale against the code. Do not quote."
+  ]
+}
