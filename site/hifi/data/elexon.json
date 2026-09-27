@@ -1,61 +1,178 @@
 {
+  "_about": "The page set and hub content for this vendor: every dataset the site documents, grouped as the hub lists it, with its families. Rendered by gridflow-build.",
+  "name": "Elexon BMRS",
+  "intro": "Great Britain’s balancing mechanism, from Elexon’s Insights API: system prices, generation outturn, BM-unit data, and demand and wind forecasts.",
+  "facts": [
+    [
+      "Market",
+      "GB electricity"
+    ],
+    [
+      "Access",
+      "No API key"
+    ],
+    [
+      "Base URL",
+      "`data.elexon.co.uk/bmrs/api/v1`"
+    ],
+    [
+      "Grain",
+      "Half-hourly settlement periods, 1 to 50 a day (46 or 50 when the clocks change); FUELINST every 5 minutes"
+    ],
+    [
+      "Connector",
+      "`connectors/elexon/client.py`"
+    ]
+  ],
+  "source_keys": [
+    "elexon"
+  ],
+  "latest_views": [
+    "system_prices",
+    "remit",
+    "fou2t14d"
+  ],
+  "notebook": {
+    "source": "elexon",
+    "dataset": "fuelhh"
+  },
+  "landscape": "elexon",
+  "landing": {
+    "bronze": "bronze/elexon/",
+    "desc": "GB balancing mechanism: prices, generation, demand, BM units and forecasts",
+    "fact": "half-hourly, no API key",
+    "start": [
+      [
+        "system_prices",
+        "one imbalance price per period"
+      ],
+      [
+        "fuelhh",
+        "outturn by fuel type, no solar"
+      ],
+      [
+        "indo",
+        "initial national demand outturn"
+      ],
+      [
+        "mid",
+        "market index, the GB day-ahead benchmark"
+      ]
+    ],
+    "order": 0
+  },
+  "groups_note": "The groups are this site’s way in. In gridflow’s code they differ by how each is requested: most take a from/to publish-time window; `system_prices` and `market_depth` take a settlement date in the path, `pn` a settlement date and period, and `bmunits_reference` nothing at all.",
   "groups": [
     {
-      "name": "Generation",
-      "blurb": "Actual and forecast output from GB power stations.",
-      "datasets": [
-        { "id": "fuelhh",   "title": "Generation by fuel type · half-hourly", "freq": "30 min", "lag": "~5 min", "rows": "1.4M / mo" },
-        { "id": "fuelinst", "title": "Generation by fuel · instantaneous",    "freq": "~5 min", "lag": "~1 min", "rows": "8.6M / mo" },
-        { "id": "agpt",     "title": "Aggregated generation per PSR type",    "freq": "30 min", "lag": "1 day",  "rows": "1.6M / mo" },
-        { "id": "agws",     "title": "Wind & solar actual generation",        "freq": "30 min", "lag": "1 day",  "rows": "0.4M / mo" },
-        { "id": "windfor",  "title": "Wind generation forecast",              "freq": "hourly", "lag": "0",      "rows": "0.5M / mo" },
-        { "id": "nonbm",    "title": "Non-BM STOR generation",                "freq": "30 min", "lag": "1 day",  "rows": "44k / mo" }
+      "name": "Prices and balancing",
+      "blurb": "What the system paid to balance, and the actions behind it.",
+      "pages": [
+        "system_prices",
+        "market_depth",
+        "mid",
+        "boal",
+        "pn",
+        "disbsad",
+        "netbsad",
+        "soso"
       ]
     },
     {
-      "name": "Prices & Balancing",
-      "blurb": "System prices, market index, balancing actions, physical notifications.",
-      "datasets": [
-        { "id": "system_prices", "title": "System buy / sell prices",            "freq": "30 min", "lag": "~5 min",  "rows": "44k / mo" },
-        { "id": "mid",           "title": "Market index data",                   "freq": "hourly", "lag": "~10 min", "rows": "22k / mo" },
-        { "id": "boal",          "title": "Bid-offer acceptance",                "freq": "hourly", "lag": "~10 min", "rows": "1.1M / mo" },
-        { "id": "disbsad",       "title": "Disaggregated balancing",             "freq": "daily",  "lag": "1 day",   "rows": "180k / mo" },
-        { "id": "netbsad",       "title": "Net balancing services",              "freq": "daily",  "lag": "1 day",   "rows": "44k / mo" },
-        { "id": "pn",            "title": "Physical notifications",              "freq": "hourly", "lag": "~10 min", "rows": "5.4M / mo" },
-        { "id": "market_depth",  "title": "Settlement market depth",             "freq": "30 min", "lag": "1 day",   "rows": "44k / mo" }
+      "name": "Generation and availability",
+      "blurb": "What ran, by fuel and by unit, and what is declared available.",
+      "pages": [
+        "fuelhh",
+        "fuelinst",
+        "agpt",
+        "agws",
+        "windfor",
+        "fou2t14d",
+        "uou2t14d",
+        "nonbm"
       ]
     },
     {
-      "name": "Demand & Forecasts",
-      "blurb": "Outturn demand, day-ahead indicateds, and multi-horizon forecasts.",
-      "datasets": [
-        { "id": "indo",     "title": "Initial demand outturn",                  "freq": "30 min", "lag": "~5 min", "rows": "44k / mo" },
-        { "id": "itsdo",    "title": "Initial transmission demand",             "freq": "30 min", "lag": "~5 min", "rows": "44k / mo" },
-        { "id": "indod",    "title": "Initial demand outturn — daily",          "freq": "daily",  "lag": "1 day",  "rows": "30 / mo" },
-        { "id": "ndf",      "title": "National demand forecast (day-ahead)",    "freq": "daily",  "lag": "0",      "rows": "1.4k / mo" },
-        { "id": "ndfd",     "title": "National demand forecast 2–14d",          "freq": "daily",  "lag": "0",      "rows": "20k / mo" },
-        { "id": "tsdf",     "title": "Transmission demand forecast",            "freq": "daily",  "lag": "0",      "rows": "44k / mo" },
-        { "id": "tsdfd",    "title": "2–14d transmission demand forecast",      "freq": "daily",  "lag": "0",      "rows": "14k / mo" },
-        { "id": "fou2t14d", "title": "2–14 day generation availability",        "freq": "daily",  "lag": "0",      "rows": "440k / mo" },
-        { "id": "uou2t14d", "title": "2–14 day availability by BM unit",        "freq": "daily",  "lag": "0",      "rows": "5.2M / mo" },
-        { "id": "atl",      "title": "Actual total load per bidding zone",      "freq": "30 min", "lag": "1 day",  "rows": "44k / mo" },
-        { "id": "inddem",   "title": "Indicated demand (day & day-ahead)",      "freq": "30 min", "lag": "0",      "rows": "44k / mo" },
-        { "id": "indgen",   "title": "Indicated generation (day & day-ahead)",  "freq": "30 min", "lag": "0",      "rows": "44k / mo" },
-        { "id": "imbalngc", "title": "Indicated imbalance (day & day-ahead)",   "freq": "30 min", "lag": "0",      "rows": "44k / mo" },
-        { "id": "melngc",   "title": "Indicated margin (day & day-ahead)",      "freq": "30 min", "lag": "0",      "rows": "44k / mo" }
+      "name": "Demand",
+      "blurb": "Outturn and forecasts, national and transmission, from the day ahead to 14 days out.",
+      "pages": [
+        "demand-outturn",
+        "demand-forecasts",
+        "atl"
       ]
     },
     {
-      "name": "System & Reference",
-      "blurb": "Frequency, reliability, REMIT outages, BM unit reference data.",
-      "datasets": [
-        { "id": "freq",              "title": "System frequency (1 s)",              "freq": "hourly",      "lag": "~1 min", "rows": "2.6M / mo" },
-        { "id": "temp",              "title": "Temperature reference",                "freq": "daily",       "lag": "1 day",  "rows": "30 / mo" },
-        { "id": "remit",             "title": "REMIT outage messages",                "freq": "as published","lag": "—",      "rows": "varies" },
-        { "id": "bmunits_reference", "title": "BMU reference list",                   "freq": "weekly",      "lag": "0",      "rows": "1 snapshot" },
-        { "id": "soso",              "title": "SO-SO trades",                         "freq": "daily",       "lag": "1 day",  "rows": "8k / mo" },
-        { "id": "lolpdrm",           "title": "Loss-of-load probability & margin",    "freq": "30 min",      "lag": "0",      "rows": "44k / mo" }
+      "name": "System indicators",
+      "blurb": "Indicated generation, demand, imbalance and margin; loss-of-load probability, frequency and temperature.",
+      "pages": [
+        "indicated-day-ahead",
+        "lolpdrm",
+        "freq",
+        "temp"
+      ]
+    },
+    {
+      "name": "Reference and messages",
+      "blurb": "The register of BM units, and outage and unavailability notices.",
+      "pages": [
+        "bmunits_reference",
+        "remit"
       ]
     }
-  ]
+  ],
+  "families": [
+    {
+      "slug": "indicated-day-ahead",
+      "title": "Indicated day and day-ahead (NGC)",
+      "members": [
+        "indgen",
+        "inddem",
+        "imbalngc",
+        "melngc"
+      ]
+    },
+    {
+      "slug": "demand-outturn",
+      "title": "Demand outturn",
+      "members": [
+        "indo",
+        "itsdo",
+        "indod"
+      ]
+    },
+    {
+      "slug": "demand-forecasts",
+      "title": "Demand forecasts",
+      "members": [
+        "ndf",
+        "ndfd",
+        "tsdf",
+        "tsdfd"
+      ]
+    }
+  ],
+  "names": {
+    "system_prices": "System sell and buy prices",
+    "market_depth": "Settlement market depth",
+    "mid": "Market index data",
+    "boal": "Bid-offer acceptance levels",
+    "pn": "Physical notifications",
+    "disbsad": "Disaggregated balancing services adjustment data",
+    "netbsad": "Net balancing services adjustment data",
+    "soso": "SO-SO prices",
+    "fuelhh": "Generation by fuel type",
+    "fuelinst": "Instantaneous generation by fuel type",
+    "agpt": "Actual generation per type",
+    "agws": "Actual or estimated wind and solar generation",
+    "windfor": "Wind generation forecast",
+    "fou2t14d": "Generation availability by fuel, 2 to 14 days ahead",
+    "uou2t14d": "Generation availability by BM unit, 2 to 14 days ahead",
+    "nonbm": "Non-BM STOR generation",
+    "atl": "Actual total load per bidding zone",
+    "lolpdrm": "Loss of load probability and de-rated margin",
+    "freq": "System frequency",
+    "temp": "Temperature",
+    "bmunits_reference": "BM unit register",
+    "remit": "REMIT outage and unavailability messages"
+  },
+  "dropped": {}
 }
