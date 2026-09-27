@@ -55,9 +55,10 @@ from pathlib import Path
 from typing import Any
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
+from markupsafe import Markup
 
-from gridflow_front_end import chart_spec
-from gridflow_front_end.page_fields import PageFields, parse_page_fields
+from gridflow_front_end import artefacts, chart_spec, chart_svg
+from gridflow_front_end.page_fields import PageFields, anatomy_errors, parse_page_fields
 from gridflow_front_end.paths import DEFAULT_VAULT, REPO_ROOT, SITE_DIR, resolve_vault_path
 
 TEMPLATES_DIR = REPO_ROOT / "templates"
@@ -337,6 +338,11 @@ class DatasetDoc:
     page_errors: list[str] = field(default_factory=list)
 
     @property
+    def new_template(self) -> bool:
+        """True when the note carries a ``page:`` block: it renders on the locked anatomy."""
+        return self.page.present
+
+    @property
     def vendor_doc_url(self) -> str:
         """Link to the canonical vendor endpoint reference, derived from vendor config."""
         base = REAL_VENDORS.get(self.vendor_id, {}).get("vendor_doc_base", "")
@@ -468,6 +474,11 @@ def _reset_caveat_stats() -> None:
 
 _MANIFEST_SLUGS_CACHE: dict[str, set[str]] | None = None
 
+# (vendor, slug) of every note on the new dataset template, filled by build()
+# before any page renders, so a legacy page's link into one drops its
+# legacy-only fragment instead of failing the fragment-aware link check.
+_NEW_TEMPLATE_PAGES: set[tuple[str, str]] = set()
+
 
 def _all_manifest_slugs() -> dict[str, set[str]]:
     """Slug set per vendor, loaded from each vendor's manifest and cached.
@@ -529,6 +540,11 @@ def _resolve_md_link(target: str, vendor_id: str) -> str | None:
         return None
     if slug not in _all_manifest_slugs().get(target_vendor, set()):
         return None
+    if anchor and (target_vendor, slug) in _NEW_TEMPLATE_PAGES:
+        # the new template has none of the legacy section ids (no #caveats, no
+        # #schema); keep the page target and drop the fragment
+        _MD_LINK_STATS["fragment_dropped"] += 1
+        anchor = ""
     if anchor:
         mapped = _map_fragment(anchor[1:])
         if mapped:
@@ -1073,7 +1089,7 @@ def render_dataset(
     spec, or ``None``. With ``None`` the page has no chart section at all:
     there is no seeded or placeholder chart.
     """
-    template = env.get_template("dataset.html.j2")
+    template = env.get_template("dataset-legacy.html.j2")
     siblings = manifest_siblings(manifest, doc.slug)
     manifest_entry = manifest_index(manifest).get(doc.slug, {})
     return template.render(
@@ -1084,6 +1100,361 @@ def render_dataset(
         manifest_total=manifest_total_count(manifest),
         chart=chart,
         chart_opts=chart_opts_json(chart) if chart else "",
+    )
+
+
+# ──────────────────────────────────────────────────────────────────────
+# The dataset page template (locked anatomy, v5 Phase 25b)
+# ──────────────────────────────────────────────────────────────────────
+
+# Template copy for the lineage columns (schema option 4, verbatim).
+LINEAGE_MEANINGS = {
+    "event_time": "Event instant: the row’s time column, else the target date",
+    "available_at": "When the row became knowable: `published_at`, else the ingest time",
+    "source_run_id": "Id of the pipeline run that wrote the row",
+    "dataset_version": "Transformer version stamped on the row",
+    "vintage_policy": "Which rule produced `available_at`",
+}
+_NUMERIC_DTYPES = re.compile(r"^(U?Int\d+|Float\d+|Decimal.*|Date|Datetime.*|Duration.*|Time)$")
+_CODE_VALUE = re.compile(r"^[A-Z0-9_\-/.]+$")
+_KW = re.compile(
+    r"\b(from|import|as|def|return|for|in|if|else|lambda|not|and|or|None|True|False)\b"
+)
+
+
+@dataclass
+class PageArtefacts:
+    """The committed files one new-template page renders from."""
+
+    chart: dict[str, Any] | None = None
+    sample: dict[str, Any] | None = None
+    notebook: dict[str, Any] | None = None
+
+
+def highlight(code: str) -> Markup:
+    """Escape Python, then tint keywords and string literals (the homepage's two token colours)."""
+    out: list[str] = []
+    pos = 0
+    for m in re.finditer(r'"[^"\n]*"|\'[^\'\n]*\'', code):
+        out.append(
+            _KW.sub(r'<span class="k">\1</span>', html_escape(code[pos : m.start()], quote=False))
+        )
+        out.append(f'<span class="s">{html_escape(m.group(0), quote=False)}</span>')
+        pos = m.end()
+    out.append(_KW.sub(r'<span class="k">\1</span>', html_escape(code[pos:], quote=False)))
+    return Markup("".join(out))
+
+
+def request_lines(request: str) -> Markup:
+    """A raw vendor request, one query parameter per line, as it reads in a well."""
+    text = html_escape(request, quote=False)
+    head, _, query = text.partition("?")
+    if not query:
+        return Markup(text)
+    params = query.split("&amp;")
+    lines = [f"{head}"] + [f"    {'?' if i == 0 else '&amp;'}{p}" for i, p in enumerate(params)]
+    return Markup("\n".join(lines))
+
+
+def check_artefacts(doc: DatasetDoc) -> tuple[PageArtefacts, list[str]]:
+    """Load a new-template page's sample and notebook files and check their digests."""
+    key = f"{doc.vendor_id}/{doc.slug}"
+    errors: list[str] = []
+    fields = doc.page
+    arts = PageArtefacts()
+    silver = artefacts.sample_silver(doc.vendor_id, doc.slug, fields.record.select, fields.chart)
+    try:
+        sample = artefacts.load_json(artefacts.sample_path(SITE_DIR, doc.vendor_id, doc.slug))
+        notebook = artefacts.load_json(artefacts.notebook_path(SITE_DIR, doc.vendor_id, doc.slug))
+    except (ValueError, json.JSONDecodeError) as exc:
+        return arts, [f"{key}: {exc}"]
+    if sample is None:
+        errors.append(f"{key}: no sample rows (run gridflow-sample and commit them)")
+    elif sample.get("select_sha256") != artefacts.select_digest(silver, fields.record.select):
+        errors.append(
+            f"{key}: sample rows were picked by a different page.record.select; rerun gridflow-sample"
+        )
+    else:
+        arts.sample = sample
+    source = artefacts.notebook_source(doc.vendor_id, fields.notebook.source)
+    cells = artefacts.notebook_cells(source, fields.notebook.cells)
+    if notebook is None:
+        errors.append(f"{key}: no executed notebook (run scripts/run_notebooks.py and commit it)")
+    elif notebook.get("cells_sha256") != artefacts.cells_digest(cells):
+        errors.append(
+            f"{key}: the notebook was executed from different cells; rerun scripts/run_notebooks.py"
+        )
+    else:
+        arts.notebook = notebook
+        for cell in notebook["cells"]:
+            for out in cell["outputs"]:
+                if out["kind"] == "image":
+                    img = artefacts.notebooks_dir(SITE_DIR) / doc.vendor_id / out["src"]
+                    if not img.is_file():
+                        errors.append(f"{key}: notebook image {out['src']} is missing")
+                    if not fields.notebook.plot_alt:
+                        errors.append(
+                            f"{key}: page.notebook.plot_alt is required for the plot output"
+                        )
+    return arts, errors
+
+
+def _record_view(doc: DatasetDoc, sample: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
+    key = f"{doc.vendor_id}/{doc.slug}"
+    rec = doc.page.record
+    errors: list[str] = []
+    cols = sample["columns"]
+    names = [c["name"] for c in cols]
+    mark = sample["rows"][sample["mark"]]
+    schema_cols = [c for c in cols if not c["lineage"]]
+    missing = [c["name"] for c in schema_cols if c["name"] not in rec.fields]
+    if missing:
+        errors.append(f"{key}: page.record.fields has no meaning for {missing}")
+    extra = sorted(set(rec.fields) - {c["name"] for c in schema_cols})
+    if extra:
+        errors.append(f"{key}: page.record.fields names columns silver does not have: {extra}")
+    bad_key = [k for k in rec.key if k not in names]
+    if bad_key:
+        errors.append(f"{key}: page.record.key names columns silver does not have: {bad_key}")
+    fields_v = []
+    lineage_v = []
+    for i, c in enumerate(cols):
+        item = {
+            "name": c["name"],
+            "value": mark[i],
+            "dtype": c["dtype"],
+            "key": c["name"] in rec.key,
+        }
+        if c["lineage"]:
+            lineage_v.append({**item, "meaning": LINEAGE_MEANINGS.get(c["name"], "")})
+        else:
+            fields_v.append({**item, "meaning": rec.fields.get(c["name"], "")})
+    differ = [
+        i
+        for i, c in enumerate(cols)
+        if not c["lineage"] and len({row[i] for row in sample["rows"]}) > 1
+    ]
+    if not differ:
+        differ = [names.index(k) for k in rec.key if k in names]
+
+    def cls(i: int) -> str:
+        if _NUMERIC_DTYPES.match(cols[i]["dtype"]):
+            return "n"
+        vals = [row[i] for row in sample["rows"] if row[i] is not None]
+        return "c" if vals and all(_CODE_VALUE.match(v) for v in vals) else "s"
+
+    table = {
+        "columns": [{"name": names[i], "align": cls(i)} for i in differ],
+        "rows": [
+            {"me": r == sample["mark"], "cells": [{"value": row[i], "cls": cls(i)} for i in differ]}
+            for r, row in enumerate(sample["rows"])
+        ],
+    }
+    relation = f"silver_{sample['silver'].replace('/', '_')}"
+    line = f"Relation <code>{html_escape(relation)}</code>"
+    if doc.pydantic_schema_wired:
+        module, _, cls_name = doc.pydantic_schema.rpartition(".")
+        line += (
+            f", typed by <code>{html_escape(cls_name)}</code> in "
+            f"<code>{html_escape(module.replace('.', '/'))}.py</code>"
+        )
+    if "dataset_version" in names and mark[names.index("dataset_version")]:
+        line += f"; transformer version {html_escape(mark[names.index('dataset_version')])}"
+    view = {
+        "relation_line": Markup(line + "."),
+        "fields": fields_v,
+        "lineage": lineage_v,
+        "caption": rec.caption,
+        "table": table,
+        "narrow": len(differ) <= 3,
+    }
+    return view, errors
+
+
+def _output_html(out: dict[str, Any], vendor_id: str, handle: str, alt: str) -> Markup:
+    kind = out["kind"]
+    if kind == "card":
+        dl = "".join(
+            f"<div><dt>{html_escape(n)}</dt><dd>{html_escape(d)}</dd></div>" for n, d in out["rows"]
+        )
+        foot = out["foot"]
+        return Markup(
+            f'<div class="card"><p class="card-h">{html_escape(handle)}</p><dl>{dl}</dl>'
+            f'<p class="card-f">{html_escape(foot[0])} <code>{html_escape(foot[1])}</code></p></div>'
+        )
+    if kind == "df":
+        head = (
+            "<tr><th></th>"
+            + "".join(f"<th>{html_escape(c)}</th>" for c in out["columns"])
+            + "</tr>"
+        )
+        body = "".join(
+            f"<tr><th>{html_escape(idx)}</th>"
+            + "".join(f"<td>{html_escape(v)}</td>" for v in row)
+            + "</tr>"
+            for idx, row in zip(out["index"], out["rows"])
+        )
+        return Markup(
+            f'<div class="df-wrap"><table class="df"><thead>{head}</thead><tbody>{body}</tbody></table></div>'
+        )
+    if kind == "image":
+        return Markup(
+            f'<div class="fig"><img src="../../data/notebooks/{vendor_id}/{html_escape(out["src"])}" '
+            f'width="{out["width"]}" height="{out["height"]}" alt="{html_escape(alt, quote=True)}" '
+            f'loading="lazy"></div>'
+        )
+    return Markup(
+        f'<div class="fig"><pre class="txt">{html_escape(out["text"], quote=False)}</pre></div>'
+    )
+
+
+def _notebook_view(doc: DatasetDoc, nb: dict[str, Any]) -> dict[str, Any]:
+    fields = doc.page.notebook
+    source = nb["source"]
+    cells = nb["cells"]
+    rendered = [
+        {
+            "n": c["n"],
+            "html": highlight(c["source"]),
+            "outputs": [
+                _output_html(o, doc.vendor_id, f"data.{source}", fields.plot_alt)
+                for o in c["outputs"]
+            ],
+        }
+        for c in cells
+    ]
+    call = [
+        {"n": 1, "html": highlight(cells[0]["source"])},
+        {"n": 2, "html": highlight(cells[2]["source"])},
+    ]
+    return {
+        "lead": fields.lead,
+        "needs": fields.needs,
+        "tab": f"{doc.slug}.ipynb",
+        "call": call,
+        "cells": rendered,
+        "source": "\n\n".join(c["source"] for c in cells) + "\n",
+        "aria": (
+            f"A demo notebook on the gridflow_models kernel: setup, the data.{source} help card, "
+            f"then {len(cells) - 2} cells on {doc.vendor_id}/{doc.slug}, every output real."
+        ),
+    }
+
+
+def page_view(
+    doc: DatasetDoc,
+    arts: PageArtefacts,
+    members: list[DatasetDoc],
+) -> tuple[dict[str, Any], list[str]]:
+    """The view model ``dataset.html.j2`` renders, and the errors that stop it rendering.
+
+    Args:
+        doc: A note on the new template (``doc.new_template``).
+        arts: Its committed chart series, sample rows and executed notebook.
+        members: For a family page, the member notes in the family's order.
+    """
+    key = f"{doc.vendor_id}/{doc.slug}"
+    p = doc.page
+    errors: list[str] = []
+    facts: list[tuple[str, Markup]] = [
+        ("Vendor", Markup(_markdown_inline(p.facts.vendor, doc.vendor_id))),
+        ("Cadence", Markup(_markdown_inline(p.facts.cadence, doc.vendor_id))),
+        ("Grain", Markup(_markdown_inline(p.facts.grain, doc.vendor_id))),
+        ("Key", Markup(", ".join(f"<code>{html_escape(k)}</code>" for k in p.record.key))),
+    ]
+    if p.facts.history:
+        facts.append(("History", Markup(_markdown_inline(p.facts.history, doc.vendor_id))))
+
+    chart_v = None
+    if arts.chart is not None:
+        errors.extend(f"{key}: {e}" for e in chart_svg.check_view(arts.chart, p.chart_view))
+        if not errors:
+            wide, narrow = chart_svg.render(arts.chart, p.chart_view, "c")
+            kind = chart_svg.key_kind(arts.chart)
+            chart_v = {
+                "title": p.chart_view.title,
+                "caption": p.chart_view.caption,
+                "wide": Markup(wide),
+                "narrow": Markup(narrow),
+                "key": [
+                    {
+                        "mark": Markup(chart_svg.key_mark(e, kind, f"k{i}")),
+                        "label": e.label,
+                        "codes": e.codes,
+                        "note": e.note,
+                    }
+                    for i, e in enumerate(p.chart_view.key)
+                ],
+            }
+
+    record_v: dict[str, Any] = {}
+    if arts.sample is not None:
+        record_v, rec_errors = _record_view(doc, arts.sample)
+        errors.extend(rec_errors)
+
+    related = []
+    slugs = _all_manifest_slugs()
+    for rel in p.related:
+        vendor, _, slug = rel.dataset.partition("/")
+        if slug not in slugs.get(vendor, set()):
+            errors.append(f"{key}: related {rel.dataset} has no page on the site")
+            continue
+        href = f"{slug}.html" if vendor == doc.vendor_id else f"../{vendor}/{slug}.html"
+        related.append({"href": href, "key": rel.dataset, "note": rel.note})
+
+    variants = []
+    if p.family is not None:
+        by_slug = {m.slug: m for m in members}
+        for mem in p.family.members:
+            m = by_slug.get(mem.dataset)
+            variants.append(
+                {
+                    "slug": mem.dataset,
+                    "key": f"{doc.vendor_id}/{mem.dataset}",
+                    "code": m.api_code if m else mem.dataset.upper(),
+                    "differs": mem.differs,
+                    "request": request_lines(mem.request),
+                }
+            )
+
+    view = {
+        "vendor_id": doc.vendor_id,
+        "vendor_label": doc.vendor_label,
+        "key": key,
+        "chips": [v["key"] for v in variants] or [key],
+        "title": p.title,
+        "summary": p.summary,
+        "summary_plain": (p.summary or "").replace("`", ""),
+        "facts": facts,
+        "landscape": p.landscape or _DEFAULT_LANDSCAPE.get(doc.vendor_id, "power"),
+        "what_it_is": p.what_it_is,
+        "how_used": p.how_used,
+        "chart": chart_v,
+        "raw": {
+            "note": p.raw_feed.note,
+            "requests": [request_lines(r) for r in p.raw_feed.requests],
+            "commands": p.raw_feed.commands,
+        },
+        "variants": variants,
+        "record": record_v,
+        "notebook": _notebook_view(doc, arts.notebook) if arts.notebook else {},
+        "related": related,
+    }
+    return view, errors
+
+
+_DEFAULT_LANDSCAPE = {"entsog": "gas", "gie": "gas"}
+
+
+def render_page(env: Environment, view: dict[str, Any]) -> str:
+    """Render one page on the dataset template."""
+    return env.get_template("dataset.html.j2").render(v=view)
+
+
+def render_redirect(env: Environment, key: str, href: str, family_title: str) -> str:
+    """A family member's old address, pointing at its section of the family page."""
+    return env.get_template("redirect.html.j2").render(
+        key=key, href=href, family_title=family_title
     )
 
 
@@ -1123,6 +1494,9 @@ def audit_vault_content(docs: list[DatasetDoc]) -> tuple[list[str], list[str]]:
         if not d.base_url and not d.api_path:
             errors.append(f"{d.slug}: vault file declares no API endpoint")
         errors.extend(f"{d.slug}: {e}" for e in d.page_errors)
+        if d.new_template:
+            errors.extend(f"{d.slug}: {e}" for e in anatomy_errors(d.page))
+            continue
         if not d.schema_rows:
             warnings.append(f"{d.slug}: silver schema rows empty (table will render placeholder)")
         if not (d.sample_rows or d.sample_raw):
@@ -1179,8 +1553,12 @@ def build_vendor(
     vendor_id: str,
     vault_path: Path,
     out_root: Path,
+    only: frozenset[str] = frozenset(),
 ) -> tuple[int, int]:
     """Render one vendor's dataset pages + hub.
+
+    ``only`` (``<vendor>/<dataset>`` keys) renders just those pages, for a
+    fast look at one page: no hub, no pruning, and every other page untouched.
 
     Returns ``(dataset_page_count, chart_page_count)``. Chart specs and series
     are checked for every dataset, authored overrides included, so a stale
@@ -1238,12 +1616,77 @@ def build_vendor(
     if chart_errors:
         _fail(vendor_id, "chart", chart_errors)
 
+    # Family pages (v5 D5): the lead note's page lists every member; each
+    # member's own address becomes a pointer to its section there.
+    by_slug = {doc.slug: doc for _, doc in docs}
+    family_of: dict[str, tuple[DatasetDoc, str]] = {}
+    page_errors: list[str] = []
+    for _path, doc in docs:
+        fam = doc.page.family if doc.new_template else None
+        if fam is None:
+            continue
+        if fam.slug in by_slug:
+            page_errors.append(f"{doc.slug}: family slug {fam.slug!r} is also a dataset slug")
+        for mem in fam.members:
+            if mem.dataset not in by_slug:
+                page_errors.append(f"{doc.slug}: family member {mem.dataset!r} has no vault note")
+            elif mem.dataset in family_of:
+                page_errors.append(f"{doc.slug}: {mem.dataset!r} is in two families")
+            elif by_slug[mem.dataset].new_template and mem.dataset != doc.slug:
+                page_errors.append(f"{mem.dataset}: a family member cannot have its own page block")
+            else:
+                family_of[mem.dataset] = (doc, fam.slug)
+        if doc.slug not in {m.dataset for m in fam.members}:
+            page_errors.append(f"{doc.slug}: a family's lead note must list itself as a member")
+
     written: set[str] = set()
     n_charts = 0
+    views: dict[str, tuple[DatasetDoc, dict[str, Any]]] = {}
     for _path, doc in docs:
+        if not doc.new_template or (only and f"{vendor_id}/{doc.slug}" not in only):
+            continue
+        if (AUTHORED_DIR / vendor_id / f"{doc.slug}.html").exists():
+            page_errors.append(
+                f"{doc.slug}: the note is on the dataset template; delete its authored override"
+            )
+        arts, errs = check_artefacts(doc)
+        arts.chart = charts.get(doc.slug)
+        if doc.page.chart and doc.page.chart.get("type") != "none" and arts.chart is None:
+            errs.append(f"{doc.slug}: page.chart has no committed series")
+        members = []
+        if doc.page.family is not None:
+            members = [by_slug[m.dataset] for m in doc.page.family.members if m.dataset in by_slug]
+        if not errs:
+            view, errs = page_view(doc, arts, members)
+            views[doc.slug] = (doc, view)
+        page_errors.extend(errs)
+    if page_errors:
+        _fail(vendor_id, "dataset page", page_errors)
+
+    for slug, (doc, view) in views.items():
+        fam = doc.page.family
+        out_name = f"{fam.slug}.html" if fam else f"{slug}.html"
+        (out_dataset_dir / out_name).write_text(render_page(env, view), encoding="utf-8")
+        written.add(out_name)
+        n_charts += 1 if view["chart"] else 0
+        print(f"  wrote: data-sources/{vendor_id}/{out_name} (dataset template)")
+
+    for _path, doc in docs:
+        if only and f"{vendor_id}/{doc.slug}" not in only:
+            continue
         out_path = out_dataset_dir / f"{doc.slug}.html"
         authored = AUTHORED_DIR / vendor_id / f"{doc.slug}.html"
-        if authored.exists():
+        if doc.slug in family_of:
+            lead, fam_slug = family_of[doc.slug]
+            href = f"{fam_slug}.html#{doc.slug}"
+            out_path.write_text(
+                render_redirect(env, f"{vendor_id}/{doc.slug}", href, lead.page.title or fam_slug),
+                encoding="utf-8",
+            )
+            print(f"  wrote: data-sources/{vendor_id}/{doc.slug}.html (points to {href})")
+        elif doc.new_template:
+            continue
+        elif authored.exists():
             # Authored pages carry their own markup verbatim, charts included;
             # they retire in Phase 25b, when the new template renders them.
             shutil.copy(authored, out_path)
@@ -1256,6 +1699,9 @@ def build_vendor(
             if chart:
                 n_charts += 1
         written.add(out_path.name)
+
+    if only:
+        return len(docs), n_charts
 
     # The vendor directory is wholly generated (gitignored), so any page this
     # run did not write is left over from an earlier build: a dropped dataset
@@ -1302,7 +1748,31 @@ def orphan_chart_files(vault_path: Path) -> list[str]:
     return orphans
 
 
-def build(vault_path: Path, output_dir: Path | None = None) -> tuple[int, int, int]:
+def new_template_pages(vault_path: Path) -> set[tuple[str, str]]:
+    """``(vendor, slug)`` of every note with a ``page:`` block."""
+    found: set[tuple[str, str]] = set()
+    for vendor_id in REAL_VENDORS:
+        for note in sorted((vault_path / vendor_id).glob("*.md")):
+            if parse_page_fields(note.read_text(encoding="utf-8"))[0].present:
+                found.add((vendor_id, note.stem))
+    return found
+
+
+def orphan_artefacts(pages: set[tuple[str, str]]) -> list[str]:
+    """Committed sample or notebook files for a dataset that is not on the dataset template."""
+    orphans: list[str] = []
+    for root in (artefacts.samples_dir(SITE_DIR), artefacts.notebooks_dir(SITE_DIR)):
+        if not root.is_dir():
+            continue
+        for path in sorted(root.glob("*/*.json")):
+            if (path.parent.name, path.stem) not in pages:
+                orphans.append(str(path.relative_to(REPO_ROOT)).replace("\\", "/"))
+    return orphans
+
+
+def build(
+    vault_path: Path, output_dir: Path | None = None, only: frozenset[str] = frozenset()
+) -> tuple[int, int, int]:
     """Render all vendor pages.
 
     Returns ``(n_dataset_pages, n_hubs, n_chart_pages)``; the last counts
@@ -1316,6 +1786,11 @@ def build(vault_path: Path, output_dir: Path | None = None) -> tuple[int, int, i
     orphans = orphan_chart_files(vault_path)
     if orphans:
         _fail("charts", "orphan chart file", [f"{o}: no such dataset page" for o in orphans])
+    _NEW_TEMPLATE_PAGES.clear()
+    _NEW_TEMPLATE_PAGES.update(new_template_pages(vault_path))
+    orphans = orphan_artefacts(_NEW_TEMPLATE_PAGES)
+    if orphans:
+        _fail("pages", "orphan artefact", [f"{o}: no dataset-template page" for o in orphans])
 
     n_pages = 0
     n_hubs = 0
@@ -1324,7 +1799,9 @@ def build(vault_path: Path, output_dir: Path | None = None) -> tuple[int, int, i
         if not (vault_path / vendor_id).is_dir():
             print(f"  skip vendor (no vault dir): {vendor_id}")
             continue
-        pages, chart_pages = build_vendor(env, vendor_id, vault_path, out_root)
+        if only and not any(k.startswith(f"{vendor_id}/") for k in only):
+            continue
+        pages, chart_pages = build_vendor(env, vendor_id, vault_path, out_root, only)
         n_pages += pages
         n_charts += chart_pages
         n_hubs += 1
@@ -1394,10 +1871,24 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Build twice and exit non-zero if any output changes between builds (idempotence check).",
     )
+    parser.add_argument(
+        "--only",
+        action="append",
+        default=[],
+        metavar="VENDOR/DATASET",
+        help="Render just this page (repeatable): no hubs, no pruning, no --check.",
+    )
     args = parser.parse_args(argv)
 
     vault_path = resolve_vault_path(args.vault_path)
     print(f"[gridflow-build] vault: {vault_path}")
+
+    if args.only:
+        if args.check:
+            parser.error("--only renders a subset; it cannot be combined with --check")
+        build(vault_path, only=frozenset(args.only))
+        print(f"[gridflow-build] rendered only {sorted(args.only)}")
+        return 0
 
     n_pages, n_hubs, _ = build(vault_path)
     print(f"[gridflow-build] wrote {n_pages} dataset pages + {n_hubs} vendor hub(s)")
