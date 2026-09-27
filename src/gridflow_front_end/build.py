@@ -1262,7 +1262,7 @@ def page_view(
             errors.append(f"{key}: related {rel.dataset} has no page on the site")
             continue
         href = f"{slug}.html" if vendor == doc.vendor_id else f"../{vendor}/{slug}.html"
-        related.append({"href": href, "key": rel.dataset, "note": rel.note})
+        related.append({"href": href, "key": _breakable(rel.dataset), "note": rel.note})
 
     variants = []
     if p.family is not None:
@@ -1353,6 +1353,22 @@ def _count_word(n: int) -> str:
     return _COUNT_WORDS[n] if n < len(_COUNT_WORDS) else str(n)
 
 
+_CODE_SPAN = re.compile(r"(<code>)([^<]*)(</code>)")
+
+
+def _wbr(escaped: str) -> str:
+    """Offer a line break after each underscore and slash of an escaped code, never inside a word."""
+    return escaped.replace("_", "_<wbr>").replace("/", "/<wbr>")
+
+
+def _breakable(code: str) -> Markup:
+    """A dataset key or path that may wrap at its underscores and slashes in a narrow column."""
+    if code.startswith("<code>"):
+        m = _CODE_SPAN.fullmatch(code)
+        return Markup(f"{m.group(1)}{_wbr(m.group(2))}{m.group(3)}") if m else Markup(code)
+    return Markup(_wbr(html_escape(code, quote=False)))
+
+
 def _hub_rows(
     vendor_id: str, manifest: dict, docs: dict[str, DatasetDoc], pages: list[str]
 ) -> list[dict[str, Any]]:
@@ -1365,7 +1381,7 @@ def _hub_rows(
             rows.append(
                 {
                     "href": f"{vendor_id}/{page}.html",
-                    "codes": fam["members"],
+                    "codes": [_breakable(m) for m in fam["members"]],
                     "title": lead.page.title
                     if lead.new_template and lead.page.title
                     else fam["title"],
@@ -1377,9 +1393,9 @@ def _hub_rows(
             rows.append(
                 {
                     "href": f"{vendor_id}/{page}.html",
-                    "codes": [page],
+                    "codes": [_breakable(page)],
                     "title": manifest["names"][page],
-                    "path": doc.api_path if doc.api_path.startswith("/") else "",
+                    "path": _breakable(doc.api_path) if doc.api_path.startswith("/") else "",
                 }
             )
     return rows
@@ -1388,7 +1404,17 @@ def _hub_rows(
 def hub_view(vendor_id: str, manifest: dict, docs: dict[str, DatasetDoc]) -> dict[str, Any]:
     """The vendor hub (direction A, "Sections"): hero and facts, the grouped datasets, silver, gold."""
     n = manifest_total_count(manifest)
-    facts = [(k, Markup(_markdown_inline(v, vendor_id))) for k, v in manifest["facts"]]
+    facts = [
+        (
+            k,
+            Markup(
+                _CODE_SPAN.sub(
+                    lambda m: str(_breakable(m.group(0))), _markdown_inline(v, vendor_id)
+                )
+            ),
+        )
+        for k, v in manifest["facts"]
+    ]
     facts.append(("Datasets", Markup(str(n))))
     groups = []
     for i, g in enumerate(manifest["groups"]):
@@ -1513,7 +1539,7 @@ def landing_view(manifests: dict[str, dict], chart: dict[str, Any] | None) -> di
     return {
         "n": n,
         "vendors": vendors,
-        "names": _LANDING_NAMES,
+        "names": [(label, _breakable(name)) for label, name in _LANDING_NAMES],
         "chart": chart,
     }
 
