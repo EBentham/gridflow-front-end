@@ -59,11 +59,53 @@
 
   body.insertAdjacentHTML("afterbegin", masthead);
   var main = document.querySelector("main");
+  // A dataset page ends in its own deep band, which holds only related datasets (DESIGN.md, the
+  // dataset page anatomy): no site footer there.
   if (main) {
-    main.insertAdjacentHTML("afterend", footer);
+    if (!main.classList.contains("ds")) main.insertAdjacentHTML("afterend", footer);
   } else {
     body.insertAdjacentHTML("beforeend", footer);
   }
+
+  // ---------------------------------------------------------------- the dataset page's demo notebook
+  // The button opens the notebook in place (and hides the two-cell call it replaces); "Copy notebook"
+  // copies the code only, ready to paste into Jupyter.
+  var SHUT = "Open the demo notebook", OPEN = "Close the demo notebook";
+  document.querySelectorAll("button.ds-open[aria-controls]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var on = btn.getAttribute("aria-expanded") !== "true";
+      btn.setAttribute("aria-expanded", on ? "true" : "false");
+      btn.textContent = on ? OPEN : SHUT;
+      btn.getAttribute("aria-controls").split(" ").forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) el.hidden = !on;
+      });
+      var call = document.getElementById(btn.getAttribute("data-call"));
+      if (call) call.hidden = on;
+    });
+  });
+  document.querySelectorAll("button[data-copy]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var src = document.getElementById(btn.getAttribute("data-copy"));
+      var status = btn.parentNode.querySelector(".ds-status");
+      if (!src) return;
+      function say(text) { if (status) status.textContent = text; }
+      function selectIt() {
+        src.hidden = false;
+        src.focus();
+        src.select();
+        var ok = false;
+        try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+        if (ok) { src.hidden = true; btn.focus(); }
+        say(ok ? "Copied." : "Selected. Copy it with your keyboard.");
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(src.value).then(function () { src.hidden = true; say("Copied."); }, selectIt);
+      } else {
+        selectIt();
+      }
+    });
+  });
 
   // ---------------------------------------------------------------- shared page behaviours
 

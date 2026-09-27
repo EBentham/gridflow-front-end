@@ -1,0 +1,23 @@
+{#- A family member's old address (v5 D5): the dataset is documented on its family page. Kept so links
+    from the vendor hub, other pages and search engines still land on the right section. -#}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ key }} is documented on {{ family_title }}</title>
+  <meta http-equiv="refresh" content="0; url={{ href }}">
+  <link rel="canonical" href="{{ href }}">
+  <link rel="stylesheet" href="../../assets/theme.css">
+</head>
+<body data-page="dataset" data-root="../../" data-screen-label="Dataset {{ key }}">
+  <main id="main">
+    <section class="stratum stratum--sky">
+      <div class="wrap ds-moved">
+        <p><code>{{ key }}</code> is documented on <a href="{{ href }}">{{ family_title }}</a>, with the other variants of its family.</p>
+      </div>
+    </section>
+  </main>
+  <script src="../../assets/site.js"></script>
+</body>
+</html>
