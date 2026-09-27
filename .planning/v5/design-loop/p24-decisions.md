@@ -77,3 +77,14 @@ Picker: https://claude.ai/artifact/MpySKZLbpbe6VmCz4pcuzV · round-1 canvas http
   3. one row read aloud as a sentence, then a slim list.
 - Standing review check: nothing clipped or overlapping at any width (turbine tops, scene edges, the
   silver corner label on fuelhh).
+
+## Decision 7: schema round 3 pick (OWNER, 2026-09-27 late)
+
+- **3a, "Clean frame, guide beneath"** (`<scratch>\p24\r3-schema\1\`), with Bobbo's changes:
+  - no unnecessary wording;
+  - drop the "Added to every row by the pipeline ..." line, since those columns sit on every dataset page;
+  - clicking the `…` column expands the folded columns.
+  The revision is with the same designer.
+- **Note for the build (OWNER):** the pages look well sized inside the artifact viewer but not when the HTML
+  is opened directly in a browser, on every page. Assess and fix during implementation: check at real
+  browser widths such as 1280, 1440, 1920 and 390, not only inside the picker's scaled frames.
