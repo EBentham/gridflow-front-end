@@ -114,6 +114,32 @@ Use the tokens in `tokens.css`. The roles:
 - **Keyed index:** a narrow column whose entries carry a small mark copied from the drawing part they
   name, aligned level with that part.
 
+## Dataset page anatomy (locked 2026-09-27)
+
+One template for every dataset page. The page descends through the strata, top to bottom. Reference boards:
+`.planning/v5/design-loop/` (round-1 A in the p24 canvas, `p24-r2-schema/4/`, `p24-r2-notebook/1/`);
+decisions and their reasons: `.planning/v5/design-loop/p24-decisions.md`.
+
+1. **Petrol hero:** dataset name, a one-line description, then the quick facts beneath it (vendor, cadence,
+   grain, key, history only where the vendor's API evidences it).
+2. **Topsoil: what it is and how it is used,** short prose, then the chart with its key beside it. Signed
+   series (interconnectors, pumped storage) stack above zero when positive and hang below when negative;
+   codes the palette doesn't cover are drawn unpainted with distinct ink hatches; khaki means only the vendor
+   code OTHER. A caveat that matters for reading the chart goes in its caption.
+3. **Bronze: the raw feed,** the vendor's raw URL and the gridflow CLI call that ingests it.
+4. **Silver: schema and sample rows, "one record, then many":** one real row laid out field by field (name,
+   value, dtype, meaning; key columns marked; the row's lineage columns under one label) is the schema; then
+   "Eight rows", a compact table of only the schema columns that differ between rows, with the record's row
+   marked. Values formatted by Polars.
+5. **Gold: the workbench call,** then the "Open the demo notebook" button. It reveals, in place, a notebook
+   in the homepage notebook style: `setup_notebook()`, the source's help card, `data.<source>.query(...)`,
+   `.head()` of the key columns, one plot (a register with no time axis reads the table with `data.sql(...)`
+   and shows a non-time output instead). Every output is real. "Copy notebook" copies the code only, ready to
+   paste into Jupyter. One line says what the notebook needs installed and ingested.
+6. **Foot:** the deep petrol band holds only related datasets. No caveats section, no GitHub or licence line.
+
+No local-data references anywhere on the page: no "held locally", local row counts or local date ranges.
+
 ## Content rules
 
 - Honesty is hard: no invented stats, no fake-live framing ("live", "now", timestamps, pulsing dots),

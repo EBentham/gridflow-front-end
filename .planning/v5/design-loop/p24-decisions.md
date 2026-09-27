@@ -51,6 +51,16 @@ Picker: https://claude.ai/artifact/MpySKZLbpbe6VmCz4pcuzV · round-1 canvas http
   `setup_notebook()`. One designer drafts it ("it's not difficult"): the inline drawer in the gold stratum,
   `<scratch>\p24\r2-notebook\1\`. The sheet and recipe directions were stopped.
 
+## Decision 5: demo notebook panel, and the lock (OWNER, 2026-09-27)
+
+- The drawer draft (`p24-r2-notebook/1/`) as it stands: homepage notebook style, opens in place in the gold
+  stratum, one "Copy notebook" button (code only), the "Needs ... ingested" line kept.
+- **Dataset page design LOCKED** ("looks good, lock it"). Anatomy written into `DESIGN.md` "Dataset page
+  anatomy". Next: the template and a five-dataset pilot (25b).
+- Carry into 25b: check "SBP equals SSP on every row" (system_prices) against code before it ships; test the
+  schema section's 390 px reflow; gridflow_models help card says "35 datasets" while `list_datasets()`
+  returns 33 (the page omits the count; the mismatch is a gridflow_models bug).
+
 ## Decision 2b: facts and how to get it (OWNER)
 
 - Keep A's for both: quick facts in the petrol hero under the one-liner; the raw feed and CLI in bronze and

@@ -24,3 +24,4 @@ Earlier milestones keep their decisions phase-local (`phases/`, `docs/adr/`).
 | 16 | 2026-09-27T11:41Z | gridflow | OWNER | gridflow adds all 29 NESO Data Portal packages (separate gridflow work, not blocking v5); each gets a page once its data lands. |
 | 17 | 2026-09-27T11:46Z | 23 | OWNER | Homepage approved on desktop ('looks amazing, I am happy with it'), copy as written; PR #41 squash-merged into v5/site (18e98b2) after seat re-ran gates on the merge result. Phone look not possible; mobile rough edges queued. |
 | 18 | 2026-09-27T15:36Z | 24 | OWNER | Dataset page schema and sample rows: option 4 'One record, then many' (one real row as the schema, then an eight-row table of only the differing columns). |
+| 19 | 2026-09-27T17:04Z | 24 | OWNER | Dataset page design locked ('looks good, lock it'): layout A, A's chart, schema option 4, demo notebook drawer. Anatomy in DESIGN.md; next is the template and a five-dataset pilot. |
