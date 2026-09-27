@@ -132,6 +132,17 @@ def test_chart_caption_lives_in_the_view() -> None:
     assert any("put the caption in page.chart_view.caption" in e for e in anatomy_errors(fields))
 
 
+def test_an_unquoted_dedup_on_key_survives_yaml() -> None:
+    note = NOTE.replace(
+        "      filter: [{column: settlement_date, op: eq, value: 2026-09-26}]\n",
+        "      filter: [{column: settlement_date, op: eq, value: 2026-09-26}]\n"
+        "      dedup: {on: [settlement_date], order_by: published_at}\n",
+    )
+    fields, errors = parse_page_fields(note)
+    assert errors == []
+    assert fields.record.select["dedup"] == {"on": ["settlement_date"], "order_by": "published_at"}
+
+
 def test_build_frontmatter_ignores_nested_keys() -> None:
     fm, body = _parse_frontmatter(NOTE)
     assert fm["dataset_key"] == "fuelhh"

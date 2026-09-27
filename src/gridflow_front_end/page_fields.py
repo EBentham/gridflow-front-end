@@ -350,7 +350,8 @@ def _jsonable(value: object) -> object:
     if isinstance(value, (dt.date, dt.datetime)):
         return value.isoformat()
     if isinstance(value, Mapping):
-        return {str(k): _jsonable(v) for k, v in value.items()}
+        # YAML 1.1 reads an unquoted ``on:`` key (the dedup spec's) as the boolean True.
+        return {("on" if k is True else str(k)): _jsonable(v) for k, v in value.items()}
     if isinstance(value, list):
         return [_jsonable(v) for v in value]
     return value
