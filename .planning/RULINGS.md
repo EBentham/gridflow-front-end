@@ -30,3 +30,5 @@ Earlier milestones keep their decisions phase-local (`phases/`, `docs/adr/`).
 | 22 | 2026-09-27T19:17Z | 27 | OWNER | Model status on the site follows gridflow_models code and manifest, not notebooks/README.md, until that README is fixed. |
 | 23 | 2026-09-27T19:50Z | 27 | OWNER | Models page: design 2 'Converging cables', minus the no-orders line and the notebook section, plus a short in-development note. No licence line anywhere on the site. |
 | 24 | 2026-09-27T20:10Z | 27 | OWNER | Models page design locked ('looks good'): round 2 of 'Converging cables', desktop and phone boards in models-r2, turbine clipping fixed. |
+| 25 | 2026-09-27T20:45Z | 25b | OWNER | Dataset rollout cost accepted: about $7 per page for the author, plus an Opus reviewer, for the remaining pages. |
+| 26 | 2026-09-27T20:45Z | 25b | OWNER | Imbalance-volume sign: an Opus agent investigates (Elexon docs, gridflow code, the rows) and concludes; pages state no sign until then. |
