@@ -55,8 +55,9 @@ evidence (file:line, or the Polars expression you ran and its output).
 - [ ] `gridflow-build --only <key>` succeeds (budgets, required fields, key entries per series, artefact
       digests, related pages resolve, no authored override).
 - [ ] `detect.mjs --json` on the page returns `[]`.
-- [ ] The eight rows are real (`generated_by: gridflow-sample`), the marked row shows the column that
-      matters, and every schema column has a meaning.
+- [ ] The eight rows are real (`generated_by: gridflow-sample`) and show the column that matters; the
+      guide has a line for every column but the pipeline ones, key columns first, and no line repeats
+      what the frame already shows.
 - [ ] The notebook JSON was written by `scripts/run_notebooks.py`, every cell is read-only (no
       `refresh`, `backfill`, ingest), outputs have no errors, and `plot_alt` describes the real plot.
 
@@ -66,7 +67,7 @@ evidence (file:line, or the Polars expression you ran and its output).
       768 and 390 in light and dark, in particular scenery tops (turbines), scene edges and
       section-corner labels.
 - [ ] Take the screenshots yourself (a headless browser or your own preview tab on a free port) and
-      look at each one: the hero scenery, the chart, the eight rows, the notebook panel and each
+      look at each one: the hero scenery, the chart, the frame (folded and unfolded) and its guide, the notebook panel and each
       stratum's corner label. A passing detector or HTML check does not replace looking.
 
 ## 6. Leakage and filler (major)

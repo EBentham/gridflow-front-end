@@ -89,9 +89,15 @@ checks it against `review-rubric.md`. You write only your own dataset's files.
   window transforms an end date that has no bronze. Comments are 6 words or fewer.
 - **record.select**: a filter (plus `order_by`, and `dedup` for append-only tables) that picks exactly
   eight real rows, chosen to show the column that matters most (a signed value, a null, a
-  double-reported flow). `record.mark` names the one row laid out field by field.
-- **record.fields**: one meaning per schema column (not the lineage columns, which the template
-  explains), 14 words or fewer, from the code. `data_provider`: "Same on every row: <vendor>".
+  double-reported flow). The rows print as a Polars frame, as silver prints them; columns past the
+  1280 px budget fold behind `…` (the pipeline columns always do). `record.mark` is no longer used.
+- **record.key**: the columns that identify a row; the frame marks them with a square and the guide
+  lists them first.
+- **record.fields**: the column guide, one line per column in frame order, 14 words or fewer, from the
+  code. No lines for the pipeline columns every table carries (`data_provider`, `ingested_at`,
+  `event_time`, `available_at`, `source_run_id`, `dataset_version`, and `vintage_policy` where
+  present): the build ignores them. No relation line, no fold note, no filler.
+- **record.caption**: one line after `shape: (8, n)` saying which eight rows these are.
 - **notebook.cells**: after the template's setup cell and `data.<source>` help card, 2 to 4 cells:
   the query (`data.<source>.query("<dataset>", start, end)`, or `data.sql(...)` for a table with no
   time axis, because `query()` filters on a date column), `.head()` of the key columns, one plot or,
@@ -139,5 +145,8 @@ kill processes.
 
 The family's lead member's note carries the page; `page.family` lists every member with what differs
 (14 words or fewer) and its raw request. Other members keep no `page:` block: their addresses become
-pointers to `<family-slug>.html#<member>`. The chart, record and notebook come from the lead's silver
-table; say so in the caption if the chart shows one member.
+pointers to `<family-slug>.html#<member>`. The chart, frame and notebook come from the lead's silver
+table; say so in the caption if the chart shows one member. The family's slug and members are fixed in
+`site/hifi/data/<vendor>.json` (the page set); `page.family` must name the same slug and members, and
+only the lead (the first member there) carries a `page:` block. Until it does, the family page renders
+blank: the hero's name and the member ids, nothing else.
