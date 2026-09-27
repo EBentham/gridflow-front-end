@@ -26,3 +26,5 @@ Earlier milestones keep their decisions phase-local (`phases/`, `docs/adr/`).
 | 18 | 2026-09-27T15:36Z | 24 | OWNER | Dataset page schema and sample rows: option 4 'One record, then many' (one real row as the schema, then an eight-row table of only the differing columns). |
 | 19 | 2026-09-27T17:04Z | 24 | OWNER | Dataset page design locked ('looks good, lock it'): layout A, A's chart, schema option 4, demo notebook drawer. Anatomy in DESIGN.md; next is the template and a five-dataset pilot. |
 | 20 | 2026-09-27T17:49Z | 27 | OWNER | Architecture page design locked ('lock it'): round 2 of 'The specimen', desktop and phone boards in arch-r2, pandas notebook read, scope line 'runs under' an orchestrator. |
+| 21 | 2026-09-27T19:17Z | 27 | OWNER | Models page stays high level for now: each model's job, inputs and chain, light headline scores at most; no inner workings, no gate or coverage failures. Supersedes #15's 'never trained' wording. |
+| 22 | 2026-09-27T19:17Z | 27 | OWNER | Model status on the site follows gridflow_models code and manifest, not notebooks/README.md, until that README is fixed. |

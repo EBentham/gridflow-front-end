@@ -19,3 +19,12 @@ Picker: https://claude.ai/artifact/MpySKZLbpbe6VmCz4pcuzV ("Models page (as it s
 1. Content check: one agent verifies every claim on A-models against gridflow_models, writes
    `models-content-check.md` (NEXT, started 2026-09-27).
 2. Three designs, side by side by section, keeping the cables; launch after the weekly reset if budget is tight.
+
+## After the content check (OWNER, 2026-09-27)
+
+- **High level for now** (RULINGS #21): the page shows each model's job, its inputs (the cables) and how the
+  models chain; at most light headline scores; no inner workings. Extend later when the modelling matures.
+- Wind and solar: no mention of the failed 90% band or the coverage gate; describe what they do. Supersedes
+  #15's "never trained" wording.
+- Status follows the code and the manifest, not `notebooks/README.md` (RULINGS #22).
+- Designers launched the same evening (not after the weekly reset): three directions, `models-r1/`.
