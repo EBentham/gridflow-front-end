@@ -139,6 +139,21 @@ def test_a_family_renders_one_page_and_points_its_members_at_it(tmp_path: Path) 
         assert "<main" in pointer
 
 
+@pytest.mark.parametrize("kind", ["power", "market", "gas", "units"])
+def test_landscape_scenery_is_never_cropped(kind: str) -> None:
+    """Each hero drawing letterboxes (meet) instead of cropping, and its viewBox clears every rotor tip."""
+    partial = (build.TEMPLATES_DIR / "_partials" / "landscape" / f"{kind}.svg.j2").read_text(encoding="utf-8")
+    svgs = re.findall(r'<svg class="land land--(wide|narrow)" viewBox="([-\d.]+) ([-\d.]+) [\d.]+ [\d.]+" '
+                      r'preserveAspectRatio="xMidYMax meet"', partial)
+    assert [v for v, _, _ in svgs] == ["wide", "narrow"]
+    wide_top = float(svgs[0][2])
+    # a rotor is drawn as an invisible circle of blade radius around its hub: cy is 0 in the rotor's frame,
+    # so the hub height comes from the translate that places it
+    for hub_y, radius in re.findall(r'translate\([-\d.]+,([-\d.]+)\)"><g class="rot [^"]+"><circle r="([\d.]+)"',
+                                    partial):
+        assert float(hub_y) - float(radius) > wide_top + 8, f"{kind}: a rotor tip reaches the top edge"
+
+
 def test_no_page_block_describes_local_data() -> None:
     for doc in _new_template_docs():
         text = (DEFAULT_VAULT / doc.vendor_id / f"{doc.slug}.md").read_text(encoding="utf-8")

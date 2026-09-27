@@ -499,9 +499,18 @@ main { position: relative; display: block; }
 .ds-facts dd { font-size: 14.5px; line-height: 1.5; font-weight: 600; color: var(--on-petrol); }
 .ds-facts code { font-weight: 400; font-size: 13.5px; }
 .ds-land { margin: 18px 0 0; }
-.ds-land svg { display: block; width: 100%; height: clamp(150px, 19.6vw, 282px); }
+/* The drawing keeps its own aspect ratio (its viewBox has top room over the tallest rotor), so nothing is
+   cropped; past the cap, `meet` letterboxes and the ground, drawn far beyond the viewBox, fills the sides.
+   Below 760px a narrow window of the same scene takes over. */
+.ds-land svg { display: block; width: 100%; height: auto; max-height: 330px; }
+.ds-land .land--narrow { display: none; }
 .ds-land text { font-family: var(--body); font-style: italic; font-size: 14px; }
 @media (max-width: 1299.98px) { .ds-land text { font-size: 17px; } }
+@media (max-width: 759.98px) {
+  .ds-land .land--wide { display: none; }
+  .ds-land .land--narrow { display: block; }
+  .ds-land text { font-size: 22px; }
+}
 @media (max-width: 1099.98px) {
   .ds-hero { grid-template-columns: minmax(0, 1fr); row-gap: 28px; padding-top: 52px; }
   .ds-hero__facts { max-width: 620px; }
@@ -510,7 +519,6 @@ main { position: relative; display: block; }
 @media (max-width: 699.98px) {
   .ds-hero { padding-top: 38px; }
   .ds-facts div { grid-template-columns: 82px minmax(0, 1fr); }
-  .ds-land .land-l { display: none; }
 }
 
 /* topsoil: the prose, then the chart with its key beside it */
