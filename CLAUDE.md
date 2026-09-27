@@ -49,7 +49,7 @@ Looking like a SaaS product or dashboard · fake live indicators (timestamps, "X
 ## Conventions
 
 - HTML filenames: kebab-case slugs, except Elexon dataset codes keep BMRS underscores (`system_prices.html`).
-- Dataset page anatomy: hero → metadata grid → stats strip → sticky sidebar → overview → snapshot chart → schema → sample → API tabs → caveats → related.
+- Dataset page anatomy: the lock in `DESIGN.md` ("Dataset page anatomy", 2026-09-27), rendered by `templates/dataset.html.j2` from a note's `page:` block (content model and budgets in `page_fields.py`; authoring in `.planning/v5/author-brief.md`). Notes without one render on `dataset-legacy.html.j2` until the fan-out.
 - Every page carries `<meta name="viewport" content="width=device-width, initial-scale=1">`.
 - A11y minimums: `<main>` landmark, `aria-current="page"` on the active nav, distinguishing `aria-label` on the dual `<nav>` (top + sidebar), `aria-hidden="true"` on decorative icons.
 
