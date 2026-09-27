@@ -148,9 +148,13 @@ code { font-size: .9em; }
 
 /* the unit's name, set like a label on a drawn section, at the right under its contact */
 .stratum__name {
-  position: absolute; top: calc(var(--contact-h) + 14px); right: max(var(--side), calc((100% - 1280px) / 2));
+  position: absolute; top: calc(var(--contact-h) + var(--name-drop, 14px));
+  right: max(var(--side), calc((100% - 1280px) / 2));
   font: italic 400 14px/1 var(--body); color: var(--ink);
 }
+/* silver's contact line has its deepest trough (about 23px) right above the label, so the label drops
+   further to keep the same clearance the other strata have */
+.stratum--silver { --name-drop: 24px; }
 
 /* a bedding plane inside one stratum: a dashed wavy line */
 .bedding {
