@@ -1222,9 +1222,14 @@ def _output_html(out: dict[str, Any], vendor_id: str, handle: str, alt: str) -> 
             f'<p class="card-f">{html_escape(foot[0])} <code>{html_escape(foot[1])}</code></p></div>'
         )
     if kind == "df":
+        # pandas' to_html heads the index column with its own blank cell, and the runner keeps it, so
+        # the header only needs one added when a table was captured without it.
+        cols = out["columns"]
+        width = len(out["rows"][0]) if out["rows"] else len(cols)
+        lead = "" if len(cols) == width + 1 else "<th></th>"
         head = (
-            "<tr><th></th>"
-            + "".join(f"<th>{html_escape(c)}</th>" for c in out["columns"])
+            f"<tr>{lead}"
+            + "".join(f"<th>{html_escape(c)}</th>" for c in cols)
             + "</tr>"
         )
         body = "".join(

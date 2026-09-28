@@ -202,6 +202,15 @@ def _time_axis(
             else:
                 ticks.append((t, "", t + day / 2))
         ticks.append((hi_edge, "", hi_edge))
+    elif span_days <= 2:
+        # a span of hours (15-second frequency, say): ticks on whole hours, labelled by the clock; the
+        # caption carries the date
+        cap = 4 if narrow else 8
+        hours = next(h for h in (1, 2, 3, 6, 12, 24) if (hi_edge - lo) / (h * 3600) <= cap)
+        t = math.ceil(lo / (hours * 3600)) * hours * 3600
+        while t <= hi_edge + 1:
+            ticks.append((t, dt.datetime.fromtimestamp(t, dt.UTC).strftime("%H:%M"), t))
+            t += hours * 3600
     elif span_days <= 16:
         every = 1 if not narrow or span_days <= 8 else 2
         t = first_mid
@@ -375,7 +384,10 @@ def _lines(chart: dict[str, Any], view: ChartView, fr: Frame, uid: str, narrow: 
     values = [v for s in chart["series"] for v in s["values"] if v is not None]
     lo, hi = min(values), max(values)
     pad = (hi - lo) * 0.04 or 1
-    plot = _Plot(fr, ts, lo - pad if lo < 0 else min(0.0, lo), hi + pad, narrow)
+    # A line keeps a zero baseline while zero is close to the data; a band far from zero (a temperature,
+    # a frequency near 50 Hz) is drawn to its own range, or it flattens into a strip at the top.
+    floor = lo - pad if lo < 0 or lo > hi / 2 else 0.0
+    plot = _Plot(fr, ts, floor, hi + pad, narrow)
     half = plot.step / 2
     body: list[str] = []
     for s in chart["series"]:

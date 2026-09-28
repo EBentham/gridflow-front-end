@@ -31,3 +31,22 @@ def test_no_axis_label_passes_the_end_of_the_axis() -> None:
     svg = plot.axes("£/MWh", "")
     for x, label in re.findall(r'<text x="([\d.]+)" y="[\d.]+" text-anchor="middle">([^<]+)</text>', svg):
         assert float(x) + len(label) * 3.6 <= chart_svg.WIDE.x1 + 8, label
+
+
+def test_a_span_of_hours_is_labelled_by_the_clock() -> None:
+    start = dt.datetime(2026, 9, 17, tzinfo=dt.UTC).timestamp()
+    ts = [start + i * 15 for i in range(6 * 240)]
+    ticks, _lo, _hi = chart_svg._time_axis(ts, chart_svg.WIDE, narrow=False)
+    assert [label for _t, label, _c in ticks] == [f"{h:02d}:00" for h in range(7)]
+
+
+def test_a_band_far_from_zero_is_drawn_to_its_own_range() -> None:
+    start = dt.datetime(2026, 9, 17, tzinfo=dt.UTC).timestamp()
+    chart = {
+        "x": [dt.datetime.fromtimestamp(start + i * 15, dt.UTC).isoformat() for i in range(3)],
+        "series": [{"key": "f", "values": [49.9, 50.0, 50.1]}],
+        "unit": "Hz",
+    }
+    view = chart_svg.ChartView(key=[chart_svg.KeyEntry(series="f", label="Frequency")], x_label=None)
+    svg = chart_svg._lines(chart, view, chart_svg.WIDE, "t", narrow=False)
+    assert ">0<" not in svg
