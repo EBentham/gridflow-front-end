@@ -1,7 +1,7 @@
 {
  "dataset": "elexon/agws",
  "generated_by": "scripts/run_notebooks.py",
- "cells_sha256": "de59e21228817d7ad5d1fcd9eef3346c7a30c4672cc440f8395a4ffa818070a4",
+ "cells_sha256": "c0b804f232212823f748f3840a3bc1d4a8e6baa81e3103ef65dac034fba1b85d",
  "kernel": "gridflow_models",
  "source": "elexon",
  "cells": [
@@ -55,7 +55,7 @@
   },
   {
    "n": 3,
-   "source": "df = data.elexon.query(\"agws\", \"2026-09-19\", \"2026-09-25\")",
+   "source": "df = data.elexon.query(\"agws\", \"2026-09-19\", \"2026-09-25\")\ndf = df.sort_values([\"timestamp_utc\", \"psr_type\"])",
    "outputs": []
   },
   {
@@ -81,33 +81,33 @@
      "rows": [
       [
        "2026-09-19",
-       "46",
+       "1",
        "Solar",
        "0.0"
       ],
       [
        "2026-09-19",
-       "46",
+       "1",
        "Wind Offshore",
-       "9499.0"
+       "11059.0"
       ],
       [
        "2026-09-19",
-       "46",
+       "1",
        "Wind Onshore",
-       "7021.0"
+       "7268.0"
       ],
       [
        "2026-09-19",
-       "47",
+       "2",
        "Solar",
        "0.0"
       ],
       [
        "2026-09-19",
-       "47",
+       "2",
        "Wind Offshore",
-       "9540.0"
+       "11114.0"
       ]
      ]
     }
@@ -115,17 +115,13 @@
   },
   {
    "n": 5,
-   "source": "wide = df.pivot_table(index=\"timestamp_utc\", columns=\"psr_type\",\n                      values=\"generation_mw\")\nwide[[\"Wind Offshore\", \"Wind Onshore\", \"Solar\"]].plot(\n    ylabel=\"MW\", color=[\"#3E8C97\", \"#1C2B22\", \"#AFC64E\"],\n    style=[\"-\", \"--\", \"-\"], figsize=(8, 3.5))",
+   "source": "wide = df.pivot_table(index=\"timestamp_utc\", columns=\"psr_type\",\n                      values=\"generation_mw\")\nax = wide[[\"Wind Offshore\", \"Wind Onshore\", \"Solar\"]].plot(\n    ylabel=\"MW\", color=[\"#3E8C97\", \"#1C2B22\", \"#AFC64E\"],\n    style=[\"-\", \"--\", \"-\"], ylim=(0, 14500), figsize=(8, 3.5))\nax.legend(ncols=3, loc=\"upper right\");",
    "outputs": [
-    {
-     "kind": "text",
-     "text": "<Axes: xlabel='timestamp_utc', ylabel='MW'>"
-    },
     {
      "kind": "image",
      "src": "agws-5.png",
      "width": 716,
-     "height": 374
+     "height": 369
     }
    ]
   }

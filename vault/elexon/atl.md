@@ -11,7 +11,7 @@ page:
     period, Elexon data item B0610.
   facts:
     vendor: Elexon BMRS, dataset ATL (B0610)
-    cadence: Half-hourly, one vendor document per settlement period
+    cadence: One vendor document per settlement period, each published on its own
     grain: One row per settlement period
   landscape: power
   what_it_is: >-

@@ -1,7 +1,7 @@
 {
  "dataset": "elexon/windfor",
  "generated_by": "scripts/run_notebooks.py",
- "cells_sha256": "670cc7e67e4123401764bcb6ec00b82254ac5e739c021cd8a331728e094515e0",
+ "cells_sha256": "b2911b1135ebec3d41fabbfee85be610b6277f775b06eae93329ae2705b1adbd",
  "kernel": "gridflow_models",
  "source": "elexon",
  "cells": [
@@ -55,7 +55,7 @@
   },
   {
    "n": 3,
-   "source": "df = data.elexon.query(\"windfor\", \"2026-09-20\", \"2026-09-22\")\nfor col in [\"timestamp_utc\", \"published_at\"]:\n    df[col] = df[col].dt.tz_convert(\"UTC\")\ndf = df[df.published_at.dt.strftime(\"%Y-%m-%d\") == \"2026-09-20\"]",
+   "source": "df = data.elexon.query(\"windfor\", \"2026-09-20\", \"2026-09-22\")\nfor col in [\"timestamp_utc\", \"published_at\"]:\n    df[col] = df[col].dt.tz_convert(\"UTC\")\ndf = df[df.published_at.dt.day == 20]",
    "outputs": []
   },
   {
@@ -71,11 +71,11 @@
       "latest_forecast_mw"
      ],
      "index": [
-      "7",
-      "1",
-      "5",
-      "6",
-      "3"
+      "15",
+      "9",
+      "13",
+      "14",
+      "11"
      ],
      "rows": [
       [

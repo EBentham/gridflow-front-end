@@ -88,7 +88,7 @@ page:
         df = data.elexon.query("windfor", "2026-09-20", "2026-09-22")
         for col in ["timestamp_utc", "published_at"]:
             df[col] = df[col].dt.tz_convert("UTC")
-        df = df[df.published_at.dt.strftime("%Y-%m-%d") == "2026-09-20"]
+        df = df[df.published_at.dt.day == 20]
       - df.sort_values(["timestamp_utc", "published_at"])[["timestamp_utc", "published_at", "latest_forecast_mw"]].head()
       - |
         wide = df.pivot(index="timestamp_utc", columns="published_at", values="latest_forecast_mw")
@@ -186,7 +186,7 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
 **Path pattern**: `{data_root}/silver/elexon/windfor/year=YYYY/month=MM/windfor_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.elexon.wind_forecast.WindForecastTransformer`
 **Pydantic schema**: `gridflow.schemas.elexon.ElexonWindForecast`
-**Dedup key**: `(timestamp_utc, published_at)`, keep last: this endpoint sends no settlement fields, so the `(settlement_date, settlement_period, published_at)` branch never applies (`silver/elexon/wind_forecast.py:160-165`). A silver file's date is its bronze publish-window date, so it holds the issues published that day.
+**Dedup key**: `(timestamp_utc, published_at)`, keep last: this endpoint sends no settlement fields, so the `(settlement_date, settlement_period, published_at)` branch never applies (`silver/elexon/wind_forecast.py:160-165`). A silver file's date is its bronze publish-window date, so it holds the issues published that day (`connectors/elexon/client.py:314` sets `data_date` to the window start; `wind_forecast.py:60-84` reads that one bronze day).
 **Point-in-time field**: `published_at`
 
 ### Silver schema

@@ -90,14 +90,17 @@ page:
       Returns a pandas DataFrame from the DuckDB relation `silver_elexon_agws`, filtered on
       `settlement_date` with both ends included. Lineage columns are dropped.
     cells:
-      - df = data.elexon.query("agws", "2026-09-19", "2026-09-25")
+      - |
+        df = data.elexon.query("agws", "2026-09-19", "2026-09-25")
+        df = df.sort_values(["timestamp_utc", "psr_type"])
       - df[["settlement_date", "settlement_period", "psr_type", "generation_mw"]].head()
       - |
         wide = df.pivot_table(index="timestamp_utc", columns="psr_type",
                               values="generation_mw")
-        wide[["Wind Offshore", "Wind Onshore", "Solar"]].plot(
+        ax = wide[["Wind Offshore", "Wind Onshore", "Solar"]].plot(
             ylabel="MW", color=["#3E8C97", "#1C2B22", "#AFC64E"],
-            style=["-", "--", "-"], figsize=(8, 3.5))
+            style=["-", "--", "-"], ylim=(0, 14500), figsize=(8, 3.5))
+        ax.legend(ncols=3, loc="upper right");
     needs: 19 to 26 September 2026
     plot_alt: >-
       Line plot of Wind Offshore, Wind Onshore (dashed) and Solar generation_mw against
@@ -228,7 +231,7 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
     {
         "settlement_date": "2026-05-06",
         "settlement_period": 4,
-        "timestamp_utc": "2026-05-06T00:30:00+00:00",  # BST: period 1 starts 23:00 UTC the day before (utils/time.py:28-42)
+        "timestamp_utc": "2026-05-06T00:30:00+00:00",
         "psr_type": "Wind Onshore",
         "generation_mw": 1238.414,
         "business_type": "Wind generation",
