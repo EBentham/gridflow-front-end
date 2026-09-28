@@ -1,8 +1,7 @@
 # Resume the Elexon batch (paused 2026-09-28 on Bobbo's request)
 
 Batch brief: `.planning/v5/p26/BATCH-elexon.md`. Reports: `.planning/v5/p26/elexon/<page>-author.md`,
-`-review.md`, `-review-2.md`. No new agents were started after the pause. The agents that were already running
-finish on their own and write their files.
+`-review.md`, `-review-2.md`. No new agents were started after the pause. Every agent that was running has finished: **nothing is in flight.**
 
 ## Where the work lives
 
@@ -21,7 +20,7 @@ finish on their own and write their files.
 | freq | revision 1 done (claim scoped, `needs` widened to 16 and 17 Sep) | a757523f18b8872ee | ac2da42890daacdbe | re-check → `freq-review-2.md` |
 | fuelinst | APPROVED, 3 nits (23:00 vs 23:05 axis label, two "how it's used" bullets repeat fuelhh, `available_at` in the note) | ac17b80233d655e7c | a3c074b63838c4512 | writer applies the nits |
 | agpt | APPROVED, 4 nits (FUELHH comparison label, "Elexon's own type", `wind` tag on the step, local measurements in the note body) | ac08817af5dc65b24 | ae15bf21016303925 | writer applies the nits |
-| agws | the writer is running | a02a65646052893e2 | — | launch the checker |
+| agws | written (stacked onshore, offshore and solar, settlement dates 19 to 25 Sep) | a02a65646052893e2 | — | launch the checker (look at the onshore hatch and `aggregation: sum`) |
 | windfor | written (three forecast issues of 20 Sep as lines); the checker is not started, because of the pause | a1ab63925783acd9e | — | launch the checker; have it look hardest at the issue-comparison claims and the silver-vs-schema correction |
 | atl | written (line of `total_load_mw`, settlement dates 14 to 20 Sep; 130 of 336 half-hours missing; about 7.9 GW above INDO at midday, cause unknown) | ae4cecd8c31375b94 | — | launch the checker (look at the gap wording and the 2,670 MW half-hour) |
 | lolpdrm, demand-forecasts, group 3, group 4, group 5 | not started | — | — | launch writers (prompts: copy any writer prompt, change the dataset and port) |

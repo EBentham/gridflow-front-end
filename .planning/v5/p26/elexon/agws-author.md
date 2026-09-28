@@ -48,7 +48,7 @@ Code paths are under `C:\Users\Bobbo\OneDrive\Desktop\Python\gridflow\src\gridfl
 | Request URL (`raw_feed.requests`) | `endpoints.py:300-313` (`publishDateTimeFrom/To` via `_to_utc_z`, plus `page`); `client.py:93-99` 24-hour chunks; bronze sidecar `bronze/elexon/agws/2026/09/19/raw_20260926T183056Z_010ce8de.meta.json` `request_params`: `publishDateTimeFrom=2026-09-19T00:00:00Z`, `publishDateTimeTo=2026-09-20T00:00:00Z`, `page=1`. |
 | Bronze filed by publish day (`raw_feed.note`) | `client.py:314` `data_date = start.date()` of the publish chunk; transformer reads one bronze day (`agws.py:27-35`) and silver writes per target date (`silver/base.py:1067,1191`). Silver file `agws_20260926.parquet` holds 25 Sep periods 46-48 and 26 Sep periods 1-45. |
 | Period 46 published after midnight UTC, so both commands run a day longer (`raw_feed.note`, `commands`) | Sample row: period 46 of 2026-09-25, `published_at` 2026-09-26 00:00:15 UTC. In September silver every date's periods 46-48 sit in the next day's file. |
-| Ingest `--start 2026-09-19 --end 2026-09-27`, end exclusive | Publish-datetime loop `client.py:93-99` (`while current < end`); CLI dates parsed as UTC instants (`cli.py:1237-1254` -> `pipeline/runner.py` `resolve_dates`). Fetches publish days 19 to 26, which cover settlement dates 19 (period 1 published 01:30 on the 19th) to 25 (periods 46-48 published on the 26th). No `PARTITION_SOURCE_OFFSETS` on the transformer (base default `(0,)`, `silver/base.py:417`). |
+| Ingest `--start 2026-09-19 --end 2026-09-27`, end exclusive | Publish-datetime loop `client.py:93-99` (`while current < end`); a bare `--end` date is midnight UTC (`pipeline/runner.py:468-471` `_parse_window_bound`, via `cli.py:1237-1254`). Fetches publish days 19 to 26, which cover settlement dates 19 (period 1 published 01:30 on the 19th) to 25 (periods 46-48 published on the 26th). No `PARTITION_SOURCE_OFFSETS` on the transformer (base default `(0,)`, `silver/base.py:417`). |
 | Transform `--start 2026-09-19 --end 2026-09-26`, inclusive, by publish day | Transformer reads the bronze day it is given (`agws.py:27-35`); the transform end is an inclusive date per the brief. |
 | `timestamp_utc` computed from settlement date and period (`record.fields`) | `agws.py:86-95` calls `settlement_period_to_utc`; `utils/time.py:41-42` period 1 = local midnight in UTC. Matches bronze `startTime` (period 45 of 19 Sep: `startTime` 21:00Z, silver 21:00 UTC). |
 | `settlement_date` is the vendor label as sent | `agws.py:58,80` rename and cast `settlementDate` to Date. |
@@ -57,7 +57,7 @@ Code paths are under `C:\Users\Bobbo\OneDrive\Desktop\Python\gridflow\src\gridfl
 | `business_type`, `document_id`, `document_revision`, `published_at` as sent | `agws.py:59-65`; `published_at` parsed to UTC `agws.py:99-104`. |
 | Two rows of each period share one document (`record.fields.document_id`) | Sample rows: ids `...0925260130`, `...0925260800`, `...0925261430`, `...0926260000`, two rows each. Scoped "here". |
 | Business types differ for solar and wind (`record.fields.business_type`) | Sample rows: `Solar generation` and `Wind generation`. Scoped "here". |
-| Notebook lead: relation `silver_elexon_agws`, filtered on `settlement_date`, both ends included, lineage dropped | `silver/schema_manifest.py:113` `("elexon", "agws"): "settlement_date"`; no agws entry in `silver/latest_views.py`, so the base view; gridflow_models `research/handles/source.py:401-451` (inclusive start/end, `EXCLUDE` of bitemporal columns). Notebook output starts at settlement date 2026-09-19 with no lineage columns. |
+| Notebook lead: relation `silver_elexon_agws`, filtered on `settlement_date`, both ends included, lineage dropped | `silver/schema_manifest.py:113` `("elexon", "agws"): "settlement_date"`; run from the gridflow_models venv, `_relation_name_for_dataset("agws")` returns `silver_elexon_agws` and `_validate_dataset_for_source("elexon", "agws")` returns `settlement_date`; no agws entry in `silver/latest_views.py`, so the base view; gridflow_models `research/handles/source.py:401-451` (inclusive start/end, `EXCLUDE` of bitemporal columns). Notebook output starts at settlement date 2026-09-19 with no lineage columns. |
 | Notebook `needs`: 19 to 26 September 2026 | Same publish days as the ingest command (end 27 exclusive). |
 | Chart: silver `elexon/agws`, MW, settlement dates 19 to 25 Sep 2026, one value per type, stacked (`chart_view.caption`) | `page.chart`: filter `settlement_date` ge 2026-09-19 and le 2026-09-25, dedup on the key by `published_at`, `group_map` one type per series, `aggregation: sum` over a single row per series and half-hour. distil: "3 series x 336 points, 1008 rows used". |
 | Alt numbers | Committed series: onshore 488 to 8,767; offshore 421 to 11,476; solar 0 to 10,099, daily peaks 6,158 (19th) to 10,099 (20th); wind combined max 19,115 (19th 01:00 UTC), min 1,598 (22nd 17:00 UTC); total 2,015 to 25,051 MW. Solar is 0.0 at every point from 20:00 to 03:59 UTC. |
@@ -77,8 +77,7 @@ Code paths are under `C:\Users\Bobbo\OneDrive\Desktop\Python\gridflow\src\gridfl
    `datetime.now(UTC)` at transform time (`silver/elexon/agws.py:119-123`). Row now says so, with the cite.
 2. Silver sample, `timestamp_utc`: `2026-05-06T01:30:00+00:00` for period 4 of a BST day was an hour late.
    Period 1 starts at local midnight (23:00 UTC the day before), so period 4 starts 00:30 UTC
-   (`utils/time.py:28-42`); the note's own bronze sample has `startTime` 00:30Z. Fixed, with an inline comment citing
-   the function.
+   (`utils/time.py:28-42`); the note's own bronze sample has `startTime` 00:30Z. Value fixed; no other change on the line.
 3. Known issues, publish-day partitioning: the 2026-07-30 reading ("`agws_20260724.parquet` held only periods 41-48",
    "about 30-40 min publish lag") no longer matches silver (re-transformed 2026-09-27). The file now holds periods 1-45
    of 24 July plus 46-48 of 23 July, and every September row has `published_at - timestamp_utc` = 150 minutes. Replaced
@@ -105,6 +104,9 @@ questions), the schema table's missing lineage columns (a matrix-wide pattern, n
   `_latest` view later; out of scope here.
 - `keep="last"` within a day follows sorted bronze filenames, which start with the fetch timestamp, so a later fetch
   wins; two identical bronze files exist for 19 Sep (same `body_sha256`), harmless.
+
+- The `.head()` index labels (0 to 4) come from pandas' own HTML. After `sort_values` they depend on the order
+  DuckDB returned the rows in, so a re-run can show other labels over the same five rows.
 
 ## Template problems
 
