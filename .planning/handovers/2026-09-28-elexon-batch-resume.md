@@ -27,7 +27,11 @@ Batch brief: `.planning/v5/p26/BATCH-elexon.md`. Reports: `.planning/v5/p26/elex
 | demand-forecasts (family, lead ndf) | written (two NDF publishes for 17 Sep; notebook scores against INDO) | abf8f9353b1213246 | — | QUEUED: launch the checker (look at the "NDF is the quantity INDO reports" claims, and the 07:45 publish) |
 | boal | written (acceptances per hour by SO flag, 14 to 20 Sep) | a31536a58a5a3b972 | — | QUEUED: launch the checker when a slot frees |
 | disbsad | writer running | a5b3f85429c8bcd8c | — | launch the checker |
-| netbsad, soso, market_depth, group 4, group 5 | not started | — | — | launch writers |
+| market_depth | written (accepted offer volume, 16 to 22 Sep) | aa46a54294f5cafaa | — | QUEUED: launch the checker (look at the same-day-null raw-feed note: vendor behaviour or local holdings?; the MWh vs MW conflict) |
+| netbsad | writer running | a5e765b85bf3eff9a | — | launch the checker |
+| soso | writer running | a41b75f70f9993f96 | — | launch the checker |
+| pn | writer running | a1f13e90b72f5b8c5 | — | launch the checker |
+| nonbm, fou2t14d, uou2t14d, remit, indicated-day-ahead (family) | not started | — | — | launch writers under the throttle |
 
 If a restart kills a running agent, check its report file and the vault note first, then resume it by id.
 
@@ -44,6 +48,8 @@ If a restart kills a running agent, check its report file and the vault note fir
   the page states it plainly.
 - **gridflow nondeterminism (from lolpdrm):** which publish silver keeps depends on bronze file-name order, so it
   is not the latest publish and can differ between machines. This is gridflow work.
+- **Chart spec takes one value column** (market_depth): a wide table cannot chart two of its columns (accepted
+  offers and bids) as two series. Template work.
 - **Frame fold order (hit by boal and demand-forecasts):** the sample frame folds from the right in silver's column
   order, so the columns that matter (boal MW levels; demand and `published_at`) hide behind `…` and the rows look
   identical. Proposed: an optional `record.select.columns` (a Polars `.select` order, pipeline columns still
