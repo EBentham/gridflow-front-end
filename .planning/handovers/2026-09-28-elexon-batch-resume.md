@@ -25,7 +25,7 @@ Batch brief: `.planning/v5/p26/BATCH-elexon.md`. Reports: `.planning/v5/p26/elex
 | atl | revision 1 done (gaps now break); checker running | ae4cecd8c31375b94 | aa5264d2b291ec745 | act on the verdict |
 | lolpdrm | written (de-rated margin, three noon publishes, 13 to 17 Sep) | a9a809d3db7a3003d | — | QUEUED: launch the checker (look at the key vs per-bronze-day dedup, and the cadence fact) |
 | demand-forecasts (family, lead ndf) | written (two NDF publishes for 17 Sep; notebook scores against INDO) | abf8f9353b1213246 | — | QUEUED: launch the checker (look at the "NDF is the quantity INDO reports" claims, and the 07:45 publish) |
-| boal | written; checker running | a31536a58a5a3b972 | (see the run) | act on the verdict |
+| boal | written; checker running | a31536a58a5a3b972 | adc1711149f93ffb3 | act on the verdict |
 | disbsad | written (volume by service, 14 to 19 Sep) | a5b3f85429c8bcd8c | — | QUEUED: launch the checker (look at "each reply holds the half-hour starting at `to`", and the £/MWh units from the note only) |
 | market_depth | written (accepted offer volume, 16 to 22 Sep) | aa46a54294f5cafaa | — | QUEUED: launch the checker (look at the same-day-null raw-feed note: vendor behaviour or local holdings?; the MWh vs MW conflict) |
 | netbsad | written; HELD, not in the batch PR (every field is 0 across 674 periods while DISBSAD shows up to 773 MWh: likely a gridflow parse bug) | a5e765b85bf3eff9a | — | research unit first, then check and publish |
