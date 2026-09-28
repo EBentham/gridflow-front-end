@@ -1725,6 +1725,26 @@ def resolve_chart(doc: DatasetDoc) -> tuple[dict[str, Any] | None, list[str], li
     return series, [], notes
 
 
+def _scoped(errors: list[str], vendor_id: str, only: frozenset[str]) -> list[str]:
+    """With ``--only``, just the errors that name a page being rendered.
+
+    Several writers build single pages side by side, so one half-finished note must not fail
+    another's build; the full build and ``--check`` still see every error.
+    """
+    if not only:
+        return errors
+    slugs = [k.split("/", 1)[1] for k in only if k.startswith(f"{vendor_id}/")]
+    names = re.compile(r"(?<![\w-])(?:" + "|".join(re.escape(s) for s in slugs) + r")(?![\w-])")
+    kept = [e for e in errors if slugs and names.search(e)]
+    if len(kept) < len(errors):
+        print(
+            f"[gridflow-build] {vendor_id}: {len(errors) - len(kept)} error(s) on pages not rendered "
+            "by --only, left for the full build",
+            file=sys.stderr,
+        )
+    return kept
+
+
 def _fail(vendor_id: str, kind: str, errors: list[str]) -> None:
     print(
         f"[gridflow-build] {vendor_id}: {len(errors)} {kind} error(s) - failing build:",
@@ -1787,6 +1807,7 @@ def build_vendor(
         print(f"[gridflow-build] {vendor_id}: {len(warnings)} content warning(s):", file=sys.stderr)
         for w in warnings:
             print(f"  WARN: {w}", file=sys.stderr)
+    errors = _scoped(errors, vendor_id, only)
     if errors:
         _fail(vendor_id, "content", errors)
 
@@ -1799,6 +1820,7 @@ def build_vendor(
             print(f"  NOTE: {note}", file=sys.stderr)
         if chart is not None:
             charts[doc.slug] = chart
+    chart_errors = _scoped(chart_errors, vendor_id, only)
     if chart_errors:
         _fail(vendor_id, "chart", chart_errors)
 
@@ -1832,6 +1854,7 @@ def build_vendor(
                 f"{doc.slug}: page.family must match the page set: slug {fam['slug']!r}, "
                 f"members {fam['members']}"
             )
+    page_errors = _scoped(page_errors, vendor_id, only)
     if page_errors:
         _fail(vendor_id, "dataset page", page_errors)
 
@@ -1855,6 +1878,7 @@ def build_vendor(
             view, errs = page_view(lead, arts, [docs[m] for m in members] if fam else [])
             views[page] = view
         page_errors.extend(errs)
+    page_errors = _scoped(page_errors, vendor_id, only)
     if page_errors:
         _fail(vendor_id, "dataset page", page_errors)
 
