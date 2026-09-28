@@ -18,12 +18,12 @@
         <div class="hero__lede">
           <p>Gridflow ingests, normalises and serves time-series data from seven public and authenticated vendors (electricity, gas, weather and carbon) into a single queryable warehouse. Models for demand, wind, solar and clearing prices sit one layer above.</p>
           <div class="cta"><a class="btn" href="architecture.html">Explore the architecture</a><a class="link-alt" href="models.html">See a model</a></div>
-          <p class="hero__scope">Seven vendors, 165 datasets, four markets, seventeen years of history, three pipeline layers.</p>
+          <p class="hero__scope">Seven vendors, 149 datasets, four markets, seventeen years of history, three pipeline layers.</p>
         </div>
         <section class="keys" aria-labelledby="keys-h">
           <h2 id="keys-h">Three things to explore</h2>
           <ul>
-          <li><a href="data-sources.html"><svg width="46" height="30" viewBox="0 0 46 30" aria-hidden="true"><defs><pattern id="k-b" width="24" height="12" patternUnits="userSpaceOnUse"><path d="M0 11.5 H24 M12 0 V6 M0 6 H24 M0 6 V12" stroke="#7C5530" stroke-width=".8" fill="none"></path></pattern></defs><rect x=".75" y=".75" width="44.5" height="28.5" fill="#E2CDB3"></rect><rect x=".75" y=".75" width="44.5" height="28.5" fill="url(#k-b)" opacity=".45"></rect><rect x=".75" y=".75" width="44.5" height="28.5" fill="none" stroke="#1C2B22" stroke-width="1.5"></rect></svg><h3>Vendors</h3><p>Seven vendors across UK and EU power, gas, carbon and weather: 165 datasets, each with schema, sample queries, and the caveats that bite.</p></a></li>
+          <li><a href="data-sources.html"><svg width="46" height="30" viewBox="0 0 46 30" aria-hidden="true"><defs><pattern id="k-b" width="24" height="12" patternUnits="userSpaceOnUse"><path d="M0 11.5 H24 M12 0 V6 M0 6 H24 M0 6 V12" stroke="#7C5530" stroke-width=".8" fill="none"></path></pattern></defs><rect x=".75" y=".75" width="44.5" height="28.5" fill="#E2CDB3"></rect><rect x=".75" y=".75" width="44.5" height="28.5" fill="url(#k-b)" opacity=".45"></rect><rect x=".75" y=".75" width="44.5" height="28.5" fill="none" stroke="#1C2B22" stroke-width="1.5"></rect></svg><h3>Vendors</h3><p>Seven vendors across UK and EU power, gas, carbon and weather: 149 datasets, each with schema, sample queries, and the caveats that bite.</p></a></li>
           <li><a href="architecture.html"><svg width="46" height="30" viewBox="0 0 46 30" aria-hidden="true"><defs><pattern id="k-s" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M0 8 L8 0" stroke="#5E6E6B" stroke-width=".8"></path></pattern></defs><rect x=".75" y=".75" width="44.5" height="28.5" fill="#DCE2DF"></rect><rect x=".75" y=".75" width="44.5" height="28.5" fill="url(#k-s)" opacity=".45"></rect><rect x=".75" y=".75" width="44.5" height="28.5" fill="none" stroke="#1C2B22" stroke-width="1.5"></rect></svg><h3>Pipeline</h3><p>Bronze, silver and gold layers. End-to-end data flow, design decisions, and the full repo map.</p></a></li>
           <li><a href="models.html"><svg width="46" height="30" viewBox="0 0 46 30" aria-hidden="true"><defs><pattern id="k-g" width="9" height="9" patternUnits="userSpaceOnUse"><circle cx="2" cy="3" r="1" fill="#8A6F1E"></circle><circle cx="6.5" cy="7.5" r=".8" fill="#8A6F1E"></circle></pattern></defs><rect x=".75" y=".75" width="44.5" height="28.5" fill="#E9DDAF"></rect><rect x=".75" y=".75" width="44.5" height="28.5" fill="url(#k-g)" opacity=".45"></rect><rect x=".75" y=".75" width="44.5" height="28.5" fill="none" stroke="#1C2B22" stroke-width="1.5"></rect></svg><h3>Forecasts</h3><p>Quantitative work built on the warehouse: probabilistic demand, wind, solar, and a fundamentals SMP forecaster.</p></a></li>
           </ul>
@@ -258,12 +258,13 @@
           <p>Raw API responses land in bronze, append-only and SHA-256 hashed. Each vendor below publishes data on one part of the system drawn above.</p>
           <p><a class="more" href="data-sources.html">Full catalogue</a></p>
         </div>
+        <!-- Each vendor's name, dataset count and fact line are copied from site/hifi/data/<vendor>.json, the files gridflow-build counts for Data sources; tests/test_home_counts.py fails the build if they drift. -->
         <div class="vendors">
         <article class="vend vend--elexon" data-feed="substation">
-          <p class="vend__land"><code>elexon/fuelhh.json</code></p>
+          <p class="vend__land"><code>bronze/elexon/</code></p>
           <h3 class="h-entry"><a href="data-sources/elexon.html">Elexon BMRS</a></h3>
           <p class="vend__d">GB electricity: prices, generation, demand, balancing</p>
-          <p class="vend__m">33 datasets, every 5 minutes</p>
+          <p class="vend__m">33 datasets, half-hourly, no API key</p>
           <svg width="280" height="52" viewBox="0 0 280 52" aria-hidden="true"><path d="M91.9 40.0 L93.1 41.4 L94.3 40.0 Z" fill="#C77E3C"></path><path d="M254.2 40.0 L255.4 42.4 L257.7 45.0 L260.0 48.0 L261.2 40.0 Z" fill="#C77E3C"></path><path d="M0 40.0 H280" stroke="#1C2B22" stroke-width=".8" stroke-dasharray="3 3" opacity=".6"></path><path d="M4.0 10.0 L6.3 10.5 L8.6 5.5 L10.9 15.9 L13.1 7.6 L15.4 5.9 L17.7 12.0 L20.0 11.5 L22.3 12.8 L24.6 21.4 L26.9 26.9 L29.1 29.7 L31.4 32.0 L33.7 35.4 L36.0 37.7 L38.3 33.3 L40.6 23.2 L42.9 18.1 L45.1 19.9 L47.4 4.0 L49.7 10.1 L52.0 4.0 L54.3 4.6 L56.6 6.8 L58.9 11.3 L61.1 11.8 L63.4 12.4 L65.7 12.4 L68.0 11.9 L70.3 11.5 L72.6 7.7 L74.9 8.0 L77.1 18.6 L79.4 13.2 L81.7 16.8 L84.0 22.2 L86.3 15.9 L88.6 12.9 L90.9 12.0 L93.1 41.4 L95.4 14.0 L97.7 6.5 L100.0 9.6 L102.3 4.5 L104.6 6.3 L106.9 6.3 L109.1 7.6 L111.4 19.9 L113.7 17.1 L116.0 15.5 L118.3 13.2 L120.6 18.7 L122.9 16.0 L125.1 12.7 L127.4 6.1 L129.7 8.8 L132.0 13.8 L134.3 8.8 L136.6 15.6 L138.9 21.7 L141.1 24.9 L143.4 24.1 L145.7 21.3 L148.0 19.0 L150.3 20.1 L152.6 20.2 L154.9 17.2 L157.1 9.2 L159.4 9.6 L161.7 11.7 L164.0 12.4 L166.3 11.2 L168.6 13.6 L170.9 18.2 L173.1 18.0 L175.4 17.6 L177.7 16.2 L180.0 15.5 L182.3 9.4 L184.6 15.7 L186.9 18.5 L189.1 16.7 L191.4 13.1 L193.7 13.9 L196.0 14.4 L198.3 21.6 L200.6 12.0 L202.9 18.9 L205.1 20.8 L207.4 28.0 L209.7 20.1 L212.0 10.8 L214.3 18.1 L216.6 19.8 L218.9 21.8 L221.1 15.8 L223.4 7.5 L225.7 9.2 L228.0 16.4 L230.3 9.7 L232.6 21.2 L234.9 21.7 L237.1 21.0 L239.4 21.3 L241.7 9.4 L244.0 10.8 L246.3 30.7 L248.6 39.5 L250.9 39.9 L253.1 39.9 L255.4 42.4 L257.7 45.0 L260.0 48.0 L262.3 18.6 L264.6 14.5 L266.9 10.1 L269.1 15.9 L271.4 9.3 L273.7 12.6 L276.0 18.4" fill="none" stroke="#1C2B22" stroke-width="1.5" stroke-linejoin="round"></path></svg>
           <p class="vend__cap"><code>system_prices</code><br>system sell price, £/MWh, −39 to 179</p>
         </article>
@@ -271,39 +272,39 @@
           <p class="vend__land" aria-hidden="true"></p>
           <h3 class="h-entry"><a href="data-sources/neso_data_portal.html">NESO Data Portal</a></h3>
           <p class="vend__d">CKAN file catalogue: wind availability, embedded forecasts, generation mix from 2009</p>
-          <p class="vend__m">3 datasets, every 30 minutes</p>
+          <p class="vend__m">3 datasets, current file only, no API key</p>
           <svg width="280" height="52" viewBox="0 0 280 52" aria-hidden="true"><path d="M4.0 29.4 L6.3 22.5 L8.6 13.5 L10.9 13.3 L13.1 6.9 L15.4 9.6 L17.7 12.6 L20.0 16.2 L22.3 7.5 L24.6 4.0 L26.9 9.7 L29.1 10.2 L31.4 19.5 L33.7 25.5 L36.0 27.3 L38.3 18.4 L40.6 19.6 L42.9 14.4 L45.1 14.7 L47.4 31.8 L49.7 39.5 L52.0 40.6 L54.3 39.3 L56.6 34.9 L58.9 37.1 L61.1 44.1 L63.4 41.4 L65.7 45.6 L68.0 39.5 L70.3 42.0 L72.6 35.0 L74.9 43.8 L77.1 44.1 L79.4 43.3 L81.7 47.2 L84.0 45.2 L86.3 38.0 L88.6 23.2 L90.9 29.7 L93.1 36.0 L95.4 43.1 L97.7 43.7 L100.0 42.3 L102.3 36.6 L104.6 33.8 L106.9 30.6 L109.1 35.6 L111.4 34.8 L113.7 29.3 L116.0 20.7 L118.3 18.7 L120.6 20.7 L122.9 15.6 L125.1 14.2 L127.4 19.6 L129.7 26.1 L132.0 20.4 L134.3 24.7 L136.6 26.8 L138.9 24.2 L141.1 21.9 L143.4 21.2 L145.7 27.7 L148.0 23.0 L150.3 18.3 L152.6 27.1 L154.9 28.4 L157.1 26.6 L159.4 20.3 L161.7 24.5 L164.0 22.0 L166.3 17.9 L168.6 30.6 L170.9 24.5 L173.1 30.8 L175.4 36.7 L177.7 32.1 L180.0 32.1 L182.3 25.3 L184.6 20.3 L186.9 31.2 L189.1 23.8 L191.4 27.0 L193.7 22.5 L196.0 25.6 L198.3 24.5 L200.6 23.8 L202.9 30.9 L205.1 26.3 L207.4 39.0 L209.7 18.7 L212.0 20.7 L214.3 13.8 L216.6 22.4 L218.9 22.0 L221.1 41.3 L223.4 29.8 L225.7 28.0 L228.0 30.2 L230.3 26.4 L232.6 39.4 L234.9 35.4 L237.1 35.5 L239.4 43.9 L241.7 43.4 L244.0 43.5 L246.3 46.1 L248.6 31.7 L250.9 36.8 L253.1 27.2 L255.4 36.7 L257.7 45.2 L260.0 43.6 L262.3 41.0 L264.6 36.5 L266.9 37.8 L269.1 36.7 L271.4 48.0 L273.7 41.1 L276.0 40.5" fill="none" stroke="#1C2B22" stroke-width="1.5" stroke-linejoin="round"></path></svg>
           <p class="vend__cap"><code>historic_generation_mix</code><br>gas share, %, Jan 2009 to Aug 2026</p>
         </article>
         <article class="vend vend--entsoe" data-feed="converter">
-          <p class="vend__land"><code>entsoe/da_prices.xml</code></p>
+          <p class="vend__land"><code>bronze/entsoe/</code></p>
           <h3 class="h-entry"><a href="data-sources/entsoe.html">ENTSO-E</a></h3>
           <p class="vend__d">European electricity transparency platform</p>
-          <p class="vend__m">49 datasets, every 15 minutes</p>
+          <p class="vend__m">36 datasets, XML, API key</p>
           <svg width="280" height="52" viewBox="0 0 280 52" aria-hidden="true"><path d="M4.0 13.9 L6.3 14.4 L8.6 14.8 L10.9 14.2 L13.1 14.2 L15.4 15.5 L17.7 16.9 L20.0 22.3 L22.3 31.1 L24.6 39.0 L26.9 44.4 L29.1 46.6 L31.4 46.6 L33.7 46.2 L36.0 40.2 L38.3 29.6 L40.6 18.4 L42.9 11.1 L45.1 7.3 L47.4 7.4 L49.7 7.9 L52.0 9.5 L54.3 10.7 L56.6 12.3 L58.9 13.1 L61.1 14.1 L63.4 14.5 L65.7 13.8 L68.0 15.2 L70.3 17.2 L72.6 20.8 L74.9 34.5 L77.1 45.9 L79.4 46.4 L81.7 46.6 L84.0 47.1 L86.3 46.7 L88.6 46.6 L90.9 45.9 L93.1 30.2 L95.4 15.8 L97.7 8.9 L100.0 6.7 L102.3 8.3 L104.6 10.4 L106.9 13.5 L109.1 16.4 L111.4 17.5 L113.7 18.3 L116.0 18.9 L118.3 18.3 L120.6 16.1 L122.9 11.9 L125.1 11.8 L127.4 14.7 L129.7 17.8 L132.0 22.6 L134.3 30.4 L136.6 35.1 L138.9 40.3 L141.1 37.8 L143.4 31.9 L145.7 24.4 L148.0 16.6 L150.3 11.5 L152.6 4.4 L154.9 4.5 L157.1 6.6 L159.4 8.9 L161.7 12.8 L164.0 13.6 L166.3 15.6 L168.6 16.9 L170.9 17.4 L173.1 16.7 L175.4 14.3 L177.7 11.0 L180.0 10.5 L182.3 12.0 L184.6 15.3 L186.9 19.7 L189.1 24.4 L191.4 28.1 L193.7 30.4 L196.0 28.7 L198.3 25.2 L200.6 22.9 L202.9 17.8 L205.1 13.9 L207.4 7.5 L209.7 4.0 L212.0 5.1 L214.3 7.6 L216.6 11.8 L218.9 13.7 L221.1 15.0 L223.4 15.8 L225.7 16.9 L228.0 18.0 L230.3 16.8 L232.6 13.6 L234.9 14.1 L237.1 17.1 L239.4 23.4 L241.7 33.9 L244.0 45.6 L246.3 47.7 L248.6 48.0 L250.9 48.0 L253.1 48.0 L255.4 47.4 L257.7 35.1 L260.0 22.5 L262.3 15.2 L264.6 12.1 L266.9 10.4 L269.1 9.7 L271.4 12.4 L273.7 13.2 L276.0 15.4" fill="none" stroke="#1C2B22" stroke-width="1.5" stroke-linejoin="round"></path></svg>
           <p class="vend__cap"><code>day_ahead_prices</code><br>day-ahead price, €/MWh, 0 to 198</p>
         </article>
         <article class="vend vend--gie" data-feed="gasterminal">
-          <p class="vend__land"><code>gie/agsi.json</code></p>
-          <h3 class="h-entry"><a href="data-sources/gie.html">GIE AGSI and ALSI</a></h3>
+          <p class="vend__land"><code>bronze/gie_agsi/</code></p>
+          <h3 class="h-entry"><a href="data-sources/gie.html">GIE AGSI+ and ALSI</a></h3>
           <p class="vend__d">EU gas storage levels and LNG terminal send-out</p>
-          <p class="vend__m">8 datasets, daily</p>
+          <p class="vend__m">6 datasets, daily gas days, API key</p>
           <svg width="280" height="52" viewBox="0 0 280 52" aria-hidden="true"><path d="M4.0 48.0 L72.0 33.3 L140.0 23.1 L208.0 14.0 L276.0 4.0" fill="none" stroke="#1C2B22" stroke-width="1.5" stroke-linejoin="round"></path><circle cx="4.0" cy="48.0" r="2.6" fill="#1C2B22"></circle><circle cx="72.0" cy="33.3" r="2.6" fill="#1C2B22"></circle><circle cx="140.0" cy="23.1" r="2.6" fill="#1C2B22"></circle><circle cx="208.0" cy="14.0" r="2.6" fill="#1C2B22"></circle><circle cx="276.0" cy="4.0" r="2.6" fill="#1C2B22"></circle></svg>
           <p class="vend__cap"><code>storage</code><br>gas in storage, GWh, 64.4 to 65.5</p>
         </article>
         <article class="vend vend--neso" data-feed="substation">
           <p class="vend__land" aria-hidden="true"></p>
-          <h3 class="h-entry"><a href="data-sources/neso.html">NESO</a></h3>
+          <h3 class="h-entry"><a href="data-sources/neso.html">NESO Carbon Intensity</a></h3>
           <p class="vend__d">GB grid carbon intensity</p>
-          <p class="vend__m">33 datasets, every 30 minutes</p>
+          <p class="vend__m">33 datasets, half-hourly, no API key</p>
           <svg width="280" height="52" viewBox="0 0 280 52" aria-hidden="true"><path d="M4.0 8.1 L6.3 10.2 L8.6 13.1 L10.9 20.4 L13.1 46.8 L15.4 22.3 L17.7 26.5 L20.0 32.0 L22.3 40.5 L24.6 40.4 L26.9 41.8 L29.1 42.4 L31.4 42.2 L33.7 41.9 L36.0 41.1 L38.3 42.2 L40.6 36.3 L42.9 24.2 L45.1 18.6 L47.4 8.9 L49.7 11.6 L52.0 7.3 L54.3 8.7 L56.6 6.0 L58.9 7.7 L61.1 10.7 L63.4 16.0 L65.7 14.2 L68.0 26.5 L70.3 11.5 L72.6 16.0 L74.9 22.1 L77.1 30.0 L79.4 34.4 L81.7 37.5 L84.0 38.7 L86.3 39.2 L88.6 38.4 L90.9 37.3 L93.1 32.0 L95.4 15.3 L97.7 12.5 L100.0 7.0 L102.3 6.9 L104.6 4.0 L106.9 8.3 L109.1 11.0 L111.4 15.3 L113.7 14.4 L116.0 13.0 L118.3 13.0 L120.6 22.4 L122.9 21.1 L125.1 11.0 L127.4 16.6 L129.7 22.1 L132.0 30.9 L134.3 36.1 L136.6 40.5 L138.9 41.8 L141.1 42.7 L143.4 41.6 L145.7 40.1 L148.0 33.8 L150.3 25.8 L152.6 21.5 L154.9 14.0 L157.1 11.5 L159.4 7.0 L161.7 8.3 L164.0 11.8 L166.3 14.8 L168.6 10.5 L170.9 11.6 L173.1 9.6 L175.4 10.7 L177.7 31.6 L180.0 6.9 L182.3 10.4 L184.6 18.2 L186.9 26.1 L189.1 27.6 L191.4 30.0 L193.7 32.3 L196.0 34.1 L198.3 33.4 L200.6 35.5 L202.9 34.3 L205.1 25.6 L207.4 25.2 L209.7 19.4 L212.0 17.6 L214.3 19.2 L216.6 22.6 L218.9 22.3 L221.1 24.7 L223.4 30.6 L225.7 32.2 L228.0 34.3 L230.3 38.6 L232.6 45.7 L234.9 41.9 L237.1 43.1 L239.4 44.0 L241.7 44.3 L244.0 44.7 L246.3 45.4 L248.6 45.7 L250.9 46.5 L253.1 47.8 L255.4 48.0 L257.7 47.4 L260.0 45.7 L262.3 45.4 L264.6 42.4 L266.9 34.3 L269.1 32.3 L271.4 30.2 L273.7 29.3 L276.0 28.8" fill="none" stroke="#1C2B22" stroke-width="1.5" stroke-linejoin="round"></path></svg>
           <p class="vend__cap"><code>carbon_intensity</code><br>forecast intensity, gCO₂/kWh, 35 to 179</p>
         </article>
         <article class="vend vend--openmeteo" data-feed="metmast">
-          <p class="vend__land"><code>openmeteo/weather.json</code></p>
+          <p class="vend__land"><code>bronze/open_meteo/</code></p>
           <h3 class="h-entry"><a href="data-sources/openmeteo.html">Open-Meteo</a></h3>
           <p class="vend__d">Weather: temperature, wind, radiation</p>
-          <p class="vend__m">6 datasets, hourly</p>
+          <p class="vend__m">6 datasets, hourly, no API key</p>
           <svg width="280" height="52" viewBox="0 0 280 52" aria-hidden="true"><path d="M4.0 31.4 L6.3 33.6 L8.6 33.3 L10.9 32.6 L13.1 31.4 L15.4 30.1 L17.7 29.4 L20.0 29.7 L22.3 28.6 L24.6 28.3 L26.9 28.2 L29.1 27.6 L31.4 28.9 L33.7 28.7 L36.0 28.9 L38.3 30.2 L40.6 29.3 L42.9 31.4 L45.1 31.8 L47.4 33.2 L49.7 34.5 L52.0 36.5 L54.3 40.1 L56.6 39.9 L58.9 39.4 L61.1 39.3 L63.4 40.6 L65.7 43.5 L68.0 45.3 L70.3 45.8 L72.6 44.0 L74.9 45.6 L77.1 46.8 L79.4 47.5 L81.7 48.0 L84.0 47.5 L86.3 47.2 L88.6 46.3 L90.9 47.8 L93.1 45.6 L95.4 42.5 L97.7 38.7 L100.0 39.3 L102.3 39.8 L104.6 39.9 L106.9 39.6 L109.1 39.2 L111.4 37.3 L113.7 39.2 L116.0 38.5 L118.3 38.3 L120.6 36.4 L122.9 34.0 L125.1 32.8 L127.4 34.1 L129.7 33.2 L132.0 31.5 L134.3 31.0 L136.6 31.4 L138.9 32.1 L141.1 30.3 L143.4 28.5 L145.7 29.4 L148.0 31.0 L150.3 31.7 L152.6 29.0 L154.9 27.0 L157.1 33.3 L159.4 36.3 L161.7 32.3 L164.0 30.4 L166.3 30.9 L168.6 34.9 L170.9 32.0 L173.1 31.8 L175.4 33.6 L177.7 35.0 L180.0 34.6 L182.3 34.9 L184.6 34.5 L186.9 34.4 L189.1 32.4 L191.4 29.8 L193.7 28.7 L196.0 28.5 L198.3 25.3 L200.6 25.1 L202.9 25.3 L205.1 23.8 L207.4 24.9 L209.7 20.1 L212.0 22.9 L214.3 24.1 L216.6 24.8 L218.9 24.5 L221.1 23.3 L223.4 23.7 L225.7 25.9 L228.0 26.1 L230.3 23.1 L232.6 21.3 L234.9 21.3 L237.1 20.3 L239.4 18.8 L241.7 17.5 L244.0 17.1 L246.3 16.8 L248.6 13.7 L250.9 10.3 L253.1 11.4 L255.4 14.1 L257.7 8.1 L260.0 6.1 L262.3 4.7 L264.6 4.6 L266.9 4.5 L269.1 4.0 L271.4 5.2 L273.7 6.3 L276.0 6.8" fill="none" stroke="#1C2B22" stroke-width="1.5" stroke-linejoin="round"></path></svg>
           <p class="vend__cap"><code>historical_wind</code><br>wind speed at 10 m, m/s, 2.9 to 8.9</p>
         </article>
@@ -311,7 +312,7 @@
           <p class="vend__land" aria-hidden="true"></p>
           <h3 class="h-entry"><a href="data-sources/entsog.html">ENTSO-G</a></h3>
           <p class="vend__d">European gas transmission flows at interconnection points</p>
-          <p class="vend__m">33 datasets, daily</p>
+          <p class="vend__m">32 datasets, daily gas days, no API key</p>
           <svg width="280" height="52" viewBox="0 0 280 52" aria-hidden="true"><path d="M4.0 26.1 L72.0 48.0 L140.0 26.7 L208.0 17.1 L276.0 4.0" fill="none" stroke="#1C2B22" stroke-width="1.5" stroke-linejoin="round"></path><circle cx="4.0" cy="26.1" r="2.6" fill="#1C2B22"></circle><circle cx="72.0" cy="48.0" r="2.6" fill="#1C2B22"></circle><circle cx="140.0" cy="26.7" r="2.6" fill="#1C2B22"></circle><circle cx="208.0" cy="17.1" r="2.6" fill="#1C2B22"></circle><circle cx="276.0" cy="4.0" r="2.6" fill="#1C2B22"></circle></svg>
           <p class="vend__cap"><code>physical_flows</code><br>physical flow, GWh a day, 36.9 to 39.7</p>
         </article>
@@ -328,7 +329,7 @@
           <p><a class="more" href="architecture.html">Read the design doc</a></p>
         </div>
         <div class="silver__tables">
-          <ul class="tables" aria-label="Silver tables"><li>silver.fuelhh</li><li>silver.da_prices</li><li>silver.gas_storage</li><li>silver.weather_grid</li></ul>
+          <ul class="tables" aria-label="Silver tables"><li>silver_elexon_system_prices</li><li>silver_neso_carbon_intensity</li><li>silver_elexon_mid</li><li>silver_gie_agsi_storage</li></ul>
         </div>
       </div>
     </section>
@@ -340,7 +341,7 @@
           <h2 class="h-sec" id="gold-h">Gold data is cleaned, joined and ready to use</h2>
           <p>Served as DuckDB views.</p>
         </div>
-        <ul class="views" aria-label="Gold views"><li>gold.gb_dispatch</li><li>gold.eu_prices</li><li>gold.fundamentals</li><li>gold.daily_brief</li></ul>
+        <ul class="views" aria-label="Gold views"><li>gold_<wbr>uk_<wbr>imbalance_<wbr>context</li><li>gold_<wbr>system_<wbr>marginal_<wbr>price</li><li>gold_<wbr>gb_<wbr>day_<wbr>ahead_<wbr>benchmark</li><li>gold_<wbr>eu_<wbr>gas_<wbr>storage</li></ul>
       </div>
       <hr class="bedding">
       <section class="wrap wb" aria-labelledby="wb-h">
