@@ -152,3 +152,40 @@ Open states: `open-1440.png`, `open-768c.png`, `open-390b.png`, and crops `o1440
 `o390-sheet`, `open-check`. `atl-390.png` is the misleading 500 px capture; ignore it. Direct
 (non-iframe) 768 captures stalled twice; the iframe wrapper worked. Headless Chrome did not exit after the
 first capture: I left its processes running (never kill processes); the dev server is stopped.
+
+## Revision 1 (2026-09-29): renderer fix merged (main 165ce0a)
+
+- **What changed upstream.** `chart_svg.py:193-200` `_step` is now the series' smallest spacing
+  (30 min here). The gap threshold is 45 min, so the line breaks at every missing half-hour. The
+  template problem reported above (mean-step bridging) is resolved.
+- **Rendered result.** The chart is now 70 pieces, 33 of them lone points drawn as dots (33 `r="3.2"`
+  circles in each of the wide and narrow SVGs).
+- **The 2,670 MW half-hour.** On the 18th it is now the end of a two-point piece: 06:00 is 25,600 MW,
+  06:30 is 2,670 MW, and there is no row at 07:00.
+- **`chart_view.caption` reworded (38 words):** "... Many half-hours have no row: the line breaks at
+  each one, and a reading with no neighbour shows as a dot." It replaces "breaks at two or more in a
+  row but joins across a single one".
+- **`chart_view.alt` reworded:**
+  - "in short pieces and lone dots: the line breaks at every half-hour with no row, most of them before
+    midday UTC";
+  - highs and lows unchanged (30,836 to 34,330; 19,958 to 22,392 at 03:30 to 05:00 UTC);
+  - "At 06:30 UTC on the 18th the line drops from 25,600 to 2,670 MW and stops there".
+  - The old "two lone readings" sentence is gone (there are now 33).
+- **Earlier change.** `facts.cadence` became "One vendor document per settlement period, each published
+  on its own" (dropped "Half-hourly", a universal on a sparse series).
+- **Gates.** Mirror re-copied (`cmp` clean). `gridflow-build --only elexon/atl` wrote the page with no
+  errors; `detect.mjs --json` returns `[]`. No other text needed changing: nothing else describes
+  bridging, and there are 0 hits for the old wording in the note or the page.
+- **Screens.**
+  - Checked 1440 (via a 1440 px iframe) and a true 390 (390 px iframe): `atl-shots/rev1-1440.png`,
+    `rev1-1440-chart.png`, `rev1-390.png`, `rev1-390-sheet.png`.
+  - Nothing is clipped or overlapping; dots sit inside the plot frame at both widths.
+- **New template nit (report only).**
+  - Since the fix, the narrow (390) x-axis ends "... 19 20 21": a "21" label sits at the axis end
+    (x 350 of the 360 viewBox), about 6 px from "20" and not overlapping (`rev1-390-axis.png`).
+  - The chart holds no settlement date 21.
+  - Cause: `chart_svg.py:234` `hi_edge = hi + step` now lands exactly on the 21st's 23:00 UTC boundary,
+    so `_midnights(lo, hi_edge, ...)` (`:261-264`) yields a zero-width day-21 tick at the edge.
+  - The wide axis drops its label via the `x + half <= fr.x1 + 8` check; the narrow axis keeps it.
+  - Suggested fix: skip a day tick whose start is at or past `hi_edge`.
+  - This likely affects every line page whose last point is the final half-hour of its window.

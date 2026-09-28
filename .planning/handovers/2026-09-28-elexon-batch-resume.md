@@ -1,7 +1,7 @@
-# Resume the Elexon batch (paused 2026-09-28 on Bobbo's request)
+# Resume the Elexon batch (resumed 2026-09-29; this note is the live tracker)
 
 Batch brief: `.planning/v5/p26/BATCH-elexon.md`. Reports: `.planning/v5/p26/elexon/<page>-author.md`,
-`-review.md`, `-review-2.md`. No new agents were started after the pause. Every agent that was running has finished: **nothing is in flight.**
+`-review.md`, `-review-2.md`. Resumed 2026-09-29. **Group 1 is approved** (mid, fuelinst, agpt, freq, temp). The preview is https://claude.ai/artifact/EYadKREQi3RnpufNwTH6Wf, waiting for Bobbo's look.
 
 ## Where the work lives
 
@@ -15,15 +15,19 @@ Batch brief: `.planning/v5/p26/BATCH-elexon.md`. Reports: `.planning/v5/p26/elex
 
 | Page | State at pause | Writer id | Checker id | Next |
 |---|---|---|---|---|
-| mid | revision 1 done (nit fixed; ticks now on settlement-day boundaries) | a7f628925ccf40d3d | a58c68c8a08822ca9 | re-check → `mid-review-2.md` |
-| temp | APPROVED; the degree-day nit is fixed | ae1512e0f404e146d | a175573d9dc677e6f | done |
-| freq | revision 1 done (claim scoped, `needs` widened to 16 and 17 Sep) | a757523f18b8872ee | ac2da42890daacdbe | re-check → `freq-review-2.md` |
-| fuelinst | APPROVED, 3 nits (23:00 vs 23:05 axis label, two "how it's used" bullets repeat fuelhh, `available_at` in the note) | ac17b80233d655e7c | a3c074b63838c4512 | writer applies the nits |
-| agpt | APPROVED, 4 nits (FUELHH comparison label, "Elexon's own type", `wind` tag on the step, local measurements in the note body) | ac08817af5dc65b24 | ae15bf21016303925 | writer applies the nits |
-| agws | written (stacked onshore, offshore and solar, settlement dates 19 to 25 Sep) | a02a65646052893e2 | — | launch the checker (look at the onshore hatch and `aggregation: sum`) |
-| windfor | written (three forecast issues of 20 Sep as lines); the checker is not started, because of the pause | a1ab63925783acd9e | — | launch the checker; have it look hardest at the issue-comparison claims and the silver-vs-schema correction |
-| atl | written (line of `total_load_mw`, settlement dates 14 to 20 Sep; 130 of 336 half-hours missing; about 7.9 GW above INDO at midday, cause unknown) | ae4cecd8c31375b94 | — | launch the checker (look at the gap wording and the 2,670 MW half-hour) |
-| lolpdrm, demand-forecasts, group 3, group 4, group 5 | not started | — | — | launch writers (prompts: copy any writer prompt, change the dataset and port) |
+| mid | APPROVED (re-check 3) | a7f628925ccf40d3d | a58c68c8a08822ca9 | done |
+| temp | APPROVED | ae1512e0f404e146d | a175573d9dc677e6f | done |
+| freq | APPROVED (review 2) | a757523f18b8872ee | ac2da42890daacdbe | done |
+| fuelinst | APPROVED, nits applied | ac17b80233d655e7c | a3c074b63838c4512 | done |
+| agpt | APPROVED, nits applied | ac08817af5dc65b24 | ae15bf21016303925 | done |
+| agws | checker running | a02a65646052893e2 | a11c80668abbefdce | act on the verdict |
+| windfor | checker running | a1ab63925783acd9e | a17288a5f3e21ed79 | act on the verdict |
+| atl | revision 1 done (gaps now break); checker running | ae4cecd8c31375b94 | aa5264d2b291ec745 | act on the verdict |
+| lolpdrm | writer running | a9a809d3db7a3003d | — | launch the checker |
+| demand-forecasts (family, lead ndf) | writer running | abf8f9353b1213246 | — | launch the checker |
+| boal | writer running | a31536a58a5a3b972 | — | launch the checker |
+| disbsad | writer running | a5b3f85429c8bcd8c | — | launch the checker |
+| netbsad, soso, market_depth, group 4, group 5 | not started | — | — | launch writers |
 
 If a restart kills a running agent, check its report file and the vault note first, then resume it by id.
 
@@ -35,13 +39,9 @@ If a restart kills a running agent, check its report file and the vault note fir
   there. Also, the windfor chart series names depend on Polars' text form of the issue times, so a Polars upgrade could
   break a `gridflow-distil` re-run (CI is unaffected).
 
-- **Shipped today:** #48 (home scenery), #49 (notebook table headers, line baselines, hour ticks, axis decimals),
-  #50 (settlement-date axes on UK midnight). All are merged to main and deployed.
-- **Next seat fix:** `gridflow-build --only` validates every note, so one writer's over-budget page fails
-  everyone's build (`build.py` ~1743-1880). Scope validation to the pages that were asked for.
-- **Line bridges a single missing half-hour** (`chart_svg.py` `_runs`, about lines 259 and 307-322). The brief
-  promises that nulls and gaps break a line. Fix in the renderer; atl's caption currently describes the bridging, so
-  reword it after the fix.
+- **Shipped:** #48 (home scenery), #49 (notebook table headers, line baselines, hour ticks, axis decimals),
+  #50 (settlement-date axes on UK midnight), #51 (lines break at absent periods; `--only` scoped), #52 (no label on the
+  axis-closing midnight). All are merged to main and deployed.
 - **ATL missing periods:** 130 of 336 half-hours absent in the chart week, mostly before midday. Why is unknown, so
   this needs a research unit (vendor behaviour or connector), not a guess on the page.
 - **Headless Chrome floors at 500 px:** a true 390 needs a 390 px iframe (atl writer). Tell the next writers.

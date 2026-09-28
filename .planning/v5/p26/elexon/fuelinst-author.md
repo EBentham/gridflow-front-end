@@ -108,3 +108,29 @@ Left untouched: the Overview's "the half-hour aggregates feed FUELHH" (unverifie
 
 - I ran one read-only `git diff --stat` in the vault worktree to confirm the CRLF edit was not a whole-file rewrite.
   No other git commands.
+
+## Revision 1 (2026-09-29, after `fuelinst-review.md`: APPROVE with 3 nits)
+
+1. **`chart_view.x_label`** is now "publish time, UTC; first point 23:05, 19 September".
+   - After PR #50, a span of 2 days or less ticks on whole UTC hours (`chart_svg.py:250-258`). The drawn axis is
+     00:00 to 21:00 every 3 h wide, and every 6 h narrow (read from the rendered SVG).
+   - The old "GB day starts 23:00" did not match that axis or the 23:05 first point.
+   - The caption's "(GB day 20 September)" became "(GB day 20 September's intervals)". This names the 23:05 to 23:00
+     span as publish times of that day's intervals, without stating the five-minute offset as a rule. 38 words.
+2. **`how_used[1]` and `[2]`** no longer repeat fuelhh:
+   - "The most recent fuel mix for intraday trading, one value every five minutes." (cadence fact);
+   - "Within-period features for imbalance price models, from the mix inside each half-hour."
+3. **Vault body, "Point-in-time field"** now adds that `available_at` is `coalesce(published_at, ingest_time)`
+   (`silver/base.py:2095-2100`, the method's own docstring; the reviewer's `:87` is the module-level mention). With no
+   `published_at`, it is always the ingest-side stamp for fuelinst (`_publication_window.py:39-42`).
+
+Checks:
+- No re-distil was needed: `chart_view` and body words are outside the spec digest.
+- Mirror `cmp` clean, CRLF kept. `gridflow-build --only elexon/fuelinst` passes; detector `[]`.
+- **1440** (headless Chrome): chart, hour ticks, the new label and the key are fully visible.
+- **True 390** (a 390 px iframe in a `file://` wrapper; `scrollWidth` 375 plus a 15 px scrollbar, no element past the
+  edge):
+  - hero, grain line, how-used, chart (ticks 00:00, 06:00, 12:00, 18:00 and the new label), key, frame, guide and
+    notebook preview all intact;
+  - the related list's top renders whole; the lower list and footer were not re-captured (the reviewer passed the
+    list at 390).
