@@ -10,7 +10,7 @@ layer_coverage: bronze, silver
 
 ## Overview
 
-Initial National Demand Outturn — Daily (INDOD) — the daily-aggregated total of INDO. One record per settlement date, total demand in MWh.
+Initial National Demand Outturn — Daily (INDOD) — the daily-aggregated total of INDO. One record per settlement date; the code states no unit for the total (see `initial_demand_outturn_mw` below).
 
 ---
 
@@ -80,17 +80,18 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
 **Transformer class**: `gridflow.silver.elexon.indod.INDODTransformer`
 **Pydantic schema**: `gridflow.schemas.elexon.ElexonINDOD` — validated fail-soft on the full frame at write time (VTA-SCHEMA-01: invalid rows are logged and counted, never dropped).
 **Dedup key**: `(settlement_date)`
-**Point-in-time field**: `ingested_at` (no native PIT field)
+**Point-in-time field**: `published_at` (vendor `publishTime`, emitted since F-08: `indod.py:92-104`)
 
 ### Silver schema
 
 | Field | Python type | Nullable | Source field | Notes |
 |-------|-------------|----------|--------------|-------|
 | `settlement_date` | `date` | No | `settlementDate` | Settlement date (BST/GMT calendar). |
-| `timestamp_utc` | `datetime[UTC]` | No | _derived_ | Derived from (settlement_date, settlement_period) via `utils/time.settlement_period_to_utc`. |
-| `initial_demand_outturn_mw` | `float` | No | `demand` | MW. |
+| `timestamp_utc` | `datetime[UTC]` | No | _derived_ | Start of settlement period 1 of the date (00:00 UK time), `settlement_period_to_utc(d, 1)` (`indod.py:80-90`). |
+| `initial_demand_outturn_mw` | `float` | No | `demand` | The day's total. Neither the code ("Daily Total", `endpoints.py:191`) nor the schema states a unit. It matches half the sum of that date's INDO half-hour MW values to within 2, which is what an MWh total would give (project check against INDO, 2026-09-27; not a vendor statement). |
+| `published_at` | `datetime[UTC]` | Yes | `publishTime` | Vendor publish time (`indod.py:92-104`). |
 | `data_provider` | `str` | No | _derived_ | Default `"elexon"`. |
-| `ingested_at` | `datetime[UTC]` | Yes | _derived_ | Time ingested into bronze. |
+| `ingested_at` | `datetime[UTC]` | Yes | _derived_ | When the silver transform ran: stamped `datetime.now(UTC)` by the transformer (`indod.py:108-113`), not the bronze ingest time. |
 
 ### Silver sample
 
@@ -98,7 +99,7 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
 [
     {
         "settlement_date": "2026-04-01",
-        "timestamp_utc": "2026-04-01T00:00:00+00:00",
+        "timestamp_utc": "2026-03-31T23:00:00+00:00",
         "initial_demand_outturn_mw": 676741,
         "data_provider": "elexon",
         "ingested_at": "2026-05-08T12:00:00Z"

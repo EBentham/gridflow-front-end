@@ -1,0 +1,177 @@
+/* The Data sources landing and the vendor hubs: direction A, "Sections" (p27 round 1, ruling 31).
+   Rendered by templates/data-sources.html.j2 and templates/hub.html.j2. The strata, the facts list,
+   the crumb and the dataset landscapes come from theme.css; hubs.js draws the cables on wide screens. */
+
+/* ---------------------------------------------------------------- sky */
+.hub-hero {
+  display: grid; grid-template-columns: minmax(0, 836fr) minmax(0, 398fr); column-gap: 46px;
+  align-items: start; padding-top: 66px; padding-bottom: 8px;
+}
+.hub-hero--landing { grid-template-columns: minmax(0, 860fr) minmax(0, 374fr); padding-top: 64px; }
+.hub-hero__h { color: var(--on-petrol); }
+.hub-intro { margin-top: 26px; max-width: 36ch; font-size: clamp(18.5px, calc(15.6px + .417vw), 21px); line-height: 1.5; color: var(--on-petrol); }
+.hub-facts { margin-top: 4px; }
+.hub-facts dd { overflow-wrap: break-word; }
+.hub-lede { padding-top: 14px; }
+.hub-lede p { margin: 0 0 14px; max-width: 58ch; font-size: var(--fs-lede); line-height: 1.6; color: var(--on-petrol-2); }
+.hub-lede .hub-lede__lead { color: var(--on-petrol); }
+.hub-n { font-weight: 600; color: var(--on-petrol); }
+
+/* The drawing keeps its own aspect ratio: its viewBox has room above the tallest rotor and a ground band
+   under the cut, so nothing is cropped and the topsoil below meets it flush. Below 760px a narrow window
+   of the same scene takes over, with its labels set larger. */
+.hub-land { margin: 18px 0 0; }
+.hub-land svg { display: block; width: 100%; height: auto; }
+.hub-land .land--narrow { display: none; }
+.hub-land text { font-family: var(--body); font-style: italic; font-size: 13.5px; }
+@media (max-width: 1299.98px) { .hub-land text { font-size: 15.5px; } }
+@media (max-width: 759.98px) {
+  .hub-land .land--wide { display: none; }
+  .hub-land .land--narrow { display: block; }
+  .hub-land text { font-size: 24px; }
+}
+@media (max-width: 699.98px) { .hub-land text { font-size: 28px; } }  /* 12.4 px at 390 */
+
+/* ---------------------------------------------------------------- topsoil: where the cables bend */
+.hub-soil { height: 110px; padding: 0; }
+.hub-soil--deep { height: 150px; }
+@media (max-width: 1099.98px) { .hub-soil, .hub-soil--deep { height: 36px; } }
+
+/* ---------------------------------------------------------------- the terminal a cable ends on */
+.term {
+  position: absolute; width: 15px; height: 15px; box-sizing: border-box; border-radius: 50%;
+  background: var(--bronze-tint); border: 2px solid var(--ink);
+}
+.term::after {
+  content: ""; position: absolute; left: 50%; top: 50%; width: 4.4px; height: 4.4px; margin: -2.2px 0 0 -2.2px;
+  border-radius: 50%; background: var(--ink);
+}
+.term--silver { background: var(--silver-tint); }
+.term--gold { background: var(--gold-tint); }
+
+/* ---------------------------------------------------------------- landing: the seven vendors */
+.vgrid {
+  list-style: none; margin: 0; padding: 30px 0 16px;
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: 53px; row-gap: 46px; align-items: start;
+}
+.vend { position: relative; min-width: 0; grid-column: var(--c); grid-row: var(--r); }
+.vend--r2 { margin-left: -43px; }
+.vend__dir { position: relative; margin: 0 0 10px; padding-left: 30px; line-height: 18px; transform: translateY(-9px); }
+.vend__dir code { font-size: 13px; color: var(--ink); }
+.vend__dir .term { left: 8.5px; top: 1.5px; }
+.vend__n { margin: 0 0 6px; font-size: var(--fs-h3); font-weight: 720; font-stretch: 90%; line-height: 1.1; letter-spacing: -.01em; }
+.vend__n a { color: var(--ink); text-decoration-color: transparent; }
+.vend__n a:hover, .vend__n a:focus-visible { text-decoration-color: var(--olive); }
+.vend__d { font-size: 14.5px; line-height: 1.45; color: var(--ink-2); }
+.vend__m { margin: 8px 0 12px; font-size: 14.5px; font-weight: 600; color: var(--ink); }
+.reps { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule-ink); }
+.reps li { padding: 6px 0 7px; border-bottom: 1px solid var(--rule-ink); line-height: 1.35; }
+.reps a { color: var(--ink); text-decoration-color: var(--olive); }
+.reps code { font-size: 14px; color: var(--ink); overflow-wrap: anywhere; }
+.reps span { display: block; font-size: 13.5px; color: var(--ink-2); }
+.vnote { grid-column: 1; grid-row: 2; max-width: 236px; padding-top: 34px; }
+.vnote p { font-size: 14px; line-height: 1.55; font-style: italic; color: var(--ink-2); }
+@media (max-width: 1099.98px) {
+  .vgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 40px; }
+  .vend { grid-column: auto; grid-row: auto; }
+  .vend--r2 { margin-left: 0; }
+  .vnote { grid-column: 1 / -1; grid-row: auto; max-width: 58ch; padding-top: 0; }
+}
+@media (max-width: 699.98px) {
+  .vgrid { grid-template-columns: minmax(0, 1fr); row-gap: 34px; padding-top: 20px; }
+}
+
+/* landing silver: one dataset under each of its names, beside its chart */
+.find { display: grid; grid-template-columns: minmax(0, 520fr) minmax(0, 700fr); column-gap: 60px; align-items: start; padding-top: 20px; padding-bottom: 26px; }
+.find--solo { grid-template-columns: minmax(0, 640px); }
+.find__l .h-sec { margin-bottom: 16px; }
+.find__l > p { max-width: 58ch; font-size: var(--fs-body); line-height: 1.62; color: var(--ink-2); }
+.find__l code { color: var(--ink); font-size: .9em; }
+.names { margin: 22px 0 0; }
+.names div { display: grid; grid-template-columns: 118px minmax(0, 1fr); column-gap: 14px; padding: 8px 0; border-top: 1px solid var(--rule-ink); }
+.names div:last-child { border-bottom: 1px solid var(--rule-ink); }
+.names dt { font-size: 14px; line-height: 1.5; font-style: italic; color: var(--ink-2); }
+.names dd { font-size: 14px; line-height: 1.5; overflow-wrap: break-word; }
+.names code { font-size: 13.5px; }
+.find__r { margin: 0; padding-top: 6px; min-width: 0; }
+.find__r .h-entry { margin-bottom: 14px; }
+.find__r .caption { margin-top: 10px; }
+.find__r .caption a { color: var(--ink); text-decoration-color: var(--olive); }
+/* the chart is drawn 600 wide for the side column; stacked, it is capped near that width so its text stays 13 to 14 px */
+@media (max-width: 1279.98px) {
+  .find { grid-template-columns: minmax(0, 1fr); row-gap: 44px; }
+  .find__r { max-width: 640px; }
+}
+
+/* ---------------------------------------------------------------- hub: the beds of datasets */
+.hub-head { max-width: 760px; padding-top: 8px; }
+.hub-head .h-sec { margin-bottom: 16px; }
+.hub-head p { max-width: 62ch; font-size: var(--fs-body); line-height: 1.62; color: var(--ink-2); }
+.hub-head code { color: var(--ink); font-size: .88em; }
+.bed { position: relative; margin-top: 44px; }
+.bed + .bed { padding-top: 30px; }
+.bed + .bed::before {
+  content: ""; position: absolute; top: 0; left: calc(-1 * var(--side)); right: calc(-1 * var(--side));
+  height: 12px; background: var(--ink); opacity: .45; -webkit-mask: var(--tex-bed); mask: var(--tex-bed);
+}
+.bed__head { position: relative; display: grid; grid-template-columns: minmax(0, 370px) minmax(0, 1fr); column-gap: 26px; align-items: baseline; margin-bottom: 12px; }
+.bed__head .h-entry { margin: 0; }
+.bed__head p { font-size: 14.5px; line-height: 1.45; color: var(--ink-2); max-width: 60ch; }
+.bed__head .term, .hub-lead .term { left: -23.5px; top: calc(.55em - 7.5px); }
+.term--solo { left: -23.5px; top: -24px; }
+.bed__rows {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 56px;
+}
+.bed__rows li {
+  display: grid; grid-template-columns: minmax(0, 190px) minmax(0, 1fr); column-gap: 18px;
+  padding: 9px 0 10px; border-top: 1px solid var(--rule-ink); min-width: 0;
+}
+.bed__rows a { align-self: start; color: var(--ink); text-decoration-color: var(--olive); overflow-wrap: break-word; }
+.bed__rows a code { font-size: 14.5px; line-height: 1.5; }
+/* a family's codes wrap whole, each breaking at its underscores only when wider than the column; an
+   inline-block does not receive its link's underline, so it carries its own */
+.bed__rows a code { display: inline-block; max-width: 100%; text-decoration: inherit; }
+.bed__rows p { font-size: 14.5px; line-height: 1.45; color: var(--ink); }
+.bed__p { display: block; margin-top: 2px; font-size: 13px; color: var(--ink-2); overflow-wrap: break-word; }
+@media (max-width: 1099.98px) {
+  .bed__rows { grid-template-columns: minmax(0, 1fr); }
+  .bed__head { grid-template-columns: minmax(0, 1fr); row-gap: 4px; }
+}
+@media (max-width: 699.98px) {
+  .bed__rows li { grid-template-columns: minmax(0, 1fr); row-gap: 2px; }
+  .bed__head .term, .hub-lead .term, .term--solo { display: none; }
+}
+
+/* hub silver and gold */
+.hub-split { display: grid; grid-template-columns: minmax(0, 560fr) minmax(0, 660fr); column-gap: 60px; align-items: start; padding-top: 6px; padding-bottom: 6px; }
+.hub-lead { position: relative; }
+.hub-lead .h-fig { margin-bottom: 10px; }
+.hub-lead p { max-width: 54ch; font-size: var(--fs-body); line-height: 1.62; color: var(--ink-2); }
+.hub-lead code { color: var(--ink); font-size: .88em; }
+.hub-lead a { color: var(--ink); text-decoration-color: var(--olive); }
+.hub-views { list-style: none; margin: 4px 0 0; padding: 0; border-top: 1px solid var(--rule-ink); }
+.hub-views li { padding: 9px 0; border-bottom: 1px solid var(--rule-ink); }
+.hub-views code { font-size: 15px; overflow-wrap: anywhere; }
+.hub-well {
+  margin: 4px 0 0; padding: 12px 16px; overflow-x: auto;
+  background: var(--topsoil); border: 1px solid var(--rule-ink); border-radius: var(--radius);
+  font: 400 var(--fs-code)/1.7 var(--mono); color: var(--ink); white-space: pre;
+}
+/* rows wrap instead of running past the box (the hang is theme.css `pre .ln`) */
+.hub-well:has(.ln) { white-space: pre-wrap; overflow-wrap: anywhere; }
+.hub-well .k { color: var(--petrol); font-weight: 500; }
+.hub-well .s { color: #7C5530; }
+@media (max-width: 1099.98px) { .hub-split { grid-template-columns: minmax(0, 1fr); row-gap: 24px; } }
+
+/* ---------------------------------------------------------------- the cables, drawn by hubs.js */
+.hub { position: relative; }
+.hub-cables { position: absolute; left: 0; top: 0; z-index: 1; overflow: visible; pointer-events: none; }
+
+@media (max-width: 1099.98px) {
+  .hub-hero, .hub-hero--landing { grid-template-columns: minmax(0, 1fr); row-gap: 28px; padding-top: 52px; }
+  .hub-facts { max-width: 620px; }
+}
+@media (max-width: 699.98px) {
+  .hub-hero, .hub-hero--landing { padding-top: 38px; }
+}

@@ -1,0 +1,103 @@
+{#- A vendor hub, direction A "Sections" (p27 round 1, ruling 31). The page descends through the strata:
+    the sky holds the name, the intro, the facts and the drawing; bronze holds every page in the vendor's
+    page set, in groups; silver names the DuckDB views; gold shows the notebook call. On wide screens
+    hubs.js runs one cable from the drawing down a lane in the margin, tapping each group.
+    `v` is the view model built by build.hub_view() from site/hifi/data/<vendor>.json. -#}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ v.name }}: data sources in gridflow</title>
+  <meta name="description" content="{{ v.intro }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&amp;family=Hanken+Grotesk:ital,wght@0,400..700;1,400..600&amp;family=Red+Hat+Mono:wght@400;500&amp;display=swap">
+  <link rel="stylesheet" href="../assets/theme.css">
+  <link rel="stylesheet" href="../assets/hubs.css">
+</head>
+<body data-page="vendor" data-root="../" data-screen-label="Vendor {{ v.vendor_id }}">
+  <main id="main" class="hub" data-cable="trunk">
+    <section class="stratum stratum--sky" aria-labelledby="hub-h">
+      <div class="wrap hub-hero">
+        <div class="hub-hero__id">
+          <nav class="ds-crumb" aria-label="Breadcrumb"><a href="../data-sources.html">Data sources</a></nav>
+          <h1 class="h-hero hub-hero__h" id="hub-h">{{ v.name }}</h1>
+          <p class="hub-intro">{{ v.intro }}</p>
+        </div>
+        <dl class="ds-facts hub-facts">
+          {%- for label, value in v.facts %}
+          <div><dt>{{ label }}</dt><dd>{{ value }}</dd></div>
+          {%- endfor %}
+        </dl>
+      </div>
+      <figure class="landscape {{ v.land_class }}">
+        {% include "_partials/landscape/" ~ v.landscape ~ ".svg.j2" %}
+      </figure>
+    </section>
+    <div class="stratum stratum--topsoil stratum--flush hub-soil" aria-hidden="true"></div>
+
+    <section class="stratum stratum--bronze" aria-labelledby="sets-h">
+      <p class="stratum__name" aria-hidden="true">bronze</p>
+      <div class="wrap">
+        <div class="hub-head">
+          <h2 class="h-sec" id="sets-h">{{ v.groups_title }}</h2>
+          {%- if v.groups_note %}
+          <p>{{ v.groups_note | md_inline | safe }}</p>
+          {%- endif %}
+        </div>
+        {%- for g in v.groups %}
+        <section class="bed"{% if g.name %} aria-labelledby="{{ g.id }}-h"{% else %} aria-label="{{ v.name }} datasets"{% endif %}>
+          {%- if g.name %}
+          <div class="bed__head" data-tap="bronze">
+            <span class="term" aria-hidden="true"></span>
+            <h3 class="h-entry" id="{{ g.id }}-h">{{ g.name }}</h3>
+            <p>{{ g.blurb }}</p>
+          </div>
+          {%- else %}
+          <span class="term term--solo" data-tap="bronze" aria-hidden="true"></span>
+          {%- endif %}
+          <ul class="bed__rows">
+            {%- for r in g.rows %}
+            <li><a href="{{ r.href }}">{% for c in r.codes %}<code>{{ c }}</code>{% if not loop.last %} {% endif %}{% endfor %}</a><div><p>{{ r.title }}</p>{% if r.path %}<code class="bed__p">{{ r.path }}</code>{% endif %}</div></li>
+            {%- endfor %}
+          </ul>
+        </section>
+        {%- endfor %}
+      </div>
+    </section>
+
+    <section class="stratum stratum--silver" aria-labelledby="sv-h">
+      <p class="stratum__name" aria-hidden="true">silver</p>
+      <div class="wrap hub-split">
+        <div class="hub-lead" data-tap="silver">
+          <span class="term term--silver" aria-hidden="true"></span>
+          <h2 class="h-fig" id="sv-h">{{ v.silver.title }}</h2>
+          <p>{{ v.silver.text }}</p>
+        </div>
+        {%- if v.silver.views %}
+        <ul class="hub-views" aria-label="The latest-capture views">
+          {%- for view in v.silver.views %}
+          <li><code>{{ view }}</code></li>
+          {%- endfor %}
+        </ul>
+        {%- endif %}
+      </div>
+    </section>
+
+    <section class="stratum stratum--gold" aria-labelledby="gd-h">
+      <p class="stratum__name" aria-hidden="true">gold</p>
+      <div class="wrap hub-split">
+        <div class="hub-lead" data-tap="gold">
+          <span class="term term--gold" aria-hidden="true"></span>
+          <h2 class="h-fig" id="gd-h">From a notebook</h2>
+          <p>The workbench in <a href="https://github.com/EBentham/gridflow-models">gridflow-models</a> reads the same silver. Every source answers the same verbs.</p>
+        </div>
+        <pre class="hub-well" aria-label="Two calls in a notebook">{{ v.well }}</pre>
+      </div>
+    </section>
+  </main>
+  <script src="../assets/site.js"></script>
+  <script src="../assets/hubs.js"></script>
+</body>
+</html>

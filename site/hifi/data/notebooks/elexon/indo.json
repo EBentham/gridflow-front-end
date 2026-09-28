@@ -1,0 +1,206 @@
+{
+ "dataset": "elexon/indo",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "96dbca97ad08a470d58bf3a97f801f0b86061beba55044d6294f5e50bdda47aa",
+ "kernel": "gridflow_models",
+ "source": "elexon",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.elexon",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.elexon.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "indo = data.elexon.query(\"indo\", \"2026-09-14\", \"2026-09-20\")\nitsdo = data.elexon.query(\"itsdo\", \"2026-09-14\", \"2026-09-20\")",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "key = [\"settlement_date\", \"settlement_period\", \"timestamp_utc\"]\nboth = indo[key + [\"initial_demand_outturn_mw\"]].merge(\n    itsdo[key + [\"initial_transmission_system_demand_outturn_mw\"]], on=key)\nboth.columns = key + [\"indo_mw\", \"itsdo_mw\"]\nboth[\"itsdo_minus_indo_mw\"] = both.itsdo_mw - both.indo_mw\nboth = both.sort_values(\"timestamp_utc\", ignore_index=True)\nboth.head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "settlement_date",
+      "settlement_period",
+      "timestamp_utc",
+      "indo_mw",
+      "itsdo_mw",
+      "itsdo_minus_indo_mw"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2026-09-14",
+       "1",
+       "2026-09-14 00:00:00+01:00",
+       "21749.0",
+       "23462.0",
+       "1713.0"
+      ],
+      [
+       "2026-09-14",
+       "2",
+       "2026-09-14 00:30:00+01:00",
+       "21445.0",
+       "23104.0",
+       "1659.0"
+      ],
+      [
+       "2026-09-14",
+       "3",
+       "2026-09-14 01:00:00+01:00",
+       "21114.0",
+       "22768.0",
+       "1654.0"
+      ],
+      [
+       "2026-09-14",
+       "4",
+       "2026-09-14 01:30:00+01:00",
+       "21050.0",
+       "22580.0",
+       "1530.0"
+      ],
+      [
+       "2026-09-14",
+       "5",
+       "2026-09-14 02:00:00+01:00",
+       "20637.0",
+       "22573.0",
+       "1936.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "both.plot(x=\"timestamp_utc\", y=[\"itsdo_mw\", \"indo_mw\"], ylabel=\"MW\",\n          color=[\"#C77E3C\", \"#155A6E\"], figsize=(8, 3.5))",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: xlabel='timestamp_utc', ylabel='MW'>"
+    },
+    {
+     "kind": "image",
+     "src": "indo-5.png",
+     "width": 716,
+     "height": 369
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "source": "indod = data.elexon.query(\"indod\", \"2026-09-14\", \"2026-09-20\")\ndaily = indo.groupby(\"settlement_date\", as_index=False).initial_demand_outturn_mw.sum()\ndaily[\"indo_sum_over_2\"] = daily.pop(\"initial_demand_outturn_mw\") / 2\nindod[[\"settlement_date\", \"initial_demand_outturn_mw\"]].merge(daily, on=\"settlement_date\")",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "settlement_date",
+      "initial_demand_outturn_mw",
+      "indo_sum_over_2"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6"
+     ],
+     "rows": [
+      [
+       "2026-09-14",
+       "596221.0",
+       "596221.0"
+      ],
+      [
+       "2026-09-15",
+       "562553.0",
+       "562552.0"
+      ],
+      [
+       "2026-09-16",
+       "581498.0",
+       "581497.5"
+      ],
+      [
+       "2026-09-17",
+       "538855.0",
+       "538855.5"
+      ],
+      [
+       "2026-09-18",
+       "552617.0",
+       "552618.5"
+      ],
+      [
+       "2026-09-19",
+       "491618.0",
+       "491617.5"
+      ],
+      [
+       "2026-09-20",
+       "473707.0",
+       "473707.5"
+      ]
+     ]
+    }
+   ]
+  }
+ ]
+}

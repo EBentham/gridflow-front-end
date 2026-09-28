@@ -1,0 +1,77 @@
+/* gridflow design tokens: "Above ground, below ground" (locked 2026-09-26).
+   Source of truth for every value here is DESIGN.md at the repo root; change both together.
+   Fonts load from Google Fonts css2:
+   Bricolage Grotesque (opsz 12..96, wdth 75..100, wght 200..800), Hanken Grotesk (400..700, italic 400..600),
+   Red Hat Mono (400, 500). */
+
+:root {
+  /* ground */
+  --petrol:        #155A6E;  /* sky, deep fields, About, footer */
+  --daylight:      #F6F4EC;  /* reading ground, cards, notebook */
+  --topsoil:       #ECE8DA;  /* first stratum; code/input wells */
+  --zebra:         #EFEBDF;  /* alternate rows on daylight */
+
+  /* ink */
+  --ink:           #1C2B22;  /* text, strokes, the drawing's line */
+  --ink-2:         #3F4A3B;  /* secondary text on daylight and strata */
+  --muted:         #5d6a55;  /* prompts, tertiary labels */
+  --rule:          #DFDACA;
+  --rule-ink:      rgba(28, 43, 34, .22);  /* hairlines on daylight */
+
+  /* text on petrol */
+  --on-petrol:     #F6F4EC;
+  --on-petrol-2:   #CFE0DC;
+  --on-petrol-3:   #B4D0CD;  /* lifted from the canvas's #A9C7C4 (4.29:1) to pass AA at 4.72:1 */
+  --rule-petrol:   rgba(207, 224, 220, .22);
+
+  /* accent */
+  --chartreuse:    #AFC64E;  /* energised land, primary button, focus ring, active nav */
+  --chartreuse-hi: #C3D86A;  /* button hover */
+  --olive:         #66793B;  /* link underline, deep land. Not a text colour (4.37:1 on daylight) */
+  --horizon:       #3E8C97;  /* ridges, wind */
+
+  /* categorical: the scenery is the palette */
+  --fuel-wind:     #3E8C97;
+  --fuel-solar:    #AFC64E;
+  --fuel-gas:      #C77E3C;  /* CCGT / OCGT: clay */
+  --fuel-nuclear:  #155A6E;
+  --fuel-imports:  #66793B;
+  --fuel-biomass:  #A5713C;
+  --fuel-other:    #A39A6A;  /* khaki */
+
+  /* strata: medallions and their tints */
+  --bronze:        #A5713C;  --bronze-tint:  #E2CDB3;
+  --silver:        #9FADAB;  --silver-tint:  #DCE2DF;
+  --gold:          #C2A14A;  --gold-tint:    #E9DDAF;
+  --gold-deep:     #8A6F1E;  /* gold stipple */
+  --clay-deep:     #7C5530;  /* bronze brick hatch; string literals in code */
+  --silver-deep:   #5E6E6B;  /* silver diagonal hatch */
+
+  /* type */
+  --display: "Bricolage Grotesque", sans-serif;
+  --body:    "Hanken Grotesk", sans-serif;
+  --mono:    "Red Hat Mono", monospace;
+
+  /* type scale (desktop; see DESIGN.md for the fluid mobile ramp) */
+  --fs-hero:   86px;   /* wght 760, wdth 84, lh .94, ls -.022em */
+  --fs-h2-xl:  52px;   /* purpose / About; wght 740, wdth 84, lh 1 */
+  --fs-h2:     42px;   /* section; wght 720, wdth 88, lh 1.02, ls -.018em */
+  --fs-h2-s:   30px;   /* figure heading; wght 700, wdth 90 */
+  --fs-h3:     23px;   /* entry; wght 720, wdth 90, lh 1.1 */
+  --fs-intro:  21px;   /* lead line, lh 1.5 */
+  --fs-lede:   17.5px;
+  --fs-body:   16px;   /* lh 1.62, max 58ch */
+  --fs-small:  14.5px; /* captions, entry descriptions, lh 1.5 */
+  --fs-label:  13.5px; /* drawing labels: Hanken italic */
+  --fs-code:   14.5px; /* mono in wells; inline code .9em */
+
+  /* layout */
+  --page-max:  1440px;
+  --margin:    80px;   /* desktop side margin; content 1280 */
+  --gutter:    16px;   /* phone side gutter */
+  --radius:    3px;    /* buttons, wells, cards: nearly square */
+
+  /* drawing */
+  --stroke:     1.5px; /* ink outline on drawn objects */
+  --stroke-hair: .8px; /* hatches, ticks */
+}
