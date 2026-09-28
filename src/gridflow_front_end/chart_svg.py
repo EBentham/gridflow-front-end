@@ -190,7 +190,19 @@ def _time_axis(
     span_days = (hi_edge - lo) / day
     first_mid = math.ceil(lo / day) * day
     ticks: list[tuple[float, str, float]] = []
-    if span_days <= 16:
+    if abs(step - day) < 60 and span_days <= 16:
+        # one value per day (a gas day from 04:00, say): ticks on the days' edges, each day named
+        # under its own point, by the date at its middle
+        n = round((hi_edge - lo) / day)
+        every = 1 if not narrow or n <= 8 else 2
+        for k in range(n):
+            t = lo + k * day
+            if k % every == 0:
+                ticks.append((t, _day_label(t + day / 2, with_month=not narrow or not ticks), t + day / 2))
+            else:
+                ticks.append((t, "", t + day / 2))
+        ticks.append((hi_edge, "", hi_edge))
+    elif span_days <= 16:
         every = 1 if not narrow or span_days <= 8 else 2
         t = first_mid
         i = 0
@@ -254,12 +266,16 @@ class _Plot:
         txt.append(
             f'<text x="{_f(fr.x0 - 10)}" y="{_f(fr.top - 12)}" text-anchor="end">{html.escape(unit)}</text>'
         )
+        prev_right = -math.inf
         for _t, label, centre in self.ticks:
             x = self.X(centre)
-            if fr.x0 - 4 <= x <= fr.x1 + 4:
+            half = len(label) * 3.6  # about half the label's width at 13 px
+            # a label that would run past the axis end or into its neighbour is left off
+            if label and fr.x0 - 4 <= x and x + half <= fr.x1 + 8 and x - half >= prev_right + 6:
                 txt.append(
                     f'<text x="{_f(x)}" y="{_f(fr.bottom + 22)}" text-anchor="middle">{label}</text>'
                 )
+                prev_right = x + half
         if x_label:
             txt.append(
                 f'<text class="ax-i" x="{_f(fr.x1)}" y="{_f(fr.bottom + 44)}" text-anchor="end">'
