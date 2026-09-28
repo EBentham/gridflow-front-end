@@ -193,7 +193,7 @@ main { position: relative; display: block; }
 .keys p { font-size: var(--fs-small); line-height: 1.5; color: var(--on-petrol-2); }
 
 .landscape { margin-top: 12px; }
-.landscape svg { display: block; width: 100%; height: clamp(230px, 27.36vw, 394px); }
+.landscape svg { display: block; width: 100%; height: clamp(253px, 30.14vw, 434px); }
 .landscape text { font-family: var(--body); font-style: italic; font-size: 13.5px; }
 @media (max-width: 1439.98px) { .landscape text { font-size: 14.5px; } }
 @media (max-width: 1299.98px) { .landscape text { font-size: 17px; } }
