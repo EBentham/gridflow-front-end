@@ -17,6 +17,12 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&amp;family=Hanken+Grotesk:ital,wght@0,400..700;1,400..600&amp;family=Red+Hat+Mono:wght@400;500&amp;display=swap">
   <link rel="stylesheet" href="../../assets/theme.css">
   <link rel="stylesheet" href="../../assets/dataset.css">
+  {%- if not v.blank and v.record.fold_css %}
+  {#- this frame's fold widths: below each, the columns that need it fold behind the ellipsis #}
+  <style>
+{{ v.record.fold_css }}
+  </style>
+  {%- endif %}
 </head>
 <body data-page="dataset" data-root="../../" data-screen-label="Dataset {{ v.key }}">
   {#- a blank page has no deep band of its own, so it is not `.ds` and site.js gives it the site footer -#}
@@ -125,17 +131,17 @@
               <thead>
                 <tr class="nm">
                   {%- for c in r.columns %}
-                  <th scope="col" id="c-{{ c.name }}"{% if c.folded %} class="fc"{% endif %}>{{ c.name }}{% if c.key %}<span class="k" aria-hidden="true"></span><span class="sr-only"> (identifies a row)</span>{% endif %}</th>
+                  <th scope="col" id="c-{{ c.name }}"{% if c.folded %} class="fc"{% endif %}{% if c.tier %} data-w="{{ c.tier }}"{% endif %}>{{ c.name }}{% if c.key %}<span class="k" aria-hidden="true"></span><span class="sr-only"> (identifies a row)</span>{% endif %}</th>
                   {%- endfor %}
-                  {%- if r.n_folded %}
-                  <th scope="col" class="el"><input type="checkbox" class="fx sr-only" id="fx"><label for="fx"><span aria-hidden="true">…</span><span class="sr-only">Show {{ r.n_folded }} more columns</span></label></th>
+                  {%- if r.n_folded or r.el_tier %}
+                  <th scope="col" class="el"{% if not r.n_folded %} data-e="{{ r.el_tier }}"{% endif %}><input type="checkbox" class="fx sr-only" id="fx"><label for="fx"><span aria-hidden="true">…</span><span class="sr-only">Show the folded columns</span></label></th>
                   {%- endif %}
                 </tr>
-                <tr class="dt">{% for c in r.columns %}<td{% if c.folded %} class="fc"{% endif %}>{{ c.dtype }}</td>{% endfor %}{% if r.n_folded %}<td class="el"><label for="fx" aria-hidden="true"></label></td>{% endif %}</tr>
+                <tr class="dt">{% for c in r.columns %}<td{% if c.folded %} class="fc"{% endif %}{% if c.tier %} data-w="{{ c.tier }}"{% endif %}>{{ c.dtype }}</td>{% endfor %}{% if r.n_folded or r.el_tier %}<td class="el"{% if not r.n_folded %} data-e="{{ r.el_tier }}"{% endif %}><label for="fx" aria-hidden="true"></label></td>{% endif %}</tr>
               </thead>
               <tbody>
                 {%- for row in r.rows %}
-                <tr>{% for c in r.columns %}{% set val = row[loop.index0] %}<td{% if c.num or c.folded %} class="{{ 'num' if c.num }}{{ ' ' if c.num and c.folded }}{{ 'fc' if c.folded }}"{% endif %}>{% if val is none %}<span class="nl">null</span>{% else %}{{ val }}{% endif %}</td>{% endfor %}{% if r.n_folded %}<td class="el"><label for="fx" aria-hidden="true">…</label></td>{% endif %}</tr>
+                <tr>{% for c in r.columns %}{% set val = row[loop.index0] %}<td{% if c.num or c.folded %} class="{{ 'num' if c.num }}{{ ' ' if c.num and c.folded }}{{ 'fc' if c.folded }}"{% endif %}{% if c.tier %} data-w="{{ c.tier }}"{% endif %}>{% if val is none %}<span class="nl">null</span>{% else %}{{ val }}{% endif %}</td>{% endfor %}{% if r.n_folded or r.el_tier %}<td class="el"{% if not r.n_folded %} data-e="{{ r.el_tier }}"{% endif %}><label for="fx" aria-hidden="true">…</label></td>{% endif %}</tr>
                 {%- endfor %}
               </tbody>
             </table>
@@ -145,7 +151,7 @@
               <p class="g-h" id="gk"><span class="k" aria-hidden="true"></span>Identifies a row</p>
               <dl aria-labelledby="gk">
                 {%- for e in r.keyed %}
-                <div class="g-r" data-k="{{ e.k }}"{% if e.folded %} data-f=""{% endif %}><dt><a href="#c-{{ e.name }}">{{ e.name }}</a></dt><dd>{{ e.meaning | md_inline | safe }}</dd></div>
+                <div class="g-r" data-k="{{ e.k }}"{% if e.folded %} data-f=""{% endif %}{% if e.tier %} data-w="{{ e.tier }}"{% endif %}><dt><a href="#c-{{ e.name }}">{{ e.name }}</a></dt><dd>{{ e.meaning | md_inline | safe }}</dd></div>
                 {%- endfor %}
               </dl>
             </div>
@@ -154,7 +160,7 @@
               <p class="g-h" id="go">Other columns</p>
               <dl aria-labelledby="go">
                 {%- for e in r.others %}
-                <div class="g-r" data-k="{{ e.k }}"{% if e.folded %} data-f=""{% endif %}><dt><a href="#c-{{ e.name }}">{{ e.name }}</a></dt><dd>{{ e.meaning | md_inline | safe }}</dd></div>
+                <div class="g-r" data-k="{{ e.k }}"{% if e.folded %} data-f=""{% endif %}{% if e.tier %} data-w="{{ e.tier }}"{% endif %}><dt><a href="#c-{{ e.name }}">{{ e.name }}</a></dt><dd>{{ e.meaning | md_inline | safe }}</dd></div>
                 {%- endfor %}
               </dl>
             </div>

@@ -1055,9 +1055,10 @@ def check_artefacts(doc: DatasetDoc) -> tuple[PageArtefacts, list[str]]:
 # Columns every silver table carries; the frame shows them, the guide gives them no line.
 PIPELINE_COLUMNS = frozenset({"data_provider", "ingested_at", *artefacts.LINEAGE_COLUMNS})
 
-# The frame's width budget, as silver prints it (the locked schema board): Red Hat Mono's advance at
-# 13 px, cell padding, the key square and Polars' `…` column. Past 1280 px, columns fold into `…`.
-_FRAME_BUDGET = 1280
+# The frame's column widths, as silver prints them (the locked schema board): Red Hat Mono's advance
+# at 13 px, cell padding, the key square and Polars' `…` column. Columns fold into `…` wherever the
+# box is narrower than the columns up to them (container queries, rounded up to _FRAME_STEP px).
+_FRAME_STEP = 10
 _FRAME_CH = 7.8
 _FRAME_PAD = 16
 _FRAME_KEY_W = 14
@@ -1096,9 +1097,9 @@ def polars_dtype(label: str) -> str:
 def _frame_view(doc: DatasetDoc, sample: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
     """The silver section: the sample rows as a Polars frame, then the column guide beneath.
 
-    Every column is in the frame. Columns past the width budget (from ``ingested_at`` on, then more
-    while the frame is wider than 1280 px) fold behind Polars' ``…`` column, which a visually hidden
-    checkbox opens in place. The guide has one line per column that is not a pipeline column, key
+    Every column is in the frame. The pipeline columns (from ``ingested_at`` on) always fold behind
+    Polars' ``…`` column, and the others fold from the right wherever the box is too narrow for them
+    (``fold_css``, container queries on ``.spec``); a visually hidden checkbox opens them in place. The guide has one line per column that is not a pipeline column, key
     columns first, each group in frame order.
     """
     key = f"{doc.vendor_id}/{doc.slug}"
@@ -1135,15 +1136,25 @@ def _frame_view(doc: DatasetDoc, sample: dict[str, Any]) -> tuple[dict[str, Any]
         return w
 
     cut = names.index("ingested_at") if "ingested_at" in names else len(names)
-    while cut > 1 and sum(width(i) for i in range(cut)) + _FRAME_EL_W + 3 > _FRAME_BUDGET:
-        cut -= 1
     folded = names[cut:]
+    # Each column before the cut shows only where the box is at least as wide as the columns up to
+    # it plus the `…` column (none after the last, when nothing is folded for good); narrower, it
+    # folds. Widths round up to _FRAME_STEP, and never drop from one column to the next.
+    tiers: dict[int, int] = {}
+    run = 0
+    for i in range(cut):
+        run += width(i)
+        need = run + 3 + (_FRAME_EL_W if i < cut - 1 or folded else 0)
+        if i > 0:
+            tiers[i] = max(math.ceil(need / _FRAME_STEP) * _FRAME_STEP, tiers.get(i - 1, 0))
+    el_tier = None if folded or not tiers else tiers[cut - 1]
     columns = [
         {
             "name": n,
             "dtype": dtypes[i],
             "key": n in rec.key,
             "folded": i >= cut,
+            "tier": tiers.get(i),
             "num": bool(_NUMERIC_POLARS.match(dtypes[i])),
         }
         for i, n in enumerate(names)
@@ -1154,6 +1165,7 @@ def _frame_view(doc: DatasetDoc, sample: dict[str, Any]) -> tuple[dict[str, Any]
             "name": n,
             "k": names.index(n) + 1,
             "folded": n in folded,
+            "tier": tiers.get(names.index(n)),
             "meaning": rec.fields.get(n, ""),
         }
 
@@ -1164,14 +1176,31 @@ def _frame_view(doc: DatasetDoc, sample: dict[str, Any]) -> tuple[dict[str, Any]
         "columns": columns,
         "rows": rows,
         "n_folded": len(folded),
+        "el_tier": el_tier,
+        "fold_css": Markup(_fold_css(sorted(set(tiers.values())), el_tier)),
         "aria": (
-            f"Sample rows from {relation}: {len(rows)} rows of {len(names)} columns"
-            + (f", the last {len(folded)} folded." if folded else ".")
+            f"Sample rows from {relation}: {len(rows)} rows of {len(names)} columns; "
+            "columns that do not fit the box fold behind the … column."
         ),
         "keyed": [entry(n) for n in guided if n in rec.key],
         "others": [entry(n) for n in guided if n not in rec.key],
     }
     return view, errors
+
+
+def _fold_css(tiers: list[int], el_tier: int | None) -> str:
+    """The frame's own fold rules: below each width, the columns that need it fold behind `…`."""
+    rules = []
+    for t in tiers:
+        body = [
+            f'.spec:not(:has(.fx:checked)) .pl [data-w="{t}"] {{ display: none; }}',
+            f'.spec:not(:has(.fx:checked)):has(.g-r[data-w="{t}"]:is(:hover, :focus-within)) '
+            f".pl .el {{ background: var(--lit); }}",
+        ]
+        if t == el_tier:
+            body.append(f'.pl [data-e="{t}"] {{ display: table-cell; }}')
+        rules.append(f"@container fr (max-width: {t - 0.02:.2f}px) {{ {' '.join(body)} }}")
+    return "\n".join(rules)
 
 
 _LOCAL_STORAGE = re.compile(r"\blocally\b|\blocal (copy|store|storage|disk)\b", re.IGNORECASE)
