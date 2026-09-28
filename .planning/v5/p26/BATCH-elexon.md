@@ -53,6 +53,10 @@ are fixed in `site/hifi/data/elexon.json`.
 - For screenshots, use headless Chrome (`C:\Program Files\Google\Chrome\Application\chrome.exe --headless=new
   --screenshot ...`) with your own `--user-data-dir` under the scratchpad, or a static server on your assigned
   port. Stop any server you start.
+- Headless Chrome will not render narrower than 500 px: a true 390 check needs the page in a 390 px iframe (or
+  the browser pane's mobile emulation, if it is free).
+- `gridflow-build --only` now fails only on the pages it renders, so another writer's half-finished note no longer
+  blocks your build.
 - No git commands in either repo. The seat commits, mirrors and merges.
 
 ## Seat follow-ups found during the batch
