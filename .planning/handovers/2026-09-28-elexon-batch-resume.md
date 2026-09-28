@@ -16,7 +16,7 @@ finish on their own and write their files.
 
 | Page | State at pause | Writer id | Checker id | Next |
 |---|---|---|---|---|
-| mid | REVISE; the major is fixed in the renderer, the writer is applying the nit | a7f628925ccf40d3d | a58c68c8a08822ca9 | re-check → `mid-review-2.md` |
+| mid | revision 1 done (nit fixed; ticks now on settlement-day boundaries) | a7f628925ccf40d3d | a58c68c8a08822ca9 | re-check → `mid-review-2.md` |
 | temp | APPROVED; the degree-day nit is fixed | ae1512e0f404e146d | a175573d9dc677e6f | done |
 | freq | revision 1 done (claim scoped, `needs` widened to 16 and 17 Sep) | a757523f18b8872ee | ac2da42890daacdbe | re-check → `freq-review-2.md` |
 | fuelinst | written; the checker is running | ac17b80233d655e7c | a3c074b63838c4512 | act on the verdict |

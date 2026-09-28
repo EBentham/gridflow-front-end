@@ -73,3 +73,25 @@ Note for the seat: the shared Browser pane tab switched to another writer's page
 
 - `notebook.needs` says "15 to 21 September 2026", but the ingest command runs 14 to 22. This follows the fuelhh and system_prices worked examples, where `needs` is the silver window.
 - `APXMIDP` only in the chart: the reason is in the caption, and the frame shows both providers side by side.
+
+## Revision 1 (2026-09-28, after `mid-review.md`: REVISE, 1 major, 1 nit)
+
+- **Major (x axis bands).** Fixed on the seat's side: the renderer now ticks on UK midnight for settlement-date axes. I
+  left `x_label` unchanged, as instructed. In the rebuilt SVG the axis runs from `x0 = 74` (14 Sep 23:00Z) and the
+  ticks are at 74, 189.7, 305.4 … 884, one settlement day (115.7 px) apart. Each day name is centred at `x0 + 12 h`
+  of its band ("15 Sep" at 131.9), so the bands are settlement dates 15 to 21, and "each starts at 23:00 UTC" is
+  now true. Checked in a 1440 headless render: 7 bands, nothing clipped.
+- **Alt and caption re-checked against the new bands.** No change needed: both already describe settlement dates.
+  - The lowest of the 17th to 19th is -3.26, which is settlement date 19, period 1 (18 Sep 23:00Z). It now sits
+    inside the "19 Sep" band.
+  - -19.03 at 15:00 UTC on the 20th and 197.83 that evening are both in the "20 Sep" band.
+  - The ranges for the 15th, 16th and 21st are by settlement date.
+  - `plot_alt` describes the notebook's matplotlib plot, which is on a UTC axis, so it is unaffected.
+- **Nit (`page.what_it_is`).** Rewritten to give the products and the time limit in full: "the volume-weighted
+  average of half-hour, one-, two- and four-hour products traded within eight hours of the submission deadline, and
+  the volume their sum. Day-ahead auction trades carry no weight; below 25 MWh, both default to zero." It is 59
+  words, within the budget of 60. I used "submission deadline" rather than "gate closure" because that is the
+  source's own term (source 05, line 573).
+- **Rebuild and checks.** `gridflow-build --only elexon/mid` is green, `detect.mjs` returns `[]`, and the mirror
+  re-copy matches (`cmp` clean). None of the artefacts needed regenerating: the chart spec, the sample rows and the
+  notebook cells are unchanged.
