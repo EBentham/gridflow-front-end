@@ -417,7 +417,17 @@ main { position: relative; display: block; }
 .fig { display: grid; row-gap: 6px; justify-items: start; min-width: 0; }
 .fig .txt { margin: 0; padding-top: 9px; font: 400 var(--fs-code)/1.6 var(--mono); color: var(--ink); white-space: pre-wrap; }
 .fig svg { display: block; width: 100%; max-width: 600px; height: auto; }
+.fig .plot-m { display: none; }
+.in .ln { display: block; }
 @media (max-width: 699.98px) {
+  /* the same figure, x axis compressed so its text stays legible at phone width; the data are unchanged */
+  .fig .plot:not(.plot-m) { display: none; }
+  .fig .plot-m { display: block; max-width: 420px; }
+  /* code wraps instead of scrolling; a wrapped line hangs 2ch in from the line it continues */
+  .in {
+    white-space: pre-wrap; overflow-x: visible; overflow-wrap: anywhere;
+    padding-left: calc(10px + 2ch); text-indent: -2ch; font-size: 13px;
+  }
   .nb-bar { padding: 0 10px 0 6px; }
   .nb-tab { padding-inline: 12px; }
   .nb-body { padding: 12px 10px 176px 2px; }
