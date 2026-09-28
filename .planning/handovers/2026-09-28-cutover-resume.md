@@ -64,3 +64,20 @@ in "Sections").
   fixing 13 of 14 QA findings. m2 was left: blank pages keep the site footer, per ruling #30. m8 was partly
   fixed. All gates are green: build `--check`, 76 tests, htmlhint, lychee, detect `[]` on 184 files.
 - The preview artifact is republished (version 5). **Waiting on Bobbo's go-live OK, then step 4.**
+
+## Closed 2026-09-28 evening
+
+- **Live.** On Bobbo's "deploy our changes" the seat squash-merged cutover PR #46 (`fffc826`). The Pages deploy
+  succeeded. The live site was checked at https://ebentham.github.io/gridflow-front-end/ and 9 pages were measured in a browser:
+  - home, Data sources, Architecture, Models and Explorer;
+  - the Elexon hub, `system_prices`, `physical_flows` and blank `freq`.
+  All returned 200, the nav is the same everywhere, there were no broken images, no sideways scroll and no console
+  errors. The retired `models/demand-forecast.html` now returns 404, as intended.
+- **Tagged `v5`** on `fffc826`.
+- **Planning history** (the ~44 local docs commits) landed as PR #47, squashed as `bb9596d`. `DESIGN.md` keeps the
+  locked schema section, and the `CLAUDE.md` anatomy line gained the build notes. PR #34 is closed as superseded.
+- **Follow-ups:**
+  - cap the scenery scaling on very wide or zoomed-out screens;
+  - blank dataset pages still carry the site footer;
+  - the page-sizing note.
+- **Next:** the dataset fan-out that fills the 68 blank pages (step 5 above).
