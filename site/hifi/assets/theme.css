@@ -551,6 +551,7 @@ pre .ln { display: block; padding-left: calc((var(--i, 0) + 2) * 1ch); text-inde
 }
 @media (max-width: 699.98px) {
   .ds-hero { padding-top: 38px; }
+  .ds-land text { font-size: 26px; }  /* 12.4 px at 390 in the narrow scene */
   .ds-facts div { grid-template-columns: 82px minmax(0, 1fr); }
 }
 

@@ -30,6 +30,7 @@
   .hub-land .land--narrow { display: block; }
   .hub-land text { font-size: 24px; }
 }
+@media (max-width: 699.98px) { .hub-land text { font-size: 28px; } }  /* 12.4 px at 390 */
 
 /* ---------------------------------------------------------------- topsoil: where the cables bend */
 .hub-soil { height: 110px; padding: 0; }
