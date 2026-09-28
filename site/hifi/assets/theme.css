@@ -214,8 +214,9 @@ main { position: relative; display: block; }
 }
 @media (max-width: 699.98px) {
   /* phones show a fixed frame, units -10 to 850 (the land: wind, solar, gas, pylons, data centre, battery),
-     whose edges also fall in gaps between objects */
-  .landscape svg { width: 260.47%; max-width: none; height: auto; aspect-ratio: 2240 / 434; margin-left: -45.35%; }
+     whose edges also fall in gaps between objects. Home's drawing only: the hub and dataset landscapes
+     (.hub-land, .ds-land) carry their own narrow scene. */
+  .landscape:not(.ds-land, .hub-land) svg { width: 260.47%; max-width: none; height: auto; aspect-ratio: 2240 / 434; margin-left: -45.35%; }
   .landscape text { font-size: 24px; }
 }
 
