@@ -1,0 +1,139 @@
+{
+ "dataset": "elexon/system_prices",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "0a52e9aa16f51cf0925e47f72c45288c678de5eb75e43d2e8f67a4f7e87c6ac4",
+ "kernel": "gridflow_models",
+ "source": "elexon",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.elexon",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.elexon.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.elexon.query(\"system_prices\", \"2026-09-16\", \"2026-09-22\")\ndf = df.sort_values(\"timestamp_utc\")",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df[[\"settlement_date\", \"settlement_period\", \"system_sell_price\", \"system_buy_price\", \"net_imbalance_volume\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "settlement_date",
+      "settlement_period",
+      "system_sell_price",
+      "system_buy_price",
+      "net_imbalance_volume"
+     ],
+     "index": [
+      "47",
+      "20",
+      "26",
+      "40",
+      "17"
+     ],
+     "rows": [
+      [
+       "2026-09-16",
+       "1",
+       "123.650000",
+       "123.650000",
+       "-198.756667"
+      ],
+      [
+       "2026-09-16",
+       "2",
+       "163.351533",
+       "163.351533",
+       "5.110833"
+      ],
+      [
+       "2026-09-16",
+       "3",
+       "162.150000",
+       "162.150000",
+       "82.634922"
+      ],
+      [
+       "2026-09-16",
+       "4",
+       "93.000000",
+       "93.000000",
+       "-62.921674"
+      ],
+      [
+       "2026-09-16",
+       "5",
+       "117.770000",
+       "117.770000",
+       "-111.784444"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "df.plot(x=\"timestamp_utc\", y=\"system_sell_price\", ylabel=\"£/MWh\",\n        color=\"#155A6E\", figsize=(8, 3.5))",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: xlabel='timestamp_utc', ylabel='£/MWh'>"
+    },
+    {
+     "kind": "image",
+     "src": "system_prices-5.png",
+     "width": 699,
+     "height": 369
+    }
+   ]
+  }
+ ]
+}

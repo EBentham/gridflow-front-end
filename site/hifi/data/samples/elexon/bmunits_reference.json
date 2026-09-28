@@ -1,0 +1,196 @@
+{
+ "dataset": "elexon/bmunits_reference",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "35e52b948ff4e96ce74e3ea5ae27a687049b06d40d96414050c0468ce48f4042",
+ "silver": "elexon/bmunits_reference",
+ "columns": [
+  {
+   "name": "bm_unit_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "bm_unit_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "fuel_type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "registered_capacity_mw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "company_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "gsp_group_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "national_grid_bm_unit",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "data_provider",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "ingested_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2__AANGE001",
+   "2__AANGE001",
+   null,
+   "80.0",
+   "Limejump Energy Limited",
+   "_A",
+   "AG-ALIM02",
+   "elexon",
+   "2026-09-26 19:08:06.128562 UTC",
+   "2026-09-26 00:00:00 UTC",
+   "2026-09-26 19:08:06.107557 UTC",
+   "ab5adf89-9f99-4499-801a-04b4d75781d7",
+   "1.1.0"
+  ],
+  [
+   "E_ABERDARE",
+   "Aberdare Power Station",
+   null,
+   "15.4",
+   "UK Power Reserve Limited",
+   "_K",
+   "ABERU-1",
+   "elexon",
+   "2026-09-26 19:08:06.128562 UTC",
+   "2026-09-26 00:00:00 UTC",
+   "2026-09-26 19:08:06.107557 UTC",
+   "ab5adf89-9f99-4499-801a-04b4d75781d7",
+   "1.1.0"
+  ],
+  [
+   "I_EAD-FRAN1",
+   "EAD-FRAN1",
+   null,
+   "0.0",
+   "NESO",
+   null,
+   "EAD-FRAN1",
+   "elexon",
+   "2026-09-26 19:08:06.128562 UTC",
+   "2026-09-26 00:00:00 UTC",
+   "2026-09-26 19:08:06.107557 UTC",
+   "ab5adf89-9f99-4499-801a-04b4d75781d7",
+   "1.1.0"
+  ],
+  [
+   "I_IEG-FRAN1",
+   "IEG-FRAN1",
+   "INTFR",
+   "2013.945",
+   "Nat Grid Interconnectors Ltd",
+   null,
+   "IEG-FRAN1",
+   "elexon",
+   "2026-09-26 19:08:06.128562 UTC",
+   "2026-09-26 00:00:00 UTC",
+   "2026-09-26 19:08:06.107557 UTC",
+   "ab5adf89-9f99-4499-801a-04b4d75781d7",
+   "1.1.0"
+  ],
+  [
+   "T_ABRBO-1",
+   "ABRBO-1",
+   "WIND",
+   "99.0",
+   "Aberdeen Offshore Wind Farm",
+   null,
+   "ABRBO-1",
+   "elexon",
+   "2026-09-26 19:08:06.128562 UTC",
+   "2026-09-26 00:00:00 UTC",
+   "2026-09-26 19:08:06.107557 UTC",
+   "ab5adf89-9f99-4499-801a-04b4d75781d7",
+   "1.1.0"
+  ],
+  [
+   "T_DINO-1",
+   "Dinorwig 1",
+   "PS",
+   "320.0",
+   "First Hydro Company",
+   null,
+   "DINO-1",
+   "elexon",
+   "2026-09-26 19:08:06.128562 UTC",
+   "2026-09-26 00:00:00 UTC",
+   "2026-09-26 19:08:06.107557 UTC",
+   "ab5adf89-9f99-4499-801a-04b4d75781d7",
+   "1.1.0"
+  ],
+  [
+   "T_HEYM11",
+   "Heysham 1 Generator 1",
+   "NUCLEAR",
+   "610.0",
+   "EDF Energy Nuclear Generation",
+   null,
+   "HEYM11",
+   "elexon",
+   "2026-09-26 19:08:06.128562 UTC",
+   "2026-09-26 00:00:00 UTC",
+   "2026-09-26 19:08:06.107557 UTC",
+   "ab5adf89-9f99-4499-801a-04b4d75781d7",
+   "1.1.0"
+  ],
+  [
+   "T_PEHE-1",
+   "Peterhead Block 1",
+   "CCGT",
+   "1200.0",
+   "SSE Thermal Generation",
+   null,
+   "PEHE-1",
+   "elexon",
+   "2026-09-26 19:08:06.128562 UTC",
+   "2026-09-26 00:00:00 UTC",
+   "2026-09-26 19:08:06.107557 UTC",
+   "ab5adf89-9f99-4499-801a-04b4d75781d7",
+   "1.1.0"
+  ]
+ ],
+ "mark": 1
+}

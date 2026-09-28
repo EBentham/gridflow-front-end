@@ -1,1046 +1,740 @@
-/* ════════════════════════════════════════════════════════════════
-   Gridflow theme — forest + cream editorial
-   ════════════════════════════════════════════════════════════════ */
+/* gridflow theme: "Above ground, below ground".
+   Every colour, font and size comes from tokens.css (DESIGN.md is the spec; change the three together).
+   This file holds structure: base, chrome, the strata, and the homepage components.
+   The block at the end marked GENERATED holds the strata textures and contact-line shapes; it is
+   written by the homepage generator from the same wave functions as the reference board. */
 
+@import url("tokens.css");
+
+/* ---------------------------------------------------------------- base */
 :root {
-  /* paper */
-  --paper:       #f5f1eb;
-  --paper-deep:  #ece6db;
-  --paper-card:  #faf7f1;
-  --rule:        #d8d1c2;
-  --rule-soft:   #e6dfd0;
-
-  /* ink */
-  --ink:         #1a1714;
-  --ink-strong:  #0d0c0a;
-  --ink-soft:    #6b6358;
-  --ink-faint:   #a8a194;
-  --text-faint:  #6d655a;
-  --ink-ghost:   #c8c0b0;
-
-  /* accent — forest */
-  --accent:      #3b6b4b;
-  --accent-deep: #2a4f37;
-  --accent-soft: #a9c4b3;
-  --accent-tint: #dfeae3;
-  --accent-wash: #ebf1ec;
-
-  /* type */
-  --serif: "Fraunces", "Iowan Old Style", "Georgia", serif;
-  --sans:  "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-  --mono:  "JetBrains Mono", "Courier New", ui-monospace, monospace;
-
-  /* layout */
-  --site-max:    1280px;
-  --site-pad:    64px;
-  --gutter:      32px;
+  --side: var(--margin);      /* side margin: 80 at 1440, fluid below, the 16 px phone gutter at the bottom */
+  --contact-h: 24px;          /* the band a contact line lives in, at the top of each stratum */
+  --pad-top: 56px;            /* space from a contact line to the first line of content */
 }
+@media (max-width: 1439.98px) { :root { --side: 5.556vw; } }
+@media (max-width: 699.98px)  { :root { --side: var(--gutter); --pad-top: 44px; } }
 
-/* reset */
 *, *::before, *::after { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; }
-img, svg { display: block; max-width: 100%; }
-button { font: inherit; color: inherit; }
-
-/* focus — visible keyboard indicator (WCAG 2.4.7 / 2.4.11) */
-:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-.card.ink :focus-visible { outline-color: var(--paper); }
-
-html {
-  font-family: var(--sans);
-  font-size: 14px;
-  line-height: 1.55;
-  color: var(--ink);
-  background: var(--paper);
-  letter-spacing: -0.005em;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-}
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 body {
-  min-height: 100vh;
-}
-
-/* ── typography ─────────────────────────────────────────────── */
-h1, h2, h3, h4 {
-  font-family: var(--serif);
-  font-weight: 400;
-  letter-spacing: -0.022em;
   margin: 0;
-  line-height: 1.05;
-  color: var(--ink-strong);
-}
-.display-1 { font-family: var(--serif); font-weight: 400; font-size: 72px; line-height: 0.98; letter-spacing: -0.03em; }
-.display-2 { font-family: var(--serif); font-weight: 400; font-size: 56px; line-height: 1.0;  letter-spacing: -0.025em; }
-.display-3 { font-family: var(--serif); font-weight: 400; font-size: 40px; line-height: 1.05; letter-spacing: -0.022em; }
-h1 { font-size: 60px; }
-h2 { font-size: 32px; }
-h3 { font-size: 22px; }
-h4 { font-size: 18px; }
-
-p { margin: 0 0 12px; }
-.lede { font-family: var(--serif); font-size: 19px; line-height: 1.45; color: var(--ink); }
-
-.eyebrow {
-  font-family: var(--sans);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-}
-.small { font-size: 13px; color: var(--ink-soft); }
-.tiny  { font-size: 11px; color: var(--text-faint); letter-spacing: 0.04em; }
-.mono  { font-family: var(--mono); font-size: 12px; }
-
-a { color: var(--ink); text-decoration: none; }
-a.link {
-  border-bottom: 1px solid var(--ink-faint);
-  padding-bottom: 1px;
-  font-weight: 500;
-}
-a.link:hover { border-color: var(--ink); }
-a.link.accent { color: var(--accent); border-color: var(--accent-soft); }
-a.link.accent:hover { border-color: var(--accent); }
-
-/* italic display (for hero accent fragment) */
-.italic { font-style: italic; }
-.fg-accent { color: var(--accent); }
-.fg-soft   { color: var(--ink-soft); }
-
-/* ── layout primitives ──────────────────────────────────────── */
-.container {
-  max-width: var(--site-max);
-  margin: 0 auto;
-  padding: 0 var(--site-pad);
-}
-.row { display: flex; gap: 16px; }
-.col { display: flex; flex-direction: column; gap: 16px; }
-.between { justify-content: space-between; align-items: center; }
-.center { align-items: center; }
-
-hr.rule        { border: 0; border-top: 1px solid var(--rule); margin: 0; }
-hr.rule-strong { border: 0; border-top: 1px solid var(--ink); margin: 0; }
-
-/* ── nav ────────────────────────────────────────────────────── */
-.nav {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  background: var(--paper);
-  border-bottom: 1px solid var(--rule);
-  backdrop-filter: blur(8px);
-}
-.nav-inner {
-  max-width: var(--site-max);
-  margin: 0 auto;
-  padding: 16px var(--site-pad);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.nav-logo {
-  font-family: var(--serif);
-  font-size: 22px;
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  color: var(--ink-strong);
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-}
-.nav-logo .mark {
-  width: 22px; height: 22px;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 35% 35%, var(--accent-soft) 0 30%, transparent 31%),
-    var(--accent);
-}
-.nav-links {
-  display: flex;
-  gap: 28px;
-  align-items: center;
-}
-.nav-links a {
-  font-size: 13px;
-  font-weight: 500;
+  background: var(--daylight);
   color: var(--ink);
-  position: relative;
-  padding-bottom: 2px;
+  font: 400 var(--fs-body)/1.62 var(--body);
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
 }
-.nav-links a:hover { color: var(--accent); }
-.nav-links a.active {
-  color: var(--accent);
-}
-.nav-links a.active::after {
-  content: "";
-  position: absolute;
-  left: 0; right: 0; bottom: -19px;
-  height: 1.5px;
-  background: var(--accent);
-}
-
-/* ── buttons & chips ────────────────────────────────────────── */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 18px;
-  border: 1px solid var(--ink);
-  background: var(--paper);
-  border-radius: 999px;
-  font-family: var(--sans);
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--ink);
-  cursor: pointer;
-  text-decoration: none;
-  transition: background .15s, color .15s, border-color .15s, transform .15s;
-}
-.btn:hover { background: var(--ink); color: var(--paper); }
-.btn.primary { background: var(--ink); color: var(--paper); }
-.btn.primary:hover { background: var(--accent); border-color: var(--accent); }
-.btn.ghost { border-color: var(--rule); color: var(--ink); background: transparent; }
-.btn.ghost:hover { border-color: var(--ink); background: var(--paper-card); color: var(--ink); }
-.btn.accent { background: var(--accent); border-color: var(--accent); color: var(--paper); }
-.btn.accent:hover { background: var(--accent-deep); border-color: var(--accent-deep); }
-.btn.sm { padding: 7px 12px; font-size: 12px; }
-
-.chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-family: var(--sans);
-  font-size: 12px;
-  color: var(--ink-soft);
-  padding: 4px 11px;
-  border: 1px solid var(--rule);
-  border-radius: 999px;
-  background: var(--paper);
-  cursor: default;
-}
-.chip.ink { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-.chip.accent { background: var(--accent-tint); border-color: var(--accent-soft); color: var(--accent-deep); }
-.chip.live::before {
-  content: "";
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-tint);
-  margin-right: 2px;
-}
-.chip.btn-like { transition: background .12s, border-color .12s; }
-button.chip.btn-like:hover { border-color: var(--ink-faint); }
-.chip.btn-like.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-
-/* ── card ───────────────────────────────────────────────────── */
-.card {
-  border: 1px solid var(--rule);
-  background: var(--paper-card);
-  padding: 24px;
-}
-.card.deep    { background: var(--paper-deep); }
-.card.ink     { background: var(--ink-strong); color: var(--paper); border-color: var(--ink-strong); }
-.card.ink * { color: inherit; }
-.card.accent  { background: var(--accent-tint); border-color: var(--accent-soft); }
-.card.flush   { padding: 0; }
-
-/* link cards (vendor list rows etc) */
-a.row-link {
-  display: block;
+h1, h2, h3 { margin: 0; font-family: var(--display); font-optical-sizing: auto; font-weight: 720; }
+p, ul, ol, dl, dd, figure { margin: 0; }
+ul, ol { padding: 0; }
+a {
   color: inherit;
-  text-decoration: none;
-  transition: background .12s;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 4px;
+  text-decoration-color: var(--olive);
 }
-a.row-link:hover { background: var(--paper-card); }
-a.row-link:hover .arrow { color: var(--accent); transform: translateX(3px); }
-.arrow { transition: color .15s, transform .15s; color: var(--text-faint); }
+:focus-visible { outline: 2px solid var(--chartreuse); outline-offset: 3px; border-radius: 2px; }
+code, pre { font-family: var(--mono); }
+code { font-size: .9em; }
 
-/* ── stats strip ────────────────────────────────────────────── */
-.stats-strip {
-  display: grid;
-  border-top: 1px solid var(--ink);
-  border-bottom: 1px solid var(--rule);
-}
-.stats-strip > div {
-  padding: 18px 20px;
-  border-right: 1px solid var(--rule);
-}
-.stats-strip > div:last-child { border-right: 0; }
-.stat-n {
-  font-family: var(--serif);
-  font-weight: 400;
-  font-size: 30px;
-  line-height: 1;
-  color: var(--ink-strong);
-  letter-spacing: -0.02em;
-}
-.stat-l {
-  font-size: 11px;
-  color: var(--ink-soft);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  margin-top: 8px;
-}
+.wrap { width: 100%; max-width: var(--page-max); margin-inline: auto; padding-inline: var(--side); }
 
-/* ── editorial table ────────────────────────────────────────── */
-.etable {
-  width: 100%;
-  border-collapse: collapse;
+.skip {
+  position: absolute; top: 8px; left: var(--side); z-index: 10;
+  padding: 8px 14px; border-radius: var(--radius);
+  background: var(--chartreuse); color: var(--ink); font-weight: 600; text-decoration: none;
+  transform: translateY(-200%);
 }
-.etable thead th {
-  text-align: left;
-  font-family: var(--sans);
-  font-weight: 500;
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-  padding: 12px 0;
-  border-top: 1px solid var(--ink);
-  border-bottom: 1px solid var(--ink);
-}
-.etable td {
-  padding: 16px 0;
-  border-bottom: 1px solid var(--rule);
-  vertical-align: top;
-}
+.skip:focus { transform: none; }
 
-/* ── code blocks ────────────────────────────────────────────── */
-pre.code, code.code {
-  font-family: var(--mono);
-  font-size: 12px;
-  line-height: 1.7;
-  background: var(--paper-deep);
-  border: 1px solid var(--rule);
-  padding: 16px 18px;
-  margin: 0;
-  overflow: auto;
-  border-radius: 4px;
-  color: var(--ink);
+/* ---------------------------------------------------------------- type roles */
+.h-hero {
+  font-size: clamp(44px, calc(26px + 4.17vw), var(--fs-hero));
+  font-weight: 760; font-stretch: 84%; line-height: .94; letter-spacing: -.022em;
 }
-pre.code.dark {
-  background: var(--ink-strong);
-  color: #d6d0c1;
-  border-color: var(--ink-strong);
+.h-xl {
+  font-size: clamp(36px, calc(30.8px + 1.333vw), 50px);
+  font-weight: 740; font-stretch: 80%; line-height: 1; letter-spacing: -.02em;
 }
-pre.code .k { color: var(--accent); }
-pre.code .s { color: #c45a3a; }
-pre.code .c { color: var(--text-faint); font-style: italic; }
-pre.code.dark .k { color: #8fbf9c; }
-pre.code.dark .s { color: #e8b8a3; }
-pre.code.dark .c { color: #6b6358; }
+.h-sec {
+  font-size: clamp(30px, calc(25.5px + 1.143vw), var(--fs-h2));
+  font-weight: 720; font-stretch: 88%; line-height: 1.02; letter-spacing: -.018em;
+}
+.h-fig {
+  font-size: clamp(24px, calc(21.8px + .571vw), var(--fs-h2-s));
+  font-weight: 700; font-stretch: 90%; line-height: 1.1; letter-spacing: -.012em;
+}
+.h-entry {
+  font-size: var(--fs-h3);
+  font-weight: 720; font-stretch: 90%; line-height: 1.1; letter-spacing: -.01em;
+}
+.intro { font-size: clamp(18.5px, calc(17.6px + .238vw), var(--fs-intro)); line-height: 1.5; color: var(--ink); }
+.prose p { margin: 0 0 14px; font-size: var(--fs-body); line-height: 1.62; color: var(--ink-2); max-width: 58ch; }
+.prose p:last-child { margin-bottom: 0; }
+.prose code { font-size: .86em; color: var(--ink); }
+.caption { font-size: var(--fs-small); line-height: 1.55; color: var(--ink-2); max-width: 66ch; }
+.more { font-weight: 600; color: var(--ink); }
 
-/* ── code-tabs (SQL / Python toggle) ────────────────────────── */
-.tabs {
-  display: flex;
-  gap: 4px;
-  border-bottom: 1px solid var(--rule);
-  margin-bottom: 14px;
+/* ---------------------------------------------------------------- actions */
+.btn {
+  display: inline-block; padding: 12px 20px; border-radius: var(--radius);
+  background: var(--chartreuse); color: var(--ink); font-weight: 600; line-height: 1.3; text-decoration: none;
 }
-.tabs button {
-  background: none;
-  border: 0;
-  padding: 8px 14px;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--ink-soft);
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
-}
-.tabs button.active {
-  color: var(--accent);
-  border-bottom-color: var(--accent);
-}
-.tab-panel { display: none; }
-.tab-panel.active { display: block; }
+.btn:hover { background: var(--chartreuse-hi); }
+.link-alt { font-weight: 600; color: var(--on-petrol); text-decoration-color: var(--chartreuse); }
 
-/* copy button */
-.copy {
-  position: absolute;
-  top: 8px; right: 8px;
-  background: var(--paper);
-  border: 1px solid var(--rule);
-  border-radius: 4px;
-  padding: 3px 9px;
-  font-size: 11px;
-  color: var(--ink-soft);
-  cursor: pointer;
-  font-family: var(--sans);
-  opacity: 0;
-  transition: opacity .12s;
+/* ---------------------------------------------------------------- chrome: masthead and footer */
+.masthead { background: var(--petrol); color: var(--on-petrol); }
+.masthead__in {
+  display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between;
+  gap: 10px 32px; padding-top: 26px;
 }
-.code-wrap { position: relative; }
-.code-wrap:hover .copy { opacity: 1; }
-.copy:hover { border-color: var(--ink); color: var(--ink); }
-.copy.copied { color: var(--accent); border-color: var(--accent-soft); }
-
-/* ── chart frame ────────────────────────────────────────────── */
-.chart {
-  border: 1px solid var(--rule);
-  background: var(--paper-card);
-  padding: 22px 24px;
+.brand {
+  font-family: var(--display); font-weight: 800; font-size: 24px; letter-spacing: -.01em;
+  color: var(--on-petrol); text-decoration: none;
 }
-.chart-legend {
-  display: flex;
-  gap: 22px;
-  margin-top: 14px;
-  flex-wrap: wrap;
-}
-.chart-legend > span {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--ink-soft);
-}
-.chart-legend i {
-  width: 12px; height: 12px; display: inline-block;
+.nav ul { display: flex; flex-wrap: wrap; gap: 6px 30px; list-style: none; font-size: 15px; }
+.nav a { display: inline-block; padding-block: 3px; color: var(--on-petrol-2); text-decoration: none; }
+.nav a:hover { color: var(--on-petrol); }
+.nav a[aria-current="page"] { color: var(--on-petrol); box-shadow: inset 0 -2px 0 var(--chartreuse); }
+@media (max-width: 699.98px) {
+  .masthead__in { padding-top: 18px; }
+  .nav { flex-basis: 100%; }
+  /* six items never fit one row at 360; they sit in two rows of three by design */
+  .nav ul { display: grid; grid-template-columns: repeat(3, max-content); justify-content: space-between; gap: 2px 12px; }
 }
 
-/* ── breadcrumbs ────────────────────────────────────────────── */
-.crumbs {
-  display: flex;
-  gap: 8px;
-  font-size: 13px;
-  color: var(--ink-soft);
-  margin-bottom: 18px;
-  align-items: center;
+.site-foot { color: var(--on-petrol-2); font-size: var(--fs-small); line-height: 1.5; }
+.site-foot__in {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 18px 48px; align-items: baseline;
+  padding-block: 30px 44px; border-top: 1px solid var(--rule-petrol);
 }
-.crumbs a { color: var(--ink-soft); }
-.crumbs a:hover { color: var(--accent); }
-.crumbs .sep { color: var(--ink-ghost); }
-.crumbs .here { color: var(--ink); font-weight: 500; }
+.site-foot .brand { font-size: 20px; }
+.site-foot ul { display: flex; flex-wrap: wrap; gap: 6px 26px; list-style: none; }
+.site-foot a { color: var(--on-petrol-2); text-decoration-color: var(--chartreuse); }
+.site-foot a:hover { color: var(--on-petrol); }
+.site-foot__line { grid-column: 1 / -1; color: var(--on-petrol-3); }
+/* six nav items and the source links share one row only from about 1200px; below that the links take a row */
+@media (min-width: 700px) and (max-width: 1199.98px) {
+  .site-foot__in { grid-template-columns: auto minmax(0, 1fr); }
+  .site-foot__in > ul { grid-column: 2; }
+}
+@media (max-width: 699.98px) { .site-foot__in { grid-template-columns: minmax(0, 1fr); } }
 
-/* ── footer ─────────────────────────────────────────────────── */
-.footer {
-  margin-top: 80px;
-  border-top: 1px solid var(--rule);
-  background: var(--paper-deep);
+/* ---------------------------------------------------------------- the strata
+   A page is a geological section. Each stratum is a full-bleed <section class="stratum stratum--x">.
+   A stratum after the first meets the one above on a wavy contact line: it rises into the one above by
+   --contact-h, is clipped to the wave, and draws the ink line along it. Textures are masked tiles whose
+   colour comes from the tokens. Add .stratum--flush to meet the stratum above on a straight edge
+   (the homepage topsoil, whose top edge is the drawn ground surface). */
+.stratum { position: relative; isolation: isolate; padding-block: var(--pad-top) 64px; }
+.stratum::before, .stratum::after { content: ""; position: absolute; z-index: -1; pointer-events: none; }
+.stratum::before { inset: 0; }
+.stratum:not(.stratum--sky):not(.stratum--flush) {
+  margin-top: calc(-1 * var(--contact-h));
+  padding-top: calc(var(--contact-h) + var(--pad-top));
 }
-.footer-inner {
-  max-width: var(--site-max);
-  margin: 0 auto;
-  padding: 48px var(--site-pad) 32px;
+.stratum:not(.stratum--sky):not(.stratum--flush)::after {
+  top: 0; left: 0; right: 0; height: var(--contact-h); background: var(--ink);
 }
-.footer h4 {
-  font-family: var(--sans);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-  margin-bottom: 14px;
-}
-.footer-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
-  gap: 48px;
-  margin-bottom: 40px;
-}
-.footer-grid a {
-  display: block;
-  font-size: 13px;
-  color: var(--ink);
-  padding: 4px 0;
-}
-.footer-grid a:hover { color: var(--accent); }
-.footer-bottom {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 24px;
-  border-top: 1px solid var(--rule);
-  font-size: 12px;
-  color: var(--ink-soft);
-}
+.stratum--sky { background: var(--petrol); color: var(--on-petrol); padding-block: 0; }
+/* straight joins overlap by a pixel, so a fractional edge never shows a hairline of the page behind */
+.stratum--sky, .stratum--flush { margin-top: -1px; }
+.stratum--topsoil { background: var(--topsoil); }
+.stratum--topsoil::before { background: var(--fuel-other); opacity: .5; -webkit-mask: var(--tex-soil); mask: var(--tex-soil); }
+.stratum--bronze { background: var(--bronze-tint); }
+.stratum--bronze::before { background: var(--clay-deep); opacity: .15; -webkit-mask: var(--tex-brick); mask: var(--tex-brick); }
+.stratum--silver { background: var(--silver-tint); }
+.stratum--silver::before { background: var(--silver-deep); opacity: .22; -webkit-mask: var(--tex-diag); mask: var(--tex-diag); }
+.stratum--gold { background: var(--gold-tint); }
+.stratum--gold::before { background: var(--gold-deep); opacity: .26; -webkit-mask: var(--tex-stip); mask: var(--tex-stip); }
+.stratum--deep { --contact-h: 44px; background: var(--petrol); color: var(--on-petrol); }
+.stratum--deep::before { background: var(--horizon); opacity: .5; -webkit-mask: var(--tex-granite); mask: var(--tex-granite); }
 
-/* ── status dot ─────────────────────────────────────────────── */
-.dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  display: inline-block;
+/* the unit's name, set like a label on a drawn section, at the right under its contact */
+.stratum__name {
+  position: absolute; top: calc(var(--contact-h) + var(--name-drop, 14px));
+  right: max(var(--side), calc((100% - 1280px) / 2));
+  font: italic 400 14px/1 var(--body); color: var(--ink);
 }
-.dot.live  { background: var(--accent); box-shadow: 0 0 0 3px var(--accent-tint); }
-.dot.warn  { background: #c45a3a; box-shadow: 0 0 0 3px #f6e2d5; }
-.dot.idle  { background: var(--ink-faint); }
+/* silver's contact line has its deepest trough (about 23px) right above the label, so the label drops
+   further to keep the same clearance the other strata have */
+.stratum--silver { --name-drop: 24px; }
 
-/* ── selection ──────────────────────────────────────────────── */
-::selection { background: var(--accent-tint); color: var(--ink-strong); }
-
-/* sections */
-section.block {
-  padding: 64px 0;
-}
-section.block.tight { padding: 40px 0; }
-section.block:not(:last-of-type) { border-bottom: 1px solid var(--rule); }
-
-/* helpers */
-.tag-row { display: flex; gap: 10px; flex-wrap: wrap; }
-.flex-1 { flex: 1; min-width: 0; }
-.gap-8 { gap: 8px; }
-.gap-16 { gap: 16px; }
-.gap-24 { gap: 24px; }
-.gap-32 { gap: 32px; }
-.mt-8 { margin-top: 8px; }
-.mt-16 { margin-top: 16px; }
-.mt-24 { margin-top: 24px; }
-.mt-32 { margin-top: 32px; }
-.mt-48 { margin-top: 48px; }
-.mb-8 { margin-bottom: 8px; }
-.mb-16 { margin-bottom: 16px; }
-.mb-24 { margin-bottom: 24px; }
-.mb-32 { margin-bottom: 32px; }
-.mb-48 { margin-bottom: 48px; }
-
-/* ──────────────────────────────────────────────────────────────
-   Mobile nav toggle (hidden on desktop)
-   ────────────────────────────────────────────────────────────── */
-.nav-toggle {
-  display: none;
-  background: transparent;
-  border: 1px solid var(--rule);
-  border-radius: 999px;
-  padding: 8px 12px;
-  cursor: pointer;
-  align-items: center;
-  gap: 6px;
-}
-.nav-toggle:hover { border-color: var(--ink); }
-.nav-toggle svg { display: block; }
-
-/* ──────────────────────────────────────────────────────────────
-   Models / case-study helpers
-   ────────────────────────────────────────────────────────────── */
-.kpi-row {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  border-top: 1px solid var(--ink);
-  border-bottom: 1px solid var(--ink);
-}
-.kpi-row > div {
-  padding: 20px 24px;
-  border-right: 1px solid var(--rule);
-}
-.kpi-row > div:last-child { border-right: 0; }
-.kpi-v {
-  font-family: var(--serif);
-  font-size: 32px;
-  line-height: 1;
-  letter-spacing: -0.02em;
-  color: var(--ink-strong);
-}
-.kpi-l {
-  font-family: var(--sans);
-  font-size: 10px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-  margin-top: 10px;
-}
-.kpi-sub {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--text-faint);
-  margin-top: 4px;
+/* a bedding plane inside one stratum: a dashed wavy line */
+.bedding {
+  display: block; height: 12px; margin: 0; border: 0;
+  background: var(--ink); opacity: .55;
+  -webkit-mask: var(--tex-bed); mask: var(--tex-bed);
 }
 
-.callout {
-  border-left: 2px solid var(--accent);
-  background: var(--accent-wash);
-  padding: 16px 20px;
-  font-size: 13px;
-  color: var(--ink);
-  margin: 24px 0;
-}
-.callout strong { color: var(--ink-strong); }
+/* the footer is the deep stratum; after a page that already ends in the deep it simply continues */
+main:has(> .stratum--deep:last-child) + .site-foot { margin-top: -1px; padding-top: 0; clip-path: none; }
+main:has(> .stratum--deep:last-child) + .site-foot::after { display: none; }
+.site-foot.stratum { padding-bottom: 0; }
 
-dl.meta {
-  display: grid;
-  grid-template-columns: 140px 1fr;
-  gap: 10px 24px;
-  margin: 0;
-  font-size: 13px;
-}
-dl.meta dt {
-  font-family: var(--sans);
-  font-size: 10px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-  padding-top: 2px;
-}
-dl.meta dd {
-  margin: 0;
-  color: var(--ink);
-}
-dl.meta dd code, dl.meta dd .mono {
-  font-family: var(--mono);
-  font-size: 12px;
-}
+/* ================================================================ homepage */
+main { position: relative; display: block; }
 
-/* ──────────────────────────────────────────────────────────────
-   Dataset pages — scoped under body[data-page="dataset"]
-   Lifted from the per-page <style> blocks (~30 lines × 22 files).
-   Page-specific exceptions (e.g. .fuel-grid on fuelhh) stay inline.
-   ────────────────────────────────────────────────────────────── */
-body[data-page="dataset"] .schema-table {
-  width: 100%;
-  border-collapse: collapse;
+/* sky: hero, the three ways in, the landscape */
+.hero {
+  display: grid; grid-template-columns: minmax(0, 860fr) minmax(0, 374fr);
+  grid-template-areas: "head lede" "keys lede";
+  column-gap: 46px; row-gap: 58px; align-items: start; padding-top: 74px;
 }
-body[data-page="dataset"] .schema-table thead th {
-  text-align: left;
-  font-family: var(--sans);
-  font-weight: 500;
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-  padding: 10px 12px;
-  border-top: 1px solid var(--ink);
-  border-bottom: 1px solid var(--ink);
-  background: var(--paper-deep);
+.hero__h { grid-area: head; color: var(--on-petrol); }
+.hero__lede { grid-area: lede; padding-top: 14px; }
+.hero__lede p { font-size: var(--fs-lede); line-height: 1.6; color: var(--on-petrol-2); }
+.hero .hero__scope { font-size: 15px; line-height: 1.6; color: var(--on-petrol-3); }
+.cta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 26px; margin: 26px 0 22px; }
+.keys { grid-area: keys; max-width: 820px; }
+.keys h2 { margin: 0 0 16px; font-size: 21px; font-weight: 650; font-stretch: 92%; letter-spacing: -.005em; color: var(--on-petrol); }
+.keys ul { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px 34px; list-style: none; }
+.keys a { display: block; color: var(--on-petrol); text-decoration: none; }
+.keys svg { display: block; margin: 0 0 12px; }
+.keys h3 {
+  margin: 0 0 4px; font-size: 20px; font-weight: 700; font-stretch: 90%;
+  text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px;
+  text-decoration-color: transparent;
 }
-body[data-page="dataset"] .schema-table td {
-  padding: 12px 12px;
-  border-bottom: 1px solid var(--rule);
-  vertical-align: top;
-  font-size: 13px;
+.keys a:hover h3, .keys a:focus-visible h3 { text-decoration-color: var(--chartreuse); }
+.keys p { font-size: var(--fs-small); line-height: 1.5; color: var(--on-petrol-2); }
+
+/* The drawing is 2240 units wide. From 700px up it always shows units 0 to 1440 (the board's frame), scaled to
+   the width, so its edges sit in the same gaps between objects at every width and nothing is cut. */
+.landscape { margin-top: 12px; overflow: hidden; }
+.landscape svg { display: block; width: 100%; height: 30.14vw; }
+.landscape text { font-family: var(--body); font-style: italic; font-size: 13.5px; }
+@media (max-width: 1439.98px) { .landscape text { font-size: 14.5px; } }
+@media (max-width: 1299.98px) { .landscape text { font-size: 17px; } }
+@media (max-width: 1099.98px) {
+  .landscape text { font-size: 21px; }
+  .landscape .lbl-edge { display: none; }
 }
-body[data-page="dataset"] .schema-table tr:hover td { background: var(--paper-card); }
-body[data-page="dataset"] .schema-table .col-name {
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--ink-strong);
-  font-weight: 500;
-}
-body[data-page="dataset"] .schema-table .col-type {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--accent);
-}
-body[data-page="dataset"] .schema-table .col-note {
-  color: var(--ink-soft);
-  font-size: 12px;
-}
-body[data-page="dataset"] .schema-table .pk-badge {
-  display: inline-block;
-  font-size: 9px;
-  font-family: var(--sans);
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  background: var(--ink-strong);
-  color: var(--paper);
-  padding: 2px 6px;
-  border-radius: 3px;
-  margin-left: 6px;
-  vertical-align: 1px;
-}
-body[data-page="dataset"] .schema-table .nullable {
-  color: var(--text-faint);
-  font-size: 11px;
-  font-family: var(--mono);
-}
-body[data-page="dataset"] .data-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-family: var(--mono);
-  font-size: 12px;
-}
-body[data-page="dataset"] .data-table thead th {
-  text-align: left;
-  padding: 10px 14px;
-  background: var(--ink-strong);
-  color: #d6d0c1;
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  white-space: nowrap;
-}
-body[data-page="dataset"] .data-table tbody tr:nth-child(odd) td { background: #26221d; }
-body[data-page="dataset"] .data-table tbody tr:nth-child(even) td { background: #221e19; }
-body[data-page="dataset"] .data-table td {
-  padding: 8px 14px;
-  color: #d6d0c1;
-  border-bottom: 1px solid #2e2924;
-  white-space: nowrap;
-}
-body[data-page="dataset"] .data-table .num  { text-align: right; color: #8fbf9c; }
-body[data-page="dataset"] .data-table .date { color: #c9a96e; }
-body[data-page="dataset"] .data-table .str  { color: #e8b8a3; }
-body[data-page="dataset"] .page-layout {
-  display: grid;
-  grid-template-columns: 220px 1fr;
-  gap: 0;
-  align-items: start;
-}
-body[data-page="dataset"] .sidebar {
-  position: sticky;
-  top: 64px;
-  padding: 32px 0;
-  border-right: 1px solid var(--rule);
-  min-height: calc(100vh - 64px);
-}
-body[data-page="dataset"] .sidebar-section { margin-bottom: 6px; }
-body[data-page="dataset"] .sidebar-section-title {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--text-faint);
-  padding: 8px 24px 4px;
-}
-body[data-page="dataset"] .sidebar a {
-  display: block;
-  padding: 6px 24px;
-  font-size: 13px;
-  color: var(--ink-soft);
-  border-left: 2px solid transparent;
-  text-decoration: none;
-  transition: color .12s, border-color .12s;
-}
-body[data-page="dataset"] .sidebar a:hover { color: var(--ink); }
-body[data-page="dataset"] .sidebar a.active {
-  color: var(--accent);
-  border-left-color: var(--accent);
-  font-weight: 500;
-}
-body[data-page="dataset"] .sidebar a.muted        { color: var(--text-faint); }
-body[data-page="dataset"] .sidebar a.muted:hover  { color: var(--ink); }
-body[data-page="dataset"] .main-content { padding: 40px 64px 80px 64px; }
-body[data-page="dataset"] .caveat-item {
-  display: grid;
-  grid-template-columns: 28px 1fr;
-  gap: 12px;
-  padding: 16px 0;
-  border-top: 1px solid var(--rule);
-}
-body[data-page="dataset"] .caveat-num {
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--ink-strong);
-  font-weight: 500;
-}
-body[data-page="dataset"] .related-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+@media (max-width: 699.98px) {
+  /* phones show a fixed frame, units -10 to 850 (the land: wind, solar, gas, pylons, data centre, battery),
+     whose edges also fall in gaps between objects. Home's drawing only: the hub and dataset landscapes
+     (.hub-land, .ds-land) carry their own narrow scene. */
+  .landscape:not(.ds-land, .hub-land) svg { width: 260.47%; max-width: none; height: auto; aspect-ratio: 2240 / 434; margin-left: -45.35%; }
+  /* 27 user units at the phone frame's scale (1016 px for 2240) render at 12.2 px */
+  .landscape text { font-size: 27px; }
+  .landscape .lbl-bat { transform: translateX(-24px); }  /* keeps its last letters inside the 850 edge */
 }
 
-/* ──────────────────────────────────────────────────────────────
-   Responsive — graceful below 1280px
-   The system was designed desktop-first. These overrides lift
-   density, stack grids, and keep typography readable on tablet
-   and mobile without redesigning the visual identity.
-   ────────────────────────────────────────────────────────────── */
+@media (max-width: 1099.98px) {
+  .hero { grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "lede" "keys"; row-gap: 36px; padding-top: 56px; }
+  .hero__lede { padding-top: 0; max-width: 620px; }
+}
+@media (max-width: 699.98px) {
+  .hero { padding-top: 40px; row-gap: 28px; }
+  .keys ul { grid-template-columns: minmax(0, 1fr); }
+}
 
-/* tablet — single-pane grids collapse */
-@media (max-width: 1100px) {
-  :root {
-    --site-pad: 40px;
+/* topsoil: the fuel mix, then the research platform */
+.core { padding-top: 30px; }
+.core__h { margin: 0 0 6px; }
+.core__fig svg { display: block; max-width: 100%; height: auto; }
+.core__fig .core-d { margin-left: -16px; }
+.core__fig .core-m { display: none; }
+.core__cap { margin-top: 8px; }
+@media (max-width: 759.98px) {
+  .core__fig .core-d { display: none; }
+  .core__fig .core-m { display: block; width: 100%; max-width: 360px; margin-top: 10px; }
+}
+.core + .bedding { margin-top: 50px; }
+
+.purpose { padding-top: 58px; padding-bottom: 190px; }
+.purpose__head {
+  display: grid; grid-template-columns: minmax(0, 1fr) 266px; column-gap: 16px; align-items: start;
+  padding-right: 50px;
+}
+.purpose__head h2 { grid-column: 1 / -1; margin-bottom: 30px; }
+.purpose__intro { max-width: 760px; }
+.purpose__aim { padding-top: 5px; font-size: 16px; line-height: 1.55; font-weight: 600; color: var(--ink); }
+.purpose__body {
+  display: grid; grid-template-columns: minmax(0, 948px) 266px; column-gap: 16px;
+  margin-top: 33px; padding-right: 50px;
+}
+.purpose__draw svg { display: block; width: 100%; height: auto; }
+.purpose__draw .draw-m { display: none; }
+.keyed { position: relative; list-style: none; margin-bottom: 40px; }
+.keyed li {
+  position: absolute; left: 0; right: 0; top: var(--at);
+  display: grid; grid-template-columns: 30px minmax(0, 1fr); column-gap: 14px; align-items: start;
+}
+.keyed svg { display: block; margin-top: 1px; }
+.keyed__n { font-weight: 600; font-size: 15.5px; line-height: 1.3; color: var(--ink); }
+.keyed__id { margin-top: 1px; font: 400 13px/1.4 var(--mono); color: var(--petrol); }
+.keyed__d { margin-top: 4px; font-size: 14px; line-height: 1.45; color: var(--ink-2); }
+.keyed__d code { font-size: 12.5px; color: var(--ink); }
+.keyed .is-q .keyed__n { font-weight: 500; font-style: italic; }
+@media (max-width: 1439.98px) {
+  .purpose__head { grid-template-columns: minmax(0, 760px) minmax(0, 300px); column-gap: 48px; }
+  .purpose__body { grid-template-columns: minmax(0, 948px); }
+  .keyed {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 26px 40px;
+    margin: 36px 0 0; max-width: 1060px;
   }
-  .display-1 { font-size: 56px; }
-  .display-2 { font-size: 44px; }
-  .display-3 { font-size: 32px; }
-  h1 { font-size: 48px; }
-
-  /* 2- and 3-column page grids → stack */
-  .stack-md {
-    grid-template-columns: 1fr !important;
-    gap: 40px !important;
-  }
-  .footer-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 32px;
-  }
-  .kpi-row {
-    grid-template-columns: 1fr 1fr;
-  }
-  .kpi-row > div:nth-child(2) { border-right: 0; }
-  .kpi-row > div:nth-child(-n+2) { border-bottom: 1px solid var(--rule); }
+  .keyed li { position: static; }
+}
+@media (max-width: 1099.98px) {
+  .purpose { padding-bottom: 88px; }
+  .purpose__head, .purpose__body { padding-right: 0; }
+  .purpose__head { grid-template-columns: minmax(0, 1fr); row-gap: 14px; }
+  .purpose__head h2 { margin-bottom: 8px; }
+}
+@media (max-width: 899.98px) {
+  .purpose__draw .draw-d { display: none; }
+  .purpose__draw .draw-m { display: block; max-width: 520px; }
+}
+@media (max-width: 699.98px) {
+  .purpose { padding-top: 44px; padding-bottom: 72px; }
+  .keyed { grid-template-columns: minmax(0, 1fr); gap: 22px; }
 }
 
-/* phone */
-@media (max-width: 720px) {
-  :root {
-    --site-pad: 20px;
-    --gutter: 16px;
-  }
-  html { font-size: 15px; }
-  .display-1 { font-size: 40px; line-height: 1.02; }
-  .display-2 { font-size: 32px; }
-  .display-3 { font-size: 26px; }
-  h1 { font-size: 36px; }
-  h2 { font-size: 26px; }
-  h3 { font-size: 20px; }
-  .lede { font-size: 17px; }
-
-  /* dataset page layout: collapse sidebar above main */
-  body[data-page="dataset"] .page-layout {
-    grid-template-columns: 1fr;
-  }
-  body[data-page="dataset"] .sidebar {
-    position: static;
-    border-right: 0;
-    border-bottom: 1px solid var(--rule);
-    min-height: 0;
-    padding: 16px 0;
-  }
-  body[data-page="dataset"] .sidebar-section {
-    margin-bottom: 12px;
-  }
-  body[data-page="dataset"] .sidebar a {
-    padding: 4px 0;
-    display: inline-block;
-    margin-right: 14px;
-  }
-  body[data-page="dataset"] .sidebar a.active { border-left: 0; }
-  body[data-page="dataset"] .main-content { padding: 24px 0 48px; }
-
-  /* dataset hero 1fr auto → stacks */
-  body[data-page="dataset"] [style*="grid-template-columns:1fr auto"],
-  body[data-page="dataset"] [style*="grid-template-columns: 1fr auto"] {
-    grid-template-columns: 1fr !important;
-    gap: 24px !important;
-  }
-  /* metric card min-width: 340px → drop on phone */
-  body[data-page="dataset"] [style*="min-width:340px"] {
-    min-width: 0 !important;
-  }
-  /* dataset stats strip 4-col → 2x2 */
-  body[data-page="dataset"] .stats-strip {
-    grid-template-columns: 1fr 1fr !important;
-  }
-  body[data-page="dataset"] .stats-strip > div:nth-child(2n) { border-right: 0; }
-  body[data-page="dataset"] .stats-strip > div:nth-child(-n+2) { border-bottom: 1px solid var(--rule); }
-  /* schema/data tables: horizontal scroll */
-  body[data-page="dataset"] .schema-table,
-  body[data-page="dataset"] .data-table {
-    min-width: 560px;
-  }
-  body[data-page="dataset"] #schema,
-  body[data-page="dataset"] #sample {
-    overflow-x: auto;
-  }
-  /* api card grid → stack */
-  body[data-page="dataset"] #api [style*="grid-template-columns:1fr 1fr"] {
-    grid-template-columns: 1fr !important;
-  }
-  /* related-grid: 2-col → 1-col */
-  body[data-page="dataset"] .related-grid {
-    grid-template-columns: 1fr;
-  }
-
-  /* vendor hub: 1.4fr 1fr → stack */
-  body[data-page="vendor"] [style*="grid-template-columns: 1.4fr 1fr"] {
-    grid-template-columns: 1fr !important;
-    gap: 32px !important;
-  }
-  /* vendor hub stats strip: 4-col → 2x2 */
-  body[data-page="vendor"] .stats-strip {
-    grid-template-columns: 1fr 1fr !important;
-  }
-  body[data-page="vendor"] .stats-strip > div:nth-child(2n) { border-right: 0; }
-  body[data-page="vendor"] .stats-strip > div:nth-child(-n+2) { border-bottom: 1px solid var(--rule); }
-  /* vendor catalog cards: 2-col → 1-col */
-  body[data-page="vendor"] #datasets [style*="grid-template-columns: 1fr 1fr"] {
-    grid-template-columns: 1fr !important;
-  }
-
-  /* data-sources hub: hero 1.5fr 1fr → stack */
-  body[data-page="sources"] [style*="grid-template-columns: 1.5fr 1fr"] {
-    grid-template-columns: 1fr !important;
-    gap: 32px !important;
-  }
-  /* data-sources cards: 4-col grid → stack labels above content */
-  body[data-page="sources"] [style*="grid-template-columns: 80px 1fr"] {
-    grid-template-columns: 1fr !important;
-    gap: 16px !important;
-  }
-  body[data-page="sources"] .etable {
-    min-width: 720px;
-  }
-  body[data-page="sources"] section.block.tight > .container > table {
-    overflow-x: auto;
-  }
-
-  section.block { padding: 40px 0; }
-  section.block.tight { padding: 28px 0; }
-
-  /* hide secondary chrome that doesn't fit */
-  .nav-links { display: none; }
-  .nav-toggle { display: inline-flex; }
-  .nav-inner { padding: 14px var(--site-pad); }
-
-  /* mobile menu drawer */
-  .nav-links.open {
-    display: flex;
-    flex-direction: column;
-    position: absolute;
-    top: 100%;
-    left: 0; right: 0;
-    background: var(--paper);
-    border-bottom: 1px solid var(--rule);
-    padding: 20px var(--site-pad) 24px;
-    gap: 18px;
-    align-items: flex-start;
-  }
-  .nav-links.open a { font-size: 16px; }
-  .nav-links.open a.active::after { display: none; }
-
-  /* any grid that hasn't been hinted: still let it stack */
-  [class*="grid-2"], [class*="grid-3"], [class*="grid-4"] {
-    grid-template-columns: 1fr !important;
-  }
-
-  /* stack any 2/3-column inline grid by force */
-  .stack-sm {
-    grid-template-columns: 1fr !important;
-    gap: 24px !important;
-  }
-
-  .footer-grid {
-    grid-template-columns: 1fr;
-    gap: 28px;
-  }
-  .footer-inner { padding: 36px var(--site-pad) 24px; }
-  .footer-bottom { flex-direction: column; gap: 8px; align-items: flex-start; }
-
-  /* tighten section padding */
-  .card { padding: 20px; }
-
-  /* tables become scrollable horizontally rather than break layout */
-  .etable-wrap { overflow-x: auto; }
-  .etable { min-width: 640px; }
-
-  /* kpi row → 2x2 stays 2x2; on very narrow → stack */
-  .kpi-row { grid-template-columns: 1fr 1fr; }
-
-  /* code blocks tighten */
-  pre.code, code.code { font-size: 11px; padding: 14px; }
-
-  /* chart frames shrink */
-  .chart { padding: 16px; }
-
-  /* hero row of buttons stacks naturally — they're already flex */
-  .row.gap-16 { flex-wrap: wrap; }
-
-  /* dl.meta → single column */
-  dl.meta { grid-template-columns: 1fr; gap: 4px 0; }
-  dl.meta dt { padding-top: 12px; }
-  dl.meta dt:first-child { padding-top: 0; }
+/* bronze: the vendors */
+.cat__head { max-width: min(560px, calc(50% - 60px)); }
+.cat__head h2 { margin-bottom: 16px; }
+.vendors {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 280px)); column-gap: 40px; row-gap: 40px;
+  margin-top: 72px;
+}
+.vend { position: relative; }
+.vend::before {
+  content: ""; position: absolute; left: 9.5px; top: -6.5px; width: 13px; height: 13px;
+  border: 2px solid var(--ink); border-radius: 50%; background: var(--bronze-tint);
+}
+.vend::after {
+  content: ""; position: absolute; left: 13.8px; top: -2.2px; width: 4.4px; height: 4.4px;
+  border-radius: 50%; background: var(--ink);
+}
+.vend__land {
+  height: 18px; margin: 0 0 10px; padding-left: 30px; transform: translateY(-9px);
+  font-size: 13px; line-height: 18px; color: var(--ink);
+}
+.vend__land code { font-size: 13px; }
+.vend h3 { margin: 0 0 6px; }
+.vend h3 a { text-decoration-color: transparent; }
+.vend h3 a:hover, .vend h3 a:focus-visible { text-decoration-color: var(--olive); }
+.vend__d { min-height: 42px; font-size: var(--fs-small); line-height: 1.45; color: var(--ink-2); }
+.vend__m { margin: 6px 0 12px; font-size: var(--fs-small); font-weight: 600; color: var(--ink); }
+.vend svg { display: block; width: 100%; max-width: 280px; height: auto; }
+.vend__cap { margin-top: 8px; font-size: 13px; line-height: 1.45; color: var(--ink-2); }
+.vend__cap code { font-size: 13px; color: var(--ink); }
+@media (min-width: 1100px) {
+  .vend--elexon { grid-area: 1 / 1; }
+  .vend--nesodp { grid-area: 1 / 2; }
+  .vend--entsoe { grid-area: 1 / 3; }
+  .vend--gie { grid-area: 1 / 4; }
+  .vend--neso { grid-area: 2 / 2; }
+  .vend--openmeteo { grid-area: 2 / 3; }
+  .vend--entsog { grid-area: 2 / 4; }
+  .vend--neso, .vend--openmeteo, .vend--entsog { margin: 0 36px 0 -36px; }
+}
+@media (max-width: 1099.98px) {
+  .cat__head { max-width: 620px; }
+  .vendors { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 48px; row-gap: 52px; margin-top: 56px; }
+}
+@media (max-width: 699.98px) {
+  .vendors { grid-template-columns: minmax(0, 1fr); row-gap: 44px; margin-top: 48px; }
 }
 
-@media (max-width: 480px) {
-  .kpi-row { grid-template-columns: 1fr; }
-  .kpi-row > div { border-right: 0; border-bottom: 1px solid var(--rule); }
-  .kpi-row > div:last-child { border-bottom: 0; }
-  .display-1 { font-size: 34px; }
-  .display-2 { font-size: 28px; }
-
-  /* dataset/vendor stats strip: 2x2 → stack on very narrow */
-  body[data-page="dataset"] .stats-strip,
-  body[data-page="vendor"] .stats-strip {
-    grid-template-columns: 1fr !important;
-  }
-  body[data-page="dataset"] .stats-strip > div,
-  body[data-page="vendor"] .stats-strip > div {
-    border-right: 0;
-    border-bottom: 1px solid var(--rule);
-  }
-  body[data-page="dataset"] .stats-strip > div:last-child,
-  body[data-page="vendor"] .stats-strip > div:last-child {
-    border-bottom: 0;
-  }
-  /* hero 6-cell metadata grid → 1-col on phone */
-  body[data-page="dataset"] [style*="grid-template-columns: 1fr 1fr"][style*="border:1px solid var(--rule)"] {
-    grid-template-columns: 1fr !important;
-  }
+/* silver */
+.silver { display: grid; grid-template-columns: minmax(0, 620fr) minmax(0, 248fr) minmax(0, 412fr); }
+.silver h2 { margin-bottom: 16px; }
+.silver__tables { grid-column: 3; padding-top: 8px; }
+.tables { list-style: none; }
+.tables li {
+  height: 44px; border-bottom: 1px solid var(--rule-ink);
+  font: 400 16px/44px var(--mono); color: var(--ink);
+}
+.stratum--silver { padding-bottom: 76px; }
+@media (max-width: 1099.98px) {
+  .silver { grid-template-columns: minmax(0, 1fr); }
+  .silver__tables { grid-column: 1; max-width: 412px; padding-top: 22px; }
 }
 
-/* respect reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    transition-duration: 0.01ms !important;
-    animation-duration: 0.01ms !important;
-  }
+/* gold: the views, then the notebook workbench */
+.gold__text h2 { margin-bottom: 16px; }
+.views { display: flex; flex-wrap: wrap; gap: 8px 32px; margin-top: 22px; list-style: none; }
+.views li { font: 400 15.5px/1.4 var(--mono); color: var(--ink); }
+.gold + .bedding { margin-top: 48px; }
+@media (min-width: 1380px) {
+  /* the views sit low on the left, where the silver cables splice into them; the text stands at the right */
+  .stratum--gold { --pad-top: 30px; }
+  .gold { display: grid; grid-template-columns: minmax(0, 756fr) minmax(0, 524fr); grid-template-rows: 124px auto; }
+  .gold__text { grid-area: 1 / 2 / 3 / 3; }
+  .views { grid-area: 2 / 1; display: grid; grid-template-columns: repeat(4, 178px); gap: 0; margin-top: 0; align-self: end; }
+  .gold + .bedding { margin-top: 62px; }
 }
 
-/* ══════════════════════════════════════════════════════════════
-   v3 Phase 13 — folded mechanical fixes (was site/hifi/exemplar/fixes.css)
-   The layout/measure/contrast pass the user signed off on as Direction A.
-   Folded here so production pages inherit it through the existing theme.css
-   link. These :root values intentionally override the lighter ones above
-   (later declaration wins) — that is the approved Direction-A cascade.
-   ══════════════════════════════════════════════════════════════ */
+.wb {
+  display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 64px; align-items: start;
+  padding-top: 58px; padding-bottom: 36px;
+}
+.wb h2 { margin-bottom: 18px; }
+/* side by side only where the longest cell (about 740 px of code) fits without scrolling */
+@media (max-width: 1439.98px) {
+  .wb { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .wb .prose { max-width: 620px; }
+}
 
+/* the notebook: real UI, so framed */
+.nb { background: var(--daylight); border: 1.5px solid var(--ink); border-radius: 4px; overflow: hidden; }
+.nb-bar {
+  display: flex; justify-content: space-between; align-items: flex-end; gap: 12px;
+  height: 40px; padding: 0 18px 0 12px; background: var(--ink);
+  font: 500 13.5px/1 var(--mono);
+}
+.nb-tab { padding: 11px 18px 12px; border-radius: 3px 3px 0 0; background: var(--daylight); color: var(--ink); white-space: nowrap; }
+.nb-kern { align-self: center; color: var(--on-petrol-2); white-space: nowrap; }
+.nb-body { position: relative; padding: 16px 24px 176px 8px; }
+.cell { position: relative; display: grid; grid-template-columns: 52px minmax(0, 1fr); column-gap: 10px; margin: 0 0 9px; }
+.cell.out { margin: -3px 0 12px; }
+.pr { padding-top: 12px; font: 400 13px/1 var(--mono); color: var(--muted); text-align: right; }
+.in {
+  margin: 0; padding: 8px 12px; overflow-x: auto;
+  background: var(--topsoil); border: 1px solid var(--rule-ink); border-radius: var(--radius);
+  font: 400 var(--fs-code)/1.6 var(--mono); color: var(--ink); white-space: pre;
+}
+.in .k { color: var(--petrol); font-weight: 500; }
+.in .s { color: var(--clay-deep); }
+.act .in { background: var(--daylight); border-color: var(--ink); }
+.caret { display: inline-block; width: 1.5px; height: 1.2em; background: var(--ink); vertical-align: -.25em; }
+.cmp {
+  position: absolute; top: 100%; left: 167px; width: 176px; margin: -2px 0 0; padding: 4px 0; list-style: none;
+  background: var(--daylight); border: 1px solid var(--ink); border-radius: 2px;
+  font: 400 14px/22px var(--mono); color: var(--ink);
+}
+.cmp li { padding: 0 12px; }
+.cmp .sel { background: var(--ink); color: var(--daylight); }
+.card { max-width: 600px; overflow: hidden; background: var(--daylight); border: 1px solid var(--rule-ink); border-radius: var(--radius); }
+.card-h {
+  padding: 9px 14px; background: var(--topsoil); border-bottom: 1px solid var(--rule-ink);
+  font: 500 15px/1.2 var(--mono); color: var(--petrol);
+}
+.card dl { padding: 7px 8px 1px; }
+.card dl div { display: grid; grid-template-columns: 136px minmax(0, 1fr); gap: 14px; padding: 2px 8px; border-radius: 2px; }
+.card dl div:nth-child(odd) { background: var(--zebra); }
+.card dt { font: 400 13.5px/1.5 var(--mono); color: var(--petrol); }
+.card dd { font-size: 14px; line-height: 1.45; color: var(--ink); }
+.card-f {
+  margin: 5px 14px 10px; padding-top: 8px; border-top: 1px solid var(--rule-ink);
+  font-size: 13.5px; color: var(--ink-2);
+}
+.card-f code { padding: 1px 5px; border-radius: 2px; background: var(--topsoil); font-size: 13px; color: var(--ink); }
+.df-wrap { overflow-x: auto; }
+.df {
+  border-collapse: collapse; margin: 3px 0 0;
+  font: 400 13.5px/1 var(--body); font-variant-numeric: tabular-nums; color: var(--ink);
+}
+.df th, .df td { padding: 6px 12px; text-align: right; white-space: nowrap; }
+.df thead th { font-weight: 600; border-bottom: 1px solid var(--ink); vertical-align: bottom; }
+.df tbody th { font-weight: 600; }
+.df tbody tr:nth-child(odd) { background: var(--zebra); }
+.fig { display: grid; row-gap: 6px; justify-items: start; min-width: 0; }
+.fig .txt { margin: 0; padding-top: 9px; font: 400 var(--fs-code)/1.6 var(--mono); color: var(--ink); white-space: pre-wrap; }
+.fig svg { display: block; width: 100%; max-width: 600px; height: auto; }
+.fig .plot-m { display: none; }
+/* code set as rows (a well, a notebook cell) wraps a too-long row instead of scrolling: the wrapped part
+   hangs 2ch in from the row's own indentation, which the row carries as --i (its leading spaces) */
+pre .ln { display: block; padding-left: calc((var(--i, 0) + 2) * 1ch); text-indent: calc((var(--i, 0) + 2) * -1ch); }
+.in:has(.ln) { white-space: pre-wrap; overflow-wrap: anywhere; padding-left: 12px; text-indent: 0; }
+@media (max-width: 699.98px) {
+  /* the same figure, x axis compressed so its text stays legible at phone width; the data are unchanged */
+  .fig .plot:not(.plot-m) { display: none; }
+  .fig .plot-m { display: block; max-width: 420px; }
+  /* code wraps instead of scrolling; a wrapped line hangs 2ch in from the line it continues */
+  .in {
+    white-space: pre-wrap; overflow-x: visible; overflow-wrap: anywhere;
+    padding-left: calc(10px + 2ch); text-indent: -2ch; font-size: 13px;
+  }
+  .nb-bar { padding: 0 10px 0 6px; }
+  .nb-tab { padding-inline: 12px; }
+  .nb-body { padding: 12px 10px 176px 2px; }
+  .cell { grid-template-columns: 36px minmax(0, 1fr); column-gap: 8px; }
+  .cmp { left: 44px; }
+  .card dl div { grid-template-columns: minmax(0, 1fr); gap: 0; padding-block: 4px; }
+}
+
+/* deep: About */
+.about { display: grid; grid-template-columns: minmax(0, 1fr) 520px; gap: 96px; align-items: start; padding-bottom: 32px; }
+.about__name { margin-bottom: 10px; font-size: clamp(38px, calc(31.3px + 1.714vw), 56px); font-weight: 760; font-stretch: 84%; line-height: 1; letter-spacing: -.02em; }
+.about__role { margin-bottom: 26px; font-size: 16px; color: var(--on-petrol-3); }
+.about__intro { margin-bottom: 18px; max-width: 34ch; font-size: clamp(18.5px, calc(17.6px + .238vw), var(--fs-intro)); line-height: 1.5; color: var(--on-petrol); }
+.about__body { margin-bottom: 30px; max-width: 62ch; font-size: 15.5px; line-height: 1.7; color: var(--on-petrol-2); }
+.links { display: flex; flex-wrap: wrap; gap: 12px; }
+.links a {
+  padding: 10px 18px; border: 1.5px solid color-mix(in srgb, var(--on-petrol-2) 55%, transparent); border-radius: var(--radius);
+  font-weight: 600; line-height: 1.3; color: var(--on-petrol); text-decoration: none;
+}
+.links a:hover { border-color: var(--on-petrol); }
+.links a.btn { border-color: var(--chartreuse); color: var(--ink); }
+.links a.btn:hover { border-color: var(--chartreuse-hi); }
+.skills h3 { margin: 0 0 12px; font-size: 22px; font-weight: 700; font-stretch: 90%; color: var(--on-petrol); }
+.skills dl div {
+  display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 18px; padding: 11px 0;
+  border-top: 1px solid var(--rule-petrol);
+}
+.skills dt { font-weight: 600; font-size: var(--fs-small); color: var(--on-petrol); }
+.skills dd { font-size: var(--fs-small); line-height: 1.5; color: var(--on-petrol-2); }
+.stratum--deep { --pad-top: 72px; }
+@media (max-width: 1099.98px) { .about { grid-template-columns: minmax(0, 1fr); gap: 48px; } }
+@media (max-width: 699.98px) {
+  .stratum--deep { --pad-top: 48px; }
+  .skills dl div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+}
+
+/* the drawn motion: the turbine rotors, and nothing else */
+.rot { transform-box: fill-box; transform-origin: center; animation: spin 17s linear infinite; }
+.sp2 { animation-duration: 13s; }
+.sp3 { animation-duration: 21s; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .rot { animation: none; } }
+
+/* the buried cables (drawn by home.js on wide screens) */
+.cables { position: absolute; left: 0; top: 0; z-index: 1; overflow: visible; pointer-events: none; }
+
+/* ================================================================ dataset page
+   The locked anatomy (DESIGN.md "Dataset page anatomy"): hero in the sky, what it is and the chart in
+   topsoil, the raw feed in bronze, one record then eight rows in silver, the notebook in gold, related
+   datasets in the deep. Rendered by templates/dataset.html.j2. */
+[hidden] { display: none !important; }
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+.ds .h-fig { margin: 0 0 12px; }
+.ds code { font-size: .9em; }
+
+/* sky: name and chip on the left, the one-liner and quick facts on the right, then the drawing */
+.ds-hero {
+  display: grid; grid-template-columns: minmax(0, 836fr) minmax(0, 398fr); column-gap: 46px;
+  align-items: start; padding-top: 66px; padding-bottom: 8px;
+}
+.ds-crumb { margin: 0 0 18px; font-size: 15px; color: var(--on-petrol-2); }
+.ds-crumb a { color: var(--on-petrol-2); text-decoration-color: var(--chartreuse); }
+.ds-crumb a:hover { color: var(--on-petrol); }
+.ds-hero__h { color: var(--on-petrol); }
+.ds-keys { display: flex; flex-wrap: wrap; gap: 8px 10px; margin-top: 22px; }
+.ds-chip {
+  display: inline-block; padding: 3px 9px; border: 1.5px solid var(--on-petrol-2); border-radius: var(--radius);
+  font: 500 15px/1.4 var(--mono); color: var(--on-petrol);
+}
+.ds-one { margin: 4px 0 18px; font-size: var(--fs-lede); line-height: 1.6; color: var(--on-petrol); }
+.ds-facts div {
+  display: grid; grid-template-columns: 96px minmax(0, 1fr); column-gap: 16px;
+  padding: 9px 0; border-top: 1px solid var(--rule-petrol);
+}
+.ds-facts div:last-child { border-bottom: 1px solid var(--rule-petrol); }
+.ds-facts dt { font-size: 14px; line-height: 1.5; color: var(--on-petrol-3); }
+.ds-facts dd { font-size: 14.5px; line-height: 1.5; font-weight: 600; color: var(--on-petrol); }
+.ds-facts code { font-weight: 400; font-size: 13.5px; }
+.ds-land { margin: 18px 0 0; }
+/* The drawing keeps its own aspect ratio (its viewBox has top room over the tallest rotor), so nothing is
+   cropped; past the cap, `meet` letterboxes and the ground, drawn far beyond the viewBox, fills the sides.
+   Below 760px a narrow window of the same scene takes over. */
+.ds-land svg { display: block; width: 100%; height: auto; max-height: 330px; }
+.ds-land .land--narrow { display: none; }
+.ds-land text { font-family: var(--body); font-style: italic; font-size: 14px; }
+@media (max-width: 1299.98px) { .ds-land text { font-size: 17px; } }
+@media (max-width: 759.98px) {
+  .ds-land .land--wide { display: none; }
+  .ds-land .land--narrow { display: block; }
+  .ds-land text { font-size: 22px; }
+}
+@media (max-width: 1099.98px) {
+  .ds-hero { grid-template-columns: minmax(0, 1fr); row-gap: 28px; padding-top: 52px; }
+  .ds-hero__facts { max-width: 620px; }
+  .ds-land text { font-size: 22px; }
+}
+@media (max-width: 699.98px) {
+  .ds-hero { padding-top: 38px; }
+  .ds-land text { font-size: 26px; }  /* 12.4 px at 390 in the narrow scene */
+  .ds-facts div { grid-template-columns: 82px minmax(0, 1fr); }
+}
+
+/* topsoil: the prose, then the chart with its key beside it */
+.ds-about { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 520px); column-gap: 96px; padding-top: 26px; }
+.ds-what .prose p { max-width: 60ch; }
+.ds-uses { list-style: none; }
+.ds-uses li { padding: 10px 0; border-bottom: 1px solid var(--rule-ink); font-size: 15.5px; line-height: 1.5; color: var(--ink); }
+.ds-uses li:first-child { border-top: 1px solid var(--rule-ink); }
+.ds-chart { margin-top: 64px; padding-bottom: 12px; }
+.ds-chart__head { max-width: 900px; margin-bottom: 18px; }
+.ds-chart__body { display: grid; grid-template-columns: minmax(0, 900px) minmax(0, 1fr); column-gap: 56px; align-items: start; }
+.chart { display: block; width: 100%; height: auto; overflow: visible; }
+.chart text { font: 400 13px/1 var(--body); fill: var(--ink-2); }
+.chart .ax-i { font-style: italic; }
+.chart .dl text { font-style: italic; font-size: 14px; fill: var(--ink); }
+.chart .dl text.on { fill: var(--daylight); }
+.chart--narrow { display: none; }
+.chart--narrow text { font-size: 12px; }
+.ds-key { list-style: none; padding-top: 4px; }
+.ds-key li { display: grid; grid-template-columns: 30px minmax(0, 1fr); column-gap: 12px; align-items: start; padding: 7px 0; }
+.ds-key .mk { display: block; margin-top: 2px; }
+.ds-key__n { font-size: 15px; line-height: 1.4; font-weight: 600; color: var(--ink); }
+.ds-key__c { margin-left: 4px; font-weight: 400; font-size: 13px; color: var(--petrol); white-space: nowrap; }  /* a code moves down whole, never splits at its hyphen */
+.ds-key__d { margin-top: 2px; font-size: 13.5px; line-height: 1.45; color: var(--ink-2); }
+@media (max-width: 1239.98px) {
+  .ds-chart__body { grid-template-columns: minmax(0, 1fr); row-gap: 22px; }
+  .ds-key { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); column-gap: 32px; }
+}
+@media (max-width: 1099.98px) { .ds-about { grid-template-columns: minmax(0, 1fr); row-gap: 36px; } }
+@media (max-width: 759.98px) {
+  .chart--wide { display: none; }
+  .chart--narrow { display: block; }
+  .ds-chart { margin-top: 48px; }
+}
+
+/* bronze and gold: a lead column against the wells or the notebook */
+.ds-split { display: grid; grid-template-columns: 340px minmax(0, 1fr); column-gap: 64px; align-items: start; }
+.ds-lead p { font-size: 15.5px; line-height: 1.6; color: var(--ink-2); max-width: 46ch; }
+.ds-lead code { color: var(--ink); }
+.ds-wells { display: grid; row-gap: 14px; min-width: 0; padding-top: 4px; }
+.ds-well {
+  margin: 0; padding: 12px 16px; overflow-x: auto;
+  background: var(--topsoil); border: 1px solid var(--rule-ink); border-radius: var(--radius);
+  font: 400 var(--fs-code)/1.65 var(--mono); color: var(--ink); white-space: pre;
+}
+/* rows wrap instead of running past the box (the hang is set on `pre .ln`, below the notebook) */
+.ds-well:has(.ln) { white-space: pre-wrap; overflow-wrap: anywhere; }
+.ds-well .nw { white-space: nowrap; }  /* a flag with its value, a URL segment: never split at a hyphen */
+.ds-cm { color: var(--muted); }
+.ds-variants { list-style: none; display: grid; grid-template-columns: minmax(0, 1fr); row-gap: 18px; min-width: 0; }
+.ds-variants > li { min-width: 0; }
+.ds-variants__h { font-size: 15px; font-weight: 600; color: var(--ink); }
+.ds-variants__h code { font-size: 14.5px; font-weight: 500; }
+.ds-variants__d { margin: 2px 0 8px; font-size: 14.5px; line-height: 1.5; color: var(--ink-2); }
+@media (max-width: 1099.98px) { .ds-split { grid-template-columns: minmax(0, 1fr); row-gap: 24px; } }
+
+/* silver: one record laid out field by field is the schema, then eight rows */
+.ds-sv-head p { max-width: 66ch; font-size: 15.5px; line-height: 1.6; color: var(--ink-2); }
+.ds-sv-head code { color: var(--ink); }
+.ds-one-rec { margin-top: 44px; }
+.ds-one-rec__h, .ds-f { display: grid; grid-template-columns: 220px 340px 160px minmax(0, 1fr); column-gap: 20px; }
+.ds-one-rec__h { position: relative; align-items: baseline; padding-bottom: 10px; }
+.ds-one-rec__h::after { content: ""; position: absolute; left: 240px; right: 0; bottom: 0; height: 1.5px; background: var(--ink); }
+.ds-one-rec__h h3 { grid-column: 2 / 4; }
+.ds-kn { grid-column: 4; font-size: 14px; line-height: 1.45; color: var(--ink-2); }
+.ds-f { position: relative; }
+.ds-f::after { content: ""; position: absolute; left: 240px; right: 0; bottom: 0; height: 1px; background: var(--rule-ink); }
+.ds-rec .ds-f:last-child::after { background: var(--ink); }
+.ds-f dt, .ds-f dd { margin: 0; padding: 6px 0; line-height: 22px; min-width: 0; }
+.ds-f dt { position: relative; text-align: right; }
+.ds-f dt code { font-size: 14px; color: var(--ink); }
+.ds-f.is-key dt code { font-weight: 500; }
+.ds-kq { position: absolute; right: -14px; top: 14px; width: 7px; height: 7px; background: var(--ink); }
+.ds-f .ds-v { padding-inline: 14px; background: var(--daylight); border-inline: 1px solid var(--ink); }
+.ds-v code { font-size: 15px; font-weight: 500; color: var(--ink); white-space: nowrap; }
+.ds-nl { color: var(--muted); font-weight: 400; }
+.ds-t code { font-size: 13px; color: var(--ink-2); }
+.ds-m { font-size: 14.5px; color: var(--ink-2); }
+.ds-m code { color: var(--ink); }
+.ds-lin-l { margin: 22px 0 8px 240px; font-size: 14px; line-height: 1.5; color: var(--ink-2); }
+.ds-lin-l code { color: var(--ink); }
+.ds-lin { position: relative; }
+.ds-lin::before { content: ""; position: absolute; left: 240px; right: 0; top: 0; height: 1px; background: var(--ink); }
+.ds-lin .ds-f dt, .ds-lin .ds-f dd { padding-block: 5px; }
+.ds-lin .ds-v { background: var(--topsoil); }
+.ds-lin .ds-v code { font-size: 14px; font-weight: 400; }
+.ds-lin dt code { color: var(--ink-2); }
+.ds-many { margin: 54px 0 0 240px; }
+.ds-many h3 { margin: 0 0 8px; }
+.ds-many__c { margin-bottom: 16px; }
+.ds-many--side { display: grid; grid-template-columns: max-content minmax(0, 46ch); justify-content: start; column-gap: 44px; align-items: start; }
+.ds-many--side h3 { grid-column: 1 / -1; }
+.ds-many--side .ds-dfs { grid-column: 1; grid-row: 2; overflow-x: visible; }
+.ds-many--side .ds-many__c { grid-column: 2; grid-row: 2; margin-top: 4px; }
+.ds-dfs { max-width: 100%; overflow-x: auto; margin-left: -24px; padding-left: 24px; }
+.ds-dfw { display: inline-block; padding: 4px 8px; background: var(--daylight); border: 1px solid var(--ink); border-radius: var(--radius); }
+.ds-df { border-collapse: collapse; font: 400 14.5px/1.3 var(--body); font-variant-numeric: tabular-nums; color: var(--ink); }
+.ds-df th { padding: 9px 12px 8px; border-bottom: 1px solid var(--ink); font: 500 13px/1.3 var(--mono); color: var(--ink); text-align: left; vertical-align: bottom; }
+.ds-df td { padding: 7px 12px; white-space: nowrap; }
+.ds-df .n { text-align: right; }
+.ds-df td.c { font: 400 13.5px/1.3 var(--mono); }
+.ds-df tbody tr:nth-child(odd) { background: var(--zebra); }
+.ds-df tr.is-me td { font-weight: 600; }
+.ds-df tr.is-me td.c { font-weight: 500; }
+.ds-df tr.is-me td:first-child { position: relative; }
+.ds-df tr.is-me td:first-child::before {
+  content: ""; position: absolute; left: -24px; top: 50%; margin-top: -5px;
+  border-left: 8px solid var(--ink); border-top: 5px solid transparent; border-bottom: 5px solid transparent;
+}
+@media (max-width: 1099.98px) {
+  .ds-one-rec__h, .ds-f { grid-template-columns: 200px minmax(0, 300px) 150px minmax(0, 1fr); }
+  .ds-one-rec__h::after, .ds-f::after, .ds-lin::before { left: 220px; }
+  .ds-lin-l, .ds-many { margin-left: 220px; }
+}
+@media (max-width: 859.98px) {
+  .ds-one-rec__h, .ds-f { grid-template-columns: minmax(0, 1fr) auto; column-gap: 12px; }
+  .ds-one-rec__h h3, .ds-kn { grid-column: 1 / -1; }
+  .ds-f dt { text-align: left; padding-left: 14px; }
+  .ds-kq { right: auto; left: 0; }
+  .ds-f .ds-v { grid-column: 1 / -1; order: 3; }
+  .ds-v code { white-space: normal; overflow-wrap: anywhere; }
+  .ds-f .ds-m { grid-column: 1 / -1; order: 4; padding-top: 0; }
+  .ds-lin-l, .ds-many { margin-left: 0; }
+  .ds-one-rec__h::after, .ds-f::after, .ds-lin::before { left: 0; }
+  .ds-many--side { display: block; }
+  .ds-dfs, .ds-many--side .ds-dfs { margin-left: 0; padding-left: 24px; overflow-x: auto; }
+}
+
+/* gold: the workbench call, the button, then the notebook in place */
+.ds-gold { padding-bottom: 12px; }
+.ds-ctl { position: sticky; top: 24px; margin-top: 26px; }
+button.btn { border: 0; font: 600 16px/1.3 var(--body); cursor: pointer; }
+.ds-tools { margin-top: 18px; }
+.ds-btn-2 {
+  padding: 10px 18px; border: 1.5px solid var(--ink); border-radius: var(--radius); background: transparent;
+  font: 600 15px/1.2 var(--body); color: var(--ink); cursor: pointer;
+}
+.ds-btn-2:hover { background: var(--daylight); }
+.ds-status { min-height: 22px; margin-top: 6px; font-size: 14px; line-height: 1.5; color: var(--ink); }
+.ds-lead .ds-need { margin-top: 6px; font-size: 14.5px; line-height: 1.5; color: var(--ink-2); }
+.ds-need a { color: var(--ink); }
+.ds-nbcol { min-width: 0; }
+.ds-nb { margin: 0; }
+.ds-nb .nb-body { padding: 16px 24px 10px 8px; }
+.ds-demo .fig img { display: block; max-width: 100%; height: auto; }
+.ds-nb-src {
+  display: block; width: calc(100% - 24px); height: 160px; margin: 0 12px 12px; padding: 8px 12px;
+  border: 1px solid var(--ink); border-radius: var(--radius); background: var(--daylight);
+  font: 400 13px/1.5 var(--mono); color: var(--ink); resize: vertical;
+}
+@media (max-width: 1099.98px) { .ds-ctl { position: static; } }
+@media (max-width: 699.98px) { .ds-nb .nb-body { padding: 12px 10px 8px 2px; } }
+
+/* deep: related datasets only; the page ends here, with no site footer */
+.ds-rel { padding-bottom: 40px; }
+.ds-rel h2 { color: var(--on-petrol); }
+.ds-rel__list { list-style: none; }
+.ds-rel__list li { padding: 11px 0; border-top: 1px solid var(--rule-petrol); }
+.ds-rel__list li:last-child { border-bottom: 1px solid var(--rule-petrol); }
+.ds-rel__list a { color: var(--on-petrol); text-decoration-color: var(--chartreuse); }
+.ds-rel__list a code { font-size: 15px; overflow-wrap: anywhere; }
+.ds-rel__list p { margin-top: 3px; font-size: 14px; line-height: 1.5; color: var(--on-petrol-2); }
+.ds-moved { padding-block: 56px 72px; color: var(--on-petrol); }
+.ds-moved a { color: var(--on-petrol); text-decoration-color: var(--chartreuse); }
+
+/* ---------------------------------------------------------------- GENERATED: textures and contacts
+   Written by the homepage generator from the reference board's wave functions. */
 :root {
-  /* Shared editorial text-measure — every content block shares the prose
-     right edge so figures/tables stop looking "very wide vs the page". */
-  --measure: 680px;
-
-  /* Contrast: AA on cream paper (#f5f1eb). Were 2.28:1 / 1.61:1. */
-  --ink-faint: #6f685a;   /* was #a8a194 — labels, sidebar links, comments */
-  --ink-ghost: #8b8374;   /* was #c8c0b0 — breadcrumb separators (as text) */
+  --tex-soil: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='23' height='17'%3E%3Ccircle cx='4' cy='5' r='.9'/%3E%3Ccircle cx='15' cy='12' r='1.1'/%3E%3Cpath d='M17 3 h3' stroke='%23000' stroke-width='.9'/%3E%3C/svg%3E") 0 0 / 23px 17px repeat;
+  --tex-brick: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='12'%3E%3Cpath d='M0 11.5 H24 M12 0 V6 M0 6 H24 M0 6 V12' stroke='%23000' stroke-width='.8' fill='none'/%3E%3C/svg%3E") 0 0 / 24px 12px repeat;
+  --tex-diag: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M0 8 L8 0' stroke='%23000' stroke-width='.8'/%3E%3C/svg%3E") 0 0 / 8px 8px repeat;
+  --tex-stip: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9'%3E%3Ccircle cx='2' cy='3' r='1'/%3E%3Ccircle cx='6.5' cy='7.5' r='.8'/%3E%3C/svg%3E") 0 0 / 9px 9px repeat;
+  --tex-granite: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='46' height='40'%3E%3Cpath d='M8 8 h8 M12 4 v8 M30 26 h8 M34 22 v8 M20 34 h6 M23 31 v6 M40 6 h5 M42.5 3.5 v5' stroke='%23000' stroke-width='1.1'/%3E%3C/svg%3E") 0 0 / 46px 40px repeat;
+  --tex-bed: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='12'%3E%3Cpath d='M0 8.87 L8 9.15 L16 9.39 L24 9.59 L32 9.75 L40 9.88 L48 9.96 L56 10.00 L64 9.99 L72 9.94 L80 9.85 L88 9.71 L96 9.54 L104 9.32 L112 9.07 L120 8.79 L128 8.47 L136 8.13 L144 7.76 L152 7.38 L160 6.98 L168 6.57 L176 6.15 L184 5.73 L192 5.32 L200 4.91 L208 4.51 L216 4.13 L224 3.77 L232 3.44 L240 3.13 L248 2.85 L256 2.61 L264 2.41 L272 2.25 L280 2.12 L288 2.04 L296 2.00 L304 2.01 L312 2.06 L320 2.15 L328 2.29 L336 2.46 L344 2.68 L352 2.93 L360 3.21 L368 3.53 L376 3.87 L384 4.24 L392 4.62 L400 5.02 L408 5.43 L416 5.85 L424 6.27 L432 6.68 L440 7.09 L448 7.49 L456 7.87 L464 8.23 L472 8.56 L480 8.87' fill='none' stroke='%23000' stroke-width='1' stroke-dasharray='2 6'/%3E%3C/svg%3E") 0 50% / 480px 12px repeat-x;
 }
-
-/* ── Grid min-content blowout fix ──────────────────────────────
-   `220px 1fr` lets the 1fr track grow to its content's min-content
-   (~994px) and overflow the container. minmax(0,1fr) lets it shrink.
-   Scoped to tablet+ so theme.css's <=720px single-column rules still win. */
-@media (min-width: 721px) {
-  body[data-page="dataset"] .page-layout {
-    grid-template-columns: 220px minmax(0, 1fr);
-  }
-  body[data-page="dataset"] .related-grid,
-  body[data-page="dataset"] #api [style*="grid-template-columns:1fr 1fr"],
-  body[data-page="dataset"] #api [style*="grid-template-columns: 1fr 1fr"] {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  }
-}
-/* Mobile single column: theme.css's bare `1fr` blows out the same way;
-   force the shrinkable form, and match the ACTUAL shipped inline hero
-   (`1.35fr 1fr`, card `min-width: 340px` with a space). */
-@media (max-width: 720px) {
-  body[data-page="dataset"] .page-layout {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  body[data-page="dataset"] [style*="min-width: 340px"],
-  body[data-page="dataset"] [style*="min-width:340px"] {
-    min-width: 0 !important;
-  }
-  body[data-page="dataset"] [style*="1.35fr 1fr"],
-  body[data-page="dataset"] [style*="1.4fr 1fr"] {
-    grid-template-columns: 1fr !important;
-    gap: 28px !important;
-  }
-}
-
-/* ── Desktop "too wide" fix — clamp figures/tables/code to the measure ── */
-body[data-page="dataset"] .chart,
-body[data-page="dataset"] .code-wrap,
-body[data-page="dataset"] pre.code {
-  max-width: var(--measure);
-}
-/* Wide tables scroll within the measure rather than forcing the page wider. */
-body[data-page="dataset"] #schema,
-body[data-page="dataset"] #sample {
-  overflow-x: auto;
-  max-width: var(--measure);
-}
-/* Long mono strings (paths, URLs, EICs) wrap; also lets the grid track shrink. */
-body[data-page="dataset"] .mono {
-  overflow-wrap: anywhere;
-}
-
-/* ── Charts: stop vertical letterboxing (theme.css sets max-width but no
-   height:auto, so a fixed height attr letterboxes the SVG). ── */
-[data-chart] svg,
-.chart svg {
-  height: auto;
-}
+.stratum--topsoil:not(.stratum--flush) { clip-path: polygon(-1.871% 6.57px, -0.617% 7.64px, 0.868% 8.88px, 2.469% 10.15px, 4.070% 11.29px, 5.556% 12.15px, 6.944% 12.72px, 8.333% 13.14px, 9.722% 13.42px, 11.111% 13.61px, 12.500% 13.75px, 13.889% 13.86px, 15.278% 13.86px, 16.667% 13.71px, 18.056% 13.50px, 19.444% 13.33px, 20.833% 13.27px, 22.222% 13.43px, 23.611% 13.84px, 25.000% 14.44px, 26.389% 15.17px, 27.778% 15.94px, 29.167% 16.69px, 30.556% 17.34px, 31.944% 17.98px, 33.333% 18.70px, 34.722% 19.39px, 36.111% 19.97px, 37.500% 20.33px, 38.889% 20.40px, 40.278% 20.10px, 41.667% 19.50px, 43.056% 18.69px, 44.444% 17.76px, 45.833% 16.79px, 47.222% 15.87px, 48.611% 14.91px, 50.000% 13.81px, 51.389% 12.67px, 52.778% 11.59px, 54.167% 10.67px, 55.556% 9.99px, 56.944% 9.62px, 58.333% 9.47px, 59.722% 9.48px, 61.111% 9.57px, 62.500% 9.66px, 63.889% 9.68px, 65.278% 9.69px, 66.667% 9.76px, 68.056% 9.84px, 69.444% 9.86px, 70.833% 9.77px, 72.222% 9.51px, 73.611% 9.00px, 75.000% 8.28px, 76.389% 7.44px, 77.778% 6.60px, 79.167% 5.84px, 80.556% 5.29px, 81.944% 4.88px, 83.333% 4.51px, 84.722% 4.24px, 86.111% 4.12px, 87.500% 4.19px, 88.889% 4.50px, 90.278% 5.15px, 91.667% 6.12px, 93.056% 7.28px, 94.444% 8.52px, 95.833% 9.72px, 97.222% 10.75px, 98.708% 11.67px, 100.309% 12.59px, 101.910% 13.47px, 100% 100%, 0% 100%); }
+.stratum--topsoil:not(.stratum--flush)::after { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 24' preserveAspectRatio='none'%3E%3Cpath d='M-26.9 6.57 L-8.9 7.64 L12.5 8.88 L35.6 10.15 L58.6 11.29 L80.0 12.15 L100.0 12.72 L120.0 13.14 L140.0 13.42 L160.0 13.61 L180.0 13.75 L200.0 13.86 L220.0 13.86 L240.0 13.71 L260.0 13.50 L280.0 13.33 L300.0 13.27 L320.0 13.43 L340.0 13.84 L360.0 14.44 L380.0 15.17 L400.0 15.94 L420.0 16.69 L440.0 17.34 L460.0 17.98 L480.0 18.70 L500.0 19.39 L520.0 19.97 L540.0 20.33 L560.0 20.40 L580.0 20.10 L600.0 19.50 L620.0 18.69 L640.0 17.76 L660.0 16.79 L680.0 15.87 L700.0 14.91 L720.0 13.81 L740.0 12.67 L760.0 11.59 L780.0 10.67 L800.0 9.99 L820.0 9.62 L840.0 9.47 L860.0 9.48 L880.0 9.57 L900.0 9.66 L920.0 9.68 L940.0 9.69 L960.0 9.76 L980.0 9.84 L1000.0 9.86 L1020.0 9.77 L1040.0 9.51 L1060.0 9.00 L1080.0 8.28 L1100.0 7.44 L1120.0 6.60 L1140.0 5.84 L1160.0 5.29 L1180.0 4.88 L1200.0 4.51 L1220.0 4.24 L1240.0 4.12 L1260.0 4.19 L1280.0 4.50 L1300.0 5.15 L1320.0 6.12 L1340.0 7.28 L1360.0 8.52 L1380.0 9.72 L1400.0 10.75 L1421.4 11.67 L1444.4 12.59 L1467.5 13.47' fill='none' stroke='%23000' stroke-width='3'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 24' preserveAspectRatio='none'%3E%3Cpath d='M-26.9 6.57 L-8.9 7.64 L12.5 8.88 L35.6 10.15 L58.6 11.29 L80.0 12.15 L100.0 12.72 L120.0 13.14 L140.0 13.42 L160.0 13.61 L180.0 13.75 L200.0 13.86 L220.0 13.86 L240.0 13.71 L260.0 13.50 L280.0 13.33 L300.0 13.27 L320.0 13.43 L340.0 13.84 L360.0 14.44 L380.0 15.17 L400.0 15.94 L420.0 16.69 L440.0 17.34 L460.0 17.98 L480.0 18.70 L500.0 19.39 L520.0 19.97 L540.0 20.33 L560.0 20.40 L580.0 20.10 L600.0 19.50 L620.0 18.69 L640.0 17.76 L660.0 16.79 L680.0 15.87 L700.0 14.91 L720.0 13.81 L740.0 12.67 L760.0 11.59 L780.0 10.67 L800.0 9.99 L820.0 9.62 L840.0 9.47 L860.0 9.48 L880.0 9.57 L900.0 9.66 L920.0 9.68 L940.0 9.69 L960.0 9.76 L980.0 9.84 L1000.0 9.86 L1020.0 9.77 L1040.0 9.51 L1060.0 9.00 L1080.0 8.28 L1100.0 7.44 L1120.0 6.60 L1140.0 5.84 L1160.0 5.29 L1180.0 4.88 L1200.0 4.51 L1220.0 4.24 L1240.0 4.12 L1260.0 4.19 L1280.0 4.50 L1300.0 5.15 L1320.0 6.12 L1340.0 7.28 L1360.0 8.52 L1380.0 9.72 L1400.0 10.75 L1421.4 11.67 L1444.4 12.59 L1467.5 13.47' fill='none' stroke='%23000' stroke-width='3'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat; }
+.stratum--bronze:not(.stratum--flush) { clip-path: polygon(-1.871% 15.25px, -0.617% 16.23px, 0.868% 17.34px, 2.469% 18.42px, 4.070% 19.29px, 5.556% 19.77px, 6.944% 19.78px, 8.333% 19.46px, 9.722% 18.93px, 11.111% 18.30px, 12.500% 17.71px, 13.889% 17.27px, 15.278% 16.94px, 16.667% 16.62px, 18.056% 16.32px, 19.444% 16.09px, 20.833% 15.96px, 22.222% 15.95px, 23.611% 16.18px, 25.000% 16.63px, 26.389% 17.18px, 27.778% 17.70px, 29.167% 18.07px, 30.556% 18.16px, 31.944% 17.99px, 33.333% 17.66px, 34.722% 17.17px, 36.111% 16.54px, 37.500% 15.77px, 38.889% 14.86px, 40.278% 13.67px, 41.667% 12.19px, 43.056% 10.57px, 44.444% 8.96px, 45.833% 7.51px, 47.222% 6.38px, 48.611% 5.55px, 50.000% 4.87px, 51.389% 4.36px, 52.778% 4.02px, 54.167% 3.86px, 55.556% 3.87px, 56.944% 4.17px, 58.333% 4.77px, 59.722% 5.55px, 61.111% 6.36px, 62.500% 7.09px, 63.889% 7.59px, 65.278% 7.87px, 66.667% 8.04px, 68.056% 8.11px, 69.444% 8.12px, 70.833% 8.08px, 72.222% 8.01px, 73.611% 7.81px, 75.000% 7.46px, 76.389% 7.05px, 77.778% 6.71px, 79.167% 6.57px, 80.556% 6.73px, 81.944% 7.23px, 83.333% 7.99px, 84.722% 8.93px, 86.111% 10.01px, 87.500% 11.14px, 88.889% 12.26px, 90.278% 13.51px, 91.667% 14.95px, 93.056% 16.46px, 94.444% 17.88px, 95.833% 19.09px, 97.222% 19.93px, 98.708% 20.33px, 100.309% 20.40px, 101.910% 20.25px, 100% 100%, 0% 100%); }
+.stratum--bronze:not(.stratum--flush)::after { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 24' preserveAspectRatio='none'%3E%3Cpath d='M-26.9 15.25 L-8.9 16.23 L12.5 17.34 L35.6 18.42 L58.6 19.29 L80.0 19.77 L100.0 19.78 L120.0 19.46 L140.0 18.93 L160.0 18.30 L180.0 17.71 L200.0 17.27 L220.0 16.94 L240.0 16.62 L260.0 16.32 L280.0 16.09 L300.0 15.96 L320.0 15.95 L340.0 16.18 L360.0 16.63 L380.0 17.18 L400.0 17.70 L420.0 18.07 L440.0 18.16 L460.0 17.99 L480.0 17.66 L500.0 17.17 L520.0 16.54 L540.0 15.77 L560.0 14.86 L580.0 13.67 L600.0 12.19 L620.0 10.57 L640.0 8.96 L660.0 7.51 L680.0 6.38 L700.0 5.55 L720.0 4.87 L740.0 4.36 L760.0 4.02 L780.0 3.86 L800.0 3.87 L820.0 4.17 L840.0 4.77 L860.0 5.55 L880.0 6.36 L900.0 7.09 L920.0 7.59 L940.0 7.87 L960.0 8.04 L980.0 8.11 L1000.0 8.12 L1020.0 8.08 L1040.0 8.01 L1060.0 7.81 L1080.0 7.46 L1100.0 7.05 L1120.0 6.71 L1140.0 6.57 L1160.0 6.73 L1180.0 7.23 L1200.0 7.99 L1220.0 8.93 L1240.0 10.01 L1260.0 11.14 L1280.0 12.26 L1300.0 13.51 L1320.0 14.95 L1340.0 16.46 L1360.0 17.88 L1380.0 19.09 L1400.0 19.93 L1421.4 20.33 L1444.4 20.40 L1467.5 20.25' fill='none' stroke='%23000' stroke-width='3'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 24' preserveAspectRatio='none'%3E%3Cpath d='M-26.9 15.25 L-8.9 16.23 L12.5 17.34 L35.6 18.42 L58.6 19.29 L80.0 19.77 L100.0 19.78 L120.0 19.46 L140.0 18.93 L160.0 18.30 L180.0 17.71 L200.0 17.27 L220.0 16.94 L240.0 16.62 L260.0 16.32 L280.0 16.09 L300.0 15.96 L320.0 15.95 L340.0 16.18 L360.0 16.63 L380.0 17.18 L400.0 17.70 L420.0 18.07 L440.0 18.16 L460.0 17.99 L480.0 17.66 L500.0 17.17 L520.0 16.54 L540.0 15.77 L560.0 14.86 L580.0 13.67 L600.0 12.19 L620.0 10.57 L640.0 8.96 L660.0 7.51 L680.0 6.38 L700.0 5.55 L720.0 4.87 L740.0 4.36 L760.0 4.02 L780.0 3.86 L800.0 3.87 L820.0 4.17 L840.0 4.77 L860.0 5.55 L880.0 6.36 L900.0 7.09 L920.0 7.59 L940.0 7.87 L960.0 8.04 L980.0 8.11 L1000.0 8.12 L1020.0 8.08 L1040.0 8.01 L1060.0 7.81 L1080.0 7.46 L1100.0 7.05 L1120.0 6.71 L1140.0 6.57 L1160.0 6.73 L1180.0 7.23 L1200.0 7.99 L1220.0 8.93 L1240.0 10.01 L1260.0 11.14 L1280.0 12.26 L1300.0 13.51 L1320.0 14.95 L1340.0 16.46 L1360.0 17.88 L1380.0 19.09 L1400.0 19.93 L1421.4 20.33 L1444.4 20.40 L1467.5 20.25' fill='none' stroke='%23000' stroke-width='3'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat; }
+.stratum--silver:not(.stratum--flush) { clip-path: polygon(-1.871% 16.19px, -0.617% 16.07px, 0.868% 15.93px, 2.469% 15.80px, 4.070% 15.69px, 5.556% 15.65px, 6.944% 15.76px, 8.333% 16.02px, 9.722% 16.32px, 11.111% 16.52px, 12.500% 16.51px, 13.889% 16.17px, 15.278% 15.43px, 16.667% 14.38px, 18.056% 13.11px, 19.444% 11.73px, 20.833% 10.35px, 22.222% 9.04px, 23.611% 7.70px, 25.000% 6.19px, 26.389% 4.67px, 27.778% 3.29px, 29.167% 2.18px, 30.556% 1.48px, 31.944% 1.26px, 33.333% 1.40px, 34.722% 1.82px, 36.111% 2.42px, 37.500% 3.10px, 38.889% 3.78px, 40.278% 4.56px, 41.667% 5.54px, 43.056% 6.61px, 44.444% 7.64px, 45.833% 8.52px, 47.222% 9.12px, 48.611% 9.37px, 50.000% 9.37px, 51.389% 9.21px, 52.778% 8.99px, 54.167% 8.82px, 55.556% 8.79px, 56.944% 8.82px, 58.333% 8.82px, 59.722% 8.86px, 61.111% 9.02px, 62.500% 9.38px, 63.889% 10.01px, 65.278% 11.04px, 66.667% 12.40px, 68.056% 13.97px, 69.444% 15.58px, 70.833% 17.10px, 72.222% 18.37px, 73.611% 19.50px, 75.000% 20.62px, 76.389% 21.64px, 77.778% 22.47px, 79.167% 23.03px, 80.556% 23.23px, 81.944% 22.96px, 83.333% 22.28px, 84.722% 21.32px, 86.111% 20.23px, 87.500% 19.15px, 88.889% 18.23px, 90.278% 17.38px, 91.667% 16.47px, 93.056% 15.57px, 94.444% 14.76px, 95.833% 14.09px, 97.222% 13.65px, 98.708% 13.48px, 100.309% 13.55px, 101.910% 13.78px, 100% 100%, 0% 100%); }
+.stratum--silver:not(.stratum--flush)::after { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 24' preserveAspectRatio='none'%3E%3Cpath d='M-26.9 16.19 L-8.9 16.07 L12.5 15.93 L35.6 15.80 L58.6 15.69 L80.0 15.65 L100.0 15.76 L120.0 16.02 L140.0 16.32 L160.0 16.52 L180.0 16.51 L200.0 16.17 L220.0 15.43 L240.0 14.38 L260.0 13.11 L280.0 11.73 L300.0 10.35 L320.0 9.04 L340.0 7.70 L360.0 6.19 L380.0 4.67 L400.0 3.29 L420.0 2.18 L440.0 1.48 L460.0 1.26 L480.0 1.40 L500.0 1.82 L520.0 2.42 L540.0 3.10 L560.0 3.78 L580.0 4.56 L600.0 5.54 L620.0 6.61 L640.0 7.64 L660.0 8.52 L680.0 9.12 L700.0 9.37 L720.0 9.37 L740.0 9.21 L760.0 8.99 L780.0 8.82 L800.0 8.79 L820.0 8.82 L840.0 8.82 L860.0 8.86 L880.0 9.02 L900.0 9.38 L920.0 10.01 L940.0 11.04 L960.0 12.40 L980.0 13.97 L1000.0 15.58 L1020.0 17.10 L1040.0 18.37 L1060.0 19.50 L1080.0 20.62 L1100.0 21.64 L1120.0 22.47 L1140.0 23.03 L1160.0 23.23 L1180.0 22.96 L1200.0 22.28 L1220.0 21.32 L1240.0 20.23 L1260.0 19.15 L1280.0 18.23 L1300.0 17.38 L1320.0 16.47 L1340.0 15.57 L1360.0 14.76 L1380.0 14.09 L1400.0 13.65 L1421.4 13.48 L1444.4 13.55 L1467.5 13.78' fill='none' stroke='%23000' stroke-width='3'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 24' preserveAspectRatio='none'%3E%3Cpath d='M-26.9 16.19 L-8.9 16.07 L12.5 15.93 L35.6 15.80 L58.6 15.69 L80.0 15.65 L100.0 15.76 L120.0 16.02 L140.0 16.32 L160.0 16.52 L180.0 16.51 L200.0 16.17 L220.0 15.43 L240.0 14.38 L260.0 13.11 L280.0 11.73 L300.0 10.35 L320.0 9.04 L340.0 7.70 L360.0 6.19 L380.0 4.67 L400.0 3.29 L420.0 2.18 L440.0 1.48 L460.0 1.26 L480.0 1.40 L500.0 1.82 L520.0 2.42 L540.0 3.10 L560.0 3.78 L580.0 4.56 L600.0 5.54 L620.0 6.61 L640.0 7.64 L660.0 8.52 L680.0 9.12 L700.0 9.37 L720.0 9.37 L740.0 9.21 L760.0 8.99 L780.0 8.82 L800.0 8.79 L820.0 8.82 L840.0 8.82 L860.0 8.86 L880.0 9.02 L900.0 9.38 L920.0 10.01 L940.0 11.04 L960.0 12.40 L980.0 13.97 L1000.0 15.58 L1020.0 17.10 L1040.0 18.37 L1060.0 19.50 L1080.0 20.62 L1100.0 21.64 L1120.0 22.47 L1140.0 23.03 L1160.0 23.23 L1180.0 22.96 L1200.0 22.28 L1220.0 21.32 L1240.0 20.23 L1260.0 19.15 L1280.0 18.23 L1300.0 17.38 L1320.0 16.47 L1340.0 15.57 L1360.0 14.76 L1380.0 14.09 L1400.0 13.65 L1421.4 13.48 L1444.4 13.55 L1467.5 13.78' fill='none' stroke='%23000' stroke-width='3'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat; }
+.stratum--gold:not(.stratum--flush) { clip-path: polygon(-1.871% 9.03px, -0.617% 7.81px, 0.868% 6.39px, 2.469% 4.98px, 4.070% 3.78px, 5.556% 2.97px, 6.944% 2.54px, 8.333% 2.33px, 9.722% 2.32px, 11.111% 2.50px, 12.500% 2.85px, 13.889% 3.35px, 15.278% 4.13px, 16.667% 5.22px, 18.056% 6.49px, 19.444% 7.78px, 20.833% 8.95px, 22.222% 9.86px, 23.611% 10.52px, 25.000% 11.04px, 26.389% 11.44px, 27.778% 11.74px, 29.167% 11.97px, 30.556% 12.15px, 31.944% 12.17px, 33.333% 12.01px, 34.722% 11.77px, 36.111% 11.57px, 37.500% 11.52px, 38.889% 11.73px, 40.278% 12.24px, 41.667% 12.96px, 43.056% 13.84px, 44.444% 14.80px, 45.833% 15.77px, 47.222% 16.68px, 48.611% 17.65px, 50.000% 18.76px, 51.389% 19.88px, 52.778% 20.88px, 54.167% 21.65px, 55.556% 22.04px, 56.944% 22.01px, 58.333% 21.67px, 59.722% 21.08px, 61.111% 20.33px, 62.500% 19.49px, 63.889% 18.64px, 65.278% 17.66px, 66.667% 16.47px, 68.056% 15.19px, 69.444% 13.95px, 70.833% 12.86px, 72.222% 12.06px, 73.611% 11.57px, 75.000% 11.32px, 76.389% 11.23px, 77.778% 11.22px, 79.167% 11.23px, 80.556% 11.17px, 81.944% 11.14px, 83.333% 11.21px, 84.722% 11.29px, 86.111% 11.30px, 87.500% 11.17px, 88.889% 10.80px, 90.278% 10.12px, 91.667% 9.18px, 93.056% 8.08px, 94.444% 6.96px, 95.833% 5.91px, 97.222% 5.05px, 98.708% 4.36px, 100.309% 3.75px, 101.910% 3.22px, 100% 100%, 0% 100%); }
+.stratum--gold:not(.stratum--flush)::after { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 24' preserveAspectRatio='none'%3E%3Cpath d='M-26.9 9.03 L-8.9 7.81 L12.5 6.39 L35.6 4.98 L58.6 3.78 L80.0 2.97 L100.0 2.54 L120.0 2.33 L140.0 2.32 L160.0 2.50 L180.0 2.85 L200.0 3.35 L220.0 4.13 L240.0 5.22 L260.0 6.49 L280.0 7.78 L300.0 8.95 L320.0 9.86 L340.0 10.52 L360.0 11.04 L380.0 11.44 L400.0 11.74 L420.0 11.97 L440.0 12.15 L460.0 12.17 L480.0 12.01 L500.0 11.77 L520.0 11.57 L540.0 11.52 L560.0 11.73 L580.0 12.24 L600.0 12.96 L620.0 13.84 L640.0 14.80 L660.0 15.77 L680.0 16.68 L700.0 17.65 L720.0 18.76 L740.0 19.88 L760.0 20.88 L780.0 21.65 L800.0 22.04 L820.0 22.01 L840.0 21.67 L860.0 21.08 L880.0 20.33 L900.0 19.49 L920.0 18.64 L940.0 17.66 L960.0 16.47 L980.0 15.19 L1000.0 13.95 L1020.0 12.86 L1040.0 12.06 L1060.0 11.57 L1080.0 11.32 L1100.0 11.23 L1120.0 11.22 L1140.0 11.23 L1160.0 11.17 L1180.0 11.14 L1200.0 11.21 L1220.0 11.29 L1240.0 11.30 L1260.0 11.17 L1280.0 10.80 L1300.0 10.12 L1320.0 9.18 L1340.0 8.08 L1360.0 6.96 L1380.0 5.91 L1400.0 5.05 L1421.4 4.36 L1444.4 3.75 L1467.5 3.22' fill='none' stroke='%23000' stroke-width='3'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 24' preserveAspectRatio='none'%3E%3Cpath d='M-26.9 9.03 L-8.9 7.81 L12.5 6.39 L35.6 4.98 L58.6 3.78 L80.0 2.97 L100.0 2.54 L120.0 2.33 L140.0 2.32 L160.0 2.50 L180.0 2.85 L200.0 3.35 L220.0 4.13 L240.0 5.22 L260.0 6.49 L280.0 7.78 L300.0 8.95 L320.0 9.86 L340.0 10.52 L360.0 11.04 L380.0 11.44 L400.0 11.74 L420.0 11.97 L440.0 12.15 L460.0 12.17 L480.0 12.01 L500.0 11.77 L520.0 11.57 L540.0 11.52 L560.0 11.73 L580.0 12.24 L600.0 12.96 L620.0 13.84 L640.0 14.80 L660.0 15.77 L680.0 16.68 L700.0 17.65 L720.0 18.76 L740.0 19.88 L760.0 20.88 L780.0 21.65 L800.0 22.04 L820.0 22.01 L840.0 21.67 L860.0 21.08 L880.0 20.33 L900.0 19.49 L920.0 18.64 L940.0 17.66 L960.0 16.47 L980.0 15.19 L1000.0 13.95 L1020.0 12.86 L1040.0 12.06 L1060.0 11.57 L1080.0 11.32 L1100.0 11.23 L1120.0 11.22 L1140.0 11.23 L1160.0 11.17 L1180.0 11.14 L1200.0 11.21 L1220.0 11.29 L1240.0 11.30 L1260.0 11.17 L1280.0 10.80 L1300.0 10.12 L1320.0 9.18 L1340.0 8.08 L1360.0 6.96 L1380.0 5.91 L1400.0 5.05 L1421.4 4.36 L1444.4 3.75 L1467.5 3.22' fill='none' stroke='%23000' stroke-width='3'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat; }
+.stratum--deep:not(.stratum--flush) { clip-path: polygon(-1.389% 31.32px, -0.694% 33.07px, 0.000% 35.03px, 0.694% 36.75px, 1.389% 37.82px, 2.083% 37.59px, 2.778% 36.34px, 3.472% 33.88px, 4.167% 30.90px, 4.861% 27.90px, 5.556% 25.34px, 6.250% 23.91px, 6.944% 23.43px, 7.639% 24.13px, 8.333% 25.36px, 9.028% 26.70px, 9.722% 27.74px, 10.417% 27.83px, 11.111% 27.22px, 11.806% 25.71px, 12.500% 23.95px, 13.194% 22.38px, 13.889% 21.39px, 14.583% 21.61px, 15.278% 22.73px, 15.972% 24.91px, 16.667% 27.45px, 17.361% 29.83px, 18.056% 31.62px, 18.750% 32.14px, 19.444% 31.62px, 20.139% 29.87px, 20.833% 27.55px, 21.528% 25.12px, 22.222% 22.98px, 22.917% 21.78px, 23.611% 21.27px, 24.306% 21.61px, 25.000% 22.19px, 25.694% 22.53px, 26.389% 22.29px, 27.083% 20.87px, 27.778% 18.59px, 28.472% 15.35px, 29.167% 11.86px, 29.861% 8.65px, 30.556% 6.13px, 31.250% 4.98px, 31.944% 4.92px, 32.639% 6.11px, 33.333% 7.89px, 34.028% 9.77px, 34.722% 11.36px, 35.417% 12.02px, 36.111% 12.04px, 36.806% 11.25px, 37.500% 10.30px, 38.194% 9.65px, 38.889% 9.64px, 39.583% 10.85px, 40.278% 12.92px, 40.972% 15.94px, 41.667% 19.20px, 42.361% 22.14px, 43.056% 24.39px, 43.750% 25.30px, 44.444% 25.18px, 45.139% 23.90px, 45.833% 22.14px, 46.528% 20.43px, 47.222% 19.12px, 47.917% 18.86px, 48.611% 19.34px, 49.306% 20.68px, 50.000% 22.26px, 50.694% 23.56px, 51.389% 24.31px, 52.083% 23.91px, 52.778% 22.74px, 53.472% 20.75px, 54.167% 18.64px, 54.861% 16.96px, 55.556% 16.05px, 56.250% 16.54px, 56.944% 18.06px, 57.639% 20.70px, 58.333% 23.77px, 59.028% 26.70px, 59.722% 29.15px, 60.417% 30.48px, 61.111% 31.02px, 61.806% 30.65px, 62.500% 30.02px, 63.194% 29.62px, 63.889% 29.72px, 64.583% 30.88px, 65.278% 32.71px, 65.972% 35.23px, 66.667% 37.75px, 67.361% 39.69px, 68.056% 40.76px, 68.750% 40.34px, 69.444% 38.84px, 70.139% 36.21px, 70.833% 33.15px, 71.528% 30.25px, 72.222% 27.83px, 72.917% 26.52px, 73.611% 25.97px, 74.306% 26.27px, 75.000% 26.77px, 75.694% 26.95px, 76.389% 26.59px, 77.083% 25.12px, 77.778% 22.96px, 78.472% 20.13px, 79.167% 17.29px, 79.861% 15.05px, 80.556% 13.65px, 81.250% 13.68px, 81.944% 14.73px, 82.639% 16.78px, 83.333% 19.14px, 84.028% 21.20px, 84.722% 22.68px, 85.417% 22.95px, 86.111% 22.40px, 86.806% 20.99px, 87.500% 19.35px, 88.194% 18.03px, 88.889% 17.25px, 89.583% 17.56px, 90.278% 18.52px, 90.972% 20.12px, 91.667% 21.69px, 92.361% 22.64px, 93.056% 22.77px, 93.750% 21.50px, 94.444% 19.32px, 95.139% 16.26px, 95.833% 13.03px, 96.528% 10.25px, 97.222% 8.20px, 97.917% 7.47px, 98.611% 7.67px, 99.306% 8.80px, 100.000% 10.22px, 100.694% 11.37px, 101.389% 12.06px, 100% 100%, 0% 100%); }
+.stratum--deep:not(.stratum--flush)::after { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 44' preserveAspectRatio='none'%3E%3Cpath d='M-20.0 31.32 L-10.0 33.07 L0.0 35.03 L10.0 36.75 L20.0 37.82 L30.0 37.59 L40.0 36.34 L50.0 33.88 L60.0 30.90 L70.0 27.90 L80.0 25.34 L90.0 23.91 L100.0 23.43 L110.0 24.13 L120.0 25.36 L130.0 26.70 L140.0 27.74 L150.0 27.83 L160.0 27.22 L170.0 25.71 L180.0 23.95 L190.0 22.38 L200.0 21.39 L210.0 21.61 L220.0 22.73 L230.0 24.91 L240.0 27.45 L250.0 29.83 L260.0 31.62 L270.0 32.14 L280.0 31.62 L290.0 29.87 L300.0 27.55 L310.0 25.12 L320.0 22.98 L330.0 21.78 L340.0 21.27 L350.0 21.61 L360.0 22.19 L370.0 22.53 L380.0 22.29 L390.0 20.87 L400.0 18.59 L410.0 15.35 L420.0 11.86 L430.0 8.65 L440.0 6.13 L450.0 4.98 L460.0 4.92 L470.0 6.11 L480.0 7.89 L490.0 9.77 L500.0 11.36 L510.0 12.02 L520.0 12.04 L530.0 11.25 L540.0 10.30 L550.0 9.65 L560.0 9.64 L570.0 10.85 L580.0 12.92 L590.0 15.94 L600.0 19.20 L610.0 22.14 L620.0 24.39 L630.0 25.30 L640.0 25.18 L650.0 23.90 L660.0 22.14 L670.0 20.43 L680.0 19.12 L690.0 18.86 L700.0 19.34 L710.0 20.68 L720.0 22.26 L730.0 23.56 L740.0 24.31 L750.0 23.91 L760.0 22.74 L770.0 20.75 L780.0 18.64 L790.0 16.96 L800.0 16.05 L810.0 16.54 L820.0 18.06 L830.0 20.70 L840.0 23.77 L850.0 26.70 L860.0 29.15 L870.0 30.48 L880.0 31.02 L890.0 30.65 L900.0 30.02 L910.0 29.62 L920.0 29.72 L930.0 30.88 L940.0 32.71 L950.0 35.23 L960.0 37.75 L970.0 39.69 L980.0 40.76 L990.0 40.34 L1000.0 38.84 L1010.0 36.21 L1020.0 33.15 L1030.0 30.25 L1040.0 27.83 L1050.0 26.52 L1060.0 25.97 L1070.0 26.27 L1080.0 26.77 L1090.0 26.95 L1100.0 26.59 L1110.0 25.12 L1120.0 22.96 L1130.0 20.13 L1140.0 17.29 L1150.0 15.05 L1160.0 13.65 L1170.0 13.68 L1180.0 14.73 L1190.0 16.78 L1200.0 19.14 L1210.0 21.20 L1220.0 22.68 L1230.0 22.95 L1240.0 22.40 L1250.0 20.99 L1260.0 19.35 L1270.0 18.03 L1280.0 17.25 L1290.0 17.56 L1300.0 18.52 L1310.0 20.12 L1320.0 21.69 L1330.0 22.64 L1340.0 22.77 L1350.0 21.50 L1360.0 19.32 L1370.0 16.26 L1380.0 13.03 L1390.0 10.25 L1400.0 8.20 L1410.0 7.47 L1420.0 7.67 L1430.0 8.80 L1440.0 10.22 L1450.0 11.37 L1460.0 12.06' fill='none' stroke='%23000' stroke-width='4'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 44' preserveAspectRatio='none'%3E%3Cpath d='M-20.0 31.32 L-10.0 33.07 L0.0 35.03 L10.0 36.75 L20.0 37.82 L30.0 37.59 L40.0 36.34 L50.0 33.88 L60.0 30.90 L70.0 27.90 L80.0 25.34 L90.0 23.91 L100.0 23.43 L110.0 24.13 L120.0 25.36 L130.0 26.70 L140.0 27.74 L150.0 27.83 L160.0 27.22 L170.0 25.71 L180.0 23.95 L190.0 22.38 L200.0 21.39 L210.0 21.61 L220.0 22.73 L230.0 24.91 L240.0 27.45 L250.0 29.83 L260.0 31.62 L270.0 32.14 L280.0 31.62 L290.0 29.87 L300.0 27.55 L310.0 25.12 L320.0 22.98 L330.0 21.78 L340.0 21.27 L350.0 21.61 L360.0 22.19 L370.0 22.53 L380.0 22.29 L390.0 20.87 L400.0 18.59 L410.0 15.35 L420.0 11.86 L430.0 8.65 L440.0 6.13 L450.0 4.98 L460.0 4.92 L470.0 6.11 L480.0 7.89 L490.0 9.77 L500.0 11.36 L510.0 12.02 L520.0 12.04 L530.0 11.25 L540.0 10.30 L550.0 9.65 L560.0 9.64 L570.0 10.85 L580.0 12.92 L590.0 15.94 L600.0 19.20 L610.0 22.14 L620.0 24.39 L630.0 25.30 L640.0 25.18 L650.0 23.90 L660.0 22.14 L670.0 20.43 L680.0 19.12 L690.0 18.86 L700.0 19.34 L710.0 20.68 L720.0 22.26 L730.0 23.56 L740.0 24.31 L750.0 23.91 L760.0 22.74 L770.0 20.75 L780.0 18.64 L790.0 16.96 L800.0 16.05 L810.0 16.54 L820.0 18.06 L830.0 20.70 L840.0 23.77 L850.0 26.70 L860.0 29.15 L870.0 30.48 L880.0 31.02 L890.0 30.65 L900.0 30.02 L910.0 29.62 L920.0 29.72 L930.0 30.88 L940.0 32.71 L950.0 35.23 L960.0 37.75 L970.0 39.69 L980.0 40.76 L990.0 40.34 L1000.0 38.84 L1010.0 36.21 L1020.0 33.15 L1030.0 30.25 L1040.0 27.83 L1050.0 26.52 L1060.0 25.97 L1070.0 26.27 L1080.0 26.77 L1090.0 26.95 L1100.0 26.59 L1110.0 25.12 L1120.0 22.96 L1130.0 20.13 L1140.0 17.29 L1150.0 15.05 L1160.0 13.65 L1170.0 13.68 L1180.0 14.73 L1190.0 16.78 L1200.0 19.14 L1210.0 21.20 L1220.0 22.68 L1230.0 22.95 L1240.0 22.40 L1250.0 20.99 L1260.0 19.35 L1270.0 18.03 L1280.0 17.25 L1290.0 17.56 L1300.0 18.52 L1310.0 20.12 L1320.0 21.69 L1330.0 22.64 L1340.0 22.77 L1350.0 21.50 L1360.0 19.32 L1370.0 16.26 L1380.0 13.03 L1390.0 10.25 L1400.0 8.20 L1410.0 7.47 L1420.0 7.67 L1430.0 8.80 L1440.0 10.22 L1450.0 11.37 L1460.0 12.06' fill='none' stroke='%23000' stroke-width='4'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat; }

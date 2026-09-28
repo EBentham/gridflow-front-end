@@ -106,7 +106,8 @@ CI runs `gridflow-build --check` after the initial build (see
 ├── templates/
 │   ├── _partials/                    # shared head + partials
 │   ├── dataset.html.j2               # 7-section dataset page template
-│   └── vendor-hub.html.j2            # vendor catalog template
+│   ├── hub.html.j2                   # vendor hub template
+│   └── data-sources.html.j2          # Data sources landing
 ├── vault/
 │   └── elexon/*.md                   # 33 vendored Elexon dataset specs
 └── site/

@@ -1,67 +1,176 @@
 {
+  "_about": "The page set and hub content for this vendor: every dataset the site documents, grouped as the hub lists it, with its families. Rendered by gridflow-build.",
+  "name": "ENTSO-G",
+  "intro": "The European gas transmission operators’ Transparency Platform: flows, nominations, capacities and gas quality at interconnection points, with congestion, tariff and reference data.",
+  "facts": [
+    [
+      "Market",
+      "EU gas; the default points are UK TSO interconnection points"
+    ],
+    [
+      "Access",
+      "No API key"
+    ],
+    [
+      "Base URL",
+      "`transparency.entsog.eu/api/v1`"
+    ],
+    [
+      "Grain",
+      "Daily gas days for operational data; tariffs and CMP data are periodic"
+    ],
+    [
+      "Connector",
+      "`connectors/entsog/client.py`"
+    ]
+  ],
+  "source_keys": [
+    "entsog"
+  ],
+  "latest_views": [],
+  "notebook": {
+    "source": "entsog",
+    "dataset": "physical_flows"
+  },
+  "landscape": "gas",
+  "landing": {
+    "bronze": "bronze/entsog/",
+    "desc": "EU gas: flows, nominations and capacity at interconnection points",
+    "fact": "daily gas days, no API key",
+    "start": [
+      [
+        "physical_flows",
+        "flow at interconnection points"
+      ],
+      [
+        "nominations",
+        "nominations per point"
+      ],
+      [
+        "firm_technical",
+        "firm technical capacity"
+      ],
+      [
+        "gcv",
+        "gross calorific value"
+      ]
+    ],
+    "order": 5
+  },
   "groups": [
     {
-      "name": "Operational · Point Data",
-      "blurb": "Point-level gas flows, nominations, capacities, and quality indicators at GB interconnection points.",
-      "datasets": [
-        { "id": "physical_flows", "title": "Physical flows · all EU points", "freq": "daily", "lag": "same day (Provisional)", "rows": "varies by point" },
-        { "id": "nominations", "title": "Nominations · GB interconnection points", "freq": "daily", "lag": "same day", "rows": "~9 points / day" },
-        { "id": "allocations", "title": "Allocations · GB interconnection points", "freq": "daily", "lag": "~1 day", "rows": "~9 points / day" },
-        { "id": "renominations", "title": "Renominations · GB interconnection points", "freq": "daily", "lag": "same day", "rows": "~9 points / day" },
-        { "id": "firm_available", "title": "Firm available capacity · GB points", "freq": "daily", "lag": "same day", "rows": "~9 points / day" },
-        { "id": "firm_booked", "title": "Firm booked capacity · GB points", "freq": "daily", "lag": "same day", "rows": "~9 points / day" },
-        { "id": "firm_technical", "title": "Firm technical capacity · GB points", "freq": "daily", "lag": "same day", "rows": "~9 points / day" },
-        { "id": "interruptible_available", "title": "Interruptible available capacity · GB points", "freq": "daily", "lag": "same day", "rows": "~9 points / day" },
-        { "id": "interruptible_booked", "title": "Interruptible booked capacity · GB points", "freq": "daily", "lag": "same day", "rows": "~9 points / day" },
-        { "id": "interruptible_total", "title": "Interruptible total capacity · GB points", "freq": "daily", "lag": "same day", "rows": "~9 points / day" },
-        { "id": "gcv", "title": "Gross calorific value · GB points", "freq": "daily", "lag": "same day", "rows": "~9 points / day" },
-        { "id": "wobbe_index", "title": "Wobbe index · GB points", "freq": "daily", "lag": "same day", "rows": "~9 points / day" },
-        { "id": "methane_content", "title": "Methane content · GB points", "freq": "daily", "lag": "same day", "rows": "~9 points / day" },
-        { "id": "hydrogen_content", "title": "Hydrogen content · GB points", "freq": "daily", "lag": "same day", "rows": "~9 points / day" },
-        { "id": "oxygen_content", "title": "Oxygen content · GB points", "freq": "daily", "lag": "same day", "rows": "~9 points / day" },
-        { "id": "available_through_oversubscription", "title": "Available through oversubscription · GB points", "freq": "daily", "lag": "same day", "rows": "~9 points / day" },
-        { "id": "available_through_surrender", "title": "Available through surrender · GB points", "freq": "daily", "lag": "same day", "rows": "~9 points / day" },
-        { "id": "available_through_uioli_long_term", "title": "Available through UIOLI long-term · GB points", "freq": "daily", "lag": "same day", "rows": "~9 points / day" },
-        { "id": "available_through_uioli_short_term", "title": "Available through UIOLI short-term · GB points", "freq": "daily", "lag": "same day", "rows": "~9 points / day" }
+      "name": "Point data",
+      "blurb": "Flows, nominations, capacities and gas quality at interconnection points.",
+      "pages": [
+        "physical_flows",
+        "nominations-allocations",
+        "capacity-by-indicator",
+        "gas-quality"
       ]
     },
     {
-      "name": "Zone Data",
-      "blurb": "Aggregated zone-level physical flows for GB and Irish balancing areas.",
-      "datasets": [
-        { "id": "aggregated_physical_flows", "title": "Aggregated physical flows · zone level", "freq": "daily", "lag": "same day", "rows": "~5 zone directions" }
+      "name": "Zone data",
+      "blurb": "Physical flows aggregated per balancing zone.",
+      "pages": [
+        "aggregated_physical_flows"
       ]
     },
     {
-      "name": "CMP Data",
-      "blurb": "Congestion Management Procedure records — unsuccessful requests, unavailable firm capacity, auction premiums.",
-      "datasets": [
-        { "id": "cmp_unsuccessful_requests", "title": "CMP unsuccessful requests", "freq": "daily", "lag": "as published", "rows": "varies" },
-        { "id": "cmp_unavailable_firm_capacity", "title": "CMP unavailable firm capacity", "freq": "daily", "lag": "as published", "rows": "varies" },
-        { "id": "cmp_auction_premiums", "title": "CMP auction premiums", "freq": "daily", "lag": "as published", "rows": "varies" }
+      "name": "Congestion management",
+      "blurb": "Unsuccessful requests, unavailable firm capacity and auction premiums.",
+      "pages": [
+        "cmp"
       ]
     },
     {
-      "name": "Tariff Data",
-      "blurb": "Tariff components and simulation costs for UK transmission entry/exit.",
-      "datasets": [
-        { "id": "tariffs", "title": "Tariff types and components · UK", "freq": "as published", "lag": "—", "rows": "varies" },
-        { "id": "tariff_simulations", "title": "Tariff simulation costs · UK", "freq": "as published", "lag": "—", "rows": "varies" }
+      "name": "Tariffs",
+      "blurb": "Published tariffs and simulated costs.",
+      "pages": [
+        "tariffs-and-simulations"
       ]
     },
     {
-      "name": "Reference · Network Topology",
-      "blurb": "Operators, connection points, balancing zones, interruptions, and urgent market messages.",
-      "datasets": [
-        { "id": "connection_points", "title": "Connection points · EU network map", "freq": "snapshot", "lag": "on change", "rows": "varies" },
-        { "id": "operators", "title": "Transmission system operators", "freq": "snapshot", "lag": "on change", "rows": "varies" },
-        { "id": "balancing_zones", "title": "European balancing zones", "freq": "snapshot", "lag": "on change", "rows": "varies" },
-        { "id": "operator_point_directions", "title": "Operator-point-direction combos", "freq": "snapshot", "lag": "on change", "rows": "varies" },
-        { "id": "interconnections", "title": "Interconnections from/to UK", "freq": "snapshot", "lag": "on change", "rows": "varies" },
-        { "id": "aggregate_interconnections", "title": "Aggregate interconnections · UK", "freq": "snapshot", "lag": "on change", "rows": "varies" },
-        { "id": "interruptions", "title": "Planned and unplanned interruptions", "freq": "daily", "lag": "as published", "rows": "varies" },
-        { "id": "urgent_market_messages", "title": "Urgent market messages", "freq": "as published", "lag": "real-time", "rows": "varies" }
+      "name": "Reference and messages",
+      "blurb": "Operators, points, balancing zones and interconnections, and urgent market messages.",
+      "pages": [
+        "reference-data",
+        "urgent_market_messages"
       ]
     }
-  ]
+  ],
+  "families": [
+    {
+      "slug": "capacity-by-indicator",
+      "title": "Capacity by indicator",
+      "members": [
+        "firm_available",
+        "firm_booked",
+        "firm_technical",
+        "interruptible_available",
+        "interruptible_booked",
+        "interruptible_total",
+        "available_through_oversubscription",
+        "available_through_surrender",
+        "available_through_uioli_long_term",
+        "available_through_uioli_short_term"
+      ]
+    },
+    {
+      "slug": "gas-quality",
+      "title": "Gas quality",
+      "members": [
+        "gcv",
+        "wobbe_index",
+        "methane_content",
+        "hydrogen_content",
+        "oxygen_content"
+      ]
+    },
+    {
+      "slug": "nominations-allocations",
+      "title": "Nominations and allocations",
+      "members": [
+        "nominations",
+        "renominations",
+        "allocations"
+      ]
+    },
+    {
+      "slug": "cmp",
+      "title": "Congestion management procedures (CMP)",
+      "members": [
+        "cmp_auction_premiums",
+        "cmp_unavailable_firm_capacity",
+        "cmp_unsuccessful_requests"
+      ]
+    },
+    {
+      "slug": "reference-data",
+      "title": "Reference data",
+      "members": [
+        "operators",
+        "balancing_zones",
+        "connection_points",
+        "interconnections",
+        "aggregate_interconnections",
+        "operator_point_directions"
+      ]
+    },
+    {
+      "slug": "tariffs-and-simulations",
+      "title": "Tariffs",
+      "members": [
+        "tariffs",
+        "tariff_simulations"
+      ]
+    }
+  ],
+  "names": {
+    "physical_flows": "Physical flows",
+    "aggregated_physical_flows": "Aggregated physical flows",
+    "urgent_market_messages": "Urgent market messages"
+  },
+  "dropped": {
+    "interruptions": "vendor returns no result"
+  }
 }

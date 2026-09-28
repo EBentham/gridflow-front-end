@@ -1,0 +1,19 @@
+{
+  "dataset": "elexon/bmunits_reference",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "73f6526d6584b2823ed213ea759c5013bdbfa1b1559ff2fb14c21672eb30da65",
+  "type": "bar",
+  "unit": "BM units",
+  "caption": "",
+  "value_column": null,
+  "aggregation": "count",
+  "window": null,
+  "provenance": {"files": 1, "rows_matched": 3014, "rows_read": 3014, "rows_used": 3014, "silver": "elexon/bmunits_reference"},
+  "spec": {"aggregation": "count", "group": "fuel_type", "group_map": {"BIOMASS": "biomass", "CCGT": "gas", "COAL": "coal", "INTELEC": "interconnectors", "INTEW": "interconnectors", "INTFR": "interconnectors", "INTGRNL": "interconnectors", "INTIFA2": "interconnectors", "INTIRL": "interconnectors", "INTNED": "interconnectors", "INTNEM": "interconnectors", "INTNSL": "interconnectors", "INTVKL": "interconnectors", "NPSHYD": "hydro", "NUCLEAR": "nuclear", "OCGT": "gas", "OTHER": "other", "PS": "hydro", "WIND": "wind"}, "group_null": "no_fuel", "silver": "elexon/bmunits_reference", "sort": "value_desc", "type": "bar", "unit": "BM units"},
+  "x_kind": "category",
+  "x": ["no_fuel", "wind", "other", "gas", "hydro", "nuclear", "biomass", "interconnectors", "coal"],
+  "series": [
+    {"key": "count", "values": [2515, 234, 92, 83, 38, 16, 15, 11, 10]}
+  ]
+}

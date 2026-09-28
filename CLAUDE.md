@@ -44,12 +44,12 @@ v4 design "Above ground, below ground" (petrol + daylight + chartreuse, Bricolag
 
 ## Anti-goals
 
-Looking like a SaaS product or dashboard · fake live indicators (timestamps, "X min ago", status badges on unfinished work) · performance metrics / KPIs / uptime badges · Node/Go SSGs (11ty, Astro, Hugo — rejected for Python-first alignment) · hand-authored dataset pages that bypass the build script (one bounded exception: `authored-pages/<vendor>/<slug>.html` showcase overrides; the long tail stays template-driven) · author photos, testimonials, hire-me CTAs.
+Looking like a SaaS product or dashboard · fake live indicators (timestamps, "X min ago", status badges on unfinished work) · performance metrics / KPIs / uptime badges · Node/Go SSGs (11ty, Astro, Hugo — rejected for Python-first alignment) · hand-authored dataset pages that bypass the build script (the `authored-pages/` overrides are retired) · author photos, testimonials, hire-me CTAs.
 
 ## Conventions
 
 - HTML filenames: kebab-case slugs, except Elexon dataset codes keep BMRS underscores (`system_prices.html`).
-- Dataset page anatomy (locked 2026-09-27): petrol hero with quick facts → topsoil prose and chart → bronze raw feed → silver sample rows as a Polars frame with a column guide beneath → gold workbench call and demo notebook → related datasets. Spec: `DESIGN.md` "Dataset page anatomy".
+- Dataset page anatomy (locked 2026-09-27): petrol hero with quick facts → topsoil prose and chart → bronze raw feed → silver sample rows as a Polars frame with a column guide beneath → gold workbench call and demo notebook → related datasets. Spec: `DESIGN.md` "Dataset page anatomy". Rendered by `templates/dataset.html.j2` from a note's `page:` block (content model and budgets in `page_fields.py`; authoring in `.planning/v5/author-brief.md`). Notes without one render blank (the hero's name and id) until the fan-out. The page set, families and hub content live in `site/hifi/data/<vendor>.json`; hubs render from `hub.html.j2`, the landing from `data-sources.html.j2`.
 - Every page carries `<meta name="viewport" content="width=device-width, initial-scale=1">`.
 - A11y minimums: `<main>` landmark, `aria-current="page"` on the active nav, distinguishing `aria-label` on the dual `<nav>` (top + sidebar), `aria-hidden="true"` on decorative icons.
 
