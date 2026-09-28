@@ -96,7 +96,11 @@
 .find__r .h-entry { margin-bottom: 14px; }
 .find__r .caption { margin-top: 10px; }
 .find__r .caption a { color: var(--ink); text-decoration-color: var(--olive); }
-@media (max-width: 1099.98px) { .find { grid-template-columns: minmax(0, 1fr); row-gap: 44px; } }
+/* the chart is drawn 600 wide for the side column; stacked, it is capped near that width so its text stays 13 to 14 px */
+@media (max-width: 1279.98px) {
+  .find { grid-template-columns: minmax(0, 1fr); row-gap: 44px; }
+  .find__r { max-width: 640px; }
+}
 
 /* ---------------------------------------------------------------- hub: the beds of datasets */
 .hub-head { max-width: 760px; padding-top: 8px; }

@@ -162,6 +162,9 @@ class Frame:
 
 WIDE = Frame(w=900, h=470, x0=74, x1=884, top=26, bottom=410, y_ticks=5, font_note="")
 NARROW = Frame(w=360, h=300, x0=50, x1=350, top=22, bottom=246, y_ticks=4, font_note=" narrow")
+# The Data sources landing sets the chart in a 600 to 700 px column: drawn 600 wide, its 13 px text
+# renders at 13 px or more there, where the 900-wide frame shrank it to 9 px.
+LANDING = Frame(w=600, h=380, x0=64, x1=588, top=26, bottom=318, y_ticks=5, font_note="")
 
 
 def _parse_time(value: str) -> float:
@@ -433,13 +436,16 @@ def key_kind(chart: dict[str, Any]) -> str:
     return "dots" if few else "line"
 
 
-def render(chart: dict[str, Any], view: ChartView, uid: str) -> tuple[str, str]:
+def render(
+    chart: dict[str, Any], view: ChartView, uid: str, wide: Frame = WIDE
+) -> tuple[str, str]:
     """The wide and the narrow drawing of one chart.
 
     Args:
         chart: The committed series payload.
         view: The note's ``chart_view`` (every series has a key entry).
         uid: A page-unique prefix for pattern ids.
+        wide: The frame of the wide drawing (the narrow one is fixed).
 
     Returns:
         ``(wide_svg, narrow_svg)``.
@@ -447,7 +453,7 @@ def render(chart: dict[str, Any], view: ChartView, uid: str) -> tuple[str, str]:
     drawers = {"stacked-area": _stacked, "line": _lines, "bar": _bars}
     draw = drawers[chart["type"]]
     out = []
-    for fr, narrow in ((WIDE, False), (NARROW, True)):
+    for fr, narrow in ((wide, False), (NARROW, True)):
         if chart["type"] == "bar":
             fr = _height_for_bars(chart, fr)
         sid = f"{uid}{'n' if narrow else 'w'}"

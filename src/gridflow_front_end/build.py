@@ -1555,7 +1555,7 @@ def landing_chart(vault_path: Path) -> dict[str, Any] | None:
         return None
     if chart_svg.check_view(chart, doc.page.chart_view):
         return None
-    wide, narrow = chart_svg.render(chart, doc.page.chart_view, "lc")
+    wide, narrow = chart_svg.render(chart, doc.page.chart_view, "lc", wide=chart_svg.LANDING)
     return {
         "title": doc.page.chart_view.title,
         "caption": doc.page.chart_view.caption,
