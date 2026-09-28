@@ -1,7 +1,8 @@
 /* gridflow site chrome: the masthead, the primary nav and the footer, injected on every page.
 
    Page contract (set on <body>):
-     data-page          which nav entry is current: home | sources | vendor | dataset | architecture | model | about
+     data-page          which nav entry is current: home | sources | vendor | dataset | architecture | model |
+                        explorer | about
      data-root          the relative path back to the site root: "" at the root, "../" one level down, "../../" two
      data-screen-label  a human label for the page, kept as page metadata; the chrome does not read it
 
@@ -20,12 +21,14 @@
     { key: "home", label: "Home", href: "index.html" },
     { key: "sources", label: "Data sources", href: "data-sources.html" },
     { key: "architecture", label: "Architecture", href: "architecture.html" },
-    { key: "model", label: "Models", href: "models/demand-forecast.html" },
+    { key: "model", label: "Models", href: "models.html" },
+    { key: "explorer", label: "Explorer", href: "explorer.html" },
     { key: "about", label: "About", href: "index.html#about" }
   ];
   // vendor hubs and dataset pages live under Data sources
   var CURRENT = { home: "home", sources: "sources", vendor: "sources", dataset: "sources",
-                  architecture: "architecture", model: "model", about: "about" }[page];
+                  architecture: "architecture", model: "model", models: "model", explorer: "explorer",
+                  about: "about" }[page];
 
   function links(current) {
     return NAV.map(function (item) {

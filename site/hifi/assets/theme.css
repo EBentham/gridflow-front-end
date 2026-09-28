@@ -101,7 +101,8 @@ code { font-size: .9em; }
 @media (max-width: 699.98px) {
   .masthead__in { padding-top: 18px; }
   .nav { flex-basis: 100%; }
-  .nav ul { justify-content: space-between; column-gap: 12px; }
+  /* six items never fit one row at 360; they sit in two rows of three by design */
+  .nav ul { display: grid; grid-template-columns: repeat(3, max-content); justify-content: space-between; gap: 2px 12px; }
 }
 
 .site-foot { color: var(--on-petrol-2); font-size: var(--fs-small); line-height: 1.5; }
@@ -114,6 +115,11 @@ code { font-size: .9em; }
 .site-foot a { color: var(--on-petrol-2); text-decoration-color: var(--chartreuse); }
 .site-foot a:hover { color: var(--on-petrol); }
 .site-foot__line { grid-column: 1 / -1; color: var(--on-petrol-3); }
+/* six nav items and the source links share one row only from about 1200px; below that the links take a row */
+@media (min-width: 700px) and (max-width: 1199.98px) {
+  .site-foot__in { grid-template-columns: auto minmax(0, 1fr); }
+  .site-foot__in > ul { grid-column: 2; }
+}
 @media (max-width: 699.98px) { .site-foot__in { grid-template-columns: minmax(0, 1fr); } }
 
 /* ---------------------------------------------------------------- the strata
@@ -195,8 +201,10 @@ main { position: relative; display: block; }
 .keys a:hover h3, .keys a:focus-visible h3 { text-decoration-color: var(--chartreuse); }
 .keys p { font-size: var(--fs-small); line-height: 1.5; color: var(--on-petrol-2); }
 
-.landscape { margin-top: 12px; }
-.landscape svg { display: block; width: 100%; height: clamp(230px, 27.36vw, 394px); }
+/* The drawing is 2240 units wide. From 700px up it always shows units 0 to 1440 (the board's frame), scaled to
+   the width, so its edges sit in the same gaps between objects at every width and nothing is cut. */
+.landscape { margin-top: 12px; overflow: hidden; }
+.landscape svg { display: block; width: 100%; height: 30.14vw; }
 .landscape text { font-family: var(--body); font-style: italic; font-size: 13.5px; }
 @media (max-width: 1439.98px) { .landscape text { font-size: 14.5px; } }
 @media (max-width: 1299.98px) { .landscape text { font-size: 17px; } }
@@ -204,7 +212,12 @@ main { position: relative; display: block; }
   .landscape text { font-size: 21px; }
   .landscape .lbl-edge { display: none; }
 }
-@media (max-width: 699.98px) { .landscape .lbl-far { display: none; } }
+@media (max-width: 699.98px) {
+  /* phones show a fixed frame, units -10 to 850 (the land: wind, solar, gas, pylons, data centre, battery),
+     whose edges also fall in gaps between objects */
+  .landscape svg { width: 260.47%; max-width: none; height: auto; aspect-ratio: 2240 / 434; margin-left: -45.35%; }
+  .landscape text { font-size: 24px; }
+}
 
 @media (max-width: 1099.98px) {
   .hero { grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "lede" "keys"; row-gap: 36px; padding-top: 56px; }
@@ -420,7 +433,17 @@ main { position: relative; display: block; }
 .fig { display: grid; row-gap: 6px; justify-items: start; min-width: 0; }
 .fig .txt { margin: 0; padding-top: 9px; font: 400 var(--fs-code)/1.6 var(--mono); color: var(--ink); white-space: pre-wrap; }
 .fig svg { display: block; width: 100%; max-width: 600px; height: auto; }
+.fig .plot-m { display: none; }
+.in .ln { display: block; }
 @media (max-width: 699.98px) {
+  /* the same figure, x axis compressed so its text stays legible at phone width; the data are unchanged */
+  .fig .plot:not(.plot-m) { display: none; }
+  .fig .plot-m { display: block; max-width: 420px; }
+  /* code wraps instead of scrolling; a wrapped line hangs 2ch in from the line it continues */
+  .in {
+    white-space: pre-wrap; overflow-x: visible; overflow-wrap: anywhere;
+    padding-left: calc(10px + 2ch); text-indent: -2ch; font-size: 13px;
+  }
   .nb-bar { padding: 0 10px 0 6px; }
   .nb-tab { padding-inline: 12px; }
   .nb-body { padding: 12px 10px 176px 2px; }
