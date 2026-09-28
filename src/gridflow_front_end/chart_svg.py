@@ -432,8 +432,9 @@ def _bars(chart: dict[str, Any], view: ChartView, fr: Frame, uid: str, narrow: b
         txt.append(f'<text x="{_f(x0 + w + 8)}" y="{_f(y + bar_h / 2 + 4.5)}">{fmt_num(v)}</text>')
     base = top + len(cats) * row + 4
     out.append(f'<path d="M{_f(x0)} {_f(top - 4)} V{_f(base)}" stroke="{ink}" stroke-width="1.5"/>')
+    # the unit sits at the foot of the bars' axis, beside the bars it measures, not out at the far end
     out.append(
-        f'<text class="ax-i" x="{_f(x1)}" y="{_f(base + 22)}" text-anchor="end">{html.escape(chart["unit"])}</text>'
+        f'<text class="ax-i" x="{_f(x0)}" y="{_f(base + 22)}" text-anchor="start">{html.escape(chart["unit"])}</text>'
     )
     return "".join(out) + f'<g class="ax">{"".join(txt)}</g>'
 
