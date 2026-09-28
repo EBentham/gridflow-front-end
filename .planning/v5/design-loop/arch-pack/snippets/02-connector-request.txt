@@ -1,0 +1,1 @@
+GET https://data.elexon.co.uk/bmrs/api/v1/balancing/settlement/system-prices/2026-09-08?page=1

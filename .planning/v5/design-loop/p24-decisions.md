@@ -24,7 +24,70 @@ Picker: https://claude.ai/artifact/MpySKZLbpbe6VmCz4pcuzV · round-1 canvas http
   above zero when positive and hang below when negative. Fuel codes the palette doesn't cover are drawn
   unpainted with distinct ink hatches, and khaki means only the vendor code OTHER.
 
+## Decision 3: schema and sample rows (OWNER)
+
+- **4, "One record, then many"** (`<scratch>\p24\r2-schema\4\`, generator `gen4.py`, `content4.py`,
+  `s4.css`, notes `4-notes.md`): one real row laid out field by field (name, value, dtype, meaning, key
+  squares; the row's lineage columns under one label) is the schema; then "Eight rows" as a compact table
+  showing only the schema columns that differ between rows, with the record's row marked. Values formatted
+  by Polars. Open from its notes: A's "equal to SSP on every row" on system_prices needs checking before
+  round 2; the 390 px reflow is written but untested.
+
+## Decision 4: demo notebook content (OWNER, 2026-09-27)
+
+- **Option 2: through gridflow and the gridflow_models notebook module** ("to show off my notebooks
+  module"): `from gridflow_models import setup_notebook`, `data, models, common = setup_notebook()`,
+  `data.<vendor>.query("<dataset>", start, end)` returning pandas, as on the architecture page. Chosen over
+  raw vendor API cells and over two tabs.
+- Constraint found 2026-09-27: `github.com/EBentham/gridflow` is public (branch master), but
+  `github.com/EBentham/gridflow-models` is PRIVATE, and gridflow-models resolves gridflow as a sibling path
+  (`[tool.uv.sources] gridflow = { path = "../gridflow" }`). "Paste it and it runs" for a reader needs the
+  repo public and setup cells (clone both side by side, `uv sync`, `gridflow init`, an ingest of the window).
+  Bobbo's ruling: keep links pointing at gridflow-models on GitHub even though it is private for now. He
+  will soon split the notebook module into its own PUBLIC repo (gridflow-models stays private); the demo
+  notebook's setup cells then install from that repo. Until its name exists, setup cells are written against
+  the current package and flagged for a one-line update.
+- Later the same day (OWNER): **no setup cells at all** (no clone, uv, init or ingest); the notebook starts at
+  `setup_notebook()`. One designer drafts it ("it's not difficult"): the inline drawer in the gold stratum,
+  `<scratch>\p24\r2-notebook\1\`. The sheet and recipe directions were stopped.
+
+## Decision 5: demo notebook panel, and the lock (OWNER, 2026-09-27)
+
+- The drawer draft (`p24-r2-notebook/1/`) as it stands: homepage notebook style, opens in place in the gold
+  stratum, one "Copy notebook" button (code only), the "Needs ... ingested" line kept.
+- **Dataset page design LOCKED** ("looks good, lock it"). Anatomy written into `DESIGN.md` "Dataset page
+  anatomy". Next: the template and a five-dataset pilot (25b).
+- Carry into 25b: check "SBP equals SSP on every row" (system_prices) against code before it ships; test the
+  schema section's 390 px reflow; gridflow_models help card says "35 datasets" while `list_datasets()`
+  returns 33 (the page omits the count; the mismatch is a gridflow_models bug).
+
 ## Decision 2b: facts and how to get it (OWNER)
 
 - Keep A's for both: quick facts in the petrol hero under the one-liner; the raw feed and CLI in bronze and
   the workbench call in gold, plus the demo-notebook button.
+
+## Decision 6: schema reopened (OWNER, 2026-09-27 evening)
+
+- Built on the real pages, option 4 read as cluttered, faint and hard to follow. Bobbo now prefers option 3,
+  "As the data scientist sees it": the rows as a Polars frame, as they look in silver. The annotation is
+  the part to rethink ("not too cluttered, easy to read and understand").
+- Round 3, three variations of option 3 (brief `<scratch>\p24\r3-schema\BRIEF.md`):
+  1. a clean frame with a column guide beneath;
+  2. grouped header bands with a short line per column;
+  3. one row read aloud as a sentence, then a slim list.
+- Standing review check: nothing clipped or overlapping at any width (turbine tops, scene edges, the
+  silver corner label on fuelhh).
+
+## Decision 7: schema round 3 pick (OWNER, 2026-09-27 late)
+
+- **3a, "Clean frame, guide beneath"** (`<scratch>\p24\r3-schema\1\`), with Bobbo's changes:
+  - no unnecessary wording;
+  - drop the "Added to every row by the pipeline ..." line, since those columns sit on every dataset page;
+  - clicking the `…` column expands the folded columns.
+  The revision is with the same designer.
+- **Note for the build (OWNER):** the pages look well sized inside the artifact viewer but not when the HTML
+  is opened directly in a browser, on every page. Assess and fix during implementation: check at real
+  browser widths such as 1280, 1440, 1920 and 390, not only inside the picker's scaled frames.
+- **LOCKED (OWNER, 2026-09-27 late):** 3a revised ("looks good, lock it"). Boards are in `p24-r3-schema/3a/`, and
+  `DESIGN.md` §Dataset page anatomy item 4 is updated. The pilot template (PR #42) still renders option 4
+  and must switch to 3a before the rollout.

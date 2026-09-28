@@ -1,0 +1,48 @@
+{
+ "desktop": {
+  "H": 1970,
+  "sections": {
+   "opening": [
+    0,
+    750
+   ],
+   "inputs": [
+    750,
+    287
+   ],
+   "models": [
+    1037,
+    757
+   ],
+   "foot": [
+    1794,
+    176
+   ]
+  },
+  "over": [],
+  "outside": []
+ },
+ "phone": {
+  "H": 2996,
+  "sections": {
+   "opening": [
+    0,
+    780
+   ],
+   "inputs": [
+    780,
+    398
+   ],
+   "models": [
+    1178,
+    1590
+   ],
+   "foot": [
+    2768,
+    228
+   ]
+  },
+  "over": [],
+  "outside": []
+ }
+}

@@ -1,0 +1,14 @@
+[
+ "Validated: median pinball 711.04 MW, 90% coverage 0.893 (version 1, 1 September 2024 to 22 August 2026).",
+ "Version 2 adds weather from <code>open_meteo/historical_demand</code>.",
+ "Weather from <code>open_meteo/historical_wind</code>.",
+ "Weather from <code>open_meteo/historical_solar</code>.",
+ "Residual demand",
+ "Demand less wind and solar is residual demand.",
+ "Fuel and carbon prices are synthetic.",
+ "It has nothing to fit.",
+ "The models, keyed to the drawing",
+ "The chain, in section",
+ "price",
+ "Section drawing of the models. Above ground: pylons into a substation for national demand, a wind farm, a solar farm, and the plant fleet in merit order (biomass, nuclear, CCGT and OCGT). A cable drops from each to the silver datasets it reads: elexon/indo, elexon/fuelhh and neso_data_portal/historic_generation_mix, and for the fleet elexon/bmunits_reference, elexon/remit and elexon/fou2t14d. In gold, the demand, wind and solar cables each split: one branch ends at its forecast model, the other carries the recorded values on, and the three meet as residual demand. The fleet cable ends at the GB merit-order stack. Residual demand and the stack's supply curve meet at fundamentals SMP, where the price is read off."
+]

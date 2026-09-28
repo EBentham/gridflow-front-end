@@ -1,0 +1,13 @@
+run 2026-09-27T16:32:55+00:00
+fuelhh: executed 5 cells in 7.2 s on kernel gridflow_models -> fuelhh_analysis.ipynb
+  In [1]: 'from gridflow_models import setup_notebook' -> ['(no output)']
+  In [2]: 'data.elexon' -> ['execute_result[text/html,text/plain]']
+  In [3]: 'df = data.elexon.query("fuelhh", "2026-09-20", "2026-09-26")' -> ['(no output)']
+  In [4]: 'df[["settlement_date", "settlement_period", "fuel_type", "generation_m' -> ['execute_result[text/html,text/plain]']
+  In [5]: 'wind = df[df.fuel_type == "WIND"]' -> ['execute_result[text/plain]', 'display_data[image/png,text/plain]']
+bmunits_reference: executed 5 cells in 4.6 s on kernel gridflow_models -> bmunits_reference_analysis.ipynb
+  In [1]: 'from gridflow_models import setup_notebook' -> ['(no output)']
+  In [2]: 'data.elexon' -> ['execute_result[text/html,text/plain]']
+  In [3]: 'df = data.sql("SELECT * FROM silver_elexon_bmunits_reference ORDER BY ' -> ['(no output)']
+  In [4]: 'df[["bm_unit_id", "fuel_type", "registered_capacity_mw", "company_name' -> ['execute_result[text/html,text/plain]']
+  In [5]: 'df.fuel_type.value_counts(dropna=False)' -> ['execute_result[text/plain]']

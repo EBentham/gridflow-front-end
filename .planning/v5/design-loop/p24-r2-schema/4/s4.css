@@ -1,0 +1,76 @@
+body{margin:0}
+.root{background:#DCE2DF;color:#1C2B22;font:400 16px/1.6 "Hanken Grotesk",sans-serif;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+.root h2,.root h3{font-family:"Bricolage Grotesque",sans-serif;margin:0;font-optical-sizing:auto;color:#1C2B22}
+.root code{font-family:"Red Hat Mono",monospace;font-size:.9em}
+.layer{position:absolute;left:0;top:0}
+main{position:relative}
+.st{position:relative;box-sizing:border-box;margin-top:40px;padding:0 80px}
+.inner{padding-top:66px}
+.head h2{font-size:30px;font-weight:700;font-stretch:90%;line-height:1.1;letter-spacing:-.012em;margin:0 0 12px}
+.head p{margin:0;max-width:66ch;font-size:15.5px;line-height:1.6;color:#3F4A3B}
+.head p code{color:#1C2B22}
+.one{margin-top:46px}
+.one-h,.f{display:grid;grid-template-columns:220px 340px 160px minmax(0,1fr);column-gap:20px}
+.one-h{position:relative;align-items:baseline;padding-bottom:10px}
+.one-h::after{content:"";position:absolute;left:240px;right:0;bottom:0;height:1.5px;background:#1C2B22}
+.one-h h3,.many h3{font-size:23px;font-weight:720;font-stretch:90%;line-height:1.1;letter-spacing:-.01em}
+.one-h h3{grid-column:2 / 4}
+.one-h .kn{grid-column:4;margin:0;font-size:14px;line-height:1.45;color:#3F4A3B}
+.rec{margin:0}
+.f{position:relative}
+.f::after{content:"";position:absolute;left:240px;right:0;bottom:0;height:1px;background:rgba(28,43,34,.22)}
+.f dt,.f dd{margin:0;padding:6px 0;line-height:22px}
+.f dt{position:relative;text-align:right}
+.f dt code{font-size:14px;color:#1C2B22}
+.f.key dt code{font-weight:500}
+.kq{position:absolute;right:-14px;top:14px;width:7px;height:7px;background:#1C2B22}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.f .v{background:#F6F4EC;border-left:1px solid #1C2B22;border-right:1px solid #1C2B22;padding:6px 14px}
+.v code{font-size:15px;font-weight:500;color:#1C2B22;white-space:nowrap}
+.nl{color:#5d6a55;font-weight:400}
+.t code{font-size:13px;color:#3F4A3B}
+.m{font-size:14.5px;color:#3F4A3B}
+.m code{color:#1C2B22}
+.rec .f:last-child::after{background:#1C2B22}
+.lin-l{margin:22px 0 8px 240px;font-size:14px;line-height:1.5;color:#3F4A3B}
+.lin-l code{color:#1C2B22}
+.lin{position:relative}
+.lin::before{content:"";position:absolute;left:240px;right:0;top:0;height:1px;background:#1C2B22}
+.lin .f dt,.lin .f dd{padding-top:5px;padding-bottom:5px}
+.lin .v{background:#ECE8DA}
+.lin .v code{font-size:14px;font-weight:400}
+.lin dt code{color:#3F4A3B}
+.many{margin:54px 0 0 240px}
+.many h3{margin:0 0 8px}
+.many.side{display:grid;grid-template-columns:max-content minmax(0,46ch);justify-content:start;column-gap:44px;align-items:start}
+.many.side h3{grid-column:1 / -1}
+.many.side .dfs{grid-column:1;grid-row:2}
+.many.side .mc{grid-column:2;grid-row:2;margin-top:4px}
+.mc{margin:0 0 16px;max-width:66ch;font-size:14.5px;line-height:1.55;color:#3F4A3B}
+.dfs{overflow-x:auto;margin-left:-20px;padding-left:20px}
+.dfw{display:inline-block;background:#F6F4EC;border:1px solid #1C2B22;border-radius:3px;padding:4px 8px}
+.df{border-collapse:collapse;font:400 14.5px/1.3 "Hanken Grotesk",sans-serif;font-variant-numeric:tabular-nums;color:#1C2B22}
+.df th{font:500 13px/1.3 "Red Hat Mono",monospace;color:#1C2B22;padding:9px 12px 8px;border-bottom:1px solid #1C2B22;vertical-align:bottom}
+.df td{padding:7px 12px;white-space:nowrap}
+.df .n{text-align:right}
+.df .s{text-align:left}
+.df td.c{font:400 13.5px/1.3 "Red Hat Mono",monospace}
+.df tr.me td.c{font-weight:500}
+.df tbody tr:nth-child(odd){background:#EFEBDF}
+.df tr.me td{font-weight:600}
+.df tr.me td:first-child{position:relative}
+.df tr.me td:first-child::before{content:"";position:absolute;left:-24px;top:50%;margin-top:-5px;border-left:8px solid #1C2B22;border-top:5px solid transparent;border-bottom:5px solid transparent}
+@media (max-width: 760px){
+.st{padding:0 16px}
+.one-h,.f{grid-template-columns:minmax(0,1fr) auto;column-gap:12px}
+.one-h h3,.one-h .kn{grid-column:1 / -1}
+.f dt{text-align:left;padding-left:14px}
+.kq{right:auto;left:0}
+.f .v{grid-column:1 / -1;order:3}
+.v code{white-space:normal;overflow-wrap:anywhere}
+.f .m{grid-column:1 / -1;order:4}
+.lin-l,.many{margin-left:0}
+.one-h::after,.f::after,.lin::before{left:0}
+.many.side{display:block}
+.dfs{margin-left:0;padding-left:20px}
+}

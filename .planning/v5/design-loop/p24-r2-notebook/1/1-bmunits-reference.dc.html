@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Balancing Mechanism units: demo notebook</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&amp;family=Hanken+Grotesk:ital,wght@0,400..700;1,400..600&amp;family=Red+Hat+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+:root {
+  
+  --petrol:        #155A6E;  
+  --daylight:      #F6F4EC;  
+  --topsoil:       #ECE8DA;  
+  --zebra:         #EFEBDF;  
+
+  
+  --ink:           #1C2B22;  
+  --ink-2:         #3F4A3B;  
+  --muted:         #5d6a55;  
+  --rule:          #DFDACA;
+  --rule-ink:      rgba(28, 43, 34, .22);  
+
+  
+  --on-petrol:     #F6F4EC;
+  --on-petrol-2:   #CFE0DC;
+  --on-petrol-3:   #B4D0CD;  
+  --rule-petrol:   rgba(207, 224, 220, .22);
+
+  
+  --chartreuse:    #AFC64E;  
+  --chartreuse-hi: #C3D86A;  
+  --olive:         #66793B;  
+  --horizon:       #3E8C97;  
+
+  
+  --fuel-wind:     #3E8C97;
+  --fuel-solar:    #AFC64E;
+  --fuel-gas:      #C77E3C;  
+  --fuel-nuclear:  #155A6E;
+  --fuel-imports:  #66793B;
+  --fuel-biomass:  #A5713C;
+  --fuel-other:    #A39A6A;  
+
+  
+  --bronze:        #A5713C;  --bronze-tint:  #E2CDB3;
+  --silver:        #9FADAB;  --silver-tint:  #DCE2DF;
+  --gold:          #C2A14A;  --gold-tint:    #E9DDAF;
+  --gold-deep:     #8A6F1E;  
+  --clay-deep:     #7C5530;  
+  --silver-deep:   #5E6E6B;  
+
+  
+  --display: "Bricolage Grotesque", sans-serif;
+  --body:    "Hanken Grotesk", sans-serif;
+  --mono:    "Red Hat Mono", monospace;
+
+  
+  --fs-hero:   86px;   
+  --fs-h2-xl:  52px;   
+  --fs-h2:     42px;   
+  --fs-h2-s:   30px;   
+  --fs-h3:     23px;   
+  --fs-intro:  21px;   
+  --fs-lede:   17.5px;
+  --fs-body:   16px;   
+  --fs-small:  14.5px; 
+  --fs-label:  13.5px; 
+  --fs-code:   14.5px; 
+
+  
+  --page-max:  1440px;
+  --margin:    80px;   
+  --gutter:    16px;   
+  --radius:    3px;    
+
+  
+  --stroke:     1.5px; 
+  --stroke-hair: .8px; 
+}
+
+body{margin:0}
+.root{background:var(--daylight);color:var(--ink);font:400 16px/1.6 var(--body);font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+.root *,.root *::before,.root *::after{box-sizing:border-box}
+.root h2,.root p,.root dl,.root dd,.root ul{margin:0}
+.root h2{font-family:var(--display);font-optical-sizing:auto}
+.root a{color:inherit;text-decoration-thickness:1.5px;text-underline-offset:4px;text-decoration-color:var(--olive)}
+.root a:focus-visible,.root button:focus-visible,.root textarea:focus-visible{outline:2px solid var(--chartreuse);outline-offset:3px}
+.root code{font-family:var(--mono);font-size:.9em}
+[hidden]{display:none !important}
+.state-h{padding:22px 80px 20px;font:600 17px/1.3 var(--body);color:var(--ink);background:var(--daylight);border-bottom:1px solid var(--rule-ink)}
+.state + .state .state-h{border-top:1px solid var(--rule-ink)}
+.sv{height:30px;background:var(--silver-tint) url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'><path d='M0 8 L8 0' stroke='%235E6E6B' stroke-width='.8' opacity='.22'/></svg>")}
+.contact{display:block;width:100%;height:34px}
+.st-gold{position:relative;padding:40px 80px 76px;background:var(--gold-tint) url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='9' height='9'><g fill='%238A6F1E' opacity='.26'><circle cx='2' cy='3' r='1'/><circle cx='6.5' cy='7.5' r='.8'/></g></svg>")}
+.unit{position:absolute;top:0;right:80px;font:italic 400 14px/1 var(--body);color:var(--ink)}
+.split{display:grid;grid-template-columns:340px minmax(0,1fr);column-gap:60px;align-items:start}
+.lead{align-self:stretch}
+.lead h2{margin:0 0 12px;font-size:30px;font-weight:700;font-stretch:90%;line-height:1.1;letter-spacing:-.012em;color:var(--ink)}
+.lead p{font-size:15.5px;line-height:1.6;color:var(--ink-2)}
+.lead code{color:var(--ink)}
+.ctl{position:sticky;top:24px;margin-top:26px}
+.btn{padding:12px 20px;border:0;border-radius:var(--radius);background:var(--chartreuse);color:var(--ink);font:600 16px/1.2 var(--body);cursor:pointer}
+.btn:hover{background:var(--chartreuse-hi)}
+.tools{margin-top:18px}
+.btn-2{padding:10px 18px;border:1.5px solid var(--ink);border-radius:var(--radius);background:transparent;color:var(--ink);font:600 15px/1.2 var(--body);cursor:pointer}
+.btn-2:hover{background:var(--daylight)}
+.status{min-height:22px;margin-top:6px !important;font-size:14px;line-height:1.5;color:var(--ink)}
+.need{margin-top:6px !important;font-size:14.5px;line-height:1.5;color:var(--ink-2)}
+.need a{color:var(--ink)}
+.nbcol{min-width:0}
+/* the notebook: the homepage's markup and CSS (theme.src.css), with no completion popup below it */
+.nb{background:var(--daylight);border:1.5px solid var(--ink);border-radius:4px;overflow:hidden;margin:0}
+.nb-bar{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;height:40px;padding:0 18px 0 12px;background:var(--ink);font:500 13.5px/1 var(--mono)}
+.nb-tab{padding:11px 18px 12px;border-radius:3px 3px 0 0;background:var(--daylight);color:var(--ink);white-space:nowrap}
+.nb-kern{align-self:center;color:var(--on-petrol-2);white-space:nowrap}
+.nb-body{position:relative;padding:16px 24px 10px 8px}
+.cell{position:relative;display:grid;grid-template-columns:52px minmax(0,1fr);column-gap:10px;margin:0 0 9px}
+.cell.out{margin:-3px 0 12px}
+.pr{padding-top:12px;font:400 13px/1 var(--mono);color:var(--muted);text-align:right}
+.in{margin:0;padding:8px 12px;overflow-x:auto;background:var(--topsoil);border:1px solid var(--rule-ink);border-radius:var(--radius);font:400 var(--fs-code)/1.6 var(--mono);color:var(--ink);white-space:pre}
+.in .k{color:var(--petrol);font-weight:500}
+.in .s{color:var(--clay-deep)}
+.card{max-width:600px;overflow:hidden;background:var(--daylight);border:1px solid var(--rule-ink);border-radius:var(--radius)}
+.card-h{padding:9px 14px;background:var(--topsoil);border-bottom:1px solid var(--rule-ink);font:500 15px/1.2 var(--mono);color:var(--petrol)}
+.card dl{padding:7px 8px 1px}
+.card dl div{display:grid;grid-template-columns:136px minmax(0,1fr);gap:14px;padding:2px 8px;border-radius:2px}
+.card dl div:nth-child(odd){background:var(--zebra)}
+.card dt{font:400 13.5px/1.5 var(--mono);color:var(--petrol)}
+.card dd{font-size:14px;line-height:1.45;color:var(--ink)}
+.card-f{margin:5px 14px 10px !important;padding-top:8px;border-top:1px solid var(--rule-ink);font-size:13.5px;color:var(--ink-2)}
+.card-f code{padding:1px 5px;border-radius:2px;background:var(--topsoil);font-size:13px;color:var(--ink)}
+.df-wrap{overflow-x:auto}
+.df{border-collapse:collapse;margin:3px 0 0;font:400 13.5px/1 var(--body);font-variant-numeric:tabular-nums;color:var(--ink)}
+.df th,.df td{padding:6px 12px;text-align:right;white-space:nowrap}
+.df thead th{font-weight:600;border-bottom:1px solid var(--ink);vertical-align:bottom}
+.df tbody th{font-weight:600}
+.df tbody tr:nth-child(odd){background:var(--zebra)}
+.fig{display:grid;row-gap:6px;justify-items:start;min-width:0}
+.fig .txt{margin:0;padding-top:9px;font:400 var(--fs-code)/1.6 var(--mono);color:var(--ink);white-space:pre-wrap}
+.fig img{display:block;max-width:100%;height:auto}
+.nb-src{display:block;width:calc(100% - 24px);height:160px;margin:0 12px 12px;padding:8px 12px;border:1px solid var(--ink);border-radius:var(--radius);background:var(--daylight);color:var(--ink);font:400 13px/1.5 var(--mono);resize:vertical}
+.st-deep{padding:64px 80px 92px;background:var(--petrol) url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='46' height='40'><path d='M8 8 h8 M12 4 v8 M30 26 h8 M34 22 v8 M20 34 h6 M23 31 v6 M40 6 h5 M42.5 3.5 v5' stroke='%233E8C97' stroke-width='1.1' opacity='.5'/></svg>");color:var(--on-petrol)}
+.st-deep h2{font-size:30px;font-weight:700;font-stretch:90%;line-height:1.1;letter-spacing:-.012em;color:var(--on-petrol)}
+.rel{list-style:none;padding:0}
+.rel li{padding:11px 0;border-top:1px solid var(--rule-petrol)}
+.rel li:last-child{border-bottom:1px solid var(--rule-petrol)}
+.rel a{color:var(--on-petrol);text-decoration-color:var(--chartreuse)}
+.rel a code{font-size:15px}
+.rel p{margin-top:3px !important;font-size:14px;line-height:1.5;color:var(--on-petrol-2)}
+.rel p code{color:var(--on-petrol)}
+@media (max-width: 699.98px){
+  .state-h{padding:18px 16px 16px}
+  .st-gold{padding:40px 16px 56px}
+  .unit{right:16px}
+  .split{grid-template-columns:minmax(0,1fr);row-gap:24px}
+  .ctl{position:static;margin-top:20px}
+  .st-deep{padding:52px 16px 72px}
+  .st-deep .split{row-gap:14px}
+  .nb-bar{padding:0 10px 0 6px}
+  .nb-tab{padding-inline:12px}
+  .nb-body{padding:12px 10px 8px 2px}
+  .cell{grid-template-columns:36px minmax(0,1fr);column-gap:8px}
+  .card dl div{grid-template-columns:minmax(0,1fr);gap:0;padding-block:4px}
+}
+</style>
+</helmet>
+<div class="root" style="width: 1440px; height: 2954px; overflow: hidden; position: relative">
+<main>
+<section class="state" aria-label="Closed, as the page loads"><p class="state-h">Closed, as the page loads</p><div class="sv" aria-hidden="true"></div><svg class="contact" width="1440" height="34" viewBox="0 0 1440 34" preserveAspectRatio="none" aria-hidden="true"><defs><pattern id="d5" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M0 8 L8 0" stroke="#5E6E6B" stroke-width=".8" opacity=".22"></path></pattern><pattern id="s5" width="9" height="9" patternUnits="userSpaceOnUse"><g fill="#8A6F1E" opacity=".26"><circle cx="2" cy="3" r="1"></circle><circle cx="6.5" cy="7.5" r=".8"></circle></g></pattern><pattern id="g5" width="46" height="40" patternUnits="userSpaceOnUse"><path d="M8 8 h8 M12 4 v8 M30 26 h8 M34 22 v8 M20 34 h6 M23 31 v6 M40 6 h5 M42.5 3.5 v5" stroke="#3E8C97" stroke-width="1.1" opacity=".5"></path></pattern></defs><rect x="0" y="0" width="1440" height="34" fill="#DCE2DF"></rect><rect x="0" y="0" width="1440" height="34" fill="url(#d5)"></rect><path d="M-40 14.9 C-20 13.7 40 9.1 80 8 C120 6.9 160 7.2 200 8.4 C240 9.5 280 13.4 320 14.9 C360 16.3 400 16.8 440 17.1 C480 17.5 520 16 560 16.7 C600 17.5 640 20 680 21.7 C720 23.4 760 26.7 800 27 C840 27.4 880 25.3 920 23.6 C960 22 1000 18.3 1040 17.1 C1080 15.8 1120 16.4 1160 16.2 C1200 16 1240 16.8 1280 15.8 C1320 14.8 1360 11.5 1400 10 C1440 8.6 1500 7.6 1520 7.1 L1480 36 L-40 36 Z" fill="#E9DDAF"></path><path d="M-40 14.9 C-20 13.7 40 9.1 80 8 C120 6.9 160 7.2 200 8.4 C240 9.5 280 13.4 320 14.9 C360 16.3 400 16.8 440 17.1 C480 17.5 520 16 560 16.7 C600 17.5 640 20 680 21.7 C720 23.4 760 26.7 800 27 C840 27.4 880 25.3 920 23.6 C960 22 1000 18.3 1040 17.1 C1080 15.8 1120 16.4 1160 16.2 C1200 16 1240 16.8 1280 15.8 C1320 14.8 1360 11.5 1400 10 C1440 8.6 1500 7.6 1520 7.1 L1480 36 L-40 36 Z" fill="url(#s5)"></path><path d="M-40 14.9 C-20 13.7 40 9.1 80 8 C120 6.9 160 7.2 200 8.4 C240 9.5 280 13.4 320 14.9 C360 16.3 400 16.8 440 17.1 C480 17.5 520 16 560 16.7 C600 17.5 640 20 680 21.7 C720 23.4 760 26.7 800 27 C840 27.4 880 25.3 920 23.6 C960 22 1000 18.3 1040 17.1 C1080 15.8 1120 16.4 1160 16.2 C1200 16 1240 16.8 1280 15.8 C1320 14.8 1360 11.5 1400 10 C1440 8.6 1500 7.6 1520 7.1" fill="none" stroke="#1C2B22" stroke-width="1.5" stroke-linejoin="round"></path></svg><section class="st-gold" aria-labelledby="gd-c"><p class="unit" aria-hidden="true">gold, served to the notebook</p><div class="split"><div class="lead"><h2 id="gd-c">Query it from a notebook</h2><p>A register with no time axis: a <code>query()</code> date range filters it on <code>ingested_at</code>, so read the whole table with <code>data.sql()</code>.</p><div class="ctl"><button class="btn" type="button" aria-expanded="false" aria-controls="demo-c tools-c" data-call="call-c">Open the demo notebook</button><div class="tools" id="tools-c" hidden><button class="btn-2" type="button" data-copy="c">Copy notebook</button><p class="status" id="st-c" role="status"></p><p class="need">Needs <a href="https://github.com/EBentham/gridflow">gridflow</a> and <a href="https://github.com/EBentham/gridflow-models">gridflow-models</a> installed, with the BM unit register ingested.</p></div></div></div><div class="nbcol"><figure class="nb nb-call" id="call-c" aria-label="The setup cell, then df = data.sql(&quot;SELECT * FROM silver_elexon_bmunits_reference ORDER BY bm_unit_id&quot;)"><div class="nb-bar"><span class="nb-tab">bmunits_reference.ipynb</span><span class="nb-kern">gridflow_models</span></div><div class="nb-body"><div class="cell"><span class="pr">[1]:</span><pre class="in"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
+data, models, common = setup_notebook()</pre></div><div class="cell"><span class="pr">[2]:</span><pre class="in">df = data.sql(<span class="s">"SELECT * FROM silver_elexon_bmunits_reference ORDER BY bm_unit_id"</span>)</pre></div></div></figure><div class="demo" id="demo-c" hidden><figure class="nb" id="nb-c" aria-label="A demo notebook on the gridflow_models kernel: setup, the data.elexon help card, the whole BM unit register read with data.sql, the first five rows, and a count of units by fuel_type."><div class="nb-bar"><span class="nb-tab">bmunits_reference_analysis.ipynb</span><span class="nb-kern">gridflow_models</span></div><div class="nb-body"><div class="cell"><span class="pr">[1]:</span><pre class="in"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
+data, models, common = setup_notebook()</pre></div><div class="cell"><span class="pr">[2]:</span><pre class="in">data.elexon</pre></div><div class="cell out"><span class="pr">[2]:</span><div class="card"><p class="card-h">data.elexon</p><dl><div><dt>list_datasets</dt><dd>List every dataset this source provides.</dd></div><div><dt>refresh</dt><dd>Fetch the latest rows for this source, topping up what you have.</dd></div><div><dt>describe</dt><dd>Show a dataset's columns, sample values, and freshness.</dd></div><div><dt>backfill</dt><dd>Download history for a dataset and store it locally.</dd></div><div><dt>query</dt><dd>Read stored rows for a dataset over a date range.</dd></div><div><dt>tail</dt><dd>Read the most recent rows of a dataset.</dd></div><div><dt>coverage</dt><dd>Show how up to date each dataset on this source is.</dd></div></dl><p class="card-f">Discover datasets: <code>data.elexon.list_datasets()</code></p></div></div><div class="cell"><span class="pr">[3]:</span><pre class="in">df = data.sql(<span class="s">"SELECT * FROM silver_elexon_bmunits_reference ORDER BY bm_unit_id"</span>)</pre></div><div class="cell"><span class="pr">[4]:</span><pre class="in">df[[<span class="s">"bm_unit_id"</span>, <span class="s">"fuel_type"</span>, <span class="s">"registered_capacity_mw"</span>, <span class="s">"company_name"</span>]].head()</pre></div><div class="cell out"><span class="pr">[4]:</span><div class="df-wrap"><table class="df"><thead><tr><th></th><th></th><th>bm_unit_id</th><th>fuel_type</th><th>registered_capacity_mw</th><th>company_name</th></tr></thead><tbody><tr><th>0</th><td>2__AANGE001</td><td>NaN</td><td>80.000</td><td>Limejump Energy Limited</td></tr><tr><th>1</th><td>2__AANGE002</td><td>NaN</td><td>50.000</td><td>Limejump Energy Limited</td></tr><tr><th>2</th><td>2__AANGE003</td><td>NaN</td><td>0.000</td><td>Limejump Energy Limited</td></tr><tr><th>3</th><td>2__AAXPO000</td><td>NaN</td><td>100.000</td><td>AXPO UK LIMITED</td></tr><tr><th>4</th><td>2__ABGAS000</td><td>NaN</td><td>5.428</td><td>British Gas Trading Ltd</td></tr></tbody></table></div></div><div class="cell"><span class="pr">[5]:</span><pre class="in">df.fuel_type.value_counts(dropna=False)</pre></div><div class="cell out"><span class="pr">[5]:</span><div class="fig"><pre class="txt">fuel_type
+NaN        2515
+WIND        234
+OTHER        92
+CCGT         61
+NPSHYD       22
+OCGT         22
+PS           16
+NUCLEAR      16
+BIOMASS      15
+COAL         10
+INTELEC       2
+INTNED        1
+INTEW         1
+INTFR         1
+INTGRNL       1
+INTIFA2       1
+INTIRL        1
+INTNSL        1
+INTVKL        1
+INTNEM        1
+Name: count, dtype: int64</pre></div></div></div><textarea class="nb-src" id="src-c" readonly hidden aria-label="The notebook as Python">from gridflow_models import setup_notebook
+data, models, common = setup_notebook()
+
+data.elexon
+
+df = data.sql("SELECT * FROM silver_elexon_bmunits_reference ORDER BY bm_unit_id")
+
+df[["bm_unit_id", "fuel_type", "registered_capacity_mw", "company_name"]].head()
+
+df.fuel_type.value_counts(dropna=False)
+</textarea></figure></div></div></div></section><svg class="contact" width="1440" height="34" viewBox="0 0 1440 34" preserveAspectRatio="none" aria-hidden="true"><defs><pattern id="d6" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M0 8 L8 0" stroke="#5E6E6B" stroke-width=".8" opacity=".22"></path></pattern><pattern id="s6" width="9" height="9" patternUnits="userSpaceOnUse"><g fill="#8A6F1E" opacity=".26"><circle cx="2" cy="3" r="1"></circle><circle cx="6.5" cy="7.5" r=".8"></circle></g></pattern><pattern id="g6" width="46" height="40" patternUnits="userSpaceOnUse"><path d="M8 8 h8 M12 4 v8 M30 26 h8 M34 22 v8 M20 34 h6 M23 31 v6 M40 6 h5 M42.5 3.5 v5" stroke="#3E8C97" stroke-width="1.1" opacity=".5"></path></pattern></defs><rect x="0" y="0" width="1440" height="34" fill="#E9DDAF"></rect><rect x="0" y="0" width="1440" height="34" fill="url(#s6)"></rect><path d="M-40 25.1 C-36.7 25.3 -26.7 25.5 -20 26.3 C-13.3 27.1 -6.7 28.9 0 30 C6.7 31.1 13.3 32.6 20 32.8 C26.7 33 33.3 32.5 40 31.3 C46.7 30.2 53.3 27.7 60 25.9 C66.7 24.1 73.3 21.6 80 20.3 C86.7 19.1 93.3 18.4 100 18.4 C106.7 18.4 113.3 19.6 120 20.4 C126.7 21.1 133.3 22.4 140 22.7 C146.7 23 153.3 22.9 160 22.2 C166.7 21.6 173.3 19.9 180 18.9 C186.7 18 193.3 16.6 200 16.4 C206.7 16.2 213.3 16.7 220 17.7 C226.7 18.7 233.3 21 240 22.4 C246.7 23.9 253.3 25.9 260 26.6 C266.7 27.3 273.3 27.3 280 26.6 C286.7 25.9 293.3 24 300 22.6 C306.7 21.1 313.3 19 320 18 C326.7 16.9 333.3 16.4 340 16.3 C346.7 16.1 353.3 17 360 17.2 C366.7 17.4 373.3 17.9 380 17.3 C386.7 16.7 393.3 15.3 400 13.6 C406.7 11.9 413.3 8.9 420 6.9 C426.7 4.8 433.3 2.3 440 1.1 C446.7 -0 453.3 -0.4 460 -0.1 C466.7 0.2 473.3 1.8 480 2.9 C486.7 4 493.3 5.7 500 6.4 C506.7 7.1 513.3 7.2 520 7 C526.7 6.9 533.3 5.7 540 5.3 C546.7 4.9 553.3 4.2 560 4.6 C566.7 5.1 573.3 6.3 580 7.9 C586.7 9.5 593.3 12.3 600 14.2 C606.7 16.1 613.3 18.4 620 19.4 C626.7 20.4 633.3 20.6 640 20.2 C646.7 19.8 653.3 18.2 660 17.1 C666.7 16.1 673.3 14.6 680 14.1 C686.7 13.7 693.3 13.8 700 14.3 C706.7 14.9 713.3 16.4 720 17.3 C726.7 18.1 733.3 19.2 740 19.3 C746.7 19.4 753.3 18.7 760 17.7 C766.7 16.8 773.3 14.8 780 13.6 C786.7 12.5 793.3 11.1 800 11 C806.7 11 813.3 11.8 820 13.1 C826.7 14.3 833.3 16.9 840 18.8 C846.7 20.6 853.3 22.9 860 24.2 C866.7 25.4 873.3 25.9 880 26 C886.7 26.2 893.3 25.2 900 25 C906.7 24.8 913.3 24.3 920 24.7 C926.7 25.2 933.3 26.4 940 27.7 C946.7 29.1 953.3 31.4 960 32.8 C966.7 34.1 973.3 35.6 980 35.8 C986.7 35.9 993.3 35.1 1000 33.8 C1006.7 32.6 1013.3 30 1020 28.2 C1026.7 26.3 1033.3 24 1040 22.8 C1046.7 21.6 1053.3 21.2 1060 21 C1066.7 20.8 1073.3 21.7 1080 21.8 C1086.7 21.9 1093.3 22.2 1100 21.6 C1106.7 21 1113.3 19.5 1120 18 C1126.7 16.4 1133.3 13.8 1140 12.3 C1146.7 10.7 1153.3 9.1 1160 8.6 C1166.7 8.2 1173.3 8.8 1180 9.7 C1186.7 10.6 1193.3 12.8 1200 14.1 C1206.7 15.5 1213.3 17.1 1220 17.7 C1226.7 18.2 1233.3 18 1240 17.4 C1246.7 16.8 1253.3 15.2 1260 14.3 C1266.7 13.5 1273.3 12.4 1280 12.2 C1286.7 12.1 1293.3 12.8 1300 13.5 C1306.7 14.3 1313.3 16 1320 16.7 C1326.7 17.4 1333.3 18.2 1340 17.8 C1346.7 17.4 1353.3 15.9 1360 14.3 C1366.7 12.7 1373.3 9.9 1380 8 C1386.7 6.2 1393.3 4.1 1400 3.2 C1406.7 2.3 1413.3 2.3 1420 2.7 C1426.7 3 1433.3 4.5 1440 5.2 C1446.7 6 1453.3 7 1460 7.1 C1466.7 7.2 1476.7 6.1 1480 5.9 L1480 36 L-40 36 Z" fill="#155A6E"></path><path d="M-40 25.1 C-36.7 25.3 -26.7 25.5 -20 26.3 C-13.3 27.1 -6.7 28.9 0 30 C6.7 31.1 13.3 32.6 20 32.8 C26.7 33 33.3 32.5 40 31.3 C46.7 30.2 53.3 27.7 60 25.9 C66.7 24.1 73.3 21.6 80 20.3 C86.7 19.1 93.3 18.4 100 18.4 C106.7 18.4 113.3 19.6 120 20.4 C126.7 21.1 133.3 22.4 140 22.7 C146.7 23 153.3 22.9 160 22.2 C166.7 21.6 173.3 19.9 180 18.9 C186.7 18 193.3 16.6 200 16.4 C206.7 16.2 213.3 16.7 220 17.7 C226.7 18.7 233.3 21 240 22.4 C246.7 23.9 253.3 25.9 260 26.6 C266.7 27.3 273.3 27.3 280 26.6 C286.7 25.9 293.3 24 300 22.6 C306.7 21.1 313.3 19 320 18 C326.7 16.9 333.3 16.4 340 16.3 C346.7 16.1 353.3 17 360 17.2 C366.7 17.4 373.3 17.9 380 17.3 C386.7 16.7 393.3 15.3 400 13.6 C406.7 11.9 413.3 8.9 420 6.9 C426.7 4.8 433.3 2.3 440 1.1 C446.7 -0 453.3 -0.4 460 -0.1 C466.7 0.2 473.3 1.8 480 2.9 C486.7 4 493.3 5.7 500 6.4 C506.7 7.1 513.3 7.2 520 7 C526.7 6.9 533.3 5.7 540 5.3 C546.7 4.9 553.3 4.2 560 4.6 C566.7 5.1 573.3 6.3 580 7.9 C586.7 9.5 593.3 12.3 600 14.2 C606.7 16.1 613.3 18.4 620 19.4 C626.7 20.4 633.3 20.6 640 20.2 C646.7 19.8 653.3 18.2 660 17.1 C666.7 16.1 673.3 14.6 680 14.1 C686.7 13.7 693.3 13.8 700 14.3 C706.7 14.9 713.3 16.4 720 17.3 C726.7 18.1 733.3 19.2 740 19.3 C746.7 19.4 753.3 18.7 760 17.7 C766.7 16.8 773.3 14.8 780 13.6 C786.7 12.5 793.3 11.1 800 11 C806.7 11 813.3 11.8 820 13.1 C826.7 14.3 833.3 16.9 840 18.8 C846.7 20.6 853.3 22.9 860 24.2 C866.7 25.4 873.3 25.9 880 26 C886.7 26.2 893.3 25.2 900 25 C906.7 24.8 913.3 24.3 920 24.7 C926.7 25.2 933.3 26.4 940 27.7 C946.7 29.1 953.3 31.4 960 32.8 C966.7 34.1 973.3 35.6 980 35.8 C986.7 35.9 993.3 35.1 1000 33.8 C1006.7 32.6 1013.3 30 1020 28.2 C1026.7 26.3 1033.3 24 1040 22.8 C1046.7 21.6 1053.3 21.2 1060 21 C1066.7 20.8 1073.3 21.7 1080 21.8 C1086.7 21.9 1093.3 22.2 1100 21.6 C1106.7 21 1113.3 19.5 1120 18 C1126.7 16.4 1133.3 13.8 1140 12.3 C1146.7 10.7 1153.3 9.1 1160 8.6 C1166.7 8.2 1173.3 8.8 1180 9.7 C1186.7 10.6 1193.3 12.8 1200 14.1 C1206.7 15.5 1213.3 17.1 1220 17.7 C1226.7 18.2 1233.3 18 1240 17.4 C1246.7 16.8 1253.3 15.2 1260 14.3 C1266.7 13.5 1273.3 12.4 1280 12.2 C1286.7 12.1 1293.3 12.8 1300 13.5 C1306.7 14.3 1313.3 16 1320 16.7 C1326.7 17.4 1333.3 18.2 1340 17.8 C1346.7 17.4 1353.3 15.9 1360 14.3 C1366.7 12.7 1373.3 9.9 1380 8 C1386.7 6.2 1393.3 4.1 1400 3.2 C1406.7 2.3 1413.3 2.3 1420 2.7 C1426.7 3 1433.3 4.5 1440 5.2 C1446.7 6 1453.3 7 1460 7.1 C1466.7 7.2 1476.7 6.1 1480 5.9 L1480 36 L-40 36 Z" fill="url(#g6)"></path><path d="M-40 25.1 C-36.7 25.3 -26.7 25.5 -20 26.3 C-13.3 27.1 -6.7 28.9 0 30 C6.7 31.1 13.3 32.6 20 32.8 C26.7 33 33.3 32.5 40 31.3 C46.7 30.2 53.3 27.7 60 25.9 C66.7 24.1 73.3 21.6 80 20.3 C86.7 19.1 93.3 18.4 100 18.4 C106.7 18.4 113.3 19.6 120 20.4 C126.7 21.1 133.3 22.4 140 22.7 C146.7 23 153.3 22.9 160 22.2 C166.7 21.6 173.3 19.9 180 18.9 C186.7 18 193.3 16.6 200 16.4 C206.7 16.2 213.3 16.7 220 17.7 C226.7 18.7 233.3 21 240 22.4 C246.7 23.9 253.3 25.9 260 26.6 C266.7 27.3 273.3 27.3 280 26.6 C286.7 25.9 293.3 24 300 22.6 C306.7 21.1 313.3 19 320 18 C326.7 16.9 333.3 16.4 340 16.3 C346.7 16.1 353.3 17 360 17.2 C366.7 17.4 373.3 17.9 380 17.3 C386.7 16.7 393.3 15.3 400 13.6 C406.7 11.9 413.3 8.9 420 6.9 C426.7 4.8 433.3 2.3 440 1.1 C446.7 -0 453.3 -0.4 460 -0.1 C466.7 0.2 473.3 1.8 480 2.9 C486.7 4 493.3 5.7 500 6.4 C506.7 7.1 513.3 7.2 520 7 C526.7 6.9 533.3 5.7 540 5.3 C546.7 4.9 553.3 4.2 560 4.6 C566.7 5.1 573.3 6.3 580 7.9 C586.7 9.5 593.3 12.3 600 14.2 C606.7 16.1 613.3 18.4 620 19.4 C626.7 20.4 633.3 20.6 640 20.2 C646.7 19.8 653.3 18.2 660 17.1 C666.7 16.1 673.3 14.6 680 14.1 C686.7 13.7 693.3 13.8 700 14.3 C706.7 14.9 713.3 16.4 720 17.3 C726.7 18.1 733.3 19.2 740 19.3 C746.7 19.4 753.3 18.7 760 17.7 C766.7 16.8 773.3 14.8 780 13.6 C786.7 12.5 793.3 11.1 800 11 C806.7 11 813.3 11.8 820 13.1 C826.7 14.3 833.3 16.9 840 18.8 C846.7 20.6 853.3 22.9 860 24.2 C866.7 25.4 873.3 25.9 880 26 C886.7 26.2 893.3 25.2 900 25 C906.7 24.8 913.3 24.3 920 24.7 C926.7 25.2 933.3 26.4 940 27.7 C946.7 29.1 953.3 31.4 960 32.8 C966.7 34.1 973.3 35.6 980 35.8 C986.7 35.9 993.3 35.1 1000 33.8 C1006.7 32.6 1013.3 30 1020 28.2 C1026.7 26.3 1033.3 24 1040 22.8 C1046.7 21.6 1053.3 21.2 1060 21 C1066.7 20.8 1073.3 21.7 1080 21.8 C1086.7 21.9 1093.3 22.2 1100 21.6 C1106.7 21 1113.3 19.5 1120 18 C1126.7 16.4 1133.3 13.8 1140 12.3 C1146.7 10.7 1153.3 9.1 1160 8.6 C1166.7 8.2 1173.3 8.8 1180 9.7 C1186.7 10.6 1193.3 12.8 1200 14.1 C1206.7 15.5 1213.3 17.1 1220 17.7 C1226.7 18.2 1233.3 18 1240 17.4 C1246.7 16.8 1253.3 15.2 1260 14.3 C1266.7 13.5 1273.3 12.4 1280 12.2 C1286.7 12.1 1293.3 12.8 1300 13.5 C1306.7 14.3 1313.3 16 1320 16.7 C1326.7 17.4 1333.3 18.2 1340 17.8 C1346.7 17.4 1353.3 15.9 1360 14.3 C1366.7 12.7 1373.3 9.9 1380 8 C1386.7 6.2 1393.3 4.1 1400 3.2 C1406.7 2.3 1413.3 2.3 1420 2.7 C1426.7 3 1433.3 4.5 1440 5.2 C1446.7 6 1453.3 7 1460 7.1 C1466.7 7.2 1476.7 6.1 1480 5.9" fill="none" stroke="#1C2B22" stroke-width="2" stroke-linejoin="round"></path></svg><section class="st-deep" aria-labelledby="rl-c"><div class="split"><h2 id="rl-c">Related datasets</h2><ul class="rel"><li><a href="#"><code>elexon/boal</code></a><p>Bid-offer acceptances, joined on <code>bm_unit_id</code></p></li><li><a href="#"><code>elexon/pn</code></a><p>Physical notifications, joined on <code>bm_unit_id</code></p></li><li><a href="#"><code>elexon/uou2t14d</code></a><p>Availability per unit</p></li><li><a href="#"><code>elexon/fuelhh</code></a><p>Shares the fuel-type codes; interconnector flow lives there</p></li></ul></div></section></section><section class="state" aria-label="Open, after pressing the button"><p class="state-h">Open, after pressing the button</p><div class="sv" aria-hidden="true"></div><svg class="contact" width="1440" height="34" viewBox="0 0 1440 34" preserveAspectRatio="none" aria-hidden="true"><defs><pattern id="d7" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M0 8 L8 0" stroke="#5E6E6B" stroke-width=".8" opacity=".22"></path></pattern><pattern id="s7" width="9" height="9" patternUnits="userSpaceOnUse"><g fill="#8A6F1E" opacity=".26"><circle cx="2" cy="3" r="1"></circle><circle cx="6.5" cy="7.5" r=".8"></circle></g></pattern><pattern id="g7" width="46" height="40" patternUnits="userSpaceOnUse"><path d="M8 8 h8 M12 4 v8 M30 26 h8 M34 22 v8 M20 34 h6 M23 31 v6 M40 6 h5 M42.5 3.5 v5" stroke="#3E8C97" stroke-width="1.1" opacity=".5"></path></pattern></defs><rect x="0" y="0" width="1440" height="34" fill="#DCE2DF"></rect><rect x="0" y="0" width="1440" height="34" fill="url(#d7)"></rect><path d="M-40 14.9 C-20 13.7 40 9.1 80 8 C120 6.9 160 7.2 200 8.4 C240 9.5 280 13.4 320 14.9 C360 16.3 400 16.8 440 17.1 C480 17.5 520 16 560 16.7 C600 17.5 640 20 680 21.7 C720 23.4 760 26.7 800 27 C840 27.4 880 25.3 920 23.6 C960 22 1000 18.3 1040 17.1 C1080 15.8 1120 16.4 1160 16.2 C1200 16 1240 16.8 1280 15.8 C1320 14.8 1360 11.5 1400 10 C1440 8.6 1500 7.6 1520 7.1 L1480 36 L-40 36 Z" fill="#E9DDAF"></path><path d="M-40 14.9 C-20 13.7 40 9.1 80 8 C120 6.9 160 7.2 200 8.4 C240 9.5 280 13.4 320 14.9 C360 16.3 400 16.8 440 17.1 C480 17.5 520 16 560 16.7 C600 17.5 640 20 680 21.7 C720 23.4 760 26.7 800 27 C840 27.4 880 25.3 920 23.6 C960 22 1000 18.3 1040 17.1 C1080 15.8 1120 16.4 1160 16.2 C1200 16 1240 16.8 1280 15.8 C1320 14.8 1360 11.5 1400 10 C1440 8.6 1500 7.6 1520 7.1 L1480 36 L-40 36 Z" fill="url(#s7)"></path><path d="M-40 14.9 C-20 13.7 40 9.1 80 8 C120 6.9 160 7.2 200 8.4 C240 9.5 280 13.4 320 14.9 C360 16.3 400 16.8 440 17.1 C480 17.5 520 16 560 16.7 C600 17.5 640 20 680 21.7 C720 23.4 760 26.7 800 27 C840 27.4 880 25.3 920 23.6 C960 22 1000 18.3 1040 17.1 C1080 15.8 1120 16.4 1160 16.2 C1200 16 1240 16.8 1280 15.8 C1320 14.8 1360 11.5 1400 10 C1440 8.6 1500 7.6 1520 7.1" fill="none" stroke="#1C2B22" stroke-width="1.5" stroke-linejoin="round"></path></svg><section class="st-gold" aria-labelledby="gd-o"><p class="unit" aria-hidden="true">gold, served to the notebook</p><div class="split"><div class="lead"><h2 id="gd-o">Query it from a notebook</h2><p>A register with no time axis: a <code>query()</code> date range filters it on <code>ingested_at</code>, so read the whole table with <code>data.sql()</code>.</p><div class="ctl"><button class="btn" type="button" aria-expanded="true" aria-controls="demo-o tools-o" data-call="call-o">Close the demo notebook</button><div class="tools" id="tools-o"><button class="btn-2" type="button" data-copy="o">Copy notebook</button><p class="status" id="st-o" role="status"></p><p class="need">Needs <a href="https://github.com/EBentham/gridflow">gridflow</a> and <a href="https://github.com/EBentham/gridflow-models">gridflow-models</a> installed, with the BM unit register ingested.</p></div></div></div><div class="nbcol"><figure class="nb nb-call" id="call-o" aria-label="The setup cell, then df = data.sql(&quot;SELECT * FROM silver_elexon_bmunits_reference ORDER BY bm_unit_id&quot;)" hidden><div class="nb-bar"><span class="nb-tab">bmunits_reference.ipynb</span><span class="nb-kern">gridflow_models</span></div><div class="nb-body"><div class="cell"><span class="pr">[1]:</span><pre class="in"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
+data, models, common = setup_notebook()</pre></div><div class="cell"><span class="pr">[2]:</span><pre class="in">df = data.sql(<span class="s">"SELECT * FROM silver_elexon_bmunits_reference ORDER BY bm_unit_id"</span>)</pre></div></div></figure><div class="demo" id="demo-o"><figure class="nb" id="nb-o" aria-label="A demo notebook on the gridflow_models kernel: setup, the data.elexon help card, the whole BM unit register read with data.sql, the first five rows, and a count of units by fuel_type."><div class="nb-bar"><span class="nb-tab">bmunits_reference_analysis.ipynb</span><span class="nb-kern">gridflow_models</span></div><div class="nb-body"><div class="cell"><span class="pr">[1]:</span><pre class="in"><span class="k">from</span> gridflow_models <span class="k">import</span> setup_notebook
+data, models, common = setup_notebook()</pre></div><div class="cell"><span class="pr">[2]:</span><pre class="in">data.elexon</pre></div><div class="cell out"><span class="pr">[2]:</span><div class="card"><p class="card-h">data.elexon</p><dl><div><dt>list_datasets</dt><dd>List every dataset this source provides.</dd></div><div><dt>refresh</dt><dd>Fetch the latest rows for this source, topping up what you have.</dd></div><div><dt>describe</dt><dd>Show a dataset's columns, sample values, and freshness.</dd></div><div><dt>backfill</dt><dd>Download history for a dataset and store it locally.</dd></div><div><dt>query</dt><dd>Read stored rows for a dataset over a date range.</dd></div><div><dt>tail</dt><dd>Read the most recent rows of a dataset.</dd></div><div><dt>coverage</dt><dd>Show how up to date each dataset on this source is.</dd></div></dl><p class="card-f">Discover datasets: <code>data.elexon.list_datasets()</code></p></div></div><div class="cell"><span class="pr">[3]:</span><pre class="in">df = data.sql(<span class="s">"SELECT * FROM silver_elexon_bmunits_reference ORDER BY bm_unit_id"</span>)</pre></div><div class="cell"><span class="pr">[4]:</span><pre class="in">df[[<span class="s">"bm_unit_id"</span>, <span class="s">"fuel_type"</span>, <span class="s">"registered_capacity_mw"</span>, <span class="s">"company_name"</span>]].head()</pre></div><div class="cell out"><span class="pr">[4]:</span><div class="df-wrap"><table class="df"><thead><tr><th></th><th></th><th>bm_unit_id</th><th>fuel_type</th><th>registered_capacity_mw</th><th>company_name</th></tr></thead><tbody><tr><th>0</th><td>2__AANGE001</td><td>NaN</td><td>80.000</td><td>Limejump Energy Limited</td></tr><tr><th>1</th><td>2__AANGE002</td><td>NaN</td><td>50.000</td><td>Limejump Energy Limited</td></tr><tr><th>2</th><td>2__AANGE003</td><td>NaN</td><td>0.000</td><td>Limejump Energy Limited</td></tr><tr><th>3</th><td>2__AAXPO000</td><td>NaN</td><td>100.000</td><td>AXPO UK LIMITED</td></tr><tr><th>4</th><td>2__ABGAS000</td><td>NaN</td><td>5.428</td><td>British Gas Trading Ltd</td></tr></tbody></table></div></div><div class="cell"><span class="pr">[5]:</span><pre class="in">df.fuel_type.value_counts(dropna=False)</pre></div><div class="cell out"><span class="pr">[5]:</span><div class="fig"><pre class="txt">fuel_type
+NaN        2515
+WIND        234
+OTHER        92
+CCGT         61
+NPSHYD       22
+OCGT         22
+PS           16
+NUCLEAR      16
+BIOMASS      15
+COAL         10
+INTELEC       2
+INTNED        1
+INTEW         1
+INTFR         1
+INTGRNL       1
+INTIFA2       1
+INTIRL        1
+INTNSL        1
+INTVKL        1
+INTNEM        1
+Name: count, dtype: int64</pre></div></div></div><textarea class="nb-src" id="src-o" readonly hidden aria-label="The notebook as Python">from gridflow_models import setup_notebook
+data, models, common = setup_notebook()
+
+data.elexon
+
+df = data.sql("SELECT * FROM silver_elexon_bmunits_reference ORDER BY bm_unit_id")
+
+df[["bm_unit_id", "fuel_type", "registered_capacity_mw", "company_name"]].head()
+
+df.fuel_type.value_counts(dropna=False)
+</textarea></figure></div></div></div></section><svg class="contact" width="1440" height="34" viewBox="0 0 1440 34" preserveAspectRatio="none" aria-hidden="true"><defs><pattern id="d8" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M0 8 L8 0" stroke="#5E6E6B" stroke-width=".8" opacity=".22"></path></pattern><pattern id="s8" width="9" height="9" patternUnits="userSpaceOnUse"><g fill="#8A6F1E" opacity=".26"><circle cx="2" cy="3" r="1"></circle><circle cx="6.5" cy="7.5" r=".8"></circle></g></pattern><pattern id="g8" width="46" height="40" patternUnits="userSpaceOnUse"><path d="M8 8 h8 M12 4 v8 M30 26 h8 M34 22 v8 M20 34 h6 M23 31 v6 M40 6 h5 M42.5 3.5 v5" stroke="#3E8C97" stroke-width="1.1" opacity=".5"></path></pattern></defs><rect x="0" y="0" width="1440" height="34" fill="#E9DDAF"></rect><rect x="0" y="0" width="1440" height="34" fill="url(#s8)"></rect><path d="M-40 25.1 C-36.7 25.3 -26.7 25.5 -20 26.3 C-13.3 27.1 -6.7 28.9 0 30 C6.7 31.1 13.3 32.6 20 32.8 C26.7 33 33.3 32.5 40 31.3 C46.7 30.2 53.3 27.7 60 25.9 C66.7 24.1 73.3 21.6 80 20.3 C86.7 19.1 93.3 18.4 100 18.4 C106.7 18.4 113.3 19.6 120 20.4 C126.7 21.1 133.3 22.4 140 22.7 C146.7 23 153.3 22.9 160 22.2 C166.7 21.6 173.3 19.9 180 18.9 C186.7 18 193.3 16.6 200 16.4 C206.7 16.2 213.3 16.7 220 17.7 C226.7 18.7 233.3 21 240 22.4 C246.7 23.9 253.3 25.9 260 26.6 C266.7 27.3 273.3 27.3 280 26.6 C286.7 25.9 293.3 24 300 22.6 C306.7 21.1 313.3 19 320 18 C326.7 16.9 333.3 16.4 340 16.3 C346.7 16.1 353.3 17 360 17.2 C366.7 17.4 373.3 17.9 380 17.3 C386.7 16.7 393.3 15.3 400 13.6 C406.7 11.9 413.3 8.9 420 6.9 C426.7 4.8 433.3 2.3 440 1.1 C446.7 -0 453.3 -0.4 460 -0.1 C466.7 0.2 473.3 1.8 480 2.9 C486.7 4 493.3 5.7 500 6.4 C506.7 7.1 513.3 7.2 520 7 C526.7 6.9 533.3 5.7 540 5.3 C546.7 4.9 553.3 4.2 560 4.6 C566.7 5.1 573.3 6.3 580 7.9 C586.7 9.5 593.3 12.3 600 14.2 C606.7 16.1 613.3 18.4 620 19.4 C626.7 20.4 633.3 20.6 640 20.2 C646.7 19.8 653.3 18.2 660 17.1 C666.7 16.1 673.3 14.6 680 14.1 C686.7 13.7 693.3 13.8 700 14.3 C706.7 14.9 713.3 16.4 720 17.3 C726.7 18.1 733.3 19.2 740 19.3 C746.7 19.4 753.3 18.7 760 17.7 C766.7 16.8 773.3 14.8 780 13.6 C786.7 12.5 793.3 11.1 800 11 C806.7 11 813.3 11.8 820 13.1 C826.7 14.3 833.3 16.9 840 18.8 C846.7 20.6 853.3 22.9 860 24.2 C866.7 25.4 873.3 25.9 880 26 C886.7 26.2 893.3 25.2 900 25 C906.7 24.8 913.3 24.3 920 24.7 C926.7 25.2 933.3 26.4 940 27.7 C946.7 29.1 953.3 31.4 960 32.8 C966.7 34.1 973.3 35.6 980 35.8 C986.7 35.9 993.3 35.1 1000 33.8 C1006.7 32.6 1013.3 30 1020 28.2 C1026.7 26.3 1033.3 24 1040 22.8 C1046.7 21.6 1053.3 21.2 1060 21 C1066.7 20.8 1073.3 21.7 1080 21.8 C1086.7 21.9 1093.3 22.2 1100 21.6 C1106.7 21 1113.3 19.5 1120 18 C1126.7 16.4 1133.3 13.8 1140 12.3 C1146.7 10.7 1153.3 9.1 1160 8.6 C1166.7 8.2 1173.3 8.8 1180 9.7 C1186.7 10.6 1193.3 12.8 1200 14.1 C1206.7 15.5 1213.3 17.1 1220 17.7 C1226.7 18.2 1233.3 18 1240 17.4 C1246.7 16.8 1253.3 15.2 1260 14.3 C1266.7 13.5 1273.3 12.4 1280 12.2 C1286.7 12.1 1293.3 12.8 1300 13.5 C1306.7 14.3 1313.3 16 1320 16.7 C1326.7 17.4 1333.3 18.2 1340 17.8 C1346.7 17.4 1353.3 15.9 1360 14.3 C1366.7 12.7 1373.3 9.9 1380 8 C1386.7 6.2 1393.3 4.1 1400 3.2 C1406.7 2.3 1413.3 2.3 1420 2.7 C1426.7 3 1433.3 4.5 1440 5.2 C1446.7 6 1453.3 7 1460 7.1 C1466.7 7.2 1476.7 6.1 1480 5.9 L1480 36 L-40 36 Z" fill="#155A6E"></path><path d="M-40 25.1 C-36.7 25.3 -26.7 25.5 -20 26.3 C-13.3 27.1 -6.7 28.9 0 30 C6.7 31.1 13.3 32.6 20 32.8 C26.7 33 33.3 32.5 40 31.3 C46.7 30.2 53.3 27.7 60 25.9 C66.7 24.1 73.3 21.6 80 20.3 C86.7 19.1 93.3 18.4 100 18.4 C106.7 18.4 113.3 19.6 120 20.4 C126.7 21.1 133.3 22.4 140 22.7 C146.7 23 153.3 22.9 160 22.2 C166.7 21.6 173.3 19.9 180 18.9 C186.7 18 193.3 16.6 200 16.4 C206.7 16.2 213.3 16.7 220 17.7 C226.7 18.7 233.3 21 240 22.4 C246.7 23.9 253.3 25.9 260 26.6 C266.7 27.3 273.3 27.3 280 26.6 C286.7 25.9 293.3 24 300 22.6 C306.7 21.1 313.3 19 320 18 C326.7 16.9 333.3 16.4 340 16.3 C346.7 16.1 353.3 17 360 17.2 C366.7 17.4 373.3 17.9 380 17.3 C386.7 16.7 393.3 15.3 400 13.6 C406.7 11.9 413.3 8.9 420 6.9 C426.7 4.8 433.3 2.3 440 1.1 C446.7 -0 453.3 -0.4 460 -0.1 C466.7 0.2 473.3 1.8 480 2.9 C486.7 4 493.3 5.7 500 6.4 C506.7 7.1 513.3 7.2 520 7 C526.7 6.9 533.3 5.7 540 5.3 C546.7 4.9 553.3 4.2 560 4.6 C566.7 5.1 573.3 6.3 580 7.9 C586.7 9.5 593.3 12.3 600 14.2 C606.7 16.1 613.3 18.4 620 19.4 C626.7 20.4 633.3 20.6 640 20.2 C646.7 19.8 653.3 18.2 660 17.1 C666.7 16.1 673.3 14.6 680 14.1 C686.7 13.7 693.3 13.8 700 14.3 C706.7 14.9 713.3 16.4 720 17.3 C726.7 18.1 733.3 19.2 740 19.3 C746.7 19.4 753.3 18.7 760 17.7 C766.7 16.8 773.3 14.8 780 13.6 C786.7 12.5 793.3 11.1 800 11 C806.7 11 813.3 11.8 820 13.1 C826.7 14.3 833.3 16.9 840 18.8 C846.7 20.6 853.3 22.9 860 24.2 C866.7 25.4 873.3 25.9 880 26 C886.7 26.2 893.3 25.2 900 25 C906.7 24.8 913.3 24.3 920 24.7 C926.7 25.2 933.3 26.4 940 27.7 C946.7 29.1 953.3 31.4 960 32.8 C966.7 34.1 973.3 35.6 980 35.8 C986.7 35.9 993.3 35.1 1000 33.8 C1006.7 32.6 1013.3 30 1020 28.2 C1026.7 26.3 1033.3 24 1040 22.8 C1046.7 21.6 1053.3 21.2 1060 21 C1066.7 20.8 1073.3 21.7 1080 21.8 C1086.7 21.9 1093.3 22.2 1100 21.6 C1106.7 21 1113.3 19.5 1120 18 C1126.7 16.4 1133.3 13.8 1140 12.3 C1146.7 10.7 1153.3 9.1 1160 8.6 C1166.7 8.2 1173.3 8.8 1180 9.7 C1186.7 10.6 1193.3 12.8 1200 14.1 C1206.7 15.5 1213.3 17.1 1220 17.7 C1226.7 18.2 1233.3 18 1240 17.4 C1246.7 16.8 1253.3 15.2 1260 14.3 C1266.7 13.5 1273.3 12.4 1280 12.2 C1286.7 12.1 1293.3 12.8 1300 13.5 C1306.7 14.3 1313.3 16 1320 16.7 C1326.7 17.4 1333.3 18.2 1340 17.8 C1346.7 17.4 1353.3 15.9 1360 14.3 C1366.7 12.7 1373.3 9.9 1380 8 C1386.7 6.2 1393.3 4.1 1400 3.2 C1406.7 2.3 1413.3 2.3 1420 2.7 C1426.7 3 1433.3 4.5 1440 5.2 C1446.7 6 1453.3 7 1460 7.1 C1466.7 7.2 1476.7 6.1 1480 5.9 L1480 36 L-40 36 Z" fill="url(#g8)"></path><path d="M-40 25.1 C-36.7 25.3 -26.7 25.5 -20 26.3 C-13.3 27.1 -6.7 28.9 0 30 C6.7 31.1 13.3 32.6 20 32.8 C26.7 33 33.3 32.5 40 31.3 C46.7 30.2 53.3 27.7 60 25.9 C66.7 24.1 73.3 21.6 80 20.3 C86.7 19.1 93.3 18.4 100 18.4 C106.7 18.4 113.3 19.6 120 20.4 C126.7 21.1 133.3 22.4 140 22.7 C146.7 23 153.3 22.9 160 22.2 C166.7 21.6 173.3 19.9 180 18.9 C186.7 18 193.3 16.6 200 16.4 C206.7 16.2 213.3 16.7 220 17.7 C226.7 18.7 233.3 21 240 22.4 C246.7 23.9 253.3 25.9 260 26.6 C266.7 27.3 273.3 27.3 280 26.6 C286.7 25.9 293.3 24 300 22.6 C306.7 21.1 313.3 19 320 18 C326.7 16.9 333.3 16.4 340 16.3 C346.7 16.1 353.3 17 360 17.2 C366.7 17.4 373.3 17.9 380 17.3 C386.7 16.7 393.3 15.3 400 13.6 C406.7 11.9 413.3 8.9 420 6.9 C426.7 4.8 433.3 2.3 440 1.1 C446.7 -0 453.3 -0.4 460 -0.1 C466.7 0.2 473.3 1.8 480 2.9 C486.7 4 493.3 5.7 500 6.4 C506.7 7.1 513.3 7.2 520 7 C526.7 6.9 533.3 5.7 540 5.3 C546.7 4.9 553.3 4.2 560 4.6 C566.7 5.1 573.3 6.3 580 7.9 C586.7 9.5 593.3 12.3 600 14.2 C606.7 16.1 613.3 18.4 620 19.4 C626.7 20.4 633.3 20.6 640 20.2 C646.7 19.8 653.3 18.2 660 17.1 C666.7 16.1 673.3 14.6 680 14.1 C686.7 13.7 693.3 13.8 700 14.3 C706.7 14.9 713.3 16.4 720 17.3 C726.7 18.1 733.3 19.2 740 19.3 C746.7 19.4 753.3 18.7 760 17.7 C766.7 16.8 773.3 14.8 780 13.6 C786.7 12.5 793.3 11.1 800 11 C806.7 11 813.3 11.8 820 13.1 C826.7 14.3 833.3 16.9 840 18.8 C846.7 20.6 853.3 22.9 860 24.2 C866.7 25.4 873.3 25.9 880 26 C886.7 26.2 893.3 25.2 900 25 C906.7 24.8 913.3 24.3 920 24.7 C926.7 25.2 933.3 26.4 940 27.7 C946.7 29.1 953.3 31.4 960 32.8 C966.7 34.1 973.3 35.6 980 35.8 C986.7 35.9 993.3 35.1 1000 33.8 C1006.7 32.6 1013.3 30 1020 28.2 C1026.7 26.3 1033.3 24 1040 22.8 C1046.7 21.6 1053.3 21.2 1060 21 C1066.7 20.8 1073.3 21.7 1080 21.8 C1086.7 21.9 1093.3 22.2 1100 21.6 C1106.7 21 1113.3 19.5 1120 18 C1126.7 16.4 1133.3 13.8 1140 12.3 C1146.7 10.7 1153.3 9.1 1160 8.6 C1166.7 8.2 1173.3 8.8 1180 9.7 C1186.7 10.6 1193.3 12.8 1200 14.1 C1206.7 15.5 1213.3 17.1 1220 17.7 C1226.7 18.2 1233.3 18 1240 17.4 C1246.7 16.8 1253.3 15.2 1260 14.3 C1266.7 13.5 1273.3 12.4 1280 12.2 C1286.7 12.1 1293.3 12.8 1300 13.5 C1306.7 14.3 1313.3 16 1320 16.7 C1326.7 17.4 1333.3 18.2 1340 17.8 C1346.7 17.4 1353.3 15.9 1360 14.3 C1366.7 12.7 1373.3 9.9 1380 8 C1386.7 6.2 1393.3 4.1 1400 3.2 C1406.7 2.3 1413.3 2.3 1420 2.7 C1426.7 3 1433.3 4.5 1440 5.2 C1446.7 6 1453.3 7 1460 7.1 C1466.7 7.2 1476.7 6.1 1480 5.9" fill="none" stroke="#1C2B22" stroke-width="2" stroke-linejoin="round"></path></svg><section class="st-deep" aria-labelledby="rl-o"><div class="split"><h2 id="rl-o">Related datasets</h2><ul class="rel"><li><a href="#"><code>elexon/boal</code></a><p>Bid-offer acceptances, joined on <code>bm_unit_id</code></p></li><li><a href="#"><code>elexon/pn</code></a><p>Physical notifications, joined on <code>bm_unit_id</code></p></li><li><a href="#"><code>elexon/uou2t14d</code></a><p>Availability per unit</p></li><li><a href="#"><code>elexon/fuelhh</code></a><p>Shares the fuel-type codes; interconnector flow lives there</p></li></ul></div></section></section>
+</main>
+<script>
+(function () {
+  var shut = "Open the demo notebook", open = "Close the demo notebook";
+  function setOpen(btn, on) {
+    btn.setAttribute("aria-expanded", on ? "true" : "false");
+    btn.textContent = on ? open : shut;
+    btn.getAttribute("aria-controls").split(" ").forEach(function (id) {
+      document.getElementById(id).hidden = !on;
+    });
+    var call = document.getElementById(btn.getAttribute("data-call"));
+    if (call) call.hidden = on;
+  }
+  Array.prototype.forEach.call(document.querySelectorAll("button[aria-controls]"), function (btn) {
+    btn.addEventListener("click", function () { setOpen(btn, btn.getAttribute("aria-expanded") !== "true"); });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll("button[data-copy]"), function (btn) {
+    btn.addEventListener("click", function () {
+      var sfx = btn.getAttribute("data-copy");
+      var src = document.getElementById("src-" + sfx), status = document.getElementById("st-" + sfx);
+      var code = src.value;
+      function selectIt() {
+        src.hidden = false;
+        src.focus();
+        src.select();
+        var ok = false;
+        try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+        if (ok) { src.hidden = true; btn.focus(); }
+        status.textContent = ok ? "Copied." : "Selected. Copy it with your keyboard.";
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code).then(function () {
+          src.hidden = true;
+          status.textContent = "Copied.";
+        }, selectIt);
+      } else {
+        selectIt();
+      }
+    });
+  });
+})();
+</script>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2954}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

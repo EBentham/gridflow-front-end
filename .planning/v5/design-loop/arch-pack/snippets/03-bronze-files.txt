@@ -1,0 +1,5 @@
+data/bronze/elexon/system_prices/2026/09/08/
+  raw_20260908T214403Z_3a7fca58.json
+  raw_20260908T214403Z_3a7fca58.meta.json
+  raw_20260916T190532Z_4c2c01b2.json
+  raw_20260916T190532Z_4c2c01b2.meta.json

@@ -49,7 +49,7 @@ Looking like a SaaS product or dashboard · fake live indicators (timestamps, "X
 ## Conventions
 
 - HTML filenames: kebab-case slugs, except Elexon dataset codes keep BMRS underscores (`system_prices.html`).
-- Dataset page anatomy: the lock in `DESIGN.md` ("Dataset page anatomy", 2026-09-27), rendered by `templates/dataset.html.j2` from a note's `page:` block (content model and budgets in `page_fields.py`; authoring in `.planning/v5/author-brief.md`). Notes without one render blank (the hero's name and id) until the fan-out. The page set, families and hub content live in `site/hifi/data/<vendor>.json`; hubs render from `hub.html.j2`, the landing from `data-sources.html.j2`.
+- Dataset page anatomy (locked 2026-09-27): petrol hero with quick facts → topsoil prose and chart → bronze raw feed → silver sample rows as a Polars frame with a column guide beneath → gold workbench call and demo notebook → related datasets. Spec: `DESIGN.md` "Dataset page anatomy". Rendered by `templates/dataset.html.j2` from a note's `page:` block (content model and budgets in `page_fields.py`; authoring in `.planning/v5/author-brief.md`). Notes without one render blank (the hero's name and id) until the fan-out. The page set, families and hub content live in `site/hifi/data/<vendor>.json`; hubs render from `hub.html.j2`, the landing from `data-sources.html.j2`.
 - Every page carries `<meta name="viewport" content="width=device-width, initial-scale=1">`.
 - A11y minimums: `<main>` landmark, `aria-current="page"` on the active nav, distinguishing `aria-label` on the dual `<nav>` (top + sidebar), `aria-hidden="true"` on decorative icons.
 
