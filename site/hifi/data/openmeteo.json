@@ -1,22 +1,99 @@
 {
+  "_about": "The page set and hub content for this vendor: every dataset the site documents, grouped as the hub lists it, with its families. Rendered by gridflow-build.",
+  "name": "Open-Meteo",
+  "intro": "Weather from Open-Meteo: the ERA5 archive and forecasts at GB demand cities, wind sites and solar sites.",
+  "facts": [
+    [
+      "Market",
+      "Weather inputs for GB power modelling"
+    ],
+    [
+      "Access",
+      "No API key"
+    ],
+    [
+      "Base URL",
+      "`archive-api.open-meteo.com/v1` for the archive, `api.open-meteo.com/v1` for forecasts"
+    ],
+    [
+      "Grain",
+      "Hourly"
+    ],
+    [
+      "Connector",
+      "`connectors/openmeteo/client.py`"
+    ]
+  ],
+  "source_keys": [
+    "open_meteo"
+  ],
+  "latest_views": [],
+  "notebook": {
+    "source": "open_meteo",
+    "dataset": "historical_wind"
+  },
+  "landscape": "power",
+  "landing": {
+    "bronze": "bronze/open_meteo/",
+    "desc": "Weather archive and forecasts at GB demand cities, wind and solar sites",
+    "fact": "hourly, no API key",
+    "start": [
+      [
+        "historical_demand",
+        "ERA5 at 7 demand cities"
+      ],
+      [
+        "historical_wind",
+        "ERA5 at 12 wind sites, 10 m and 100 m"
+      ],
+      [
+        "historical_solar",
+        "ERA5 at 6 solar sites"
+      ],
+      [
+        "forecast_wind",
+        "forecast at the same wind sites"
+      ]
+    ],
+    "order": 3
+  },
   "groups": [
     {
-      "name": "Forecast",
-      "blurb": "Hourly NWP model output, 1–16 days ahead, at GB demand centres and generation sites.",
-      "datasets": [
-        { "id": "forecast_demand", "title": "Forecast demand weather · population centres", "freq": "hourly", "lag": "Real-time (~1 hr refresh)", "rows": "~7 × 7 days × 24 hr = 1 176 / run" },
-        { "id": "forecast_solar", "title": "Forecast solar irradiance · capacity-weighted sites", "freq": "hourly", "lag": "Real-time (~1 hr refresh)", "rows": "~6 × 7 days × 24 hr = 1 008 / run" },
-        { "id": "forecast_wind", "title": "Forecast wind weather · capacity-weighted sites", "freq": "hourly", "lag": "Real-time (~1 hr refresh)", "rows": "~12 × 7 days × 24 hr = 2 016 / run" }
+      "name": "",
+      "blurb": "",
+      "pages": [
+        "demand-weather",
+        "wind-weather",
+        "solar-weather"
+      ]
+    }
+  ],
+  "families": [
+    {
+      "slug": "demand-weather",
+      "title": "Demand weather",
+      "members": [
+        "historical_demand",
+        "forecast_demand"
       ]
     },
     {
-      "name": "Historical",
-      "blurb": "ERA5 reanalysis archive from 1940, ~5 days behind real time, at the same GB sites.",
-      "datasets": [
-        { "id": "historical_demand", "title": "Historical demand weather · ERA5 archive", "freq": "hourly", "lag": "~5 days", "rows": "~7 × 24 hr / day" },
-        { "id": "historical_solar", "title": "Historical solar irradiance · ERA5 archive", "freq": "hourly", "lag": "~5 days", "rows": "~6 × 24 hr / day" },
-        { "id": "historical_wind", "title": "Historical wind weather · ERA5 archive", "freq": "hourly", "lag": "~5 days", "rows": "~12 × 24 hr / day" }
+      "slug": "wind-weather",
+      "title": "Wind weather",
+      "members": [
+        "historical_wind",
+        "forecast_wind"
+      ]
+    },
+    {
+      "slug": "solar-weather",
+      "title": "Solar weather",
+      "members": [
+        "historical_solar",
+        "forecast_solar"
       ]
     }
-  ]
+  ],
+  "names": {},
+  "dropped": {}
 }

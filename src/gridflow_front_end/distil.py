@@ -75,6 +75,28 @@ def _round(value: float | None) -> float | None:
     return round(float(value), 3)
 
 
+def coerce_value(value: Any, dtype: pl.DataType) -> Any:
+    """ISO strings in a filter become dates or datetimes when the column is temporal.
+
+    YAML and JSON carry dates as strings; Polars will not compare a Date
+    column with a string. The time column is naive UTC after ``_scan``.
+    """
+    if isinstance(value, list):
+        return [coerce_value(v, dtype) for v in value]
+    if not isinstance(value, str):
+        return value
+    if dtype == pl.Date:
+        return dt.date.fromisoformat(value)
+    if isinstance(dtype, pl.Datetime):
+        parsed = dt.datetime.fromisoformat(value)
+        if dtype.time_zone and parsed.tzinfo is None:
+            return parsed.replace(tzinfo=dt.UTC)
+        if not dtype.time_zone and parsed.tzinfo is not None:
+            return parsed.astimezone(dt.UTC).replace(tzinfo=None)
+        return parsed
+    return value
+
+
 def _filter_expr(flt: Mapping[str, Any]) -> pl.Expr:
     col = pl.col(flt["column"])
     op = flt["op"]
@@ -165,6 +187,13 @@ def _apply_groups(df: pl.DataFrame, spec: Mapping[str, Any]) -> tuple[pl.DataFra
     """Add the ``__g`` series label column; report raw values the map missed."""
     if "group" not in spec:
         return df.with_columns(pl.lit(spec.get("value", "count")).alias("__g")), []
+    if "group_null" in spec:
+        # a null group is a real category (a unit with no declared fuel type),
+        # kept under its own label instead of being dropped
+        label = spec["group_null"]
+        df = df.with_columns(pl.col(spec["group"]).cast(pl.String).fill_null(label))
+        if spec.get("group_map"):
+            spec = {**spec, "group_map": {**spec["group_map"], label: label}}
     raw = pl.col(spec["group"]).cast(pl.String)
     gmap = spec.get("group_map")
     if not gmap:
@@ -198,8 +227,12 @@ def distil_spec(spec: Mapping[str, Any], silver_root: Path) -> dict[str, Any]:
     """
     lf, n_files = _scan(silver_root, spec)
     rows_read = lf.select(pl.len()).collect().item()
+    schema = lf.collect_schema()
     for flt in spec.get("filter", []):
-        lf = lf.filter(_filter_expr(flt))
+        typed = dict(flt)
+        if "value" in typed:
+            typed["value"] = coerce_value(typed["value"], schema[flt["column"]])
+        lf = lf.filter(_filter_expr(typed))
     is_time = spec["type"] in chart_spec.TIME_CHART_TYPES
     time_col = spec.get("time")
 
@@ -334,7 +367,7 @@ def build_payload(source: SpecSource, silver_root: Path) -> dict[str, Any]:
         "spec_sha256": chart_spec.spec_digest(source.spec),
         "type": source.spec["type"],
         "unit": source.spec["unit"],
-        "caption": source.spec["caption"],
+        "caption": source.spec.get("caption", ""),
         "value_column": source.spec.get("value"),
         "aggregation": source.spec["aggregation"],
         "window": chart["window"],

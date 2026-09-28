@@ -30,6 +30,7 @@ Spec shape (every key is listed in ``_ALLOWED_KEYS``)::
       "group": "fuel_type",            # series split (time) or category (bar)
       "group_map": {"CCGT": "gas"},    # raw group value -> series label
       "group_default": "other",        # label for values group_map misses
+      "group_null": "no fuel type",    # keep null group values as their own series
       "series_order": ["wind", "gas"],
       "aggregation": "sum",            # sum | mean | min | max | count | last
       "time_bucket": "1d",             # 30m | 1h | 1d, truncates before aggregating
@@ -40,6 +41,10 @@ Spec shape (every key is listed in ``_ALLOWED_KEYS``)::
       "unit": "MW",
       "caption": "What the chart shows, in one sentence."
     }
+
+``caption`` is optional: a page on the new dataset template keeps its caption
+in the note's ``page.chart_view`` (page words, not data), so editing the words
+never forces a re-distil.
 
 ``{"type": "none", "reason": "..."}`` records a deliberate no-chart decision
 (for example a reference table whose only numeric column is an identifier).
@@ -73,6 +78,7 @@ _ALLOWED_KEYS = frozenset(
         "group",
         "group_map",
         "group_default",
+        "group_null",
         "series_order",
         "aggregation",
         "time_bucket",
@@ -207,9 +213,10 @@ def validate_spec(spec: object) -> list[str]:
     elif aggregation != "count":
         errors.append("value: required unless aggregation is 'count'")
 
-    for key in ("unit", "caption"):
-        if not isinstance(spec.get(key), str) or not spec[key].strip():
-            errors.append(f"{key}: required, a non-empty string")
+    if not isinstance(spec.get("unit"), str) or not spec["unit"].strip():
+        errors.append("unit: required, a non-empty string")
+    if "caption" in spec and (not isinstance(spec["caption"], str) or not spec["caption"].strip()):
+        errors.append("caption: must be a non-empty string when given")
 
     if "filter" in spec:
         _check_filter(errors, spec["filter"])
@@ -229,7 +236,7 @@ def validate_spec(spec: object) -> list[str]:
 
     if "group" in spec:
         _check_column(errors, "group", spec["group"])
-    for key in ("group_map", "group_default", "series_order"):
+    for key in ("group_map", "group_default", "group_null", "series_order"):
         if key in spec and "group" not in spec:
             errors.append(f"{key}: needs a group column")
     if "group_map" in spec:
@@ -243,6 +250,10 @@ def validate_spec(spec: object) -> list[str]:
             errors.append("group_default: only meaningful with a group_map")
         if not isinstance(spec["group_default"], str) or not spec["group_default"]:
             errors.append("group_default: must be a non-empty string")
+    if "group_null" in spec and (
+        not isinstance(spec["group_null"], str) or not spec["group_null"].strip()
+    ):
+        errors.append("group_null: must be a non-empty label")
     if "series_order" in spec:
         order = spec["series_order"]
         if not isinstance(order, list) or not all(isinstance(s, str) for s in order):

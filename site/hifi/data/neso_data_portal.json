@@ -1,19 +1,78 @@
 {
+  "_about": "The page set and hub content for this vendor: every dataset the site documents, grouped as the hub lists it, with its families. Rendered by gridflow-build.",
+  "name": "NESO Data Portal",
+  "intro": "NESO’s open-data portal, a CKAN file catalogue. gridflow reads three of its files: the GB generation mix since 2009, the embedded wind and solar forecast, and daily wind availability per BM unit.",
+  "facts": [
+    [
+      "Market",
+      "GB electricity, from the system operator"
+    ],
+    [
+      "Access",
+      "No API key"
+    ],
+    [
+      "Base URL",
+      "`api.neso.energy`"
+    ],
+    [
+      "Grain",
+      "Half-hourly for the generation mix and the embedded forecast; daily per BM unit for wind availability"
+    ],
+    [
+      "Connector",
+      "`connectors/neso_data_portal/client.py`"
+    ]
+  ],
+  "source_keys": [
+    "neso_data_portal"
+  ],
+  "latest_views": [
+    "historic_generation_mix",
+    "embedded_wind_solar_forecast",
+    "daily_wind_availability"
+  ],
+  "notebook": {
+    "source": "neso_data_portal",
+    "dataset": "historic_generation_mix"
+  },
+  "landscape": "power",
+  "landing": {
+    "bronze": "bronze/neso_data_portal/",
+    "desc": "System operator files: the GB generation mix since 2009, embedded forecasts",
+    "fact": "current file only, no API key",
+    "start": [
+      [
+        "historic_generation_mix",
+        "GB mix by fuel since 2009, with solar"
+      ],
+      [
+        "embedded_wind_solar_forecast",
+        "embedded wind and solar forecast"
+      ],
+      [
+        "daily_wind_availability",
+        "daily MW per BM unit"
+      ]
+    ],
+    "order": 2
+  },
   "groups": [
     {
-      "name": "Generation",
-      "blurb": "Per-BMU wind availability forecasts and embedded (sub-transmission) wind/solar generation forecasts from the NESO Open Data Portal's CKAN file catalogue.",
-      "datasets": [
-        { "id": "daily_wind_availability", "title": "Daily wind availability · per-BMU forecast", "freq": "daily", "lag": "Not stated by NESO (whole-file republication)", "rows": "~300 / day (per wind BMU)" },
-        { "id": "embedded_wind_solar_forecast", "title": "Embedded wind & solar forecast · current issue", "freq": "30 min", "lag": "Forecast issue cadence not stated by NESO", "rows": "~48 / day" }
-      ]
-    },
-    {
-      "name": "Generation mix archive",
-      "blurb": "Half-hourly GB generation mix by fuel type and carbon intensity, archived from 2009.",
-      "datasets": [
-        { "id": "historic_generation_mix", "title": "Historic generation mix & carbon intensity", "freq": "30 min", "lag": "Not stated by NESO", "rows": "~48 / day" }
+      "name": "",
+      "blurb": "",
+      "pages": [
+        "historic_generation_mix",
+        "embedded_wind_solar_forecast",
+        "daily_wind_availability"
       ]
     }
-  ]
+  ],
+  "families": [],
+  "names": {
+    "historic_generation_mix": "Historic GB generation mix",
+    "embedded_wind_solar_forecast": "Embedded wind and solar forecast",
+    "daily_wind_availability": "Daily wind availability"
+  },
+  "dropped": {}
 }

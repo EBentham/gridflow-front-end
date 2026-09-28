@@ -1,0 +1,127 @@
+{
+ "dataset": "elexon/bmunits_reference",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "2b305fe432d439a463de5fadfe8e43fedae83c47bea1da83fad6cff342e57125",
+ "kernel": "gridflow_models",
+ "source": "elexon",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.elexon",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.elexon.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.sql(\"\"\"\n    SELECT bm_unit_id, bm_unit_name, fuel_type, registered_capacity_mw,\n           company_name, gsp_group_id, national_grid_bm_unit\n    FROM silver_elexon_bmunits_reference\n    ORDER BY bm_unit_id\n\"\"\")",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df[[\"bm_unit_id\", \"fuel_type\", \"registered_capacity_mw\", \"company_name\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "bm_unit_id",
+      "fuel_type",
+      "registered_capacity_mw",
+      "company_name"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2__AANGE001",
+       "NaN",
+       "80.000",
+       "Limejump Energy Limited"
+      ],
+      [
+       "2__AANGE002",
+       "NaN",
+       "50.000",
+       "Limejump Energy Limited"
+      ],
+      [
+       "2__AANGE003",
+       "NaN",
+       "0.000",
+       "Limejump Energy Limited"
+      ],
+      [
+       "2__AAXPO000",
+       "NaN",
+       "100.000",
+       "AXPO UK LIMITED"
+      ],
+      [
+       "2__ABGAS000",
+       "NaN",
+       "5.428",
+       "British Gas Trading Ltd"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "df[\"fuel_type\"].value_counts(dropna=False)",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "fuel_type\nNaN        2515\nWIND        234\nOTHER        92\nCCGT         61\nNPSHYD       22\nOCGT         22\nPS           16\nNUCLEAR      16\nBIOMASS      15\nCOAL         10\nINTELEC       2\nINTNED        1\nINTEW         1\nINTFR         1\nINTGRNL       1\nINTIFA2       1\nINTIRL        1\nINTNSL        1\nINTVKL        1\nINTNEM        1\nName: count, dtype: int64"
+    }
+   ]
+  }
+ ]
+}

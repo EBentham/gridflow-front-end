@@ -2,7 +2,7 @@
 source: elexon
 dataset_key: itsdo
 vendor: Elexon BMRS
-last_verified: 2026-05-08
+last_verified: 2026-07-30
 layer_coverage: bronze, silver
 ---
 
@@ -10,7 +10,7 @@ layer_coverage: bronze, silver
 
 ## Overview
 
-Initial Transmission System Demand Outturn (ITSDO) — the realised transmission-network demand per settlement period (national demand minus embedded generation). ITSDO is the transmission-only counterpart to INDO and is what drives transmission-network analytics.
+Initial Transmission System Demand Outturn (ITSDO) — the realised transmission-network demand per settlement period. ITSDO is **higher** than INDO, not lower. By the cited definitions (see Modelling notes → Definition citations), ITSDO = INDO + a **fixed station-load estimate (500 MW BST / 600 MW GMT)** + pump-storage pumping + interconnector exports, plus storage-module charging under the Grid Code definition. Unmetered embedded wind/solar is in neither series. (Corrected 2026-09-24, gridflow_models v2.1 F-5: the earlier `+ embedded generation` term is not supported by the NESO or Grid Code definitions.) Live-verified 2026-07-30 against 24 July 2026 silver: ITSDO exceeded INDO by ~2,375 MW on average across the day (every settlement period, no exceptions), ruling out the previous "national demand minus embedded generation" description, which predicted the opposite sign. ITSDO is the transmission-only counterpart to INDO and is what drives transmission-network analytics.
 
 ---
 
@@ -102,7 +102,7 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
 | `initial_transmission_system_demand_outturn_mw` | `float` | No | `demand` | MW. |
 | `published_at` | `datetime[UTC]` | Yes | `publishTime` | Publication time / document vintage; bitemporal point-in-time field. |
 | `data_provider` | `str` | No | _derived_ | Default `"elexon"`. |
-| `ingested_at` | `datetime[UTC]` | Yes | _derived_ | Time ingested into bronze. |
+| `ingested_at` | `datetime[UTC]` | Yes | _derived_ | When the silver transform ran: stamped `datetime.now(UTC)` by the transformer (`itsdo.py:118-123`), not the bronze ingest time. |
 
 ### Silver sample
 
@@ -111,7 +111,7 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
     {
         "settlement_date": "2026-05-06",
         "settlement_period": 8,
-        "timestamp_utc": "2026-05-06T03:30:00+00:00",
+        "timestamp_utc": "2026-05-06T02:30:00+00:00",
         "initial_transmission_system_demand_outturn_mw": 23628,
         "data_provider": "elexon",
         "ingested_at": "2026-05-08T12:00:00Z"
@@ -129,7 +129,8 @@ None implemented.
 
 ## Known issues and gotchas
 
-- **Transmission-only** — does not include embedded generation. Embedded contribution = INDO − ITSDO.
+- **ITSDO is above INDO, not below.** A 2026-07-30 correction previously described this as `ITSDO = INDO + embedded generation + interconnector exports + pump-storage pumping` — that attribution was itself wrong on closer testing (see below) and is superseded again here. What's confirmed by live data (24 July 2026, 48 settlement periods): `itsdo_minus_indo` is consistently positive and stays in a narrow ~1,530–3,050 MW band all day (mean ~2,375 MW), with **no meaningful midday peak** — its correlation with AGWS solar output is only 0.35 despite solar swinging 0 → 12,700 MW over the same periods, which rules out embedded solar as a material driver. Correlation with FUELHH pumped-storage flow (`PS`, negative = pumping) is −0.43 — a real but partial signal, consistent with pump-storage pumping load being one contributor, not confirmed as the whole story. **Do not derive an "embedded generation" estimate as `INDO − ITSDO`** — the sign and magnitude don't support that reading. Exact decomposition of the ITSDO−INDO gap is TODO.
+- **Neither INDO nor ITSDO is a full generation-side reconciliation against FUELHH — but the gap is not embedded-generation-driven.** `FUELHH-stack + net-interconnector-flow` undershoots ITSDO by ~1,000–2,200 MW at every settlement period on 24 July 2026 (live-verified), essentially flat across the day (correlation with AGWS solar: 0.02 — no midday widening despite solar's 0→12,700 MW swing over the same window). A prior note here claimed this gap was embedded-solar-driven and widened at midday; that claim did not survive testing the full-day shape and is retracted. The flat, few-GW magnitude is more consistent with transmission losses and/or generation categories FUELHH doesn't bucket cleanly, but neither is confirmed — TODO before citing a cause.
 
 ---
 
@@ -141,7 +142,28 @@ None implemented.
 
 ## Modelling notes
 
-TODO
+### Definition citations (gridflow_models v2.1 F-5, OWNER #865)
+
+Source record: `gridflow_models/.planning/phases/v2.1-F-5-vendor-definitions/CITATIONS.md` (Opus research review CONVERGED, REVIEW-RESEARCH-2); archived bytes under `C:/gridflow-data/receipts/v2.1-F-5/sources/` (`#NN:line`). Written under OWNER #865 on 2026-09-24. Citations only: the owner's class-3 ruling on them is pending at the gridflow_models v2.1 close.
+
+- **Mapping.** NESO: National Demand "is equivalent to the Initial National Demand Outturn (INDO)"; Transmission System
+  Demand "is equivalent to the Initial Transmission System Outturn (ITSDO)" (NESO data portal, Daily demand update
+  definitions, #01:244, #01:268; live page, undated). The Grid Code's terms are **National Demand** and **National
+  Electricity Transmission System Demand** (Grid Code Glossary, Issue 6 Revision 45, 13 Aug 2026, #02:3009–3033); no
+  archived Grid Code text names INDO/ITSDO.
+- **Station-transformer load:** INDO excludes it (Grid Code National Demand "minus … the Demand taken by Station
+  Transformers"). ITSDO includes it **as a fixed estimate**: "Transmission System Demand includes an estimate of station
+  load of 500MW in BST and 600MW in GMT" (#01:268). ITSDO−INDO does not contain metered station load.
+- **Pumped-storage pumping and interconnector exports:** INDO excludes both; ITSDO includes both. TSD is "ND plus the
+  additional generation required to meet station load, pump storage pumping and interconnector exports" (#01:268); the
+  Grid Code National Demand "does not include … any exports".
+- **Electricity Storage Modules (battery charging):** the Grid Code lists "Pumped Storage Units' and Electricity Storage
+  Modules'" in both clauses (excluded from National Demand, included in NETS Demand; #02:3013–3015, 3031–3033). NESO
+  names only pump-storage pumping, so the sources disagree. `TODO:` battery treatment in INDO/ITSDO *as published*.
+- **Embedded wind and solar:** NESO's unmetered estimates are components of neither series. They are "embedded in the
+  distribution network and invisible to National Grid ESO. Their effect is to suppress the electricity demand" (#01:292,
+  #01:316, with #01:244 "sum of metered generation"). Supply from **Embedded Large Power Stations** is included in both
+  (Grid Code). `TODO:` no blanket classification of all distribution-connected wind/solar.
 
 ---
 
