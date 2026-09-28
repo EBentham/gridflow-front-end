@@ -25,13 +25,25 @@ Batch brief: `.planning/v5/p26/BATCH-elexon.md`. Reports: `.planning/v5/p26/elex
 | atl | revision 1 done (gaps now break); checker running | ae4cecd8c31375b94 | aa5264d2b291ec745 | act on the verdict |
 | lolpdrm | writer running | a9a809d3db7a3003d | — | launch the checker |
 | demand-forecasts (family, lead ndf) | writer running | abf8f9353b1213246 | — | launch the checker |
-| boal | writer running | a31536a58a5a3b972 | — | launch the checker |
+| boal | written (acceptances per hour by SO flag, 14 to 20 Sep) | a31536a58a5a3b972 | — | QUEUED: launch the checker when a slot frees |
 | disbsad | writer running | a5b3f85429c8bcd8c | — | launch the checker |
 | netbsad, soso, market_depth, group 4, group 5 | not started | — | — | launch writers |
 
 If a restart kills a running agent, check its report file and the vault note first, then resume it by id.
 
+## Throttle (Bobbo 2026-09-29)
+
+- At most **2 agents at once** once the current wave drains. No launches above about **85% of the 5-hour window**;
+  set a timer to resume at the reset. Check with `get_usage` as agents finish. Queued work waits in this table.
+
 ## Seat items
+
+- **gridflow data loss (from boal):** the silver transform keeps only the last segment per acceptance and settlement
+  period and drops the segment times (`boal.py:74-78, 120-148`). On 19 Sep, 41,078 raw segments became 22,538 silver
+  rows, so silver cannot rebuild an acceptance's MW profile. This is gridflow work (a connector or transform fix);
+  the page states it plainly.
+- **Frame fold order:** the sample frame folds from the right in silver's column order, so boal's MW level columns
+  always fold. A template option to set the column order (or pin columns) would help register-like tables.
 
 - **gridflow discrepancy (from windfor):** silver `windfor` has no `settlement_date`, `settlement_period` or
   `initial_forecast_mw` and is keyed on `(timestamp_utc, published_at)`. That contradicts the pydantic schema and the

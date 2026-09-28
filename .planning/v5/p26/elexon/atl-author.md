@@ -189,3 +189,24 @@ first capture: I left its processes running (never kill processes); the dev serv
   - The wide axis drops its label via the `x + half <= fr.x1 + 8` check; the narrow axis keeps it.
   - Suggested fix: skip a day tick whose start is at or past `hi_edge`.
   - This likely affects every line page whose last point is the final half-hour of its window.
+
+## Revision 2 (2026-09-29): the review's three nits (`atl-review.md`, APPROVE)
+
+1. `how_used[2]`:
+   - was "A load feature for a GB power price model, once missing half-hours are handled."
+   - now "A total-load feature for a GB power price model."
+   - The gaps are no longer presented as a property of ATL in general; they stay scoped to the week
+     charted in `what_it_is` and the caption.
+2. `facts.cadence`:
+   - was "One vendor document per settlement period, each published on its own."
+   - now "Each settlement period sent as its own document, as the frame shows."
+   - Scoped to the eight rows: 8 distinct `document_id` and `published_at`.
+3. `summary`:
+   - was "... actual total load for each half-hour settlement period: ..."
+   - now "Great Britain's actual total load by settlement period: one MW figure per period, Elexon data
+     item B0610." (17 words)
+
+Gates: mirror re-copied (`cmp` clean); `gridflow-build --only elexon/atl` wrote the page with no
+errors; `detect.mjs --json` returns `[]`; 0 hits for the old wording in the rendered page. The layout
+is unchanged, since all three edits are the same length or shorter in existing fields, so the Revision 1
+screens stand.
