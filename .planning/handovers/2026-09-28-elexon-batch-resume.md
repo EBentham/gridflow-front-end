@@ -23,7 +23,7 @@ finish on their own and write their files.
 | agpt | APPROVED, 4 nits (FUELHH comparison label, "Elexon's own type", `wind` tag on the step, local measurements in the note body) | ac08817af5dc65b24 | ae15bf21016303925 | writer applies the nits |
 | agws | the writer is running | a02a65646052893e2 | — | launch the checker |
 | windfor | written (three forecast issues of 20 Sep as lines); the checker is not started, because of the pause | a1ab63925783acd9e | — | launch the checker; have it look hardest at the issue-comparison claims and the silver-vs-schema correction |
-| atl | the writer is running (`what_it_is` was 61/60 words) | ae4cecd8c31375b94 | — | launch the checker |
+| atl | written (line of `total_load_mw`, settlement dates 14 to 20 Sep; 130 of 336 half-hours missing; about 7.9 GW above INDO at midday, cause unknown) | ae4cecd8c31375b94 | — | launch the checker (look at the gap wording and the 2,670 MW half-hour) |
 | lolpdrm, demand-forecasts, group 3, group 4, group 5 | not started | — | — | launch writers (prompts: copy any writer prompt, change the dataset and port) |
 
 If a restart kills a running agent, check its report file and the vault note first, then resume it by id.
@@ -40,6 +40,12 @@ If a restart kills a running agent, check its report file and the vault note fir
   #50 (settlement-date axes on UK midnight). All are merged to main and deployed.
 - **Next seat fix:** `gridflow-build --only` validates every note, so one writer's over-budget page fails
   everyone's build (`build.py` ~1743-1880). Scope validation to the pages that were asked for.
+- **Line bridges a single missing half-hour** (`chart_svg.py` `_runs`, about lines 259 and 307-322). The brief
+  promises that nulls and gaps break a line. Fix in the renderer; atl's caption currently describes the bridging, so
+  reword it after the fix.
+- **ATL missing periods:** 130 of 336 half-hours absent in the chart week, mostly before midday. Why is unknown, so
+  this needs a research unit (vendor behaviour or connector), not a guess on the page.
+- **Headless Chrome floors at 500 px:** a true 390 needs a 390 px iframe (atl writer). Tell the next writers.
 - **Weather scenery:** `temp` (and later Open-Meteo) has no weather landscape, and the hero says "generation data".
 - **`elexon.json`:** the MID blurb is corrected in the worktree, and it ships with the batch PR.
 - **Go-live per group:** wait for Bobbo's preview look. He has not ruled on auto-merge.

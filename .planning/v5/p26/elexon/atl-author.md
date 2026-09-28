@@ -57,7 +57,7 @@ Writer, 2026-09-28. Page: `site/hifi/data-sources/elexon/atl.html` in the p26-el
 | `total_load_mw` = vendor `quantity`, MW | `atl.py:65`; MW from the schema column name `ElexonATL.total_load_mw` (`schemas/elexon.py:590`). |
 | `document_id` / `document_revision` / `published_at` sources | `atl.py:64`, `:66-67`, and `:101-106` (parsed as UTC). |
 | No `business_type` column | `atl.py:70` renames only present keys; `:137` selects available columns. Local silver schema has no `business_type`; the vault bronze sample and the bronze file for the 20th carry no `businessType`. |
-| Cadence "one vendor document per settlement period" | Each row has its own `documentId` (the frame shows 8 distinct ids). "Half-hourly" is the settlement-period grain. |
+| Cadence "One vendor document per settlement period, each published on its own" | Each row has its own `documentId` and its own `publishTime`: the frame shows 8 distinct ids and 8 distinct `published_at`. There is deliberately no "half-hourly" or "every 30 minutes", because many periods have no row. |
 | Chart numbers: daily highs 30,836 to 34,330; lows 19,958 to 22,392 at 03:30 to 05:00 UTC; 2,670 MW at 06:30 UTC on the 18th between 25,600 and 30,651; lone dots on the 16th (06:30) and 18th (23:30) | Committed series (206 points). Polars over the series: per settlement date min/max; lone points from the renderer's run logic (`chart_svg.py:307-322`) with its mean step, 49.0 min. Row check: 18 Sep, period 15 = 25,600, period 16 = 2,670, period 18 = 30,651 (period 17 has no row). |
 | "many half-hours have no row, mostly before midday" (caption, `what_it_is`, alt; scoped to the week charted) | Series: 206 of 336 half-hours present; of the 130 absent, 92 are before 12:00 UTC. Numbers are not on the page; the gaps are visible in the chart. |
 | "the line breaks at two or more in a row but joins across a single one" (caption) | `chart_svg.py:307-322`: `_runs` splits at `gap > step*1.5`, with `step` the mean spacing (`:259`). Here that is 49.0 min, so the threshold is 73.5 min: a single missing half-hour (60 min) is bridged, two (90 min) break. 43 single gaps are bridged in this series. |
@@ -109,9 +109,14 @@ it is not edited.
 - **What B0610 total load includes** (and so why it exceeds INDO most in daytime). No definition is
   quoted in the repo or vault; the ENTSO-E vault note `30-vendors/entsoe/datasets/actual_load.md`
   describes the ENTSO-E A65/A16 series, not Elexon's ATL.
-- **Screenshots of interactive states.** The frame unfolded and the notebook drawer open were not
-  captured: headless `--screenshot` cannot click. Their content was checked from the sample and
-  notebook JSON; the checker may want to open both in a browser.
+- **Interactive states, now checked.** Unfolded frame (`#fx` checked) and notebook drawer open (button
+  clicked on load):
+  - captured from a scratchpad copy of the page (`atl-shot/`, served on 9723, then stopped);
+  - checked at 1440, 768 (iframe) and 390 (iframe); nothing is clipped or overlapping;
+  - wide frames and notebook tables scroll sideways inside `.df-wrap` / `.ds-dfs` (`overflow-x: auto`)
+    by design.
+  - The notebook plot is `loading="lazy"`: in the first 390 iframe capture it had not loaded and showed
+    its alt text. With `eager` in the scratch copy it renders, so that was a capture artefact.
 
 ## Open questions
 
@@ -143,5 +148,7 @@ In the scratchpad `atl-shots/`:
 - `sheet768.png`, `sheet1024.png`;
 - the true 390: `real-390.png` and crops `r390-*`.
 
-`atl-390.png` is the misleading 500 px capture; ignore it. Headless Chrome did not exit after the
+Open states: `open-1440.png`, `open-768c.png`, `open-390b.png`, and crops `o1440-*`, `o768-sheet`,
+`o390-sheet`, `open-check`. `atl-390.png` is the misleading 500 px capture; ignore it. Direct
+(non-iframe) 768 captures stalled twice; the iframe wrapper worked. Headless Chrome did not exit after the
 first capture: I left its processes running (never kill processes); the dev server is stopped.
