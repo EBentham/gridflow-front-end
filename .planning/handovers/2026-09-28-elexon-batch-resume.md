@@ -18,9 +18,9 @@ finish on their own and write their files.
 |---|---|---|---|---|
 | mid | REVISE; the major is fixed in the renderer, the writer is applying the nit | a7f628925ccf40d3d | a58c68c8a08822ca9 | re-check → `mid-review-2.md` |
 | temp | APPROVED; the degree-day nit is fixed | ae1512e0f404e146d | a175573d9dc677e6f | done |
-| freq | REVISE, 1 major (scope "response includes the window's end"); the writer is revising | a757523f18b8872ee | ac2da42890daacdbe | re-check |
+| freq | revision 1 done (claim scoped, `needs` widened to 16 and 17 Sep) | a757523f18b8872ee | ac2da42890daacdbe | re-check → `freq-review-2.md` |
 | fuelinst | written; the checker is running | ac17b80233d655e7c | a3c074b63838c4512 | act on the verdict |
-| agpt | written; the checker is running | ac08817af5dc65b24 | ae15bf21016303925 | act on the verdict |
+| agpt | APPROVED, 4 nits (FUELHH comparison label, "Elexon's own type", `wind` tag on the step, local measurements in the note body) | ac08817af5dc65b24 | ae15bf21016303925 | writer applies the nits |
 | agws | the writer is running | a02a65646052893e2 | — | launch the checker |
 | windfor | the writer is running | a1ab63925783acd9e | — | launch the checker |
 | atl | the writer is running (`what_it_is` was 61/60 words) | ae4cecd8c31375b94 | — | launch the checker |
