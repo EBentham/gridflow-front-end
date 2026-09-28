@@ -57,3 +57,10 @@ in "Sections").
 5. **Then Phase 26:** the dataset fan-out fills the blank pages (author and reviewer per dataset, vendor
    batches; the brief and rubric are on #42 at `.planning/v5/author-brief.md` and `review-rubric.md`,
    already updated to 3a).
+
+## Update 2026-09-28 late morning
+
+- **Next steps 1-3 are DONE.** The fixer committed `2444f12..1f34728` on `v5/cutover-integration` (pushed),
+  fixing 13 of 14 QA findings. m2 was left: blank pages keep the site footer, per ruling #30. m8 was partly
+  fixed. All gates are green: build `--check`, 76 tests, htmlhint, lychee, detect `[]` on 184 files.
+- The preview artifact is republished (version 5). **Waiting on Bobbo's go-live OK, then step 4.**
