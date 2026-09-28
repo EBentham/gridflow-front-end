@@ -26,7 +26,7 @@ Batch brief: `.planning/v5/p26/BATCH-elexon.md`. Reports: `.planning/v5/p26/elex
 | lolpdrm | written (de-rated margin, three noon publishes, 13 to 17 Sep) | a9a809d3db7a3003d | — | QUEUED: launch the checker (look at the key vs per-bronze-day dedup, and the cadence fact) |
 | demand-forecasts (family, lead ndf) | written (two NDF publishes for 17 Sep; notebook scores against INDO) | abf8f9353b1213246 | — | QUEUED: launch the checker (look at the "NDF is the quantity INDO reports" claims, and the 07:45 publish) |
 | boal | written (acceptances per hour by SO flag, 14 to 20 Sep) | a31536a58a5a3b972 | — | QUEUED: launch the checker when a slot frees |
-| disbsad | writer running | a5b3f85429c8bcd8c | — | launch the checker |
+| disbsad | written (volume by service, 14 to 19 Sep) | a5b3f85429c8bcd8c | — | QUEUED: launch the checker (look at "each reply holds the half-hour starting at `to`", and the £/MWh units from the note only) |
 | market_depth | written (accepted offer volume, 16 to 22 Sep) | aa46a54294f5cafaa | — | QUEUED: launch the checker (look at the same-day-null raw-feed note: vendor behaviour or local holdings?; the MWh vs MW conflict) |
 | netbsad | writer running | a5e765b85bf3eff9a | — | launch the checker |
 | soso | writer running | a41b75f70f9993f96 | — | launch the checker |
@@ -48,6 +48,9 @@ If a restart kills a running agent, check its report file and the vault note fir
   the page states it plainly.
 - **gridflow nondeterminism (from lolpdrm):** which publish silver keeps depends on bronze file-name order, so it
   is not the latest publish and can differ between machines. This is gridflow work.
+- **gridflow duplicates (from disbsad):** silver stores the midnight half-hour twice across neighbouring days
+  (the same pattern as freq and fuelinst). Pages drop the repeat. This is gridflow work (per-day windows include
+  the end instant).
 - **Chart spec takes one value column** (market_depth): a wide table cannot chart two of its columns (accepted
   offers and bids) as two series. Template work.
 - **Frame fold order (hit by boal and demand-forecasts):** the sample frame folds from the right in silver's column
