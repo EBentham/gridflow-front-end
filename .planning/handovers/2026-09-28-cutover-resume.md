@@ -1,38 +1,59 @@
-# Resume the v5 cutover (written 2026-09-28 about 00:30, in case usage runs out)
+# Resume the v5 cutover (updated 2026-09-28 about 02:45; the weekly limit hit 99%, resets 09:00)
 
 Plan: `.planning/v5/CUTOVER-PLAN.md`. Rulings #30 (blank dataset pages) and #31 (cutover approved, hubs
-in "Sections"). Phase 1 runs four builders in parallel; phase 2 integrates, then QA, then the preview;
-phase 3 is the cutover PR (Bobbo merges to main).
+in "Sections").
 
-## Where each unit stood
+## Done
 
-| Unit | Branch / PR | State |
-|---|---|---|
-| U1: dataset template, 3a schema, blank pages, hubs, retire old templates | `v5/p25b-template`, PR #42, worktree `.claude/worktrees/agent-a3e553d579e4d88f0` (agent `a3e553d579e4d88f0`) | 3a and brief commits landed; screenshots nearly done; hub and drawing fixes pending |
-| U2: Architecture | PR #44 (`v5/p27-architecture`) | DONE, gates green. Watch: index text about 12 px at 1280 |
-| U3: Models | PR #43 (`v5/p27-models`) | DONE, gates green. The licence line in `site.js` goes when #42 merges |
-| U4: Explorer + nav + home fixes | `v5/p27-explorer`, worktree `agent-a25e07ca9e214e65e` | running (had a headless Chrome port issue) |
+- **Phase 1:** all four units are done, each with an open PR into `v5/site`:
+  - #42 dataset template (3a schema, 68 blank pages plus 5 pilots, landing and 7 hubs, old templates retired);
+  - #43 Models;
+  - #44 Architecture;
+  - #45 Explorer, plus the nav (Explorer; Models goes to `models.html`), the homepage fixes, and
+    `models/demand-forecast.html` retired.
+- **Integration branch `v5/cutover-integration`** (pushed; local worktree at
+  `<scratch>\integ`) merges all four onto `origin/v5/site`. The one conflict (demand-forecast deleted) is
+  resolved.
+- **Gates green on it:**
+  - build `--check` idempotent (73 pages + 7 hubs);
+  - 68 tests;
+  - htmlhint on 184 files;
+  - lychee `--offline` with 0 errors;
+  - detect `[]` on 184 files.
+- The site preview artifact https://claude.ai/artifact/JBjXGxskWvkQYeFtjAn4R7 shows this integrated build
+  (version 4). A local server is on :9661 (launch config `cutover-site`).
+- **QA report:** `.planning/v5/QA-CUTOVER.md`, with 1 blocker, 3 majors and 10 minors.
 
-## To resume
+## Next (after the 09:00 reset)
 
-1. `git fetch`. Run `gh pr list --base v5/site` to see which PRs exist; check each unit's branch head.
-2. Any unit without a PR: resume its agent with SendMessage (the ids above) and ask it to finish, gate,
-   push and open its PR. If an agent is gone, launch a fresh Opus builder on the same branch with
-   `.planning/v5/p27-build/BRIEF.md`.
-3. When all four are in, merge into `v5/site` in this order: #42, #43, #44, then Explorer. The seat
-   resolves the `site.js` overlap: licence line out, nav gains Explorer, Models goes to `models.html`.
-4. Run the clean-checkout gates on `v5/site`:
-   - `gridflow-build --check`
-   - tests
-   - htmlhint
-   - lychee `--offline`
-   - detect
-   - no 390 overflow
-5. U5 QA: an inspection-only Opus reviewer screenshots the whole site at 1280, 1440, 1920 and 390, light
-   and dark (clipping, overlap, sizing). Route its findings back to the owning unit.
-6. Refresh the site preview artifact https://claude.ai/artifact/JBjXGxskWvkQYeFtjAn4R7 from the merged
-   `v5/site` build. Show Bobbo.
-7. On Bobbo's look, open the cutover PR from `v5/site` into `main`. **Bobbo merges.** Then check the live
-   site, tag, and write a close note.
-8. Then Phase 26 (the dataset fan-out by vendor batch) fills the blank pages. Also: close PR #34 as
-   superseded (PROXY default), and the NESO Data Portal packages are gridflow work (#16).
+1. **One Opus fixer on `v5/cutover-integration`** (the worktree above), fixing from `QA-CUTOVER.md`:
+   - **B1 (blocker):** the home phone rule in `theme.css` (`@media (max-width:699.98px) .landscape svg`
+     `aspect-ratio` and `margin-left`) breaks the `.ds-land` / `.hub-land` hero drawings at phone width.
+     Scope the rule to the home figure.
+   - **M1:** the Data sources chart axis text is 9-10 px.
+   - **M2:** counts disagree: home says 165 datasets and 7 vendors, the build says 149, and the Explorer
+     page says "eight sources".
+     - Home's numbers must come from the build or match it (#14).
+     - Check the per-vendor cadence claims against the code.
+     - Home's silver/gold example names must be real relation names.
+   - **M3:** Architecture legend and labels are 10-12 px at 1280.
+   - **Minors m1-m7, m9, m10:**
+     - blank pages should also drop the site footer;
+     - the explorer crop cuts through a text line;
+     - the physical_flows x-axis;
+     - the frames that overflow instead of folding into `…` (a 3a spec violation);
+     - code boxes need a scroll cue or wrapping;
+     - the orphaned "it" in the Data sources headline;
+     - the ITP label break;
+     - the BM units axis title.
+     m8 (12 px mono) is optional.
+   Commit per fix, then re-run all gates.
+2. **Quick re-QA** of the pages the fixes touched (same method, 390 and 1280 at least).
+3. **Republish the preview:** use the artifact `url` above with `file_path` =
+   `<scratch>\integ\site\hifi\index.html` and root at that folder. **Show Bobbo.**
+4. **On Bobbo's OK:** merge `v5/cutover-integration` into `v5/site`; PRs #42-#45 then show as merged, so
+   comment on each. Open the cutover PR from `v5/site` into `main`. **Bobbo merges.** Then check the live
+   site, tag, write a close note, and close PR #34 as superseded (PROXY default).
+5. **Then Phase 26:** the dataset fan-out fills the blank pages (author and reviewer per dataset, vendor
+   batches; the brief and rubric are on #42 at `.planning/v5/author-brief.md` and `review-rubric.md`,
+   already updated to 3a).
