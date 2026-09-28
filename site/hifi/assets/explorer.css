@@ -17,7 +17,7 @@
 /* the landscape: the drawn surface the tour sits under */
 .xland { margin-top: 12px; }
 .xland svg { display: block; width: 100%; height: auto; }
-.xland__p { display: none; }
+.xland .xland__p { display: none; }
 
 @media (max-width: 1099.98px) {
   .xhero { grid-template-columns: minmax(0, 1fr); row-gap: 22px; padding-top: 48px; }
@@ -28,8 +28,8 @@
   .xhero__lede p { font-size: 16.5px; }
 }
 @media (max-width: 559.98px) {
-  .xland__d { display: none; }
-  .xland__p { display: block; }
+  .xland .xland__d { display: none; }
+  .xland .xland__p { display: block; }
 }
 
 /* ---------------------------------------------------------------- topsoil: the tour */
