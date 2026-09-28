@@ -79,3 +79,11 @@ def test_a_line_breaks_at_a_missing_half_hour_that_is_absent_not_null() -> None:
     ts = [t0 + i * 1800 for i in range(10) if i != 4]
     runs = chart_svg._runs(ts, [1.0] * len(ts), chart_svg._step(ts))
     assert [len(r) for r in runs] == [4, 5]
+
+
+def test_the_midnight_closing_the_axis_carries_no_day_label() -> None:
+    lo = dt.datetime(2026, 9, 14, 23, tzinfo=dt.UTC).timestamp()
+    ts = [lo + i * 1800 for i in range(7 * 48)]
+    for narrow in (False, True):
+        ticks, _lo, hi = chart_svg._time_axis(ts, chart_svg.WIDE, narrow=narrow, uk_days=True)
+        assert ticks[-1][0] == hi and ticks[-1][1] == ""
