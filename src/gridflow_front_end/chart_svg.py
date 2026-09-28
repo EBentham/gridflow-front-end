@@ -259,7 +259,10 @@ def _time_axis(
     elif span_days <= 16:
         every = 1 if not narrow or span_days <= 8 else 2
         for i, (t, d) in enumerate(_midnights(lo, hi_edge, uk_days)):
-            if i % every == 0:
+            if t >= hi_edge - 1:
+                # the midnight that closes the axis opens a day the chart does not show
+                ticks.append((t, "", t))
+            elif i % every == 0:
                 # a short span labels each day at the middle of its visible part
                 centre = (t + min(t + day, hi_edge)) / 2 if span_days <= 9 else t
                 label = f"{d.day} {MONTHS[d.month - 1]}" if not narrow or not ticks else str(d.day)
