@@ -206,6 +206,10 @@ main { position: relative; display: block; }
 .landscape { margin-top: 12px; overflow: hidden; }
 .landscape svg { display: block; width: 100%; height: 30.14vw; }
 .landscape text { font-family: var(--body); font-style: italic; font-size: 13.5px; }
+/* Past 1920px the height stops growing, so the scale holds at its 1920 size and `slice` reveals more of the
+   scene at the sides (drawn to units -420 and 1860) instead of zooming in; the scale grows again only past
+   2986px, where the whole 2240 units are in view. */
+@media (min-width: 1920px) { .landscape:not(.ds-land, .hub-land) svg { height: 578.7px; } }
 @media (max-width: 1439.98px) { .landscape text { font-size: 14.5px; } }
 @media (max-width: 1299.98px) { .landscape text { font-size: 17px; } }
 @media (max-width: 1099.98px) {
