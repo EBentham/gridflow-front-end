@@ -67,9 +67,19 @@ def _f(v: float) -> str:
     return s.removesuffix(".0")
 
 
-def fmt_num(v: float) -> str:
-    """Tick labels: thousands separators and a true minus sign."""
-    text = f"{v:,.0f}" if abs(v) >= 10 or v == int(v) else f"{v:,.1f}"
+def fmt_num(v: float, step: float | None = None) -> str:
+    """Tick labels: thousands separators and a true minus sign.
+
+    With ``step`` (the axis's tick spacing) every label carries the decimals that spacing needs, so a
+    tenth-of-a-hertz axis reads 49.9, 50.0, 50.1 rather than 50 three times.
+    """
+    if step:
+        places = 0
+        while places < 4 and abs(step * 10**places - round(step * 10**places)) > 1e-6:
+            places += 1
+        text = f"{v:,.{places}f}"
+    else:
+        text = f"{v:,.0f}" if abs(v) >= 10 or v == int(v) else f"{v:,.1f}"
     return text.replace("-", "−")
 
 
@@ -202,6 +212,15 @@ def _time_axis(
             else:
                 ticks.append((t, "", t + day / 2))
         ticks.append((hi_edge, "", hi_edge))
+    elif span_days <= 2:
+        # a span of hours (15-second frequency, say): ticks on whole hours, labelled by the clock; the
+        # caption carries the date
+        cap = 4 if narrow else 8
+        hours = next(h for h in (1, 2, 3, 6, 12, 24) if (hi_edge - lo) / (h * 3600) <= cap)
+        t = math.ceil(lo / (hours * 3600)) * hours * 3600
+        while t <= hi_edge + 1:
+            ticks.append((t, dt.datetime.fromtimestamp(t, dt.UTC).strftime("%H:%M"), t))
+            t += hours * 3600
     elif span_days <= 16:
         every = 1 if not narrow or span_days <= 8 else 2
         t = first_mid
@@ -260,7 +279,7 @@ class _Plot:
         ytk = " ".join(f"M{_f(fr.x0 - 6)} {_f(self.Y(v))} H{_f(fr.x0)}" for v in self.yt)
         out.append(f'<path d="{tk} {ytk}" stroke="{ink}" stroke-width="1.1"/>')
         txt = [
-            f'<text x="{_f(fr.x0 - 10)}" y="{_f(self.Y(v) + 4.5)}" text-anchor="end">{fmt_num(v)}</text>'
+            f'<text x="{_f(fr.x0 - 10)}" y="{_f(self.Y(v) + 4.5)}" text-anchor="end">{fmt_num(v, self.yt[1] - self.yt[0])}</text>'
             for v in self.yt
         ]
         txt.append(
@@ -375,7 +394,10 @@ def _lines(chart: dict[str, Any], view: ChartView, fr: Frame, uid: str, narrow: 
     values = [v for s in chart["series"] for v in s["values"] if v is not None]
     lo, hi = min(values), max(values)
     pad = (hi - lo) * 0.04 or 1
-    plot = _Plot(fr, ts, lo - pad if lo < 0 else min(0.0, lo), hi + pad, narrow)
+    # A line keeps a zero baseline while zero is close to the data; a band far from zero (a temperature,
+    # a frequency near 50 Hz) is drawn to its own range, or it flattens into a strip at the top.
+    floor = lo - pad if lo < 0 or lo > hi / 2 else 0.0
+    plot = _Plot(fr, ts, floor, hi + pad, narrow)
     half = plot.step / 2
     body: list[str] = []
     for s in chart["series"]:
