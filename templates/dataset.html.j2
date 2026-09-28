@@ -107,8 +107,7 @@
           <pre class="ds-well" aria-label="The vendor request">{{ req | safe }}</pre>
           {%- endfor %}
           {%- endif %}
-          <pre class="ds-well" aria-label="The gridflow commands">{% for c in v.raw.commands %}{{ c.run }}{% if c.comment %}  <span class="ds-cm"># {{ c.comment }}</span>{% endif %}{% if not loop.last %}
-{% endif %}{% endfor %}</pre>
+          <pre class="ds-well" aria-label="The gridflow commands">{% for c in v.raw.commands %}{% if c.comment %}<span class="ln ds-cm"># {{ c.comment }}</span>{% endif %}<span class="ln">{{ c.run }}</span>{% endfor %}</pre>
         </div>
       </div>
     </section>

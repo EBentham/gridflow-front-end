@@ -116,6 +116,9 @@
   background: var(--topsoil); border: 1px solid rgba(28, 43, 34, .18); border-radius: var(--radius);
   font: 400 var(--fs-code)/1.7 var(--mono); color: var(--ink); white-space: pre;
 }
+/* a well set as rows wraps a too-long row instead of scrolling (the hang is theme.css `pre .ln`) */
+.well:has(.ln) { white-space: pre-wrap; overflow-wrap: anywhere; }
+.well .nw { white-space: nowrap; }
 .well.sm { font-size: 13px; }
 .well .s { color: var(--clay-deep); }
 .well .k { color: var(--petrol); font-weight: 500; }

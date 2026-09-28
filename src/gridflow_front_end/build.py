@@ -950,15 +950,63 @@ def highlight(code: str) -> Markup:
     return Markup("".join(out))
 
 
+def well_lines(lines: list[str]) -> Markup:
+    """Escaped lines as a well's rows: one block each, so a long row wraps with a hanging indent.
+
+    A row's leading spaces go in ``--i``, so its wrapped part hangs 2ch in from the row's own
+    indentation rather than from the box edge.
+    """
+    rows = []
+    for line in lines:
+        indent = len(line) - len(line.lstrip(" "))
+        style = f' style="--i:{indent}"' if indent and line.strip() else ""
+        rows.append(f'<span class="ln"{style}>{line}</span>')
+    return Markup("".join(rows))
+
+
+def _nw(text: str) -> str:
+    return f'<span class="nw">{text}</span>'
+
+
+def command_row(run: str) -> Markup:
+    """A CLI command whose row may wrap only between arguments, never inside one.
+
+    A browser may break after any hyphen, which would split ``--end`` or a date; each flag is
+    kept with its value, and every other argument whole.
+    """
+    tokens = run.split(" ")
+    parts: list[str] = []
+    i = 0
+    while i < len(tokens):
+        tok = tokens[i]
+        if tok.startswith("-") and i + 1 < len(tokens) and not tokens[i + 1].startswith("-"):
+            tok = f"{tok} {tokens[i + 1]}"
+            i += 1
+        parts.append(_nw(html_escape(tok, quote=False)))
+        i += 1
+    return Markup(" ".join(parts))
+
+
+def _url_row(line: str) -> str:
+    """An escaped request line whose URL may wrap only after a slash, never at a hyphen."""
+    m = re.match(r"(.*?)(https?://[^/]+/)(.*)$", line)
+    if not m:
+        return line
+    lead, host, path = m.groups()
+    segments = [host, *re.findall(r"[^/]*/|[^/]+$", path)]
+    return lead + "<wbr>".join(_nw(s) for s in segments if s)
+
+
 def request_lines(request: str) -> Markup:
     """A raw vendor request, one query parameter per line, as it reads in a well."""
     text = html_escape(request, quote=False)
     head, _, query = text.partition("?")
+    head = _url_row(head)
     if not query:
-        return Markup(text)
+        return well_lines([head])
     params = query.split("&amp;")
     lines = [f"{head}"] + [f"    {'?' if i == 0 else '&amp;'}{p}" for i, p in enumerate(params)]
-    return Markup("\n".join(lines))
+    return well_lines(lines)
 
 
 def check_artefacts(doc: DatasetDoc) -> tuple[PageArtefacts, list[str]]:
@@ -1170,6 +1218,11 @@ def _output_html(out: dict[str, Any], vendor_id: str, handle: str, alt: str) -> 
     )
 
 
+def _code_rows(code: str) -> Markup:
+    """A notebook cell's code, highlighted row by row (a blank row keeps its height)."""
+    return well_lines([highlight(line) if line else " " for line in code.split("\n")])
+
+
 def _notebook_view(doc: DatasetDoc, nb: dict[str, Any]) -> dict[str, Any]:
     fields = doc.page.notebook
     source = nb["source"]
@@ -1177,7 +1230,7 @@ def _notebook_view(doc: DatasetDoc, nb: dict[str, Any]) -> dict[str, Any]:
     rendered = [
         {
             "n": c["n"],
-            "html": highlight(c["source"]),
+            "html": _code_rows(c["source"]),
             "outputs": [
                 _output_html(o, doc.vendor_id, f"data.{source}", fields.plot_alt)
                 for o in c["outputs"]
@@ -1186,8 +1239,8 @@ def _notebook_view(doc: DatasetDoc, nb: dict[str, Any]) -> dict[str, Any]:
         for c in cells
     ]
     call = [
-        {"n": 1, "html": highlight(cells[0]["source"])},
-        {"n": 2, "html": highlight(cells[2]["source"])},
+        {"n": 1, "html": _code_rows(cells[0]["source"])},
+        {"n": 2, "html": _code_rows(cells[2]["source"])},
     ]
     return {
         "lead": fields.lead,
@@ -1296,7 +1349,9 @@ def page_view(
         "raw": {
             "note": p.raw_feed.note,
             "requests": [request_lines(r) for r in p.raw_feed.requests],
-            "commands": p.raw_feed.commands,
+            "commands": [
+                {"run": command_row(c.run), "comment": c.comment} for c in p.raw_feed.commands
+            ],
         },
         "variants": variants,
         "record": record_v,
@@ -1453,11 +1508,11 @@ def hub_view(vendor_id: str, manifest: dict, docs: dict[str, DatasetDoc]) -> dic
             "views": [],
         }
     nb = manifest["notebook"]
-    well = Markup(
-        highlight(
-            f"data.{nb['source']}.list_datasets()\n"
-            f'df = data.{nb["source"]}.query("{nb["dataset"]}", start, end)'
-        )
+    well = well_lines(
+        [
+            highlight(f"data.{nb['source']}.list_datasets()"),
+            highlight(f'df = data.{nb["source"]}.query("{nb["dataset"]}", start, end)'),
+        ]
     )
     return {
         "vendor_id": vendor_id,

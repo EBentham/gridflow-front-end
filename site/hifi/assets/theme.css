@@ -437,7 +437,10 @@ main { position: relative; display: block; }
 .fig .txt { margin: 0; padding-top: 9px; font: 400 var(--fs-code)/1.6 var(--mono); color: var(--ink); white-space: pre-wrap; }
 .fig svg { display: block; width: 100%; max-width: 600px; height: auto; }
 .fig .plot-m { display: none; }
-.in .ln { display: block; }
+/* code set as rows (a well, a notebook cell) wraps a too-long row instead of scrolling: the wrapped part
+   hangs 2ch in from the row's own indentation, which the row carries as --i (its leading spaces) */
+pre .ln { display: block; padding-left: calc((var(--i, 0) + 2) * 1ch); text-indent: calc((var(--i, 0) + 2) * -1ch); }
+.in:has(.ln) { white-space: pre-wrap; overflow-wrap: anywhere; padding-left: 12px; text-indent: 0; }
 @media (max-width: 699.98px) {
   /* the same figure, x axis compressed so its text stays legible at phone width; the data are unchanged */
   .fig .plot:not(.plot-m) { display: none; }
@@ -594,6 +597,9 @@ main { position: relative; display: block; }
   background: var(--topsoil); border: 1px solid var(--rule-ink); border-radius: var(--radius);
   font: 400 var(--fs-code)/1.65 var(--mono); color: var(--ink); white-space: pre;
 }
+/* rows wrap instead of running past the box (the hang is set on `pre .ln`, below the notebook) */
+.ds-well:has(.ln) { white-space: pre-wrap; overflow-wrap: anywhere; }
+.ds-well .nw { white-space: nowrap; }  /* a flag with its value, a URL segment: never split at a hyphen */
 .ds-cm { color: var(--muted); }
 .ds-variants { list-style: none; display: grid; grid-template-columns: minmax(0, 1fr); row-gap: 18px; min-width: 0; }
 .ds-variants > li { min-width: 0; }

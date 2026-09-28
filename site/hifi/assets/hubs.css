@@ -157,6 +157,8 @@
   background: var(--topsoil); border: 1px solid var(--rule-ink); border-radius: var(--radius);
   font: 400 var(--fs-code)/1.7 var(--mono); color: var(--ink); white-space: pre;
 }
+/* rows wrap instead of running past the box (the hang is theme.css `pre .ln`) */
+.hub-well:has(.ln) { white-space: pre-wrap; overflow-wrap: anywhere; }
 .hub-well .k { color: var(--petrol); font-weight: 500; }
 .hub-well .s { color: #7C5530; }
 @media (max-width: 1099.98px) { .hub-split { grid-template-columns: minmax(0, 1fr); row-gap: 24px; } }
