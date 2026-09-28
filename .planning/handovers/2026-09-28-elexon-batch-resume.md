@@ -19,7 +19,7 @@ finish on their own and write their files.
 | mid | revision 1 done (nit fixed; ticks now on settlement-day boundaries) | a7f628925ccf40d3d | a58c68c8a08822ca9 | re-check → `mid-review-2.md` |
 | temp | APPROVED; the degree-day nit is fixed | ae1512e0f404e146d | a175573d9dc677e6f | done |
 | freq | revision 1 done (claim scoped, `needs` widened to 16 and 17 Sep) | a757523f18b8872ee | ac2da42890daacdbe | re-check → `freq-review-2.md` |
-| fuelinst | written; the checker is running | ac17b80233d655e7c | a3c074b63838c4512 | act on the verdict |
+| fuelinst | APPROVED, 3 nits (23:00 vs 23:05 axis label, two "how it's used" bullets repeat fuelhh, `available_at` in the note) | ac17b80233d655e7c | a3c074b63838c4512 | writer applies the nits |
 | agpt | APPROVED, 4 nits (FUELHH comparison label, "Elexon's own type", `wind` tag on the step, local measurements in the note body) | ac08817af5dc65b24 | ae15bf21016303925 | writer applies the nits |
 | agws | the writer is running | a02a65646052893e2 | — | launch the checker |
 | windfor | the writer is running | a1ab63925783acd9e | — | launch the checker |
