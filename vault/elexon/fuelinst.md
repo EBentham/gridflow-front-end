@@ -21,8 +21,8 @@ page:
     interconnector codes and pumped storage (`PS`) are signed. There is no solar code.
   how_used:
     - "Fuel mix within the half-hour: wind, gas and interconnector ramps at five-minute steps."
-    - Net interconnector flow by link, from the signed interconnector codes.
-    - Checking a wind generation forecast against five-minute outturn.
+    - The most recent fuel mix for intraday trading, one value every five minutes.
+    - Within-period features for imbalance price models, from the mix inside each half-hour.
   chart:
     type: stacked-area
     silver: elexon/fuelinst
@@ -62,7 +62,7 @@ page:
     title: Generation by fuel, five-minute steps, 20 September 2026
     caption: >-
       Silver `elexon/fuelinst`, MW, the 288 five-minute values published from 23:05 UTC on 19
-      September to 23:00 UTC on 20 September 2026 (GB day 20 September), a group's codes summed,
+      September to 23:00 UTC on 20 September 2026 (GB day 20 September's intervals), a group's codes summed,
       00:00 counted once. Negative values hang below zero.
     alt: >-
       Stacked area chart of GB generation by fuel from elexon/fuelinst, in MW, for the 288
@@ -71,7 +71,7 @@ page:
       GW early on, falling to 5.4 GW at 19:05 UTC), then net imports and pumped storage when
       positive. Net interconnector flow runs from 6.3 GW of exports at 04:20 UTC to 6.0 GW of
       imports at 16:10 UTC, crossing zero at 14:05 UTC.
-    x_label: publish time, UTC; GB day starts 23:00 UTC
+    x_label: publish time, UTC; first point 23:05, 19 September
     key:
       - {series: ps, label: Pumped storage, codes: PS, paint: hatch-cross, note: "Signed; Elexon does not say what the sign means. Drawn above or below zero as it falls."}
       - {series: imports, label: "Interconnectors, net", codes: "INT*, 10 codes", note: "Signed. Positive is import to GB, checked on FUELHH against demand; Elexon does not state it."}
@@ -222,7 +222,7 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
 **Transformer class**: `gridflow.silver.elexon.fuelinst.FuelInstTransformer`
 **Pydantic schema**: `gridflow.schemas.elexon.ElexonFuelInst` (`schemas/elexon.py:87-103`; `schema_cls` at `silver/elexon/fuelinst.py:28`).
 **Dedup key**: `(timestamp_utc, fuel_type)`
-**Point-in-time field**: none in silver. The publish time becomes `timestamp_utc`; no `published_at` column is written (`fuelinst.py:86-121`).
+**Point-in-time field**: none in silver. The publish time becomes `timestamp_utc`; no `published_at` column is written (`fuelinst.py:86-121`). The lineage `available_at` is `coalesce(published_at, ingest_time)` (`silver/base.py:2095-2100`), so for fuelinst it is always the ingest-side stamp, not the vendor publish time (the F-08-class note at `silver/elexon/_publication_window.py:39-42`).
 
 ### Silver schema
 

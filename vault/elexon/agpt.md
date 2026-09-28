@@ -53,8 +53,8 @@ page:
     title: Generation by type, 14 to 20 September 2026
     caption: >-
       Silver `elexon/agpt`, MW, every half-hour of settlement dates 14 to 20 September 2026,
-      with a group's types summed. For a day from 15:30 UTC on the 17th, wind reads 2.2 to 4.6
-      GW; FUELHH wind does not dip. Cause unverified.
+      types summed per group. Wind reads 2.2 to 4.6 GW for a day from 15:30 UTC on the 17th;
+      the project found no such dip in FUELHH.
     alt: >-
       Stacked area chart of GB generation by production type from elexon/agpt, in MW, for every
       half-hour of settlement dates 14 to 20 September 2026. From zero upward: nuclear (3.3 to 3.7
@@ -66,9 +66,9 @@ page:
     key:
       - {series: ps, label: Pumped storage, codes: Hydro Pumped Storage, paint: hatch-cross, note: "Zero or above in this window, unlike the signed PS code in FUELHH."}
       - {series: solar, label: Solar, codes: Solar, tag: solar, note: "FUELHH has no solar code."}
-      - {series: wind, label: Wind, codes: "Wind Offshore, Wind Onshore", tag: wind, note: "Offshore and onshore summed here; the rows keep them apart."}
+      - {series: wind, label: Wind, codes: "Wind Offshore, Wind Onshore", note: "Offshore and onshore summed here; the rows keep them apart."}
       - {series: gas, label: Gas, codes: Fossil Gas, tag: gas}
-      - {series: other, label: Other, codes: Other, note: "Elexon's own type; what it holds is undocumented."}
+      - {series: other, label: Other, codes: Other, note: "The vendor's Other type; what it holds is undocumented."}
       - {series: coal_oil, label: Coal and oil, codes: "Fossil Hard coal, Fossil Oil", paint: hatch-dots, note: "Zero in every half-hour of this window."}
       - {series: hydro, label: "Hydro, run-of-river", codes: Hydro Run-of-river and poundage, paint: hatch-lines}
       - {series: biomass, label: Biomass, codes: Biomass, tag: biomass}
@@ -145,7 +145,7 @@ Actual Aggregated Generation Per Type (AGPT, ENTSO-E B1620) — every PSR (Produ
 | Rate limit       | Vendor-published: not stated. Project default 2 req/sec (asyncio.Semaphore); verified safe 2026-05-08. |
 | Pagination       | Connector handles via `page=N` query param; stops when `page >= total_pages`. Reference endpoints (`/reference/bmunits/all`) are not paginated. |
 | Historical depth | Several years (since B-series rollout). |
-| Publication lag  | Soon after each settlement period closes (B-series). Measured 2026-09-28 on Aug-Sep 2026 silver (not a vendor statement): `published_at` is 149 min after `timestamp_utc` on every row, so periods 47-48 of a settlement day fall in the next UTC day's publish window. |
+| Publication lag  | Soon after each settlement period closes (B-series). |
 | Response format  | JSON |
 
 ### Query parameters
@@ -267,8 +267,7 @@ None implemented.
 
 - **PSR types are human-readable labels.** Elexon's AGPT API returns PSR *labels* (e.g. "Biomass", "Hydro Pumped Storage"); silver stores them verbatim. They are NOT ENTSO-E B-codes — do not assume a B01-B25 code domain.
 - **Cross-source representation differs.** Elexon stores human-readable PSR *labels*; ENTSO-E's `wind_solar_forecast` stores the raw B-code. The same concept is represented two ways across sources — downstream joins must not assume a shared code domain.
-- **`document_revision`** — same period+psr_type can be re-issued. The transformer does not compare revisions: it keeps the last row per key in bronze file order (`raw_{ts}_{hash}`, so the latest fetch) within one publish-day partition (`agpt.py:114-117`, `bronze/writer.py:57`). A re-issue published on a later day lands in a later silver file. Only revision 1 seen in silver as of 2026-09-28.
-- **Wind dip, 17-18 Sep 2026 (cause unverified).** From 2026-09-17 15:30 to 2026-09-18 15:30 UTC, `Wind Offshore` reads 117-288 MW and `Wind Offshore` + `Wind Onshore` 2.2-4.6 GW, while FUELHH `WIND` for the same half-hours reads 11.7-16.9 GW. All rows revision 1 (measured 2026-09-28 on local silver). Not checked against the live API.
+- **`document_revision`** — same period+psr_type can be re-issued. The transformer does not compare revisions: it keeps the last row per key in bronze file order (`raw_{ts}_{hash}`, so the latest fetch) within one publish-day partition (`agpt.py:114-117`, `bronze/writer.py:57`). A re-issue published on a later day lands in a later silver file.
 
 ---
 

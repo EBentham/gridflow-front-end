@@ -38,15 +38,14 @@ page:
     title: Actual total load (ATL), 14 to 20 September 2026
     caption: >-
       Silver `elexon/atl`, MW, one value per half-hour of settlement dates 14 to 20 September
-      2026, as sent. Many half-hours have no row: the line breaks at two or more in a row but
-      joins across a single one.
+      2026, as sent. Many half-hours have no row: the line breaks at each one, and a reading with
+      no neighbour shows as a dot.
     alt: >-
       Line chart of GB actual total load from elexon/atl, in MW, for settlement dates 14 to 20
-      September 2026, in broken pieces: many half-hours have no row, mostly before midday UTC.
-      Daily highs are 30,836 to 34,330 MW, near midday or at 17:00 UTC; lows, 03:30 to 05:00 UTC,
-      are 19,958 to 22,392 MW. At 06:30 UTC on the 18th one half-hour drops to 2,670 MW between
-      readings of 25,600 and 30,651 MW. Two lone readings show as dots, early on the 16th and late
-      on the 18th.
+      September 2026, in short pieces and lone dots: the line breaks at every half-hour with no
+      row, most of them before midday UTC. Daily highs are 30,836 to 34,330 MW, near midday or at
+      17:00 UTC; lows, 03:30 to 05:00 UTC, are 19,958 to 22,392 MW. At 06:30 UTC on the 18th the
+      line drops from 25,600 to 2,670 MW and stops there.
     x_label: settlement date; each starts at 23:00 UTC
     key:
       - {series: total_load_mw, label: Total load, codes: ATL, paint: petrol, note: "One half-hour, 06:30 UTC on the 18th, reads 2,670 MW as sent."}
