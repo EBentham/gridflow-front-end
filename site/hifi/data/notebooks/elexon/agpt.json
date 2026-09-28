@@ -1,0 +1,133 @@
+{
+ "dataset": "elexon/agpt",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "f8e7184086be76c50586a27883bd2b5845b31e36a0950d5a43f97eb8a1b1ac42",
+ "kernel": "gridflow_models",
+ "source": "elexon",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.elexon",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.elexon.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.elexon.query(\"agpt\", \"2026-09-14\", \"2026-09-20\")",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df[[\"settlement_date\", \"settlement_period\", \"psr_type\", \"generation_mw\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "settlement_date",
+      "settlement_period",
+      "psr_type",
+      "generation_mw"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2026-09-14",
+       "1",
+       "Biomass",
+       "2623.0"
+      ],
+      [
+       "2026-09-14",
+       "1",
+       "Fossil Gas",
+       "11535.0"
+      ],
+      [
+       "2026-09-14",
+       "1",
+       "Fossil Hard coal",
+       "0.0"
+      ],
+      [
+       "2026-09-14",
+       "1",
+       "Fossil Oil",
+       "0.0"
+      ],
+      [
+       "2026-09-14",
+       "1",
+       "Hydro Pumped Storage",
+       "0.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "wide = df.pivot_table(\n    index=\"timestamp_utc\", columns=\"psr_type\", values=\"generation_mw\")\nwide[[\"Solar\", \"Wind Offshore\", \"Wind Onshore\"]].plot(\n    ylabel=\"MW\", color=[\"#AFC64E\", \"#3E8C97\", \"#155A6E\"], figsize=(8, 3.5))",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: xlabel='timestamp_utc', ylabel='MW'>"
+    },
+    {
+     "kind": "image",
+     "src": "agpt-5.png",
+     "width": 716,
+     "height": 374
+    }
+   ]
+  }
+ ]
+}

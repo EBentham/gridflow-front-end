@@ -1,0 +1,127 @@
+{
+ "dataset": "elexon/temp",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "4ba58bdf88840ffb2e0e04155e1167d79b83fd75b16eaa17cd376a36b112153b",
+ "kernel": "gridflow_models",
+ "source": "elexon",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.elexon",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.elexon.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.elexon.query(\"temp\", \"2026-09-14\", \"2026-09-21\")\ndf = df.sort_values(\"timestamp_utc\")\ndf[\"timestamp_utc\"] = df[\"timestamp_utc\"].dt.tz_convert(\"UTC\")",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df[[\"timestamp_utc\", \"measurement_date\", \"temperature\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "measurement_date",
+      "temperature"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2026-09-14 09:06:00+00:00",
+       "2026-09-13",
+       "17.7"
+      ],
+      [
+       "2026-09-14 15:45:00+00:00",
+       "2026-09-14",
+       "18.6"
+      ],
+      [
+       "2026-09-15 15:45:00+00:00",
+       "2026-09-15",
+       "18.3"
+      ],
+      [
+       "2026-09-16 15:45:00+00:00",
+       "2026-09-16",
+       "16.9"
+      ],
+      [
+       "2026-09-17 15:45:00+00:00",
+       "2026-09-17",
+       "16.6"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "df.plot(x=\"measurement_date\", y=\"temperature\", ylabel=\"°C\",\n        color=\"#155A6E\", figsize=(8, 3.5))",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: xlabel='measurement_date', ylabel='°C'>"
+    },
+    {
+     "kind": "image",
+     "src": "temp-5.png",
+     "width": 712,
+     "height": 369
+    }
+   ]
+  }
+ ]
+}

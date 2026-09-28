@@ -1,0 +1,193 @@
+{
+ "dataset": "elexon/atl",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "2231621f60c2570f347eb3c213319df705b35ebe210ac55d84252a0e02204769",
+ "kernel": "gridflow_models",
+ "source": "elexon",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.elexon",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.elexon.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "atl = data.elexon.query(\"atl\", \"2026-09-14\", \"2026-09-20\")\nindo = data.elexon.query(\"indo\", \"2026-09-14\", \"2026-09-20\")",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "key = [\"settlement_date\", \"settlement_period\", \"timestamp_utc\"]\nboth = indo[key + [\"initial_demand_outturn_mw\"]].merge(\n    atl[key + [\"total_load_mw\"]], on=key, how=\"left\")\nboth.columns = key + [\"indo_mw\", \"atl_mw\"]\nboth[\"atl_minus_indo_mw\"] = both.atl_mw - both.indo_mw\nboth[\"timestamp_utc\"] = both.timestamp_utc.dt.tz_convert(\"UTC\")\nboth = both.sort_values(\"timestamp_utc\", ignore_index=True)\nboth.head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "settlement_date",
+      "settlement_period",
+      "timestamp_utc",
+      "indo_mw",
+      "atl_mw",
+      "atl_minus_indo_mw"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2026-09-14",
+       "1",
+       "2026-09-13 23:00:00+00:00",
+       "21749.0",
+       "22870.0",
+       "1121.0"
+      ],
+      [
+       "2026-09-14",
+       "2",
+       "2026-09-13 23:30:00+00:00",
+       "21445.0",
+       "22580.0",
+       "1135.0"
+      ],
+      [
+       "2026-09-14",
+       "3",
+       "2026-09-14 00:00:00+00:00",
+       "21114.0",
+       "22309.0",
+       "1195.0"
+      ],
+      [
+       "2026-09-14",
+       "4",
+       "2026-09-14 00:30:00+00:00",
+       "21050.0",
+       "NaN",
+       "NaN"
+      ],
+      [
+       "2026-09-14",
+       "5",
+       "2026-09-14 01:00:00+00:00",
+       "20637.0",
+       "22018.0",
+       "1381.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "both.plot(x=\"timestamp_utc\", y=[\"atl_mw\", \"indo_mw\"], ylabel=\"MW\",\n          color=[\"#155A6E\", \"#C77E3C\"], figsize=(8, 3.5))",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: xlabel='timestamp_utc', ylabel='MW'>"
+    },
+    {
+     "kind": "image",
+     "src": "atl-5.png",
+     "width": 716,
+     "height": 367
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "source": "from_hour_utc = (both.timestamp_utc.dt.hour // 6 * 6).rename(\"from_hour_utc\")\nboth.groupby(from_hour_utc).atl_minus_indo_mw.agg([\"min\", \"median\", \"max\"]).reset_index()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "from_hour_utc",
+      "min",
+      "median",
+      "max"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3"
+     ],
+     "rows": [
+      [
+       "0",
+       "-874.0",
+       "2510.0",
+       "5003.0"
+      ],
+      [
+       "6",
+       "-23291.0",
+       "6357.0",
+       "12876.0"
+      ],
+      [
+       "12",
+       "2154.0",
+       "7916.0",
+       "15704.0"
+      ],
+      [
+       "18",
+       "902.0",
+       "3686.0",
+       "6079.0"
+      ]
+     ]
+    }
+   ]
+  }
+ ]
+}

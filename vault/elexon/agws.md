@@ -4,6 +4,111 @@ dataset_key: agws
 vendor: Elexon BMRS
 last_verified: 2026-05-08
 layer_coverage: bronze, silver
+page:
+  title: Wind and solar generation
+  summary: >-
+    Great Britain's wind and solar generation for every half-hour settlement period: solar,
+    offshore wind and onshore wind as separate MW figures.
+  facts:
+    vendor: Elexon BMRS, dataset AGWS (B1630)
+    cadence: Every 30 minutes
+    grain: One row per settlement period and production type
+  landscape: power
+  what_it_is: >-
+    Elexon's actual or estimated wind and solar generation for each GB settlement period, the
+    ENTSO-E B1630 figure: one MW value per production type, sent as a label (`Solar`,
+    `Wind Offshore`, `Wind Onshore`). No column says whether a value is actual or estimated. In
+    the rows below, each period was published two and a half hours after it began.
+  how_used:
+    - Solar and wind supply terms for a GB residual-demand or price model.
+    - Scoring a wind forecast such as WINDFOR against outturn, offshore and onshore apart.
+    - Solar outturn per half-hour, which the FUELHH fuel mix does not carry.
+  chart:
+    type: stacked-area
+    silver: elexon/agws
+    time: timestamp_utc
+    value: generation_mw
+    filter:
+      - {column: settlement_date, op: ge, value: "2026-09-19"}
+      - {column: settlement_date, op: le, value: "2026-09-25"}
+    dedup: {"on": [settlement_date, settlement_period, psr_type], order_by: published_at}
+    group: psr_type
+    group_map:
+      Wind Onshore: onshore
+      Wind Offshore: offshore
+      Solar: solar
+    series_order: [onshore, offshore, solar]
+    aggregation: sum
+    window: {start: "2026-09-18", end: "2026-09-25"}
+    unit: MW
+  chart_view:
+    title: Wind and solar, 19 to 25 September 2026
+    caption: >-
+      Silver `elexon/agws`, MW, every half-hour of settlement dates 19 to 25 September 2026, one
+      value per production type, stacked: the top edge is the three types summed.
+    alt: >-
+      Stacked area chart of GB wind and solar generation from elexon/agws, in MW, for every
+      half-hour of settlement dates 19 to 25 September 2026. From zero upward: onshore wind (0.5
+      to 8.8 GW), offshore wind (0.4 to 11.5 GW) and solar (zero overnight, peaking between 6.2 and
+      10.1 GW each day). Wind is strongest on the 19th, up to 19.1 GW combined, and weakest on the
+      22nd, down to 1.6 GW. The total runs from 2.0 to 25.1 GW.
+    x_label: settlement date; each starts at 23:00 UTC
+    key:
+      - {series: solar, label: Solar, codes: Solar, tag: solar, note: "FUELHH has no solar code."}
+      - {series: offshore, label: Offshore wind, codes: Wind Offshore, paint: horizon, tag: offshore wind}
+      - {series: onshore, label: Onshore wind, codes: Wind Onshore, paint: hatch-lines, note: "Unpainted: the palette has one colour for wind."}
+  raw_feed:
+    note: >-
+      From the Elexon Insights API in 24-hour publish windows; bronze is filed by publish day.
+      Period 46 below was published after midnight UTC, so both commands run a day longer.
+    requests:
+      - "GET https://data.elexon.co.uk/bmrs/api/v1/datasets/AGWS?publishDateTimeFrom=2026-09-19T00:00:00Z&publishDateTimeTo=2026-09-20T00:00:00Z&page=1"
+    commands:
+      - {run: gridflow ingest elexon agws --start 2026-09-19 --end 2026-09-27, comment: "bronze; the end is exclusive"}
+      - {run: gridflow transform elexon agws --start 2026-09-19 --end 2026-09-26, comment: "bronze to silver, by publish day"}
+  record:
+    select:
+      filter:
+        - {column: settlement_date, op: eq, value: "2026-09-25"}
+        - {column: settlement_period, op: in, value: [1, 14, 27, 46]}
+        - {column: psr_type, op: in, value: [Solar, Wind Offshore]}
+      order_by: [settlement_period, psr_type]
+    key: [settlement_date, settlement_period, psr_type]
+    caption: "Settlement date 2026-09-25: Solar and Wind Offshore at periods 1, 14, 27 and 46."
+    fields:
+      settlement_date: "GB settlement date, the vendor's settlementDate as sent"
+      settlement_period: Half-hour of the settlement day, 1 to 48; 46 or 50 on clock-change days
+      timestamp_utc: Start of the half-hour, computed from settlement date and period
+      psr_type: "Production type as Elexon sends it: a label, not a code"
+      generation_mw: "MW for the period, from the vendor's quantity field"
+      business_type: Vendor business type as sent; solar and wind differ here
+      document_id: Vendor document id; the two rows of each period here share one
+      document_revision: Revision number of that document, as sent
+      published_at: "Vendor publish time; period 46's falls after midnight UTC, the next day"
+  notebook:
+    lead: >-
+      Returns a pandas DataFrame from the DuckDB relation `silver_elexon_agws`, filtered on
+      `settlement_date` with both ends included. Lineage columns are dropped.
+    cells:
+      - df = data.elexon.query("agws", "2026-09-19", "2026-09-25")
+      - df[["settlement_date", "settlement_period", "psr_type", "generation_mw"]].head()
+      - |
+        wide = df.pivot_table(index="timestamp_utc", columns="psr_type",
+                              values="generation_mw")
+        wide[["Wind Offshore", "Wind Onshore", "Solar"]].plot(
+            ylabel="MW", color=["#3E8C97", "#1C2B22", "#AFC64E"],
+            style=["-", "--", "-"], figsize=(8, 3.5))
+    needs: 19 to 26 September 2026
+    plot_alt: >-
+      Line plot of Wind Offshore, Wind Onshore (dashed) and Solar generation_mw against
+      timestamp_utc for settlement dates 19 to 25 September 2026. Offshore peaks near 11,500 MW
+      early on the 19th and onshore near 8,800 MW that day; on the 22nd both stay below 3,400 MW.
+      Solar peaks each day, from about 6,200 to 10,100 MW, and is zero overnight.
+  related:
+    - {dataset: elexon/agpt, note: "Every production type for the same periods, wind and solar included"}
+    - {dataset: elexon/windfor, note: "Elexon's wind forecast, to score against this outturn"}
+    - {dataset: elexon/fuelhh, note: "The same half-hours by fuel code: wind as one code, no solar"}
+    - {dataset: entsoe/wind_solar_forecast, note: "ENTSO-E's forecast of the same three types, as B16, B18 and B19"}
 ---
 
 # Elexon - Actual or Estimated Wind and Solar Power Generation (`AGWS / B1630`)
@@ -114,7 +219,7 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
 | `document_revision` | `int` | Yes | `documentRevisionNumber` | Document revision number. |
 | `published_at` | `datetime[UTC]` | Yes | `publishTime` | Publication time / document vintage; bitemporal point-in-time field. |
 | `data_provider` | `str` | No | _derived_ | Default `"elexon"`. |
-| `ingested_at` | `datetime[UTC]` | Yes | _derived_ | Time ingested into bronze. |
+| `ingested_at` | `datetime[UTC]` | Yes | _derived_ | When the silver transform ran: `datetime.now(UTC)` stamped by the transformer (`silver/elexon/agws.py:119-123`), not the bronze ingest time. |
 
 ### Silver sample
 
@@ -123,7 +228,7 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
     {
         "settlement_date": "2026-05-06",
         "settlement_period": 4,
-        "timestamp_utc": "2026-05-06T01:30:00+00:00",
+        "timestamp_utc": "2026-05-06T00:30:00+00:00",  # BST: period 1 starts 23:00 UTC the day before (utils/time.py:28-42)
         "psr_type": "Wind Onshore",
         "generation_mw": 1238.414,
         "business_type": "Wind generation",
@@ -147,6 +252,8 @@ None implemented.
 
 - **Same gotchas as AGPT** — limited to wind/solar PSR types.
 - **Cross-source representation differs.** Elexon stores human-readable PSR *labels*; ENTSO-E's `wind_solar_forecast` stores the raw B-code. The same concept is represented two ways across sources — downstream joins must not assume a shared code domain.
+- **Daily silver files are bucketed by publish/ingestion day, not settlement day** (re-checked 2026-09-28 against silver re-transformed 2026-09-27; the 2026-07-30 reading of "periods 41–48 only" no longer holds). `agws_20260724.parquet` holds periods 1–45 of `settlement_date=2026-07-24` plus periods 46–48 of 2026-07-23, because AGWS is a `PUBLISH_DATETIME`-style endpoint (`connectors/elexon/endpoints.py:168-172`; bronze `data_date` is the publish-window start, `connectors/elexon/client.py:314`) and each period is published 2 h 30 min after it starts (`published_at - timestamp_utc` = 150 min on every row of settlement dates 1–25 Sep 2026), so a BST day's last three periods fall in the next UTC publish day. Always filter on the `settlement_date` column across the full glob (`agws/**/*.parquet`) — never assume one filename's date == one settlement day's data. This is a different partitioning behaviour than `settlement_date`-partitioned datasets like FUELHH/INDO/ITSDO, which hold one clean full day per file.
+- **`Solar` PSR type is present and non-trivial** (live-verified 2026-07-30: 0 MW overnight, ~12,700 MW midday peak on 24 July 2026) — not documented in the original spec, which only mentioned wind. Scope (BM-registered only vs. a broader national/embedded estimate) is unconfirmed — TODO before relying on it as an embedded-generation proxy. `Wind Onshore + Wind Offshore` summed only correlates 0.66 with FUELHH's `WIND` fuel type on the same day (mean abs diff ~1,270 MW) — the two wind figures are not interchangeable; cause of the discrepancy is also TODO.
 
 ---
 

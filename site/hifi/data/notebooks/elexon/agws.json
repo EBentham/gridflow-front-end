@@ -1,0 +1,133 @@
+{
+ "dataset": "elexon/agws",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "de59e21228817d7ad5d1fcd9eef3346c7a30c4672cc440f8395a4ffa818070a4",
+ "kernel": "gridflow_models",
+ "source": "elexon",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.elexon",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.elexon.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.elexon.query(\"agws\", \"2026-09-19\", \"2026-09-25\")",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df[[\"settlement_date\", \"settlement_period\", \"psr_type\", \"generation_mw\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "settlement_date",
+      "settlement_period",
+      "psr_type",
+      "generation_mw"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2026-09-19",
+       "46",
+       "Solar",
+       "0.0"
+      ],
+      [
+       "2026-09-19",
+       "46",
+       "Wind Offshore",
+       "9499.0"
+      ],
+      [
+       "2026-09-19",
+       "46",
+       "Wind Onshore",
+       "7021.0"
+      ],
+      [
+       "2026-09-19",
+       "47",
+       "Solar",
+       "0.0"
+      ],
+      [
+       "2026-09-19",
+       "47",
+       "Wind Offshore",
+       "9540.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "wide = df.pivot_table(index=\"timestamp_utc\", columns=\"psr_type\",\n                      values=\"generation_mw\")\nwide[[\"Wind Offshore\", \"Wind Onshore\", \"Solar\"]].plot(\n    ylabel=\"MW\", color=[\"#3E8C97\", \"#1C2B22\", \"#AFC64E\"],\n    style=[\"-\", \"--\", \"-\"], figsize=(8, 3.5))",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: xlabel='timestamp_utc', ylabel='MW'>"
+    },
+    {
+     "kind": "image",
+     "src": "agws-5.png",
+     "width": 716,
+     "height": 374
+    }
+   ]
+  }
+ ]
+}

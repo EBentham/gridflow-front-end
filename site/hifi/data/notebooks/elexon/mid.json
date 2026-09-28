@@ -1,0 +1,139 @@
+{
+ "dataset": "elexon/mid",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "67eaa78f49d7d612fcd7736d0b8e94d64d10824c86dff86dc95c7a8d41bdba4e",
+ "kernel": "gridflow_models",
+ "source": "elexon",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.elexon",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.elexon.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.elexon.query(\"mid\", \"2026-09-15\", \"2026-09-21\")\ndf = df.sort_values([\"timestamp_utc\", \"data_provider_id\"])",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df[[\"settlement_date\", \"settlement_period\", \"data_provider_id\", \"market_index_price\", \"market_index_volume\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "settlement_date",
+      "settlement_period",
+      "data_provider_id",
+      "market_index_price",
+      "market_index_volume"
+     ],
+     "index": [
+      "0",
+      "24",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2026-09-15",
+       "1",
+       "APXMIDP",
+       "181.44",
+       "2571.40"
+      ],
+      [
+       "2026-09-15",
+       "1",
+       "N2EXMIDP",
+       "0.00",
+       "0.00"
+      ],
+      [
+       "2026-09-15",
+       "2",
+       "APXMIDP",
+       "179.22",
+       "2513.25"
+      ],
+      [
+       "2026-09-15",
+       "2",
+       "N2EXMIDP",
+       "0.00",
+       "0.00"
+      ],
+      [
+       "2026-09-15",
+       "3",
+       "APXMIDP",
+       "166.28",
+       "2000.10"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "apx = df[df.data_provider_id == \"APXMIDP\"]\napx.plot(x=\"timestamp_utc\", y=\"market_index_price\", ylabel=\"£/MWh\",\n         color=\"#155A6E\", figsize=(8, 3.5))",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: xlabel='timestamp_utc', ylabel='£/MWh'>"
+    },
+    {
+     "kind": "image",
+     "src": "mid-5.png",
+     "width": 699,
+     "height": 369
+    }
+   ]
+  }
+ ]
+}

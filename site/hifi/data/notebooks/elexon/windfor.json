@@ -1,0 +1,127 @@
+{
+ "dataset": "elexon/windfor",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "670cc7e67e4123401764bcb6ec00b82254ac5e739c021cd8a331728e094515e0",
+ "kernel": "gridflow_models",
+ "source": "elexon",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.elexon",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.elexon.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.elexon.query(\"windfor\", \"2026-09-20\", \"2026-09-22\")\nfor col in [\"timestamp_utc\", \"published_at\"]:\n    df[col] = df[col].dt.tz_convert(\"UTC\")\ndf = df[df.published_at.dt.strftime(\"%Y-%m-%d\") == \"2026-09-20\"]",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df.sort_values([\"timestamp_utc\", \"published_at\"])[[\"timestamp_utc\", \"published_at\", \"latest_forecast_mw\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "published_at",
+      "latest_forecast_mw"
+     ],
+     "index": [
+      "7",
+      "1",
+      "5",
+      "6",
+      "3"
+     ],
+     "rows": [
+      [
+       "2026-09-20 00:00:00+00:00",
+       "2026-09-20 03:30:00+00:00",
+       "20316.0"
+      ],
+      [
+       "2026-09-20 00:00:00+00:00",
+       "2026-09-20 05:30:00+00:00",
+       "20316.0"
+      ],
+      [
+       "2026-09-20 00:00:00+00:00",
+       "2026-09-20 08:30:00+00:00",
+       "20316.0"
+      ],
+      [
+       "2026-09-20 00:00:00+00:00",
+       "2026-09-20 10:30:00+00:00",
+       "20316.0"
+      ],
+      [
+       "2026-09-20 00:00:00+00:00",
+       "2026-09-20 12:30:00+00:00",
+       "20316.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "wide = df.pivot(index=\"timestamp_utc\", columns=\"published_at\", values=\"latest_forecast_mw\")\nwide.columns = wide.columns.strftime(\"%H:%M\")\nwide.plot(ylabel=\"MW\", figsize=(8, 3.5))",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: xlabel='timestamp_utc', ylabel='MW'>"
+    },
+    {
+     "kind": "image",
+     "src": "windfor-5.png",
+     "width": 716,
+     "height": 369
+    }
+   ]
+  }
+ ]
+}
