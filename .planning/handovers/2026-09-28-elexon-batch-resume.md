@@ -29,7 +29,7 @@ Batch brief: `.planning/v5/p26/BATCH-elexon.md`. Reports: `.planning/v5/p26/elex
 | disbsad | written (volume by service, 14 to 19 Sep) | a5b3f85429c8bcd8c | — | QUEUED: launch the checker (look at "each reply holds the half-hour starting at `to`", and the £/MWh units from the note only) |
 | market_depth | written (accepted offer volume, 16 to 22 Sep) | aa46a54294f5cafaa | — | QUEUED: launch the checker (look at the same-day-null raw-feed note: vendor behaviour or local holdings?; the MWh vs MW conflict) |
 | netbsad | writer running | a5e765b85bf3eff9a | — | launch the checker |
-| soso | writer running | a41b75f70f9993f96 | — | launch the checker |
+| soso | written (EWIC_EG mean Bid and Offer by start hour, 14 to 18 Sep) | a41b75f70f9993f96 | — | QUEUED: launch the checker (look at Bid/Offer undefined by Elexon; the "£" unit) |
 | pn | writer running | a1f13e90b72f5b8c5 | — | launch the checker |
 | nonbm, fou2t14d, uou2t14d, remit, indicated-day-ahead (family) | not started | — | — | launch writers under the throttle |
 
