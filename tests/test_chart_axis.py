@@ -50,3 +50,9 @@ def test_a_band_far_from_zero_is_drawn_to_its_own_range() -> None:
     view = chart_svg.ChartView(key=[chart_svg.KeyEntry(series="f", label="Frequency")], x_label=None)
     svg = chart_svg._lines(chart, view, chart_svg.WIDE, "t", narrow=False)
     assert ">0<" not in svg
+
+
+def test_axis_labels_carry_the_decimals_their_spacing_needs() -> None:
+    assert [chart_svg.fmt_num(v, 0.1) for v in (49.9, 50.0, 50.1)] == ["49.9", "50.0", "50.1"]
+    assert chart_svg.fmt_num(12.5, 2.5) == "12.5"
+    assert chart_svg.fmt_num(-1500, 500) == "−1,500"

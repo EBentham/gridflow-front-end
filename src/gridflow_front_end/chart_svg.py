@@ -67,9 +67,19 @@ def _f(v: float) -> str:
     return s.removesuffix(".0")
 
 
-def fmt_num(v: float) -> str:
-    """Tick labels: thousands separators and a true minus sign."""
-    text = f"{v:,.0f}" if abs(v) >= 10 or v == int(v) else f"{v:,.1f}"
+def fmt_num(v: float, step: float | None = None) -> str:
+    """Tick labels: thousands separators and a true minus sign.
+
+    With ``step`` (the axis's tick spacing) every label carries the decimals that spacing needs, so a
+    tenth-of-a-hertz axis reads 49.9, 50.0, 50.1 rather than 50 three times.
+    """
+    if step:
+        places = 0
+        while places < 4 and abs(step * 10**places - round(step * 10**places)) > 1e-6:
+            places += 1
+        text = f"{v:,.{places}f}"
+    else:
+        text = f"{v:,.0f}" if abs(v) >= 10 or v == int(v) else f"{v:,.1f}"
     return text.replace("-", "−")
 
 
@@ -269,7 +279,7 @@ class _Plot:
         ytk = " ".join(f"M{_f(fr.x0 - 6)} {_f(self.Y(v))} H{_f(fr.x0)}" for v in self.yt)
         out.append(f'<path d="{tk} {ytk}" stroke="{ink}" stroke-width="1.1"/>')
         txt = [
-            f'<text x="{_f(fr.x0 - 10)}" y="{_f(self.Y(v) + 4.5)}" text-anchor="end">{fmt_num(v)}</text>'
+            f'<text x="{_f(fr.x0 - 10)}" y="{_f(self.Y(v) + 4.5)}" text-anchor="end">{fmt_num(v, self.yt[1] - self.yt[0])}</text>'
             for v in self.yt
         ]
         txt.append(
