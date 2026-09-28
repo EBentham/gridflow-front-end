@@ -25,10 +25,10 @@ Batch brief: `.planning/v5/p26/BATCH-elexon.md`. Reports: `.planning/v5/p26/elex
 | atl | revision 1 done (gaps now break); checker running | ae4cecd8c31375b94 | aa5264d2b291ec745 | act on the verdict |
 | lolpdrm | written (de-rated margin, three noon publishes, 13 to 17 Sep) | a9a809d3db7a3003d | — | QUEUED: launch the checker (look at the key vs per-bronze-day dedup, and the cadence fact) |
 | demand-forecasts (family, lead ndf) | written (two NDF publishes for 17 Sep; notebook scores against INDO) | abf8f9353b1213246 | — | QUEUED: launch the checker (look at the "NDF is the quantity INDO reports" claims, and the 07:45 publish) |
-| boal | written (acceptances per hour by SO flag, 14 to 20 Sep) | a31536a58a5a3b972 | — | QUEUED: launch the checker when a slot frees |
+| boal | written; checker running | a31536a58a5a3b972 | (see the run) | act on the verdict |
 | disbsad | written (volume by service, 14 to 19 Sep) | a5b3f85429c8bcd8c | — | QUEUED: launch the checker (look at "each reply holds the half-hour starting at `to`", and the £/MWh units from the note only) |
 | market_depth | written (accepted offer volume, 16 to 22 Sep) | aa46a54294f5cafaa | — | QUEUED: launch the checker (look at the same-day-null raw-feed note: vendor behaviour or local holdings?; the MWh vs MW conflict) |
-| netbsad | writer running | a5e765b85bf3eff9a | — | launch the checker |
+| netbsad | written; HELD, not in the batch PR (every field is 0 across 674 periods while DISBSAD shows up to 773 MWh: likely a gridflow parse bug) | a5e765b85bf3eff9a | — | research unit first, then check and publish |
 | soso | written (EWIC_EG mean Bid and Offer by start hour, 14 to 18 Sep) | a41b75f70f9993f96 | — | QUEUED: launch the checker (look at Bid/Offer undefined by Elexon; the "£" unit) |
 | pn | writer running | a1f13e90b72f5b8c5 | — | launch the checker |
 | nonbm, fou2t14d, uou2t14d, remit, indicated-day-ahead (family) | not started | — | — | launch writers under the throttle |
@@ -37,7 +37,7 @@ If a restart kills a running agent, check its report file and the vault note fir
 
 ## Throttle (Bobbo 2026-09-29)
 
-- At most **2 agents at once** once the current wave drains. No launches above about **85% of the 5-hour window**;
+- At most **2 agents at once** once the current wave drains. No launches above about **85% of the 5-hour window** (61% at 00:00 UTC on 2026-09-29, reset 04:00 UTC);
   set a timer to resume at the reset. Check with `get_usage` as agents finish. Queued work waits in this table.
 
 ## Seat items
@@ -48,6 +48,9 @@ If a restart kills a running agent, check its report file and the vault note fir
   the page states it plainly.
 - **gridflow nondeterminism (from lolpdrm):** which publish silver keeps depends on bronze file-name order, so it
   is not the latest publish and can differ between machines. This is gridflow work.
+- **NETBSAD all zeros (held page):** every NETBSAD field reads 0 in silver across 674 periods where DISBSAD has
+  actions. Check whether the gridflow connector or transformer reads the right fields before publishing
+  `netbsad` (class-3 hold: its page stays blank on the live site).
 - **gridflow duplicates (from disbsad):** silver stores the midnight half-hour twice across neighbouring days
   (the same pattern as freq and fuelinst). Pages drop the repeat. This is gridflow work (per-day windows include
   the end instant).
