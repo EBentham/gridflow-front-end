@@ -56,3 +56,19 @@ def test_axis_labels_carry_the_decimals_their_spacing_needs() -> None:
     assert [chart_svg.fmt_num(v, 0.1) for v in (49.9, 50.0, 50.1)] == ["49.9", "50.0", "50.1"]
     assert chart_svg.fmt_num(12.5, 2.5) == "12.5"
     assert chart_svg.fmt_num(-1500, 500) == "−1,500"
+
+
+def test_settlement_dates_tick_on_uk_midnight() -> None:
+    # settlement dates 15 to 21 September 2026 in BST: each opens at 23:00 UTC the evening before
+    lo = dt.datetime(2026, 9, 14, 23, tzinfo=dt.UTC).timestamp()
+    ts = [lo + i * 1800 for i in range(7 * 48)]
+    ticks, _lo, _hi = chart_svg._time_axis(ts, chart_svg.WIDE, narrow=False, uk_days=True)
+    assert [t for t, _l, _c in ticks] == [lo + i * DAY for i in range(8)]
+    assert [label for _t, label, _c in ticks][:2] == ["15 Sep", "16 Sep"]
+
+
+def test_winter_settlement_dates_tick_on_utc_midnight() -> None:
+    lo = dt.datetime(2026, 12, 1, tzinfo=dt.UTC).timestamp()
+    ts = [lo + i * 1800 for i in range(3 * 48)]
+    ticks, _lo, _hi = chart_svg._time_axis(ts, chart_svg.WIDE, narrow=False, uk_days=True)
+    assert ticks[0][0] == lo
