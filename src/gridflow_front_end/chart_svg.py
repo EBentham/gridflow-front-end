@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import datetime as dt
 import html
+import itertools
 import math
 import re
 from collections.abc import Sequence
@@ -189,6 +190,16 @@ def _day_label(ts: float, with_month: bool = True) -> str:
     return f"{d.day} {MONTHS[d.month - 1]}" if with_month else str(d.day)
 
 
+def _step(ts: Sequence[float]) -> float:
+    """The series' own interval: its smallest spacing, not its average.
+
+    A series whose missing periods are absent rather than null has a stretched average, and a line
+    measured against it would bridge a missing half-hour instead of breaking there.
+    """
+    gaps = [b - a for a, b in itertools.pairwise(ts) if b > a]
+    return min(gaps) if gaps else 86400
+
+
 def _last_sunday(year: int, month: int) -> dt.date:
     d = dt.date(year, month + 1, 1) - dt.timedelta(days=1)
     return d - dt.timedelta(days=(d.weekday() + 1) % 7)
@@ -219,7 +230,7 @@ def _time_axis(
 ) -> tuple[list[tuple[float, str, float]], float, float]:
     """Ticks as ``(tick_ts, label, label_ts)``, plus the axis span."""
     lo, hi = ts[0], ts[-1]
-    step = (hi - lo) / max(len(ts) - 1, 1) if len(ts) > 1 else 86400
+    step = _step(ts)
     hi_edge = hi + step  # each value covers its own interval
     day = 86400
     span_days = (hi_edge - lo) / day
@@ -285,7 +296,7 @@ class _Plot:
         self.ticks, self.t0, self.t1 = _time_axis(ts, fr, narrow, uk_days)
         self.yt = nice_ticks(lo_v, hi_v, fr.y_ticks)
         self.v0, self.v1 = self.yt[0], self.yt[-1]
-        self.step = (ts[-1] - ts[0]) / max(len(ts) - 1, 1) if len(ts) > 1 else 86400
+        self.step = _step(ts)
 
     def X(self, t: float) -> float:
         return self.fr.x0 + (t - self.t0) / (self.t1 - self.t0) * (self.fr.x1 - self.fr.x0)

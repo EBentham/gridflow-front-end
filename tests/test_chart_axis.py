@@ -72,3 +72,10 @@ def test_winter_settlement_dates_tick_on_utc_midnight() -> None:
     ts = [lo + i * 1800 for i in range(3 * 48)]
     ticks, _lo, _hi = chart_svg._time_axis(ts, chart_svg.WIDE, narrow=False, uk_days=True)
     assert ticks[0][0] == lo
+
+
+def test_a_line_breaks_at_a_missing_half_hour_that_is_absent_not_null() -> None:
+    t0 = dt.datetime(2026, 9, 14, tzinfo=dt.UTC).timestamp()
+    ts = [t0 + i * 1800 for i in range(10) if i != 4]
+    runs = chart_svg._runs(ts, [1.0] * len(ts), chart_svg._step(ts))
+    assert [len(r) for r in runs] == [4, 5]
