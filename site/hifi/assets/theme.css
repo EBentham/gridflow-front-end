@@ -217,7 +217,9 @@ main { position: relative; display: block; }
      whose edges also fall in gaps between objects. Home's drawing only: the hub and dataset landscapes
      (.hub-land, .ds-land) carry their own narrow scene. */
   .landscape:not(.ds-land, .hub-land) svg { width: 260.47%; max-width: none; height: auto; aspect-ratio: 2240 / 434; margin-left: -45.35%; }
-  .landscape text { font-size: 24px; }
+  /* 27 user units at the phone frame's scale (1016 px for 2240) render at 12.2 px */
+  .landscape text { font-size: 27px; }
+  .landscape .lbl-bat { transform: translateX(-24px); }  /* keeps its last letters inside the 850 edge */
 }
 
 @media (max-width: 1099.98px) {
