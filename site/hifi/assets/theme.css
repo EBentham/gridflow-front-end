@@ -571,7 +571,7 @@ main { position: relative; display: block; }
 .ds-key li { display: grid; grid-template-columns: 30px minmax(0, 1fr); column-gap: 12px; align-items: start; padding: 7px 0; }
 .ds-key .mk { display: block; margin-top: 2px; }
 .ds-key__n { font-size: 15px; line-height: 1.4; font-weight: 600; color: var(--ink); }
-.ds-key__c { margin-left: 4px; font-weight: 400; font-size: 13px; color: var(--petrol); }
+.ds-key__c { margin-left: 4px; font-weight: 400; font-size: 13px; color: var(--petrol); white-space: nowrap; }  /* a code moves down whole, never splits at its hyphen */
 .ds-key__d { margin-top: 2px; font-size: 13.5px; line-height: 1.45; color: var(--ink-2); }
 @media (max-width: 1239.98px) {
   .ds-chart__body { grid-template-columns: minmax(0, 1fr); row-gap: 22px; }
