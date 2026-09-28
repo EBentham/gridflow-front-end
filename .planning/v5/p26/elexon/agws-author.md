@@ -2,7 +2,7 @@
 
 Page `elexon/agws`, "Wind and solar generation". Writer: Opus 5.5, 2026-09-28.
 
-- Canonical note: vault worktree `30-vendors/elexon/datasets/agws.md` (CRLF kept, 280 lines).
+- Canonical note: vault worktree `30-vendors/elexon/datasets/agws.md` (CRLF kept, 283 lines).
 - Mirror: `vault/elexon/agws.md` in the front-end worktree, byte-identical (`cmp` clean after the last edit).
 - Artefacts: `site/hifi/data/series/elexon/agws.json` (gridflow-distil, `spec_origin: vault`, 3 series x 336 points),
   `site/hifi/data/samples/elexon/agws.json` (gridflow-sample), `site/hifi/data/notebooks/elexon/agws.json` and
@@ -11,7 +11,26 @@ Page `elexon/agws`, "Wind and solar generation". Writer: Opus 5.5, 2026-09-28.
 
 ## Build and detector
 
-BUILD_STATUS
+- `uv run --system-certs --extra build gridflow-build --only elexon/agws`: passes ("wrote: data-sources/elexon/agws.html
+  (dataset template)", "rendered only ['elexon/agws']"). While I worked, other writers' in-progress notes (`windfor`,
+  `atl` over-budget fields) sometimes failed the whole elexon build; I retried until they cleared and never touched
+  their files.
+- `detect.mjs --json site/hifi/data-sources/elexon/agws.html`: `[]` (rerun after the last build).
+- Screenshots (headless Chrome, my own profile, a static server on port 9721, stopped afterwards):
+  - 1440, 1024 and 768 full page;
+  - 390 in a 390 px iframe and with CDP device emulation (plain `--window-size=390` renders at Chrome's roughly 500 px
+    minimum and looks clipped);
+  - opened states at all four widths via CDP: frame unfolded (`#fx`) and notebook open.
+  - No horizontal overflow at any width, closed or opened (`scrollWidth == innerWidth`).
+  - Hero scenery tops, chart tags, key, stratum corner labels, frame and guide, notebook and foot all fully visible.
+  - Light and dark are the same: the site has no dark theme (no `prefers-color-scheme` or `data-theme` in its CSS
+    or JS). The light/dark pixel diff is limited to the animated turbine band.
+- Changes the screenshots led to:
+  - related note "sent as B-codes" broke at the hyphen at 390; now "as B16, B18 and B19";
+  - the notebook head started at period 46, because `query()` orders by `settlement_date` only; now sorted by
+    `timestamp_utc, psr_type` in the query cell;
+  - the matplotlib legend covered the 22nd's solar peak; now `ylim=(0, 14500)` and a one-row legend in the upper
+    right, clear of every line.
 
 ## Evidence
 
@@ -45,11 +64,12 @@ Code paths are under `C:\Users\Bobbo\OneDrive\Desktop\Python\gridflow\src\gridfl
 | `x_label` "each starts at 23:00 UTC" | BST window; series `x` starts 2026-09-18T23:00:00Z. |
 | Palette | `solar` default chartreuse; `offshore` horizon (the wind role); `onshore` unpainted `hatch-lines` because DESIGN.md "Colour" gives wind one colour and "no other series colours" (petrol is nuclear). No khaki. No signed values in the window (min 0.0). |
 | Key note "FUELHH has no solar code" | fuelhh note (vault) Overview and the fuelhh `page.chart.group_map`: no solar code; Bobbo's ruling 2026-08-31 recorded there. |
-| `plot_alt` | `agws-5.png` inspected: offshore about 11,500 MW early on the 19th, onshore about 8,800 MW that day; UTC day 22: offshore max 2,814, onshore max 3,392 (series); solar daily peaks 6,158 to 10,099, 0 overnight. |
+| Notebook cells are read-only | `query`, `sort_values`, `head`, `pivot_table`, `plot`, `legend`: no refresh, backfill or ingest. The runner's `READ_ONLY_VERBS` check passed. |
+| `plot_alt` | Final `agws-5.png` (with `ylim` and a one-row legend) inspected: offshore about 11,500 MW early on the 19th, onshore about 8,800 MW that day; UTC day 22: offshore max 2,814, onshore max 3,392 (series); solar daily peaks 6,158 to 10,099, 0 overnight. |
 | Related: `agpt` every production type | agpt page and silver: 11 types including `Solar`, `Wind Offshore`, `Wind Onshore`. |
 | Related: `windfor` is Elexon's wind forecast | `endpoints.py` `"windfor"`: description "Wind Generation Forecast". |
 | Related: `fuelhh` has one wind code and no solar | fuelhh `page.chart.group_map` (`WIND` only) and note Overview. |
-| Related: ENTSO-E `wind_solar_forecast` covers the same three types as B-codes | `silver/entsoe/wind_solar_forecast.py:23-24` "B16 = Solar, B18 = Wind Offshore, B19 = Wind Onshore". |
+| Related: ENTSO-E `wind_solar_forecast` covers the same three types as B16, B18 and B19 | `silver/entsoe/wind_solar_forecast.py:23-24` "B16 = Solar, B18 = Wind Offshore, B19 = Wind Onshore". |
 
 ## Note-body corrections (canonical note)
 
@@ -79,7 +99,8 @@ questions), the schema table's missing lineage columns (a matrix-wide pattern, n
 ## Open questions
 
 - Silver dedup is per publish day (`agws.py:114-117`), so a key revised on a later day appears in two files. Across
-  all local agws silver 531 keys appear twice (all in 2022 to April 2026; document revisions 2 and 3). The chart spec
+  all local agws silver 531 keys appear twice, the latest on settlement date 2026-04-29 (document revisions 2 and 3
+  occur on 309 rows, 2022 to 2025). The chart spec
   dedups by `published_at`; `query()` in the notebook does not. None in the charted week. Worth a note-body line or a
   `_latest` view later; out of scope here.
 - `keep="last"` within a day follows sorted bronze filenames, which start with the fetch timestamp, so a later fetch
@@ -87,4 +108,10 @@ questions), the schema table's missing lineage columns (a matrix-wide pattern, n
 
 ## Template problems
 
-TEMPLATE_NOTES
+Neither is agws-specific; both look the same on `agpt`. I did not work around either.
+
+- At 390 the notebook's code cells wrap long lines mid-token (`timestamp_u` / `tc`,
+  `values="gen` / `eration_mw"`). The text is not clipped, but it is hard to read.
+- At 390 the `.head()` output table shows two columns; the rest sit behind the output's own horizontal scroll.
+- The notebook header shift reported at `build.py` ~1225 did not show on this page: the head table's headers line up
+  with their columns at every width.

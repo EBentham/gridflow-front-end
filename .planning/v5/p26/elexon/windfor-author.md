@@ -39,7 +39,7 @@ Writer, 2026-09-28. Page: `site/hifi/data-sources/elexon/windfor.html` (front-en
 
 1. **Overview**: "published per settlement period. Each row carries an initial-issue forecast and a latest-issue forecast in MW" was wrong. It now says the forecast is hourly and reissued up to 8 times a day (OpenAPI `/forecast/generation/wind`), and gives the row fields and the absence of the initial/latest split (OpenAPI `DatasetRows.WindGenerationForecast`). The unverified "canonical ... benchmarked" sentence was left as is.
 2. **Publication lag**: "Multiple publishes per day" became "Up to 8 issues a day (Elexon OpenAPI, `/forecast/generation/wind`)".
-3. **Dedup key**: the "_inline in transformer_" placeholder became `(timestamp_utc, published_at)`, keep last (`wind_forecast.py:160-165`), plus the silver-file-date = publish-window-date note.
+3. **Dedup key**: the "_inline in transformer_" placeholder became `(timestamp_utc, published_at)`, keep last (`wind_forecast.py:160-165`). It also notes that the silver file date is the publish-window date (`connectors/elexon/client.py:314`, `wind_forecast.py:60-84`).
 4. **Silver schema table**:
    - `settlement_date`, `settlement_period` and `initial_forecast_mw` are marked as not written (`:175-186`);
    - `timestamp_utc` source is `startTime` (`:133-140`), not `settlement_period_to_utc`;
@@ -53,18 +53,24 @@ Not changed: the curl example (`publishDateTime...` with `format=json`, valid fo
 
 ## Unverified
 
+- **Hourly interval**: the vendor docs I read give publish times and metering scope but do not state the target interval. "Hourly" (summary, grain, what_it_is) is what the rows and chart show: every `startTime` is on the hour, 1 h steps, 73 per issue. It is not a quoted vendor rule.
 - **Unit**: Elexon's OpenAPI row carries no unit. "MW" rests only on gridflow's column name, and the page says so.
 - **Timezone of the vendor's eight publish times**: Elexon lists clock times without a zone. In silver in September (BST) they appear as those exact times in UTC. The page does not state the zone.
 - The pattern "an hour's value freezes at the first issue published after it begins" holds for the 20 Sep issues. It is only claimed as far as the chart shows (the caption's "repeats hours already begun"), not as a rule.
 
 ## Open questions
 
+- **Spec fragility for the seat**: `page.chart.group` is `published_at`, a tz-aware datetime. The `group_map` keys (`"2026-09-20 03:30:00.000000+00:00"`) are the string Polars' `.cast(pl.String)` produced under the pinned version in `distil.py`. A re-distil under a Polars that formats datetimes differently would miss the map, and the build would then fail on `chart_view.key`. CI is unaffected (it reads the committed series). A `chart_spec` option to group on a formatted time would remove this.
+
 - The `ElexonWindForecast` pydantic schema and `ENTITY_KEY_COLUMNS` still describe the settlement-coordinate shape, which this endpoint never produces. The DATA-MATRIX "vs =" verdict compares the vault table with pydantic, not actual silver, so it missed this. Worth a gridflow docs or schema cleanup? (Not in scope here.)
 - The OpenAPI is a local scratchpad copy dated 2026-09-27. If the checker wants the quote re-sourced, the live Swagger UI is linked in the note.
 
 ## Screenshots and template observations
 
-- Headless Chrome via CDP with its own profile in the scratchpad; static server on 9722, now stopped. Captured at 1440, 1024, 768 and 390: full page folded; full page with the frame unfolded (`#fx`); the notebook drawer open with the lazy plot loaded.
+- Headless Chrome via CDP with its own profile in the scratchpad; static server on 9722, now stopped. Shots are in `scratchpad/windfor-shots/`:
+  - full page folded (`L-*`) and with the frame unfolded (`F-*`), at 1440, 1024, 768 and 390;
+  - the notebook drawer open with the lazy plot loaded (`N-*`, `NC-390`), at 1440, 1024, 768 and 390.
+- I looked at every tile. The `L-*` and `F-*` captures predate the last notebook-cell edit (the filter became `published_at.dt.day == 20`); `N-1024` and `NC-390` show the final cell.
 - **Nothing clipped or overlapping in my content.** Scenery tops, corner labels, chart key and notes, the 390 code wrap and related notes are all fully visible. No horizontal page overflow at any width (`scrollWidth == innerWidth`).
 - **No dark mode exists on the site**: no `prefers-color-scheme` or `data-theme` in `site/hifi/assets/*.css|js`, so "dark" renders identically to light.
 - **Known template issues, ignored as instructed**: the notebook df header shift, and the line y-axis starting at 0 (here the floor is 0 anyway because min < max/2).
