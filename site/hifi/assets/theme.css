@@ -115,6 +115,11 @@ code { font-size: .9em; }
 .site-foot a { color: var(--on-petrol-2); text-decoration-color: var(--chartreuse); }
 .site-foot a:hover { color: var(--on-petrol); }
 .site-foot__line { grid-column: 1 / -1; color: var(--on-petrol-3); }
+/* six nav items and the source links share one row only from about 1200px; below that the links take a row */
+@media (min-width: 700px) and (max-width: 1199.98px) {
+  .site-foot__in { grid-template-columns: auto minmax(0, 1fr); }
+  .site-foot__in > ul { grid-column: 2; }
+}
 @media (max-width: 699.98px) { .site-foot__in { grid-template-columns: minmax(0, 1fr); } }
 
 /* ---------------------------------------------------------------- the strata
