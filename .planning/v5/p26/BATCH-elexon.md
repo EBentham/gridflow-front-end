@@ -54,3 +54,10 @@ are fixed in `site/hifi/data/elexon.json`.
   --screenshot ...`) with your own `--user-data-dir` under the scratchpad, or a static server on your assigned
   port. Stop any server you start.
 - No git commands in either repo. The seat commits, mirrors and merges.
+
+## Seat follow-ups found during the batch
+
+- **Weather scenery.** No landscape fits a weather reading (`temp`, and later the Open-Meteo pages). The hero
+  scenery labels say "generation data". This needs a weather landscape or a neutral label (template work).
+- **`--only` validates every note.** A build of one page fails on another writer's half-finished note.
+  Writers retry; it is worth scoping the check to the page that was asked for.
