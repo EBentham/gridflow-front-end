@@ -101,7 +101,8 @@ code { font-size: .9em; }
 @media (max-width: 699.98px) {
   .masthead__in { padding-top: 18px; }
   .nav { flex-basis: 100%; }
-  .nav ul { justify-content: space-between; column-gap: 12px; }
+  /* six items never fit one row at 360; they sit in two rows of three by design */
+  .nav ul { display: grid; grid-template-columns: repeat(3, max-content); justify-content: space-between; gap: 2px 12px; }
 }
 
 .site-foot { color: var(--on-petrol-2); font-size: var(--fs-small); line-height: 1.5; }
