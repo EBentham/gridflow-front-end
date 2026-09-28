@@ -189,8 +189,33 @@ def _day_label(ts: float, with_month: bool = True) -> str:
     return f"{d.day} {MONTHS[d.month - 1]}" if with_month else str(d.day)
 
 
+def _last_sunday(year: int, month: int) -> dt.date:
+    d = dt.date(year, month + 1, 1) - dt.timedelta(days=1)
+    return d - dt.timedelta(days=(d.weekday() + 1) % 7)
+
+
+def _midnights(lo: float, hi: float, uk: bool) -> list[tuple[float, dt.date]]:
+    """Each midnight in ``lo..hi`` with the date it opens, on the UTC clock or the UK one.
+
+    A GB settlement date is a UK calendar day, so in summer time it opens at 23:00 UTC the evening
+    before. UK summer time runs from the last Sunday in March to the last Sunday in October, both
+    changes at 01:00 UTC, so a local midnight is an hour early for the dates in between.
+    """
+    out: list[tuple[float, dt.date]] = []
+    d = dt.datetime.fromtimestamp(lo, dt.UTC).date() - dt.timedelta(days=1)
+    while True:
+        t = dt.datetime(d.year, d.month, d.day, tzinfo=dt.UTC).timestamp()
+        if uk and _last_sunday(d.year, 3) < d <= _last_sunday(d.year, 10):
+            t -= 3600
+        if t > hi + 1:
+            return out
+        if t >= lo - 1:
+            out.append((t, d))
+        d += dt.timedelta(days=1)
+
+
 def _time_axis(
-    ts: Sequence[float], fr: Frame, narrow: bool
+    ts: Sequence[float], fr: Frame, narrow: bool, uk_days: bool = False
 ) -> tuple[list[tuple[float, str, float]], float, float]:
     """Ticks as ``(tick_ts, label, label_ts)``, plus the axis span."""
     lo, hi = ts[0], ts[-1]
@@ -198,7 +223,6 @@ def _time_axis(
     hi_edge = hi + step  # each value covers its own interval
     day = 86400
     span_days = (hi_edge - lo) / day
-    first_mid = math.ceil(lo / day) * day
     ticks: list[tuple[float, str, float]] = []
     if abs(step - day) < 60 and span_days <= 16:
         # one value per day (a gas day from 04:00, say): ticks on the days' edges, each day named
@@ -223,37 +247,42 @@ def _time_axis(
             t += hours * 3600
     elif span_days <= 16:
         every = 1 if not narrow or span_days <= 8 else 2
-        t = first_mid
-        i = 0
-        while t <= hi_edge + 1:
+        for i, (t, d) in enumerate(_midnights(lo, hi_edge, uk_days)):
             if i % every == 0:
                 # a short span labels each day at the middle of its visible part
                 centre = (t + min(t + day, hi_edge)) / 2 if span_days <= 9 else t
-                ticks.append((t, _day_label(t, with_month=not narrow or not ticks), centre))
-            t += day
-            i += 1
+                label = f"{d.day} {MONTHS[d.month - 1]}" if not narrow or not ticks else str(d.day)
+                ticks.append((t, label, centre))
     else:
         # weekly ticks on Mondays, or the 1st of each month for long spans
-        t = first_mid
-        while t <= hi_edge:
-            d = dt.datetime.fromtimestamp(t, dt.UTC)
+        for t, d in _midnights(lo, hi_edge, uk_days):
             if (span_days <= 120 and d.weekday() == 0) or (span_days > 120 and d.day == 1):
-                ticks.append((t, _day_label(t), t))
-            t += day
+                ticks.append((t, f"{d.day} {MONTHS[d.month - 1]}", t))
         if narrow and len(ticks) > 4:
             ticks = ticks[:: math.ceil(len(ticks) / 4)]
     return ticks, lo, hi_edge
+
+
+def _settlement_days(view: ChartView) -> bool:
+    """An axis of GB settlement dates marks UK days, not UTC ones."""
+    return (view.x_label or "").lower().startswith("settlement date")
 
 
 class _Plot:
     """Shared plotting state for one time drawing."""
 
     def __init__(
-        self, fr: Frame, ts: Sequence[float], lo_v: float, hi_v: float, narrow: bool
+        self,
+        fr: Frame,
+        ts: Sequence[float],
+        lo_v: float,
+        hi_v: float,
+        narrow: bool,
+        uk_days: bool = False,
     ) -> None:
         self.fr = fr
         self.narrow = narrow
-        self.ticks, self.t0, self.t1 = _time_axis(ts, fr, narrow)
+        self.ticks, self.t0, self.t1 = _time_axis(ts, fr, narrow, uk_days)
         self.yt = nice_ticks(lo_v, hi_v, fr.y_ticks)
         self.v0, self.v1 = self.yt[0], self.yt[-1]
         self.step = (ts[-1] - ts[0]) / max(len(ts) - 1, 1) if len(ts) > 1 else 86400
@@ -343,7 +372,7 @@ def _stacked(chart: dict[str, Any], view: ChartView, fr: Frame, uid: str, narrow
             upper = neg[:]
             neg = [a + min(0.0, v) for a, v in zip(neg, vals)]
             layers.append((entry, neg[:], upper, False))
-    plot = _Plot(fr, ts, min(0.0, min(neg)), max(pos), narrow)
+    plot = _Plot(fr, ts, min(0.0, min(neg)), max(pos), narrow, _settlement_days(view))
     half = plot.step / 2
     body: list[str] = []
     labels: list[str] = []
@@ -397,7 +426,7 @@ def _lines(chart: dict[str, Any], view: ChartView, fr: Frame, uid: str, narrow: 
     # A line keeps a zero baseline while zero is close to the data; a band far from zero (a temperature,
     # a frequency near 50 Hz) is drawn to its own range, or it flattens into a strip at the top.
     floor = lo - pad if lo < 0 or lo > hi / 2 else 0.0
-    plot = _Plot(fr, ts, floor, hi + pad, narrow)
+    plot = _Plot(fr, ts, floor, hi + pad, narrow, _settlement_days(view))
     half = plot.step / 2
     body: list[str] = []
     for s in chart["series"]:
