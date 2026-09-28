@@ -192,8 +192,10 @@ main { position: relative; display: block; }
 .keys a:hover h3, .keys a:focus-visible h3 { text-decoration-color: var(--chartreuse); }
 .keys p { font-size: var(--fs-small); line-height: 1.5; color: var(--on-petrol-2); }
 
-.landscape { margin-top: 12px; }
-.landscape svg { display: block; width: 100%; height: clamp(253px, 30.14vw, 434px); }
+/* The drawing is 2240 units wide. From 700px up it always shows units 0 to 1440 (the board's frame), scaled to
+   the width, so its edges sit in the same gaps between objects at every width and nothing is cut. */
+.landscape { margin-top: 12px; overflow: hidden; }
+.landscape svg { display: block; width: 100%; height: 30.14vw; }
 .landscape text { font-family: var(--body); font-style: italic; font-size: 13.5px; }
 @media (max-width: 1439.98px) { .landscape text { font-size: 14.5px; } }
 @media (max-width: 1299.98px) { .landscape text { font-size: 17px; } }
@@ -201,7 +203,12 @@ main { position: relative; display: block; }
   .landscape text { font-size: 21px; }
   .landscape .lbl-edge { display: none; }
 }
-@media (max-width: 699.98px) { .landscape .lbl-far { display: none; } }
+@media (max-width: 699.98px) {
+  /* phones show a fixed frame, units -10 to 850 (the land: wind, solar, gas, pylons, data centre, battery),
+     whose edges also fall in gaps between objects */
+  .landscape svg { width: 260.47%; max-width: none; height: auto; aspect-ratio: 2240 / 434; margin-left: -45.35%; }
+  .landscape text { font-size: 24px; }
+}
 
 @media (max-width: 1099.98px) {
   .hero { grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "lede" "keys"; row-gap: 36px; padding-top: 56px; }
