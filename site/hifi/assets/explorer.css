@@ -1,0 +1,182 @@
+/* Explorer page: the tour through gridflow explorer's screens, then how it is built.
+   Layout from the locked boards explorer-r1/2 (1440 and 390), folded into one responsive page.
+   Colours and type come from tokens.css through theme.css. */
+
+/* ---------------------------------------------------------------- sky: the opening */
+.xhero {
+  display: grid; grid-template-columns: minmax(0, 780fr) minmax(0, 440fr);
+  column-gap: 60px; align-items: start; padding-top: 64px;
+}
+.xhero__h { color: var(--on-petrol); }
+.xhero__lede { padding-top: 10px; }
+.xhero__lede p { margin: 0 0 14px; max-width: 58ch; font-size: var(--fs-lede); line-height: 1.6; color: var(--on-petrol-2); }
+.xhero__lede .xhero__lead { color: var(--on-petrol); }
+.xhero__lede .xhero__repo { margin: 22px 0 0; color: var(--on-petrol); }
+.xhero__repo code { font-size: 15px; }
+
+/* the landscape: the drawn surface the tour sits under */
+.xland { margin-top: 12px; }
+.xland svg { display: block; width: 100%; height: auto; }
+.xland__p { display: none; }
+
+@media (max-width: 1099.98px) {
+  .xhero { grid-template-columns: minmax(0, 1fr); row-gap: 22px; padding-top: 48px; }
+  .xhero__lede { padding-top: 0; max-width: 620px; }
+}
+@media (max-width: 699.98px) {
+  .xhero { padding-top: 34px; row-gap: 18px; }
+  .xhero__lede p { font-size: 16.5px; }
+}
+@media (max-width: 559.98px) {
+  .xland__d { display: none; }
+  .xland__p { display: block; }
+}
+
+/* ---------------------------------------------------------------- topsoil: the tour */
+.tour-st.stratum { padding-bottom: 0; }
+.thead {
+  display: grid; grid-template-columns: minmax(0, 520fr) minmax(0, 560fr); column-gap: 80px; align-items: end;
+  max-width: 1160px;
+}
+.thead p { max-width: 58ch; font-size: var(--fs-body); line-height: 1.62; color: var(--ink-2); }
+
+.step { display: grid; column-gap: 40px; align-items: start; margin: 84px 0 0; }
+.step.s1 { margin-top: 64px; }
+.scap { min-width: 0; }
+.scap h3 { margin: 14px 0 8px; }
+.scap p { font-size: 15px; line-height: 1.55; color: var(--ink-2); }
+.scap .scap__open { margin-top: 10px; font-size: 14px; }
+.scap__open a { font-weight: 600; color: var(--ink); }
+.jn {
+  display: block; width: 28px; height: 28px; border: 2px solid var(--ink); border-radius: 50%;
+  background: var(--daylight); font: 700 13px/24px var(--body); text-align: center; color: var(--ink);
+}
+
+/* a window frame round each real screenshot, with its tab */
+.win { min-width: 0; overflow: hidden; background: var(--daylight); border: 1.5px solid var(--ink); border-radius: 4px; }
+.wbar {
+  display: flex; justify-content: space-between; align-items: flex-end; gap: 12px;
+  height: 40px; padding: 0 18px 0 12px; background: var(--ink);
+}
+.wtab {
+  flex: none; padding: 11px 18px 12px; border-radius: 3px 3px 0 0;
+  background: var(--daylight); color: var(--ink); font: 600 14px/1 var(--body); white-space: nowrap;
+}
+.wname {
+  align-self: center; min-width: 0; overflow: hidden; text-overflow: ellipsis;
+  color: var(--on-petrol-2); font: 400 13.5px/1 var(--mono); white-space: nowrap;
+}
+.wbody { position: relative; overflow: hidden; }
+.wbody img { position: absolute; display: block; max-width: none; height: auto; }
+.ring {
+  position: absolute; border: 3px solid var(--chartreuse); outline: 1.5px solid var(--ink); border-radius: 5px;
+}
+
+/* the crops, as fractions of the window so they hold at every width (board: 1000, 880 and 960 wide) */
+.s1 .wbody { aspect-ratio: 1000 / 491; }
+.s1 img { width: 107.14%; left: -7.14%; top: 0; }
+.s1 .ring { left: 6.7%; top: 72.89%; width: 9.38%; height: 4.85%; }
+.s2 .wbody { aspect-ratio: 880 / 490; }
+.s2 img { width: 143.43%; left: -9.557%; top: 0; }
+.s2 .ring { left: 75.2%; top: 89.98%; width: 13.05%; height: 4.84%; }
+.s3 .wbody { aspect-ratio: 960 / 592; }
+.s3 img { width: 109.43%; left: -7.906%; top: 0; }
+
+/* the click trail (drawn by explorer.js where the steps sit side by side) */
+.trail { position: absolute; left: 0; top: 0; z-index: 3; overflow: visible; pointer-events: none; }
+
+@media (min-width: 1180px) {
+  .step.s1 { grid-template-columns: minmax(0, 1003fr) minmax(250px, 237fr); }
+  .step.s2 { grid-template-columns: minmax(250px, 357fr) minmax(0, 883fr); }
+  .step.s3 { grid-template-columns: minmax(0, 963fr) minmax(250px, 277fr); }
+  .s1 .scap, .s3 .scap { grid-area: 1 / 2; }
+  .s1 .win, .s3 .win { grid-area: 1 / 1; }
+  .scap { padding-top: 66px; max-width: 320px; }
+  .s2 .scap { padding-top: 76px; max-width: 340px; }
+}
+@media (max-width: 1179.98px) {
+  .step { grid-template-columns: minmax(0, 1fr); row-gap: 16px; margin-top: 56px; }
+  .step.s1 { margin-top: 40px; }
+  .scap { max-width: 62ch; }
+}
+@media (max-width: 1099.98px) {
+  .thead { grid-template-columns: minmax(0, 1fr); row-gap: 12px; }
+}
+@media (max-width: 699.98px) {
+  .thead p { font-size: 15.5px; }
+  .step { row-gap: 14px; margin-top: 40px; }
+  .step.s1 { margin-top: 30px; }
+  .scap h3 { margin-top: 10px; font-size: 20px; }
+  .wbar { height: 34px; padding: 0 10px 0 6px; }
+  .wtab { padding: 9px 12px 10px; font-size: 13px; }
+  .wname { font-size: 12px; }
+  /* phone crops: a readable part of each screen, with the whole screen a link away */
+  .s1 .wbody { aspect-ratio: 355 / 260; }
+  .s1 img { width: 338.03%; left: -28.17%; top: -107.04%; }
+  .s1 .ring { left: 15.49%; top: 47.12%; width: 29.58%; height: 10.27%; }
+  .s2 .wbody { aspect-ratio: 355 / 300; }
+  .s2 img { width: 300%; left: -25.01%; top: -39.43%; }
+  .s2 .ring { left: 1%; top: 83.33%; width: 98%; height: 14.3%; }
+  .s3 .wbody { aspect-ratio: 355 / 269; }
+  .s3 img { width: 269.66%; left: -107.13%; top: -97.36%; }
+}
+
+/* ---------------------------------------------------------------- How it's built
+   Three lines level with a drawing of one request, which runs down through the topsoil into silver and gold.
+   The bands have fixed heights so the drawing (one overlay svg) meets the contact lines where the board has
+   them: the silver contact just above FastAPI, the gold contact through DuckDB. */
+.bz { position: relative; }
+.bz .stratum.bz-t, .bz .stratum.bz-s, .bz .stratum.bz-g { padding: 0; }
+.bz-row { position: relative; height: 100%; }
+.bz-row h2 { position: absolute; top: 120px; left: var(--side); right: var(--side); }
+.bz-i {
+  position: absolute; left: var(--side); width: min(560px, calc(100% - 2 * var(--side)));
+  max-width: 38ch; font-size: 19px; line-height: 1.45; color: var(--ink);
+}
+.bz-i .tech { color: var(--ink-2); }
+.nw { white-space: nowrap; }
+.bz-t { height: 354px; }
+.bz-s { height: 343px; }
+.bz-g { height: 181px; }
+.bz-i0 { top: 193px; }
+.bz-i1 { top: 68px; }
+.bz-i2 { top: 34px; }
+
+.bz-ov { position: absolute; top: 0; left: 0; right: 0; z-index: 3; pointer-events: none; }
+.bz-draw { position: absolute; top: 0; display: block; overflow: visible; }
+.bz-draw--d { left: calc(var(--side) + 568px); }
+.bz-draw--p { display: none; left: calc(var(--side) - 16px); }
+.bz-draw .lab text { font: italic 400 14px var(--body); fill: var(--ink); }
+.bz-draw .lab text.m { font: 400 13px var(--mono); }
+.bz-draw .lab text.hs { paint-order: stroke; stroke: var(--silver-tint); stroke-width: 5px; stroke-linejoin: round; }
+.bz-draw .lab text.ht { paint-order: stroke; stroke: var(--topsoil); stroke-width: 5px; stroke-linejoin: round; }
+
+@media (max-width: 1179.98px) {
+  /* the phone arrangement: the drawing narrow at the left, the lines beside it */
+  .bz-t { height: 258px; }
+  .bz-s { height: 267px; }
+  .bz-g { height: 171px; }
+  .bz-row h2 { top: 64px; }
+  .bz-i { left: calc(var(--side) + 116px); width: auto; right: var(--side); font-size: 16px; }
+  .bz-i0 { top: 124px; }
+  .bz-i1 { top: 55.5px; }
+  .bz-i2 { top: 22px; }
+  .bz-draw--d { display: none; }
+  .bz-draw--p { display: block; }
+  .bz-draw .lab text { font-size: 12.5px; }
+  .bz-draw .lab text.m { font-size: 11px; }
+}
+
+/* ---------------------------------------------------------------- gold: the rest of gridflow */
+.rest-st.stratum { padding-top: 0; padding-bottom: 110px; }
+.rest {
+  display: grid; grid-template-columns: minmax(0, 420fr) minmax(0, 400fr) minmax(0, 400fr);
+  column-gap: 60px; align-items: start;
+}
+.re h3 { margin: 4px 0 8px; }
+.re h3 a { text-decoration-color: var(--olive); }
+.re p { max-width: 58ch; font-size: var(--fs-body); line-height: 1.62; color: var(--ink-2); }
+@media (max-width: 1099.98px) {
+  .rest-st.stratum { padding-bottom: 70px; }
+  .rest { grid-template-columns: minmax(0, 1fr); row-gap: 22px; }
+}
