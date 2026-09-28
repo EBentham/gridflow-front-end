@@ -24,7 +24,7 @@ Batch brief: `.planning/v5/p26/BATCH-elexon.md`. Reports: `.planning/v5/p26/elex
 | windfor | checker running | a1ab63925783acd9e | a17288a5f3e21ed79 | act on the verdict |
 | atl | revision 1 done (gaps now break); checker running | ae4cecd8c31375b94 | aa5264d2b291ec745 | act on the verdict |
 | lolpdrm | written (de-rated margin, three noon publishes, 13 to 17 Sep) | a9a809d3db7a3003d | — | QUEUED: launch the checker (look at the key vs per-bronze-day dedup, and the cadence fact) |
-| demand-forecasts (family, lead ndf) | writer running | abf8f9353b1213246 | — | launch the checker |
+| demand-forecasts (family, lead ndf) | written (two NDF publishes for 17 Sep; notebook scores against INDO) | abf8f9353b1213246 | — | QUEUED: launch the checker (look at the "NDF is the quantity INDO reports" claims, and the 07:45 publish) |
 | boal | written (acceptances per hour by SO flag, 14 to 20 Sep) | a31536a58a5a3b972 | — | QUEUED: launch the checker when a slot frees |
 | disbsad | writer running | a5b3f85429c8bcd8c | — | launch the checker |
 | netbsad, soso, market_depth, group 4, group 5 | not started | — | — | launch writers |
@@ -44,8 +44,10 @@ If a restart kills a running agent, check its report file and the vault note fir
   the page states it plainly.
 - **gridflow nondeterminism (from lolpdrm):** which publish silver keeps depends on bronze file-name order, so it
   is not the latest publish and can differ between machines. This is gridflow work.
-- **Frame fold order:** the sample frame folds from the right in silver's column order, so boal's MW level columns
-  always fold. A template option to set the column order (or pin columns) would help register-like tables.
+- **Frame fold order (hit by boal and demand-forecasts):** the sample frame folds from the right in silver's column
+  order, so the columns that matter (boal MW levels; demand and `published_at`) hide behind `…` and the rows look
+  identical. Proposed: an optional `record.select.columns` (a Polars `.select` order, pipeline columns still
+  last), which touches the locked 3a design ("as silver prints"), so Bobbo rules first. Then rebuild both pages.
 
 - **gridflow discrepancy (from windfor):** silver `windfor` has no `settlement_date`, `settlement_period` or
   `initial_forecast_mw` and is keyed on `(timestamp_utc, published_at)`. That contradicts the pydantic schema and the
