@@ -10,6 +10,9 @@
   - Up to 10 agents at once (raised 18:20 UTC: 35% used with 1h31m left).
   - No launches above about 92% of the 5-hour window. The window resets at 19:50 UTC.
 - **Ship:** under ruling #36, as with Elexon.
+- **18:46 UTC, 73% used, 1h04m left:** no new writers. Checks and revisions for pages already written may launch up
+  to about 90%. After that, everything waits for the 19:50 UTC reset. Then resume the "writers after the reset" rows in
+  order, with checkers as writers finish, keeping up to 10 agents at a time.
 - **Pause on new writers (18:34 UTC, 59% used, 1h16m left, rising about 12 points per 7 minutes):** in-flight pages finish
   their checks and revisions. Groups 3 and 4 start after the 19:50 UTC reset. (At 18:38 the rate had slowed, 63% with 1h12m left, so two group-3 writers started.)
 
@@ -24,7 +27,7 @@
 | generation_forecast | APPROVED (review 2) | a9ca9d520ca0d49ab | a6c61259813ce01e3 | done |
 | cross_border_flows | APPROVED (review 2), line-cite nit applied by the seat | aaad21b6d79fe8b11 | abd692feda2530f4a | done |
 | commercial_schedules | REVISE (blocker: grain misses business_type; major: BE key note overclaims); writer revising | a31494e4d83ddddc5 | a511e8538be41f2c9 | re-check |
-| net_positions | written (DE-LU day-ahead export/import bands, 14 to 20 Sep; the note had the sign wrong); checker running | affea4b8af88a3d6b | a90d8f640060a2b41 | verdict |
+| net_positions | APPROVED (4 nits; sign correction confirmed) | affea4b8af88a3d6b | a90d8f640060a2b41 | done |
 | net_transfer_capacity | written (day-ahead NTC into GB from FR, IE-SEM, BE, NL, 8 to 21 Sep); checker running | af6a9dcd642a89a55 | a57d6b2c71914570c | verdict |
 | auction_revenue | writer running | a745ee86e95b1e284 | — | checker |
 | capacity-allocated-nominated (family, lead total_capacity_allocated) | writer running | aa5201e596dbf26ce | — | checker |
