@@ -52,7 +52,7 @@ page:
   raw_feed:
     note: >-
       One call per settlement date. The most recently fetched response wins each period; a
-      same-day request returned null volumes for the day's later periods (seen on 1 September 2026).
+      same-day request returned null accepted volumes for the day's later periods (seen on 1 September 2026).
     requests:
       - "GET https://data.elexon.co.uk/bmrs/api/v1/balancing/settlement/market-depth/2026-09-20?page=1"
     commands:
@@ -254,6 +254,7 @@ None implemented.
 ## Known issues and gotchas
 
 - **Built from IMBALNGC/BOD/DISEBSP/DISPTAV** (the response's `metadata.datasets`) — don't double-count when joining with the underlying datasets.
+- **Same-day requests return nulls for later periods.** A request for the current settlement date returns all 48 periods, with the accepted and priced fields sent as JSON `null` from a period that moves with fetch time; `offerVolume`/`bidVolume` stay populated about four periods longer, and `indicatedImbalance` is sent for every period. Bronze `market_depth/2026/09/01` holds 15 fetches made during 1 September 2026: the first null accepted period is SP10 at 04:15 UTC, SP18 at 07:57-08:14 UTC, SP20 at 09:13 UTC and SP24 at 11:17 UTC (offer/bid: SP14, SP21-22, SP24, SP28). The transformer keeps each period's row from the latest fetch (`market_depth.py:42,113`), so re-ingest and re-transform the day after it ends. Vendor does not document this.
 
 ---
 

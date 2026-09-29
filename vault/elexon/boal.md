@@ -58,8 +58,8 @@ page:
       - {series: not_flagged, label: Not flagged, codes: "so_flag false", paint: hatch-lines}
   raw_feed:
     note: >-
-      From the Elexon Insights API, in 24-hour `from`/`to` windows. A segment starting at midnight
-      UTC is in both adjacent windows, so silver repeats it. Summer settlement days start 23:00 UTC.
+      From the Elexon Insights API in 24-hour `from`/`to` windows. Replies fetched for this page held
+      midnight-UTC segments in both adjacent windows; silver repeats them. Summer settlement days start 23:00 UTC.
     requests:
       - "GET https://data.elexon.co.uk/bmrs/api/v1/datasets/BOALF?from=2026-09-13T00:00:00Z&to=2026-09-14T00:00:00Z&page=1"
     commands:
@@ -276,7 +276,7 @@ None implemented.
 
 - **BM Unit IDs**: keep raw casing (e.g. `T_DRAXX-1`); do NOT normalise.
 - **`settlementPeriodFrom`/`settlementPeriodTo`**: a single acceptance can span multiple periods. Silver maps `settlementPeriodFrom → settlement_period` (loses span info). Each raw record is one segment of an acceptance; silver drops `timeFrom`, `timeTo`, `settlementPeriodTo`, `amendmentFlag` and `nationalGridBmUnit` (all but `settlementPeriodTo` renamed at `silver/elexon/boal.py:74-77`; all five absent from `output_cols` at `boal.py:133-148`), and the dedup at `boal.py:120-123` keeps one segment per (date, period, unit, acceptance): the last in response order.
-- **Midnight boundary (measured 2026-09-29 on the 2026-09-19 bronze response, not vendor-documented)**: the `from`/`to` window returned segments with `timeFrom` from 00:00 to 24:00 UTC inclusive, so a segment starting exactly at midnight is in two adjacent bronze days and two silver files with the same key.
+- **Midnight boundary (measured 2026-09-29 on the 2026-09-19 bronze response, not vendor-documented)**: the `from`/`to` window returned segments with `timeFrom` from 00:00 to 24:00 UTC inclusive, so a segment starting exactly at midnight is in two adjacent bronze days and two silver files with the same key. Checked 2026-09-29 over the silver built from the responses fetched 2026-08-16 (1 to 5 August) and 2026-09-26 (13 to 21 September 2026): 539 keys (1,078 rows) repeat across two adjacent files, all at `timestamp_utc` 00:00 UTC, with identical levels. Elexon does not document this; it is what these responses held.
 - **Acceptance number** is non-unique across (date, BM unit) — required for proper deduplication.
 
 ---

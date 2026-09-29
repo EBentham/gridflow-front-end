@@ -61,13 +61,13 @@ page:
     x_label: settlement date; each starts at 23:00 UTC
     key:
       - {series: energy, label: Energy actions, codes: Energy, paint: hatch-lines, note: "Every Energy volume here is positive, with `so_flag` false."}
-      - {series: system, label: System actions, codes: System, paint: hatch-cross, note: "Signed, -100 to 750 MWh here; no vendor text in the note says what the sign means."}
+      - {series: system, label: System actions, codes: System, paint: hatch-cross, note: "Signed, -100 to 750 MWh here; the sign's meaning is not stated."}
       - {series: lcm, label: Non-BM LCM actions, codes: Non-BM LCM, paint: hatch-dots, note: "Negative volumes with positive costs here; 5.76 MWh at most, too thin to see."}
       - {series: none, label: No action, codes: null service, paint: hatch-vertical, note: "A period with no action here carries one zero row with no service."}
   raw_feed:
     note: >-
-      From the Elexon Insights API in 24-hour `from`/`to` windows starting at midnight UTC. Each
-      reply also holds the half-hour starting at `to`, so silver repeats it on neighbouring days.
+      From the Elexon Insights API in 24-hour `from`/`to` windows from midnight UTC. Replies
+      fetched for this page also held the half-hour at `to`, so silver keeps it twice.
     requests:
       - "GET https://data.elexon.co.uk/bmrs/api/v1/datasets/DISBSAD?from=2026-09-17T00:00:00Z&to=2026-09-18T00:00:00Z&page=1"
     commands:
@@ -113,7 +113,7 @@ page:
     needs: 13 to 19 September 2026
     plot_alt: >-
       Line plot of half-hourly volume by component against timestamp_utc, 14 to 19 September
-      2026: Energy and System step between zero and blocks of 100 to 770 MWh, System dips to
+      2026: Energy and System step between zero and blocks of up to 770 MWh, System dips to
       -100 MWh on the 16th, and Non-BM LCM stays at or just below zero.
   related:
     - {dataset: elexon/netbsad, note: "Elexon's net adjustment per period, published as its own table"}
@@ -125,7 +125,7 @@ page:
 
 ## Overview
 
-Disaggregated Balancing Services Adjustment Data (DISBSAD) — the constituent BSAD components used to derive Net BSAD. Each row captures the cost and volume of a single non-BM balancing action (e.g. STOR call-off, ancillary services, system operator instructions outside of BOALF). Together with NETBSAD, DISBSAD is what BSC parties consume to reconcile imbalance settlement.
+Disaggregated Balancing Services Adjustment Data (DISBSAD) — the individual Balancing Services Adjustment Actions, which Elexon's guidance names as one of the two parts of BSAD, the other being the BPA/SPA (see Vendor documentation below); no vendor text found says NETBSAD is derived from DISBSAD (checked 2026-09-29). Each row captures the cost and volume of a single non-BM balancing action (e.g. STOR call-off, ancillary services, system operator instructions outside of BOALF). Together with NETBSAD, DISBSAD is what BSC parties consume to reconcile imbalance settlement.
 
 ---
 
@@ -232,8 +232,8 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
 | `so_flag` | `bool` | No | `soFlag` | System Operator flag. |
 | `stor_flag` | `bool` | No | `storFlag` (current) / `storProviderFlag` (legacy) | STOR flag. The transformer maps both (`disbsad.py:73-74`). |
 | `component` | `str` | Yes | `component` (legacy) / `service` (current) | DISBSAD component code. G5-W1.3: live API renamed to `service` 2026-05; transformer renames both. |
-| `cost` | `float` | Yes | `cost` | GBP. |
-| `volume` | `float` | Yes | `volume` | MWh. |
+| `cost` | `float` | Yes | `cost` | GBP (*Imbalance Pricing Guidance* p. 16; see Vendor documentation). |
+| `volume` | `float` | Yes | `volume` | MWh (*Imbalance Pricing Guidance* p. 16). |
 | `data_provider` | `str` | No | _derived_ | Default `"elexon"`. |
 | `ingested_at` | `datetime[UTC]` | Yes | _derived_ | When the silver transform ran: stamped `datetime.now(UTC)` by the transformer (`disbsad.py:125-129`), not the bronze ingest time. |
 
@@ -267,8 +267,15 @@ None implemented.
 
 ## Known issues and gotchas
 
-- **DISBSAD pairs with NETBSAD**: NETBSAD is the aggregate of DISBSAD components for the same period. Don't sum DISBSAD twice when joining.
-- **Cost field unit**: GBP (not GBP/MWh).
+- **DISBSAD and NETBSAD are not "sum and total"**: Elexon's guidance treats the individual actions (DISBSAD) and the BPA/SPA as the two parts of BSAD (Vendor documentation below); no vendor text found says NETBSAD sums DISBSAD. Measured 2026-09-29 on local silver: `netbsad` reads 0.0 in every column for 2026-09-17 periods 40 to 44, where these actions total 450 to 750 MWh of positive volume per period. Do not read NETBSAD as a DISBSAD sum.
+- **Cost field unit**: GBP (not GBP/MWh). Vendor source: *Imbalance Pricing Guidance* p. 16, quoted below.
+- **Midnight half-hour in two replies (measured 2026-09-29)**: the nine replies for `from=D T00:00:00Z&to=D+1 T00:00:00Z`, D = 13 to 21 September 2026 (fetched 2026-09-26), each ran from the period starting at D 00:00 UTC to the one starting at D+1 00:00 UTC, both included. The transformer dedups within one bronze day only (`disbsad.py:118-123`), so silver holds those keys twice (9 keys in September, all settlement period 3, same cost and volume). The vendor text quoted here does not say whether `to` is inclusive, and gridflow treats the bare `from`/`to` override as undocumented (`silver/elexon/_publication_window.py:53-56`). Dedup on the four key columns when reading across days.
+
+### Vendor documentation
+
+- Elexon, *Imbalance Pricing Guidance*, v15.0, 25 June 2020 (https://www.elexon.co.uk/bsc/documents/training-guidance/bscguidance-notes/imbalance-pricing/), p. 16: "BSAD is made up of two parts: Balancing Services Adjustment Actions (disaggregated BSAD); and Buy Price Price Adjustment (BPA) / Sell Price Price Adjustment (SPA)." "Each Balancing Services Adjustment Action has a: Balancing Services Adjustment Cost – value in £ (can be a NULL cost); Balancing Services Adjustment Volume – value in MWh; SO-Flag - either set to True/False; and STOR Provider Flag – either set to True/False."
+- Same, p. 19: "For Balancing Services Adjustment Actions, the SO also flags when it believes the balancing action was impacted by a transmission constraint", with two further interconnector reasons.
+- The guidance states no sign convention for the action's cost or volume (text search of the whole document, 2026-09-29).
 
 ---
 
