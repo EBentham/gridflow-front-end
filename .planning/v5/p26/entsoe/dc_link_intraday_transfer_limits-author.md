@@ -36,7 +36,7 @@ Every bronze response was classified with a script: root element, TimeSeries cou
 | Cadence "`PT60M` in these rows" | Silver `resolution` unique = `PT60M`; scoped to the rows shown, per the seat's ruling |
 | Grain and key include business type | Dedup `unique(subset=[timestamp_utc, in_area_code, out_area_code, business_type])`, `h6_market.py:91-99` |
 | No published limit → acknowledgement, Reason 999, "No matching data found" | 166 bronze acknowledgements; the note's live call of 2026-05-08 |
-| Each document spans a CET delivery day; silver keeps the UTC request day | Both documents' `period.timeInterval` run 22:00Z to 22:00Z; `base.py:1921-1940` (the vendor's "measured CET/CEST delivery-day over-span"); HALF_OPEN filter |
+| "Documents here span a CET delivery day" (scoped to the two documents shown); silver keeps the UTC request day | Both documents' `period.timeInterval` run 22:00Z to 22:00Z; `base.py:1921-1940` (the vendor's "measured CET/CEST delivery-day over-span"); HALF_OPEN filter |
 | "The GB and NL pair is BritNed" | The approved `cross_border_flows` note's border table (`GB–NL (BritNed)`); NESO's catalogue lists "BritNed - NESO's Intraday Trading Limit". **Not verified against ENTSO-E text**: the data-view page returns HTTP 400 |
 | Request URL | Bronze sidecar `request_url` for 2026-08-01 GB/NL: parameter order documentType, periodStart, periodEnd, in_Domain, out_Domain, securityToken |
 | One GET per pair per UTC day, eight ordered pairs; acknowledgements stored in bronze | `client.py:131-167` (day sub-windows), `:211-228` (pairs); the acknowledgement XMLs are in bronze |
@@ -49,7 +49,7 @@ Every bronze response was classified with a script: root element, TimeSeries cou
 | Eight rows 14:00 to 21:00, 300 MW low at 17:00 | `gridflow-sample` output |
 | Notebook lead (inclusive ends, lineage dropped, time-ordered only) | gridflow_models `research/handles/source.py:401-446`; `schema_manifest.py:163` date column `timestamp_utc` |
 | Related: NTC, flows and schedules request the same eight pairs | `endpoints.py` zone_pair entries all go through `_FLOW_PAIRS` |
-| Related: Elexon `INTNED` is BritNed's flow | The fuelhh note maps INTNED to imports; the BritNed name is domain knowledge (see the unverified list) |
+| Related: Elexon `INTNED` as the Netherlands interconnector flow | The fuelhh note maps INTNED to imports; the page names BritNed once only, in `what_it_is` (unverified against ENTSO-E) |
 
 ## Page choices
 

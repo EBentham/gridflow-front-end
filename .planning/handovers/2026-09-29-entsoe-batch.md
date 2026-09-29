@@ -31,7 +31,7 @@
 | net_transfer_capacity | written (day-ahead NTC into GB from FR, IE-SEM, BE, NL, 8 to 21 Sep); checker running | af6a9dcd642a89a55 | a57d6b2c71914570c | verdict |
 | auction_revenue | written (hourly EUR, GB-NL and GB-BE, 15 to 21 Sep); checker running | a745ee86e95b1e284 | a0f2a1125adccad7d | verdict |
 | capacity-allocated-nominated (family, lead total_capacity_allocated) | writer running | aa5201e596dbf26ce | — | checker |
-| dc_link_intraday_transfer_limits | writer running (thin: 24 rows, 1 to 5 Aug) | aafc74fa32a44daac | — | checker |
+| dc_link_intraday_transfer_limits | written (one BritNed line, 1 Aug, 22 points; the vendor publishes rarely); checker running, may recommend a hold | aafc74fa32a44daac | (dc-checker) | verdict |
 | group 2 rest: dc_link_intraday_transfer_limits | queued | — | — | writers |
 | current_balancing_state | writer running | aff7fcf8159bb3639 | — | checker |
 | procured_balancing_capacity | writer running | a7d2508a74e6ebbfa | — | checker |
@@ -48,7 +48,7 @@
 
 **Remediation list (Bobbo 2026-09-29):** log each gridflow or data defect as it is found, in gridflow `.planning/BACKLOG.md`
 item 13 and in the vault page `10-projects/gridflow/specs/remediation-from-site-batches.md` (on the branch for PR quant-vault#55).
-Logged so far: 13a to 13j.
+Logged so far: 13a to 13k.
 
 - Ruling #39, amended by #40: EIC codes in a note's front matter use `-` escapes (the vault scripts split the note on `---`).
   The build now rejects a literal one: guard in `page_fields.parse_page_fields`, tests in `tests/test_front_matter_fence.py`,
@@ -74,3 +74,5 @@ Logged so far: 13a to 13j.
 - gridflow and vault (from net_transfer_capacity): FR to BE and FR to DE-LU returned "No matching data" on all 19 days, so
   2 of the 8 requested pairs are dead requests. The vault note said NTC caps flow, but flow exceeds NTC in 141 of 432 hours
   on NL from DE-LU. The note is fixed in the batch.
+- Template (from dc_link): wrapped `code` in `notebook.lead` does not break at 390, so the writer reworded to fit. It needs
+  an `overflow-wrap` rule on lead code.
