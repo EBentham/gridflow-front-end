@@ -47,7 +47,8 @@
 | generation_units_master_data | writer running | a20a17cf260cfe31f | | report |
 | installed_capacity | writer running | ae278337fa1293ec8 | | report |
 | load-forecasts (family, lead load_forecast) | writer running | a0639f624b8567137 | | report |
-| still queued: installed_capacity_units, water_reservoirs, forecast_margin, outages (family) | queued | | | writers as slots free (GIE checkers first) |
+| installed_capacity_units | writer running | abc4b218164a9acf8 | | report |
+| still queued: water_reservoirs, forecast_margin, outages (family) | queued | | | writers as slots free (GIE checkers first) |
 
 ## At PR time
 
