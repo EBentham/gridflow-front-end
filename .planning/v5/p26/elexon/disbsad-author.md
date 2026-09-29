@@ -113,3 +113,20 @@ NETBSAD gotcha (see open questions).
   `.drop(columns=...)` is harmless, so the guard may be broader than intended.
 - Headless Chrome hung once at 768 with `--virtual-time-budget`; a `timeout 90` wrapper and no virtual-time flag
   worked.
+
+## Revision 1 (answering `disbsad-review.md`, REVISE: 2 majors, 4 nits)
+
+| Finding | Change |
+|---|---|
+| 1 major, `raw_feed.note` stated the `to` half-hour as a vendor rule | Scoped: "Replies fetched for this page also held the half-hour at `to`, so silver keeps it twice." (26 words). Vault body Known issues gains a dated "measured 2026-09-29" bullet: the nine replies for 13 to 21 Sep 2026 (fetched 2026-09-26) ran D 00:00 to D+1 00:00 UTC inclusive, transformer dedups within one bronze day (`disbsad.py:118-123`), 9 keys held twice, `to` inclusivity undocumented (`_publication_window.py:53-56`). |
+| 2 major, £ and MWh unsourced | Vendor source found and quoted in a new body section "Vendor documentation": Elexon, *Imbalance Pricing Guidance* v15.0, 25 June 2020, p. 16: each Balancing Services Adjustment Action has a "Balancing Services Adjustment Cost – value in £ (can be a NULL cost)" and a "Balancing Services Adjustment Volume – value in MWh" (also the SO-Flag and STOR Provider Flag). Text extracted from the PDF with pypdf in a throwaway `uv --with` env. The schema table's `cost`/`volume` rows and the "Cost field unit" gotcha now cite it. Page units stand as written. The guidance states no sign convention for either field (whole-document search), so the page keeps "the sign's meaning is not stated". |
+| 3 nit, key note referred to "the note" | System key note now "Signed, -100 to 750 MWh here; the sign's meaning is not stated." |
+| 4 nit, grain / "one row per action" vs the relation | No change, as the checker allowed once finding 1 was scoped; the notebook lead, chart and rows all dedup. |
+| 5 nit, `plot_alt` "blocks of 100 to 770 MWh" | Now "blocks of up to 770 MWh". |
+| 6 nit, body NETBSAD claims contradict the netbsad note | Aligned with the netbsad note's sourced wording: the Overview now says DISBSAD is the individual actions, one of BSAD's two parts per the guidance p. 16, with no vendor text saying NETBSAD derives from it; the "NETBSAD is the aggregate" gotcha is replaced by the guidance reading plus the dated local measurement (netbsad 0.0 on 17 Sep P40 to 44 where these actions total 450 to 750 MWh). |
+
+Checks after the revision: vault note CRLF on all 309 lines; mirror `cmp`-identical; `gridflow-build --only
+elexon/disbsad` succeeds; `detect.mjs --json` returns `[]`; the rendered HTML carries the three new strings and no
+"no vendor text". No change to the chart spec, series, sample or notebook cells (only `plot_alt` and page words),
+so the artefacts and their digests are unchanged. Layout: the edited strings are the same length or shorter, in
+places already checked at all four widths.

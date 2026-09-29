@@ -25,8 +25,8 @@ Batch brief: `.planning/v5/p26/BATCH-elexon.md`. Reports: `.planning/v5/p26/elex
 | atl | revision 1 done (gaps now break); checker running | ae4cecd8c31375b94 | aa5264d2b291ec745 | act on the verdict |
 | lolpdrm | APPROVED (review 2) | a9a809d3db7a3003d | a0485269512755d5d | done |
 | demand-forecasts (family, lead ndf) | APPROVED (review 2) | abf8f9353b1213246 | a47d843864370aaca | done |
-| boal | APPROVED; FOLLOW-UP: scope its raw-feed "comes back in both neighbouring windows" wording to fetched responses (the disbsad checker flagged the same unscoped pattern) | a31536a58a5a3b972 | adc1711149f93ffb3 | send the writer the one-line fix when a slot frees |
-| disbsad | REVISE (2 majors: `to` sentence unscoped; £/MWh unsourced), writer revising | a5b3f85429c8bcd8c | aebe91340cd8e1a7c | re-check |
+| boal | APPROVED; writer scoping the raw-feed midnight sentence (follow-up) | a31536a58a5a3b972 | adc1711149f93ffb3 | done once it lands |
+| disbsad | APPROVED (review 2) | a5b3f85429c8bcd8c | aebe91340cd8e1a7c | done |
 | market_depth | APPROVED, nits applied | aa46a54294f5cafaa | a8ccdd8aa4d55aa88 | done |
 | netbsad | written; HELD, not in the batch PR (every field is 0 across 674 periods while DISBSAD shows up to 773 MWh: likely a gridflow parse bug) | a5e765b85bf3eff9a | — | research unit first, then check and publish |
 | soso | written; checker running (launched at 76%) | a41b75f70f9993f96 | a3d57de07ebfc9143 | act on the verdict |
@@ -55,6 +55,8 @@ https://claude.ai/artifact/EYadKREQi3RnpufNwTH6Wf from `<scratch>\p26-elexon\sit
 - **lolpdrm publish choice:** which publish silver keeps depends on bronze file-name order (fetch time, then a
   hash of the body: `bronze/writer.py:33,57`), so it is deterministic but not necessarily the latest publish. The
   writer's "differs between machines" claim was wrong (checker). Worth a gridflow look.
+- **netbsad note:** two off-by-one page numbers in its Imbalance Pricing Guidance citations (disbsad checker).
+  Fix when netbsad is unheld.
 - **NETBSAD all zeros (held page):** every NETBSAD field reads 0 in silver across 674 periods where DISBSAD has
   actions. Check whether the gridflow connector or transformer reads the right fields before publishing
   `netbsad` (class-3 hold: its page stays blank on the live site).
