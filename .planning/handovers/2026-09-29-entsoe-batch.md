@@ -30,7 +30,7 @@
 | cross_border_flows | APPROVED (review 2), line-cite nit applied by the seat | aaad21b6d79fe8b11 | abd692feda2530f4a | done |
 | commercial_schedules | APPROVED (review 2) | a31494e4d83ddddc5 | a511e8538be41f2c9 | done |
 | net_positions | APPROVED (4 nits; sign correction confirmed) | affea4b8af88a3d6b | a90d8f640060a2b41 | done |
-| net_transfer_capacity | REVISE (blocker: GB price claim in related; major: flow-cap claim fails on GB from NL); writer revising | af6a9dcd642a89a55 | a57d6b2c71914570c | re-check |
+| net_transfer_capacity | APPROVED (review 2); a dead domain link in the note body is left for the seat (it is not on the page) | af6a9dcd642a89a55 | a57d6b2c71914570c | done |
 | auction_revenue | written (hourly EUR, GB-NL and GB-BE, 15 to 21 Sep); checker running | a745ee86e95b1e284 | a0f2a1125adccad7d | verdict |
 | capacity-allocated-nominated (family, lead total_capacity_allocated) | written (allocated into GB from NL and BE, 14 to 21 Sep; ships with the A07-only loss stated); checker running | aa5201e596dbf26ce | a455406fcf3b6a9f0 | verdict |
 | dc_link_intraday_transfer_limits | written (one BritNed line, 1 Aug, 22 points; the vendor publishes rarely); checker running, may recommend a hold | aafc74fa32a44daac | a8e78e2d10063228c | verdict |
