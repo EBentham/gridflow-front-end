@@ -35,7 +35,7 @@ Batch brief: `.planning/v5/p26/BATCH-elexon.md`. Reports: `.planning/v5/p26/elex
 | fou2t14d | APPROVED, 1 taste nit left as is (at 390 the folded frame repeats 12402.0) | a8d7b6b1894c6c155 | a2b14d08df16b6c0d | done |
 | uou2t14d | APPROVED (review 2) | a0a9e27c09f4cd6ff | a29dfe5ba88e4765f | done |
 | remit | APPROVED (review 2), nit applied by the seat; detector advisory on dashed Elexon IDs accepted | added78eb82ce18d5 | addf06d5b13c34aa2 | done |
-| indicated-day-ahead (family, lead indgen) | writer running (build with `--only elexon/indgen`) | a638e8b7099ae8bca | — | checker after the writer |
+| indicated-day-ahead (family, lead indgen) | written (indgen, boundary N, 17 Sep, two publishes); checker running | a638e8b7099ae8bca | aadf924deb93edda8 | act on the verdict |
 
 If a restart kills a running agent, check its report file and the vault note first, then resume it by id.
 
@@ -96,6 +96,8 @@ https://claude.ai/artifact/EYadKREQi3RnpufNwTH6Wf from `<scratch>\p26-elexon\sit
 - **Vault glossary** (`20-domain/glossary.md:123-124`) calls FOU2T14D "by BM Unit"; it is by fuel type (fou2t14d writer).
 - **Chart builder filters before it picks the latest revision** (remit): an "unavailable MW by fuel in force" chart
   over-counts (76 vs 62 at a test instant). Template work before REMIT can chart MW.
+- **gridflow (from indicated-day-ahead):** the transformers keep whichever row the API lists last (no sort), and
+  `imbalngc`/`melngc` drop `boundary`, so silver depends on Elexon's row order. Raise in gridflow.
 - **Sampler takes exactly 8 rows** (`sample.py:109`): a dataset with fewer distinct rows cannot build. Template work.
 
 - **gridflow discrepancy (from windfor):** silver `windfor` has no `settlement_date`, `settlement_period` or
