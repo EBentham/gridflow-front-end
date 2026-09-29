@@ -54,6 +54,7 @@ Writer: Opus 5.5 · high, 2026-09-29. Screenshot port 9811 (Chrome debugging on 
 | Resolution `PT60M` on GB borders, `PT15M` elsewhere, as sent (cadence, resolution) | Silver: GB pairs `PT60M`, continental pairs `PT15M`; described as "as sent in the responses we hold" per the seat time rule |
 | `published_at` fetch-time stamp | `h6_market.py:105` `with_published_at`; bronze createdDateTime `2026-09-26T18:19:06Z` vs `fetched_at` `18:19:06.967`; ruling #39 |
 | Key `[timestamp_utc, in_area_code, out_area_code, business_type]` | Transformer dedup subset `h6_market.py:91-97` |
+| Grain names three columns, key has four (deliberate) | The dedup subset includes `business_type`, so the key carries it. It is constant `A06` here, so the grain line leaves it out. The checker may prefer to add it |
 | `in_Domain` = receiving zone (in_area_code, related fuelhh note) | Project check above, plus entsoe-py |
 | Chart numbers (alt, key notes) | Read from the committed series: FR 0 to 3,076, at or above 3,000 MW for 5 to 10 hours on every day except the 19th (max 1,979), daily minimum below 210; BE max 1,055, 660 on the 17th, 11 zero hours on the 17th; NL zero to the 18th, 410 on the 19th, 1,172 on the 20th; IE max 280.827 (shown 281), non-zero only on the 14th, 16th and 17th |
 | Frame rows | `gridflow-sample`, filter `timestamp_utc == 2026-09-16T21:00:00Z`, 8 rows (same instant as the sister page) |

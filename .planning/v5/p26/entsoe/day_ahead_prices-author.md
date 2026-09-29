@@ -87,6 +87,24 @@ Left unchanged:
 2. The note's modelling advice "Use Elexon `system_prices` for GB" points at imbalance prices, not a day-ahead reference. Elexon `mid` looks closer; the page's related link uses `mid`. I left the body alone because this is domain judgement, not a code fact.
 3. `cadence` has no vendor quote. Keep it, or drop it to vendor and grain only?
 
+## Revision 1 (after `day_ahead_prices-review.md`, REVISE with 2 majors and 2 nits)
+
+1. **Major, rate limit (body).** Restored "codebase configured at 1 req/s", now citing `config/sources.yaml:192`.
+   - My mistake: I had read `gridflow/.tmp/validation-7day-20260511/config/sources.yaml`, a gitignored copy.
+   - Body correction 1 above is withdrawn.
+   - The evidence-table host citation should read `config/sources.yaml:189`; the value is unchanged.
+2. **Major, `page.facts.cadence`.** Now reads "Daily; afternoon replies here already held the next delivery day". It is scoped to the responses we hold. Evidence: the 15 Sep 19:53 UTC fetch holds delivery day 16, from 15 Sep 22:00 UTC.
+3. **Nit, `page.what_it_is` and the body bullet.** "whichever the document lists last" now reads "whichever the latest reply lists last". The body adds that `read_bronze` concatenates every capture in name order (`day_ahead_prices.py:36`).
+4. **Nit, `record.fields.price_eur_mwh`.** Now scoped: "omitted points repeat the previous one (curve type A03)".
+5. **Batch rule.** `record.fields.timestamp_utc` now reads "Start of the price period, UTC: `start + (position - 1) × resolution`" (`parsers.py:530`).
+
+Gates:
+- Canonical note CRLF on all 340 lines; no literal `---` in the front matter.
+- Mirror `cmp` clean.
+- `gridflow-build --only entsoe/day_ahead_prices` succeeds; the detector shows only the accepted EIC-dash advisory.
+- Series, sample and notebook are unchanged (neither the chart spec nor `record.select` changed).
+- Screenshots at 1280 (headless Chrome, `timeout 60`) and 390 (390 px iframe): nothing is clipped or overlapping.
+
 ## Template problems (not worked around, except as noted)
 
 1. **One bad note blocks every writer's distil.** `gridflow-distil --dataset X` validates every note (`distil.py:479-489`), so another writer's mid-edit note (`cross_border_flows`) blocked my distil until they fixed it. Suggest scoping validation to `--dataset`.

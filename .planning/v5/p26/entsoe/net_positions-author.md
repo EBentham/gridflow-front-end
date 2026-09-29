@@ -36,7 +36,7 @@ Writer: Opus 5.5 · high, 2026-09-29. The page is built in the batch worktree (`
 | Claim (field) | Evidence |
 |---|---|
 | Request URL, parameter order (`raw_feed.requests`) | Bronze `.meta.json` `request_url` for 2026-09-20: `documentType, periodStart, periodEnd, in_Domain, out_Domain, businessType, contract_MarketAgreement.Type, securityToken`. `client.py:249-262` sets `out_domain=mrid` for `domain_style="zone"`; `_domain_params` is at `client.py:548`. DE-LU's EIC has no dashes, so the URL needs no `%2D`. |
-| One GET per zone per UTC day; six zones (`raw_feed.note`) | `client.py:163-170` (`day_subwindows`); `DEFAULT_ZONES` at `endpoints.py:395`. |
+| One GET per zone per UTC day; six zones (`raw_feed.note`) | `client.py:162-168` (`day_subwindows` per window); `DEFAULT_ZONES` at `endpoints.py:395`. |
 | GB and IE-SEM return no-data acknowledgements in every response (`raw_feed.note`) | 28 of 28 GB and IE-SEM bronze XMLs contain "No matching data found for Data item IMPLICIT_ALLOCATIONS_NET_POSITIONS [12.1.E]". The vault note's 2026-05-08 live GB probe says the same. |
 | Ingest `--end 2026-09-21` excludes that date (`raw_feed.commands`) | `utils/time.py:123-140` `day_subwindows`: `[start, end)`, and a midnight end excludes the date. The dataset has no `PARTITION_SOURCE_OFFSETS`, and each response tiles the UTC day exactly (NL XML: TimeSeries periods 00:00 to 07:00, 07:00 to 15:30 and so on to 24:00). |
 | Transform `--end` is inclusive | Batch convention (author brief); the same as the cross_border_flows page. Not re-derived from `runner.py`. |
@@ -44,7 +44,7 @@ Writer: Opus 5.5 · high, 2026-09-29. The page is built in the batch worktree (`
 | Exports and imports netted, in MW, per market time unit (`summary`, `what_it_is`) | DDD v3r4 p.55: the regulation text says "for every market time unit the net positions of each bidding zone (MW)"; the description says "netted sum of electricity exports and imports". |
 | A size plus a direction, not a sign (`what_it_is`, `quantity_mw`, caption) | DDD p.55 ("indicator whether the value represents import or export"). Silver min `quantity_mw` is 1.5 MW over all 5,376 rows. `h6_market.py:86` only casts. |
 | Zone as `out_area_code` = export (project reading) | Hourly join of the signed position with actual_generation minus actual_load, same zone and hour. DE-LU: corr 0.89, sign agreement 0.89. FR 0.52 / 0.96, BE 0.41 / 0.95, NL 0.63 / 0.44 (see Unverified). Against day-ahead price minus the four-zone mean, corr is negative for DE-LU (-0.45), NL (-0.38) and BE (-0.30): exporting zones price below the mean. Corroboration only, not cited on the page: entsoe-py `parse_netpositions` treats `REGION` in `out_domain.mrid` as import (factor -1). |
-| Key (`record.key`) | Transformer dedup subset `(timestamp_utc, in_area_code, out_area_code, business_type)`, `h6_market.py:88-98`. |
+| Key (`record.key`) | Transformer dedup subset `(timestamp_utc, in_area_code, out_area_code, business_type)`, `h6_market.py:91-99`. |
 | `timestamp_utc` = period start + (position - 1) × resolution | `parsers.py:530` (seat note). |
 | `published_at` is a fetch-time stamp | Ruling #39. Rows: `published_at` 2026-09-26T18:16:48Z against bronze `fetched_at` 2026-09-26T18:16:~ for data on 2026-09-17. |
 | Quarter-hourly in the responses gridflow holds (`facts.cadence`, `resolution`) | Every silver row is `PT15M` (4 zones × 14 days × 96). |

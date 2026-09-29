@@ -117,6 +117,37 @@ The curl example is unchanged; it is correct for the vendor.
 
 About 300k tokens (the context counter ran from 15.00M to about 14.70M), Opus 5.5 · high, one agent, two advisor calls.
 
+## Revision 1 (after `cross_border_flows-review.md`, REVISE)
+
+Every finding is fixed in the canonical note and the note is mirrored with `cp`. `cmp` is clean against the working copy; it is CRLF there, and `.gitattributes` normalises it to LF.
+
+1. **Blocker, `record.fields.timestamp_utc`.** Now reads "Interval start, UTC: period start plus (position minus one) resolutions" (`parsers.py:530`, `:582`).
+2. **Major, request URL and note.**
+   - The URL now carries the plain EICs, written as `\x2D` escapes in the front matter. It renders `in_Domain=10YGB----------A&out_Domain=10YFR-RTE------C`, matching the bronze sidecar `request_url`.
+   - The "EIC dashes shown as `%2D`" clause is removed from `raw_feed.note`.
+   - The guard now checks raw front matter only (`page_fields.py:592`). I confirmed an escaped value passes `parse_page_fields`.
+3. **Major, caption and alt.**
+   - The caption names the three series ("the France, Belgium and Netherlands series with `in_area_code` GB"). It gives no reason for leaving out IE-SEM, and it is trimmed to 40 words.
+   - The alt says "three series with in_area_code GB".
+4. **Major, `related[2]` (`day_ahead_prices`).** Now reads "Prices at the continental and Irish ends; none for GB".
+5. **Major, `facts.cadence`.**
+   - Now reads "Per series, as `resolution` states; `PT60M` or `PT15M` in these rows".
+   - The Overview in the note body is scoped the same way: "at the resolution each response states (`PT60M` or `PT15M` in the responses gridflow holds; one border switched between them)".
+6. **Nit, chart filter.**
+   - `in_area_code eq "10YGB\x2D…A"` and `out_area_code in [FR, BE, NL]`, all escaped. The string range, the `ne` IE-SEM filter and the stale YAML comment are gone.
+   - Re-distilled: new `spec_sha256`, and `x` and `series` are identical to before (checked in Python).
+   - The key `codes` stay `out_Domain FR`, `BE` and `NL` (the optional part, not taken).
+7. **Nit, note body.**
+   - The Overview now says "positive as import to GB is itself a project check, not an Elexon rule".
+   - The IE-SEM row is marked "checked, weaker: hourly correlation about 0.79 with the per-cable positive parts; at most 70 MW while GB exported". My per-cable figure was 0.794 and the checker's 0.789. The 0.94 in my first report was against the positive part of the net sum.
+   - The modelling line "Net interconnector flow = GB→X − X→GB" now adds "gridflow cannot serve this yet: it requests one direction per border (`client.py:40-49`)".
+8. **Nit, France key note.** Now reads "Tracks the positive parts of Elexon's INTFR, INTIFA2 and INTELEC, summed".
+
+**Gates.**
+- `gridflow-build --only entsoe/cross_border_flows`: OK.
+- `detect.mjs`: only the accepted `em-dash-overuse` advisory. There is no `%2D` left on the page.
+- Screenshots at 1280 and 390 (CDP port 9806, under `timeout 60`, files `scratchpad/cbf-shots/r1-*`): `scrollWidth` equals `innerWidth`, no `<pre>` overflows, and the request wraps cleanly at 390 with no gaps. Nothing is clipped or overlapping.
+
 ## Seat rulings applied
 
 - **Ruling 1 (with its correction).**

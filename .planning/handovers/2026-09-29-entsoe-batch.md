@@ -20,8 +20,8 @@
 | actual_load | Revision 1 done; re-check running | afa2e30d1849a63bd | a24ae1f85e1a79713 | re-check |
 | wind_solar_forecast | APPROVED (review 2) | a21e8456c9ebdbc7f | a2f6ec605542e237d | done |
 | generation_forecast | APPROVED (review 2) | a9ca9d520ca0d49ab | a6c61259813ce01e3 | done |
-| cross_border_flows | REVISE (blocker: point time; majors: %2D URL, caption vs IE-SEM, cadence as rule); writer revising | aaad21b6d79fe8b11 | abd692feda2530f4a | re-check |
-| commercial_schedules | writer running | a31494e4d83ddddc5 | — | checker |
+| cross_border_flows | Revision 1 done; re-check running | aaad21b6d79fe8b11 | abd692feda2530f4a | re-check |
+| commercial_schedules | written (into GB from FR, BE, NL, IE-SEM, hourly, 14 to 20 Sep); checker running | a31494e4d83ddddc5 | a511e8538be41f2c9 | verdict |
 | net_positions | writer running | affea4b8af88a3d6b | — | checker |
 | net_transfer_capacity | writer running | af6a9dcd642a89a55 | — | checker |
 | auction_revenue | writer running | a745ee86e95b1e284 | — | checker |
@@ -41,7 +41,7 @@
 
 **Remediation list (Bobbo 2026-09-29):** log each gridflow or data defect as it is found, in gridflow `.planning/BACKLOG.md`
 item 13 and in the vault page `10-projects/gridflow/specs/remediation-from-site-batches.md` (on the branch for PR quant-vault#55).
-Logged so far: 13a to 13g.
+Logged so far: 13a to 13h.
 
 - Ruling #39, amended by #40: EIC codes in a note's front matter use `-` escapes (the vault scripts split the note on `---`).
   The build now rejects a literal one: guard in `page_fields.parse_page_fields`, tests in `tests/test_front_matter_fence.py`,
