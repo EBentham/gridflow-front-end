@@ -40,7 +40,7 @@ one key (v5 decision D2). The fields follow the locked page anatomy
           - {run: gridflow ingest elexon fuelhh --start ... --end ..., comment: bronze only}
       # 4. silver
       record:
-        select: {filter: [...], dedup: {...}, order_by: [...]}   # picks exactly eight rows
+        select: {filter: [...], dedup: {...}, order_by: [...], columns: [...]}  # eight rows; columns = print order
         mark: {fuel_type: PS}                    # optional, unused by the page since the frame (3a) lock
         key: [settlement_date, settlement_period, fuel_type]
         caption: ...                             # 16 words or fewer
@@ -702,7 +702,7 @@ def anatomy_errors(fields: PageFields) -> list[str]:
         if not rec.select:
             e.append(f"{p}.record.select: missing (the filter that picks the eight rows)")
         else:
-            extra = set(rec.select) - {"silver", "filter", "dedup", "order_by"}
+            extra = set(rec.select) - {"silver", "filter", "dedup", "order_by", "columns"}
             if extra:
                 e.append(f"{p}.record.select: unknown key(s) {sorted(extra)}")
         if not rec.key:
