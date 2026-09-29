@@ -25,7 +25,7 @@ Batch brief: `.planning/v5/p26/BATCH-elexon.md`. Reports: `.planning/v5/p26/elex
 | atl | revision 1 done (gaps now break); checker running | ae4cecd8c31375b94 | aa5264d2b291ec745 | act on the verdict |
 | lolpdrm | APPROVED (review 2) | a9a809d3db7a3003d | a0485269512755d5d | done |
 | demand-forecasts (family, lead ndf) | APPROVED (review 2) | abf8f9353b1213246 | a47d843864370aaca | done |
-| boal | APPROVED; writer scoping the raw-feed midnight sentence (follow-up) | a31536a58a5a3b972 | adc1711149f93ffb3 | done once it lands |
+| boal | APPROVED, follow-up applied (Revision 2) | a31536a58a5a3b972 | adc1711149f93ffb3 | done |
 | disbsad | APPROVED (review 2) | a5b3f85429c8bcd8c | aebe91340cd8e1a7c | done |
 | market_depth | APPROVED, nits applied | aa46a54294f5cafaa | a8ccdd8aa4d55aa88 | done |
 | netbsad | written; HELD, not in the batch PR (every field is 0 across 674 periods while DISBSAD shows up to 773 MWh: likely a gridflow parse bug) | a5e765b85bf3eff9a | — | research unit first, then check and publish |
@@ -39,6 +39,9 @@ If a restart kills a running agent, check its report file and the vault note fir
 
 - At most **2 agents at once** once the current wave drains. No launches above about **85% of the 5-hour window** (75% at about 00:30 UTC on 2026-09-29, reset 04:00 UTC);
   set a timer to resume at the reset. Check with `get_usage` as agents finish. Queued work waits in this table.
+
+**USAGE PAUSE (00:45 UTC 2026-09-29, 5-hour window at 81%):** no launches until the reset at 04:00 UTC. A timer
+resumes the batch at about 04:05 UTC. Only the soso checker (a3d57de07ebfc9143) was still running at the pause.
 
 **Next, in order:** checker for pn, then writers for nonbm, fou2t14d, uou2t14d, remit and
 indicated-day-ahead. Keep at most 2 agents at a time and stop launching at about 85% of the 5-hour window. Then group

@@ -122,3 +122,12 @@ schema table's `float` for levels (Pydantic says `float`; silver stores `Int64` 
 
 Then: copied the note to the mirror (`cmp` identical, 314 of 314 lines CRLF), `gridflow-build --only elexon/boal`
 green, `detect.mjs --json` `[]`. No chart, sample or notebook change, so no artefact was regenerated.
+
+## Revision 2 (disbsad checker's follow-up)
+
+`page.raw_feed.note` now scopes the midnight repeat to the fetched responses: "Replies fetched for this page held
+midnight-UTC segments in both adjacent windows; silver repeats them." (30 words). The note body's "Midnight boundary"
+bullet gained a dated evidence line: checked 2026-09-29 over silver built from responses fetched 2026-08-16 (1 to 5 Aug)
+and 2026-09-26 (13 to 21 Sep), 539 keys (1,078 rows) repeat across two adjacent files, all at 00:00 UTC, with identical
+levels; "Elexon does not document this". Fetch dates are from the bronze sidecars' `fetched_at`. Mirror identical
+(`cmp`, 314 of 314 lines CRLF), `--only elexon/boal` green, detector `[]`.
