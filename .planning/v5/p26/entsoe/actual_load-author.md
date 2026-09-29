@@ -115,3 +115,23 @@ I did not touch the curl example: it is valid for the vendor, and only the param
 - `record.fields.published_at`: "within seconds of the request". This follows seat ruling 2 and the bronze measurement over 104 documents (−3.5 s to +0.1 s).
 - `chart_view.key` NL note "Lows fall near midday on every day shown; cause undocumented." This is measured on the charted week only, and worded that way.
 - The chart's `group_map` keys use `\x2D` escapes. Check that the committed series' `spec.group_map` decodes them to the real EICs: it does, and there are no unmapped groups.
+
+## Revision 1 (after `actual_load-review.md`: REVISE, 1 major and 4 nits)
+
+1. **Major, the GB claim was stated as an ENTSO-E rule.** It is now scoped to what gridflow received.
+   - `what_it_is`: "GB and IE-SEM got ENTSO-E's "no matching data" answer (code 999) on the days charted."
+   - `related[elexon/indo].note`: "GB demand outturn; gridflow's GB calls to ENTSO-E returned code 999".
+2. **Nit 2.** `chart_view.alt` now says "DE-LU runs highest on almost every interval". FR is above DE-LU at 22:00 and 22:15 UTC on 18 Sep.
+3. **Nit 3.** The last sentence of `what_it_is` is now "ENTSO-E defines what total load includes; that definition is not quoted here." The "network losses" hint is gone.
+4. **Nit 4.** The note body's `timestamp_utc` row now cites the bronze check for the A03 claim: "all 104 data responses in bronze (checked 2026-09-29) are `curveType` A03". The parser citation now covers only the forward-fill behaviour.
+5. **Nit 5.** `chart_view.key[nl].note` is now "Lows fall between late morning and early afternoon UTC; cause undocumented."
+6. **Batch rule.**
+   - Timestamp wording: the guide line already reads "period start plus (position minus 1) times resolution", so no change was needed.
+   - Cadence: `facts.cadence` is now "15 minutes (`PT15M`) in every response charted", which states what the responses contain rather than a rule.
+7. **Gates.**
+   - The canonical note is edited with the Edit tool, keeping CRLF (304 of 304 lines).
+   - The mirror is copied byte for byte (`cmp` clean).
+   - `gridflow-build --only entsoe/actual_load` passes.
+   - `detect.mjs` reports only the accepted `em-dash-overuse` advisory (43, all EIC padding and CLI flags).
+   - CDP screenshots at 1280 and 390 show no overflow (scrollWidth equals innerWidth) and nothing clipped or overlapping in the hero facts, what-it-is, chart, key notes, raw feed or frame.
+   - The artefacts are unchanged: the chart spec, sample select and notebook cells were not edited, so no re-distil or re-run was needed.
