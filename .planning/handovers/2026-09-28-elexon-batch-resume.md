@@ -23,7 +23,7 @@ Batch brief: `.planning/v5/p26/BATCH-elexon.md`. Reports: `.planning/v5/p26/elex
 | agws | checker running | a02a65646052893e2 | a11c80668abbefdce | act on the verdict |
 | windfor | checker running | a1ab63925783acd9e | a17288a5f3e21ed79 | act on the verdict |
 | atl | revision 1 done (gaps now break); checker running | ae4cecd8c31375b94 | aa5264d2b291ec745 | act on the verdict |
-| lolpdrm | written; checker running | a9a809d3db7a3003d | a0485269512755d5d | act on the verdict |
+| lolpdrm | REVISE (1 major: "random suffix" claim), writer revising | a9a809d3db7a3003d | a0485269512755d5d | re-check |
 | demand-forecasts (family, lead ndf) | written; checker running | abf8f9353b1213246 | a47d843864370aaca | act on the verdict |
 | boal | APPROVED, nits applied | a31536a58a5a3b972 | adc1711149f93ffb3 | done |
 | disbsad | written (volume by service, 14 to 19 Sep) | a5b3f85429c8bcd8c | — | QUEUED: launch the checker (look at "each reply holds the half-hour starting at `to`", and the £/MWh units from the note only) |
@@ -46,8 +46,9 @@ If a restart kills a running agent, check its report file and the vault note fir
   period and drops the segment times (`boal.py:74-78, 120-148`). On 19 Sep, 41,078 raw segments became 22,538 silver
   rows, so silver cannot rebuild an acceptance's MW profile. This is gridflow work (a connector or transform fix);
   the page states it plainly.
-- **gridflow nondeterminism (from lolpdrm):** which publish silver keeps depends on bronze file-name order, so it
-  is not the latest publish and can differ between machines. This is gridflow work.
+- **lolpdrm publish choice:** which publish silver keeps depends on bronze file-name order (fetch time, then a
+  hash of the body: `bronze/writer.py:33,57`), so it is deterministic but not necessarily the latest publish. The
+  writer's "differs between machines" claim was wrong (checker). Worth a gridflow look.
 - **NETBSAD all zeros (held page):** every NETBSAD field reads 0 in silver across 674 periods where DISBSAD has
   actions. Check whether the gridflow connector or transformer reads the right fields before publishing
   `netbsad` (class-3 hold: its page stays blank on the live site).
