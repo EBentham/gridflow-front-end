@@ -1,0 +1,19 @@
+{
+  "dataset": "entsoe/installed_capacity",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "dfad2375efeed825d6d67eba74deb8680a847b73f7a258c1151399461036e686",
+  "type": "bar",
+  "unit": "MW",
+  "caption": "",
+  "value_column": "capacity_mw",
+  "aggregation": "sum",
+  "window": null,
+  "provenance": {"duplicates_dropped": 220, "files": 12, "null_values_dropped": 0, "rows_matched": 240, "rows_read": 804, "rows_used": 20, "silver": "entsoe/installed_capacity"},
+  "spec": {"aggregation": "sum", "dedup": {"on": ["timestamp_utc", "area_code", "production_type"], "order_by": "published_at"}, "filter": [{"column": "area_code", "op": "eq", "value": "10Y1001A1001A82H"}, {"column": "timestamp_utc", "op": "eq", "value": "2025-12-31T23:00:00Z"}], "group": "production_type", "group_map": {"B01": "biomass", "B02": "coal", "B03": "coal", "B04": "gas", "B05": "coal", "B06": "misc", "B07": "misc", "B08": "misc", "B09": "misc", "B10": "storage", "B11": "hydro", "B12": "hydro", "B13": "misc", "B15": "misc", "B16": "solar", "B17": "misc", "B18": "wind", "B19": "wind", "B20": "other", "B25": "storage"}, "silver": "entsoe/installed_capacity", "sort": "value_desc", "type": "bar", "unit": "MW", "value": "capacity_mw"},
+  "x_kind": "category",
+  "x": ["solar", "wind", "gas", "coal", "storage", "biomass", "misc", "hydro", "other"],
+  "series": [
+    {"key": "capacity_mw", "values": [104029.51, 77149.35, 35678.02, 31907.13, 23427.61, 8855.9, 6286.94, 5575.95, 2030.47]}
+  ]
+}

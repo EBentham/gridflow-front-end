@@ -1,0 +1,129 @@
+{
+ "dataset": "entsoe/total_capacity_allocated",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "720b1bfd2bd063464b69277a26844f4ca50c9d8aa82adbd4ce90ce6b5c19e2db",
+ "kernel": "gridflow_models",
+ "source": "entsoe",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.entsoe",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.entsoe.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "import pandas as pd\ncols = [\"timestamp_utc\", \"in_area_code\", \"out_area_code\", \"quantity_mw\"]\nalloc = data.entsoe.query(\"total_capacity_allocated\", \"2026-09-14\", \"2026-09-21\")[cols]\nnom = data.entsoe.query(\"total_nominated_capacity\", \"2026-09-14\", \"2026-09-21\")[cols]",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "def be_to_gb(df):\n    df = df[df.in_area_code.str.startswith(\"10YGB\") & df.out_area_code.str.startswith(\"10YBE\")]\n    return df.set_index(df.timestamp_utc.dt.tz_convert(\"UTC\")).quantity_mw.sort_index()\nboth = pd.concat({\"allocated\": be_to_gb(alloc), \"nominated_A07\": be_to_gb(nom)}, axis=1)\nboth.loc[\"2026-09-20 20:00\":\"2026-09-21 01:00\"].reset_index()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "allocated",
+      "nominated_A07"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5"
+     ],
+     "rows": [
+      [
+       "2026-09-20 20:00:00+00:00",
+       "725.0",
+       "859.0"
+      ],
+      [
+       "2026-09-20 21:00:00+00:00",
+       "725.0",
+       "851.0"
+      ],
+      [
+       "2026-09-20 22:00:00+00:00",
+       "0.0",
+       "36.0"
+      ],
+      [
+       "2026-09-20 23:00:00+00:00",
+       "0.0",
+       "65.0"
+      ],
+      [
+       "2026-09-21 00:00:00+00:00",
+       "0.0",
+       "255.0"
+      ],
+      [
+       "2026-09-21 01:00:00+00:00",
+       "0.0",
+       "842.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "ax = both.plot(ylabel=\"MW\", drawstyle=\"steps-post\", figsize=(8, 3.5), color=[\"#155A6E\", \"#C77E3C\"])\nax.legend(loc=\"upper left\", bbox_to_anchor=(1, 1));",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "total_capacity_allocated-5.png",
+     "width": 877,
+     "height": 369
+    }
+   ]
+  }
+ ]
+}

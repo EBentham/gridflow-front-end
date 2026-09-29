@@ -1,0 +1,163 @@
+{
+ "dataset": "entsoe/dc_link_intraday_transfer_limits",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "ec03dbf45f723da55b3cac6fc87f4403acd616697bd92c0255c120f18a7f3f55",
+ "kernel": "gridflow_models",
+ "source": "entsoe",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.entsoe",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.entsoe.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.entsoe.query(\"dc_link_intraday_transfer_limits\", \"2026-08-01\", \"2026-08-01\")\ndf[\"timestamp_utc\"] = df[\"timestamp_utc\"].dt.tz_convert(\"UTC\")\ndf = df.sort_values([\"timestamp_utc\", \"in_area_code\", \"out_area_code\"])",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df[[\"timestamp_utc\", \"in_area_code\", \"out_area_code\", \"quantity_mw\", \"business_type\"]].head(8)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "in_area_code",
+      "out_area_code",
+      "quantity_mw",
+      "business_type"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7"
+     ],
+     "rows": [
+      [
+       "2026-08-01 00:00:00+00:00",
+       "10YGB----------A",
+       "10YNL----------L",
+       "600.0",
+       "B06"
+      ],
+      [
+       "2026-08-01 01:00:00+00:00",
+       "10YGB----------A",
+       "10YNL----------L",
+       "550.0",
+       "B06"
+      ],
+      [
+       "2026-08-01 02:00:00+00:00",
+       "10YGB----------A",
+       "10YNL----------L",
+       "500.0",
+       "B06"
+      ],
+      [
+       "2026-08-01 03:00:00+00:00",
+       "10YGB----------A",
+       "10YNL----------L",
+       "450.0",
+       "B06"
+      ],
+      [
+       "2026-08-01 04:00:00+00:00",
+       "10YGB----------A",
+       "10YNL----------L",
+       "550.0",
+       "B06"
+      ],
+      [
+       "2026-08-01 05:00:00+00:00",
+       "10YGB----------A",
+       "10YNL----------L",
+       "650.0",
+       "B06"
+      ],
+      [
+       "2026-08-01 06:00:00+00:00",
+       "10YGB----------A",
+       "10YNL----------L",
+       "740.0",
+       "B06"
+      ],
+      [
+       "2026-08-01 07:00:00+00:00",
+       "10YGB----------A",
+       "10YNL----------L",
+       "1021.0",
+       "B06"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "df.plot(x=\"timestamp_utc\", y=\"quantity_mw\", drawstyle=\"steps-post\", ylabel=\"MW\",\n        color=\"#155A6E\", legend=False, figsize=(8, 3.5))",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: xlabel='timestamp_utc', ylabel='MW'>"
+    },
+    {
+     "kind": "image",
+     "src": "dc_link_intraday_transfer_limits-5.png",
+     "width": 726,
+     "height": 353
+    }
+   ]
+  }
+ ]
+}

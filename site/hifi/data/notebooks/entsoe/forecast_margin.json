@@ -1,0 +1,115 @@
+{
+ "dataset": "entsoe/forecast_margin",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "4accc758f037f97be951f60c4d7fab659e79341d9f1f4784d743ef7652a77678",
+ "kernel": "gridflow_models",
+ "source": "entsoe",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.entsoe",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.entsoe.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.entsoe.query(\"forecast_margin\", \"2025-12-31\", \"2025-12-31\")\nkey = [\"timestamp_utc\", \"area_code\"]\ndf = df.sort_values(\"published_at\").drop_duplicates(subset=key, keep=\"last\")",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "zones = {'10Y1001A1001A82H': 'DE-LU', '10YFR-RTE------C': 'FR',\n         '10YNL----------L': 'NL', '10YBE----------2': 'BE'}\ndf = df.assign(zone=df['area_code'].map(zones), published_at=df['published_at'].dt.tz_convert('UTC'))\n# DE-LU is sent negative (A92); silver keeps only 4126, unsigned, so drop it.\ndf = df[df['zone'] != 'DE-LU']\ndf[['zone', 'forecast_margin_mw', 'resolution', 'published_at']].reset_index(drop=True)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "zone",
+      "forecast_margin_mw",
+      "resolution",
+      "published_at"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2"
+     ],
+     "rows": [
+      [
+       "FR",
+       "1500.000",
+       "P1Y",
+       "2026-09-15 20:18:09+00:00"
+      ],
+      [
+       "BE",
+       "180.000",
+       "P1Y",
+       "2026-09-15 20:18:12+00:00"
+      ],
+      [
+       "NL",
+       "41891.044",
+       "P1Y",
+       "2026-09-15 20:18:12+00:00"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "shown = df.sort_values(\"forecast_margin_mw\", ascending=False)\nax = shown.plot.bar(x=\"zone\", y=\"forecast_margin_mw\", ylabel=\"MW\", legend=False, rot=0, figsize=(6, 3))\nax.bar_label(ax.containers[0], fmt=\"{:,.0f}\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "forecast_margin-5.png",
+     "width": 561,
+     "height": 302
+    }
+   ]
+  }
+ ]
+}

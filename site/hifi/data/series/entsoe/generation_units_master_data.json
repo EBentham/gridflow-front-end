@@ -1,0 +1,19 @@
+{
+  "dataset": "entsoe/generation_units_master_data",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "5af3aa3330c9b167e38c2bf1a700c586d10240d3d3ce29420bf9210027b77177",
+  "type": "bar",
+  "unit": "production units",
+  "caption": "",
+  "value_column": null,
+  "aggregation": "count",
+  "window": null,
+  "provenance": {"files": 2, "rows_matched": 660, "rows_read": 1317, "rows_used": 660, "silver": "entsoe/generation_units_master_data"},
+  "spec": {"aggregation": "count", "filter": [{"column": "event_time", "op": "eq", "value": "2026-09-08T00:00:00Z"}], "group": "production_type", "group_map": {"B01": "misc", "B02": "fossil", "B03": "fossil", "B04": "gas", "B05": "fossil", "B06": "fossil", "B08": "fossil", "B10": "pumped", "B11": "hydro", "B12": "hydro", "B13": "misc", "B14": "nuclear", "B16": "misc", "B17": "misc", "B18": "wind", "B19": "wind", "B20": "other", "B25": "misc"}, "silver": "entsoe/generation_units_master_data", "sort": "value_desc", "type": "bar", "unit": "production units"},
+  "x_kind": "category",
+  "x": ["gas", "wind", "hydro", "fossil", "nuclear", "pumped", "misc", "other"],
+  "series": [
+    {"key": "count", "values": [175, 172, 106, 80, 70, 27, 21, 9]}
+  ]
+}

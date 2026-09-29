@@ -10,7 +10,7 @@ layer_coverage: bronze, silver
 
 ## Overview
 
-Daily congestion-management costs paid by TSOs (in EUR) — the financial
+Monthly (`P1M`, see the silver callout; "daily" was wrong) congestion-management costs paid by TSOs (in EUR) — the financial
 total of redispatching plus countertrading actions per zone. Article 13.1.C
 of Regulation (EC) 543/2013. Used to monetise congestion at the bidding-zone
 level and as a target for congestion-cost forecast models.
@@ -78,8 +78,15 @@ curl --ssl-no-revoke -fsS \
 
 Live 2026-05-08: Acknowledgement, Reason 999 — `COSTS_OF_CONGESTION_MANAGEMENT_R3
 [13.1.C] (10YGB----------A)`. A populated payload reports
-`<quantity_Measure_Unit.name>EUR</quantity_Measure_Unit.name>` with
-`<Point><quantity>...</quantity></Point>` carrying the daily cost.
+`<currency_Unit.name>EUR</currency_Unit.name>` with
+`<Point><congestionCost_Price.amount>...</congestionCost_Price.amount></Point>`
+carrying the monthly cost (corrected 2026-09-29 from 2026-07/08 bronze: the
+earlier text named `quantity_Measure_Unit.name` and `<quantity>`, and "daily").
+Replies for FR, NL and BE carry three TimeSeries per month, `businessType`
+`A46`, `B03` and `B04`, each `curveType` `A03`, `resolution` `P1M`, one Point.
+In every populated reply seen, the `B04` value equals `A46` plus `B03`
+(project observation; the code list in the vault gives no meaning for `B03`
+or `B04`).
 
 ---
 
@@ -91,6 +98,19 @@ Live 2026-05-08: Acknowledgement, Reason 999 — `COSTS_OF_CONGESTION_MANAGEMENT
 **Dedup key**: `(timestamp_utc, in_area_code, out_area_code, business_type)`
 **Point-in-time field**: `none`
 
+> **Vendor cadence is MONTHLY (`P1M`) — live-probe verified 2026-08-04.**
+> A single-UTC-day request returns a real populated document whose
+> `Period.timeInterval` spans the **whole calendar month**
+> (`[2026-05-31T22:00Z, 2026-06-30T22:00Z)` for a 2026-06-01 request) with
+> `<resolution>P1M</resolution>` and one point. Evidence: gridflow
+> `.planning/phases/R3-test-integrity/probes/entsoe_A92_congestion_costs_FR_20260601.xml`.
+> A92 is a TSO financial-reporting article (13.1.C) that settles over
+> accounting periods, not delivery days — structurally unlike the MW/quantity
+> families. **Consequence:** this dataset is EXEMPT from gridflow's row-level
+> event-window filter (a day-exact trim would delete the row on every day
+> except the one containing the period start) — see unit N-9. The prior "P1D"
+> value in the silver sample below was a synthetic assumption and was wrong.
+
 ### Silver schema
 
 | Field | Python type | Nullable | Source field | Notes |
@@ -98,25 +118,29 @@ Live 2026-05-08: Acknowledgement, Reason 999 — `COSTS_OF_CONGESTION_MANAGEMENT
 | `timestamp_utc` | `datetime[UTC]` | No | period + position | |
 | `in_area_code` | `str` | No | `in_Domain.mRID` | Zone EIC |
 | `out_area_code` | `str` | No | `out_Domain.mRID` | Mirrors `in_area_code` |
-| `amount_eur` | `float` | No | `Point.quantity` | EUR (note: amount, not MW) |
-| `business_type` | `str` | No | TS `businessType` | Default "" in canonical. |
-| `resolution` | `str` | No | `Period.resolution` | Default "" in canonical. |
+| `amount_eur` | `float` | No | `Point.congestionCost_Price.amount` (suffix match, `parsers.py:148-153`) | EUR (note: amount, not MW); `currency_Unit.name` is not kept |
+| `business_type` | `str` | No | TS `businessType` | `A46`, `B03`, `B04` in replies (schema default ""). |
+| `resolution` | `str` | No | `Period.resolution` | `P1M` in replies (schema default ""). |
+| `published_at` | `datetime[UTC]` | Yes | root `createdDateTime` | Fetch-time stamp (added 2026-09-29) |
 | `data_provider` | `str` | No | derived | `"entsoe"` |
 | `ingested_at` | `datetime[UTC]` | Yes | derived | |
 
 ### Silver sample
 
+Real row from silver (NL, July 2026), replacing the synthetic `P1D` example on 2026-09-29.
+
 ```python
 [
     {
-        "timestamp_utc": "2026-05-06T00:00:00Z",
-        "in_area_code": "10YGB----------A",
-        "out_area_code": "10YGB----------A",
-        "amount_eur": 125000.0,
-        "business_type": "",
-        "resolution": "P1D",
+        "timestamp_utc": "2026-06-30T22:00:00Z",
+        "in_area_code": "10YNL----------L",
+        "out_area_code": "10YNL----------L",
+        "amount_eur": 16882788.28,
+        "business_type": "A46",
+        "resolution": "P1M",
+        "published_at": "2026-09-27T00:38:23Z",
         "data_provider": "entsoe",
-        "ingested_at": "2026-05-08T18:05:30Z",
+        "ingested_at": "2026-09-27T00:44:55Z",
     },
 ]
 ```
@@ -138,6 +162,27 @@ None implemented.
   responses do not necessarily indicate the absence of cost.
 - Single-zone (`domain_style=zone` per the `congestion_management_costs` entry in `endpoints.py`) — passing different
   `in_Domain`/`out_Domain` may be ignored or cause confusing empties.
+- **Silver repeats each month in every daily partition (2026-09-29).** Every
+  daily request returns the whole-month document, the transformer is exempt
+  from the event-window filter (`_event_window.py:201-204`) and dedups only
+  within one partition (`h6_market.py:91-99`). July and August 2026 silver
+  holds 744 rows but 24 distinct keys, each stored 31 times, so any read over
+  the partitions returns each month-row once per day. De-duplicate on the key
+  first.
+- **False second point in some months (2026-09-29).** With `curveType` `A03`
+  the parser forward-fills to the Period end (`parsers.py:578-600`) and steps
+  `P1M` by calendar month from the UTC start (`parsers.py:54-63`, `76-93`).
+  July's Period is `[2026-06-30T22:00Z, 2026-07-31T22:00Z)`; one month on from
+  the start is 2026-07-30T22:00Z, still inside it, so silver gains a copy of
+  July's value at 30 July 22:00 UTC (9 of the 24 keys). August
+  (`[07-31T22:00Z, 08-31T22:00Z)`) steps exactly to its end and gains none.
+  Any month following a shorter month is affected.
+- A month's row is stamped at its Period start in UTC (July: 2026-06-30T22:00Z),
+  so a `timestamp_utc` filter from 1 July misses July's real row but keeps the
+  false 30 July row. Start the range a day earlier. Checked 2026-09-29 with
+  `data.entsoe.query("congestion_management_costs", "2026-07-01", "2026-07-31")`:
+  465 rows, only the 30 July 22:00 and 31 July 22:00 UTC (August) stamps;
+  from `"2026-06-30"` it returns all 744 rows, 24 distinct keys.
 
 ---
 

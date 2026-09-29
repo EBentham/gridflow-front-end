@@ -391,8 +391,8 @@ main { position: relative; display: block; }
   height: 40px; padding: 0 18px 0 12px; background: var(--ink);
   font: 500 13.5px/1 var(--mono);
 }
-.nb-tab { padding: 11px 18px 12px; border-radius: 3px 3px 0 0; background: var(--daylight); color: var(--ink); white-space: nowrap; }
-.nb-kern { align-self: center; color: var(--on-petrol-2); white-space: nowrap; }
+.nb-tab { min-width: 0; overflow: hidden; text-overflow: ellipsis; padding: 11px 18px 12px; border-radius: 3px 3px 0 0; background: var(--daylight); color: var(--ink); white-space: nowrap; }
+.nb-kern { flex-shrink: 0; align-self: center; color: var(--on-petrol-2); white-space: nowrap; }
 .nb-body { position: relative; padding: 16px 24px 176px 8px; }
 .cell { position: relative; display: grid; grid-template-columns: 52px minmax(0, 1fr); column-gap: 10px; margin: 0 0 9px; }
 .cell.out { margin: -3px 0 12px; }
@@ -435,6 +435,7 @@ main { position: relative; display: block; }
 }
 .df th, .df td { padding: 6px 12px; text-align: right; white-space: nowrap; }
 .df thead th { font-weight: 600; border-bottom: 1px solid var(--ink); vertical-align: bottom; }
+.df thead tr:not(:last-child) th { border-bottom: 0; }  /* a named index's own row: one rule, under it */
 .df tbody th { font-weight: 600; }
 .df tbody tr:nth-child(odd) { background: var(--zebra); }
 .fig { display: grid; row-gap: 6px; justify-items: start; min-width: 0; }
@@ -698,6 +699,7 @@ button.btn { border: 0; font: 600 16px/1.3 var(--body); cursor: pointer; }
 .ds-status { min-height: 22px; margin-top: 6px; font-size: 14px; line-height: 1.5; color: var(--ink); }
 .ds-lead .ds-need { margin-top: 6px; font-size: 14.5px; line-height: 1.5; color: var(--ink-2); }
 .ds-need a { color: var(--ink); }
+.ds-gold > .ds-lead > p code { overflow-wrap: anywhere; }  /* a long call breaks at a phone-width column */
 .ds-nbcol { min-width: 0; }
 .ds-nb { margin: 0; }
 .ds-nb .nb-body { padding: 16px 24px 10px 8px; }

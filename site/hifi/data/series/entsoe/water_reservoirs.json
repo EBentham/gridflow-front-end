@@ -1,0 +1,19 @@
+{
+  "dataset": "entsoe/water_reservoirs",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "802830abd76d0e0100114a8fd77225b2d52d964d5ae5e3d9a5b2e494b0053dc3",
+  "type": "line",
+  "unit": "MWh",
+  "caption": "",
+  "value_column": "reservoir_mwh",
+  "aggregation": "last",
+  "window": {"end": "2026-09-13", "rule": "fixed", "start": "2026-07-26"},
+  "provenance": {"duplicates_dropped": 14, "files": 18, "null_values_dropped": 0, "rows_matched": 18, "rows_read": 18, "rows_used": 4, "silver": "entsoe/water_reservoirs", "silver_first": "2026-07-26T22:00:00Z", "silver_last": "2026-09-13T22:00:00Z"},
+  "spec": {"aggregation": "last", "dedup": {"on": ["timestamp_utc", "area_code"], "order_by": "published_at"}, "filter": [{"column": "area_code", "op": "eq", "value": "10YFR-RTE------C"}], "silver": "entsoe/water_reservoirs", "time": "timestamp_utc", "type": "line", "unit": "MWh", "value": "reservoir_mwh", "window": {"end": "2026-09-13", "start": "2026-07-26"}},
+  "x_kind": "time",
+  "x": ["2026-07-26T22:00:00Z", "2026-08-02T22:00:00Z", "2026-09-06T22:00:00Z", "2026-09-13T22:00:00Z"],
+  "series": [
+    {"key": "reservoir_mwh", "values": [2261238.0, 2191776.0, 1989272.0, 1952966.0]}
+  ]
+}

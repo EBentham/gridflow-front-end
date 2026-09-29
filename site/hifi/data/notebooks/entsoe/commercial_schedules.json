@@ -1,0 +1,163 @@
+{
+ "dataset": "entsoe/commercial_schedules",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "685233fa5b1c09fe2b3bbaf36c84d31342a14b461bfcde10ef6260e912334988",
+ "kernel": "gridflow_models",
+ "source": "entsoe",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.entsoe",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.entsoe.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.entsoe.query(\"commercial_schedules\", \"2026-09-14\", \"2026-09-20\")\ndf[\"timestamp_utc\"] = df[\"timestamp_utc\"].dt.tz_convert(\"UTC\")\ndf = df.sort_values([\"timestamp_utc\", \"in_area_code\", \"out_area_code\"])",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df[[\"timestamp_utc\", \"in_area_code\", \"out_area_code\", \"quantity_mw\", \"resolution\"]].head(8)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "in_area_code",
+      "out_area_code",
+      "quantity_mw",
+      "resolution"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7"
+     ],
+     "rows": [
+      [
+       "2026-09-14 00:00:00+00:00",
+       "10YFR-RTE------C",
+       "10Y1001A1001A82H",
+       "649.21",
+       "PT15M"
+      ],
+      [
+       "2026-09-14 00:00:00+00:00",
+       "10YFR-RTE------C",
+       "10YBE----------2",
+       "134.90",
+       "PT15M"
+      ],
+      [
+       "2026-09-14 00:00:00+00:00",
+       "10YGB----------A",
+       "10Y1001A1001A59C",
+       "0.00",
+       "PT60M"
+      ],
+      [
+       "2026-09-14 00:00:00+00:00",
+       "10YGB----------A",
+       "10YBE----------2",
+       "306.00",
+       "PT60M"
+      ],
+      [
+       "2026-09-14 00:00:00+00:00",
+       "10YGB----------A",
+       "10YFR-RTE------C",
+       "957.00",
+       "PT60M"
+      ],
+      [
+       "2026-09-14 00:00:00+00:00",
+       "10YGB----------A",
+       "10YNL----------L",
+       "0.00",
+       "PT60M"
+      ],
+      [
+       "2026-09-14 00:00:00+00:00",
+       "10YNL----------L",
+       "10Y1001A1001A82H",
+       "185.00",
+       "PT15M"
+      ],
+      [
+       "2026-09-14 00:00:00+00:00",
+       "10YNL----------L",
+       "10YBE----------2",
+       "226.20",
+       "PT15M"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "gb = df[df[\"in_area_code\"].str.startswith(\"10YGB\")].copy()\ngb[\"border\"] = gb[\"out_area_code\"].str[3:5].replace({\"10\": \"IE-SEM\"})\nhourly = gb.pivot_table(index=\"timestamp_utc\", columns=\"border\", values=\"quantity_mw\")\nhourly[[\"FR\", \"BE\", \"NL\", \"IE-SEM\"]].plot(ylabel=\"MW\", color=[\"#155A6E\", \"#3E8C97\", \"#66793B\", \"#C77E3C\"], figsize=(8, 3.5))",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: xlabel='timestamp_utc', ylabel='MW'>"
+    },
+    {
+     "kind": "image",
+     "src": "commercial_schedules-5.png",
+     "width": 707,
+     "height": 369
+    }
+   ]
+  }
+ ]
+}

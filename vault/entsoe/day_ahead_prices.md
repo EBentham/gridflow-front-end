@@ -4,6 +4,114 @@ dataset_key: day_ahead_prices
 vendor: ENTSO-E Transparency Platform
 last_verified: 2026-05-08
 layer_coverage: bronze, silver
+page:
+  title: Day-ahead prices by bidding zone
+  summary: >-
+    Day-ahead market clearing prices for each bidding zone gridflow requests, per quarter-hour or
+    hour, in the currency ENTSO-E sends.
+  facts:
+    vendor: ENTSO-E Transparency Platform, document type A44
+    cadence: Daily; evening replies here already held the next delivery day
+    grain: One row per bidding zone and price period (15 or 60 minutes)
+  landscape: market
+  what_it_is: >-
+    ENTSO-E's day-ahead clearing price per bidding zone and period, for the zones gridflow
+    requests. From 14 to 20 September 2026, FR, NL, BE and DE-LU cleared in quarter-hours and
+    IE-SEM hourly. GB returns Acknowledgement 999, no data. DE-LU sends two numbered price
+    sequences; silver keeps one per quarter-hour, whichever the latest reply lists last.
+  how_used:
+    - The EU side of a GB interconnector spread, beside Elexon's market index price.
+    - Zone-to-zone spreads, read against cross-border flows and transfer capacity.
+    - A price target or feature for day-ahead forecasting per zone.
+  chart:
+    type: line
+    silver: entsoe/day_ahead_prices
+    time: timestamp_utc
+    value: price_eur_mwh
+    filter:
+      - {column: area_code, op: ne, value: "10Y1001A1001A82H"}
+      - {column: currency, op: eq, value: EUR}
+    group: area_code
+    group_map:
+      "10Y1001A1001A59C": ie_sem
+      "10YFR-RTE\x2D\x2D\x2D\x2D\x2D\x2DC": fr
+      "10YNL\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2DL": nl
+      "10YBE\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D2": be
+    series_order: [ie_sem, fr, nl, be]
+    aggregation: mean
+    time_bucket: 1h
+    window: {start: "2026-09-14", end: "2026-09-20"}
+    unit: EUR/MWh
+  chart_view:
+    title: Day-ahead price, hourly, 14 to 20 September 2026
+    caption: >-
+      Silver `entsoe/day_ahead_prices`, EUR/MWh, UTC days 14 to 20 September 2026: the
+      quarter-hour prices of FR, NL and BE averaged to each hour; IE-SEM as sent, hourly. DE-LU is
+      left out: silver mixes its two price sequences.
+    alt: >-
+      Line chart of hourly day-ahead prices from entsoe/day_ahead_prices, in EUR/MWh, for UTC days
+      14 to 20 September 2026. FR, NL and BE move together: evening peaks of 306 to 442 on the
+      14th, lower prices from the 17th, and hours just below zero around midday on the 19th and
+      20th (lowest -3.1, NL). IE-SEM ranges from 1, early on the 19th, to 359, and on the 20th stays
+      between 147 and 359 while the other three fall to about zero at midday.
+    x_label: UTC day; delivery days open 22:00 UTC
+    key:
+      - {series: ie_sem, label: "Ireland (SEM)", codes: IE-SEM, paint: petrol, note: "Hourly as sent; the other three are means of four quarter-hours."}
+      - {series: fr, label: France, codes: FR, paint: horizon}
+      - {series: nl, label: Netherlands, codes: NL, paint: olive}
+      - {series: be, label: Belgium, codes: BE, paint: clay}
+  raw_feed:
+    note: >-
+      From the ENTSO-E Transparency Platform, one call per zone and UTC day. Replies hold whole
+      delivery days (from 22:00 UTC here); `gridflow transform` keeps rows inside the requested day.
+    requests:
+      - "GET https://web-api.tp.entsoe.eu/api?documentType=A44&periodStart=202609200000&periodEnd=202609210000&in_Domain=10Y1001A1001A59C&out_Domain=10Y1001A1001A59C&securityToken=<your-entsoe-api-key>"
+    commands:
+      - {run: gridflow ingest entsoe day_ahead_prices --start 2026-09-14 --end 2026-09-21, comment: "bronze; the end is exclusive"}
+      - {run: gridflow transform entsoe day_ahead_prices --start 2026-09-14 --end 2026-09-20, comment: bronze to silver}
+  record:
+    select:
+      filter:
+        - {column: area_code, op: ne, value: "10Y1001A1001A82H"}
+        - {column: timestamp_utc, op: in, value: ["2026-09-20T12:00:00", "2026-09-20T13:00:00"]}
+      order_by: [timestamp_utc, area_code]
+      columns: [timestamp_utc, area_code, price_eur_mwh, currency, resolution, published_at]
+    key: [timestamp_utc, area_code]
+    caption: "12:00 and 13:00 UTC, 20 September 2026: IE-SEM above 200, the rest below zero."
+    fields:
+      timestamp_utc: "Start of the price period, UTC: `start + (position - 1) × resolution`"
+      area_code: "Bidding-zone EIC from `in_Domain.mRID`, as sent; `10Y1001A1001A59C` is IE-SEM"
+      price_eur_mwh: "Price per MWh in `currency`; omitted points repeat the previous one (curve type A03)"
+      currency: "Vendor's `currency_Unit.name`; trust it over the `price_eur_mwh` column name"
+      resolution: "Vendor period length: `PT15M` or `PT60M` in these rows"
+      published_at: "Response `createdDateTime`, stamped within seconds of the fetch; not the auction time"
+  notebook:
+    lead: >-
+      Returns a pandas DataFrame from the DuckDB relation `silver_entsoe_day_ahead_prices`, filtered
+      on `timestamp_utc` (UTC days, both ends included), returned in the session's time zone,
+      Europe/London here. Lineage columns are dropped; rows are ordered by time only.
+    cells:
+      - |
+        df = data.entsoe.query("day_ahead_prices", "2026-09-14", "2026-09-20")
+        df = df.sort_values(["area_code", "timestamp_utc"])
+      - df[["timestamp_utc", "area_code", "price_eur_mwh", "currency", "resolution"]].head()
+      - |
+        fr = df[df.area_code.str.startswith("10YFR")]
+        ie = df[df.area_code == "10Y1001A1001A59C"]
+        ax = fr.plot(x="timestamp_utc", y="price_eur_mwh", label="FR, 15 min",
+                     color="#3E8C97", figsize=(8, 3.5))
+        ie.plot(x="timestamp_utc", y="price_eur_mwh", label="IE-SEM, hourly",
+                color="#155A6E", ylabel="EUR/MWh", ax=ax)
+    needs: 14 to 20 September 2026
+    plot_alt: >-
+      Line plot of price_eur_mwh against timestamp_utc, 14 to 20 September 2026: FR's quarter-hours
+      (about -1 to 333 EUR/MWh) and IE-SEM's hours (1 to 359). The two share a daily shape until
+      the 20th, when FR sits near zero from early morning to mid-afternoon while IE-SEM rises to 359.
+  related:
+    - {dataset: entsoe/cross_border_flows, note: "Physical flows across the borders between these same zones"}
+    - {dataset: entsoe/actual_load, note: "Realised load in the same bidding zones"}
+    - {dataset: entsoe/wind_solar_forecast, note: "Day-ahead wind and solar forecasts for the same zones and days"}
+    - {dataset: elexon/mid, note: "GB's market index price, the GB side of a spread"}
 ---
 
 # ENTSO-E — Day-ahead Prices (A44)
@@ -37,7 +145,7 @@ Related domain notes:
 | Path             | `/api` |
 | Method           | GET |
 | Auth             | Query param `securityToken` from env var `ENTSOE_API_KEY` |
-| Rate limit       | Not vendor-published — codebase configured at 1 req/s; treat 1 req/s as polite |
+| Rate limit       | Not vendor-published — codebase configured at 1 req/s (`config/sources.yaml:192`); treat 1 req/s as polite |
 | Pagination       | None |
 | Historical depth | ~5 years on most zones (vendor-bounded) |
 | Publication lag  | ~12:55 CET D-1 for D, then revisions |
@@ -116,7 +224,7 @@ EU day-ahead market after Brexit. Use Elexon `system_prices` for GB.
 **Transformer class**: `gridflow.silver.entsoe.day_ahead_prices.DayAheadPricesTransformer`
 **Pydantic schema**: `gridflow.schemas.entsoe.EntsoeDayAheadPrice`
 **Dedup key**: `(timestamp_utc, area_code)` — last write wins
-**Point-in-time field**: none (day-ahead prices are not revised — `data_provider` and `ingested_at` are tracking-only)
+**Point-in-time field**: `published_at`, the response document's `createdDateTime` (`silver/entsoe/day_ahead_prices.py:93-94`). In the September 2026 captures it matches the fetch time (for example `createdDateTime` 2026-09-21T09:59:33Z in a response fetched at 09:59:34Z), not the auction's publication time.
 
 ### Silver schema
 
@@ -124,9 +232,10 @@ EU day-ahead market after Brexit. Use Elexon `system_prices` for GB.
 |-------|-------------|----------|--------------|-------|
 | `timestamp_utc` | `datetime` (tz-aware UTC) | No | `Period.timeInterval.start + (position-1)*resolution` | Rejected if naive |
 | `area_code` | `str` | No | `TimeSeries/in_Domain.mRID` | EIC bidding zone mRID, as-is (no normalisation) |
-| `price_eur_mwh` | `float` | No | `Point/price.amount` | EUR/MWh (currency_Unit + price_Measure_Unit) |
+| `price_eur_mwh` | `float` | No | `Point/price.amount` | Price per MWh in `currency` (the `_eur_` name is legacy; `schemas/entsoe.py:13-20`). Curve type A03 omits repeated points; the parser forward-fills them (`connectors/entsoe/parsers.py:533-601`) |
 | `currency` | `str` | No (default `"EUR"`) | `TimeSeries/currency_Unit.name` | Source denomination (EUR/GBP); authoritative over the legacy `_eur_` value-column name. |
 | `resolution` | `str` | No (default `""`) | `Period/resolution` | ISO duration: `PT60M` or `PT15M` |
+| `published_at` | `datetime` (tz-aware UTC) | Yes | `Publication_MarketDocument/createdDateTime` | Response document creation time (`silver/entsoe/day_ahead_prices.py:93-94`; `schemas/entsoe.py:28`) |
 | `data_provider` | `str` | No (default `"entsoe"`) | derived | Constant `"entsoe"` |
 | `ingested_at` | `datetime` (tz-aware UTC) | Yes | derived | Set by transformer at silver write |
 
@@ -167,8 +276,9 @@ None implemented.
   are not published via ENTSO-E. The connector still queries GB by default
   (`DEFAULT_ZONES` includes `GB`); the silver transformer simply produces
   zero rows for GB. Use Elexon `system_prices` for GB market reference.
-- **15-minute zones**: DE-LU and a growing list of zones publish PT15M
-  resolution. The silver schema preserves `resolution` as a string;
+- **15-minute zones**: in the September 2026 captures FR, NL, BE and DE-LU
+  send PT15M and IE-SEM sends PT60M (bronze
+  `day_ahead_prices/2026/09/15/raw_20260921T0959*.xml`). The silver schema preserves `resolution` as a string;
   downstream gold/model layers must aggregate or interpolate as needed.
 - **ZIP-of-XML responses**: large windows (multi-day) may be returned as a
   ZIP archive containing day-partitioned XML files. The connector
@@ -177,8 +287,17 @@ None implemented.
   connector sends both with the same EIC; silver maps `in_Domain.mRID`
   to `area_code`.
 - **No revisions**: day-ahead prices are not republished post-clearing.
-  The dedup `(timestamp_utc, area_code)` is sufficient; no `run_type`
-  needed.
+  The dedup `(timestamp_utc, area_code)` is not sufficient for DE-LU: its
+  documents carry two TimeSeries per delivery day,
+  `classificationSequence_AttributeInstanceComponent.position` 1 and 2, with
+  different prices (up to 322 EUR/MWh apart on 14 September 2026). The parser
+  does not read the sequence and `unique(keep="last")`
+  (`silver/entsoe/day_ahead_prices.py:83`) keeps whichever series the latest reply
+  for that day lists last (`read_bronze` concatenates every capture in name
+  order, `:36`), so silver DE-LU mixes the two (14 Sep 2026: 87 quarter-hours
+  from sequence 1, 8 from sequence 2; 15 Sep: 8 and 88). The document does not
+  say what the sequences are. FR, BE and IE-SEM also send two series per day
+  on some days, but with identical prices.
 
 ---
 

@@ -1,0 +1,170 @@
+{
+ "dataset": "entsoe/water_reservoirs",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "27ad03d7443858910691c70a21db09933e461915eeecf31150908b11cfdbb492",
+ "silver": "entsoe/water_reservoirs",
+ "columns": [
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "area_code",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "reservoir_mwh",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "resolution",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "data_provider",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "ingested_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2026-07-26 22:00:00 UTC",
+   "10YFR-RTE------C",
+   "2026-08-16 13:46:44 UTC",
+   "2.261238e6",
+   "P7D",
+   "entsoe",
+   "2026-08-16 13:47:37.269 UTC",
+   "2026-07-26 22:00:00 UTC",
+   "2026-08-16 13:46:44 UTC",
+   "5c80342b-daf4-481a-a0ed-771306d17faf",
+   "1.0.0"
+  ],
+  [
+   "2026-07-26 22:00:00 UTC",
+   "10YFR-RTE------C",
+   "2026-08-16 13:47:00 UTC",
+   "2.261238e6",
+   "P7D",
+   "entsoe",
+   "2026-08-16 13:47:37.278576 UTC",
+   "2026-07-26 22:00:00 UTC",
+   "2026-08-16 13:47:00 UTC",
+   "5c80342b-daf4-481a-a0ed-771306d17faf",
+   "1.0.0"
+  ],
+  [
+   "2026-09-06 22:00:00 UTC",
+   "10YFR-RTE------C",
+   "2026-09-15 20:12:43 UTC",
+   "1.989272e6",
+   "P7D",
+   "entsoe",
+   "2026-09-15 20:13:29.273405 UTC",
+   "2026-09-06 22:00:00 UTC",
+   "2026-09-15 20:12:43 UTC",
+   "3e2c1023-df55-4bcb-963c-bd1a21e5dc9d",
+   "1.0.0"
+  ],
+  [
+   "2026-09-06 22:00:00 UTC",
+   "10YFR-RTE------C",
+   "2026-09-15 20:12:49 UTC",
+   "1.989272e6",
+   "P7D",
+   "entsoe",
+   "2026-09-15 20:13:29.280932 UTC",
+   "2026-09-06 22:00:00 UTC",
+   "2026-09-15 20:12:49 UTC",
+   "3e2c1023-df55-4bcb-963c-bd1a21e5dc9d",
+   "1.0.0"
+  ],
+  [
+   "2026-09-06 22:00:00 UTC",
+   "10YFR-RTE------C",
+   "2026-09-15 20:12:55 UTC",
+   "1.989272e6",
+   "P7D",
+   "entsoe",
+   "2026-09-15 20:13:29.289930 UTC",
+   "2026-09-06 22:00:00 UTC",
+   "2026-09-15 20:12:55 UTC",
+   "3e2c1023-df55-4bcb-963c-bd1a21e5dc9d",
+   "1.0.0"
+  ],
+  [
+   "2026-09-06 22:00:00 UTC",
+   "10YFR-RTE------C",
+   "2026-09-15 20:13:03 UTC",
+   "1.989272e6",
+   "P7D",
+   "entsoe",
+   "2026-09-15 20:13:29.297599 UTC",
+   "2026-09-06 22:00:00 UTC",
+   "2026-09-15 20:13:03 UTC",
+   "3e2c1023-df55-4bcb-963c-bd1a21e5dc9d",
+   "1.0.0"
+  ],
+  [
+   "2026-09-06 22:00:00 UTC",
+   "10YFR-RTE------C",
+   "2026-09-15 20:13:09 UTC",
+   "1.989272e6",
+   "P7D",
+   "entsoe",
+   "2026-09-15 20:13:29.303604 UTC",
+   "2026-09-06 22:00:00 UTC",
+   "2026-09-15 20:13:09 UTC",
+   "3e2c1023-df55-4bcb-963c-bd1a21e5dc9d",
+   "1.0.0"
+  ],
+  [
+   "2026-09-06 22:00:00 UTC",
+   "10YFR-RTE------C",
+   "2026-09-26 17:49:13 UTC",
+   "1.989272e6",
+   "P7D",
+   "entsoe",
+   "2026-09-26 17:51:39.610378 UTC",
+   "2026-09-06 22:00:00 UTC",
+   "2026-09-26 17:49:13 UTC",
+   "b8567e07-df79-4cb3-977d-f8c9c64b7d21",
+   "1.0.0"
+  ]
+ ],
+ "mark": null
+}

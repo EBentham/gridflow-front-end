@@ -1,0 +1,19 @@
+{
+  "dataset": "entsoe/installed_capacity_units",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "7c08b0dec7e260c1ee3e4caadfcbccc8ae1b5c7553bfcec22c6c0d7fbdc90d8c",
+  "type": "bar",
+  "unit": "production units",
+  "caption": "",
+  "value_column": null,
+  "aggregation": "count",
+  "window": null,
+  "provenance": {"duplicates_dropped": 7029, "files": 12, "rows_matched": 7668, "rows_read": 7668, "rows_used": 639, "silver": "entsoe/installed_capacity_units"},
+  "spec": {"aggregation": "count", "dedup": {"on": ["area_code", "unit_mrid"], "order_by": "published_at"}, "filter": [{"column": "timestamp_utc", "op": "eq", "value": "2025-12-31T23:00:00Z"}], "group": "production_type", "group_map": {"B01": "biomass", "B02": "coal", "B03": "coal", "B04": "gas", "B05": "coal", "B06": "oil", "B08": "smaller", "B10": "hydro", "B11": "hydro", "B12": "hydro", "B13": "smaller", "B14": "nuclear", "B16": "smaller", "B17": "smaller", "B18": "wind", "B19": "wind", "B20": "other", "B25": "smaller"}, "silver": "entsoe/installed_capacity_units", "sort": "value_desc", "type": "bar", "unit": "production units"},
+  "x_kind": "category",
+  "x": ["gas", "wind", "hydro", "nuclear", "coal", "oil", "smaller", "biomass", "other"],
+  "series": [
+    {"key": "count", "values": [167, 166, 133, 70, 50, 26, 14, 7, 6]}
+  ]
+}

@@ -79,6 +79,16 @@ Live 2026-05-08: Acknowledgement, Reason 999 — `COUNTERTRADING_R3 [13.1.B]
 identical to A63 (TimeSeries with `<businessType>` describing the
 countertrade direction).
 
+Correction 2026-09-29 (populated FR→DE-LU replies for 2026-09-22 and
+2026-09-25 in bronze): the root is `TransmissionNetwork_MarketDocument`.
+`businessType` is `B03` on every TimeSeries and does not carry the direction;
+the direction is `flowDirection.direction` (`A02` in every reply seen). Each
+TimeSeries is one quarter-hour: one Period one `PT15M` step long with one
+Point, `quantity_Measurement_Unit.name` `MAW`, `curveType` `A03`,
+`connecting_MarketParticipant.mRID` `10XFR-RTE------Q` and Reason `B24`.
+Only the FR/DE-LU pair returned data; the other seven pairs returned
+Acknowledgements.
+
 ---
 
 ## Silver layer
@@ -92,22 +102,28 @@ countertrade direction).
 ### Silver schema
 
 H6 quantity envelope: `timestamp_utc`, `in_area_code`, `out_area_code`,
-`quantity_mw`, `business_type`, `resolution`, `data_provider`,
-`ingested_at`.
+`quantity_mw`, `business_type`, `resolution`, `published_at`,
+`data_provider`, `ingested_at` (`h6_market.py:107-117`; `published_at`
+added 2026-09-29).
 
 ### Silver sample
+
+Real row from silver, replacing a synthetic GB→FR example (200.0, empty
+`business_type`, `PT60M`) on 2026-09-29. Replies carry `B03`, so
+`business_type` is not empty; `quantity_mw` is the value as sent (`MAW`).
 
 ```python
 [
     {
-        "timestamp_utc": "2026-05-06T18:00:00Z",
-        "in_area_code": "10YGB----------A",
-        "out_area_code": "10YFR-RTE------C",
-        "quantity_mw": 200.0,
-        "business_type": "",
-        "resolution": "PT60M",
+        "timestamp_utc": "2026-09-22T04:00:00Z",
+        "in_area_code": "10YFR-RTE------C",
+        "out_area_code": "10Y1001A1001A82H",
+        "quantity_mw": 300.0,
+        "business_type": "B03",
+        "resolution": "PT15M",
+        "published_at": "2026-09-27T00:22:51Z",
         "data_provider": "entsoe",
-        "ingested_at": "2026-05-08T18:05:30Z",
+        "ingested_at": "2026-09-27T00:23:23Z",
     },
 ]
 ```
@@ -126,6 +142,10 @@ None implemented.
   contracted only when warranted by congestion cost minimisation.
 - A91 events tend to coincide with simultaneous A63 redispatch and A92
   congestion-cost publications.
+- (2026-09-29) Silver keeps neither `flowDirection` nor the connecting
+  participant; the dedup key is `(timestamp_utc, in_area_code, out_area_code,
+  business_type)` (`h6_market.py:91-99`). The replies seen carry `A02` only,
+  one TimeSeries per quarter-hour, so no row was lost.
 
 ---
 

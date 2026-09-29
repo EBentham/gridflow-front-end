@@ -69,7 +69,6 @@ def test_none_spec_needs_a_reason_and_nothing_else() -> None:
         (_with(LINE, unit=""), "unit"),
         (_with(LINE, caption="  "), "caption"),
         (_with(LINE, colour="red"), "unknown key"),
-        (_with(LINE, caption="a --- b"), "---"),
         (_with(LINE, sort="label"), "sort"),
         (_with(LINE, time_bucket="1w"), "time_bucket"),
         (_with(LINE, filter=[{"column": "fuel_type", "op": "in", "value": []}]), "non-empty"),

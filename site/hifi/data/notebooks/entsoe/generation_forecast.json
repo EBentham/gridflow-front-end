@@ -1,0 +1,133 @@
+{
+ "dataset": "entsoe/generation_forecast",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "ff98929be9211b539bf8c9e370d7d732f4ffca85851a3d68b3747fb626074b81",
+ "kernel": "gridflow_models",
+ "source": "entsoe",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.entsoe",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.entsoe.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.entsoe.query(\"generation_forecast\", \"2026-09-14\", \"2026-09-20\")\ndf[\"timestamp_utc\"] = df[\"timestamp_utc\"].dt.tz_convert(\"UTC\")",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df.sort_values([\"timestamp_utc\", \"area_code\"])[[\"timestamp_utc\", \"area_code\", \"generation_forecast_mw\", \"resolution\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "area_code",
+      "generation_forecast_mw",
+      "resolution"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2026-09-14 00:00:00+00:00",
+       "10Y1001A1001A82H",
+       "31513.501651",
+       "PT15M"
+      ],
+      [
+       "2026-09-14 00:00:00+00:00",
+       "10YBE----------2",
+       "2811.702500",
+       "PT60M"
+      ],
+      [
+       "2026-09-14 00:00:00+00:00",
+       "10YFR-RTE------C",
+       "45591.000000",
+       "PT15M"
+      ],
+      [
+       "2026-09-14 00:00:00+00:00",
+       "10YNL----------L",
+       "9460.441000",
+       "PT15M"
+      ],
+      [
+       "2026-09-14 00:15:00+00:00",
+       "10Y1001A1001A82H",
+       "31356.261463",
+       "PT15M"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "de = df[df.area_code == \"10Y1001A1001A82H\"].sort_values(\"timestamp_utc\")\nde.plot(x=\"timestamp_utc\", y=\"generation_forecast_mw\", ylabel=\"MW\",\n        color=\"#155A6E\", figsize=(8, 3.5))",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: xlabel='timestamp_utc', ylabel='MW'>"
+    },
+    {
+     "kind": "image",
+     "src": "generation_forecast-5.png",
+     "width": 716,
+     "height": 369
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,145 @@
+{
+ "dataset": "entsoe/load_forecast",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "09a72dfc428c9f9a511756c33a0133c80563ad9ff9597218bf119b1a44568ff9",
+ "kernel": "gridflow_models",
+ "source": "entsoe",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.entsoe",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.entsoe.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "fc = data.entsoe.query(\"load_forecast\", \"2026-09-14\", \"2026-09-20\")\nact = data.entsoe.query(\"actual_load\", \"2026-09-14\", \"2026-09-20\")\nkeys = [\"timestamp_utc\", \"area_code\"]\nboth = fc.merge(act, on=keys).sort_values(keys, ignore_index=True)",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "both[\"error_mw\"] = both.load_forecast_mw - both.load_mw\nboth[keys + [\"load_forecast_mw\", \"load_mw\", \"error_mw\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "area_code",
+      "load_forecast_mw",
+      "load_mw",
+      "error_mw"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2026-09-14 01:00:00+01:00",
+       "10Y1001A1001A82H",
+       "39980.274374",
+       "42238.09809",
+       "-2257.823716"
+      ],
+      [
+       "2026-09-14 01:00:00+01:00",
+       "10YBE----------2",
+       "7250.610000",
+       "7088.12000",
+       "162.490000"
+      ],
+      [
+       "2026-09-14 01:00:00+01:00",
+       "10YFR-RTE------C",
+       "36300.000000",
+       "35887.95000",
+       "412.050000"
+      ],
+      [
+       "2026-09-14 01:00:00+01:00",
+       "10YNL----------L",
+       "10176.629000",
+       "10428.34600",
+       "-251.717000"
+      ],
+      [
+       "2026-09-14 01:15:00+01:00",
+       "10Y1001A1001A82H",
+       "39982.897573",
+       "42049.06892",
+       "-2066.171347"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "both.groupby(\"area_code\").error_mw.agg(lambda s: s.abs().mean()).round()",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "area_code\n10Y1001A1001A82H    1257.0\n10YBE----------2     295.0\n10YFR-RTE------C     595.0\n10YNL----------L    1707.0\nName: error_mw, dtype: float64"
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "source": "err = both.pivot_table(index=\"timestamp_utc\", columns=\"area_code\", values=\"error_mw\")\nax = err.plot(ylabel=\"forecast minus actual, MW\", figsize=(8, 3.5))\nax.legend(ncols=2, loc=\"lower center\", bbox_to_anchor=(0.5, 1.0));",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "load_forecast-6.png",
+     "width": 722,
+     "height": 422
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,185 @@
+{
+ "dataset": "entsoe/redispatching_internal",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "55726f0f581b212e7132ed707f14508e727b8b8d58ec5f2ab70e5b8530a56ef6",
+ "kernel": "gridflow_models",
+ "source": "entsoe",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.entsoe",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.entsoe.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.entsoe.query(\"redispatching_internal\", \"2026-09-15\", \"2026-09-21\")\ndf[\"timestamp_utc\"] = df.timestamp_utc.dt.tz_convert(\"UTC\")\nnl = df[df.in_area_code.str.startswith(\"10YNL\")].sort_values(\"timestamp_utc\")\nnl[[\"timestamp_utc\", \"in_area_code\", \"quantity_mw\", \"business_type\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "in_area_code",
+      "quantity_mw",
+      "business_type"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2026-09-15 00:00:00+00:00",
+       "10YNL----------L",
+       "0.0",
+       "A85"
+      ],
+      [
+       "2026-09-15 00:15:00+00:00",
+       "10YNL----------L",
+       "0.0",
+       "A85"
+      ],
+      [
+       "2026-09-15 00:30:00+00:00",
+       "10YNL----------L",
+       "0.0",
+       "A85"
+      ],
+      [
+       "2026-09-15 00:45:00+00:00",
+       "10YNL----------L",
+       "0.0",
+       "A85"
+      ],
+      [
+       "2026-09-15 01:00:00+00:00",
+       "10YNL----------L",
+       "0.0",
+       "A85"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "day = nl.timestamp_utc.dt.date.rename(\"utc_day\")\nnl.groupby(day).quantity_mw.agg(above_zero=lambda s: int((s > 0).sum()), peak=\"max\").reset_index()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "utc_day",
+      "above_zero",
+      "peak"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6"
+     ],
+     "rows": [
+      [
+       "2026-09-15",
+       "48",
+       "80.00"
+      ],
+      [
+       "2026-09-16",
+       "48",
+       "70.50"
+      ],
+      [
+       "2026-09-17",
+       "96",
+       "82.75"
+      ],
+      [
+       "2026-09-18",
+       "96",
+       "84.00"
+      ],
+      [
+       "2026-09-19",
+       "96",
+       "71.50"
+      ],
+      [
+       "2026-09-20",
+       "96",
+       "71.25"
+      ],
+      [
+       "2026-09-21",
+       "60",
+       "66.25"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "nl.set_index(\"timestamp_utc\").quantity_mw.plot(ylabel=\"MWH as sent\", drawstyle=\"steps-post\", figsize=(8, 3.5), color=\"#155A6E\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "redispatching_internal-5.png",
+     "width": 690,
+     "height": 369
+    }
+   ]
+  }
+ ]
+}

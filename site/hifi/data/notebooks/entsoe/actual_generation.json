@@ -1,0 +1,133 @@
+{
+ "dataset": "entsoe/actual_generation",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "d6752321053eef222511ebe3fb8c493448ebe1d327b68815e3e8fff8b986b8b9",
+ "kernel": "gridflow_models",
+ "source": "entsoe",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.entsoe",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.entsoe.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.entsoe.query(\"actual_generation\", \"2026-09-12\", \"2026-09-18\")\ndf[\"timestamp_utc\"] = df[\"timestamp_utc\"].dt.tz_convert(\"UTC\")",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df.sort_values([\"timestamp_utc\", \"area_code\", \"production_type\"])[[\"timestamp_utc\", \"area_code\", \"production_type\", \"generation_mw\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "area_code",
+      "production_type",
+      "generation_mw"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2026-09-12 00:00:00+00:00",
+       "10Y1001A1001A82H",
+       "B01",
+       "3763.65499"
+      ],
+      [
+       "2026-09-12 00:00:00+00:00",
+       "10Y1001A1001A82H",
+       "B02",
+       "12194.62767"
+      ],
+      [
+       "2026-09-12 00:00:00+00:00",
+       "10Y1001A1001A82H",
+       "B03",
+       "455.72333"
+      ],
+      [
+       "2026-09-12 00:00:00+00:00",
+       "10Y1001A1001A82H",
+       "B04",
+       "5640.27757"
+      ],
+      [
+       "2026-09-12 00:00:00+00:00",
+       "10Y1001A1001A82H",
+       "B05",
+       "4145.70150"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "solar = df[(df.area_code == \"10Y1001A1001A82H\") & (df.production_type == \"B16\")].sort_values(\"timestamp_utc\")\nsolar.plot(x=\"timestamp_utc\", y=\"generation_mw\", ylabel=\"MW\",\n           color=\"#155A6E\", figsize=(8, 3.5))",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: xlabel='timestamp_utc', ylabel='MW'>"
+    },
+    {
+     "kind": "image",
+     "src": "actual_generation-5.png",
+     "width": 716,
+     "height": 369
+    }
+   ]
+  }
+ ]
+}

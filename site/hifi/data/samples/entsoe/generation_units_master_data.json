@@ -1,0 +1,170 @@
+{
+ "dataset": "entsoe/generation_units_master_data",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "10fed36d89843e8d542256ea3b82f68feefd6983a3db45b9949f239a430c0c6d",
+ "silver": "entsoe/generation_units_master_data",
+ "columns": [
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "implementation_datetime_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "unit_mrid",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "area_code",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "production_type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "unit_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "data_provider",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "ingested_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2026-09-08 00:00:00 UTC",
+   "2026-09-12 00:00:00 UTC",
+   "11W0-0000-0919-L",
+   "10Y1001A1001A82H",
+   "B18",
+   "Nordseecluster A",
+   "entsoe",
+   "2026-09-15 20:13:41.919638 UTC",
+   "2026-09-15 20:13:41.860726 UTC",
+   "26935ab8-abb1-498c-9ce7-bcd340d35414",
+   "1.0.0"
+  ],
+  [
+   "2026-08-01 00:00:00 UTC",
+   "2018-10-14 00:00:00 UTC",
+   "22W201806271---D",
+   "10YBE----------2",
+   "B04",
+   "EDF Luminus Seraing TGV",
+   "entsoe",
+   "2026-08-16 13:47:46.711938 UTC",
+   "2026-08-16 13:47:45.338522 UTC",
+   "bb073dca-4b04-4b23-832d-220ffb9ce3ea",
+   "1.0.0"
+  ],
+  [
+   "2026-09-08 00:00:00 UTC",
+   "2025-11-01 00:00:00 UTC",
+   "22W201806271---D",
+   "10YBE----------2",
+   "B04",
+   "EDF Luminus Seraing TGV",
+   "entsoe",
+   "2026-09-15 20:13:41.919638 UTC",
+   "2026-09-15 20:13:41.860726 UTC",
+   "26935ab8-abb1-498c-9ce7-bcd340d35414",
+   "1.0.0"
+  ],
+  [
+   "2026-08-01 00:00:00 UTC",
+   "2027-01-01 00:00:00 UTC",
+   "22W202412112---T",
+   "10YBE----------2",
+   "B25",
+   "KALLO BESS",
+   "entsoe",
+   "2026-08-16 13:47:46.711938 UTC",
+   "2026-08-16 13:47:45.338522 UTC",
+   "bb073dca-4b04-4b23-832d-220ffb9ce3ea",
+   "1.0.0"
+  ],
+  [
+   "2026-09-08 00:00:00 UTC",
+   "2027-01-01 00:00:00 UTC",
+   "22W202412112---T",
+   "10YBE----------2",
+   "B25",
+   "KALLO BESS",
+   "entsoe",
+   "2026-09-15 20:13:41.919638 UTC",
+   "2026-09-15 20:13:41.860726 UTC",
+   "26935ab8-abb1-498c-9ce7-bcd340d35414",
+   "1.0.0"
+  ],
+  [
+   "2026-09-08 00:00:00 UTC",
+   "2026-08-18 00:00:00 UTC",
+   "17W0000022653653",
+   "10YFR-RTE------C",
+   "B18",
+   "FERME EOLIENNE DE RIDENS-DE-DIEPPE",
+   "entsoe",
+   "2026-09-15 20:13:41.919638 UTC",
+   "2026-09-15 20:13:41.860726 UTC",
+   "26935ab8-abb1-498c-9ce7-bcd340d35414",
+   "1.0.0"
+  ],
+  [
+   "2026-08-01 00:00:00 UTC",
+   "2000-01-01 00:00:00 UTC",
+   "17W100B100P0189S",
+   "10YFR-RTE------C",
+   "B14",
+   "CATTENOM 3",
+   "entsoe",
+   "2026-08-16 13:47:46.711938 UTC",
+   "2026-08-16 13:47:45.338522 UTC",
+   "bb073dca-4b04-4b23-832d-220ffb9ce3ea",
+   "1.0.0"
+  ],
+  [
+   "2026-09-08 00:00:00 UTC",
+   "2000-01-01 00:00:00 UTC",
+   "17W100B100P0189S",
+   "10YFR-RTE------C",
+   "B14",
+   "CATTENOM 3",
+   "entsoe",
+   "2026-09-15 20:13:41.919638 UTC",
+   "2026-09-15 20:13:41.860726 UTC",
+   "26935ab8-abb1-498c-9ce7-bcd340d35414",
+   "1.0.0"
+  ]
+ ],
+ "mark": null
+}

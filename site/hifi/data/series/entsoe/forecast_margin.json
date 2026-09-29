@@ -1,0 +1,19 @@
+{
+  "dataset": "entsoe/forecast_margin",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "584edbed90d7794ed6628661e61d5790b4556a46846d00db7727f29b0804c767",
+  "type": "bar",
+  "unit": "MW",
+  "caption": "",
+  "value_column": "forecast_margin_mw",
+  "aggregation": "sum",
+  "window": null,
+  "provenance": {"duplicates_dropped": 33, "files": 12, "null_values_dropped": 0, "rows_matched": 36, "rows_read": 48, "rows_used": 3, "silver": "entsoe/forecast_margin"},
+  "spec": {"aggregation": "sum", "dedup": {"on": ["timestamp_utc", "area_code"], "order_by": "published_at"}, "filter": [{"column": "area_code", "op": "ne", "value": "10Y1001A1001A82H"}, {"column": "timestamp_utc", "op": "eq", "value": "2025-12-31T23:00:00Z"}], "group": "area_code", "group_map": {"10YBE----------2": "be", "10YFR-RTE------C": "fr", "10YNL----------L": "nl"}, "silver": "entsoe/forecast_margin", "sort": "value_desc", "type": "bar", "unit": "MW", "value": "forecast_margin_mw"},
+  "x_kind": "category",
+  "x": ["nl", "fr", "be"],
+  "series": [
+    {"key": "forecast_margin_mw", "values": [41891.044, 1500.0, 180.0]}
+  ]
+}
