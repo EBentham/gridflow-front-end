@@ -44,8 +44,8 @@ page:
     title: EWIC_EG prices, 14 to 18 September 2026
     caption: >-
       Silver `elexon/soso`, £ as Elexon labels it, trader unit `EWIC_EG`, settlement dates 14 to
-      18 September 2026: each start hour's mean `Bid` price and mean `Offer` price. `GL1_EG` carries
-      the same prices in every hour shown.
+      18 September 2026: the mean of each start hour's eight 25 MW `Bid` contracts, and of its eight
+      `Offer` contracts. `GL1_EG` carries the same prices here.
     alt: >-
       Line chart of the mean EWIC_EG Bid and Offer prices from elexon/soso, in £, for every start
       hour of settlement dates 14 to 18 September 2026. Both move in steps that repeat each day.
@@ -73,19 +73,20 @@ page:
           op: in
           value: [EG_20260915_1200_1, EG_20260915_1200_9, GL_20260915_1200_1, GL_20260915_1200_9, SO_20260915_1200_1, SO_20260915_1200_9, NG_20260915_1200_17, NG_20260915_1200_25]
       order_by: [trader_unit, trade_direction]
+      columns: [trader_unit, trade_price, trade_direction, contract_identification, settlement_date, trade_quantity_mw]
     key: [settlement_date, contract_identification, trade_direction]
     caption: "Start 2026-09-15 12:00 UTC: one Bid and one Offer from each of four trader units."
     fields:
-      settlement_date: "Settlement date, the vendor's `settlementDate` as sent"
-      timestamp_utc: "Contract start, copied from `start_time`: the feed sends no settlement period"
-      contract_identification: "Contract id as sent; here a prefix, the date, the start hour, a number"
-      sender_identification: "Sender party code, as sent; one value in all eight rows"
-      receiver_identification: "Receiver party code, as sent; one value in all eight rows"
-      resource_provider: "Resource provider code, as sent; it differs by trader unit here"
-      trade_direction: "`Bid` or `Offer`, as sent; Elexon's docs define neither"
-      trade_quantity_mw: "Quantity in MW, as Elexon labels it (`tradeQuantity`)"
-      trade_price: "Price as sent (`tradePrice`); Elexon labels it in £ and says no more"
       trader_unit: "Trader unit code, as sent (`traderUnit`)"
+      trade_price: "Price as sent (`tradePrice`); Elexon labels it in £ and says no more"
+      trade_direction: "`Bid` or `Offer`, as sent; Elexon's docs define neither"
+      contract_identification: "Contract id as sent; here a prefix, the date, the start hour, a number"
+      settlement_date: "Settlement date, the vendor's `settlementDate` as sent"
+      trade_quantity_mw: "Quantity in MW, as Elexon labels it (`tradeQuantity`)"
+      timestamp_utc: "Contract start, copied from `start_time`: the feed sends no settlement period"
+      sender_identification: "Sender party code, as sent (`senderIdentification`)"
+      receiver_identification: "Receiver party code, as sent (`receiverIdentification`)"
+      resource_provider: "Resource provider code, as sent (`resourceProvider`)"
       start_time: "Contract start, UTC, as sent (`startTime`)"
       end_time: "Null: the vendor's `endTime` carries no `Z`, so the parse fails"
       published_at: "Vendor publish time (`publishTime`); silver is filed by publish window"
@@ -98,13 +99,15 @@ page:
       - |
         df = data.elexon.query("soso", "2026-09-14", "2026-09-18")
         df = df.sort_values(["timestamp_utc", "trader_unit", "contract_identification"])
-      - df[["settlement_date", "trader_unit", "trade_direction", "contract_identification", "trade_price"]].head()
+      - df[["trade_direction", "trade_price"]].head()
       - |
         ewic = df[df.trader_unit == "EWIC_EG"]
-        wide = ewic.pivot_table(index="timestamp_utc", columns="trade_direction",
-                                values="trade_price", aggfunc="mean")
-        ax = wide[["Bid", "Offer"]].plot(ylabel="£", color=["#155A6E", "#C77E3C"],
-                                         ylim=(-100, 1000), figsize=(8, 3.5))
+        wide = ewic.pivot_table(
+            index="timestamp_utc", columns="trade_direction",
+            values="trade_price", aggfunc="mean")
+        ax = wide[["Bid", "Offer"]].plot(
+            ylabel="£", color=["#155A6E", "#C77E3C"],
+            ylim=(-100, 1000), figsize=(8, 3.5))
         ax.legend(ncols=2, loc="upper left");
     needs: 13 to 18 September 2026
     plot_alt: >-

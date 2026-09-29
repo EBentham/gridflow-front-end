@@ -1,7 +1,7 @@
 {
- "dataset": "elexon/pn",
+ "dataset": "elexon/fou2t14d",
  "generated_by": "scripts/run_notebooks.py",
- "cells_sha256": "57afc84e82fcbdc170c56e25df1c5705d289e1a0a7318904fe34919b39973fa5",
+ "cells_sha256": "d63ee6715c06c2c445de238a96cd6470f3deb6f109cb1636a289177d2ce0e984",
  "kernel": "gridflow_models",
  "source": "elexon",
  "cells": [
@@ -55,59 +55,64 @@
   },
   {
    "n": 3,
-   "source": "df = data.elexon.query(\"pn\", \"2026-09-16\", \"2026-09-22\")",
-   "outputs": []
+   "source": "df = data.elexon.query(\"fou2t14d\", \"2026-09-24\", \"2026-10-06\")\ndf[\"published_at\"] = df.published_at.dt.tz_convert(\"UTC\")\ndf.published_at.unique()",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<DatetimeArray>\n['2026-09-22 00:00:00+00:00']\nLength: 1, dtype: datetime64[us, UTC]"
+    }
+   ]
   },
   {
    "n": 4,
-   "source": "dino = df[df.bm_unit_id == \"T_DINO-5\"].sort_values(\"timestamp_utc\")\ndino[dino.level_from != 0][[\"settlement_date\", \"settlement_period\", \"level_from\", \"level_to\"]].head()",
+   "source": "df.sort_values([\"settlement_date\", \"fuel_type\"])[[\"settlement_date\", \"fuel_type\", \"published_at\", \"output_usable_mw\"]].head()",
    "outputs": [
     {
      "kind": "df",
      "columns": [
       "",
       "settlement_date",
-      "settlement_period",
-      "level_from",
-      "level_to"
+      "fuel_type",
+      "published_at",
+      "output_usable_mw"
      ],
      "index": [
-      "86300",
-      "88778",
-      "91256",
-      "93734",
-      "96212"
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
      ],
      "rows": [
       [
-       "2026-09-16",
-       "35",
-       "300.0",
-       "300.0"
+       "2026-09-24",
+       "BIOMASS",
+       "2026-09-22 00:00:00+00:00",
+       "3207.0"
       ],
       [
-       "2026-09-16",
-       "36",
-       "300.0",
-       "300.0"
+       "2026-09-24",
+       "CCGT",
+       "2026-09-22 00:00:00+00:00",
+       "19214.0"
       ],
       [
-       "2026-09-16",
-       "37",
-       "300.0",
-       "300.0"
+       "2026-09-24",
+       "COAL",
+       "2026-09-22 00:00:00+00:00",
+       "0.0"
       ],
       [
-       "2026-09-16",
-       "38",
-       "300.0",
-       "300.0"
+       "2026-09-24",
+       "INTELEC",
+       "2026-09-22 00:00:00+00:00",
+       "1000.0"
       ],
       [
-       "2026-09-16",
-       "39",
-       "300.0",
-       "300.0"
+       "2026-09-24",
+       "INTEW",
+       "2026-09-22 00:00:00+00:00",
+       "500.0"
       ]
      ]
     }
@@ -115,16 +120,16 @@
   },
   {
    "n": 5,
-   "source": "dino.plot(x=\"timestamp_utc\", y=\"level_from\", ylabel=\"MW\",\n          color=\"#155A6E\", figsize=(8, 3.5), legend=False)",
+   "source": "wide = df.pivot(index=\"settlement_date\", columns=\"fuel_type\", values=\"output_usable_mw\")\nwide[[\"CCGT\", \"WIND\", \"NUCLEAR\"]].plot(ylabel=\"MW\", figsize=(8, 3.5))",
    "outputs": [
     {
      "kind": "text",
-     "text": "<Axes: xlabel='timestamp_utc', ylabel='MW'>"
+     "text": "<Axes: xlabel='settlement_date', ylabel='MW'>"
     },
     {
      "kind": "image",
-     "src": "pn-5.png",
-     "width": 708,
+     "src": "fou2t14d-5.png",
+     "width": 724,
      "height": 369
     }
    ]

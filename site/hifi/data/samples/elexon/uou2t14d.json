@@ -1,0 +1,196 @@
+{
+ "dataset": "elexon/uou2t14d",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "af0360a0923c81fda20472a64dd525dc87ba17187a480e3e841579cec7495b2a",
+ "silver": "elexon/uou2t14d",
+ "columns": [
+  {
+   "name": "bm_unit_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "output_usable_mw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "national_grid_bm_unit",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "settlement_date",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "fuel_type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "data_provider",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "ingested_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "T_DRAXX-4",
+   "645.0",
+   "DRAXX-4",
+   "2026-09-21 20:00:00 UTC",
+   "2026-09-30",
+   "BIOMASS",
+   "2026-09-30 00:00:00 UTC",
+   "elexon",
+   "2026-09-26 18:34:17.072963 UTC",
+   "2026-09-30 00:00:00 UTC",
+   "2026-09-21 20:00:00 UTC",
+   "b8480f28-d1bd-48de-9804-cf093b5dea11",
+   "1.0.0"
+  ],
+  [
+   "T_PEHE-1",
+   "1180.0",
+   "PEHE-1",
+   "2026-09-21 20:00:00 UTC",
+   "2026-09-30",
+   "CCGT",
+   "2026-09-30 00:00:00 UTC",
+   "elexon",
+   "2026-09-26 18:34:17.072963 UTC",
+   "2026-09-30 00:00:00 UTC",
+   "2026-09-21 20:00:00 UTC",
+   "b8480f28-d1bd-48de-9804-cf093b5dea11",
+   "1.0.0"
+  ],
+  [
+   "I_IEG-FRAN1",
+   "2000.0",
+   "IEG-FRAN1",
+   "2026-09-21 20:00:00 UTC",
+   "2026-09-30",
+   "INTFR",
+   "2026-09-30 00:00:00 UTC",
+   "elexon",
+   "2026-09-26 18:34:17.072963 UTC",
+   "2026-09-30 00:00:00 UTC",
+   "2026-09-21 20:00:00 UTC",
+   "b8480f28-d1bd-48de-9804-cf093b5dea11",
+   "1.0.0"
+  ],
+  [
+   "T_HEYM11",
+   "262.0",
+   "HEYM11",
+   "2026-09-21 20:00:00 UTC",
+   "2026-09-30",
+   "NUCLEAR",
+   "2026-09-30 00:00:00 UTC",
+   "elexon",
+   "2026-09-26 18:34:17.072963 UTC",
+   "2026-09-30 00:00:00 UTC",
+   "2026-09-21 20:00:00 UTC",
+   "b8480f28-d1bd-48de-9804-cf093b5dea11",
+   "1.0.0"
+  ],
+  [
+   "T_SIZB-1",
+   "630.0",
+   "SIZB-1",
+   "2026-09-21 20:00:00 UTC",
+   "2026-09-30",
+   "NUCLEAR",
+   "2026-09-30 00:00:00 UTC",
+   "elexon",
+   "2026-09-26 18:34:17.072963 UTC",
+   "2026-09-30 00:00:00 UTC",
+   "2026-09-21 20:00:00 UTC",
+   "b8480f28-d1bd-48de-9804-cf093b5dea11",
+   "1.0.0"
+  ],
+  [
+   "T_DINO-3",
+   "0.0",
+   "DINO-3",
+   "2026-09-21 20:00:00 UTC",
+   "2026-09-30",
+   "PS",
+   "2026-09-30 00:00:00 UTC",
+   "elexon",
+   "2026-09-26 18:34:17.072963 UTC",
+   "2026-09-30 00:00:00 UTC",
+   "2026-09-21 20:00:00 UTC",
+   "b8480f28-d1bd-48de-9804-cf093b5dea11",
+   "1.0.0"
+  ],
+  [
+   "T_SGRWO-6",
+   "256.0",
+   "SGRWO-6",
+   "2026-09-21 20:00:00 UTC",
+   "2026-09-30",
+   "WIND",
+   "2026-09-30 00:00:00 UTC",
+   "elexon",
+   "2026-09-26 18:34:17.072963 UTC",
+   "2026-09-30 00:00:00 UTC",
+   "2026-09-21 20:00:00 UTC",
+   "b8480f28-d1bd-48de-9804-cf093b5dea11",
+   "1.0.0"
+  ],
+  [
+   null,
+   "10.0",
+   "WTGRW-1",
+   "2026-09-21 20:00:00 UTC",
+   "2026-09-30",
+   "WIND",
+   "2026-09-30 00:00:00 UTC",
+   "elexon",
+   "2026-09-26 18:34:17.072963 UTC",
+   "2026-09-30 00:00:00 UTC",
+   "2026-09-21 20:00:00 UTC",
+   "b8480f28-d1bd-48de-9804-cf093b5dea11",
+   "1.0.0"
+  ]
+ ],
+ "mark": null
+}

@@ -10,7 +10,7 @@ layer_coverage: bronze, silver
 
 ## Overview
 
-Indicated margin — the published GB capacity margin (available capacity above expected demand) issued day-ahead and intra-day. MELNGC is the canonical short-term de-rated margin signal alongside the longer-horizon LOLPDRM forecast.
+Indicated margin — the published GB capacity margin (available capacity above expected demand) issued day-ahead and intra-day. Elexon defines it as the sum of the MELs submitted for the period minus the System Operator's National Demand Forecast; the greater the value, the more spare capacity ([Elexon BSC glossary](https://elexon.co.uk/glossary/indicated-margin)). It is not de-rated: LOLPDRM's de-rated margin is a different measure.
 
 ---
 
@@ -92,7 +92,7 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
 **Path pattern**: `{data_root}/silver/elexon/melngc/year=YYYY/month=MM/melngc_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.elexon.melngc.MelNGCTransformer`
 **Pydantic schema**: `gridflow.schemas.elexon.ElexonMelNGC` — validated fail-soft on the full frame at write time (VTA-SCHEMA-01: invalid rows are logged and counted, never dropped).
-**Dedup key**: `(settlement_date, settlement_period)`
+**Dedup key**: `(settlement_date, settlement_period)`, `unique(keep="last")` with no prior sort, over one UTC publish day's bronze. `boundary` is in neither the key nor the output (`silver/elexon/melngc.py:116,126-134`), so one of the 18 boundary rows per half-hour survives, chosen by API row order; in the files checked 2026-09-29 it was `N`, from the day's earliest publish.
 **Point-in-time field**: `published_at`
 
 ### Silver schema
@@ -105,7 +105,7 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
 | `indicated_margin` | `float` | No | `indicatedMargin` or `margin` | MW. |
 | `published_at` | `datetime[UTC]` | Yes | `publishTime` | Publication time / document vintage; bitemporal point-in-time field. |
 | `data_provider` | `str` | No | _derived_ | Default `"elexon"`. |
-| `ingested_at` | `datetime[UTC]` | Yes | _derived_ | Time ingested into bronze. |
+| `ingested_at` | `datetime[UTC]` | Yes | _derived_ | When the silver transform ran: stamped `datetime.now(UTC)` by the transformer (`melngc.py:118-124`), not the bronze ingest time. |
 
 ### Silver sample
 
@@ -114,7 +114,7 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
     {
         "settlement_date": "2026-05-06",
         "settlement_period": 9,
-        "timestamp_utc": "2026-05-06T04:00:00+00:00",
+        "timestamp_utc": "2026-05-06T03:00:00+00:00",
         "indicated_margin": -3309,
         "data_provider": "elexon",
         "ingested_at": "2026-05-08T12:00:00Z"

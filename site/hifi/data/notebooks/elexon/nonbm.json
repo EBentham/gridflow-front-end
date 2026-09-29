@@ -1,7 +1,7 @@
 {
- "dataset": "elexon/pn",
+ "dataset": "elexon/nonbm",
  "generated_by": "scripts/run_notebooks.py",
- "cells_sha256": "57afc84e82fcbdc170c56e25df1c5705d289e1a0a7318904fe34919b39973fa5",
+ "cells_sha256": "caa8005609622c5e7981f2ceb3b1d631cc6d9ac24435229ce84d1fe7f9023b60",
  "kernel": "gridflow_models",
  "source": "elexon",
  "cells": [
@@ -55,12 +55,12 @@
   },
   {
    "n": 3,
-   "source": "df = data.elexon.query(\"pn\", \"2026-09-16\", \"2026-09-22\")",
+   "source": "df = data.elexon.query(\"nonbm\", \"2026-04-01\", \"2026-04-01\")",
    "outputs": []
   },
   {
    "n": 4,
-   "source": "dino = df[df.bm_unit_id == \"T_DINO-5\"].sort_values(\"timestamp_utc\")\ndino[dino.level_from != 0][[\"settlement_date\", \"settlement_period\", \"level_from\", \"level_to\"]].head()",
+   "source": "df[[\"settlement_date\", \"settlement_period\", \"generation_mw\", \"published_at\", \"ingested_at\"]]",
    "outputs": [
     {
      "kind": "df",
@@ -68,46 +68,52 @@
       "",
       "settlement_date",
       "settlement_period",
-      "level_from",
-      "level_to"
+      "generation_mw",
+      "published_at",
+      "ingested_at"
      ],
      "index": [
-      "86300",
-      "88778",
-      "91256",
-      "93734",
-      "96212"
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
      ],
      "rows": [
       [
-       "2026-09-16",
-       "35",
-       "300.0",
-       "300.0"
+       "2026-04-01",
+       "22",
+       "0.0",
+       "2026-04-01 11:04:00+01:00",
+       "2026-08-16 14:27:50.320916+01:00"
       ],
       [
-       "2026-09-16",
-       "36",
-       "300.0",
-       "300.0"
+       "2026-04-01",
+       "22",
+       "0.0",
+       "2026-04-01 11:04:00+01:00",
+       "2026-08-16 14:27:50.326491+01:00"
       ],
       [
-       "2026-09-16",
-       "37",
-       "300.0",
-       "300.0"
+       "2026-04-01",
+       "22",
+       "0.0",
+       "2026-04-01 11:04:00+01:00",
+       "2026-08-16 14:27:50.331604+01:00"
       ],
       [
-       "2026-09-16",
-       "38",
-       "300.0",
-       "300.0"
+       "2026-04-01",
+       "22",
+       "0.0",
+       "2026-04-01 11:04:00+01:00",
+       "2026-08-16 14:27:50.336814+01:00"
       ],
       [
-       "2026-09-16",
-       "39",
-       "300.0",
-       "300.0"
+       "2026-04-01",
+       "22",
+       "0.0",
+       "2026-04-01 11:04:00+01:00",
+       "2026-08-16 14:27:50.312879+01:00"
       ]
      ]
     }
@@ -115,17 +121,26 @@
   },
   {
    "n": 5,
-   "source": "dino.plot(x=\"timestamp_utc\", y=\"level_from\", ylabel=\"MW\",\n          color=\"#155A6E\", figsize=(8, 3.5), legend=False)",
+   "source": "df.drop_duplicates([\"settlement_date\", \"settlement_period\"])[[\"settlement_date\", \"settlement_period\", \"generation_mw\"]]",
    "outputs": [
     {
-     "kind": "text",
-     "text": "<Axes: xlabel='timestamp_utc', ylabel='MW'>"
-    },
-    {
-     "kind": "image",
-     "src": "pn-5.png",
-     "width": 708,
-     "height": 369
+     "kind": "df",
+     "columns": [
+      "",
+      "settlement_date",
+      "settlement_period",
+      "generation_mw"
+     ],
+     "index": [
+      "0"
+     ],
+     "rows": [
+      [
+       "2026-04-01",
+       "22",
+       "0.0"
+      ]
+     ]
     }
    ]
   }

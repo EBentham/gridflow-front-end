@@ -74,15 +74,16 @@ page:
           value: ["2026-09-16T07:45:00Z", "2026-09-16T11:18:00Z", "2026-09-16T17:47:00Z", "2026-09-16T19:47:00Z",
                   "2026-09-16T21:47:00Z", "2026-09-17T06:46:00Z", "2026-09-17T09:46:00Z", "2026-09-17T16:18:00Z"]
       order_by: [published_at]
+      columns: [published_at, national_demand_mw, settlement_period]
     key: [settlement_date, settlement_period, forecast_type, published_at]
     caption: "Eight publishes of the forecast for 17 September, period 36 (16:30 UTC), oldest first."
     fields:
-      settlement_date: "GB settlement date, the vendor's `settlementDate` label"
+      published_at: "Vendor publish time, from `publishTime`; in the key, so every publish stays"
+      national_demand_mw: "Forecast national demand for the half-hour in MW, the vendor's `demand`"
       settlement_period: Half-hour of the settlement date, 1 to 48; 46 or 50 on clock-change days
+      settlement_date: "GB settlement date, the vendor's `settlementDate` label"
       timestamp_utc: Start of the half-hour, computed from the settlement date and period
       forecast_type: "`day_ahead` on every NDF row; NDFD rows carry `2_14_day`"
-      national_demand_mw: "Forecast national demand for the half-hour in MW, the vendor's `demand`"
-      published_at: "Vendor publish time, from `publishTime`; in the key, so every publish stays"
   notebook:
     lead: >-
       Returns pandas DataFrames from `silver_elexon_ndf` and `silver_elexon_indo`, filtered on

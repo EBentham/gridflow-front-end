@@ -73,21 +73,22 @@ page:
         - {column: settlement_period, op: ge, value: 36}
         - {column: settlement_period, op: le, value: 38}
       order_by: [settlement_period, acceptance_number]
+      columns: [bm_unit_id, acceptance_number, acceptance_time, settlement_period, bid_offer_level_from, bid_offer_level_to, so_flag]
     key: [settlement_date, settlement_period, bm_unit_id, acceptance_number]
     caption: "Unit `T_COALB-2`, 2026-09-19, periods 36 to 38: acceptances 991, 993 and 994 span two periods."
     fields:
-      settlement_date: GB settlement date, as Elexon labels it
-      settlement_period: "Half-hour the kept segment starts in (`settlementPeriodFrom`)"
-      timestamp_utc: "Start of that settlement period, not the segment's own start time"
       bm_unit_id: BM unit id, casing as sent
       acceptance_number: "Elexon's acceptance number; one acceptance can span several periods"
       acceptance_time: When the system operator issued the acceptance, UTC
-      deem_flag: "Elexon's deemed bid-offer flag (`deemedBoFlag`), as sent"
-      so_flag: True when the SO believes a transmission constraint may affect the acceptance
-      stor_flag: "Elexon's STOR flag (`storFlag`), as sent"
-      rr_flag: "Elexon's replacement reserve flag (`rrFlag`), as sent"
+      settlement_period: "Half-hour the kept segment starts in (`settlementPeriodFrom`)"
       bid_offer_level_from: MW operating level at the start of the kept segment
       bid_offer_level_to: MW operating level at the end of the kept segment
+      so_flag: True when the SO believes a transmission constraint may affect the acceptance
+      settlement_date: GB settlement date, as Elexon labels it
+      timestamp_utc: "Start of that settlement period, not the segment's own start time"
+      deem_flag: "Elexon's deemed bid-offer flag (`deemedBoFlag`), as sent"
+      stor_flag: "Elexon's STOR flag (`storFlag`), as sent"
+      rr_flag: "Elexon's replacement reserve flag (`rrFlag`), as sent"
   notebook:
     lead: >-
       Returns a pandas DataFrame from the DuckDB relation `silver_elexon_boal`, filtered on

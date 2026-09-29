@@ -1,7 +1,7 @@
 {
  "dataset": "elexon/soso",
  "generated_by": "scripts/run_notebooks.py",
- "cells_sha256": "a967e70af93a0175d320ef7e3ac8899e01bd6f0adb02fce10f75a3dac8430755",
+ "cells_sha256": "28fe2f6b3e3a257e48032a28eca2f6958bd1e146ae7258060145883535514942",
  "kernel": "gridflow_models",
  "source": "elexon",
  "cells": [
@@ -60,16 +60,13 @@
   },
   {
    "n": 4,
-   "source": "df[[\"settlement_date\", \"trader_unit\", \"trade_direction\", \"contract_identification\", \"trade_price\"]].head()",
+   "source": "df[[\"trade_direction\", \"trade_price\"]].head()",
    "outputs": [
     {
      "kind": "df",
      "columns": [
       "",
-      "settlement_date",
-      "trader_unit",
       "trade_direction",
-      "contract_identification",
       "trade_price"
      ],
      "index": [
@@ -81,38 +78,23 @@
      ],
      "rows": [
       [
-       "2026-09-14",
-       "EWIC_EG",
        "Offer",
-       "EG_20260913_2300_1",
        "-0.08"
       ],
       [
-       "2026-09-14",
-       "EWIC_EG",
        "Bid",
-       "EG_20260913_2300_10",
        "364.91"
       ],
       [
-       "2026-09-14",
-       "EWIC_EG",
        "Bid",
-       "EG_20260913_2300_11",
        "361.46"
       ],
       [
-       "2026-09-14",
-       "EWIC_EG",
        "Bid",
-       "EG_20260913_2300_12",
        "358.02"
       ],
       [
-       "2026-09-14",
-       "EWIC_EG",
        "Bid",
-       "EG_20260913_2300_13",
        "354.58"
       ]
      ]
@@ -121,7 +103,7 @@
   },
   {
    "n": 5,
-   "source": "ewic = df[df.trader_unit == \"EWIC_EG\"]\nwide = ewic.pivot_table(index=\"timestamp_utc\", columns=\"trade_direction\",\n                        values=\"trade_price\", aggfunc=\"mean\")\nax = wide[[\"Bid\", \"Offer\"]].plot(ylabel=\"£\", color=[\"#155A6E\", \"#C77E3C\"],\n                                 ylim=(-100, 1000), figsize=(8, 3.5))\nax.legend(ncols=2, loc=\"upper left\");",
+   "source": "ewic = df[df.trader_unit == \"EWIC_EG\"]\nwide = ewic.pivot_table(\n    index=\"timestamp_utc\", columns=\"trade_direction\",\n    values=\"trade_price\", aggfunc=\"mean\")\nax = wide[[\"Bid\", \"Offer\"]].plot(\n    ylabel=\"£\", color=[\"#155A6E\", \"#C77E3C\"],\n    ylim=(-100, 1000), figsize=(8, 3.5))\nax.legend(ncols=2, loc=\"upper left\");",
    "outputs": [
     {
      "kind": "image",

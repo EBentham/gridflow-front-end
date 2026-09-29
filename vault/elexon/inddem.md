@@ -10,7 +10,7 @@ layer_coverage: bronze, silver
 
 ## Overview
 
-Indicated Demand — the GB demand component of the NESO indicated-imbalance forecast. INDDEM, INDGEN, IMBALNGC, and MELNGC are published together to convey the day-ahead operational picture.
+Indicated Demand — the sum of the negative Physical Notifications (importing BM units), so its values are negative ([Elexon BSC glossary](https://elexon.co.uk/glossary/indicated-demand)). It is not the demand in IMBALNGC, which subtracts the transmission demand forecast ([glossary](https://elexon.co.uk/glossary/indicated-imbalance)). INDDEM, INDGEN, IMBALNGC, and MELNGC are published together to convey the day-ahead operational picture.
 
 ---
 
@@ -92,7 +92,7 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
 **Path pattern**: `{data_root}/silver/elexon/inddem/year=YYYY/month=MM/inddem_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.elexon.inddem.INDDEMTransformer`
 **Pydantic schema**: `gridflow.schemas.elexon.ElexonIndDem` — validated fail-soft on the full frame at write time (VTA-SCHEMA-01: invalid rows are logged and counted, never dropped).
-**Dedup key**: _inline in transformer (see `silver/elexon/inddem.py`)_
+**Dedup key**: `(settlement_date, settlement_period, boundary)`, `unique(keep="last")` with no prior sort, over one UTC publish day's bronze (`silver/elexon/inddem.py:114-117`)
 **Point-in-time field**: `published_at`
 
 ### Silver schema
@@ -102,11 +102,11 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
 | `settlement_date` | `date` | No | `settlementDate` | Settlement date (BST/GMT calendar). |
 | `settlement_period` | `int` | No | `settlementPeriod` | 1..50 (DST: 46 spring, 50 autumn). |
 | `timestamp_utc` | `datetime[UTC]` | No | _derived_ | Derived from (settlement_date, settlement_period) via `utils/time.settlement_period_to_utc`. |
-| `indicated_demand_mw` | `float` | No | `demand` | MW. |
-| `boundary` | `str` | Yes | `boundary` | `N` (national) or `Z` (zonal). |
+| `indicated_demand_mw` | `float` | No | `demand` | MW; negative, as the sum of importing units' Physical Notifications. |
+| `boundary` | `str` | Yes | `boundary` | `N` (national) or a system zone, `B1` to `B17` (bronze rows, 2026-09-29). |
 | `published_at` | `datetime[UTC]` | Yes | `publishTime` | Publication time / document vintage; bitemporal point-in-time field. |
 | `data_provider` | `str` | No | _derived_ | Default `"elexon"`. |
-| `ingested_at` | `datetime[UTC]` | Yes | _derived_ | Time ingested into bronze. |
+| `ingested_at` | `datetime[UTC]` | Yes | _derived_ | When the silver transform ran: stamped `datetime.now(UTC)` by the transformer (`inddem.py:119-124`), not the bronze ingest time. |
 
 ### Silver sample
 
@@ -115,7 +115,7 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
     {
         "settlement_date": "2026-05-06",
         "settlement_period": 9,
-        "timestamp_utc": "2026-05-06T04:00:00+00:00",
+        "timestamp_utc": "2026-05-06T03:00:00+00:00",
         "indicated_demand_mw": -46,
         "boundary": "B1",
         "data_provider": "elexon",
@@ -134,7 +134,7 @@ None implemented.
 
 ## Known issues and gotchas
 
-- **Forecast revision behaviour** — multiple publishes per period; latest wins after dedup.
+- **Forecast revision behaviour** — multiple publishes per period. Not "latest wins": each silver file holds one UTC publish day, and the dedup keeps the last row the API returned per key, with no sort (`inddem.py:114-117`). The API lists the newest publish first (project check on bronze, 2026-09-29), so the survivor is the day's earliest publish covering that half-hour. Filter on `published_at` before joining or summing.
 
 ---
 
