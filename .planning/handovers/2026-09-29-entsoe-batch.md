@@ -43,14 +43,14 @@
 | procured_balancing_capacity | HELD blank (ruling #42): silver rows are arbitrary picks across 4 countries (13o). The note body was corrected but is unchecked | a7d2508a74e6ebbfa | — | after the gridflow fix |
 | balancing-energy-bids (family, lead balancing_energy_bids) | **HELD** (ruling #44): lead stops at 100 series and drops BE bids at dedup; aggregated area blank. Note edits in both notes and mirrors go to a held branch at PR time | a963682b7f587ae52 | — | held |
 | congestion-management (family, lead redispatching_internal) | written (NL internal redispatch, down series only, 15-21 Sep); seat: ships with the direction loss stated (as A07); checker running | a696043a3c83b78e1 | a40db70347a68ee3a | verdict |
-| actual_generation_units | REVISE (2 blockers: unlabelled wrong sample rows; 'single-unit plants' advice unsafe in FR); writer resumed | aa26b6043c67cd777 | a307fc1083fa679bf | re-check |
+| actual_generation_units | **APPROVED** on re-check (clean Dutch sample rows; how-used limited to charted plants) | aa26b6043c67cd777 | a307fc1083fa679bf | done |
 | generation_units_master_data | **APPROVED** (3 optional nits) | a20a17cf260cfe31f | a9307d180d54daee9 | done |
-| installed_capacity | REVISE (1 major: notebook pivot headers one column right, the named-index renderer bug; rename_axis workaround; 4 nits); writer resumed | ae278337fa1293ec8 | aadbd72a6a196372e | re-check |
-| load-forecasts (family, lead load_forecast) | REVISE (1 major: loss stated only in codes, summary promises max/min; 4 nits); writer resumed | a0639f624b8567137 | a8fde62593ddf835d | re-check |
+| installed_capacity | revised (pivot headers fixed, 4 nits); re-check running | ae278337fa1293ec8 | aadbd72a6a196372e | re-check |
+| load-forecasts (family, lead load_forecast) | revised (loss stated in words); re-check running | a0639f624b8567137 | a8fde62593ddf835d | re-check |
 | installed_capacity_units | written (unit count by type, 6 zones, 15 Sep fetch; Seraing sample across fetches); checker running | abc4b218164a9acf8 | a9a068a48017c1f65 | verdict |
 | water_reservoirs | written (FR only, 4 weekly points in two pieces); seat: ships thin-but-accurate with coverage stated; swap the blank-page test at PR time; checker running | ad11aa4256be63ae4 | a328b581d4bd66dc5 | verdict |
 | forecast_margin | writer running | a567036a197b2b0ce | | report |
-| still queued: outages (family) | queued | | | writer when a slot frees |
+| outages (family, lead outages_generation) | writer running | a6091df14760f7c08 | | report |
 
 ## At PR time
 
