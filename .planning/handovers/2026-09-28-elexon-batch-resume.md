@@ -24,12 +24,12 @@ Batch brief: `.planning/v5/p26/BATCH-elexon.md`. Reports: `.planning/v5/p26/elex
 | windfor | checker running | a1ab63925783acd9e | a17288a5f3e21ed79 | act on the verdict |
 | atl | revision 1 done (gaps now break); checker running | ae4cecd8c31375b94 | aa5264d2b291ec745 | act on the verdict |
 | lolpdrm | APPROVED (review 2) | a9a809d3db7a3003d | a0485269512755d5d | done |
-| demand-forecasts (family, lead ndf) | REVISE (NESO attribution) fixed; re-check running | abf8f9353b1213246 | a47d843864370aaca | act on the re-check |
+| demand-forecasts (family, lead ndf) | APPROVED (review 2) | abf8f9353b1213246 | a47d843864370aaca | done |
 | boal | APPROVED, nits applied | a31536a58a5a3b972 | adc1711149f93ffb3 | done |
 | disbsad | written; checker running | a5b3f85429c8bcd8c | aebe91340cd8e1a7c | act on the verdict |
 | market_depth | APPROVED, nits applied | aa46a54294f5cafaa | a8ccdd8aa4d55aa88 | done |
 | netbsad | written; HELD, not in the batch PR (every field is 0 across 674 periods while DISBSAD shows up to 773 MWh: likely a gridflow parse bug) | a5e765b85bf3eff9a | — | research unit first, then check and publish |
-| soso | written (EWIC_EG mean Bid and Offer by start hour, 14 to 18 Sep) | a41b75f70f9993f96 | — | QUEUED: launch the checker (look at Bid/Offer undefined by Elexon; the "£" unit) |
+| soso | written; checker running (launched at 76%) | a41b75f70f9993f96 | (new) | act on the verdict |
 | pn | written (level_from for three BM units, 16 to 22 Sep) | a1f13e90b72f5b8c5 | — | QUEUED: launch the checker (look at "each kept segment starts its period", and the null `bm_unit_id` line) |
 | nonbm, fou2t14d, uou2t14d, remit, indicated-day-ahead (family) | not started | — | — | launch writers under the throttle |
 
@@ -40,7 +40,7 @@ If a restart kills a running agent, check its report file and the vault note fir
 - At most **2 agents at once** once the current wave drains. No launches above about **85% of the 5-hour window** (75% at about 00:30 UTC on 2026-09-29, reset 04:00 UTC);
   set a timer to resume at the reset. Check with `get_usage` as agents finish. Queued work waits in this table.
 
-**Next, in order:** checkers for soso and pn, then writers for nonbm, fou2t14d, uou2t14d, remit and
+**Next, in order:** checker for pn, then writers for nonbm, fou2t14d, uou2t14d, remit and
 indicated-day-ahead. Keep at most 2 agents at a time and stop launching at about 85% of the 5-hour window. Then group
 2 onwards gets a batch PR into main, after Bobbo's look at the preview (republish
 https://claude.ai/artifact/EYadKREQi3RnpufNwTH6Wf from `<scratch>\p26-elexon\site\hifi`, file list in
