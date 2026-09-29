@@ -160,3 +160,39 @@ line wrapped mid-token at 768. About one in five tall (9,000 px) headless render
   second header row, and the columns shifted: 12 headers for 6 values. I avoided it with
   `nat.reset_index().head()`. The parser should handle a named index. Not blocking.
 - None blocking the build.
+
+## Revision 1 (after `indicated-day-ahead-review.md`: REVISE, 1 major, 3 nits)
+
+Only `page:` fields in the canonical `indgen.md` changed. The note was mirrored byte for byte (`cmp`
+clean, CRLF 302/302). The series, sample and notebook were not re-run: their inputs did not change and
+the build's digest check passed.
+
+- **Major 1: the zone row that `imbalngc`/`melngc` silver keeps.** Evidence: `imbalngc.py:117`,
+  `melngc.py:116`, where `keep="last"` has no sort and `boundary` is not in the output.
+  - `family.members[imbalngc].differs`: now "`INDGEN` minus transmission demand forecast, MW; silver
+    keeps the zone row listed last, unlabelled" (14 words).
+  - `family.members[melngc].differs`: now "Summed MELs minus national demand forecast; silver keeps the zone
+    row listed last, unlabelled" (14).
+  - `facts.grain`: now "One row per half-hour, zone, publish day; IMBALNGC, MELNGC keep one unlabelled
+    zone row" (14).
+  - `what_it_is`: rewritten to 59/60 words. It ends "Silver keeps one unlabelled `IMBALNGC` and `MELNGC`
+    zone row per half-hour, the API's last (`N` in this window)." That scopes the `N` observation to the
+    window shown. The Elexon definitions are kept. "(exporting units)" and "so is negative" were dropped
+    for budget; the `inddem` member line still says "so negative".
+  - `notebook.lead`: "national rows" now reads "the 00:17 UTC publish, with `boundary` filtered to `N`
+    where present" (33 words). It no longer claims the imbalngc/melngc rows are national. Cell 5's check
+    (−62 to 0 MW against INDGEN `N` minus TSDF `N`) remains the visible evidence for the window.
+- **Nit 2: `chart_view.alt`.** The peaks are now paired with their publishes: "at 33,220 (00:17) and
+  31,228 MW (10:48)" (90/90 words). The values were checked against the committed series: `same_day` max
+  33,220 and `day_ahead` max 31,228, both at 18:30.
+- **Nit 3: `related[elexon/ndf]`.** No change. The checker accepts it as a term match. It stays listed
+  under "Unverified" for the seat.
+- **Nit 4: code wraps mid-token at 390.** No change. This is template CSS (the code block breaks words
+  at any character), which I may not edit. Reported to the seat as a template item.
+
+**Checks.** `gridflow-build --only elexon/indgen` is green (it wrote `indicated-day-ahead.html`), and
+`detect.mjs --json` returns `[]`. The rendered page shows the new text.
+
+**Screenshots.** Headless Chrome, each call under `timeout 60`, at 1280 and at 390 in a 390 px iframe,
+served on 127.0.0.1:9751 under `timeout 400`. The facts, what it is, the member lines, the notebook lead,
+chart, frame, guide and related are all whole. Nothing is clipped or overlapping.

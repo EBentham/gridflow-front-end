@@ -1,3 +1,11 @@
+# Elexon batch: SHIPPED 2026-09-29 (ruling #38)
+
+**Closed.** PR #54 squash-merged (`cccf643`), deploy green, live pages match the local build. 19 pages live; netbsad
+and nonbm stay blank (held). Held work: front-end branch `v5/p26-elexon-held`, vault branch `docs/v5-p26-elexon-held`.
+Vault PR https://github.com/EBentham/quant-vault/pull/54 is open for Bobbo's merge (the pilot's vault PR #53 is also
+still open). The blank-page test now uses `entsoe/water_reservoirs`. The seat items below remain open as gridflow or
+template work.
+
 # Resume the Elexon batch (resumed 2026-09-29; this note is the live tracker)
 
 Batch brief: `.planning/v5/p26/BATCH-elexon.md`. Reports: `.planning/v5/p26/elexon/<page>-author.md`,
@@ -35,7 +43,7 @@ Batch brief: `.planning/v5/p26/BATCH-elexon.md`. Reports: `.planning/v5/p26/elex
 | fou2t14d | APPROVED, 1 taste nit left as is (at 390 the folded frame repeats 12402.0) | a8d7b6b1894c6c155 | a2b14d08df16b6c0d | done |
 | uou2t14d | APPROVED (review 2) | a0a9e27c09f4cd6ff | a29dfe5ba88e4765f | done |
 | remit | APPROVED (review 2), nit applied by the seat; detector advisory on dashed Elexon IDs accepted | added78eb82ce18d5 | addf06d5b13c34aa2 | done |
-| indicated-day-ahead (family, lead indgen) | written (indgen, boundary N, 17 Sep, two publishes); checker running | a638e8b7099ae8bca | aadf924deb93edda8 | act on the verdict |
+| indicated-day-ahead (family, lead indgen) | APPROVED (review 2) | a638e8b7099ae8bca | aadf924deb93edda8 | done |
 
 If a restart kills a running agent, check its report file and the vault note first, then resume it by id.
 
