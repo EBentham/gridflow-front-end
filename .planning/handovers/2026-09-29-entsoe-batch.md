@@ -41,14 +41,15 @@
 | group 2 rest: dc_link_intraday_transfer_limits | queued | — | — | writers |
 | current_balancing_state | HELD blank (ruling #41): silver has no zone, no sign and wrong times (13l). The note body was corrected but is unchecked | aff7fcf8159bb3639 | — | after the gridflow fix: page block, then checker |
 | procured_balancing_capacity | HELD blank (ruling #42): silver rows are arbitrary picks across 4 countries (13o). The note body was corrected but is unchecked | a7d2508a74e6ebbfa | — | after the gridflow fix |
-| balancing-energy-bids (family, lead balancing_energy_bids; warned about the 13o empty-area bug) | writer running | a963682b7f587ae52 | | report |
+| balancing-energy-bids (family, lead balancing_energy_bids) | **HELD** (ruling #44): lead stops at 100 series and drops BE bids at dedup; aggregated area blank. Note edits in both notes and mirrors go to a held branch at PR time | a963682b7f587ae52 | — | held |
 | congestion-management (family, lead redispatching_internal) | writer running | a696043a3c83b78e1 | | report |
 | actual_generation_units | writer running | aa26b6043c67cd777 | | report |
 | generation_units_master_data | writer running | a20a17cf260cfe31f | | report |
 | installed_capacity | writer running | ae278337fa1293ec8 | | report |
 | load-forecasts (family, lead load_forecast) | writer running | a0639f624b8567137 | | report |
 | installed_capacity_units | writer running | abc4b218164a9acf8 | | report |
-| still queued: water_reservoirs, forecast_margin, outages (family) | queued | | | writers as slots free (GIE checkers first) |
+| water_reservoirs | writer running | ad11aa4256be63ae4 | | report |
+| still queued: forecast_margin, outages (family) | queued | | | writers as slots free (GIE checkers first) |
 
 ## At PR time
 
@@ -61,7 +62,7 @@
 
 **Remediation list (Bobbo 2026-09-29):** log each gridflow or data defect as it is found, in gridflow `.planning/BACKLOG.md`
 item 13 and in the vault page `10-projects/gridflow/specs/remediation-from-site-batches.md` (on the branch for PR quant-vault#55).
-Logged so far: 13a to 13o.
+Logged so far: 13a to 13r.
 
 - Ruling #39, amended by #40: EIC codes in a note's front matter use `-` escapes (the vault scripts split the note on `---`).
   The build now rejects a literal one: guard in `page_fields.parse_page_fields`, tests in `tests/test_front_matter_fence.py`,
