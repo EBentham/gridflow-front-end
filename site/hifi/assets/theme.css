@@ -391,8 +391,8 @@ main { position: relative; display: block; }
   height: 40px; padding: 0 18px 0 12px; background: var(--ink);
   font: 500 13.5px/1 var(--mono);
 }
-.nb-tab { padding: 11px 18px 12px; border-radius: 3px 3px 0 0; background: var(--daylight); color: var(--ink); white-space: nowrap; }
-.nb-kern { align-self: center; color: var(--on-petrol-2); white-space: nowrap; }
+.nb-tab { min-width: 0; overflow: hidden; text-overflow: ellipsis; padding: 11px 18px 12px; border-radius: 3px 3px 0 0; background: var(--daylight); color: var(--ink); white-space: nowrap; }
+.nb-kern { flex-shrink: 0; align-self: center; color: var(--on-petrol-2); white-space: nowrap; }
 .nb-body { position: relative; padding: 16px 24px 176px 8px; }
 .cell { position: relative; display: grid; grid-template-columns: 52px minmax(0, 1fr); column-gap: 10px; margin: 0 0 9px; }
 .cell.out { margin: -3px 0 12px; }
