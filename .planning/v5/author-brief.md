@@ -91,6 +91,9 @@ checks it against `review-rubric.md`. You write only your own dataset's files.
   eight real rows, chosen to show the column that matters most (a signed value, a null, a
   double-reported flow). The rows print as a Polars frame, as silver prints them; columns past the
   1280 px budget fold behind `…` (the pipeline columns always do). `record.mark` is no longer used.
+  `select.columns` (ruling #35) sets the print order, like a Polars `.select`: the named columns come first and
+  the rest follow in silver's order. Name the columns that matter (a level, a value, `published_at`) so they stay
+  in view when the frame folds. The column guide then follows that order.
 - **record.key**: the columns that identify a row; the frame marks them with a square and the guide
   lists them first.
 - **record.fields**: the column guide, one line per column in frame order, 14 words or fewer, from the
