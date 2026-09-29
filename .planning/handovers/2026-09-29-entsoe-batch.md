@@ -26,10 +26,10 @@
 | wind_solar_forecast | APPROVED (review 2) | a21e8456c9ebdbc7f | a2f6ec605542e237d | done |
 | generation_forecast | APPROVED (review 2) | a9ca9d520ca0d49ab | a6c61259813ce01e3 | done |
 | cross_border_flows | APPROVED (review 2), line-cite nit applied by the seat | aaad21b6d79fe8b11 | abd692feda2530f4a | done |
-| commercial_schedules | Revision 1 done; re-check running | a31494e4d83ddddc5 | a511e8538be41f2c9 | re-check |
+| commercial_schedules | APPROVED (review 2) | a31494e4d83ddddc5 | a511e8538be41f2c9 | done |
 | net_positions | APPROVED (4 nits; sign correction confirmed) | affea4b8af88a3d6b | a90d8f640060a2b41 | done |
 | net_transfer_capacity | written (day-ahead NTC into GB from FR, IE-SEM, BE, NL, 8 to 21 Sep); checker running | af6a9dcd642a89a55 | a57d6b2c71914570c | verdict |
-| auction_revenue | written (hourly EUR, GB-NL and GB-BE, 15 to 21 Sep); checker running | a745ee86e95b1e284 | (ar-checker) | verdict |
+| auction_revenue | written (hourly EUR, GB-NL and GB-BE, 15 to 21 Sep); checker running | a745ee86e95b1e284 | a0f2a1125adccad7d | verdict |
 | capacity-allocated-nominated (family, lead total_capacity_allocated) | writer running | aa5201e596dbf26ce | — | checker |
 | dc_link_intraday_transfer_limits | writer running (thin: 24 rows, 1 to 5 Aug) | aafc74fa32a44daac | — | checker |
 | group 2 rest: dc_link_intraday_transfer_limits | queued | — | — | writers |
