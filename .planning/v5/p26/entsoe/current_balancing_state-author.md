@@ -19,7 +19,7 @@ page stays blank (hero name and id). I made body corrections to the canonical no
 
 | # | Defect | Evidence |
 |---|---|---|
-| 1 | **`PT1M` is not mapped, so point times are spread over hours.** `_RESOLUTION_MAP` has no `PT1M`, and `_resolve_resolution` falls back to `timedelta(hours=1)`. Each point therefore lands at start + (position - 1) **hours**, not minutes. The A03 forward-fill is also skipped for an unmapped code. | `connectors/entsoe/parsers.py:35-43`, `:50-51`, `:530`, `:547-555`. Bronze holds 1 to 5 Aug only, yet silver `timestamp_utc` runs to 2026-08-25 08:15 UTC: FR's 5 Aug document, stretched sixty times. 8,948 of 9,414 rows have a non-zero minute. |
+| 1 | **`PT1M` is not mapped, so point times are spread over hours.** `_RESOLUTION_MAP` has no `PT1M`, and `_resolve_resolution` falls back to `timedelta(hours=1)`. Each point therefore lands at start + (position - 1) **hours**, not minutes. The A03 forward-fill is also skipped for an unmapped code. | `connectors/entsoe/parsers.py:35-43`, `:50-51`, `:530`, `:547-555`. Bronze holds 1 to 5 Aug only, yet silver `timestamp_utc` runs to 2026-08-25 08:15 UTC: FR's 5 Aug document, stretched sixty times. Silver's maximum equals the maximum from my bronze re-parse with gridflow's own parser, and the dedup simulation below reproduces silver's 9,414 rows exactly. |
 | 2 | **Zone lost.** Real A86 responses carry `area_Domain.mRID` at document level. The parser reads it only from TimeSeries children, so `area_code` is `""` on every row. | `parsers.py:302`. Every bronze document header has it (for example `<area_Domain.mRID codingScheme="A01">10YFR-RTE------C</area_Domain.mRID>` directly under the root), as does ENTSO-E's own XML example. Polars: `df["area_code"].unique()` gives `['']` over 9,414 rows. |
 | 3 | **Sign lost.** `flow_direction` is parsed but is not in `output_cols`, so silver holds magnitudes only. | `silver/entsoe/h8_balancing.py:36-45`. `(quantity_mw < 0).sum()` is 0; the minimum is 0.018 and the maximum 2361.76. |
 
@@ -75,7 +75,7 @@ evidence string is out of date (a seat item for gridflow).
 | Claim | Evidence |
 |---|---|
 | The request is `GET https://web-api.tp.entsoe.eu/api?documentType=A86&periodStart=YYYYMMDD0000&periodEnd=<next day>0000&area_Domain=<EIC>&businessType=B33&securityToken=...` | `client.py:291-311` (parameter order); `endpoints.py:328-334`; bronze `.meta.json` `request_url` (for example `...documentType=A86&periodStart=202608010000&periodEnd=202608020000&area_Domain=10YFR-RTE------C&businessType=B33...`) |
-| One call per zone and UTC day, over six zones | `client.py:161-167` (`day_subwindows`), `:249` (the `DEFAULT_ZONES` loop, since the doc type has no `domain_style`, so the "zone" default applies with `domain_params`); `endpoints.py:394` |
+| One call per zone and UTC day, over six zones | `client.py:161-167` (`day_subwindows`), `:249` (the `DEFAULT_ZONES` loop, since the doc type has no `domain_style`, so the "zone" default applies with `domain_params`); `endpoints.py:395` |
 | Point time = start + (position - 1) × resolution | `parsers.py:530` |
 | `PT1M` is unmapped and falls back to 1 h | `parsers.py:35-43`, `:50-51` |
 | `area_Domain.mRID` is read only inside the TimeSeries | `parsers.py:302`; bronze document heads |

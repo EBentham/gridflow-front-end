@@ -31,7 +31,7 @@
 | net_transfer_capacity | written (day-ahead NTC into GB from FR, IE-SEM, BE, NL, 8 to 21 Sep); checker running | af6a9dcd642a89a55 | a57d6b2c71914570c | verdict |
 | auction_revenue | written (hourly EUR, GB-NL and GB-BE, 15 to 21 Sep); checker running | a745ee86e95b1e284 | a0f2a1125adccad7d | verdict |
 | capacity-allocated-nominated (family, lead total_capacity_allocated) | writer running | aa5201e596dbf26ce | — | checker |
-| dc_link_intraday_transfer_limits | written (one BritNed line, 1 Aug, 22 points; the vendor publishes rarely); checker running, may recommend a hold | aafc74fa32a44daac | (dc-checker) | verdict |
+| dc_link_intraday_transfer_limits | written (one BritNed line, 1 Aug, 22 points; the vendor publishes rarely); checker running, may recommend a hold | aafc74fa32a44daac | a8e78e2d10063228c | verdict |
 | group 2 rest: dc_link_intraday_transfer_limits | queued | — | — | writers |
 | current_balancing_state | writer running | aff7fcf8159bb3639 | — | checker |
 | procured_balancing_capacity | writer running | a7d2508a74e6ebbfa | — | checker |
