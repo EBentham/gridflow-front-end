@@ -1,0 +1,123 @@
+{
+ "dataset": "gie/lng",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "ea267ae817179371a68ab4757f3ba40388f191cf464eec9c51690b284ab75d6e",
+ "kernel": "gridflow_models",
+ "source": "gie_alsi",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.gie_alsi",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.gie_alsi.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.gie_alsi.query(\"lng\", \"2026-09-13\", \"2026-09-22\")\ndf = df.sort_values([\"gas_day\", \"country_code\"])",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df[[\"gas_day\", \"country_code\", \"send_out_gwh\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "gas_day",
+      "country_code",
+      "send_out_gwh"
+     ],
+     "index": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5"
+     ],
+     "rows": [
+      [
+       "2026-09-13",
+       "BE",
+       "106.6"
+      ],
+      [
+       "2026-09-13",
+       "ES",
+       "295.0"
+      ],
+      [
+       "2026-09-13",
+       "FR",
+       "776.7"
+      ],
+      [
+       "2026-09-13",
+       "GB",
+       "NaN"
+      ],
+      [
+       "2026-09-13",
+       "IT",
+       "584.5"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "sent = df[df.country_code != \"GB\"]\nwide = sent.pivot(index=\"gas_day\", columns=\"country_code\", values=\"send_out_gwh\")\nax = wide.plot.area(ylabel=\"GWh per gas day\", figsize=(8, 3.5))\nax.legend(loc=\"upper left\", bbox_to_anchor=(1, 1));",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "lng-5.png",
+     "width": 790,
+     "height": 369
+    }
+   ]
+  }
+ ]
+}

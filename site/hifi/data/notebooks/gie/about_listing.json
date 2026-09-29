@@ -1,0 +1,137 @@
+{
+ "dataset": "gie/about_listing",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "d6f8f6c008e1406778a46c6873fab7ad238a7736a34be66a0c4daf06cc64375b",
+ "kernel": "gridflow_models",
+ "source": "gie_agsi",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.gie_agsi",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.gie_agsi.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.sql(\"\"\"\n    SELECT entity_level, entity_code, entity_name, country_code,\n           entity_type, company_code, company_name\n    FROM silver_gie_agsi_about_listing\n    WHERE event_time = (SELECT max(event_time) FROM silver_gie_agsi_about_listing)\n    ORDER BY entity_level, entity_code\n\"\"\")",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df[[\"entity_level\", \"entity_code\", \"entity_name\", \"country_code\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "entity_level",
+      "entity_code",
+      "entity_name",
+      "country_code"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "company",
+       "11X0-0000-0667-8",
+       "EnBW Etzel Speicher",
+       "DE"
+      ],
+      [
+       "company",
+       "11XSWHANNOVERAG3",
+       "enercity",
+       "DE"
+      ],
+      [
+       "company",
+       "21X-BE-A-A0A0A-Y",
+       "Fluxys",
+       "BE"
+      ],
+      [
+       "company",
+       "21X-BG-A-A0A0A-C",
+       "Bulgartransgaz (4)",
+       "BG"
+      ],
+      [
+       "company",
+       "21X-DEPOGAZ-AGSI",
+       "Depogaz Ploiești",
+       "RO"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "df[\"entity_level\"].value_counts()",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "entity_level\nfacility    121\ncompany      64\nName: count, dtype: int64"
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "source": "df[\"entity_type\"].value_counts(dropna=False)",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "entity_type\nSSO    64\nASF    50\nDSR    48\nASR    13\nNaN     5\nGRP     4\nSRC     1\nName: count, dtype: int64"
+    }
+   ]
+  }
+ ]
+}

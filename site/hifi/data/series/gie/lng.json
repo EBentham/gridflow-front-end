@@ -1,0 +1,25 @@
+{
+  "dataset": "gie/lng",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "5d759529bf082740e5fa88df38b38f127f70d694d2f3bb54de2a760ea75903e6",
+  "type": "stacked-area",
+  "unit": "GWh",
+  "caption": "",
+  "value_column": "send_out_gwh",
+  "aggregation": "sum",
+  "window": {"end": "2026-09-22", "rule": "fixed", "start": "2026-09-13"},
+  "provenance": {"files": 15, "null_values_dropped": 0, "rows_matched": 105, "rows_read": 120, "rows_used": 70, "silver": "gie_alsi/lng", "silver_first": "2026-08-01", "silver_last": "2026-09-22"},
+  "spec": {"aggregation": "sum", "filter": [{"column": "country_code", "op": "ne", "value": "GB"}], "group": "country_code", "group_map": {"BE": "be", "ES": "es", "FR": "fr", "IT": "it", "NL": "nl", "PL": "pl", "PT": "pt"}, "series_order": ["nl", "it", "pt", "pl", "be", "es", "fr"], "silver": "gie_alsi/lng", "time": "gas_day", "type": "stacked-area", "unit": "GWh", "value": "send_out_gwh", "window": {"end": "2026-09-22", "start": "2026-09-13"}},
+  "x_kind": "time",
+  "x": ["2026-09-13", "2026-09-14", "2026-09-15", "2026-09-16", "2026-09-17", "2026-09-18", "2026-09-19", "2026-09-20", "2026-09-21", "2026-09-22"],
+  "series": [
+    {"key": "nl", "values": [587.2, 713.1, 732.7, 731.0, 734.6, 736.2, 754.0, 754.0, 763.6, 737.9]},
+    {"key": "it", "values": [584.5, 627.5, 699.8, 696.8, 667.6, 533.5, 505.8, 532.6, 647.6, 645.2]},
+    {"key": "pt", "values": [174.8, 184.5, 184.3, 178.4, 176.5, 178.9, 178.1, 173.2, 176.7, 187.4]},
+    {"key": "pl", "values": [165.0, 167.3, 154.5, 105.0, 105.0, 115.0, 96.0, 84.8, 166.0, 190.5]},
+    {"key": "be", "values": [106.6, 91.8, 108.7, 104.8, 113.6, 115.9, 126.3, 175.5, 216.0, 263.8]},
+    {"key": "es", "values": [295.0, 507.1, 549.5, 334.7, 538.3, 697.9, 547.4, 534.0, 668.5, 601.5]},
+    {"key": "fr", "values": [776.7, 857.8, 354.4, 687.1, 920.0, 1052.8, 1074.4, 1075.6, 1085.1, 800.4]}
+  ]
+}

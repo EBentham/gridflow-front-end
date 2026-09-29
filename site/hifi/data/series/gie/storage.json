@@ -1,0 +1,23 @@
+{
+  "dataset": "gie/storage",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "e9a3316f502d63c7cdc9ea2dfaee3eb04f516009b98b6deb6942e81f73dc89af",
+  "type": "line",
+  "unit": "%",
+  "caption": "",
+  "value_column": "storage_pct_full",
+  "aggregation": "last",
+  "window": {"end": "2026-09-22", "rule": "fixed", "start": "2026-09-13"},
+  "provenance": {"files": 15, "null_values_dropped": 0, "rows_matched": 75, "rows_read": 135, "rows_used": 50, "silver": "gie_agsi/storage", "silver_first": "2026-08-01", "silver_last": "2026-09-22"},
+  "spec": {"aggregation": "last", "filter": [{"column": "entity_code", "op": "in", "value": ["DE", "IT", "NL", "FR", "AT"]}], "group": "entity_code", "group_map": {"AT": "at", "DE": "de", "FR": "fr", "IT": "it", "NL": "nl"}, "series_order": ["it", "fr", "at", "de", "nl"], "silver": "gie_agsi/storage", "time": "gas_day", "type": "line", "unit": "%", "value": "storage_pct_full", "window": {"end": "2026-09-22", "start": "2026-09-13"}},
+  "x_kind": "time",
+  "x": ["2026-09-13", "2026-09-14", "2026-09-15", "2026-09-16", "2026-09-17", "2026-09-18", "2026-09-19", "2026-09-20", "2026-09-21", "2026-09-22"],
+  "series": [
+    {"key": "it", "values": [84.66, 84.8, 84.96, 85.1, 85.21, 85.32, 85.54, 85.78, 85.91, 86.03]},
+    {"key": "fr", "values": [76.74, 77.16, 77.53, 78.01, 78.52, 79.1, 79.69, 80.31, 80.82, 81.09]},
+    {"key": "at", "values": [67.1, 67.12, 67.16, 67.17, 67.23, 67.38, 67.55, 67.79, 67.87, 67.81]},
+    {"key": "de", "values": [55.81, 55.93, 55.96, 56.02, 56.12, 56.26, 56.55, 56.84, 56.99, 56.99]},
+    {"key": "nl", "values": [52.55, 52.9, 53.24, 53.65, 54.1, 54.55, 55.06, 55.54, 55.96, 56.26]}
+  ]
+}
