@@ -41,7 +41,7 @@ Writer: Opus 5.5 · high, 2026-09-29. Page: `site/hifi/data-sources/entsoe/net_t
   - `related` separates `total_capacity_allocated` ("already allocated in auctions ... not the forecast") from `cross_border_flows` ("physical flow").
   - I never call NTC an upper bound on flow (see the project check below).
 - **Borders.** The connector sends the eight `_FLOW_PAIRS` (in, out) (`client.py:40-49`), one direction each.
-  - Two pairs, FR to BE and FR to DE-LU, return a Reason 999 acknowledgement ("No matching data found for Data item FORECASTED_TRANSFER_CAPACITIES_EXPLICIT [11.1]") on all 19 bronze days (38 of 38 files).
+  - Two pairs, FR to BE and FR to DE-LU, return a Reason 999 acknowledgement ("No matching data found for Data item FORECASTED_TRANSFER_CAPACITIES_EXPLICIT [11.1]") on all 19 bronze days (42 of 42 files; 13 and 14 September were fetched twice).
   - Silver therefore holds six pairs: GB from FR, NL, BE and IE-SEM, plus NL from DE-LU and NL from BE.
 - **Direction.** `in_Domain` reads as the receiving zone. This is a project check, and the page says so each time.
 - **Resolution.**
@@ -58,7 +58,7 @@ Writer: Opus 5.5 · high, 2026-09-29. Page: `site/hifi/data-sources/entsoe/net_t
 | Request parameter order `documentType, periodStart, periodEnd, in_Domain, out_Domain, contract_MarketAgreement.Type, securityToken` (requests) | `client.py:286-310` (`update` order: period, `_domain_params`, `extra_params`, token); bronze sidecar `2026/09/16/raw_20260926T175621Z_76bbb763.meta.json` `request_url` has exactly this order |
 | One GET per ordered pair per UTC day, eight pairs (raw_feed.note) | `client.py:162-168` (`day_subwindows`), `:211-228` (one task per `_FLOW_PAIRS` entry); bronze has 8 files per day |
 | Ingest `--end 2026-09-22` excludes that date; transform `--end 2026-09-21` included (commands) | `utils/time.py:123-141`: an end at midnight excludes that date. `PARTITION_SOURCE_OFFSETS` is the default `(0,)` (`silver/base.py:417`), with no override. Periods are UTC days, so no neighbouring bronze day is read. |
-| FR to BE and FR to DE-LU came back as no matching data (what_it_is) | 38 acknowledgement XMLs, one per FR pair per day, across all 19 bronze days; the Reason text is quoted above. Worded in the past tense, as what the responses said, not as a vendor rule. |
+| FR to BE and FR to DE-LU returned "No matching data found" in the responses received (what_it_is) | 42 acknowledgement XMLs, 21 per FR pair, across all 19 bronze days; the Reason text is quoted above. Worded in the past tense, as what the responses said, not as a vendor rule. |
 | GB rows read as capacity into GB (what_it_is, fields.in_area_code) | Project check: hourly mean `cross_border_flows.flow_mw` for the same (in, out), 2,426 joined hours, 2026-08-01 to 2026-09-20. On the GB pairs, flow into GB tops out at the NTC value: FR 3,028 vs max 3,061; 4,028 vs 4,077; BE 1,012 vs 1,027; NL 1,016 vs 1,054. Max flow/NTC is 1.04, bar one GB-BE hour at 1.11 (889 vs 804). |
 | Grain and key: interval start, in, out (facts.grain, record.key) | `net_transfer_capacity.py:78` `unique(subset=[timestamp_utc, in_area_code, out_area_code], keep="last")`; 144 rows per day = 6 pairs × 24 |
 | `timestamp_utc` = period start + (position − 1) × resolution (fields) | `parsers.py:527-529`, `:579-582`; the coordinator's wording |
@@ -103,7 +103,7 @@ The curl example is unchanged; it is correct for the vendor.
 
 ## Open questions
 
-1. **Should `_FLOW_PAIRS` stay shared by A61?** FR-BE and FR-DE-LU never return A61 data (38 of 38 acknowledgements). Dropping them for this dataset would save 2 of 8 calls a day; this is a gridflow change.
+1. **Should `_FLOW_PAIRS` stay shared by A61?** FR-BE and FR-DE-LU never return A61 data (42 of 42 acknowledgements). Dropping them for this dataset would save 2 of 8 calls a day; this is a gridflow change.
 2. **Is the page right to keep the NL pairs off the chart?** Their A61 values swing hourly (0 to 4,498 MW) and do not bound physical flow. The chart and the rows show GB only; the notebook summary lists all six pairs.
 3. **Reverse direction.** As on `cross_border_flows`, capacity out of GB is never requested, so GB export capacity cannot be shown.
 4. **`published_at` comment in gridflow** (`_published_at.py` docstring, "forecast issue time"). This is a seat item already (ruling #39).
@@ -133,3 +133,27 @@ The curl example is unchanged; it is correct for the vendor.
 - **Coordinator note.**
   - `timestamp_utc` is worded "period start plus (position minus one) times resolution".
   - Cadence is scoped to "the responses received".
+
+## Revision 1 (after `net_transfer_capacity-review.md`, REVISE: 1 blocker, 1 major, 4 nits)
+
+1. **Blocker, `page.related[3].note`.** "Prices in the zones at each end of these borders" became "Prices at the continental and Irish ends; none for GB", the `cross_border_flows` wording. `day_ahead_prices` holds no GB price.
+2. **Major, note body `## Modelling notes`.**
+   - I reproduced the checker's join: GB from NL has 286 hours at NTC 0, with flow positive in 259. Flow is above 1 MW in two of them: 86.5 MW at 13:00 and 373.5 MW at 19:00 UTC on 19 September. The rest are about 0.06 MW.
+   - The 1.04 × NTC figure is now scoped to hours with NTC above zero.
+   - The bullet now says flow also runs at NTC 0, on GB from NL as well as NL-DE-LU.
+   - "Normal on the GB pairs" is restricted to NTC > 0, and utilisation is called undefined at NTC 0.
+   - The page quotes no count or ratio; this is a note-body change only.
+3. **Nit, `### Cross-zonal parameters`.**
+   - The direction check now names GB-FR, GB-BE and GB-NL, and says GB-IE-SEM flow stays far below NTC, so it neither confirms nor contradicts the direction.
+   - The day ranges are split (1 to 5 August, 8 to 21 September 2026), and the count is 42 of 42, with 13 and 14 September fetched twice.
+4. **Nit, `page.what_it_is`.** "came back as no matching data" became `returned "No matching data found" in the responses received`. It is within the 60-word budget; the build passes.
+5. **Nit, this report.** "38 of 38" became 42 of 42 in Status, the evidence table and the open questions.
+6. **Nit, dead domain link.** Left for the seat, as the checker recommends; it is not on the page.
+
+**Gates after revision 1**
+- The canonical note is CRLF (325 lines, 325 CRs), and the mirror `cmp` is clean.
+- `gridflow-build --only entsoe/net_transfer_capacity`: wrote the page, no errors.
+- `detect.mjs`: only the accepted `em-dash-overuse` advisory ("142 em-dashes", EIC padding and flags).
+- Screenshots at 1280 and 390 (`scratchpad/ntc-shots/rev1-*`, CDP on port 9813, under `timeout 60`): `scrollWidth` equals `innerWidth`.
+- The changed `what_it_is` and related list are fully visible at both widths, with nothing clipped or overlapping.
+- No artefact changed, because the chart spec, record select and notebook cells are untouched, so no re-distil or re-run was needed.

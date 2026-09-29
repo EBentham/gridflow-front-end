@@ -54,6 +54,9 @@ Family page `capacity-allocated-nominated`: lead `total_capacity_allocated`, mem
 | `plot_alt` | Silver GB/BE, 14 to 21 September: allocated is 725, then 0 from 20 Sep 22:00. Nominated maximum is 1,055 at 14 Sep 10:00; it is above 725 on 7 of 8 days; it is 0 from 21 Sep 04:00 to 23:00. |
 | Notebook lead: relation, date column, inclusive ends, lineage dropped | `gridflow_models/research/handles/source.py:401-451`: `_relation_name_for_dataset`, `_date_range_predicate` inclusive, `_present_bitemporal_exclude_clause`. `schema_manifest.py:188-189` gives `timestamp_utc` for both tables. The runner executed both queries without error. |
 | "Nominations follow later rounds too, so they can exceed allocated" | The definitions: allocated counts only "previous allocation procedures". The nominated replies carry contract series `A01`, `A06` and `A07` (see defects). |
+| `A29` means capacity already allocated (`business_type` field, how_used headroom) | `.planning/audit/2026-05-31-vendor-truth-audit/vendor-docs/entsoe-codes.md:52`: "A29, Already allocated capacity (AAC)". Line 56: "B08, Total nominated capacity". |
+| Grain "one row per interval start" | Lead rows are `PT60M`. The member's FR/DE-LU rows are `PT15M`, so the grain is not stated as "hour". |
+| Commands cover the nominated table too | `raw_feed.note` ends "Same commands, name swapped." Both tables use the same connector path and have no partition offsets. |
 | Related | All four pages are in `site/hifi/data/entsoe.json`. `auction_revenue` is explicit allocations (`endpoints.py:230-238`, `B07`). The allocated replies carry `auction.type` `A02` (Explicit per `.planning/audit/2026-05-31-vendor-truth-audit/vendor-docs/entsoe-codes.md` §4). |
 
 ## Body corrections (smallest spans)
@@ -83,7 +86,7 @@ Family page `capacity-allocated-nominated`: lead `total_capacity_allocated`, mem
 1. **Nominated silver keeps one of three contract series (gridflow defect, major for the data).**
    - GB/FR, GB/NL and GB/BE replies each carry three TimeSeries, contract types `A01`, `A06` and `A07`, in that order.
    - `parse_timeseries_xml` reads `contract_MarketAgreement.type` into no returned field. The H6 dedup key `(timestamp_utc, in_area_code, out_area_code, business_type)` with `keep="last"` (`h6_market.py:91-99`) drops `A01` and `A06`.
-   - Silver equals the `A07` series in all 336 hours on each GB pair. It also equals `commercial_schedules` exactly on those pairs (100% of 312 matched hours).
+   - Silver equals the `A07` series in all 336 hours on each GB pair. It also equals `commercial_schedules` exactly on those pairs (100% of 312 matched hours per GB pair).
    - Fix: carry the contract type as a column and add it to the key (T2, silver shape change).
 2. **Allocated `auction.Category` filter.** The GB/NL replies echo `auction.category` `A04` although the request sends `auction.Category=A01`. Either the lowercase-`a` parameter is ignored for this border, or the platform maps it. Not verified live. The silver rows carry no auction category.
 3. **Silver has no contract or auction columns on either table**, so a reader cannot tell which product a row belongs to. This follows from defect 1.

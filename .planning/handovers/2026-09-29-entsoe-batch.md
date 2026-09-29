@@ -30,7 +30,7 @@
 | net_positions | APPROVED (4 nits; sign correction confirmed) | affea4b8af88a3d6b | a90d8f640060a2b41 | done |
 | net_transfer_capacity | REVISE (blocker: GB price claim in related; major: flow-cap claim fails on GB from NL); writer revising | af6a9dcd642a89a55 | a57d6b2c71914570c | re-check |
 | auction_revenue | written (hourly EUR, GB-NL and GB-BE, 15 to 21 Sep); checker running | a745ee86e95b1e284 | a0f2a1125adccad7d | verdict |
-| capacity-allocated-nominated (family, lead total_capacity_allocated) | writer running | aa5201e596dbf26ce | — | checker |
+| capacity-allocated-nominated (family, lead total_capacity_allocated) | written (allocated into GB from NL and BE, 14 to 21 Sep; ships with the A07-only loss stated); checker running | aa5201e596dbf26ce | (can-checker) | verdict |
 | dc_link_intraday_transfer_limits | written (one BritNed line, 1 Aug, 22 points; the vendor publishes rarely); checker running, may recommend a hold | aafc74fa32a44daac | a8e78e2d10063228c | verdict |
 | group 2 rest: dc_link_intraday_transfer_limits | queued | — | — | writers |
 | current_balancing_state | HELD blank (ruling #41): silver has no zone, no sign and wrong times (13l). The note body was corrected but is unchecked | aff7fcf8159bb3639 | — | after the gridflow fix: page block, then checker |
@@ -49,7 +49,7 @@
 
 **Remediation list (Bobbo 2026-09-29):** log each gridflow or data defect as it is found, in gridflow `.planning/BACKLOG.md`
 item 13 and in the vault page `10-projects/gridflow/specs/remediation-from-site-batches.md` (on the branch for PR quant-vault#55).
-Logged so far: 13a to 13l.
+Logged so far: 13a to 13n.
 
 - Ruling #39, amended by #40: EIC codes in a note's front matter use `-` escapes (the vault scripts split the note on `---`).
   The build now rejects a literal one: guard in `page_fields.parse_page_fields`, tests in `tests/test_front_matter_fence.py`,
@@ -77,3 +77,6 @@ Logged so far: 13a to 13l.
   on NL from DE-LU. The note is fixed in the batch.
 - Template (from dc_link): wrapped `code` in `notebook.lead` does not break at 390, so the writer reworded to fit. It needs
   an `overflow-wrap` rule on lead code.
+- Front-end bug (from capacity-allocated-nominated): the notebook runner gives a DataFrame with a named index a misaligned
+  header (the #49 fix covers the plain index only). The writer worked around it with `.reset_index()`. Fix it in
+  `build._output_html`.
