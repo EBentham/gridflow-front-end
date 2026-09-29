@@ -71,7 +71,8 @@ hour 66 on the 14th, 283 at 2026-09-19T18:00Z, 188 max on the 20th; SO-flagged m
    dropped fields (`timeFrom`, `timeTo`, `settlementPeriodTo`, `amendmentFlag`, `nationalGridBmUnit`) and the one-segment
    dedup; added a labelled measurement (not vendor-documented) that the 2026-09-19 `from`/`to` response ran `timeFrom`
    00:00 to 24:00 inclusive, so a midnight segment sits in two bronze days and two silver files with the same key
-   (814 such duplicate keys across the September files, all at 00:00 UTC).
+   (539 duplicate keys, 1,078 rows, across all 14 local files, all at 00:00 UTC; corrected in Revision 1, the 814
+   first given here was September's row count, which is 407 keys).
 
 Left alone: em dashes and "Near real-time"/"Several years" in the body (not on the page; unverified, not shown), the
 schema table's `float` for levels (Pydantic says `float`; silver stores `Int64` because the transformer never casts).
@@ -90,7 +91,7 @@ schema table's `float` for levels (Pydantic says `float`; silver stores `Int64` 
 - **Silver loses the acceptance profile.** `boal.py` drops `timeFrom`/`timeTo` and keeps one segment per (date, period,
   unit, acceptance); on 19 Sep, 41,078 raw segments became 22,538 silver rows. A gridflow unit to keep segment times
   (and key on `timeFrom`) would make levels usable; the page states the limitation plainly.
-- **Cross-file duplicates at midnight UTC** (814 keys in September). `query()` returns both copies; the notebook uses
+- **Cross-file duplicates at midnight UTC** (539 keys, 1,078 rows across all 14 local files). `query()` returns both copies; the notebook uses
   `drop_duplicates` on (unit, acceptance) and the chart dedups, so nothing on the page is affected.
 
 ## Template problems (not worked around)
@@ -104,3 +105,20 @@ schema table's `float` for levels (Pydantic says `float`; silver stores `Int64` 
 2. **Long `chart.unit` strings clip at 390.** `chart_svg.py:329` end-anchors the unit at `x0 - 10`; a unit wider than the
    left gutter runs off the SVG. Worked within it by using `count`; other pages with a long unit would hit it.
 3. At 768 the y-axis title sits within a pixel or two of the top tick label (no overlap).
+
+## Revision 1 (after `boal-review.md`: APPROVE, 3 nits)
+
+1. **Repeated midnight rows (nit 1).** `page.raw_feed.note` now reads: "From the Elexon Insights API, in 24-hour
+   `from`/`to` windows. A segment starting at midnight UTC is in both adjacent windows, so silver repeats it. Summer
+   settlement days start 23:00 UTC." (30 words, at budget.) This follows the disbsad page's wording for the same
+   effect. `facts.grain` and `what_it_is` are unchanged: they state the per-transform code rule (`boal.py:120-123`),
+   and the repeats are the same segment (the checker found 0 keys with differing levels). Evidence: Polars over all 14
+   local silver files gives 539 duplicate keys (1,078 rows), all at `timestamp_utc` 00:00 UTC. The report's 814 was
+   September's row count (407 keys); corrected above.
+2. **`settlementPeriodTo` citation (nit 2).** Note body now reads "all but `settlementPeriodTo` renamed at
+   `silver/elexon/boal.py:74-77`; all five absent from `output_cols` at `boal.py:133-148`".
+3. **NESO name evidence (nit 3).** The Overview now cites https://www.neso.energy/ (checked 2026-09-29), where NESO
+   calls itself "the National Energy System Operator for Great Britain".
+
+Then: copied the note to the mirror (`cmp` identical, 314 of 314 lines CRLF), `gridflow-build --only elexon/boal`
+green, `detect.mjs --json` `[]`. No chart, sample or notebook change, so no artefact was regenerated.
