@@ -88,4 +88,7 @@ Each family's slug, title and members are fixed in `site/hifi/data/entsoe.json`.
 - **`published_at` on ENTSO-E forecast tables:** it is the response's `createdDateTime`, within seconds of the fetch.
   - It is not the forecast's issue time. The gridflow code comment calling it one is wrong (a seat item).
   - Describe it as a fetch-time stamp.
+- **Point times (from a checker):** a point's time is `period start + (position - 1) × resolution`
+  (`parsers.py:530`), never "position times resolution", which puts every row one step late.
+  - Say that the cadence (15-minute, hourly) is as sent in the responses we hold, not as a general rule.
 - **Notebook header clip at 390:** a long `.ipynb` filename clips the `gridflow_models` label. This is template work that the seat fixes; leave it.

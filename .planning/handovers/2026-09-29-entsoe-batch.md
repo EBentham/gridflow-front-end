@@ -19,7 +19,7 @@
 | actual_generation | written (DE-LU stacked, 12 to 18 Sep, B10 excluded); checker running | a764d6bcc53324bb2 | aec318644be7fe476 | verdict |
 | actual_load | written (DE-LU, FR, NL, BE, 15-min, 14 to 20 Sep); checker running | afa2e30d1849a63bd | a24ae1f85e1a79713 | verdict |
 | wind_solar_forecast | written (DE-LU stacked, 14 to 20 Sep; PSR codes corrected); checker running | a21e8456c9ebdbc7f | a2f6ec605542e237d | verdict |
-| generation_forecast | written (DE-LU, FR, NL, BE hourly means, 14 to 20 Sep); checker running | a9ca9d520ca0d49ab | a6c61259813ce01e3 | verdict |
+| generation_forecast | REVISE (blocker: point time off by one step; major: cadence stated as a rule); writer revising | a9ca9d520ca0d49ab | a6c61259813ce01e3 | re-check |
 | cross_border_flows | written (flows into GB from FR, BE, NL, hourly mean, 14 to 20 Sep); checker running | aaad21b6d79fe8b11 | abd692feda2530f4a | verdict |
 | commercial_schedules | writer running | a31494e4d83ddddc5 | — | checker |
 | net_positions | writer running | affea4b8af88a3d6b | — | checker |
