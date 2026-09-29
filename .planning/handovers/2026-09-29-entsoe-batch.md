@@ -18,7 +18,7 @@
 | day_ahead_prices | written (FR, NL, BE, IE-SEM hourly, 14 to 20 Sep; DE-LU excluded, see seat items); checker running | a3832f1aa7ea3b06d | af7698a43e3be4872 | verdict |
 | actual_generation | written (DE-LU stacked, 12 to 18 Sep, B10 excluded); checker running | a764d6bcc53324bb2 | aec318644be7fe476 | verdict |
 | actual_load | REVISE (major: GB code 999 stated as an ENTSO-E rule); writer revising | afa2e30d1849a63bd | a24ae1f85e1a79713 | re-check |
-| wind_solar_forecast | Revision 1 done; re-check running | a21e8456c9ebdbc7f | a2f6ec605542e237d | re-check |
+| wind_solar_forecast | APPROVED (review 2) | a21e8456c9ebdbc7f | a2f6ec605542e237d | done |
 | generation_forecast | APPROVED (review 2) | a9ca9d520ca0d49ab | a6c61259813ce01e3 | done |
 | cross_border_flows | written (flows into GB from FR, BE, NL, hourly mean, 14 to 20 Sep); checker running | aaad21b6d79fe8b11 | abd692feda2530f4a | verdict |
 | commercial_schedules | writer running | a31494e4d83ddddc5 | — | checker |
@@ -26,6 +26,7 @@
 | net_transfer_capacity | writer running | af6a9dcd642a89a55 | — | checker |
 | auction_revenue | writer running | a745ee86e95b1e284 | — | checker |
 | capacity-allocated-nominated (family, lead total_capacity_allocated) | writer running | aa5201e596dbf26ce | — | checker |
+| dc_link_intraday_transfer_limits | writer running (thin: 24 rows, 1 to 5 Aug) | (see below) | — | checker |
 | group 2 rest: dc_link_intraday_transfer_limits | queued | — | — | writers |
 | group 3: current_balancing_state, procured_balancing_capacity, balancing-energy-bids, congestion-management, actual_generation_units, generation_units_master_data | queued | — | — | writers |
 | group 4: installed_capacity, installed_capacity_units, water_reservoirs, forecast_margin, load-forecasts, outages | queued | — | — | writers |
