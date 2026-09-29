@@ -4,7 +4,7 @@ Reviewer: Opus 5.5 · high, checker. Inputs: `BATCH-entsoe.md` (rulings #39, #40
 
 ## Verdict: REVISE
 
-1 major, 2 nits. The page itself is correct: every fact, number, request and command on it checks out. The major is in the note body. Two sentences there still carry the scrambled production-type codes the writer set out to fix.
+1 major, 3 nits. The page itself is correct: every fact, number, request and command on it checks out. The major is in the note body. Two sentences there still carry the scrambled production-type codes the writer set out to fix.
 
 ## Findings
 
@@ -38,6 +38,14 @@ Reviewer: Opus 5.5 · high, checker. Inputs: `BATCH-entsoe.md` (rulings #39, #40
      - A reader comparing bronze with silver will see missing points.
    - **Why only a nit:** nothing on the page is false. Each row is still one target interval and one point quantity.
    - **Optional fix:** a few words in `raw_feed.note`, for example "fills the vendor's A03 blocks".
+
+4. **nit**: `page.facts.cadence` (and the body gotcha "DE-LU is published at PT15M; some smaller zones publish at PT60M only")
+   - **What is wrong:** "each zone sends its own interval, such as PT15M or PT60M" reads as a vendor rule. No quoted vendor source backs it. It is what these responses carry.
+     - Silver 14 to 20 Sep: DE-LU, FR and NL are PT15M; BE and IE-SEM are PT60M.
+   - **Fix:** scope it, for example "Day-ahead; the interval is the response's `resolution`, PT15M or PT60M in these responses". The body gotcha is an unedited original, so it is optional to fix.
+   - **Checked per the seat note:** no field says a point's time is "position times resolution".
+     - The `timestamp_utc` guide ("from the period start and point position") is consistent with `parsers.py:530`, which computes `start + (position - 1) * resolution`.
+     - The note body's "Period start + position" is loose but not one step late, and it is not a page field.
 
 ## What was checked and holds
 

@@ -123,6 +123,15 @@ Writer: Opus 5.5 · high, 2026-09-29. Screenshot port 9805 (server stopped).
 - Residual risk, for the seat: the raw front matter now contains `---` inside the `group_map` keys. `gridflow_drift_check.py:129` and `derive_machine_catalog.py:180` do `text.split("---", 2)`, so those vault tools will cut this note's front matter short. The same applies to every ENTSO-E note that writes these codes plainly.
 - Template problems 3 (detector) and 2 (the workaround) above are superseded by this ruling. Problem 1 (the 390 notebook header) is left for the seat.
 
+Superseded by the corrected ruling (#40): the `group_map` keys are back to `\x2D` escapes, and the front matter holds no literal `---` apart from its fences. The four-zone rows are kept, and `tests/test_front_matter_fence.py` passes.
+
+## Revision 1 (review REVISE, 2026-09-29)
+
+1. **Blocker, `page.record.fields.timestamp_utc`.** Now "Target time: start of the step, period start plus (position minus 1) steps, UTC", matching `parsers.py:530` and the BE 2026-09-08 position 9 = 08:00 check. The body's Silver schema row had the same error; it now reads `Period start + (position - 1) * resolution (parsers.py:530)`. A grep of the page for "position" finds only this line and the A03 guide line, which is correct.
+2. **Major, `page.facts.cadence`.** Now "Every 15 minutes for DE-LU, FR and NL, hourly for BE, in these responses" (14 words).
+3. Mirror `cmp`-identical (CRLF). `gridflow-build --only entsoe/generation_forecast` exits 0. The detector shows only the accepted `em-dash-overuse` advisory (43).
+4. Screenshots at 1280 and 390: the hero facts, the frame, the guide and the notebook show nothing clipped or overlapping. The 390 wrapper lived in the scratchpad this time, not under `site/hifi`, and the server is stopped.
+
 ## Spend
 
 One writer session (Opus 5.5 · high). The advisor was rate-limited, so it was not consulted.
