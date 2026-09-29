@@ -46,7 +46,7 @@
 | actual_generation_units | REVISE (2 blockers: unlabelled wrong sample rows; 'single-unit plants' advice unsafe in FR); writer resumed | aa26b6043c67cd777 | a307fc1083fa679bf | re-check |
 | generation_units_master_data | written (unit count by type, 6 zones, no MW); seat: event_time stays in the key, 'Smaller types' label ok; checker running | a20a17cf260cfe31f | a9307d180d54daee9 | verdict |
 | installed_capacity | written (DE-LU 2026 capacity by type, bar; 4 zones, daily repeats noted); checker running | ae278337fa1293ec8 | aadbd72a6a196372e | verdict |
-| load-forecasts (family, lead load_forecast) | written (day-ahead DE-LU/FR/NL/BE 14-20 Sep, no issue time); seat: horizon members ship with the A61-only loss stated; checker running | a0639f624b8567137 | a8fde62593ddf835d | verdict |
+| load-forecasts (family, lead load_forecast) | REVISE (1 major: loss stated only in codes, summary promises max/min; 4 nits); writer resumed | a0639f624b8567137 | a8fde62593ddf835d | re-check |
 | installed_capacity_units | writer running | abc4b218164a9acf8 | | report |
 | water_reservoirs | written (FR only, 4 weekly points in two pieces); seat: ships thin-but-accurate with coverage stated; swap the blank-page test at PR time; checker running | ad11aa4256be63ae4 | a328b581d4bd66dc5 | verdict |
 | still queued: forecast_margin, outages (family) | queued | | | writers as slots free (GIE checkers first) |
