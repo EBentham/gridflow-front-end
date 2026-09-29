@@ -1,0 +1,19 @@
+{
+  "dataset": "gie/about_listing",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "ef26762b1e141c262392bb0412ed4cafe9d5617beba058a75ce4319a11b06751",
+  "type": "bar",
+  "unit": "facility EICs",
+  "caption": "",
+  "value_column": null,
+  "aggregation": "count",
+  "window": null,
+  "provenance": {"duplicates_dropped": 968, "files": 9, "rows_matched": 1089, "rows_read": 1665, "rows_used": 121, "silver": "gie_agsi/about_listing", "unmapped_groups": ["BE", "BG", "DK", "ES", "HR", "HU", "IE", "IT", "LV", "PT", "SE", "SK", "UA"]},
+  "spec": {"aggregation": "count", "dedup": {"on": ["entity_code"], "order_by": "ingested_at"}, "filter": [{"column": "entity_level", "op": "eq", "value": "facility"}], "group": "country_code", "group_default": "rest", "group_map": {"AT": "austria", "CZ": "czech", "DE": "germany", "FR": "france", "GB": "uk", "NL": "netherlands", "PL": "poland", "RO": "romania"}, "silver": "gie_agsi/about_listing", "sort": "value_desc", "type": "bar", "unit": "facility EICs"},
+  "x_kind": "category",
+  "x": ["germany", "rest", "france", "netherlands", "romania", "austria", "uk", "czech", "poland"],
+  "series": [
+    {"key": "count", "values": [63, 18, 8, 7, 7, 5, 5, 4, 4]}
+  ]
+}

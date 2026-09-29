@@ -1,0 +1,129 @@
+{
+ "dataset": "gie/storage",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "26e15ccc0e1f8ebff56d573786205a3a3a74e6d4ae6fa8f9085078cd17b6c683",
+ "kernel": "gridflow_models",
+ "source": "gie_agsi",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.gie_agsi",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.gie_agsi.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.gie_agsi.query(\"storage\", \"2026-09-13\", \"2026-09-22\")",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df[[\"gas_day\", \"entity_code\", \"storage_pct_full\", \"net_withdrawal_gwh\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "gas_day",
+      "entity_code",
+      "storage_pct_full",
+      "net_withdrawal_gwh"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2026-09-13",
+       "AT",
+       "67.10",
+       "-184.2"
+      ],
+      [
+       "2026-09-13",
+       "PL",
+       "98.13",
+       "-90.9"
+      ],
+      [
+       "2026-09-13",
+       "NL",
+       "52.55",
+       "-601.6"
+      ],
+      [
+       "2026-09-13",
+       "IT",
+       "84.66",
+       "-522.1"
+      ],
+      [
+       "2026-09-13",
+       "GB",
+       "NaN",
+       "NaN"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "net = df.pivot(index=\"gas_day\", columns=\"entity_code\", values=\"net_withdrawal_gwh\")\ncolors = [\"#155A6E\", \"#66793B\", \"#C77E3C\"]\nax = net[[\"DE\", \"FR\", \"NL\"]].plot(ylabel=\"net withdrawal, GWh\", figsize=(8, 3.5), color=colors)\nax.legend(loc=\"upper left\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "storage-5.png",
+     "width": 716,
+     "height": 369
+    }
+   ]
+  }
+ ]
+}

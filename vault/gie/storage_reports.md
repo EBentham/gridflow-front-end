@@ -14,8 +14,13 @@ layer_coverage: bronze, silver
 time-series. Same `/api` endpoint and shape as `storage`, but the
 connector exercises the full set of query scopes documented in
 `docs/gie_agsi_endpoint_catalog.yaml`: `aggregate_type` (`type=EU`),
-`country`, `company`, and `facility`. It returns one record per
-gas-day per entity, with stocks (`gasInStorage`), flow components
+`country`, `company`, and `facility`. Its default scope, though, is
+`aggregate_type` with `type=EU` (`connectors/gie/client.py:177-181`,
+`endpoints.py:25`), and `gridflow ingest` passes no scope
+(`pipeline/runner.py:947`), so a CLI ingest holds one EU aggregate row
+per gas day (`entity_level = aggregate_type`, `entity_code = eu`). The
+other scopes need a direct `connector.fetch(..., scope=...)` call. It
+returns one record per gas-day per entity, with stocks (`gasInStorage`), flow components
 (`injection`, `withdrawal`, `netWithdrawal`), capacity figures
 (`workingGasVolume`, `injectionCapacity`, `withdrawalCapacity`,
 `contractedCapacity`, `availableCapacity`, `coveredCapacity`),
@@ -26,8 +31,10 @@ who operates it, and how is it changing day-by-day?" — the foundational
 input for any winter-season tightness, fuel-switching, or storage-spread
 trade idea on EU gas.
 
-→ [Gas day](../../../20-domain/concepts/gas-day.md) — gas day starts at
-  06:00 UTC, not at midnight.
+→ [Gas day](../../../20-domain/concepts/gas-day.md) — `gas_day` is the
+  vendor's `gasDayStart` date; gridflow labels its `event_time` at a fixed
+  06:00 UTC (`silver/base.py:383-400`), a project convention, not the
+  vendor's start instant.
 
 ---
 
@@ -134,7 +141,7 @@ returns numeric values:
 
 **Path pattern**: `{data_root}/silver/gie_agsi/storage_reports/year=YYYY/month=MM/storage_reports_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.gie.agsi.StorageReportsTransformer`
-**Pydantic schema**: `gridflow.schemas.gie.GasStorage`
+**Pydantic schema**: none. `StorageReportsTransformer.schema_cls = None` (`silver/gie/agsi.py:301`), so rows are not validated against `GasStorage` and `storage_pct_full` is not clamped.
 **Dedup key**: `(gas_day, entity_level, entity_code, entity_url)`
 **Point-in-time field**: `updated_at` — vendor `updatedAt`. Use for as-of filtering.
 
@@ -142,28 +149,28 @@ returns numeric values:
 
 | Field | Python type | Nullable | Source field | Notes |
 |-------|-------------|----------|--------------|-------|
-| `gas_day` | `date` | No | `gasDayStart` | Required. Gas day starts 06:00 UTC. |
-| `gas_day_end` | `datetime[UTC]` | Yes | `gasDayEnd` | |
-| `updated_at` | `datetime[UTC]` | Yes | `updatedAt` | Vendor revision timestamp. |
+| `gas_day` | `date` | No | `gasDayStart` | Required. `event_time` labels it at a fixed 06:00 UTC (`silver/base.py:383-400`). |
+| `gas_day_end` | `datetime[UTC]` | Yes | `gasDayEnd` | Vendor date (the next day) stored at 00:00 UTC (`silver/gie/agsi.py:56-57,193`). |
+| `updated_at` | `datetime[UTC]` | Yes | `updatedAt` | Vendor stamp sent without a zone; the transformer reads it as UTC (`silver/gie/agsi.py:48-62`). |
 | `entity_level` | `str` | No | derived | One of `aggregate_type`, `country`, `company`, `facility`. Inferred from request params. |
-| `entity_code` | `str` | No | `code` (or request param) | EIC for company/facility, ISO-2 for country, `EU` for aggregate. |
+| `entity_code` | `str` | No | `code` (or request param) | EIC for company/facility, ISO-2 for country, `eu` (the vendor's lowercase `code`) for the EU aggregate. |
 | `entity_name` | `str` | No | `name` | |
 | `entity_url` | `str` | Yes | `url` | |
-| `country_code` | `str` | No | request `country` or `code` | |
-| `country_name` | `str` | No | derived | |
-| `gas_in_storage_gwh` | `float` | Yes | `gasInStorage` | GWh. `-` placeholder → null. |
-| `consumption_gwh` | `float` | Yes | `consumption` | GWh. |
+| `country_code` | `str` | No | request `country` or `code` | Empty string on EU aggregate rows (`silver/gie/agsi.py:182`). |
+| `country_name` | `str` | Yes | derived | Null on EU aggregate rows (`silver/gie/agsi.py:186-188`). |
+| `gas_in_storage_gwh` | `float` | Yes | `gasInStorage` | TWh despite the name (our check, 2026-09-29): its day-on-day change x 1,000 matches `injection` - `withdrawal`, and those flows are GWh/d (see Known issues). `-` placeholder → null. |
+| `consumption_gwh` | `float` | Yes | `consumption` | TWh, like `gas_in_storage_gwh` (`consumption_full_pct` = stock / consumption x 100); period undocumented. |
 | `consumption_full_pct` | `float` | Yes | `consumptionFull` | %. |
 | `injection_gwh` | `float` | Yes | `injection` | GWh. |
 | `withdrawal_gwh` | `float` | Yes | `withdrawal` | GWh. |
-| `net_withdrawal_gwh` | `float` | Yes | `netWithdrawal` | GWh. Signed. |
-| `working_gas_volume_gwh` | `float` | Yes | `workingGasVolume` | GWh. |
+| `net_withdrawal_gwh` | `float` | Yes | `netWithdrawal` | GWh. Signed: within 0.1 of `withdrawal` - `injection` (checked), negative while injecting. |
+| `working_gas_volume_gwh` | `float` | Yes | `workingGasVolume` | TWh, like `gas_in_storage_gwh` (`full` = stock / working gas volume x 100), not GWh. |
 | `injection_capacity_gwh_per_day` | `float` | Yes | `injectionCapacity` | GWh/day. |
 | `withdrawal_capacity_gwh_per_day` | `float` | Yes | `withdrawalCapacity` | GWh/day. |
-| `contracted_capacity_gwh_per_day` | `float` | Yes | `contractedCapacity` | GWh/day. |
-| `available_capacity_gwh_per_day` | `float` | Yes | `availableCapacity` | GWh/day. |
-| `covered_capacity_gwh_per_day` | `float` | Yes | `coveredCapacity` | GWh/day. |
-| `storage_pct_full` | `float` | Yes | `full` | 0-100, clamped at schema. |
+| `contracted_capacity_gwh_per_day` | `float` | Yes | `contractedCapacity` | Named GWh/day, but a TWh volume (contracted + available ≈ working gas volume). |
+| `available_capacity_gwh_per_day` | `float` | Yes | `availableCapacity` | Named GWh/day, but a TWh volume (see above). |
+| `covered_capacity_gwh_per_day` | `float` | Yes | `coveredCapacity` | `100` on every non-null row checked (2026-08-01 to 09-22); meaning undocumented, not GWh/day. |
+| `storage_pct_full` | `float` | Yes | `full` | 0-100 as sent; not clamped (no schema on this table). |
 | `trend` | `float` | Yes | `trend` | Signed daily delta (sign convention TODO confirm). |
 | `status` | `str` | Yes | `status` | `E` estimate, `C` confirmed, `N` no value. |
 | `info` | `str` | Yes | `info` | JSON-encoded freeform info object. |
@@ -219,17 +226,28 @@ None implemented.
 - Lowercase `x-key` header. Capitalised `X-Key` returns 401.
 - `last_page` field is the pagination source of truth. `total` is the
   current-page row count, NOT the global record count.
-- All values in **GWh** (and capacities in GWh/day). Vendor docs
-  historically called this `working_volume`/`gas_in_storage_mwh` but the
-  live response key is `gasInStorage` and the units are GWh.
+- Flows (`injection`, `withdrawal`, `netWithdrawal`) are GWh per gas day:
+  IT net injection matches ENTSOG `physical_flows` (exits minus entries
+  at the three Italian UGS points, `flow_gwh_per_day`, converted from the
+  vendor unit in `silver/entsog/physical_flows.py:27-68`) within 4% on 14
+  gas days (ratio 0.96 to 1.02; checked 2026-09-29).
+  The stock columns (`gas_in_storage_gwh`, `working_gas_volume_gwh`,
+  `consumption_gwh`, `contracted_`/`available_capacity_gwh_per_day`) are on
+  a scale 1,000 times the flows, so TWh, despite their names: for the EU aggregate,
+  the day-on-day change in `gas_in_storage_gwh` x 1,000 matches
+  `injection` - `withdrawal` (checked on silver 2026-09-29). Vendor docs
+  historically called this `working_volume`/`gas_in_storage_mwh`; GIE's
+  own unit statement is not in our sources, so these units are our
+  check.
 - Rate limit: 60 calls/min (1 req/s).
 - GB returns "United Kingdom (Pre-Brexit)" with `-` placeholders for
   numeric values post-Brexit; only historical pre-Oct-2019 GB rows have
   numeric data. Convert `-` to null at the silver-transformer boundary
   (`_safe_float` already does this).
-- Gas day starts at 06:00 UTC. The `gas_day` field is a `date`, not a
-  timestamp; do not synthesise a UTC midnight timestamp without applying
-  the 06:00 offset.
+- The `gas_day` field is a `date` (vendor `gasDayStart`), not a
+  timestamp. gridflow labels `event_time` at a fixed 06:00 UTC
+  (`silver/base.py:383-400`), a project convention; `gas_day_end` is the
+  next date at 00:00 UTC. Neither is the vendor's start or end instant.
 - `trend` sign convention not formally documented; observed values match
   the daily change of `full` percent (negative for net withdrawal).
 - Aggregate `EU` row co-exists with country rows in the same response —

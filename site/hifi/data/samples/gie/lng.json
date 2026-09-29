@@ -1,0 +1,196 @@
+{
+ "dataset": "gie/lng",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "c6747a3c7cc1dbee30fb8f55d88045084c9667a157b54341266bc6b9bbd97195",
+ "silver": "gie_alsi/lng",
+ "columns": [
+  {
+   "name": "gas_day",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "country_code",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "country_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "send_out_gwh",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "dtrs",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "dtmi_lng",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "dtmi_gwh",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "data_provider",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "ingested_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2026-09-20",
+   "BE",
+   "Belgium",
+   "175.5",
+   "724.1",
+   "566.0",
+   "3844.6",
+   "gie_alsi",
+   "2026-09-26 17:48:12.795892 UTC",
+   "2026-09-20 06:00:00 UTC",
+   "2026-09-26 17:48:12.793891 UTC",
+   "2ddd117f-5245-41c6-990f-5f1d9f84dc6e",
+   "2.0.0"
+  ],
+  [
+   "2026-09-20",
+   "ES",
+   "Spain",
+   "534.0",
+   "2132.3",
+   "3446.5",
+   "23791.54",
+   "gie_alsi",
+   "2026-09-26 17:48:12.795892 UTC",
+   "2026-09-20 06:00:00 UTC",
+   "2026-09-26 17:48:12.793891 UTC",
+   "2ddd117f-5245-41c6-990f-5f1d9f84dc6e",
+   "2.0.0"
+  ],
+  [
+   "2026-09-20",
+   "FR",
+   "France",
+   "1075.6",
+   "1281.7",
+   "1340.15",
+   "8905.28",
+   "gie_alsi",
+   "2026-09-26 17:48:12.795892 UTC",
+   "2026-09-20 06:00:00 UTC",
+   "2026-09-26 17:48:12.793891 UTC",
+   "2ddd117f-5245-41c6-990f-5f1d9f84dc6e",
+   "2.0.0"
+  ],
+  [
+   "2026-09-20",
+   "GB",
+   "United Kingdom (Pre-Brexit)",
+   null,
+   null,
+   null,
+   null,
+   "gie_alsi",
+   "2026-09-26 17:48:12.795892 UTC",
+   "2026-09-20 06:00:00 UTC",
+   "2026-09-26 17:48:12.793891 UTC",
+   "2ddd117f-5245-41c6-990f-5f1d9f84dc6e",
+   "2.0.0"
+  ],
+  [
+   "2026-09-20",
+   "IT",
+   "Italy",
+   "532.6",
+   "889.8",
+   "771.02",
+   "5168.43",
+   "gie_alsi",
+   "2026-09-26 17:48:12.795892 UTC",
+   "2026-09-20 06:00:00 UTC",
+   "2026-09-26 17:48:12.793891 UTC",
+   "2ddd117f-5245-41c6-990f-5f1d9f84dc6e",
+   "2.0.0"
+  ],
+  [
+   "2026-09-20",
+   "NL",
+   "Netherlands",
+   "754.0",
+   "864.7",
+   "715.4",
+   "4526.65",
+   "gie_alsi",
+   "2026-09-26 17:48:12.795892 UTC",
+   "2026-09-20 06:00:00 UTC",
+   "2026-09-26 17:48:12.793891 UTC",
+   "2ddd117f-5245-41c6-990f-5f1d9f84dc6e",
+   "2.0.0"
+  ],
+  [
+   "2026-09-20",
+   "PL",
+   "Poland",
+   "84.8",
+   "264.0",
+   "500.0",
+   "3274.64",
+   "gie_alsi",
+   "2026-09-26 17:48:12.795892 UTC",
+   "2026-09-20 06:00:00 UTC",
+   "2026-09-26 17:48:12.793891 UTC",
+   "2ddd117f-5245-41c6-990f-5f1d9f84dc6e",
+   "2.0.0"
+  ],
+  [
+   "2026-09-20",
+   "PT",
+   "Portugal",
+   "173.2",
+   "200.0",
+   "390.0",
+   "2666.03",
+   "gie_alsi",
+   "2026-09-26 17:48:12.795892 UTC",
+   "2026-09-20 06:00:00 UTC",
+   "2026-09-26 17:48:12.793891 UTC",
+   "2ddd117f-5245-41c6-990f-5f1d9f84dc6e",
+   "2.0.0"
+  ]
+ ],
+ "mark": null
+}

@@ -1,0 +1,209 @@
+{
+ "dataset": "gie/about_listing",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "732de278c40542e5532cccfe6df58381c539b6353c45a9ff0b6b5f7afab5e1b5",
+ "silver": "gie_agsi/about_listing",
+ "columns": [
+  {
+   "name": "entity_level",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "entity_code",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "entity_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "country_code",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "entity_type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "company_code",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "company_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "entity_url",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "data_provider",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "ingested_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "company",
+   "21X-SE-A-A0A0A-F",
+   "Swedegas",
+   "SE",
+   "SSO",
+   null,
+   null,
+   "https://agsi.gie.eu/api?country=SE&company=21X-SE-A-A0A0A-F",
+   "gie_agsi",
+   "2026-09-27 00:31:42.655108 UTC",
+   "2026-09-27 00:00:00 UTC",
+   "2026-09-27 00:31:42.652601 UTC",
+   "4a6158d1-05a1-4b92-ad99-65b2c753f8b3",
+   "1.0.0"
+  ],
+  [
+   "company",
+   "21X0000000011756",
+   "EWE Gasspeicher (NL) (5) (8)",
+   "NL",
+   "SSO",
+   null,
+   null,
+   "https://agsi.gie.eu/api?country=NL&company=21X0000000011756",
+   "gie_agsi",
+   "2026-09-27 00:31:42.655108 UTC",
+   "2026-09-27 00:00:00 UTC",
+   "2026-09-27 00:31:42.652601 UTC",
+   "4a6158d1-05a1-4b92-ad99-65b2c753f8b3",
+   "1.0.0"
+  ],
+  [
+   "company",
+   "55XHUMBLYGROVE1H",
+   "Humbly Grove Energy",
+   "GB",
+   "SSO",
+   null,
+   null,
+   "https://agsi.gie.eu/api?country=GB&company=55XHUMBLYGROVE1H",
+   "gie_agsi",
+   "2026-09-27 00:31:42.655108 UTC",
+   "2026-09-27 00:00:00 UTC",
+   "2026-09-27 00:31:42.652601 UTC",
+   "4a6158d1-05a1-4b92-ad99-65b2c753f8b3",
+   "1.0.0"
+  ],
+  [
+   "facility",
+   "21W0000000000435",
+   "UGS Skallen",
+   "SE",
+   "SRC",
+   "21X-SE-A-A0A0A-F",
+   "Swedegas",
+   "https://agsi.gie.eu/api?country=SE&company=21X-SE-A-A0A0A-F&facility=21W0000000000435",
+   "gie_agsi",
+   "2026-09-27 00:31:42.657557 UTC",
+   "2026-09-27 00:00:00 UTC",
+   "2026-09-27 00:31:42.652601 UTC",
+   "4a6158d1-05a1-4b92-ad99-65b2c753f8b3",
+   "1.0.0"
+  ],
+  [
+   "facility",
+   "21W000000000095N",
+   "VGS HUB2 (Collalto, Cellino, San Potito & Cotignola) (7)",
+   "IT",
+   "GRP",
+   "21X000000001250I",
+   "Snam Stoccaggio (7)",
+   "https://agsi.gie.eu/api?country=IT&company=21X000000001250I&facility=21W000000000095N",
+   "gie_agsi",
+   "2026-09-27 00:31:42.657557 UTC",
+   "2026-09-27 00:00:00 UTC",
+   "2026-09-27 00:31:42.652601 UTC",
+   "4a6158d1-05a1-4b92-ad99-65b2c753f8b3",
+   "1.0.0"
+  ],
+  [
+   "facility",
+   "21W0000000001075",
+   "UGS EWE-Zone L",
+   "DE",
+   "ASF",
+   "21X0000000011756",
+   "EWE Gasspeicher",
+   "https://agsi.gie.eu/api?country=DE&company=21X0000000011756&facility=21W0000000001075",
+   "gie_agsi",
+   "2026-09-27 00:31:42.656114 UTC",
+   "2026-09-27 00:00:00 UTC",
+   "2026-09-27 00:31:42.652601 UTC",
+   "4a6158d1-05a1-4b92-ad99-65b2c753f8b3",
+   "1.0.0"
+  ],
+  [
+   "facility",
+   "55WHUMBLY1GROVER",
+   "UGS Humbly Grove",
+   "GB",
+   null,
+   "55XHUMBLYGROVE1H",
+   "Humbly Grove Energy",
+   "https://agsi.gie.eu/api?country=GB&company=55XHUMBLYGROVE1H&facility=55WHUMBLY1GROVER",
+   "gie_agsi",
+   "2026-09-27 00:31:42.657557 UTC",
+   "2026-09-27 00:00:00 UTC",
+   "2026-09-27 00:31:42.652601 UTC",
+   "4a6158d1-05a1-4b92-ad99-65b2c753f8b3",
+   "1.0.0"
+  ],
+  [
+   "facility",
+   "PRIOR_EWE_000001",
+   "UGS Nüttermoor H aggregated data prior to 7 April 2016",
+   "DE",
+   "DSR",
+   "21X0000000011756",
+   "EWE Gasspeicher",
+   "https://agsi.gie.eu/api?country=DE&company=21X0000000011756&facility=PRIOR_EWE_000001",
+   "gie_agsi",
+   "2026-09-27 00:31:42.656114 UTC",
+   "2026-09-27 00:00:00 UTC",
+   "2026-09-27 00:31:42.652601 UTC",
+   "4a6158d1-05a1-4b92-ad99-65b2c753f8b3",
+   "1.0.0"
+  ]
+ ],
+ "mark": null
+}
