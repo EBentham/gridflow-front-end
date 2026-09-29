@@ -376,8 +376,6 @@ class _Reader:
         if not isinstance(value, str) or not value.strip():
             self.errors.append(f"{path}: must be a non-empty string")
             return ""
-        if _FENCE in value:
-            self.errors.append(f"{path}: must not contain '---' (breaks front-matter parsing)")
         return " ".join(value.split()) if "\n" not in value.strip() else value.strip()
 
     def mapping(self, path: str, value: object) -> Mapping[str, Any]:
@@ -489,8 +487,6 @@ def _read(page: Mapping[str, Any]) -> tuple[PageFields, list[str]]:
         if not isinstance(cell, str) or not cell.strip():
             r.errors.append(f"{p}.notebook.cells[{i}]: must be a non-empty string")
             continue
-        if _FENCE in cell:
-            r.errors.append(f"{p}.notebook.cells[{i}]: must not contain '---'")
         cells.append(cell.strip("\n").rstrip())
     notebook = Notebook(
         lead=_prose(r.text(f"{p}.notebook.lead", nb_m.get("lead"))),
@@ -590,7 +586,15 @@ def parse_page_fields(text: str) -> tuple[PageFields, list[str]]:
     page = data[PAGE_KEY]
     if not isinstance(page, Mapping):
         return PageFields(), [f"{PAGE_KEY}: must be a mapping of page fields"]
-    return _read(page)
+    fields, errors = _read(page)
+    # The vault's own scripts split a note on its first "---" pairs, so a literal one
+    # anywhere in the front matter (an ENTSO-E EIC key, say) truncates it for them.
+    if _FENCE in raw:
+        errors.append(
+            "front matter must not contain '---' (vault scripts split on it); "
+            r"write the dashes as \x2D escapes in a double-quoted string"
+        )
+    return fields, errors
 
 
 def _budget(errors: list[str], path: str, text: str, budget: str) -> None:

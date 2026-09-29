@@ -97,28 +97,11 @@ _SILVER_RE = re.compile(r"^[a-z0-9_]+/[a-z0-9_]+$")
 _COLUMN_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 _LAST_RE = re.compile(r"^([1-9][0-9]{0,3})([hd])$")
 _DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
-# gridflow_drift_check.py and derive_machine_catalog.py split a vault note on
-# the first "---" to find its front matter; a spec string carrying one would
-# truncate the YAML they parse.
-_FRONT_MATTER_FENCE = "---"
 
 
 def _check_column(errors: list[str], key: str, value: object) -> None:
     if not isinstance(value, str) or not _COLUMN_RE.match(value):
         errors.append(f"{key}: must be a column name, got {value!r}")
-
-
-def _check_strings(errors: list[str], path: str, value: object) -> None:
-    """Reject the front-matter fence anywhere in a (nested) string value."""
-    if isinstance(value, str):
-        if _FRONT_MATTER_FENCE in value:
-            errors.append(f"{path}: must not contain '---' (it breaks vault front-matter parsing)")
-    elif isinstance(value, Mapping):
-        for k, v in value.items():
-            _check_strings(errors, f"{path}.{k}", v)
-    elif isinstance(value, list):
-        for i, v in enumerate(value):
-            _check_strings(errors, f"{path}[{i}]", v)
 
 
 def _check_filter(errors: list[str], filters: object) -> None:
@@ -185,7 +168,6 @@ def validate_spec(spec: object) -> list[str]:
     unknown = set(spec) - _ALLOWED_KEYS
     if unknown:
         errors.append(f"unknown key(s) {sorted(unknown)}")
-    _check_strings(errors, "chart", dict(spec))
 
     chart_type = spec.get("type")
     if chart_type not in CHART_TYPES:
