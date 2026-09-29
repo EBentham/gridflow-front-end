@@ -56,7 +56,7 @@ Measured by re-parsing all 24 bronze days with gridflow's own parser, with the o
 | Vendor A75 / A16 (`facts.vendor`) | `connectors/entsoe/endpoints.py:37-43`; bronze meta `request_params` |
 | Cadence PT15M DE-LU/FR/NL, PT30M IE-SEM, PT60M BE (`facts.cadence`, `record.fields.resolution`) | bronze `<resolution>` tags 2026-09-15, all five files; silver `resolution` one value per zone |
 | Grain / key (`facts.grain`, `record.key`) | dedup `actual_generation.py:80` |
-| B01 biomass, B25 energy storage (`what_it_is`) | code list v36r0 cache (gridflow `.planning/audit/2026-05-31-vendor-truth-audit/vendor-docs/entsoe-codes.md` §6) for B01; entsoe-py `PSRTYPE_MAPPINGS` for B25 (see Unverified) |
+| "B01 biomass to B25" (`what_it_is`) | code list v36r0 cache (gridflow `.planning/audit/2026-05-31-vendor-truth-audit/vendor-docs/entsoe-codes.md` §6) for B01; B25 named nowhere on the page |
 | gridflow requests six zones (`what_it_is`) | `DEFAULT_ZONES` `endpoints.py:395`; loop `client.py:249` |
 | GB returns a no-data acknowledgement (`what_it_is`) | bronze 2026-09-15 `raw_20260921T100644Z_30c7aec1.xml`: `Acknowledgement_MarketDocument`, reason 999 "No matching data found ... (10YGB----------A)"; note's own live check 2026-05-08 |
 | Some types carry a consumption series; silver cannot tell which (`what_it_is`, caption, `area_code` field) | parsers.py:289-297, actual_generation.py:80, bronze tags; measurement above |
@@ -100,9 +100,9 @@ Left alone: the silver sample block still shows `area_name: ""` (a dated May exa
 
 ## Unverified
 
-- **PSR names for B02, B03, B06 and B25.** They come from entsoe-py (de facto), not the vendor PDF. The gridflow cache omits them, the ENTSO-E knowledge-base page returned 403, and the explorer's `codes.ts` agrees with entsoe-py. They appear on the page as lignite (B02), coal gas (B03), oil (B06) and energy storage (B25, `what_it_is`).
-  - One conflict: the front-end brief `content-briefs/entsoe/_landing.md:262` calls B25 "Not specified". I went with entsoe-py and the explorer.
-- **`outBiddingZone_Domain` means consumption.** This is inferred from values (B10 high at midday when solar peaks and near zero at the evening peak; NL gas at about 140 MW). It is not checked against the API guide. The page only says "consumption series" in the what-it-is and caption, which the note already asserted for storage. The B10 row's guide line says "checked against bronze".
+- **PSR names for B02, B03 and B06.** They come from entsoe-py (de facto), not the vendor PDF. The gridflow cache omits them, the ENTSO-E knowledge-base page returned 403, and the explorer's `codes.ts` agrees with entsoe-py. They appear on the page as lignite (B02), coal gas (B03) and oil (B06), in the chart key only.
+  - B25's name has been dropped from the page (`what_it_is` now reads "B01 biomass to B25"), because the front-end brief `content-briefs/entsoe/_landing.md:262` calls it "Not specified" while entsoe-py says "Energy storage".
+- **`outBiddingZone_Domain` means consumption.** This is corroborated de facto by entsoe-py `parsers.py` (`CONSUMPTION_ELEMENT = "outBiddingZone_Domain.mRID"` gives "Actual Consumption") and by the values (B10 high at midday when solar peaks and near zero at the evening peak). It is still not checked against the API guide itself; the note carries a TODO. The B10 guide line ("pumping (consumption) figure, checked against bronze") rests on this.
 - **"B20 Other: what it holds is undocumented."** No vendor definition was found.
 
 ## Open questions for the seat
@@ -125,7 +125,7 @@ Left alone: the silver sample block still shows `area_name: ""` (a dated May exa
 
 ## Batch rulings applied
 
-- **Ruling 1 (EIC codes plain):** no escaping. My page uses only `10Y1001A1001A82H`, and the detector is `[]`.
+- **Ruling 1, as corrected (no literal `---` in front matter; `\x2D` escapes for EIC codes there):** nothing to escape. The front matter's only EIC code is `10Y1001A1001A82H`, and a grep of the front matter finds no `---`. The body keeps codes plain. Detector `[]`.
 - **Ruling 2 (`published_at` is a fetch-time stamp):** `record.fields.published_at` and three body lines reworded.
 
 ## Line endings

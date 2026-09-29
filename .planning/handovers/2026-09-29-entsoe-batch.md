@@ -7,7 +7,7 @@
   - `vault-p26-entsoe` on branch `docs/v5-p26-entsoe`.
   - If the scratchpad is cleared, recreate both from GitHub.
 - **Throttle (Bobbo 2026-09-29):** "increase the speed... spin up more agents in parallel".
-  - Up to 6 agents at once.
+  - Up to 8 agents at once (raised 18:15 UTC: 27% used with 1h36m left).
   - No launches above about 92% of the 5-hour window. The window resets at 19:50 UTC.
 - **Ship:** under ruling #36, as with Elexon.
 
@@ -18,10 +18,12 @@
 | day_ahead_prices | writer running | a3832f1aa7ea3b06d | — | checker |
 | actual_generation | writer running | a764d6bcc53324bb2 | — | checker |
 | actual_load | writer running | afa2e30d1849a63bd | — | checker |
-| wind_solar_forecast | writer running | a21e8456c9ebdbc7f | — | checker |
-| generation_forecast | written (DE-LU, FR, NL, BE hourly means, 14 to 20 Sep); reverting EIC escapes per ruling #39 | a9ca9d520ca0d49ab | — | checker |
+| wind_solar_forecast | written (DE-LU stacked, 14 to 20 Sep; PSR codes corrected); checker running | a21e8456c9ebdbc7f | a2f6ec605542e237d | verdict |
+| generation_forecast | written (DE-LU, FR, NL, BE hourly means, 14 to 20 Sep); checker running | a9ca9d520ca0d49ab | a6c61259813ce01e3 | verdict |
 | cross_border_flows | writer running | aaad21b6d79fe8b11 | — | checker |
-| group 2: commercial_schedules, net_positions, net_transfer_capacity, auction_revenue, capacity-allocated-nominated, dc_link_intraday_transfer_limits | queued | — | — | writers |
+| commercial_schedules | writer running | a31494e4d83ddddc5 | — | checker |
+| net_positions | writer running | affea4b8af88a3d6b | — | checker |
+| group 2 rest: net_transfer_capacity, auction_revenue, capacity-allocated-nominated, dc_link_intraday_transfer_limits | queued | — | — | writers |
 | group 3: current_balancing_state, procured_balancing_capacity, balancing-energy-bids, congestion-management, actual_generation_units, generation_units_master_data | queued | — | — | writers |
 | group 4: installed_capacity, installed_capacity_units, water_reservoirs, forecast_margin, load-forecasts, outages | queued | — | — | writers |
 
