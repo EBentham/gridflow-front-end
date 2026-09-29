@@ -129,3 +129,26 @@ Left alone: pre-existing em dashes in the body, the curl example (still valid fo
 - `site/hifi/data/notebooks/elexon/uou2t14d.json`, `uou2t14d-5.png`
 - Built page `site/hifi/data-sources/elexon/uou2t14d.html`
 - Screenshots: `<scratchpad>/uou-shots/w{1440,1024,768,390}-{light,dark}-t*.png`
+
+## Revision 1 (answers `uou2t14d-review.md`)
+
+Build `--only elexon/uou2t14d` green, detector `[]`, mirror byte-identical (304 lines, all CRLF). Notebook re-run by
+`scripts/run_notebooks.py`; series and sample unchanged (chart spec and `record.select` untouched). Screenshots at 1280
+and 390 (390 in a 390 px iframe): nothing clipped or overlapping.
+
+| # | Finding | Fix |
+|---|---|---|
+| 1 major | Key does not say `published_at` is outside the dedup | Key kept as three columns. `record.fields.published_at`: "Publish time from `publishTime`, UTC; separates fetched days, not in gridflow's dedup key". |
+| 2 major | "One row per unit and date" is false for null-id units | `facts.grain`: "One row per delivery date, unit id and fetched day; null ids share one". `what_it_is`: "one row per Elexon unit id and date per fetched day ... units without an id collapse to one row". `raw_feed.note`: "one row per Elexon unit id and delivery date". `bm_unit_id` field: "null-id units collapse to one row per date and fetched day". No counts on the page. |
+| 3 major | Notebook hard-coded the 20:00 publish | Cell 1 now converts `published_at` to UTC and keeps rows published on 2026-09-21 (`dt.strftime("%Y-%m-%d") == "2026-09-21"`), printing `published_at.unique()`. Output: one publish, `2026-09-21 20:00:00+00:00`. Lead: "The cells keep the 21 September fetch's publish." (lead trimmed to 35 words). `plot_alt` says "the 20:00 UTC publish kept from the 21 September fetch". |
+| 4 major | Plot hid Heysham's zero run | Plot draws `wide[["T_PEHE-1", "T_SGRWO-6", "T_HEYM11"]]` with colours reordered to match, Heysham last, Seagreen dashed (`style=["-", "--", "-"]`). New `uou2t14d-5.png` shows Heysham's petrol line along zero over Peterhead's. `plot_alt` says Heysham is "drawn on top" and Seagreen "dashed". |
+| 5 nit | Body dedup paragraph omitted the publication-window filter | Added one sentence citing `base.py:1638-1642`, `1761-1805` and `_publication_window.py:94-117`: after the dedup, day D's rows published at or after D+1 00:00 are dropped when day D+1's bronze owns that publish. |
+| 6 nit | Publication-lag cell omitted the 22nd 00:00 publish | Now "00:00 to 23:00 UTC, plus 00:00 on the 22nd (the publish windows include both ends)". |
+| 7 nit | `settlement_date` wording | "Delivery date the forecast is for, from the vendor `forecastDate`" (sister wording, without "a London date"). |
+
+Correction to my first report's Unverified section: "nothing enforces" the three-column key was incomplete. The
+publication-window filter trims the shared D+1 00:00 boundary publish from day D whenever day D+1's bronze proves it
+owns it, so the triple holds by code in that case; the file-order survivor within a day is still unenforced.
+
+Rendering note: at 390 the notebook code wraps mid-token (for example `"UT` / `C"`). That is the shared template's
+wrapping rule, not this page's content; nothing is clipped.

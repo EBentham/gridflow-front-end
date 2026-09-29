@@ -33,8 +33,9 @@ Batch brief: `.planning/v5/p26/BATCH-elexon.md`. Reports: `.planning/v5/p26/elex
 | pn | APPROVED (review 2), nits applied | a1f13e90b72f5b8c5 | a1f47734a4b13c4d3 | done |
 | nonbm | written; HELD (ruling #37): silver repeats one record (1 Apr, period 22) and the connector likely sends `publishDateTimeFrom/To` where the API lists `from`/`to`; the fixed 8-row sample also fails | acc464ee4405621aa | — | gridflow research unit, then a sampler that accepts fewer rows, then check and publish |
 | fou2t14d | written (72 hourly publishes for 24 Sep, CCGT/wind/nuclear); checker running | a8d7b6b1894c6c155 | a2b14d08df16b6c0d | act on the verdict |
-| uou2t14d | written (one publish, 3 units, 23 Sep to 5 Oct); checker running | a0a9e27c09f4cd6ff | a29dfe5ba88e4765f | act on the verdict |
-| remit, indicated-day-ahead (family) | not started | — | — | launch writers under the throttle |
+| uou2t14d | APPROVED (review 2) | a0a9e27c09f4cd6ff | a29dfe5ba88e4765f | done |
+| remit | written (bar count of messages by fuel, 13 to 21 Sep, latest revision each); checker running. Detector advisory "em-dash overuse" accepted by the seat: the rule counts `--` padding in Elexon IDs (`10YGB----------A`), and advisories never fail the gate | added78eb82ce18d5 | addf06d5b13c34aa2 | act on the verdict |
+| indicated-day-ahead (family) | not started | — | — | launch writers under the throttle |
 
 If a restart kills a running agent, check its report file and the vault note first, then resume it by id.
 
@@ -57,7 +58,7 @@ and demand-forecasts writers set `record.select.columns`, re-sample, rebuild.
 artefacts, so both stay blank. The vault PR needs the same care: their `page:` blocks must not reach canonical master
 until unheld (the next mirror sync would publish them).
 
-**Next, in order:** act on the fou2t14d and uou2t14d verdicts, writers for remit and
+**Next, in order:** act on the fou2t14d and remit verdicts, writer for and
 indicated-day-ahead. Keep at most 2 agents at a time and stop launching at about 85% of the 5-hour window. Then group
 2 onwards gets a batch PR into main, after Bobbo's look at the preview (republish
 https://claude.ai/artifact/EYadKREQi3RnpufNwTH6Wf from `<scratch>\p26-elexon\site\hifi`, file list in
@@ -94,6 +95,8 @@ https://claude.ai/artifact/EYadKREQi3RnpufNwTH6Wf from `<scratch>\p26-elexon\sit
 - **gridflow (from uou2t14d):** silver dedups on `(settlement_date, bm_unit_id)` per bronze day with no `published_at`,
   so one hourly publish survives per fetched day, chosen by file order; null-id units collapse (80 of 81 dropped per date).
 - **Vault glossary** (`20-domain/glossary.md:123-124`) calls FOU2T14D "by BM Unit"; it is by fuel type (fou2t14d writer).
+- **Chart builder filters before it picks the latest revision** (remit): an "unavailable MW by fuel in force" chart
+  over-counts (76 vs 62 at a test instant). Template work before REMIT can chart MW.
 - **Sampler takes exactly 8 rows** (`sample.py:109`): a dataset with fewer distinct rows cannot build. Template work.
 
 - **gridflow discrepancy (from windfor):** silver `windfor` has no `settlement_date`, `settlement_period` or
