@@ -45,7 +45,7 @@
 | congestion-management (family, lead redispatching_internal) | written (NL internal redispatch, down series only, 15-21 Sep); seat: ships with the direction loss stated (as A07); checker running | a696043a3c83b78e1 | a40db70347a68ee3a | verdict |
 | actual_generation_units | REVISE (2 blockers: unlabelled wrong sample rows; 'single-unit plants' advice unsafe in FR); writer resumed | aa26b6043c67cd777 | a307fc1083fa679bf | re-check |
 | generation_units_master_data | **APPROVED** (3 optional nits) | a20a17cf260cfe31f | a9307d180d54daee9 | done |
-| installed_capacity | written (DE-LU 2026 capacity by type, bar; 4 zones, daily repeats noted); checker running | ae278337fa1293ec8 | aadbd72a6a196372e | verdict |
+| installed_capacity | REVISE (1 major: notebook pivot headers one column right, the named-index renderer bug; rename_axis workaround; 4 nits); writer resumed | ae278337fa1293ec8 | aadbd72a6a196372e | re-check |
 | load-forecasts (family, lead load_forecast) | REVISE (1 major: loss stated only in codes, summary promises max/min; 4 nits); writer resumed | a0639f624b8567137 | a8fde62593ddf835d | re-check |
 | installed_capacity_units | written (unit count by type, 6 zones, 15 Sep fetch; Seraing sample across fetches); checker running | abc4b218164a9acf8 | a9a068a48017c1f65 | verdict |
 | water_reservoirs | written (FR only, 4 weekly points in two pieces); seat: ships thin-but-accurate with coverage stated; swap the blank-page test at PR time; checker running | ad11aa4256be63ae4 | a328b581d4bd66dc5 | verdict |
