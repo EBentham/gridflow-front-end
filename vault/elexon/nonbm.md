@@ -4,70 +4,6 @@ dataset_key: nonbm
 vendor: Elexon BMRS
 last_verified: 2026-05-08
 layer_coverage: bronze, silver
-page:
-  title: Non-BM STOR generation
-  summary: >-
-    Elexon's figure for generation by Short-Term Operating Reserve providers outside the
-    Balancing Mechanism, one per GB settlement period.
-  facts:
-    vendor: Elexon BMRS, dataset NONBM
-    cadence: "Not established; gridflow asks in 24-hour publish windows"
-    grain: One row per settlement period; no provider or unit column
-  landscape: power
-  what_it_is: >-
-    Elexon's generation from Short-Term Operating Reserve (STOR) providers that sit outside the
-    Balancing Mechanism: one figure per GB settlement period, with no provider named. Every
-    publish window gridflow requested in May and August 2026 returned the same single record:
-    settlement date 1 April 2026, period 22, generation 0. Whether Elexon publishes rarely or has
-    stopped is not established.
-  how_used:
-    - Adding non-BM reserve output to BM-metered generation for a fuller supply picture.
-    - A reserve-dispatch feature for an imbalance price model, beside BM acceptances.
-  chart:
-    type: none
-    reason: >-
-      One vendor record (settlement date 1 April 2026, period 22, generation 0) is all the
-      publish-window requests have returned; one point makes no chart.
-  raw_feed:
-    note: >-
-      Elexon's API reference lists `from` and `to` for NONBM. gridflow sends 24-hour
-      `publishDateTimeFrom`/`To` windows; the record returned was published outside every window,
-      so none filtered it.
-    requests:
-      - "GET https://data.elexon.co.uk/bmrs/api/v1/datasets/NONBM?publishDateTimeFrom=2026-08-01T00:00:00Z&publishDateTimeTo=2026-08-02T00:00:00Z&page=1"
-    commands:
-      - {run: gridflow ingest elexon nonbm --start 2026-08-01 --end 2026-08-06, comment: "bronze; the end is exclusive"}
-      - {run: gridflow transform elexon nonbm --start 2026-08-01 --end 2026-08-05, comment: one silver file per window}
-  record:
-    select:
-      filter:
-        - {column: settlement_date, op: eq, value: "2026-04-01"}
-        - {column: settlement_period, op: eq, value: 22}
-      order_by: [ingested_at]
-      columns: [settlement_date, settlement_period, generation_mw, published_at, ingested_at]
-    key: [settlement_date, settlement_period]
-    caption: "One Elexon record, settlement date 2026-04-01 period 22, repeated in each window's silver file."
-    fields:
-      settlement_date: GB settlement date, as Elexon sends it in `settlementDate`
-      settlement_period: Half-hour of the settlement day, 1 to 48; 46 or 50 on clock-change days
-      generation_mw: "Elexon's `generation` as a float; MW by the column name, not the response"
-      published_at: Vendor publish time, from `publishTime`
-      timestamp_utc: "Start of the half-hour, computed from settlement date and period; `startTime` is dropped"
-  notebook:
-    lead: >-
-      Returns a pandas DataFrame from the DuckDB relation `silver_elexon_nonbm`, filtered on
-      `settlement_date` with both ends included; lineage columns are dropped. The record is dated
-      1 April, though fetched in August windows.
-    cells:
-      - df = data.elexon.query("nonbm", "2026-04-01", "2026-04-01")
-      - df[["settlement_date", "settlement_period", "generation_mw", "published_at", "ingested_at"]]
-      - df.drop_duplicates(["settlement_date", "settlement_period"])[["settlement_date", "settlement_period", "generation_mw"]]
-    needs: the 1 to 5 August 2026 publish windows
-  related:
-    - {dataset: elexon/disbsad, note: "Balancing actions outside the BM; STOR providers flagged by `stor_flag`"}
-    - {dataset: elexon/boal, note: "Balancing Mechanism acceptances; non-BM STOR runs outside them"}
-    - {dataset: elexon/fuelhh, note: Transmission-metered generation by fuel for the same settlement periods}
-    - {dataset: elexon/system_prices, note: The imbalance prices for the same settlement periods}
 ---
 
 # Elexon - Non-BM STOR Generation (`NONBM`)
@@ -158,7 +94,7 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
 | `generation_mw` | `float` | No | `generation` | MW. |
 | `published_at` | `datetime[UTC]` | Yes | `publishTime` | Publication time / document vintage; bitemporal point-in-time field. |
 | `data_provider` | `str` | No | _derived_ | Default `"elexon"`. |
-| `ingested_at` | `datetime[UTC]` | Yes | _derived_ | When the silver transform ran, not the bronze fetch (`silver/elexon/nonbm.py:114-118`). |
+| `ingested_at` | `datetime[UTC]` | Yes | _derived_ | Time ingested into bronze. |
 
 ### Silver sample
 
@@ -167,7 +103,7 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
     {
         "settlement_date": "2026-04-01",
         "settlement_period": 22,
-        "timestamp_utc": "2026-04-01T09:30:00+00:00",
+        "timestamp_utc": "2026-04-01T10:30:00+00:00",
         "generation_mw": 0,
         "data_provider": "elexon",
         "ingested_at": "2026-05-08T12:00:00Z"
@@ -186,13 +122,12 @@ None implemented.
 ## Known issues and gotchas
 
 - **STOR-only** — captures only Short-Term Operating Reserve providers operating outside the BM. Total non-BM dispatch needs further sources.
-- **One record repeated across silver files**: bronze is filed under the publish-window start date (`connectors/elexon/client.py:314`), the transformer reads one such day (`silver/elexon/nonbm.py:31-37`) and dedups within it only (`nonbm.py:112`). Because every window returned the same record, `nonbm_20260801` to `nonbm_20260805` each hold settlement date 2026-04-01, period 22. Drop repeats on the key after `query()`.
 
 ---
 
 ## Implementation delta
 
-- **Param style mismatch**: docs declare `from`/`to`; code uses default `publishDateTimeFrom/To`. Live test 2026-05-08 (window 2026-05-06) returned 1 row published 2026-04-01T10:04Z, outside the requested window, so the default param names did not filter it. The windows 2026-05-04 to 2026-05-10 and 2026-08-01 to 2026-08-05 each returned the same body (`body_sha256` `123a943b…` in every bronze `.meta.json`). The same vendor behaviour is recorded for FREQ with the wrong param names (`connectors/elexon/endpoints.py:100-103`). Worth verifying with explicit `from`/`to` parameters and noting whichever path is canonical.
+- **Param style mismatch**: docs declare `from`/`to`; code uses default `publishDateTimeFrom/To`. Live test 2026-05-08 returned 1 row with the default param names — the API may accept both. Worth verifying with explicit `from`/`to` parameters and noting whichever path is canonical.
 - **Pydantic schema** `ElexonNonBM` exists in `schemas/elexon.py` and is applied via `BaseSilverTransformer._validate_against_schema` (fail-soft).
 
 ---
