@@ -1,0 +1,126 @@
+{
+ "dataset": "entsoe/water_reservoirs",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "7207ce013a94bc5130eafa8c2d4f21f6d4206f45ebd264b21a07c45c4a907725",
+ "kernel": "gridflow_models",
+ "source": "entsoe",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.entsoe",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.entsoe.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.entsoe.query(\"water_reservoirs\", \"2026-07-26\", \"2026-09-13\")\nfor col in [\"timestamp_utc\", \"published_at\"]:\n    df[col] = df[col].dt.tz_convert(\"UTC\")\nkey = [\"timestamp_utc\", \"area_code\"]\nweekly = df.sort_values(\"published_at\").drop_duplicates(subset=key, keep=\"last\").sort_values(key)",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "weekly[[\"timestamp_utc\", \"area_code\", \"reservoir_mwh\", \"published_at\"]]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "area_code",
+      "reservoir_mwh",
+      "published_at"
+     ],
+     "index": [
+      "1",
+      "4",
+      "5",
+      "17"
+     ],
+     "rows": [
+      [
+       "2026-07-26 22:00:00+00:00",
+       "10YFR-RTE------C",
+       "2261238.0",
+       "2026-08-16 13:47:00+00:00"
+      ],
+      [
+       "2026-08-02 22:00:00+00:00",
+       "10YFR-RTE------C",
+       "2191776.0",
+       "2026-08-16 13:47:30+00:00"
+      ],
+      [
+       "2026-09-06 22:00:00+00:00",
+       "10YFR-RTE------C",
+       "1989272.0",
+       "2026-09-26 17:49:13+00:00"
+      ],
+      [
+       "2026-09-13 22:00:00+00:00",
+       "10YFR-RTE------C",
+       "1952966.0",
+       "2026-09-26 17:51:05+00:00"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "fr = weekly[weekly[\"area_code\"].str.startswith(\"10YFR\")].set_index(\"timestamp_utc\")\ngwh = fr[\"reservoir_mwh\"].asfreq(\"7D\") / 1000\ngwh.plot(marker=\"o\", ylabel=\"GWh, weekly average\", legend=False, color=\"#155A6E\", figsize=(8, 3.5))",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: xlabel='timestamp_utc', ylabel='GWh, weekly average'>"
+    },
+    {
+     "kind": "image",
+     "src": "water_reservoirs-5.png",
+     "width": 707,
+     "height": 343
+    }
+   ]
+  }
+ ]
+}

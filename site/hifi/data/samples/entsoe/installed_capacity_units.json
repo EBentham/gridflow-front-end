@@ -1,0 +1,209 @@
+{
+ "dataset": "entsoe/installed_capacity_units",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "a349db3533301165997ee84902c258220da6f06338b7a1f0d3ece5333c4fcfef",
+ "silver": "entsoe/installed_capacity_units",
+ "columns": [
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "capacity_mw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "unit_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "unit_mrid",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "area_code",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "production_type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "resolution",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "data_provider",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "ingested_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2026-08-16 13:43:49 UTC",
+   "470.0",
+   "EDF Luminus Seraing TGV",
+   "22W201806271---D",
+   "10YBE----------2",
+   "B04",
+   "2025-12-31 23:00:00 UTC",
+   "P1Y",
+   "entsoe",
+   "2026-08-16 13:44:11.308816 UTC",
+   "2025-12-31 23:00:00 UTC",
+   "2026-08-16 13:43:49 UTC",
+   "5cdd846d-1718-48ca-b62a-a1d33d8ab561",
+   "1.0.0"
+  ],
+  [
+   "2026-08-16 13:43:55 UTC",
+   "470.0",
+   "EDF Luminus Seraing TGV",
+   "22W201806271---D",
+   "10YBE----------2",
+   "B04",
+   "2025-12-31 23:00:00 UTC",
+   "P1Y",
+   "entsoe",
+   "2026-08-16 13:44:11.372310 UTC",
+   "2025-12-31 23:00:00 UTC",
+   "2026-08-16 13:43:55 UTC",
+   "5cdd846d-1718-48ca-b62a-a1d33d8ab561",
+   "1.0.0"
+  ],
+  [
+   "2026-08-16 13:44:01 UTC",
+   "470.0",
+   "EDF Luminus Seraing TGV",
+   "22W201806271---D",
+   "10YBE----------2",
+   "B04",
+   "2025-12-31 23:00:00 UTC",
+   "P1Y",
+   "entsoe",
+   "2026-08-16 13:44:11.435222 UTC",
+   "2025-12-31 23:00:00 UTC",
+   "2026-08-16 13:44:01 UTC",
+   "5cdd846d-1718-48ca-b62a-a1d33d8ab561",
+   "1.0.0"
+  ],
+  [
+   "2026-08-16 13:44:08 UTC",
+   "470.0",
+   "EDF Luminus Seraing TGV",
+   "22W201806271---D",
+   "10YBE----------2",
+   "B04",
+   "2025-12-31 23:00:00 UTC",
+   "P1Y",
+   "entsoe",
+   "2026-08-16 13:44:11.497734 UTC",
+   "2025-12-31 23:00:00 UTC",
+   "2026-08-16 13:44:08 UTC",
+   "5cdd846d-1718-48ca-b62a-a1d33d8ab561",
+   "1.0.0"
+  ],
+  [
+   "2026-09-15 20:08:45 UTC",
+   "300.0",
+   "EDF Luminus Seraing TGV",
+   "22W201806271---D",
+   "10YBE----------2",
+   "B04",
+   "2025-12-31 23:00:00 UTC",
+   "P1Y",
+   "entsoe",
+   "2026-09-15 20:09:28.032536 UTC",
+   "2025-12-31 23:00:00 UTC",
+   "2026-09-15 20:08:45 UTC",
+   "90eb2ccc-bfb5-4311-849e-d81c88321673",
+   "1.0.0"
+  ],
+  [
+   "2026-09-15 20:08:51 UTC",
+   "300.0",
+   "EDF Luminus Seraing TGV",
+   "22W201806271---D",
+   "10YBE----------2",
+   "B04",
+   "2025-12-31 23:00:00 UTC",
+   "P1Y",
+   "entsoe",
+   "2026-09-15 20:09:28.136966 UTC",
+   "2025-12-31 23:00:00 UTC",
+   "2026-09-15 20:08:51 UTC",
+   "90eb2ccc-bfb5-4311-849e-d81c88321673",
+   "1.0.0"
+  ],
+  [
+   "2026-09-15 20:08:58 UTC",
+   "300.0",
+   "EDF Luminus Seraing TGV",
+   "22W201806271---D",
+   "10YBE----------2",
+   "B04",
+   "2025-12-31 23:00:00 UTC",
+   "P1Y",
+   "entsoe",
+   "2026-09-15 20:09:28.242999 UTC",
+   "2025-12-31 23:00:00 UTC",
+   "2026-09-15 20:08:58 UTC",
+   "90eb2ccc-bfb5-4311-849e-d81c88321673",
+   "1.0.0"
+  ],
+  [
+   "2026-09-15 20:09:04 UTC",
+   "300.0",
+   "EDF Luminus Seraing TGV",
+   "22W201806271---D",
+   "10YBE----------2",
+   "B04",
+   "2025-12-31 23:00:00 UTC",
+   "P1Y",
+   "entsoe",
+   "2026-09-15 20:09:28.340424 UTC",
+   "2025-12-31 23:00:00 UTC",
+   "2026-09-15 20:09:04 UTC",
+   "90eb2ccc-bfb5-4311-849e-d81c88321673",
+   "1.0.0"
+  ]
+ ],
+ "mark": null
+}

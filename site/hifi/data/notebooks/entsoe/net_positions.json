@@ -1,0 +1,154 @@
+{
+ "dataset": "entsoe/net_positions",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "e8b1f1d05ae9dd495e6fba8b511e5660bba8dd01ab71a3dc68a07c005aef931d",
+ "kernel": "gridflow_models",
+ "source": "entsoe",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.entsoe",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.entsoe.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.entsoe.query(\"net_positions\", \"2026-09-14\", \"2026-09-20\")\ndf[\"timestamp_utc\"] = df[\"timestamp_utc\"].dt.tz_convert(\"UTC\")\ndf = df.sort_values([\"timestamp_utc\", \"in_area_code\", \"out_area_code\"])",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df[[\"timestamp_utc\", \"in_area_code\", \"out_area_code\", \"quantity_mw\"]].head(8)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "in_area_code",
+      "out_area_code",
+      "quantity_mw"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7"
+     ],
+     "rows": [
+      [
+       "2026-09-14 00:00:00+00:00",
+       "10Y1001A1001A82H",
+       "REGION_CODE-----",
+       "4147.0"
+      ],
+      [
+       "2026-09-14 00:00:00+00:00",
+       "10YBE----------2",
+       "REGION_CODE-----",
+       "3321.8"
+      ],
+      [
+       "2026-09-14 00:00:00+00:00",
+       "REGION_CODE-----",
+       "10YFR-RTE------C",
+       "6356.6"
+      ],
+      [
+       "2026-09-14 00:00:00+00:00",
+       "REGION_CODE-----",
+       "10YNL----------L",
+       "2482.9"
+      ],
+      [
+       "2026-09-14 00:15:00+00:00",
+       "10Y1001A1001A82H",
+       "REGION_CODE-----",
+       "4228.6"
+      ],
+      [
+       "2026-09-14 00:15:00+00:00",
+       "10YBE----------2",
+       "REGION_CODE-----",
+       "3504.6"
+      ],
+      [
+       "2026-09-14 00:15:00+00:00",
+       "REGION_CODE-----",
+       "10YFR-RTE------C",
+       "6444.6"
+      ],
+      [
+       "2026-09-14 00:15:00+00:00",
+       "REGION_CODE-----",
+       "10YNL----------L",
+       "2541.4"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "exporting = df[\"in_area_code\"].str.startswith(\"REGION\")\ndf[\"zone\"] = df[\"out_area_code\"].where(exporting, df[\"in_area_code\"])\ndf[\"net_mw\"] = df[\"quantity_mw\"].where(exporting, -df[\"quantity_mw\"])\nde = df[df[\"zone\"] == \"10Y1001A1001A82H\"]\nde.plot(x=\"timestamp_utc\", y=\"net_mw\", ylabel=\"MW, export positive\", legend=False,\n        color=\"#155A6E\", figsize=(8, 3.5))",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: xlabel='timestamp_utc', ylabel='MW, export positive'>"
+    },
+    {
+     "kind": "image",
+     "src": "net_positions-5.png",
+     "width": 725,
+     "height": 369
+    }
+   ]
+  }
+ ]
+}

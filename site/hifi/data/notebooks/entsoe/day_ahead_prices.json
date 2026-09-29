@@ -1,0 +1,139 @@
+{
+ "dataset": "entsoe/day_ahead_prices",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "6ba1c4d0cce25373c4bcfea42b97b154a85bef86b342d999cd38d0b13d0810c7",
+ "kernel": "gridflow_models",
+ "source": "entsoe",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.entsoe",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.entsoe.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.entsoe.query(\"day_ahead_prices\", \"2026-09-14\", \"2026-09-20\")\ndf = df.sort_values([\"area_code\", \"timestamp_utc\"])",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df[[\"timestamp_utc\", \"area_code\", \"price_eur_mwh\", \"currency\", \"resolution\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "area_code",
+      "price_eur_mwh",
+      "currency",
+      "resolution"
+     ],
+     "index": [
+      "0",
+      "17",
+      "34",
+      "51",
+      "68"
+     ],
+     "rows": [
+      [
+       "2026-09-14 01:00:00+01:00",
+       "10Y1001A1001A59C",
+       "191.165",
+       "EUR",
+       "PT60M"
+      ],
+      [
+       "2026-09-14 02:00:00+01:00",
+       "10Y1001A1001A59C",
+       "191.855",
+       "EUR",
+       "PT60M"
+      ],
+      [
+       "2026-09-14 03:00:00+01:00",
+       "10Y1001A1001A59C",
+       "190.975",
+       "EUR",
+       "PT60M"
+      ],
+      [
+       "2026-09-14 04:00:00+01:00",
+       "10Y1001A1001A59C",
+       "194.390",
+       "EUR",
+       "PT60M"
+      ],
+      [
+       "2026-09-14 05:00:00+01:00",
+       "10Y1001A1001A59C",
+       "211.660",
+       "EUR",
+       "PT60M"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "fr = df[df.area_code.str.startswith(\"10YFR\")]\nie = df[df.area_code == \"10Y1001A1001A59C\"]\nax = fr.plot(x=\"timestamp_utc\", y=\"price_eur_mwh\", label=\"FR, 15 min\",\n             color=\"#3E8C97\", figsize=(8, 3.5))\nie.plot(x=\"timestamp_utc\", y=\"price_eur_mwh\", label=\"IE-SEM, hourly\",\n        color=\"#155A6E\", ylabel=\"EUR/MWh\", ax=ax)",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: xlabel='timestamp_utc', ylabel='EUR/MWh'>"
+    },
+    {
+     "kind": "image",
+     "src": "day_ahead_prices-5.png",
+     "width": 704,
+     "height": 367
+    }
+   ]
+  }
+ ]
+}

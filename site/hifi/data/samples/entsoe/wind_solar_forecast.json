@@ -1,0 +1,183 @@
+{
+ "dataset": "entsoe/wind_solar_forecast",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "5d23b6f9c8fb27deb43ebe3b1df03c82595fb16300092783b7585911505be09f",
+ "silver": "entsoe/wind_solar_forecast",
+ "columns": [
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "area_code",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "production_type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "generation_forecast_mw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "resolution",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "data_provider",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "ingested_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2026-09-14 22:00:00 UTC",
+   "10Y1001A1001A82H",
+   "B16",
+   "0.0",
+   "PT15M",
+   "2026-09-21 10:07:59 UTC",
+   "entsoe",
+   "2026-09-21 10:09:02.138917 UTC",
+   "2026-09-14 22:00:00 UTC",
+   "2026-09-21 10:07:59 UTC",
+   "7cea0291-d84e-4aea-b998-0b2e870a9e6d",
+   "1.0.0"
+  ],
+  [
+   "2026-09-14 22:00:00 UTC",
+   "10Y1001A1001A82H",
+   "B19",
+   "3458.69357",
+   "PT15M",
+   "2026-09-21 10:07:59 UTC",
+   "entsoe",
+   "2026-09-21 10:09:02.138917 UTC",
+   "2026-09-14 22:00:00 UTC",
+   "2026-09-21 10:07:59 UTC",
+   "7cea0291-d84e-4aea-b998-0b2e870a9e6d",
+   "1.0.0"
+  ],
+  [
+   "2026-09-14 22:00:00 UTC",
+   "10YBE----------2",
+   "B16",
+   "0.0",
+   "PT60M",
+   "2026-09-21 10:07:58 UTC",
+   "entsoe",
+   "2026-09-21 10:09:02.138917 UTC",
+   "2026-09-14 22:00:00 UTC",
+   "2026-09-21 10:07:58 UTC",
+   "7cea0291-d84e-4aea-b998-0b2e870a9e6d",
+   "1.0.0"
+  ],
+  [
+   "2026-09-14 22:00:00 UTC",
+   "10YBE----------2",
+   "B19",
+   "127.75",
+   "PT60M",
+   "2026-09-21 10:07:58 UTC",
+   "entsoe",
+   "2026-09-21 10:09:02.138917 UTC",
+   "2026-09-14 22:00:00 UTC",
+   "2026-09-21 10:07:58 UTC",
+   "7cea0291-d84e-4aea-b998-0b2e870a9e6d",
+   "1.0.0"
+  ],
+  [
+   "2026-09-14 22:00:00 UTC",
+   "10YFR-RTE------C",
+   "B16",
+   "0.0",
+   "PT15M",
+   "2026-09-21 10:07:56 UTC",
+   "entsoe",
+   "2026-09-21 10:09:02.138917 UTC",
+   "2026-09-14 22:00:00 UTC",
+   "2026-09-21 10:07:56 UTC",
+   "7cea0291-d84e-4aea-b998-0b2e870a9e6d",
+   "1.0.0"
+  ],
+  [
+   "2026-09-14 22:00:00 UTC",
+   "10YFR-RTE------C",
+   "B19",
+   "994.17004",
+   "PT15M",
+   "2026-09-21 10:07:56 UTC",
+   "entsoe",
+   "2026-09-21 10:09:02.138917 UTC",
+   "2026-09-14 22:00:00 UTC",
+   "2026-09-21 10:07:56 UTC",
+   "7cea0291-d84e-4aea-b998-0b2e870a9e6d",
+   "1.0.0"
+  ],
+  [
+   "2026-09-14 22:00:00 UTC",
+   "10YNL----------L",
+   "B16",
+   "0.0",
+   "PT15M",
+   "2026-09-21 10:07:57 UTC",
+   "entsoe",
+   "2026-09-21 10:09:02.138917 UTC",
+   "2026-09-14 22:00:00 UTC",
+   "2026-09-21 10:07:57 UTC",
+   "7cea0291-d84e-4aea-b998-0b2e870a9e6d",
+   "1.0.0"
+  ],
+  [
+   "2026-09-14 22:00:00 UTC",
+   "10YNL----------L",
+   "B19",
+   "635.0",
+   "PT15M",
+   "2026-09-21 10:07:57 UTC",
+   "entsoe",
+   "2026-09-21 10:09:02.138917 UTC",
+   "2026-09-14 22:00:00 UTC",
+   "2026-09-21 10:07:57 UTC",
+   "7cea0291-d84e-4aea-b998-0b2e870a9e6d",
+   "1.0.0"
+  ]
+ ],
+ "mark": null
+}

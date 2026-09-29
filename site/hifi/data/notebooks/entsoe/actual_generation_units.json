@@ -1,0 +1,139 @@
+{
+ "dataset": "entsoe/actual_generation_units",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "15d68b6a1c4478c252ad652e5c32e424a63c7a05a39373fb9545dfe061310ef1",
+ "kernel": "gridflow_models",
+ "source": "entsoe",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.entsoe",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.entsoe.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.entsoe.query(\"actual_generation_units\", \"2026-09-14\", \"2026-09-20\")\ndf[\"timestamp_utc\"] = df[\"timestamp_utc\"].dt.tz_convert(\"UTC\")\ndf = df.sort_values([\"timestamp_utc\", \"area_code\", \"unit_mrid\"])",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df[[\"timestamp_utc\", \"area_code\", \"unit_mrid\", \"production_type\", \"generation_mw\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "area_code",
+      "unit_mrid",
+      "production_type",
+      "generation_mw"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2026-09-14 00:00:00+00:00",
+       "10YBE----------2",
+       "22W20161130----Z",
+       "B18",
+       "0.0"
+      ],
+      [
+       "2026-09-14 00:00:00+00:00",
+       "10YBE----------2",
+       "22W201806271---D",
+       "B04",
+       "0.0"
+      ],
+      [
+       "2026-09-14 00:00:00+00:00",
+       "10YBE----------2",
+       "22W20180628----H",
+       "B18",
+       "0.0"
+      ],
+      [
+       "2026-09-14 00:00:00+00:00",
+       "10YBE----------2",
+       "22W20181005PU--J",
+       "B04",
+       "0.0"
+      ],
+      [
+       "2026-09-14 00:00:00+00:00",
+       "10YBE----------2",
+       "22W201902131---T",
+       "B18",
+       "0.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "plants = {\"49W000000000054X\": \"Borssele\", \"49W000000000102B\": \"Maasvlakte\", \"49W000000000069K\": \"Claus\"}\nnl = df[df[\"unit_mrid\"].isin(list(plants))].pivot(index=\"timestamp_utc\", columns=\"unit_mrid\", values=\"generation_mw\").rename(columns=plants)\nnl[[\"Borssele\", \"Maasvlakte\", \"Claus\"]].plot(ylabel=\"MW\", color=[\"#155A6E\", \"#66793B\", \"#C77E3C\"], figsize=(8, 3.5))",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: xlabel='timestamp_utc', ylabel='MW'>"
+    },
+    {
+     "kind": "image",
+     "src": "actual_generation_units-5.png",
+     "width": 707,
+     "height": 374
+    }
+   ]
+  }
+ ]
+}

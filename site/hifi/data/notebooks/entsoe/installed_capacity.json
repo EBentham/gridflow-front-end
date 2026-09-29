@@ -1,0 +1,245 @@
+{
+ "dataset": "entsoe/installed_capacity",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "f9c527986834b06bd1868daef3cf5410dd029c96d21a3f7860f22a4f739e4969",
+ "kernel": "gridflow_models",
+ "source": "entsoe",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.entsoe",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.entsoe.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.entsoe.query(\"installed_capacity\", \"2025-12-31\", \"2025-12-31\")\nkey = [\"timestamp_utc\", \"area_code\", \"production_type\"]\ndf = df.sort_values(\"published_at\").drop_duplicates(subset=key, keep=\"last\")",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "zones = {'10Y1001A1001A82H': 'DE-LU', '10YFR-RTE------C': 'FR',\n         '10YNL----------L': 'NL', '10YBE----------2': 'BE'}\nwide = (df.pivot_table(index='production_type', columns='area_code', values='capacity_mw')\n          .rename(columns=zones).rename_axis(index=None, columns=None))\nwide",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "DE-LU",
+      "BE",
+      "FR",
+      "NL"
+     ],
+     "index": [
+      "B01",
+      "B02",
+      "B03",
+      "B04",
+      "B05",
+      "B06",
+      "B07",
+      "B08",
+      "B09",
+      "B10",
+      "B11",
+      "B12",
+      "B13",
+      "B14",
+      "B15",
+      "B16",
+      "B17",
+      "B18",
+      "B19",
+      "B20",
+      "B25"
+     ],
+     "rows": [
+      [
+       "8855.90",
+       "846.099",
+       "1434.93000",
+       "418.0"
+      ],
+      [
+       "14808.40",
+       "NaN",
+       "NaN",
+       "0.0"
+      ],
+      [
+       "1791.00",
+       "NaN",
+       "NaN",
+       "0.0"
+      ],
+      [
+       "35678.02",
+       "8402.238",
+       "12801.19000",
+       "18412.0"
+      ],
+      [
+       "15307.73",
+       "NaN",
+       "1810.71000",
+       "4012.0"
+      ],
+      [
+       "3929.69",
+       "477.491",
+       "2985.89000",
+       "0.0"
+      ],
+      [
+       "0.00",
+       "NaN",
+       "NaN",
+       "0.0"
+      ],
+      [
+       "0.00",
+       "NaN",
+       "NaN",
+       "0.0"
+      ],
+      [
+       "75.55",
+       "NaN",
+       "1.85000",
+       "0.0"
+      ],
+      [
+       "9401.80",
+       "1309.700",
+       "5060.88000",
+       "0.0"
+      ],
+      [
+       "4116.15",
+       "126.584",
+       "11748.34000",
+       "38.0"
+      ],
+      [
+       "1459.80",
+       "NaN",
+       "8791.12000",
+       "0.0"
+      ],
+      [
+       "0.00",
+       "NaN",
+       "243.09194",
+       "0.0"
+      ],
+      [
+       "NaN",
+       "2056.000",
+       "62990.00000",
+       "486.0"
+      ],
+      [
+       "329.15",
+       "NaN",
+       "NaN",
+       "0.0"
+      ],
+      [
+       "104029.51",
+       "11683.000",
+       "28253.87000",
+       "29282.0"
+      ],
+      [
+       "1952.55",
+       "393.800",
+       "1039.89000",
+       "777.0"
+      ],
+      [
+       "9226.42",
+       "2262.100",
+       "1528.20000",
+       "4739.0"
+      ],
+      [
+       "67922.93",
+       "3588.942",
+       "23671.77000",
+       "7178.0"
+      ],
+      [
+       "2030.47",
+       "693.845",
+       "1249.35000",
+       "1.0"
+      ],
+      [
+       "14025.81",
+       "862.011",
+       "NaN",
+       "NaN"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "types = {\"B04\": \"gas\", \"B14\": \"nuclear\", \"B16\": \"solar\", \"B19\": \"wind onshore\", \"B18\": \"wind offshore\"}\nmix = wide.loc[list(types)].rename(index=types).T\nmix.plot.bar(ylabel=\"MW\", rot=0, figsize=(8, 3.5))",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: ylabel='MW'>"
+    },
+    {
+     "kind": "image",
+     "src": "installed_capacity-5.png",
+     "width": 724,
+     "height": 316
+    }
+   ]
+  }
+ ]
+}

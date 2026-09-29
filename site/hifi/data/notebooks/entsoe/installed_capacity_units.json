@@ -1,0 +1,133 @@
+{
+ "dataset": "entsoe/installed_capacity_units",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "b76c844268309197fc35766844e199a1797a754ca7fede066e6f82178f0ce8a1",
+ "kernel": "gridflow_models",
+ "source": "entsoe",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.entsoe",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.entsoe.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.entsoe.query(\"installed_capacity_units\", \"2025-12-31\", \"2025-12-31\")\nlatest = df.sort_values(\"published_at\").drop_duplicates([\"area_code\", \"unit_mrid\"], keep=\"last\")",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "latest[[\"area_code\", \"unit_mrid\", \"unit_name\", \"production_type\", \"capacity_mw\"]].sort_values(\"capacity_mw\", ascending=False).head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "area_code",
+      "unit_mrid",
+      "unit_name",
+      "production_type",
+      "capacity_mw"
+     ],
+     "index": [
+      "6874",
+      "6533",
+      "6790",
+      "6798",
+      "6523"
+     ],
+     "rows": [
+      [
+       "10YGB----------A",
+       "48WSTN0000DRAXXK",
+       "DRAXX",
+       "B01",
+       "3885.0"
+      ],
+      [
+       "10Y1001A1001A82H",
+       "11WD8BOXB1L----J",
+       "KW Boxberg",
+       "B02",
+       "2470.0"
+      ],
+      [
+       "10YGB----------A",
+       "48WSTN00000LOAND",
+       "LOAN",
+       "B05",
+       "2400.0"
+      ],
+      [
+       "10YGB----------A",
+       "48WSTN00000PEMBL",
+       "PEMB",
+       "B04",
+       "2305.0"
+      ],
+      [
+       "10Y1001A1001A82H",
+       "11WD7NIED-B-KW-5",
+       "Niederaußem",
+       "B02",
+       "2197.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "latest[\"area_code\"].value_counts()",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "area_code\n10YGB----------A    230\n10YFR-RTE------C    165\n10Y1001A1001A82H    129\n10YNL----------L     51\n10Y1001A1001A59C     33\n10YBE----------2     31\nName: count, dtype: int64"
+    }
+   ]
+  }
+ ]
+}

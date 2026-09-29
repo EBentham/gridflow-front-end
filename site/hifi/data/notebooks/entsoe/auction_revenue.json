@@ -1,0 +1,163 @@
+{
+ "dataset": "entsoe/auction_revenue",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "8172a5a66b240225b93a705a96549cb016b43f777a17150915c278f565e32e53",
+ "kernel": "gridflow_models",
+ "source": "entsoe",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.entsoe",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.entsoe.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.entsoe.query(\"auction_revenue\", \"2026-09-14\", \"2026-09-21\")\ndf[\"timestamp_utc\"] = df[\"timestamp_utc\"].dt.tz_convert(\"UTC\")\nkey = [\"timestamp_utc\", \"in_area_code\", \"out_area_code\"]\ndf = df.drop_duplicates(subset=key).sort_values(key)",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df[[\"timestamp_utc\", \"in_area_code\", \"out_area_code\", \"amount_eur\", \"resolution\"]].head(8)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "in_area_code",
+      "out_area_code",
+      "amount_eur",
+      "resolution"
+     ],
+     "index": [
+      "0",
+      "1",
+      "4",
+      "5",
+      "8",
+      "9",
+      "12",
+      "13"
+     ],
+     "rows": [
+      [
+       "2026-09-14 00:00:00+00:00",
+       "10YGB----------A",
+       "10YBE----------2",
+       "75.48",
+       "PT60M"
+      ],
+      [
+       "2026-09-14 00:00:00+00:00",
+       "10YGB----------A",
+       "10YNL----------L",
+       "0.00",
+       "PT60M"
+      ],
+      [
+       "2026-09-14 01:00:00+00:00",
+       "10YGB----------A",
+       "10YBE----------2",
+       "88.13",
+       "PT60M"
+      ],
+      [
+       "2026-09-14 01:00:00+00:00",
+       "10YGB----------A",
+       "10YNL----------L",
+       "0.00",
+       "PT60M"
+      ],
+      [
+       "2026-09-14 02:00:00+00:00",
+       "10YGB----------A",
+       "10YBE----------2",
+       "37.77",
+       "PT60M"
+      ],
+      [
+       "2026-09-14 02:00:00+00:00",
+       "10YGB----------A",
+       "10YNL----------L",
+       "0.00",
+       "PT60M"
+      ],
+      [
+       "2026-09-14 03:00:00+00:00",
+       "10YGB----------A",
+       "10YBE----------2",
+       "37.74",
+       "PT60M"
+      ],
+      [
+       "2026-09-14 03:00:00+00:00",
+       "10YGB----------A",
+       "10YNL----------L",
+       "0.00",
+       "PT60M"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "df[\"delivery_day\"] = df[\"timestamp_utc\"].dt.tz_convert(\"Europe/Brussels\").dt.date.astype(str)\ndf[\"border\"] = \"GB-\" + df[\"out_area_code\"].str[3:5]\ndays = df[df[\"delivery_day\"].between(\"2026-09-15\", \"2026-09-21\")]\ndaily = days.pivot_table(index=\"delivery_day\", columns=\"border\", values=\"amount_eur\", aggfunc=\"sum\")\ndaily.plot.bar(ylabel=\"EUR per delivery day\", color=[\"#3E8C97\", \"#155A6E\"], figsize=(8, 3.5))",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: xlabel='delivery_day', ylabel='EUR per delivery day'>"
+    },
+    {
+     "kind": "image",
+     "src": "auction_revenue-5.png",
+     "width": 724,
+     "height": 401
+    }
+   ]
+  }
+ ]
+}

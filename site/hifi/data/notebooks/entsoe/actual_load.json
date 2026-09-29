@@ -1,0 +1,123 @@
+{
+ "dataset": "entsoe/actual_load",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "868cabb9e9dc0c4c7b0c3181041b06f19eabe26e6d0519c44095e135e1b32dba",
+ "kernel": "gridflow_models",
+ "source": "entsoe",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.entsoe",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.entsoe.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.entsoe.query(\"actual_load\", \"2026-09-14\", \"2026-09-20\")",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df[[\"timestamp_utc\", \"area_code\", \"load_mw\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "area_code",
+      "load_mw"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2026-09-14 01:00:00+01:00",
+       "10Y1001A1001A82H",
+       "42238.09809"
+      ],
+      [
+       "2026-09-14 01:00:00+01:00",
+       "10YBE----------2",
+       "7088.12000"
+      ],
+      [
+       "2026-09-14 01:00:00+01:00",
+       "10YFR-RTE------C",
+       "35887.95000"
+      ],
+      [
+       "2026-09-14 01:00:00+01:00",
+       "10YNL----------L",
+       "10428.34600"
+      ],
+      [
+       "2026-09-14 01:15:00+01:00",
+       "10Y1001A1001A82H",
+       "42049.06892"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "wide = df.pivot_table(index=\"timestamp_utc\", columns=\"area_code\", values=\"load_mw\")\nax = wide.plot(ylabel=\"MW\", figsize=(8, 3.5))\nax.legend(ncols=2, loc=\"lower center\", bbox_to_anchor=(0.5, 1.0));",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "actual_load-5.png",
+     "width": 722,
+     "height": 422
+    }
+   ]
+  }
+ ]
+}

@@ -81,6 +81,15 @@ REDISPATCHING_CROSS_BORDER_R3 [13.1.A] (10YGB----------A,
 with TimeSeries containing `<businessType>A46</businessType>` and a
 `<flowDirection>` block per redispatch event.
 
+Correction 2026-09-29 (populated NL→BE replies in 2026-07 bronze): the root is
+`TransmissionNetwork_MarketDocument`, not `Publication_MarketDocument`. Each
+TimeSeries carries a `flowDirection.direction` element (`A02` in every reply
+seen), `quantity_Measurement_Unit.name` `MWH`, `mktPSRType.psrType` `A04`,
+`pSRType.psrType` `B21`, the line in `location.name` (`HORTA DOEL`),
+`curveType` `A03`, `resolution` `PT15M` and Reason `B24`. Only the NL/BE
+pair returned data (4 of 78 daily replies); the other seven pairs returned
+Acknowledgements.
+
 ---
 
 ## Silver layer
@@ -95,21 +104,26 @@ with TimeSeries containing `<businessType>A46</businessType>` and a
 
 Same as the H6 quantity envelope: `timestamp_utc`, `in_area_code`,
 `out_area_code`, `quantity_mw`, `business_type`, `resolution`,
-`data_provider`, `ingested_at`.
+`published_at`, `data_provider`, `ingested_at` (`h6_market.py:107-117`;
+`published_at` added 2026-09-29).
 
 ### Silver sample
+
+Real row from silver, replacing a synthetic GB→FR example (250.0, `PT60M`) on 2026-09-29.
+`quantity_mw` holds the value as sent; the unit in the reply is `MWH`.
 
 ```python
 [
     {
-        "timestamp_utc": "2026-05-06T07:00:00Z",
-        "in_area_code": "10YGB----------A",
-        "out_area_code": "10YFR-RTE------C",
-        "quantity_mw": 250.0,
+        "timestamp_utc": "2026-07-07T17:00:00Z",
+        "in_area_code": "10YNL----------L",
+        "out_area_code": "10YBE----------2",
+        "quantity_mw": 1.25,
         "business_type": "A46",
-        "resolution": "PT60M",
+        "resolution": "PT15M",
+        "published_at": "2026-09-27T01:03:45Z",
         "data_provider": "entsoe",
-        "ingested_at": "2026-05-08T18:05:30Z",
+        "ingested_at": "2026-09-27T01:14:23Z",
     },
 ]
 ```
@@ -130,7 +144,11 @@ None implemented.
 - Sister dataset `redispatching_internal` differs **only** by `businessType`
   (A85 internal vs A46 cross-border). Keep both around — they are not aliases.
 - Direction depends on which zone bore the increase vs decrease — cross-check
-  TS `flowDirection` field when present.
+  TS `flowDirection` field when present. (2026-09-29: silver does not keep
+  `flowDirection`, nor the line in `location.name`; the dedup key is
+  `(timestamp_utc, in_area_code, out_area_code, business_type)`,
+  `h6_market.py:91-99`. The replies seen carry `A02` only, so nothing was lost
+  there, but a reply with both directions would keep one. Unit is `MWH`.)
 
 ---
 

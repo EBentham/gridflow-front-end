@@ -1,0 +1,196 @@
+{
+ "dataset": "entsoe/actual_generation",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "b1ea7236a30a0b1a18c928ec0cd51e48aa20a38a7f3350058d6d42f9bc2e7681",
+ "silver": "entsoe/actual_generation",
+ "columns": [
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "area_code",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "production_type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "generation_mw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "resolution",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "area_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "data_provider",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "ingested_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2026-09-18 12:00:00 UTC",
+   "10Y1001A1001A82H",
+   "B02",
+   "5901.27928",
+   "PT15M",
+   "2026-09-21 10:07:28 UTC",
+   "Germany / Luxembourg",
+   "entsoe",
+   "2026-09-21 10:07:50.836715 UTC",
+   "2026-09-18 12:00:00 UTC",
+   "2026-09-21 10:07:28 UTC",
+   "004f28fc-1a6e-4004-b760-23762842fdfb",
+   "1.0.0"
+  ],
+  [
+   "2026-09-18 12:00:00 UTC",
+   "10Y1001A1001A82H",
+   "B04",
+   "2400.1646",
+   "PT15M",
+   "2026-09-21 10:07:28 UTC",
+   "Germany / Luxembourg",
+   "entsoe",
+   "2026-09-21 10:07:50.836715 UTC",
+   "2026-09-18 12:00:00 UTC",
+   "2026-09-21 10:07:28 UTC",
+   "004f28fc-1a6e-4004-b760-23762842fdfb",
+   "1.0.0"
+  ],
+  [
+   "2026-09-18 12:00:00 UTC",
+   "10Y1001A1001A82H",
+   "B05",
+   "1172.20008",
+   "PT15M",
+   "2026-09-21 10:07:28 UTC",
+   "Germany / Luxembourg",
+   "entsoe",
+   "2026-09-21 10:07:50.836715 UTC",
+   "2026-09-18 12:00:00 UTC",
+   "2026-09-21 10:07:28 UTC",
+   "004f28fc-1a6e-4004-b760-23762842fdfb",
+   "1.0.0"
+  ],
+  [
+   "2026-09-18 12:00:00 UTC",
+   "10Y1001A1001A82H",
+   "B10",
+   "4055.1934",
+   "PT15M",
+   "2026-09-21 10:07:28 UTC",
+   "Germany / Luxembourg",
+   "entsoe",
+   "2026-09-21 10:07:50.836715 UTC",
+   "2026-09-18 12:00:00 UTC",
+   "2026-09-21 10:07:28 UTC",
+   "004f28fc-1a6e-4004-b760-23762842fdfb",
+   "1.0.0"
+  ],
+  [
+   "2026-09-18 12:00:00 UTC",
+   "10Y1001A1001A82H",
+   "B16",
+   "31480.865",
+   "PT15M",
+   "2026-09-21 10:07:28 UTC",
+   "Germany / Luxembourg",
+   "entsoe",
+   "2026-09-21 10:07:50.836715 UTC",
+   "2026-09-18 12:00:00 UTC",
+   "2026-09-21 10:07:28 UTC",
+   "004f28fc-1a6e-4004-b760-23762842fdfb",
+   "1.0.0"
+  ],
+  [
+   "2026-09-18 12:00:00 UTC",
+   "10Y1001A1001A82H",
+   "B18",
+   "3835.606",
+   "PT15M",
+   "2026-09-21 10:07:28 UTC",
+   "Germany / Luxembourg",
+   "entsoe",
+   "2026-09-21 10:07:50.836715 UTC",
+   "2026-09-18 12:00:00 UTC",
+   "2026-09-21 10:07:28 UTC",
+   "004f28fc-1a6e-4004-b760-23762842fdfb",
+   "1.0.0"
+  ],
+  [
+   "2026-09-18 12:00:00 UTC",
+   "10Y1001A1001A82H",
+   "B19",
+   "18838.23741",
+   "PT15M",
+   "2026-09-21 10:07:28 UTC",
+   "Germany / Luxembourg",
+   "entsoe",
+   "2026-09-21 10:07:50.836715 UTC",
+   "2026-09-18 12:00:00 UTC",
+   "2026-09-21 10:07:28 UTC",
+   "004f28fc-1a6e-4004-b760-23762842fdfb",
+   "1.0.0"
+  ],
+  [
+   "2026-09-18 12:00:00 UTC",
+   "10Y1001A1001A82H",
+   "B20",
+   "159.38455",
+   "PT15M",
+   "2026-09-21 10:07:28 UTC",
+   "Germany / Luxembourg",
+   "entsoe",
+   "2026-09-21 10:07:50.836715 UTC",
+   "2026-09-18 12:00:00 UTC",
+   "2026-09-21 10:07:28 UTC",
+   "004f28fc-1a6e-4004-b760-23762842fdfb",
+   "1.0.0"
+  ]
+ ],
+ "mark": null
+}

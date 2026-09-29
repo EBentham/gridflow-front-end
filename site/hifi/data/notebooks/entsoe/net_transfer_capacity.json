@@ -1,0 +1,147 @@
+{
+ "dataset": "entsoe/net_transfer_capacity",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "fccc448e356a16af8cbac1e86700745c91d3726a98880a9f4b4019f507102300",
+ "kernel": "gridflow_models",
+ "source": "entsoe",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.entsoe",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.entsoe.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.entsoe.query(\"net_transfer_capacity\", \"2026-09-08\", \"2026-09-21\")\ndf[\"timestamp_utc\"] = df[\"timestamp_utc\"].dt.tz_convert(\"UTC\")\ndf = df.sort_values([\"timestamp_utc\", \"in_area_code\", \"out_area_code\"])",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df.groupby([\"in_area_code\", \"out_area_code\"])[\"ntc_mw\"].agg([\"min\", \"max\", \"count\"]).reset_index()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "in_area_code",
+      "out_area_code",
+      "min",
+      "max",
+      "count"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5"
+     ],
+     "rows": [
+      [
+       "10YGB----------A",
+       "10Y1001A1001A59C",
+       "400.0",
+       "1413.0",
+       "336"
+      ],
+      [
+       "10YGB----------A",
+       "10YBE----------2",
+       "0.0",
+       "1032.0",
+       "336"
+      ],
+      [
+       "10YGB----------A",
+       "10YFR-RTE------C",
+       "3028.0",
+       "4028.0",
+       "336"
+      ],
+      [
+       "10YGB----------A",
+       "10YNL----------L",
+       "0.0",
+       "1016.0",
+       "336"
+      ],
+      [
+       "10YNL----------L",
+       "10Y1001A1001A82H",
+       "0.0",
+       "2774.0",
+       "336"
+      ],
+      [
+       "10YNL----------L",
+       "10YBE----------2",
+       "0.0",
+       "4498.0",
+       "336"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "gb = df[df[\"in_area_code\"].str.startswith(\"10YGB\")].copy()\ngb[\"border\"] = gb[\"out_area_code\"].str[3:5].replace({\"10\": \"IE-SEM\"})  # IE-SEM's EIC has no letters there\nwide = gb.pivot(index=\"timestamp_utc\", columns=\"border\", values=\"ntc_mw\")\nwide[[\"FR\", \"IE-SEM\", \"BE\", \"NL\"]].plot(ylabel=\"MW\", drawstyle=\"steps-post\", color=[\"#155A6E\", \"#C77E3C\", \"#3E8C97\", \"#66793B\"], figsize=(8, 3.5))",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: xlabel='timestamp_utc', ylabel='MW'>"
+    },
+    {
+     "kind": "image",
+     "src": "net_transfer_capacity-5.png",
+     "width": 707,
+     "height": 369
+    }
+   ]
+  }
+ ]
+}
