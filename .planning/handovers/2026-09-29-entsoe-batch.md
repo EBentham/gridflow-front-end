@@ -42,7 +42,7 @@
 | current_balancing_state | HELD blank (ruling #41): silver has no zone, no sign and wrong times (13l). The note body was corrected but is unchecked | aff7fcf8159bb3639 | — | after the gridflow fix: page block, then checker |
 | procured_balancing_capacity | HELD blank (ruling #42): silver rows are arbitrary picks across 4 countries (13o). The note body was corrected but is unchecked | a7d2508a74e6ebbfa | — | after the gridflow fix |
 | balancing-energy-bids (family, lead balancing_energy_bids) | **HELD** (ruling #44): lead stops at 100 series and drops BE bids at dedup; aggregated area blank. Note edits in both notes and mirrors go to a held branch at PR time | a963682b7f587ae52 | — | held |
-| congestion-management (family, lead redispatching_internal) | written (NL internal redispatch, down series only, 15-21 Sep); seat: ships with the direction loss stated (as A07); checker running | a696043a3c83b78e1 | a40db70347a68ee3a | verdict |
+| congestion-management (family, lead redispatching_internal) | REVISE (1 major: stale 'no view' sentence in the costs note; 5 nits); writer resumed | a696043a3c83b78e1 | a40db70347a68ee3a | re-check |
 | actual_generation_units | **APPROVED** on re-check (clean Dutch sample rows; how-used limited to charted plants) | aa26b6043c67cd777 | a307fc1083fa679bf | done |
 | generation_units_master_data | **APPROVED** (3 optional nits) | a20a17cf260cfe31f | a9307d180d54daee9 | done |
 | installed_capacity | **APPROVED** on re-check (pivot headers fixed) | ae278337fa1293ec8 | aadbd72a6a196372e | done |
