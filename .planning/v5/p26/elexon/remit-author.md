@@ -152,3 +152,46 @@ Taken with headless Chrome through a same-origin iframe wrapper on port 9745 (se
 - **Otherwise:** nothing clipped or overlapping in the hero scenery, chart, key, raw feed, frame,
   guide, notebook panel or related list.
 - **Unfolded:** the frame becomes a horizontal scroller, as designed.
+
+## Revision 1 (response to remit-review.md, REVISE: 1 major, 6 nits)
+
+All fixes are in the canonical note. The mirror is `cmp`-identical and CRLF (0 bare LF).
+`gridflow-build --only elexon/remit` passes. The detector returns only the accepted
+`em-dash-overuse` advisory. No artefact changed digest: the spec, select and cells are untouched, so
+there was no re-distil, re-sample or notebook run.
+
+1. **major, body Revisions bullet.** My "32 steps" counted ties within the same second.
+   - Recount with a strict inequality: a pairwise join on `mrid` filtered to
+     `timestamp_utc < timestamp_utc_b & revision_number > revision_number_b` gives 5 pairs across
+     4 messages. Three are 1 s apart; `48X000000000357G-ELXP-RMT-20000025` is about 6 h 30 m apart.
+   - Pairs sharing a publish second with different numbers: 72, across 47 messages.
+   - The sentence now reads: "in 4 messages a lower number was published after a higher one (3 of
+     them one second later), and 47 messages carry two numbers in the same publish second." The
+     re-send counts are kept.
+   - Also withdrawn from this report: the "32 steps" row in the evidence table and the PEMB-41 revs
+     6 and 7 example. Those two share 15:18:05, so they are a tie, not an inversion.
+2. **nit, body `event_status` row.** Was "Active / Withdrawn etc.". Now "Status as sent, e.g.
+   `Active`, `Inactive`, `Dismissed` (silver, 2026-09-29; no `Withdrawn`); meanings not documented
+   here".
+3. **nit, key note `no_fuel`.** Checked bronze (read only), the 1,401 September records: `fuelType`
+   is absent 310 times and never sent as an explicit null. The note now reads "Elexon's record has no
+   `fuelType` field: a missing value, not a fuel."
+4. **nit, `facts.grain`.** Now "... Elexon can re-send a revision, sometimes identically" (13 words).
+5. **nit, `fields.timestamp_utc`.** "not an event time" is now "not the outage's start or end". The
+   lineage `event_time` equals this column.
+6. **nit, `related` uou2t14d and fou2t14d.** These now say how they relate: "Forward availability for
+   the units these messages name" and "Forward availability for the fuel types charted here".
+7. **Found in the 1280 check, not in the review.** The wind key codes (`Wind Offshore, Wind Onshore`)
+   overran the viewport at 1280. Codes are now `Wind *, 2 values`, with the note "`Wind Offshore` and
+   `Wind Onshore` counted together." (Same pattern as hydro.)
+
+A correction to my own report: the evidence line for the pumped-storage key note said "with the same
+window". The review found that untrue for 10 of 33 windows. The page never said it; the report line
+is withdrawn.
+
+**Screenshots:** 1280 (direct) and true 390 (390 px same-origin iframe, port 9745, server stopped),
+folded and unfolded. Nothing clipped or overlapping in the hero facts, chart key, frame, guide,
+notebook or related list.
+
+**Not changed:** the detector advisory (accepted by the coordinator), and the review's gridflow
+latest-view ordering note (a seat and gridflow issue, as in open question 1).

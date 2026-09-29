@@ -20,9 +20,9 @@ Batch brief: `.planning/v5/p26/BATCH-elexon.md`. Reports: `.planning/v5/p26/elex
 | freq | APPROVED (review 2) | a757523f18b8872ee | ac2da42890daacdbe | done |
 | fuelinst | APPROVED, nits applied | ac17b80233d655e7c | a3c074b63838c4512 | done |
 | agpt | APPROVED, nits applied | ac08817af5dc65b24 | ae15bf21016303925 | done |
-| agws | checker running | a02a65646052893e2 | a11c80668abbefdce | act on the verdict |
-| windfor | checker running | a1ab63925783acd9e | a17288a5f3e21ed79 | act on the verdict |
-| atl | revision 1 done (gaps now break); checker running | ae4cecd8c31375b94 | aa5264d2b291ec745 | act on the verdict |
+| agws | APPROVED (review 2) | a02a65646052893e2 | a11c80668abbefdce | done |
+| windfor | APPROVED (review 2) | a1ab63925783acd9e | a17288a5f3e21ed79 | done |
+| atl | APPROVED (after revision 1), 3 nits | ae4cecd8c31375b94 | aa5264d2b291ec745 | done |
 | lolpdrm | APPROVED (review 2) | a9a809d3db7a3003d | a0485269512755d5d | done |
 | demand-forecasts (family, lead ndf) | APPROVED (review 2); column order set (build it with `--only elexon/ndf`: the family slug renders nothing) | abf8f9353b1213246 | a47d843864370aaca | done |
 | boal | APPROVED; column order set (Revision 3) | a31536a58a5a3b972 | adc1711149f93ffb3 | done |
@@ -32,10 +32,10 @@ Batch brief: `.planning/v5/p26/BATCH-elexon.md`. Reports: `.planning/v5/p26/elex
 | soso | APPROVED (review 2) | a41b75f70f9993f96 | a3d57de07ebfc9143 | done |
 | pn | APPROVED (review 2), nits applied | a1f13e90b72f5b8c5 | a1f47734a4b13c4d3 | done |
 | nonbm | written; HELD (ruling #37): silver repeats one record (1 Apr, period 22) and the connector likely sends `publishDateTimeFrom/To` where the API lists `from`/`to`; the fixed 8-row sample also fails | acc464ee4405621aa | — | gridflow research unit, then a sampler that accepts fewer rows, then check and publish |
-| fou2t14d | written (72 hourly publishes for 24 Sep, CCGT/wind/nuclear); checker running | a8d7b6b1894c6c155 | a2b14d08df16b6c0d | act on the verdict |
+| fou2t14d | APPROVED, 1 taste nit left as is (at 390 the folded frame repeats 12402.0) | a8d7b6b1894c6c155 | a2b14d08df16b6c0d | done |
 | uou2t14d | APPROVED (review 2) | a0a9e27c09f4cd6ff | a29dfe5ba88e4765f | done |
-| remit | written (bar count of messages by fuel, 13 to 21 Sep, latest revision each); checker running. Detector advisory "em-dash overuse" accepted by the seat: the rule counts `--` padding in Elexon IDs (`10YGB----------A`), and advisories never fail the gate | added78eb82ce18d5 | addf06d5b13c34aa2 | act on the verdict |
-| indicated-day-ahead (family) | not started | — | — | launch writers under the throttle |
+| remit | APPROVED (review 2), nit applied by the seat; detector advisory on dashed Elexon IDs accepted | added78eb82ce18d5 | addf06d5b13c34aa2 | done |
+| indicated-day-ahead (family, lead indgen) | writer running (build with `--only elexon/indgen`) | a638e8b7099ae8bca | — | checker after the writer |
 
 If a restart kills a running agent, check its report file and the vault note first, then resume it by id.
 
@@ -58,8 +58,7 @@ and demand-forecasts writers set `record.select.columns`, re-sample, rebuild.
 artefacts, so both stay blank. The vault PR needs the same care: their `page:` blocks must not reach canonical master
 until unheld (the next mirror sync would publish them).
 
-**Next, in order:** act on the fou2t14d and remit verdicts, writer for
-indicated-day-ahead. Keep at most 2 agents at a time and stop launching at about 85% of the 5-hour window. Then the batch PR into main
+**Next, in order:** checker for indicated-day-ahead, then the batch PR. Keep at most 2 agents at a time and stop launching at about 85% of the 5-hour window. Then the batch PR into main
 (ruling #36: no preview wait), with the preview republished for Bobbo to look at later (republish
 https://claude.ai/artifact/EYadKREQi3RnpufNwTH6Wf from `<scratch>\p26-elexon\site\hifi`, file list in
 `<scratch>\elexon-preview-files.json`). netbsad stays blank (held).
