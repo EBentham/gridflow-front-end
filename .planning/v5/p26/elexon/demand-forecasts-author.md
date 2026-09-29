@@ -118,3 +118,19 @@ Family page `demand-forecasts` (lead `ndf`; members `ndfd`, `tsdf`, `tsdfd`). Wr
 - **Optional body note, taken:** `ndfd.md` and `tsdfd.md` say "the fields do not say which daily statistic" instead of "undocumented".
 - **Artefacts:** unchanged. No chart, record-select or notebook-cell edits, so the series, sample and notebook digests still hold.
 - **Checks re-run:** `gridflow-build --only elexon/ndf` passes and `detect.mjs --json` returns `[]`. All four notes are re-copied to the mirror, byte-identical with CRLF kept.
+
+## Revision: column order
+
+- **Change:** `record.select.columns: [published_at, national_demand_mw, settlement_period]`, checked against silver's column names. The rest follow in silver's order: `settlement_date`, `timestamp_utc`, `forecast_type`, then the pipeline columns.
+  - These are the two columns that differ across the eight rows, then the target period. The date, period, `timestamp_utc` and `forecast_type` are the same in all eight rows, and the caption names them.
+  - `record.fields` is reordered to match. Its words and key are unchanged.
+- **Artefacts:** re-ran `gridflow-sample --dataset elexon/ndf`, which rewrote `samples/elexon/ndf.json`. The series and notebook are untouched.
+- **Mirror:** the vault note is mirrored byte for byte (295 lines, CRLF).
+- **Build:**
+  - `gridflow-build --only elexon/demand-forecasts` renders nothing. It reports "0 template page(s)" and left the page file unchanged.
+  - The family page builds under its lead key: `--only elexon/ndf` wrote `demand-forecasts.html` with the new order (`published_at`, `national_demand_mw`, `settlement_period`, ...).
+  - `detect.mjs --json` returns `[]` on the rebuilt page.
+- **Screenshots (headless Chrome, port 9725, server stopped):**
+  - **1280:** the frame shows `published_at`, `national_demand_mw`, `settlement_period`, `settlement_date`, `timestamp_utc` and `forecast_type` before the `…`. The eight falling values (28,734 to 26,554 MW) sit beside their publish times.
+  - **390 (390 px iframe):** only `published_at` fits before the `…`. The eight distinct publish times now tell the rows apart, but `national_demand_mw` folds, because the two columns together need about 350 px against about 330 px of box.
+  - Nothing is clipped or overlapping at either width.

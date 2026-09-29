@@ -20,18 +20,22 @@ Batch brief: `.planning/v5/p26/BATCH-elexon.md`. Reports: `.planning/v5/p26/elex
 | freq | APPROVED (review 2) | a757523f18b8872ee | ac2da42890daacdbe | done |
 | fuelinst | APPROVED, nits applied | ac17b80233d655e7c | a3c074b63838c4512 | done |
 | agpt | APPROVED, nits applied | ac08817af5dc65b24 | ae15bf21016303925 | done |
-| agws | checker running | a02a65646052893e2 | a11c80668abbefdce | act on the verdict |
-| windfor | checker running | a1ab63925783acd9e | a17288a5f3e21ed79 | act on the verdict |
-| atl | revision 1 done (gaps now break); checker running | ae4cecd8c31375b94 | aa5264d2b291ec745 | act on the verdict |
+| agws | APPROVED (review 2) | a02a65646052893e2 | a11c80668abbefdce | done |
+| windfor | APPROVED (review 2) | a1ab63925783acd9e | a17288a5f3e21ed79 | done |
+| atl | APPROVED (after revision 1), 3 nits | ae4cecd8c31375b94 | aa5264d2b291ec745 | done |
 | lolpdrm | APPROVED (review 2) | a9a809d3db7a3003d | a0485269512755d5d | done |
-| demand-forecasts (family, lead ndf) | APPROVED (review 2) | abf8f9353b1213246 | a47d843864370aaca | done |
-| boal | APPROVED, follow-up applied (Revision 2) | a31536a58a5a3b972 | adc1711149f93ffb3 | done |
+| demand-forecasts (family, lead ndf) | APPROVED (review 2); column order set (build it with `--only elexon/ndf`: the family slug renders nothing) | abf8f9353b1213246 | a47d843864370aaca | done |
+| boal | APPROVED; column order set (Revision 3) | a31536a58a5a3b972 | adc1711149f93ffb3 | done |
 | disbsad | APPROVED (review 2) | a5b3f85429c8bcd8c | aebe91340cd8e1a7c | done |
 | market_depth | APPROVED, nits applied | aa46a54294f5cafaa | a8ccdd8aa4d55aa88 | done |
 | netbsad | written; HELD, not in the batch PR (every field is 0 across 674 periods while DISBSAD shows up to 773 MWh: likely a gridflow parse bug) | a5e765b85bf3eff9a | — | research unit first, then check and publish |
-| soso | written; checker running (launched at 76%) | a41b75f70f9993f96 | a3d57de07ebfc9143 | act on the verdict |
-| pn | written (level_from for three BM units, 16 to 22 Sep) | a1f13e90b72f5b8c5 | — | QUEUED: launch the checker (look at "each kept segment starts its period", and the null `bm_unit_id` line) |
-| nonbm, fou2t14d, uou2t14d, remit, indicated-day-ahead (family) | not started | — | — | launch writers under the throttle |
+| soso | APPROVED (review 2) | a41b75f70f9993f96 | a3d57de07ebfc9143 | done |
+| pn | APPROVED (review 2), nits applied | a1f13e90b72f5b8c5 | a1f47734a4b13c4d3 | done |
+| nonbm | written; HELD (ruling #37): silver repeats one record (1 Apr, period 22) and the connector likely sends `publishDateTimeFrom/To` where the API lists `from`/`to`; the fixed 8-row sample also fails | acc464ee4405621aa | — | gridflow research unit, then a sampler that accepts fewer rows, then check and publish |
+| fou2t14d | APPROVED, 1 taste nit left as is (at 390 the folded frame repeats 12402.0) | a8d7b6b1894c6c155 | a2b14d08df16b6c0d | done |
+| uou2t14d | APPROVED (review 2) | a0a9e27c09f4cd6ff | a29dfe5ba88e4765f | done |
+| remit | APPROVED (review 2), nit applied by the seat; detector advisory on dashed Elexon IDs accepted | added78eb82ce18d5 | addf06d5b13c34aa2 | done |
+| indicated-day-ahead (family, lead indgen) | written (indgen, boundary N, 17 Sep, two publishes); checker running | a638e8b7099ae8bca | aadf924deb93edda8 | act on the verdict |
 
 If a restart kills a running agent, check its report file and the vault note first, then resume it by id.
 
@@ -47,9 +51,15 @@ resumes the batch at about 04:05 UTC. Only the soso checker (a3d57de07ebfc9143) 
 demand-forecasts writers use it). #36 autonomous: ship the Elexon batch PR to main once all its pages are approved and
 the gates are green, with no preview wait.
 
-**Next, in order:** checker for pn, then writers for nonbm, fou2t14d, uou2t14d, remit and
-indicated-day-ahead. Keep at most 2 agents at a time and stop launching at about 85% of the 5-hour window. Then group
-2 onwards gets a batch PR into main, after Bobbo's look at the preview (republish
+**Column order shipped** (PR #53, `e6d44f4`, merged into the batch worktree at `5881dae`, 11:15 UTC). Follow-up: boal
+and demand-forecasts writers set `record.select.columns`, re-sample, rebuild.
+
+**Held pages at PR time:** restore `vault/elexon/{netbsad,nonbm}.md` from origin/main in the site PR and leave out their
+artefacts, so both stay blank. The vault PR needs the same care: their `page:` blocks must not reach canonical master
+until unheld (the next mirror sync would publish them).
+
+**Next, in order:** checker for indicated-day-ahead, then the batch PR. Keep at most 2 agents at a time and stop launching at about 85% of the 5-hour window. Then the batch PR into main
+(ruling #36: no preview wait), with the preview republished for Bobbo to look at later (republish
 https://claude.ai/artifact/EYadKREQi3RnpufNwTH6Wf from `<scratch>\p26-elexon\site\hifi`, file list in
 `<scratch>\elexon-preview-files.json`). netbsad stays blank (held).
 
@@ -78,6 +88,17 @@ https://claude.ai/artifact/EYadKREQi3RnpufNwTH6Wf from `<scratch>\p26-elexon\sit
   order, so the columns that matter (boal MW levels; demand and `published_at`) hide behind `…` and the rows look
   identical. Proposed: an optional `record.select.columns` (a Polars `.select` order, pipeline columns still
   last), which touches the locked 3a design ("as silver prints"), so Bobbo rules first. Then rebuild both pages.
+
+- **gridflow gap (from nonbm):** the connector sends `publishDateTimeFrom/To`; the vault's API table lists `from`/`to`.
+  Thirteen windows (May, Aug) all returned the same 1 Apr record. Needs a research unit against the live parameters.
+- **gridflow (from uou2t14d):** silver dedups on `(settlement_date, bm_unit_id)` per bronze day with no `published_at`,
+  so one hourly publish survives per fetched day, chosen by file order; null-id units collapse (80 of 81 dropped per date).
+- **Vault glossary** (`20-domain/glossary.md:123-124`) calls FOU2T14D "by BM Unit"; it is by fuel type (fou2t14d writer).
+- **Chart builder filters before it picks the latest revision** (remit): an "unavailable MW by fuel in force" chart
+  over-counts (76 vs 62 at a test instant). Template work before REMIT can chart MW.
+- **gridflow (from indicated-day-ahead):** the transformers keep whichever row the API lists last (no sort), and
+  `imbalngc`/`melngc` drop `boundary`, so silver depends on Elexon's row order. Raise in gridflow.
+- **Sampler takes exactly 8 rows** (`sample.py:109`): a dataset with fewer distinct rows cannot build. Template work.
 
 - **gridflow discrepancy (from windfor):** silver `windfor` has no `settlement_date`, `settlement_period` or
   `initial_forecast_mw` and is keyed on `(timestamp_utc, published_at)`. That contradicts the pydantic schema and the

@@ -42,3 +42,4 @@ Earlier milestones keep their decisions phase-local (`phases/`, `docs/adr/`).
 | 34 | 2026-09-28T20:30Z | 26 | OWNER | Home landscape capped at 1920 size (PR #48 merged). Elexon batch opened: 21 pages, writer + checker each, Opus 5.5 high; each group goes live after Bobbo's preview look. Detail: .planning/v5/p26/BATCH-elexon.md |
 | 35 | 2026-09-29T11:07Z | 26 | OWNER | Sample frame may set its column order (record.select.columns, a Polars select order; pipeline columns stay last). Amends the 3a lock's 'as silver prints'. |
 | 36 | 2026-09-29T11:07Z | 26 | PROXY-SOURCED | Bobbo can't view previews ('continue autonomous'): each vendor batch ships to main once every page is APPROVED and gates are green; held pages stay blank. Ratify at close. |
+| 37 | 2026-09-29T11:42Z | 26 | PROXY-SOURCED | nonbm held like netbsad: silver repeats one record; connector likely sends the wrong time params. Page stays blank; gridflow research unit needed. Ratify at close. |
