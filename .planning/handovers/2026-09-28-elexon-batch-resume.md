@@ -27,7 +27,7 @@ Batch brief: `.planning/v5/p26/BATCH-elexon.md`. Reports: `.planning/v5/p26/elex
 | demand-forecasts (family, lead ndf) | written; checker running | abf8f9353b1213246 | a47d843864370aaca | act on the verdict |
 | boal | APPROVED, nits applied | a31536a58a5a3b972 | adc1711149f93ffb3 | done |
 | disbsad | written (volume by service, 14 to 19 Sep) | a5b3f85429c8bcd8c | — | QUEUED: launch the checker (look at "each reply holds the half-hour starting at `to`", and the £/MWh units from the note only) |
-| market_depth | written; checker running (launched at 71% of the 5-hour window) | aa46a54294f5cafaa | (new) | act on the verdict |
+| market_depth | written; checker running (launched at 71% of the 5-hour window) | aa46a54294f5cafaa | a8ccdd8aa4d55aa88 | act on the verdict |
 | netbsad | written; HELD, not in the batch PR (every field is 0 across 674 periods while DISBSAD shows up to 773 MWh: likely a gridflow parse bug) | a5e765b85bf3eff9a | — | research unit first, then check and publish |
 | soso | written (EWIC_EG mean Bid and Offer by start hour, 14 to 18 Sep) | a41b75f70f9993f96 | — | QUEUED: launch the checker (look at Bid/Offer undefined by Elexon; the "£" unit) |
 | pn | written (level_from for three BM units, 16 to 22 Sep) | a1f13e90b72f5b8c5 | — | QUEUED: launch the checker (look at "each kept segment starts its period", and the null `bm_unit_id` line) |
