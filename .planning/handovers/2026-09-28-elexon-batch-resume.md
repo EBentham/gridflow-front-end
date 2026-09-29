@@ -25,8 +25,8 @@ Batch brief: `.planning/v5/p26/BATCH-elexon.md`. Reports: `.planning/v5/p26/elex
 | atl | revision 1 done (gaps now break); checker running | ae4cecd8c31375b94 | aa5264d2b291ec745 | act on the verdict |
 | lolpdrm | APPROVED (review 2) | a9a809d3db7a3003d | a0485269512755d5d | done |
 | demand-forecasts (family, lead ndf) | APPROVED (review 2) | abf8f9353b1213246 | a47d843864370aaca | done |
-| boal | APPROVED, nits applied | a31536a58a5a3b972 | adc1711149f93ffb3 | done |
-| disbsad | written; checker running | a5b3f85429c8bcd8c | aebe91340cd8e1a7c | act on the verdict |
+| boal | APPROVED; FOLLOW-UP: scope its raw-feed "comes back in both neighbouring windows" wording to fetched responses (the disbsad checker flagged the same unscoped pattern) | a31536a58a5a3b972 | adc1711149f93ffb3 | send the writer the one-line fix when a slot frees |
+| disbsad | REVISE (2 majors: `to` sentence unscoped; £/MWh unsourced), writer revising | a5b3f85429c8bcd8c | aebe91340cd8e1a7c | re-check |
 | market_depth | APPROVED, nits applied | aa46a54294f5cafaa | a8ccdd8aa4d55aa88 | done |
 | netbsad | written; HELD, not in the batch PR (every field is 0 across 674 periods while DISBSAD shows up to 773 MWh: likely a gridflow parse bug) | a5e765b85bf3eff9a | — | research unit first, then check and publish |
 | soso | written; checker running (launched at 76%) | a41b75f70f9993f96 | a3d57de07ebfc9143 | act on the verdict |
