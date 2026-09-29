@@ -126,45 +126,53 @@ coverage." The endpoint is live-served and well-formed.
 **Path pattern**: `{data_root}/silver/gie_agsi/unavailability/year=YYYY/month=MM/unavailability_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.gie.agsi.UnavailabilityTransformer`
 **Pydantic schema**: (no dedicated schema — dynamic columns from `AgsiJsonTransformer`)
-**Dedup key**: `(facility_eic, start, end)` — falls back to `(id, url, entity_code, eic)` per `AgsiJsonTransformer.unique` logic.
-**Point-in-time field**: `published` (parsed to UTC datetime).
+**Dedup key**: none applied. `AgsiJsonTransformer.transform` dedups only on whichever of `id`, `url`, `turl`, `entity_code`, `eic` are columns (`agsi.py:387-390`), and an unavailability record carries none of them. `(facility, start, end)` names the outage window, but it is not a row key: one window can carry several records (separate injection and withdrawal records, and re-publications with a later `published`, including cancellations).
+**Point-in-time field**: `published`, kept as the vendor's `"YYYY-MM-DD HH:MM:SS"` string (no timezone stated; not parsed, see below).
 
 ### Silver schema
 
 (Dynamic — derived from live JSON keys via `_normalise_row` /
-`_camel_to_snake` / `_safe_*` helpers.)
+`_camel_to_snake` / `_safe_*` helpers.) Only keys in `datetime_columns`
+or ending `_at` are parsed to datetimes, and only keys in `numeric_names`
+or ending in a `numeric_suffixes` suffix are cast to float
+(`agsi.py:311-331`, `372-378`, `437-442`). None of the live keys
+`published`, `start`, `end`, `volume`, `injection`, `withdrawal` match,
+so all of them stay the vendor's strings in silver.
 
 | Field | Python type | Nullable | Source field | Notes |
 |-------|-------------|----------|--------------|-------|
-| `published` | `datetime[UTC]` | Yes | `published` | Vendor publish timestamp. |
-| `country` | `str` | Yes | `country` | JSON-encoded `{"name", "code"}` dict. |
-| `company` | `str` | Yes | `company` | JSON-encoded `{"name", "eic"}` dict. |
-| `facility` | `str` | Yes | `facility` | JSON-encoded `{"name", "eic"}` dict. |
-| `start` | `datetime[UTC]` | Yes | `start` | Outage window start. |
-| `end` | `datetime[UTC]` | Yes | `end` | Outage window end (`end_flag` says whether confirmed or estimated). |
-| `volume` | `float` | Yes | `volume` | GWh (per docs). |
-| `injection` | `float` | Yes | `injection` | GWh/day capacity reduction. |
-| `withdrawal` | `float` | Yes | `withdrawal` | GWh/day capacity reduction. |
+| `published` | `str` | Yes | `published` | Vendor publish time, `"YYYY-MM-DD HH:MM:SS"`, no timezone stated. |
+| `country` | `str` | Yes | `country` | JSON-encoded `{"code", "name"}` dict (keys sorted, `agsi.py:70`). |
+| `company` | `str` | Yes | `company` | JSON-encoded `{"eic", "name"}` dict. |
+| `facility` | `str` | Yes | `facility` | JSON-encoded `{"eic", "name"}` dict. |
+| `start` | `str` | Yes | `start` | Outage window start, `"YYYY-MM-DD HH:MM:SS"`, no timezone stated. |
+| `end` | `str` | Yes | `end` | Outage window end, same format (`end_flag` says whether confirmed or estimated). |
+| `volume` | `str` | Yes | `volume` | Decimal string, e.g. `"3.004"`. GWh (per docs). |
+| `injection` | `str` | Yes | `injection` | Decimal string. GWh/day capacity reduction. |
+| `withdrawal` | `str` | Yes | `withdrawal` | Decimal string. GWh/day capacity reduction. |
 | `description` | `str` | Yes | `description` | Free-text note. |
 | `end_flag` | `str` | Yes | `end_flag` | `Confirmed`, `Estimate`. |
 | `type` | `str` | Yes | `type` | `Planned`, `Unplanned`, ... |
 | `data_provider` | `str` | No | derived | Always `gie_agsi`. |
-| `ingested_at` | `datetime[UTC]` | No | derived | |
+| `ingested_at` | `datetime[UTC]` | No | derived | Silver transform time (`datetime.now(UTC)`, `agsi.py:381`), not the bronze fetch. |
+
+Silver also carries the pipeline columns `event_time`, `available_at`,
+`source_run_id` and `dataset_version` (`silver/base.py`).
 
 ### Silver sample
 
 ```python
 [
     {
-        "published": datetime(2026, 5, 8, 10, 40, 7, tzinfo=UTC),
-        "country": '{"name": "Germany", "code": "DE"}',
-        "company": '{"name": "EWE Gasspeicher", "eic": "21X0000000011756"}',
-        "facility": '{"name": "EWE H-Gas Zone", "eic": "37W000000000002O"}',
-        "start": datetime(2026, 5, 4, 6, 0, tzinfo=UTC),
-        "end": datetime(2026, 5, 8, 12, 0, tzinfo=UTC),
-        "volume": 3.004,
-        "injection": 41.4,
-        "withdrawal": 82.8,
+        "published": "2026-05-08 10:40:07",
+        "country": '{"code": "DE", "name": "Germany"}',
+        "company": '{"eic": "21X0000000011756", "name": "EWE Gasspeicher"}',
+        "facility": '{"eic": "37W000000000002O", "name": "EWE H-Gas Zone"}',
+        "start": "2026-05-04 06:00:00",
+        "end": "2026-05-08 12:00:00",
+        "volume": "3.004",
+        "injection": "41.4",
+        "withdrawal": "82.8",
         "description": "safety test / maintenance work (only Huntorf is influenced)",
         "end_flag": "Confirmed",
         "type": "Planned",
@@ -196,8 +204,22 @@ None implemented.
 - `country`, `company`, `facility` arrive as nested dicts
   (`{"name": ..., "code": ...}` or `{"name": ..., "eic": ...}`) —
   the silver transformer JSON-encodes them at column level.
-- `start` / `end` arrive as `YYYY-MM-DD HH:MM:SS` (naïve local) —
-  silver `_safe_datetime` parses with UTC fallback.
+- `start` / `end` / `published` arrive as `YYYY-MM-DD HH:MM:SS` with no
+  timezone stated. Silver does not parse them: none of the three is in
+  `datetime_columns` or ends `_at` (`agsi.py:311-322`, `374`), so they
+  stay strings.
+- **Every daily partition holds the whole fetched outage set (gridflow
+  `master`).** `_unavailability_record_overlaps` (`agsi.py:704-714`)
+  reads only `event_start` / `start_at` / `gas_day_start` and the
+  matching end keys; live records carry `start` / `end`, so every record
+  looks dateless and is kept for every target day. Rows repeat once per
+  partition, and a partition does not mean "outages on this day". The
+  fix (overlap of `[start, end)` with the calendar day, `DATASET_VERSION`
+  1.1.0) is on the unmerged branch `fix/silver-agsi-unavailability-overlap`
+  (`80bad68`); silver built before it carries `dataset_version` 1.0.0.
+- `gridflow_models` `query("unavailability", ...)` filters on
+  `ingested_at` (`silver/schema_manifest.py:232`), the silver transform
+  time, not on the outage window or `published`.
 - The catalog YAML notes documentation ambiguity (v007 PDF wording
   about whether `unavailability` is part of the AGSI API).
 
@@ -228,12 +250,15 @@ None implemented.
   out of date relative to live shape (logged here, NOT regenerated in
   V1 — fixture regeneration is out of scope).
 - **`event_start`/`event_end` vs `start`/`end`**: fixture uses
-  `eventStart` / `eventEnd`; live uses `start` / `end`. The
-  `_unavailability_record_overlaps` helper checks both shapes.
+  `eventStart` / `eventEnd`; live uses `start` / `end`. On `master` the
+  `_unavailability_record_overlaps` helper reads only the fixture shape
+  (`agsi.py:706-707`), so live records are never filtered (see Known
+  issues); the unmerged fix reads both.
 - **`unavailableCapacity` / `workingGasVolume` not in live**: fixture
   has these keys; live has `volume`, `injection`, `withdrawal`. The
-  `AgsiJsonTransformer` numeric heuristic captures `volume` and
-  `*_capacity` suffixes regardless.
+  `AgsiJsonTransformer` numeric heuristic (`numeric_names`, suffixes
+  `_volume`, `_capacity`, ...) matches none of the three live names, so
+  they stay strings in silver (`agsi.py:323-331`, `437-442`).
 
 No connector-behaviour discrepancies found.
 
