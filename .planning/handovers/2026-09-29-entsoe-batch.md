@@ -47,7 +47,7 @@
 | generation_units_master_data | **APPROVED** (3 optional nits) | a20a17cf260cfe31f | a9307d180d54daee9 | done |
 | installed_capacity | **APPROVED** on re-check (pivot headers fixed) | ae278337fa1293ec8 | aadbd72a6a196372e | done |
 | load-forecasts (family, lead load_forecast) | **APPROVED** on re-check (loss in plain words) | a0639f624b8567137 | a8fde62593ddf835d | done |
-| installed_capacity_units | written (unit count by type, 6 zones, 15 Sep fetch; Seraing sample across fetches); checker running | abc4b218164a9acf8 | a9a068a48017c1f65 | verdict |
+| installed_capacity_units | REVISE (1 major: scope 'every request returns the year document' to our replies; 3 nits); writer resumed | abc4b218164a9acf8 | a9a068a48017c1f65 | re-check |
 | water_reservoirs | written (FR only, 4 weekly points in two pieces); seat: ships thin-but-accurate with coverage stated; swap the blank-page test at PR time; checker running | ad11aa4256be63ae4 | a328b581d4bd66dc5 | verdict |
 | forecast_margin | writer running | a567036a197b2b0ce | | report |
 | outages (family, lead outages_generation) | writer running | a6091df14760f7c08 | | report |
