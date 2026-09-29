@@ -49,7 +49,7 @@
 | load-forecasts (family, lead load_forecast) | **APPROVED** on re-check (loss in plain words) | a0639f624b8567137 | a8fde62593ddf835d | done |
 | installed_capacity_units | **APPROVED** on re-check | abc4b218164a9acf8 | a9a068a48017c1f65 | done |
 | water_reservoirs | **APPROVED** (3 nits fixed); swap the blank-page test at PR time | ad11aa4256be63ae4 | a328b581d4bd66dc5 | done |
-| forecast_margin | writer running | a567036a197b2b0ce | | report |
+| forecast_margin | written (BE/FR/NL bar, 2026 doc); seat: DE-LU left out with the reason stated (silver drops the sign); checker running | a567036a197b2b0ce | a2c81932ebff15c69 | verdict |
 | outages (family, lead outages_generation) | writer running | a6091df14760f7c08 | | report |
 
 ## At PR time
@@ -65,7 +65,7 @@
 
 **Remediation list (Bobbo 2026-09-29):** log each gridflow or data defect as it is found, in gridflow `.planning/BACKLOG.md`
 item 13 and in the vault page `10-projects/gridflow/specs/remediation-from-site-batches.md` (on the branch for PR quant-vault#55).
-Logged so far: 13a to 13ag.
+Logged so far: 13a to 13ah.
 
 - Ruling #39, amended by #40: EIC codes in a note's front matter use `-` escapes (the vault scripts split the note on `---`).
   The build now rejects a literal one: guard in `page_fields.parse_page_fields`, tests in `tests/test_front_matter_fence.py`,
