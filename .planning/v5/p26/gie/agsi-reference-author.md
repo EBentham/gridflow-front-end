@@ -6,10 +6,21 @@ Family `agsi-reference`, lead `about_listing`, member `about_summary`. Writer po
 
 - `page:` block written on the lead's canonical note. Body corrections made on both notes. Both notes mirrored byte for byte (CRLF kept).
 - Series (`gridflow-distil`) and sample (`gridflow-sample`) written from real silver. Nothing is committed; the seat commits.
-- **Blocked: the notebook.** The warehouse `C:\gridflow-data\gridflow.duckdb` has no views for these two tables, so every `gridflow_models` read fails (see Blocker). The build therefore stops on `gie/about_listing: no executed notebook`. That is its only error: parse, anatomy budgets, key entries, related links and series digest all pass.
-- Full-page screenshots and the detector wait on the build. I checked the chart itself: both SVGs were rendered from the committed series with `chart_svg.render`, loaded with the site stylesheet, and every label box measured in headless Chrome. Nothing clips at the wide (900) or narrow (360) drawing; the tightest label is "United Kingdom" at x=15 in the narrow one.
+- **Notebook: done** (update, after the seat refreshed the views with `runner.refresh_views`). `run_notebooks.py --dataset gie/about_listing` ran 6 cells in 9.2 s with no errors. The outputs match the expected counts:
+  - `.head()`: the first five operators by `entity_code`;
+  - `entity_level`: facility 121, company 64 (185 rows);
+  - `entity_type`: SSO 64, ASF 50, DSR 48, ASR 13, NaN 5, GRP 4, SRC 1.
+- **Build: green.** `gridflow-build --only gie/about_listing` wrote `data-sources/gie/agsi-reference.html`; the only warnings are the existing "no Pydantic class" content warnings for other GIE members.
+- **Detector: `[]`.** No findings, so no advisories to accept.
+- **Screenshots.**
+  - **How.** A static server on port 9852 (stopped afterwards) and headless Chrome over CDP with true device-width viewports (`scratchpad\agref_shot.mjs`, profile under `scratchpad\agref-cdp-*`, each run wrapped in `timeout 60`).
+  - **Widths.** 1440, 1024, 768 and 390, full page. No horizontal overflow: `scrollWidth` equals `innerWidth` at every width.
+  - **Nothing clipped or overlapping.** Checked the hero (turbines, gas terminal and offshore-platform labels), the chart bars, the labels ("United Kingdom" and "Czech Republic" at 390) and the key notes (reflowing to 1, 2 or 3 columns), the raw feed (URLs and commands wrap), the frame (folds behind `…` at every width; at 390 only `entity_level` and `entity_code` show before the fold), the column guide, the notebook cells (the SQL wraps at 390), related links and the corner labels.
+  - **Dark mode.** The site has no dark theme: no `prefers-color-scheme` or `data-theme` rules in `theme.css` or `tokens.css`. Emulated dark captures at 1440 and 390 render identically to light.
+  - Files: `scratchpad\agref-shots\page-<width>[-dark].png` and cropped `c-*.png`.
+- **Notebook scratch copy.** `scratchpad\agref-wh\gridflow.duckdb` from the earlier attempt was not used for the final notebook, which ran against the refreshed warehouse; I left it in place.
 
-## Blocker (seat ruling needed)
+## Blocker (resolved: the seat refreshed the views)
 
 - **Symptom.** The warehouse holds `silver_gie_agsi_storage`, `_storage_reports`, `_unavailability` and `silver_gie_alsi_lng`, but no `silver_gie_agsi_about_listing` or `silver_gie_agsi_about_summary`.
 - **Cause.** The warehouse file was last written 2026-09-27 00:23 UTC, and these silver files 00:31 UTC, so no view refresh followed that transform.
@@ -108,11 +119,11 @@ The curl examples are unchanged; they match the connector.
 - **Facility type codes** (`ASF`, `DSR`, `ASR`, `GRP`, `SRC`): meanings are not documented in gridflow or the vault, and I did not call GIE's docs. The page names them only as "other codes for facilities".
 - **Bracketed numbers in names** (`Bulgartransgaz (4)`, `EWE Gasspeicher (NL) (5) (8)`): part of the name GIE sends; their meaning is unknown and the page does not interpret them.
 - **Which duplicate survives** depends on payload order (keep last). The UK key note and the summary's "UK rows keep `GB*`" describe this capture and the current order.
-- **Rendered page.** Full-page screenshots at 1440, 1024, 768 and 390 (light and dark), the frame fold and the detector are not done, because the build stops on the notebook. Only the chart SVG was measured.
+- **Unfolded frame.** I checked the frame folded only. The unfolded state (the `…` expanded) was not captured; the folded columns are `company_name`, `entity_url` and the pipeline columns.
 
 ## Open questions
 
-1. The notebook blocker above (view refresh). Recommended: yes.
+1. The notebook blocker is resolved (the seat refreshed the views).
 2. Should `record.key` stay `entity_code` (what silver enforces), or should the page say the vendor's natural key is wider, (EIC, country) for operators? I kept `entity_code` and put the repeat in `what_it_is`, the key note and the guide.
 3. The chart counts every facility listing, including historical and closed entries. A current-only count needs `about_summary`'s end dates, but family rule D5 puts the chart on the lead's table. Keep, or chart from the member?
 
@@ -140,11 +151,29 @@ None found. One observation: `rest` (the "13 others" bar) sorts second under `va
 - **Data state: the warehouse has no views for the AGSI reference tables.**
   - `C:\gridflow-data\gridflow.duckdb` (mtime 2026-09-27 00:23 UTC) has no `silver_gie_agsi_about_listing` or `silver_gie_agsi_about_summary` view, while the silver files date from 00:31 UTC. `data.sql()`, `query()` and `tail()` fail for both tables until views are refreshed.
   - Also note `gridflow_models`: `configs/settings.yaml` values beat `GRIDFLOW_MODELS_*` env vars (`config/settings.py:156-160`), so the warehouse cannot be redirected per process.
+  - Resolved 2026-09-29 by the seat's `refresh_views` (with a snapshot first). The root cause, a transform that ran without its view refresh landing, is still worth a backlog line.
 - **Vault: the `about_listing` and `about_summary` notes were stale against the code.** Wrong dedup key, name source, type values, country shape and a false pass-through claim. Corrected on branch `docs/v5-p26-gie`.
 
 ## Files written
 
 - Canonical notes: `scratchpad\vault-p26-gie\30-vendors\gie\datasets\about_listing.md` (page block and body) and `about_summary.md` (body).
 - Mirror: `scratchpad\p26-gie\vault\gie\about_listing.md` and `about_summary.md`, byte-identical.
-- Artefacts: `scratchpad\p26-gie\site\hifi\data\series\gie\about_listing.json` and `scratchpad\p26-gie\site\hifi\data\samples\gie\about_listing.json`. The notebook is not yet written.
+- Artefacts: `scratchpad\p26-gie\site\hifi\data\series\gie\about_listing.json` and `scratchpad\p26-gie\site\hifi\data\samples\gie\about_listing.json`. Notebook: `scratchpad\p26-gie\site\hifi\data\notebooks\gie\about_listing.json` (no plot, so no PNG). Built page: `scratchpad\p26-gie\site\hifi\data-sources\gie\agsi-reference.html`.
 - There was no staged chart spec or authored override for these datasets to retire.
+
+## Nits fixed (after the APPROVE review, `agsi-reference-review.md`)
+
+1. **`page.chart_view.caption`.** "Entries GIE names historical or decommissioned count too" is now "Closed and historical entries count too, whether or not their names say so." (36 of 40 words.)
+2. **`page.chart_view.key[uk].note`.** Now reads "Each is listed under `GB` to 2020 and again under post-Brexit `GB*`; silver kept the pre-Brexit `GB` entry." (17 of 18 words.)
+3. **Grain scoped to one transform day.**
+   - `page.facts.grain` now reads "One row per EIC per transform day; `entity_level` says operator or facility".
+   - `page.what_it_is` now ends "silver keeps one row per EIC per transform day".
+   - `page.record.fields.entity_code` now reads "The listing's `eic`; one row per EIC per transform day, the last sent".
+   - `record.key` stays `[entity_code]`.
+
+**Checks.**
+- The canonical note is edited with CRLF kept (339 lines, 339 CRs), and both mirrors are byte-identical (`cmp`).
+- `gridflow-build --only gie/about_listing` is green, and `detect.mjs --json` returns `[]`.
+- The new wording appears in the rendered `agsi-reference.html`.
+- The chart spec, record select and notebook cells are unchanged, so the series, sample and notebook artefacts did not need regenerating (the build's digest checks passed).
+- I did not touch the server on port 9670.
