@@ -25,7 +25,7 @@
 | cross_border_flows | APPROVED (review 2), line-cite nit applied by the seat | aaad21b6d79fe8b11 | abd692feda2530f4a | done |
 | commercial_schedules | written (into GB from FR, BE, NL, IE-SEM, hourly, 14 to 20 Sep); checker running | a31494e4d83ddddc5 | a511e8538be41f2c9 | verdict |
 | net_positions | written (DE-LU day-ahead export/import bands, 14 to 20 Sep; the note had the sign wrong); checker running | affea4b8af88a3d6b | a90d8f640060a2b41 | verdict |
-| net_transfer_capacity | writer running | af6a9dcd642a89a55 | — | checker |
+| net_transfer_capacity | written (day-ahead NTC into GB from FR, IE-SEM, BE, NL, 8 to 21 Sep); checker running | af6a9dcd642a89a55 | (ntc-checker) | verdict |
 | auction_revenue | writer running | a745ee86e95b1e284 | — | checker |
 | capacity-allocated-nominated (family, lead total_capacity_allocated) | writer running | aa5201e596dbf26ce | — | checker |
 | dc_link_intraday_transfer_limits | writer running (thin: 24 rows, 1 to 5 Aug) | aafc74fa32a44daac | — | checker |
@@ -68,3 +68,6 @@ Logged so far: 13a to 13h.
   chart and rows and says so; it ships with that caveat.
 - Template gap (from net_positions): the chart spec cannot negate a value by a direction column, so a signed line is
   impossible when ENTSO-E sends size plus direction. The page uses two stacked bands instead.
+- gridflow and vault (from net_transfer_capacity): FR to BE and FR to DE-LU returned "No matching data" on all 19 days, so
+  2 of the 8 requested pairs are dead requests. The vault note said NTC caps flow, but flow exceeds NTC in 141 of 432 hours
+  on NL from DE-LU. The note is fixed in the batch.

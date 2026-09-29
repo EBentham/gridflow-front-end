@@ -4,7 +4,10 @@ Writer: Opus 5.5 · high, 2026-09-29. Page: `site/hifi/data-sources/entsoe/net_t
 
 ## Status
 
-- **Build.** `gridflow-build --only entsoe/net_transfer_capacity`: OK, dataset template. The one earlier failure was an alt text of 92 words, which I trimmed.
+- **Build.** `gridflow-build --only entsoe/net_transfer_capacity`: OK, dataset template, rerun after the final edits. The one earlier failure was an alt text of 92 words, which I trimmed.
+- **Final fixes after the last review.**
+  - `what_it_is`: "not what was later allocated" became "not what was allocated", because allocation in earlier auctions comes before the daily forecast.
+  - `facts.cadence`: "one document per UTC day" became "one document per pair per UTC day".
 - **Detector.** `detect.mjs --json` returns one finding, `em-dash-overuse` (advisory, "142 em-dashes in body text").
   - Every match is dash padding inside EIC codes (the eight rows, the request URL, the notebook summary) or a `--start`/`--end` flag.
   - The page block has no em or en dash (grep count 0), and the rendered text has none either.
@@ -33,7 +36,7 @@ Writer: Opus 5.5 · high, 2026-09-29. Page: `site/hifi/data-sources/entsoe/net_t
   - The schema and transformer docstrings say "day-ahead (A61/A01)" (`schemas/entsoe.py:342`).
   - Week-, month- and year-ahead NTC are never requested.
 - **Forecast capacity, not a flow, and not allocation.**
-  - `what_it_is` says "capacity forecast for commercial exchange, not what was later allocated or nominated".
+  - `what_it_is` says "capacity forecast for commercial exchange, not what was allocated or nominated".
   - The caption ends "Forecast capacity, not flow".
   - `related` separates `total_capacity_allocated` ("already allocated in auctions ... not the forecast") from `cross_border_flows` ("physical flow").
   - I never call NTC an upper bound on flow (see the project check below).
@@ -50,6 +53,7 @@ Writer: Opus 5.5 · high, 2026-09-29. Page: `site/hifi/data-sources/entsoe/net_t
 
 | Claim (page field) | Evidence |
 |---|---|
+| Definition: "how much power may be exchanged across a border" (summary), "capacity forecast for commercial exchange" (what_it_is) | The note's Overview paraphrases Regulation (EC) 543/2013 Art. 11.1 ("maximum forecast commercial exchange capacity offered to the market"); the vendor's own data-item name in its acknowledgements is `FORECASTED_TRANSFER_CAPACITIES_EXPLICIT [11.1]`. The "commercial exchange" gloss is the regulation's wording via the note, not a vendor quote. "Not what was allocated": `total_capacity_allocated` is capacity already allocated in past auctions (A26/A29), a separate document. |
 | A61, contract type A01 (daily), host `web-api.tp.entsoe.eu`, `/api` (facts.vendor, requests) | `endpoints.py:139-145` (`extra_params={"contract_MarketAgreement.Type": "A01"}`); `endpoints.py:324` "A01=daily products"; `client.py:51` path |
 | Request parameter order `documentType, periodStart, periodEnd, in_Domain, out_Domain, contract_MarketAgreement.Type, securityToken` (requests) | `client.py:286-310` (`update` order: period, `_domain_params`, `extra_params`, token); bronze sidecar `2026/09/16/raw_20260926T175621Z_76bbb763.meta.json` `request_url` has exactly this order |
 | One GET per ordered pair per UTC day, eight pairs (raw_feed.note) | `client.py:162-168` (`day_subwindows`), `:211-228` (one task per `_FLOW_PAIRS` entry); bronze has 8 files per day |
@@ -108,7 +112,7 @@ The curl example is unchanged; it is correct for the vendor.
 
 1. **At 390 px, the long `&contract_MarketAgreement.Type=A01` parameter** wraps with a blank line before it and breaks as `Type=` / `A01`. It is readable, not clipped; it is the same wrap the `cross_border_flows` report noted.
 2. **At 390 px, the notebook tab label** truncates to `net_transfer_capacity…`. This is the known template item the seat fixes (ruling #39); I left it.
-3. **No dark theme exists** (no `prefers-color-scheme` in `tokens.css` or `theme.css`), so light is the only rendering.
+3. **No dark theme exists.** `grep -c prefers-color-scheme` returns 0 on both `tokens.css` and `theme.css` (my own check), so light is the only rendering.
 4. **A grouped pandas result with a MultiIndex** renders badly in the notebook frame: the first index level is lost and there are blank headers. I worked around it in my own cell with `.reset_index()`. Other authors may hit it too.
 
 ## Screenshots
