@@ -43,8 +43,8 @@
 | procured_balancing_capacity | HELD blank (ruling #42): silver rows are arbitrary picks across 4 countries (13o). The note body was corrected but is unchecked | a7d2508a74e6ebbfa | — | after the gridflow fix |
 | balancing-energy-bids (family, lead balancing_energy_bids) | **HELD** (ruling #44): lead stops at 100 series and drops BE bids at dedup; aggregated area blank. Note edits in both notes and mirrors go to a held branch at PR time | a963682b7f587ae52 | — | held |
 | congestion-management (family, lead redispatching_internal) | writer running | a696043a3c83b78e1 | | report |
-| actual_generation_units | writer running | aa26b6043c67cd777 | | report |
-| generation_units_master_data | writer running | a20a17cf260cfe31f | | report |
+| actual_generation_units | written (3 NL plants hourly 14-20 Sep); seat: ships with the plant-not-unit defect stated (as 13a); checker running | aa26b6043c67cd777 | a307fc1083fa679bf | verdict |
+| generation_units_master_data | written (unit count by type, 6 zones, no MW); seat: event_time stays in the key, 'Smaller types' label ok; checker running | a20a17cf260cfe31f | a9307d180d54daee9 | verdict |
 | installed_capacity | written (DE-LU 2026 capacity by type, bar; 4 zones, daily repeats noted); checker running | ae278337fa1293ec8 | aadbd72a6a196372e | verdict |
 | load-forecasts (family, lead load_forecast) | written (day-ahead DE-LU/FR/NL/BE 14-20 Sep, no issue time); seat: horizon members ship with the A61-only loss stated; checker running | a0639f624b8567137 | a8fde62593ddf835d | verdict |
 | installed_capacity_units | writer running | abc4b218164a9acf8 | | report |
@@ -62,7 +62,7 @@
 
 **Remediation list (Bobbo 2026-09-29):** log each gridflow or data defect as it is found, in gridflow `.planning/BACKLOG.md`
 item 13 and in the vault page `10-projects/gridflow/specs/remediation-from-site-batches.md` (on the branch for PR quant-vault#55).
-Logged so far: 13a to 13v.
+Logged so far: 13a to 13y.
 
 - Ruling #39, amended by #40: EIC codes in a note's front matter use `-` escapes (the vault scripts split the note on `---`).
   The build now rejects a literal one: guard in `page_fields.parse_page_fields`, tests in `tests/test_front_matter_fence.py`,
