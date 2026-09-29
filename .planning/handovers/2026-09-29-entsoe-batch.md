@@ -10,14 +10,16 @@
   - Up to 10 agents at once (raised 18:20 UTC: 35% used with 1h31m left).
   - No launches above about 92% of the 5-hour window. The window resets at 19:50 UTC.
 - **Ship:** under ruling #36, as with Elexon.
+- **Pause on new writers (18:34 UTC, 59% used, 1h16m left, rising about 12 points per 7 minutes):** in-flight pages finish
+  their checks and revisions. Groups 3 and 4 start after the 19:50 UTC reset.
 
 ## Per page (agent ids resume with SendMessage)
 
 | Page | State | Writer | Checker | Next |
 |---|---|---|---|---|
-| day_ahead_prices | REVISE (majors: rate limit edited to 6 from a stale config, real is 1; cadence as rule); writer revising | a3832f1aa7ea3b06d | af7698a43e3be4872 | verdict |
+| day_ahead_prices | Revision 1 done; re-check running | a3832f1aa7ea3b06d | af7698a43e3be4872 | verdict |
 | actual_generation | REVISE (blocker: point time; majors: defect understated, cadence as rule); writer revising | a764d6bcc53324bb2 | aec318644be7fe476 | verdict |
-| actual_load | Revision 1 done; re-check running | afa2e30d1849a63bd | a24ae1f85e1a79713 | re-check |
+| actual_load | APPROVED (review 2) | afa2e30d1849a63bd | a24ae1f85e1a79713 | done |
 | wind_solar_forecast | APPROVED (review 2) | a21e8456c9ebdbc7f | a2f6ec605542e237d | done |
 | generation_forecast | APPROVED (review 2) | a9ca9d520ca0d49ab | a6c61259813ce01e3 | done |
 | cross_border_flows | Revision 1 done; re-check running | aaad21b6d79fe8b11 | abd692feda2530f4a | re-check |
