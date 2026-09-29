@@ -58,9 +58,9 @@ and demand-forecasts writers set `record.select.columns`, re-sample, rebuild.
 artefacts, so both stay blank. The vault PR needs the same care: their `page:` blocks must not reach canonical master
 until unheld (the next mirror sync would publish them).
 
-**Next, in order:** act on the fou2t14d and remit verdicts, writer for and
-indicated-day-ahead. Keep at most 2 agents at a time and stop launching at about 85% of the 5-hour window. Then group
-2 onwards gets a batch PR into main, after Bobbo's look at the preview (republish
+**Next, in order:** act on the fou2t14d and remit verdicts, writer for
+indicated-day-ahead. Keep at most 2 agents at a time and stop launching at about 85% of the 5-hour window. Then the batch PR into main
+(ruling #36: no preview wait), with the preview republished for Bobbo to look at later (republish
 https://claude.ai/artifact/EYadKREQi3RnpufNwTH6Wf from `<scratch>\p26-elexon\site\hifi`, file list in
 `<scratch>\elexon-preview-files.json`). netbsad stays blank (held).
 
