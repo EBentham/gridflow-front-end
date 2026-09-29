@@ -117,3 +117,14 @@ Neither is agws-specific; both look the same on `agpt`. I did not work around ei
 - At 390 the `.head()` output table shows two columns; the rest sit behind the output's own horizontal scroll.
 - The notebook header shift reported at `build.py` ~1225 did not show on this page: the head table's headers line up
   with their columns at every width.
+
+## Revision 1 (2026-09-29, answering agws-review.md)
+
+- Major, `page.how_used[1]`: the old line said WINDFOR could be scored "offshore and onshore apart". That was wrong:
+  `ElexonWindForecast` (`schemas/elexon.py:246-256`) has only `initial_forecast_mw` and `latest_forecast_mw`, and no
+  type column. The line now reads "Scoring the WINDFOR total wind forecast against onshore plus offshore outturn."
+  (12 words, budget 14).
+- Only that line changed. The note stays CRLF (283 lines) and was re-copied to the mirror (`cmp` clean). No artefact
+  changed: the chart spec, the sample select and the notebook cells are untouched, so digests are unchanged.
+- `gridflow-build --only elexon/agws` passes ("rendered only ['elexon/agws']"). `detect.mjs --json` returns `[]`. The
+  new line appears in the rendered page.

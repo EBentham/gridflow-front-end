@@ -78,3 +78,27 @@ Not changed: the curl example (`publishDateTime...` with `format=json`, valid fo
   - At 390 the frame folds every column after `timestamp_utc`, so `latest_forecast_mw` (the column that matters) sits behind the `…`. This is the width rule (`data-w="390"`), same as other pages.
   - The unfolded frame and the notebook df scroll sideways inside their own boxes at narrow widths.
   - Notebook df output shows pandas' unordered index labels (DuckDB returns rows unordered within the date filter). They changed between runs (7, 1, ... then 15, 9, ...). Values are identical.
+
+## Revision 1 (2026-09-29, answering `windfor-review.md`)
+
+1. **Major 1, "hourly" had no vendor or code source.** I did not cite a vendor source; every dataset-level use is now scoped to what the page shows.
+   - `summary`: "hourly" removed.
+   - `facts.grain`: "One row per target time and issue time".
+   - `what_it_is`: "The issues charted, all published on 20 September, give one figure per hour and run to 20:00 UTC on the 22nd".
+   - `raw_feed.note`: "one row per target time and issue".
+   - `record.fields.timestamp_utc`: "Target time the forecast is for, ...".
+   - `notebook.lead`: "`timestamp_utc`, the target time ... every stored issue for those days".
+   - Body Overview: the OpenAPI citation now sits after "reissued up to 8 times a day". It adds: "The docs read do not state the target interval; the target times in gridflow's silver fall on the hour." The row is "one target time (`startTime`)". The silver-table `timestamp_utc` row reads "The target time".
+   - Unchanged, as the checker allowed: "target hour(s)" where it describes shown data (chart caption, `x_label`, `record.caption`, alt).
+2. **Major 2, the alts named the wrong minimum.** Both are re-derived from the committed series and the 20 Sep silver file (the checker's figures are confirmed).
+   - `chart_view.alt`: peak 20,629 at 01:00 on the 20th; first trough 4,769 / 4,017 / 3,449 early on the 21st; recovery 6,734 / 6,249 / 5,684; lows 2,286 / 1,961 / 1,500 at 17:00 or 18:00 on the 22nd; ends 2,815 / 2,287 / 1,603. The ordering sentence (02:00 to 23:00 on the 21st) is kept.
+   - `notebook.plot_alt`: eight issues, dip to 3,449 to 4,769 early on the 21st, recover to 5,684 to 6,734, lows of 1,500 to 2,286 MW on the evening of the 22nd, at 17:00 to 19:00.
+3. **Nit, the caption.** It now reads: "Silver `elexon/windfor`, MW, target hours 20 September 00:00 to 22nd 20:00 UTC: three of that day's eight issues. Lines coincide only on hours begun before the earlier issue: all three to 03:00 on the 20th, the later two to 12:00." This matches the checker's exact-equality results.
+
+No change to the chart spec, series, sample or notebook cells, so no artefacts were regenerated. `raw_feed.note` was reworded to stay within 30 words: "each day's bronze holds that day's issues".
+
+**Checks after the merge of main:**
+- The note was re-copied to the mirror (`cmp` identical; 255 lines, 255 CRLF).
+- `gridflow-build --only elexon/windfor` passes; `detect.mjs --json` returns `[]`; the rendered page has no "hourly".
+- Screenshots at 390, 768, 1024 and 1440 (`scratchpad/windfor-shots/R1-*`) show no horizontal overflow. The new caption and the chart render without clipping at 390 and 1440. The series has no time gaps, so the merged gap-breaking renderer draws the same three unbroken lines.
+- The static server on 9722 is stopped.

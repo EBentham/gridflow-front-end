@@ -108,7 +108,13 @@ def select_rows(silver_root: Path, silver: str, select: Mapping[str, Any]) -> pl
         df = df.sort(order, maintain_order=True)
     if df.height != ROWS:
         raise SampleError(f"select picks {df.height} rows; it must pick exactly {ROWS}")
-    return df
+    # A Polars ``.select`` order, as a reader would print the table: the named columns first, every
+    # other column after them in silver's order, so the frame folds the ones that matter least.
+    first = list(select.get("columns", []))
+    missing = [c for c in first if c not in df.columns]
+    if missing:
+        raise SampleError(f"select.columns: {missing} not in silver")
+    return df.select(first + [c for c in df.columns if c not in first])
 
 
 def build_payload(

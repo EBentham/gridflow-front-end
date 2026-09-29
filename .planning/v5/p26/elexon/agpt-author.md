@@ -109,3 +109,37 @@ the latter about 16 px from the 390 gutter), raw feed, frame folded and unfolded
 page width equals viewport), column guide, notebook closed and open, related. Nothing clipped or
 overlapping. One fix made from this: the plot cell's continuation indent wrapped mid-token at 390,
 now a hanging indent.
+
+## Revision 1 (2026-09-29, after `agpt-review.md`: APPROVE, 4 nits)
+
+All four nits applied in the canonical note, then copied to the mirror (`cmp` clean, CRLF kept).
+
+1. **Caption** (`page.chart_view.caption`): the FUELHH comparison is now labelled as the project's
+   own check: "Wind reads 2.2 to 4.6 GW for a day from 15:30 UTC on the 17th; the project found no
+   such dip in FUELHH." "Cause unverified" is gone (no cause is asserted). The first sentence is
+   tightened to "types summed per group", keeping the caption within its 40-word budget.
+2. **`Other` key note**: "Elexon's own type" became "The vendor's Other type; what it holds is
+   undocumented."
+3. **Wind tag**: dropped `tag: wind`, so no label sits on the step up at 16:00 UTC on 18 Sep. The
+   key still names the band.
+4. **Note body, local measurements removed**:
+   - the Publication lag row is back to the vendor line only;
+   - the "Wind dip, 17-18 Sep 2026" Known issues bullet is deleted;
+   - "Only revision 1 seen in silver as of 2026-09-28" is deleted from the revision bullet.
+
+   The code-based corrections stay: `ingested_at`, the sample `timestamp_utc`, the dedup order and
+   the silver file date. The lag and dip measurements, and the reviewer's AGWS agreement (identical
+   dip in AGWS silver), now live only in this report as evidence.
+
+Checks:
+
+- `gridflow-build --only elexon/agpt` is green (no `--with tzdata` needed now).
+- `detect.mjs --json` returns `[]`.
+- The series, sample and notebook artefacts are unchanged; the build digest check passes.
+- Screenshots at 1440 and a true 390 (390 px iframe): the caption, key and chart show nothing clipped
+  or overlapping.
+
+Template observation: since the main merge, the 390 x-axis shows a trailing "21" tick at the domain
+end, next to "20". The chart ends at 23:00 UTC on the 20th, the start of settlement date 21. The two
+labels do not overlap, but the tick labels a day with no data. This belongs to the seat, and I have
+not worked around it.
