@@ -45,7 +45,7 @@ which the bid connects to the reserve pool.
 | Method           | GET |
 | Auth             | Query param `securityToken=<ENTSOE_API_KEY>` |
 | Rate limit       | Vendor-published: not documented. Project default: 1 req/s. |
-| Pagination       | `offset` parameter (mandatory). API documents up to 4800 TimeSeries; if exceeded, increment `offset` by 100 until pages exhausted (per ENTSOE API guide §4.1). |
+| Pagination       | `offset` parameter (mandatory). API documents up to 4800 TimeSeries; if exceeded, increment `offset` by 100 until pages exhausted (per ENTSOE API guide §4.1). **Observed 2026-09-26:** every populated response (42 zone-days, Aug and Sep 2026) carried exactly 100 `Bid_TimeSeries` in total, across its ZIP entries (e.g. 94 + 6, 99 + 1), so a page is 100 series here. gridflow never requests `offset=100` (see Implementation delta). |
 | Historical depth | TODO — H8 catalogue, varies by control area. GB has no published data (EMPTY). |
 | Publication lag  | Near real-time after gate closure of the relevant balancing market interval. |
 | Response format  | XML (`Balancing_MarketDocument`) |
@@ -83,7 +83,58 @@ curl --ssl-no-revoke -fsS -H "Accept: application/xml" \
 
 **Path pattern**: `{data_root}/bronze/entsoe/balancing_energy_bids/<year>/<month>/<day>/raw_<uuid>.xml`
 **Format**: Raw XML (`Balancing_MarketDocument`), as-received.
-**Granularity**: One file per (connecting_area, fetch window, offset page).
+**Granularity**: One file per ZIP entry of one response. One request per zone in `DEFAULT_ZONES` (GB, FR, NL, BE, DE-LU, IE-SEM) per UTC day (`client.py:249`, `endpoints.py:395`). A37 responses arrive as ZIPs, one `.xml` per entry, the entry name kept in `.meta.json` `request_params.zip_entry` (`client.py:367-381`). GB, NL and IE-SEM return a code-999 acknowledgement; FR, BE and DE-LU publish.
+
+> **⚠ The live envelope does NOT match the fixture below — live-probe verified
+> 2026-08-04.** The vendor returns a `ReserveBid_MarketDocument` whose series
+> elements are **`Bid_TimeSeries`**, not the `Balancing_MarketDocument` /
+> `TimeSeries` shape this hand-built fixture assumes, and whose points carry
+> **`<quantity.quantity>`**, not `<quantity>`. Evidence: gridflow
+> `.planning/phases/R3-test-integrity/probes/entsoe_A37_extracted.xml` —
+> 100 `<Bid_TimeSeries>` elements, **zero** bare `<TimeSeries>`.
+> **Treat the sample below as fixture shape, not vendor shape.**
+>
+> **✅ CONFIRMED then FIXED — v0.18 R4-b, 2026-08-16 (gridflow PR #65).**
+> The zero-row consequence was no longer inferred: measured against the saved
+> 144 KB probe, the old parser returned **0 records from 100 populated bid
+> series, with no warning at all**. It was a two-layer defect — fixing the
+> element name alone still yielded zero rows, because the transformer's
+> `value_tag="quantity"` was also matched by exact equality and the vendor
+> sends `quantity.quantity`.
+>
+> The parser now resolves its accepted series and value tags from the document
+> root, so a `ReserveBid_MarketDocument` is handled without changing behaviour
+> for any other document type. Two ambiguity guards ride with it: a document
+> presenting more than one accepted **series** name, or a `<Point>` presenting
+> more than one accepted **value** tag, is refused loudly with zero records
+> rather than resolved by element order. A zero-match diagnostic now warns when
+> any ENTSO-E document yields no series matches at all — calibrated at one trip
+> across the whole saved probe corpus, that trip being this very payload.
+>
+> **Residual, deliberate:** the bid **price** (`<energy_Price.amount>`,
+> observed down to −14997 EUR/MWh) is still discarded — the silver schema has
+> no price column, so recovered rows carry quantity only. Verified that no gold
+> view, model handle, notebook or quality check reads these rows as complete
+> bid records; bronze retains the bytes. Filed as a v0.19 carry.
+>
+> **Live shape by zone (bronze 1 to 5 Aug and 13 to 21 Sep 2026, read 2026-09-29).**
+> Every `Bid_TimeSeries` carries `connecting_Domain.mRID`, `acquiring_Domain.mRID`,
+> `auction.mRID`, `businessType` `B74`, `flowDirection.direction`, `divisible`,
+> `quantity_Measure_Unit.name` `MAW`, `currency_Unit.name` `EUR`,
+> `price_Measure_Unit.name` `MWH` and one Point per Period
+> (`quantity.quantity`, `energy_Price.amount`), PT15M.
+> - **BE**: one document per request, `reserveBid_Period` 22:00Z to 22:00Z (the CET/CEST day),
+>   `standard_MarketProduct.marketProductType` `A05` or `A07`, `status` `A06`/`A11`, 1 to 18 Periods
+>   per series. The series `mRID` is a small sequence number (1 to 81) that is **reused** for an
+>   `A05` and an `A07` series in the same document.
+> - **FR**: `reserveBid_Period` 00:00Z to 00:15Z only; `original_MarketProduct.marketProductType`
+>   `A02`, `auction.mRID` a local datetime, 8-digit `mRID`. A second ZIP entry (document
+>   `domain.mRID` `10Y1001C--00085O`, `auction.mRID` `AUCTION-mFRR`) carries `A05` series for the
+>   same quarter-hour.
+> - **DE-LU**: `reserveBid_Period` 00:00Z to 00:15Z only; `A07` with `auction.mRID`
+>   `AUCTION-mFRR` and acquiring domain `10Y1001C--00085O`; almost all `A02`.
+> - The meanings of `A05`, `A07`, `A02` (product) and `A06`/`A11` (status) are not established in
+>   the repo. Note that `A07` bids are labelled `AUCTION-mFRR` by the vendor.
 
 ### Bronze sample
 
@@ -124,25 +175,30 @@ From `tests/fixtures/entsoe/balancing_energy_bids_gb.xml`:
 **Transformer class**: `gridflow.silver.entsoe.h8_balancing.BalancingEnergyBidsTransformer`
 **Pydantic schema**: `gridflow.schemas.entsoe.EntsoeBalancingEnergyBid`
 **Dedup key**: `(timestamp_utc, area_code, bid_mrid, direction)`
-**Point-in-time field**: none
+**Point-in-time field**: `published_at`, the document `createdDateTime` (`h8_balancing.py:91`), a fetch-time stamp within seconds of the request, not a bid submission time.
 
 ### Silver schema
 
 | Field | Python type | Nullable | Source field | Notes |
 |-------|-------------|----------|--------------|-------|
-| `timestamp_utc` | `datetime[UTC]` | No | derived (Period start + position * resolution) | UTC-aware. |
+| `timestamp_utc` | `datetime[UTC]` | No | derived (Period start + (position - 1) × resolution, `parsers.py:530`) | UTC-aware. |
 | `area_code` | `str` | No | `connecting_Domain.mRID` | Renamed from `connecting_domain`. |
-| `quantity_mw` | `float` | No | `<quantity>` | Bid volume offered in MW. |
+| `quantity_mw` | `float` | No | `<quantity.quantity>` (alias for `ReserveBid_MarketDocument`, `parsers.py:171-173`) | Bid volume offered in MW (`MAW`). |
 | `business_type` | `str` | No | `<businessType>` | Default "" in canonical. `B74` for bids. |
-| `bid_mrid` | `str` | No | `TimeSeries/<mRID>` | Default "" in canonical. Renamed from `timeseries_mrid` — the bid identity. |
-| `direction` | `str` | No | `<Direction>` (or `flowDirection.direction`) | Default "" in canonical. `A01`=up, `A02`=down. |
+| `bid_mrid` | `str` | No | `Bid_TimeSeries/<mRID>` | Default "" in canonical. Renamed from `timeseries_mrid`. Unique per bid for FR and DE-LU; for BE a per-document sequence number reused across products, so not a bid identity on its own. |
+| `direction` | `str` | No | `flowDirection.direction` (the only spelling in live responses) | Default "" in canonical. `A01`=up, `A02`=down. |
 | `original_market_product` | `str` | No | `Original_MarketProduct/marketProductType` | Default "" in canonical. Bidder-side product. |
 | `standard_market_product` | `str` | No | `Standard_MarketProduct/marketProductType` | Default "" in canonical. Standardised product code. |
-| `resolution` | `str` | No | `<resolution>` (raw ISO-8601 duration code, emitted verbatim) | Default "" in canonical. |
+| `resolution` | `str` | No | `<resolution>` (raw ISO-8601 duration code, emitted verbatim) | Default "" in canonical. `PT15M` in every live response. |
+| `published_at` | `datetime[UTC]` | Yes | document `createdDateTime` | Fetch-time stamp (`h8_balancing.py:91`). |
 | `data_provider` | `str` | No | derived | Default "entsoe" in canonical. |
-| `ingested_at` | `datetime` | Yes | derived | Nullable (datetime or None). |
+| `ingested_at` | `datetime` | Yes | derived | Stamped at silver transform time (`h8_balancing.py:99`). |
+
+Not carried to silver: `energy_Price.amount` (the bid price), `acquiring_Domain.mRID`, `auction.mRID`, `status`, `divisible`.
 
 ### Silver sample
+
+From the GB fixture (GB publishes nothing live):
 
 ```python
 [
@@ -186,9 +242,11 @@ None implemented.
 ## Known issues and gotchas
 
 - **GB returns EMPTY.** Live curl on 2026-05-08 returned reason 999: `No matching data found for Data item BALANCING_ENERGY_BIDS_R3 [GL EB 12.3.B&C] (10YGB----------A)...`. National Grid ESO does not publish to ENTSOE for this data item.
-- **`offset` is mandatory.** Documented in ENTSOE API guide §4.1 — for endpoints with potentially many TimeSeries (>4800), pagination via `offset` is required. The connector currently always sends `offset=0` and does not iterate further pages — for high-volume areas this would silently truncate.
-- **`bid_mrid` is the bidder identity.** The transformer renames `timeseries_mrid` → `bid_mrid`. Multiple Points within a bid share the same `bid_mrid`; multiple bids in the same response have distinct mRIDs.
-- **Direction casing varies.** Some responses emit `<Direction>` and others `<flowDirection><direction>`; parser handles both.
+- **`offset` is mandatory, and silver holds page one only.** Documented in ENTSOE API guide §4.1. Live pages carry 100 series. The connector sends `offset=0` and stops there (see Implementation delta), so every zone-day is cut at 100 bids, silently. Effect, measured 2026-09-29 on bronze 1 to 5 Aug and 13 to 21 Sep 2026: FR and DE-LU silver holds exactly 100 bids per day, all at 00:00 UTC (the first quarter-hour), and DE-LU's are all `A02`; BE holds 64 to 81 distinct `bid_mrid` per day across 00:00 to 21:45 UTC.
+- **Dedup collision on BE (silver drops real bids).** The key `(timestamp_utc, area_code, bid_mrid, direction)` (`h8_balancing.py:148`) omits the product, and BE reuses one `mRID` for an `A05` and an `A07` series; `unique(keep="last")` (`h8_balancing.py:104`) keeps whichever parsed later. Reproduced with gridflow's parser: 88,146 in-window BE points → 78,763 silver rows (9,383 lost, 10.6%); on 15 Sep 2026 12:00 UTC, 50 BE bids (1,524 MW) → 42. Adding `standard_market_product` and `original_market_product` to the key removes every collision (90,946 in-window points, 90,946 unique). Surviving rows are internally consistent (product, direction and MW from one series).
+- **BE loses 22:00 to 24:00 UTC every day.** BE documents run 22:00Z to 22:00Z; the HALF_OPEN event-window filter (`EVENT_WINDOW_FILTER = True`, `h8_balancing.py:152`) drops the day-D document's first eight quarter-hours (they belong to D-1), and the D-1 document ends at 22:00Z. 10,628 parsed points dropped over the 14 days. The FILTER_SAFE classification (`_event_window.py:528-556`) rests on a DE-LU probe whose document starts at the request start; BE's does not.
+- **`bid_mrid` is not a bidder identity.** The transformer renames `timeseries_mrid` → `bid_mrid`. FR and DE-LU send distinct 8-digit or random mRIDs; BE sends a per-document sequence reused across products (above). Nothing in the response names the BSP.
+- **Direction spelling.** Every live series sends `flowDirection.direction`; the parser also accepts `<Direction>` (`parsers.py:316-319`).
 
 ### Control-area vs cross-zonal
 
@@ -203,7 +261,7 @@ typically point to the same EIC.
 
 ## Implementation delta
 
-- **Pagination not implemented in connector.** `offset=0` is hardcoded as an extra param; the client never iterates pages. For dense-bid areas this would cap results at 4800 TimeSeries. Track as a follow-up; not changed in V1.
+- **Pagination loop never reaches page two for A37.** The loop exists (`client.py:313-349`) but steps `offset` by `_ENTSOE_PAGE_SIZE = 4800` (`client.py:63`) and stops when a page counts fewer than 4800 series. Its counter `count_timeseries_or_none` counts only elements named `TimeSeries` (`client.py:483-512`), and A37 sends `Bid_TimeSeries`, so the count is 0 and the loop always stops after `offset=0`. Live pages carry 100 series, so both the step and the counter need fixing.
 - **Schema-vs-fixture default for `business_type`.** Schema default is `""` but `endpoints.py` always sends `B74` and the fixture carries `B74`. Empty default is harmless but misleading — the dataset will never produce a row with empty `business_type` from this query path.
 
 ---

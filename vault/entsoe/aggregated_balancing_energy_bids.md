@@ -57,7 +57,7 @@ uses `area_Domain` (singular control area), with the response carrying
 | `periodEnd` | string | Yes | UTC `yyyyMMddHHmm`, max 1 day | `202605080000` |
 | `securityToken` | string | Yes | API key | `<UUID>` |
 
-ENTSOE tuple: `(documentType=A24, processType=A51, businessType=n/a, area-param-name=area_Domain)`. The TimeSeries response itself carries `<businessType>B74</businessType>` (offer) and `<flowDirection.direction>` per series, but neither is a query input — they classify each returned series.
+ENTSOE tuple: `(documentType=A24, processType=A51, businessType=n/a, area-param-name=area_Domain)`. The TimeSeries response itself carries `<businessType>` and `<flowDirection.direction>` per series, but neither is a query input — they classify each returned series. Live BE responses (22 to 25 Sep 2026) send `businessType` `A14`, not `B74`.
 
 ### Working curl example
 
@@ -74,7 +74,17 @@ curl --ssl-no-revoke -fsS -H "Accept: application/xml" \
 
 **Path pattern**: `{data_root}/bronze/entsoe/aggregated_balancing_energy_bids/<year>/<month>/<day>/raw_<uuid>.xml`
 **Format**: Raw XML.
-**Granularity**: One file per (control_area, fetch window).
+**Granularity**: One file per zone in `DEFAULT_ZONES` (GB, FR, NL, BE, DE-LU, IE-SEM) per UTC day (`client.py:249`, `endpoints.py:395`). No `offset`: the doc type declares no optional params (`endpoints.py:348-353`).
+
+> **Live shape (BE, 22 to 25 Sep 2026, fetched 2026-09-27; read 2026-09-29).** Only BE
+> published: GB, FR, NL, DE-LU and IE-SEM returned code 999 on all four days, and all six zones
+> returned code 999 for 1 to 5 Aug 2026. The populated `Balancing_MarketDocument` carries
+> `area_Domain.mRID` **at document level** (a child of the root, beside `period.timeInterval`
+> 00:00Z to 00:00Z, the UTC day), not inside the TimeSeries as in the fixture below. It has two
+> TimeSeries, `mRID` `1` (`flowDirection.direction` `A02`) and `2` (`A01`), each with
+> `businessType` `A14`, `standard_MarketProduct.marketProductType` `A01`,
+> `quantity_Measure_Unit.name` `MAW`, `curveType` `A03` and one PT15M Period over the day
+> (83 to 95 declared points per series, forward-filled to 96 by the parser).
 
 ### Bronze sample
 
@@ -112,25 +122,28 @@ From `tests/fixtures/entsoe/aggregated_balancing_energy_bids_gb.xml`:
 **Transformer class**: `gridflow.silver.entsoe.h8_balancing.AggregatedBalancingEnergyBidsTransformer`
 **Pydantic schema**: `gridflow.schemas.entsoe.EntsoeBalancingEnergyBid` (shared with bid-level)
 **Dedup key**: `(timestamp_utc, area_code, bid_mrid, direction)`
-**Point-in-time field**: none
+**Point-in-time field**: `published_at`, the document `createdDateTime` (`h8_balancing.py:91`), a fetch-time stamp within seconds of the request.
 
 ### Silver schema
 
 | Field | Python type | Nullable | Source field | Notes |
 |-------|-------------|----------|--------------|-------|
-| `timestamp_utc` | `datetime[UTC]` | No | derived (Period start + position * resolution) | UTC-aware. |
-| `area_code` | `str` | No | `area_Domain.mRID` | Renamed from `area_domain`. |
-| `quantity_mw` | `float` | No | `<quantity>` | Aggregated bid volume in MW. |
-| `business_type` | `str` | No | `<businessType>` | Default "" in canonical. Typically `B74`. |
-| `bid_mrid` | `str` | No | `TimeSeries/<mRID>` | Default "" in canonical. Aggregated TimeSeries identifier (not a bidder identity). |
-| `direction` | `str` | No | `<flowDirection.direction>` (when present) | Default "" in canonical. `A01`/`A02`. |
-| `original_market_product` | `str` | No | (rare in aggregate) | Default "" in canonical. |
-| `standard_market_product` | `str` | No | (rare in aggregate) | Default "" in canonical. |
-| `resolution` | `str` | No | `<resolution>` | Default "" in canonical. |
+| `timestamp_utc` | `datetime[UTC]` | No | derived (Period start + (position - 1) × resolution, `parsers.py:530`; A03 forward-fill) | UTC-aware. |
+| `area_code` | `str` | No | `area_Domain.mRID` | Renamed from `area_domain`. **Empty on live responses**: the vendor sends `area_Domain.mRID` at document level, and the parser reads it only among TimeSeries children (`parsers.py:302`; `_root_document_metadata`, `parsers.py:121-145`, ignores it). |
+| `quantity_mw` | `float` | No | `<quantity>` | Aggregated bid volume in MW (`MAW`). |
+| `business_type` | `str` | No | `<businessType>` | Default "" in canonical. `A14` in live BE responses. |
+| `bid_mrid` | `str` | No | `TimeSeries/<mRID>` | Default "" in canonical. Aggregated TimeSeries identifier (not a bidder identity): `1` and `2` in each live document. |
+| `direction` | `str` | No | `<flowDirection.direction>` (when present) | Default "" in canonical. `A01`/`A02`; present on both live series. |
+| `original_market_product` | `str` | No | (rare in aggregate) | Default "" in canonical. Empty in live BE responses. |
+| `standard_market_product` | `str` | No | `standard_MarketProduct.marketProductType` | Default "" in canonical. `A01` in live BE responses. |
+| `resolution` | `str` | No | `<resolution>` | Default "" in canonical. `PT15M` live. |
+| `published_at` | `datetime[UTC]` | Yes | document `createdDateTime` | Fetch-time stamp (`h8_balancing.py:91`). |
 | `data_provider` | `str` | No | derived | Default "entsoe" in canonical. |
-| `ingested_at` | `datetime` | Yes | derived | Nullable (datetime or None). |
+| `ingested_at` | `datetime` | Yes | derived | Stamped at silver transform time (`h8_balancing.py:99`). |
 
 ### Silver sample
+
+From the GB fixture (GB publishes nothing live):
 
 ```python
 [
@@ -174,8 +187,13 @@ None implemented.
 ## Known issues and gotchas
 
 - **GB returns EMPTY.** Live curl on 2026-05-08 returned reason 999: `No matching data found for Data item AGGREGATED_BALANCING_ENERGY_BIDS_R3 [12.3.E] (10YGB----------A)...`.
-- **Direction may be missing in TimeSeries.** Aggregated responses sometimes split direction into two TimeSeries (one per direction) and sometimes emit a single TimeSeries without a direction tag. The schema's `direction` defaults to empty rather than NULL — model code should treat `""` as "all directions / unknown".
-- **Shared schema with bid-level dataset.** The same `EntsoeBalancingEnergyBid` Pydantic schema is reused. The aggregated dataset never populates `original_market_product` / `standard_market_product` fields, but they remain present (empty strings).
+- **DE-LU also returned EMPTY** on a 2026-08-03 live probe for 2026-06-01 — a 967-byte `Acknowledgement_MarketDocument`, reason 999, same `No matching data found` text. So the empty response is not GB-specific. Probe saved at gridflow `.planning/phases/R3-test-integrity/probes/entsoe_A24_aggregated_balancing_energy_bids_DE_20260601.xml`.
+- **A24 is NOT affected by the A37 envelope defect** — checked, not assumed (gridflow v0.18 R4-b, 2026-08-16). The sibling `balancing_energy_bids` (A37) returns `ReserveBid_MarketDocument`/`Bid_TimeSeries` and was parsing to zero rows silently until fixed; A24's probe contains **zero `TimeSeries`-like elements of any name**, because it returned no data at all. Scope of that fix was therefore one dataset, not two. **Update 2026-09-29:** a populated A24 envelope is now held (BE, 22 to 25 Sep 2026; see the live-shape note under Bronze layer): `Balancing_MarketDocument`/`TimeSeries`/`quantity`, which the parser reads. The bronze sample below is still the fixture.
+- **`area_code` is empty in silver (gridflow defect).** Live A24 puts `area_Domain.mRID` at document level; the parser only reads it inside TimeSeries (`parsers.py:302`). All 768 silver rows (BE, 22 to 25 Sep 2026) have `area_code == ""`. Values are otherwise exactly the bronze re-parse. Latent: the dedup key `(timestamp_utc, area_code, bid_mrid, direction)` would merge zones the day a second zone publishes, since every document numbers its series `1` and `2`. Same root cause as `procured_balancing_capacity` and `current_balancing_state`.
+- **Only BE publishes here.** GB, FR, NL, DE-LU and IE-SEM returned code 999 for every request in 22 to 25 Sep 2026; BE also returned 999 for 1 to 5 Aug 2026.
+- **Direction may be missing in TimeSeries.** Aggregated responses sometimes split direction into two TimeSeries (one per direction) and sometimes emit a single TimeSeries without a direction tag. The schema's `direction` defaults to empty rather than NULL — model code should treat `""` as "all directions / unknown". (Live BE responses send two series, one per direction.)
+- **Shared schema with bid-level dataset.** The same `EntsoeBalancingEnergyBid` Pydantic schema is reused. Live BE responses leave `original_market_product` empty and send `standard_market_product` `A01`.
+- **Stale classification.** `_event_window.py:910-936` records A24 as UNKNOWN, "never observed populated"; BE is now populated, with documents aligned to the UTC day (00:00Z to 00:00Z), so no rows fall outside the transform day.
 
 ### Control-area vs cross-zonal
 
