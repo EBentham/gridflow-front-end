@@ -23,7 +23,7 @@ Batch brief: `.planning/v5/p26/BATCH-elexon.md`. Reports: `.planning/v5/p26/elex
 | agws | checker running | a02a65646052893e2 | a11c80668abbefdce | act on the verdict |
 | windfor | checker running | a1ab63925783acd9e | a17288a5f3e21ed79 | act on the verdict |
 | atl | revision 1 done (gaps now break); checker running | ae4cecd8c31375b94 | aa5264d2b291ec745 | act on the verdict |
-| lolpdrm | written; checker running | a9a809d3db7a3003d | (just launched) | act on the verdict |
+| lolpdrm | written; checker running | a9a809d3db7a3003d | a0485269512755d5d | act on the verdict |
 | demand-forecasts (family, lead ndf) | written (two NDF publishes for 17 Sep; notebook scores against INDO) | abf8f9353b1213246 | — | QUEUED: launch the checker (look at the "NDF is the quantity INDO reports" claims, and the 07:45 publish) |
 | boal | written; checker running | a31536a58a5a3b972 | adc1711149f93ffb3 | act on the verdict |
 | disbsad | written (volume by service, 14 to 19 Sep) | a5b3f85429c8bcd8c | — | QUEUED: launch the checker (look at "each reply holds the half-hour starting at `to`", and the £/MWh units from the note only) |
