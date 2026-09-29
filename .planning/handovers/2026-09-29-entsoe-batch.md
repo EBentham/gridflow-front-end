@@ -17,7 +17,7 @@
 
 | Page | State | Writer | Checker | Next |
 |---|---|---|---|---|
-| day_ahead_prices | Revision 1 done; re-check running | a3832f1aa7ea3b06d | af7698a43e3be4872 | verdict |
+| day_ahead_prices | APPROVED: review 2 left one major ("afternoon" should be "evening": the 19:53 UTC fetches), which the seat fixed, mirrored and rebuilt | a3832f1aa7ea3b06d | af7698a43e3be4872 | done |
 | actual_generation | Revision 1 done; re-check running | a764d6bcc53324bb2 | aec318644be7fe476 | verdict |
 | actual_load | APPROVED (review 2) | afa2e30d1849a63bd | a24ae1f85e1a79713 | done |
 | wind_solar_forecast | APPROVED (review 2) | a21e8456c9ebdbc7f | a2f6ec605542e237d | done |
