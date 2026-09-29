@@ -102,3 +102,31 @@ Writer: Opus 5.5 · high, 2026-09-29. Screenshot port 9811 (Chrome debugging on 
   - the frame, folded behind `…` at 390 and 768;
   - the guide, the notebook panel, the related links, and each stratum's corner label.
 - The static server was stopped. The Chrome profile folders `%TEMP%\cdp-cs-*` were left in place.
+
+## Revision 1 (after `commercial_schedules-review.md`)
+
+All seven findings are fixed as field edits. The chart spec is unchanged, so the series was not re-distilled.
+
+1. **Blocker, `facts.grain`.** Now "One row per interval start, `in_Domain` zone, `out_Domain` zone and `businessType` (only `A06` here)". This matches the dedup subset (`h6_market.py:91-98`), and the Key line agrees with it.
+2. **Major, Belgium key note.** Now "Moves with Elexon's INTNEM imports (project check), not hour for hour; zero for 11 hours on the 17th." The France note is unchanged, because the checker found it holds.
+3. **Nits 3 and 4, `what_it_is`.** Now says plainly "so the day-ahead series is lost", and cites `A05` as "total, in ENTSO-E's code list" instead of entsoe-py.
+   - Vault body, Known issues: "no ENTSO-E quote recorded" is replaced with ENTSO-E Code Lists v29r0 §3.8 `ContractTypeList`. `A05` is "Total", "the sum of all capacity contract types for the period covered", and `A01` is "Daily".
+   - It is scoped as the generic EDI list, not the A09 guide, with the caveat that `A05` is not `A01` plus more.
+   - The code-list wording is as quoted by the checker. The writer did not re-open the PDF.
+4. **Nit 5, `record.fields.quantity_mw`.** Now "MW of the last-listed series, `A05` here; A03 points repeat until the next".
+5. **Nit 6, `chart_view.alt`.** The Belgium clause now reads "…between zero and 1,055 MW, and reaches 660 MW at most on the 17th". France's clause was shortened to "dipping below 210 MW daily" to stay within 90 words.
+6. **Nit 7, vault body direction bullet.** The construction is now named: "against the positive part of the summed Elexon flows, hourly".
+
+**Unverified, updated.** The `A05` meaning now has a vendor source (the code list). The entsoe-py corroboration stays in the body only.
+
+**Gates after the revision.**
+- The mirror matches the canonical note byte for byte (`cmp`).
+- `gridflow-build --only entsoe/commercial_schedules` passes.
+- `detect.mjs` returns only the accepted `em-dash-overuse` advisory.
+- The rendered page has zero em dashes.
+
+**Screenshots.** Taken at 1280 (full page) and at 390 (three slices: hero and what-it-is, chart and key, frame and guide), in `scratchpad/cs-shots/r1*`.
+- Nothing is clipped or overlapping.
+- The longer grain line wraps to three lines in the hero facts at both widths.
+- The Belgium note wraps to three lines at 390 and five in the narrow key column at 1280.
+- The server was stopped.

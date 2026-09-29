@@ -64,7 +64,7 @@ Writer: Opus 5.5 · high, one agent, two advisor calls. Worktrees as in `BATCH-e
 | Request URL: parameter order and values | Bronze `.meta.json` `request_url` (`documentType, periodStart, periodEnd, in_Domain, out_Domain, businessType, contract_MarketAgreement.Type, securityToken`); `client.py:283-306` |
 | Ingest `--end` exclusive; bronze 14-20 covers delivery days 14-21 | `utils/time.py:123-142` `day_subwindows`; UTC day D returns delivery days D and D+1 |
 | Transform day D reads bronze day D only | `silver/base.py:417` `PARTITION_SOURCE_OFFSETS = (0,)`, not overridden in `h6_market.py` |
-| Each hour in two silver files; one copy kept (`chart_view.caption`) | Silver: 1,296 rows, 744 keys, 0 value conflicts; series `provenance.duplicates_dropped: 336`; `_event_window.py:210` EXEMPT (no trim) |
+| Most hours in two silver files; one copy kept (`chart_view.caption`; scoped "most" because under the page's commands delivery day 21 lands in file 20 only) | Silver: 1,296 rows, 744 keys, 0 value conflicts; series `provenance.duplicates_dropped: 336`; `_event_window.py:210` EXEMPT (no trim) |
 | `query()` relation, date column, both ends, lineage dropped, and duplicates returned (`notebook.lead`) | Explore trace: `storage/duckdb.py:180` plain glob view; `schema_manifest.py:151` `timestamp_utc`; `_get_method_registry.py:94-96` `< end + 1 day`; `schema_manifest.py:77-85` lineage; `source.py:449` `ORDER BY timestamp_utc` |
 | Chart numbers (alt, key notes) | Committed series: NL max 115,433.72 at 2026-09-21T11:00Z, zero until 2026-09-19T22:00Z, 14,711.94 max on delivery day 20; BE 81,197.76 (15th 11:00), 78,442.32 (16th 11:00), 13,209.6 (18th 11:00), other days max 4,367.85 |
 | Notebook plot numbers (`plot_alt`) | Delivery-day sums from the series: BE 247,326 / 381,571 / 654 / 50,966 / 6,171 / 11,218 / 830; NL 0 ×5 / 41,271 / 660,098; the PNG matches |
@@ -77,7 +77,7 @@ Writer: Opus 5.5 · high, one agent, two advisor calls. Worktrees as in `BATCH-e
 2. **Bronze sample:** the speculative "Populated payload would mirror A92…" is replaced with the observed populated payload:
    - GB-NL and GB-BE only; Reason 999 for the six other pairs;
    - A02, A01, EUR, A03, `PT60M`, `price.amount`;
-   - 22:00-to-22:00 UTC Periods.
+   - 22:00-to-22:00 UTC Periods "in these documents"; a one-UTC-day request "can return" both delivery days it touches (2 of the 28 documents had one Period).
    - The cited file is `2026/09/20/raw_20260926T175330Z_005f5299.xml`.
 3. **Silver schema, `amount_eur`:** the source is `Point.price.amount`, not `Point.quantity` (`h6_market.py:130`). The currency is dropped (`:107`).
 4. **Silver schema:** added the missing `published_at` row (`createdDateTime`, a fetch-time stamp; `h6_market.py:105`).
@@ -96,7 +96,7 @@ Left alone, and not used on the page:
   - gridflow never requests the reverse orientation, so the page says only "the ordered pair as sent" and "which direction an amount covers is not stated".
   - A project check was inconclusive. Revenue divided by `total_capacity_allocated` MW, set against the GB (Elexon `mid` APXMIDP, ×1.16) minus NL/BE day-ahead spread: among hours with implied price above 5 EUR/MW, GB was dearer in only 100 of 195 (NL) and 52 of 71 (BE).
 - **A03 semantics for amounts.** The code repeats a block's value on every omitted hour, so a block is read as per-hour amounts, not a block total. ENTSO-E's A03 definition supports a per-position value, but I did not read the vendor guide.
-  - The notebook's daily sums rely on this.
+  - The notebook's daily sums rely on this, and so does the page's `what_it_is` sentence that the hours of one delivery day can be summed.
   - The all-zero NL days are unaffected.
 - **"Explicit capacity auctions … Article 12.1.A"** rests on the acknowledgement text and the note's overview, not on the ENTSO-E guide itself.
 
@@ -119,7 +119,10 @@ Left alone, and not used on the page:
    - Not a page defect, but checkers should force `loading='eager'` before judging.
 4. **No dark theme.** The "dark" captures at 1440 and 390 are byte-identical to the light ones (`cmp`).
 5. **The notebook shows the matplotlib `<Axes …>` repr as a text output before the plot.** This is cosmetic and the same on other pages.
-6. **The frame folds statically** after `data_provider` at 1440, and after `business_type` at 768. There is no unfold control, so the folded view is what readers get.
+6. **Frame fold.** `select.columns` puts `amount_eur`, `resolution` and `published_at` before `business_type`, so at 768 the frame folds after `amount_eur` and the value column stays in view.
+   - The first draft had `business_type` fourth, which hid `amount_eur` at 768. Fixed after the advisor's check.
+   - The `…` header is a checkbox (`#fx`, "Show the folded columns"). Unfolded, the frame scrolls inside its own box: 2,272 px in 683 at 768, and 2,304 px in 390 at 390, with no page overflow.
+   - Files: `fold-768.png`, `unfold-768.png`, `unfold-390.png`.
 
 ## Screenshots
 
@@ -128,7 +131,8 @@ Left alone, and not used on the page:
   - `p-{1440,1024,768,390}.png`;
   - `p-{1440,390}-dark.png`;
   - `c{0,1400,2800,4200}-390.png` (390 bands);
-  - `nb-{1440,390}.png` and `nbimg-{390,1440}.png` (notebook open).
+  - `nb-{1440,390}.png` and `nbimg-{390,1440}.png` (notebook open);
+  - `r2-{1440,1024,768,390}.png` (after the column reorder), `fold-768.png`, `unfold-{768,390}.png`.
 - **Checks:**
   - `scrollWidth` equals `innerWidth` at every width.
   - No element outside the SVG scenery extends past the viewport.
