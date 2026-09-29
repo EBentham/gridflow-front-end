@@ -1,0 +1,21 @@
+{
+  "dataset": "elexon/uou2t14d",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "b2cce9a58ea1b4a7c848992918ad15218b975f9af1389bcb482e83c24480c60e",
+  "type": "line",
+  "unit": "MW",
+  "caption": "",
+  "value_column": "output_usable_mw",
+  "aggregation": "last",
+  "window": {"end": "2026-10-05", "rule": "fixed", "start": "2026-09-23"},
+  "provenance": {"files": 14, "null_values_dropped": 0, "rows_matched": 39, "rows_read": 92232, "rows_used": 39, "silver": "elexon/uou2t14d", "silver_first": "2026-09-23", "silver_last": "2026-10-05"},
+  "spec": {"aggregation": "last", "filter": [{"column": "published_at", "op": "eq", "value": "2026-09-21T20:00:00Z"}, {"column": "bm_unit_id", "op": "in", "value": ["T_PEHE-1", "T_HEYM11", "T_SGRWO-6"]}], "group": "bm_unit_id", "group_map": {"T_HEYM11": "heysham", "T_PEHE-1": "peterhead", "T_SGRWO-6": "seagreen"}, "series_order": ["peterhead", "heysham", "seagreen"], "silver": "elexon/uou2t14d", "time": "settlement_date", "type": "line", "unit": "MW", "value": "output_usable_mw", "window": {"end": "2026-10-05", "start": "2026-09-23"}},
+  "x_kind": "time",
+  "x": ["2026-09-23", "2026-09-24", "2026-09-25", "2026-09-26", "2026-09-27", "2026-09-28", "2026-09-29", "2026-09-30", "2026-10-01", "2026-10-02", "2026-10-03", "2026-10-04", "2026-10-05"],
+  "series": [
+    {"key": "peterhead", "values": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1180.0, 1180.0, 1180.0, 1180.0, 1180.0, 1180.0]},
+    {"key": "heysham", "values": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 262.0, 360.0, 476.0, 498.0, 498.0, 498.0]},
+    {"key": "seagreen", "values": [89.0, 299.0, 135.0, 195.0, 228.0, 194.0, 277.0, 256.0, 178.0, 165.0, 162.0, 172.0, 172.0]}
+  ]
+}

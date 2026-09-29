@@ -1,0 +1,196 @@
+{
+ "dataset": "elexon/atl",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "7abe5737781db81ae2843b2edafda17a57acaba75f5e8e5ee7f8cde1097dfc67",
+ "silver": "elexon/atl",
+ "columns": [
+  {
+   "name": "settlement_date",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "settlement_period",
+   "dtype": "Int32",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "total_load_mw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "document_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "document_revision",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "data_provider",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "ingested_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2026-09-20",
+   "39",
+   "2026-09-20 18:00:00 UTC",
+   "30098.0",
+   "NGET-EMFIP-ATL-09202623",
+   "1",
+   "2026-09-20 19:59:02 UTC",
+   "elexon",
+   "2026-09-26 18:29:17.642792 UTC",
+   "2026-09-20 18:00:00 UTC",
+   "2026-09-20 19:59:02 UTC",
+   "f7f5d294-2f8a-452f-812f-e308bb46b435",
+   "1.0.0"
+  ],
+  [
+   "2026-09-20",
+   "41",
+   "2026-09-20 19:00:00 UTC",
+   "29928.0",
+   "NGET-EMFIP-ATL-09202634",
+   "1",
+   "2026-09-20 20:59:02 UTC",
+   "elexon",
+   "2026-09-26 18:29:17.642792 UTC",
+   "2026-09-20 19:00:00 UTC",
+   "2026-09-20 20:59:02 UTC",
+   "f7f5d294-2f8a-452f-812f-e308bb46b435",
+   "1.0.0"
+  ],
+  [
+   "2026-09-20",
+   "43",
+   "2026-09-20 20:00:00 UTC",
+   "28077.0",
+   "NGET-EMFIP-ATL-09202625",
+   "1",
+   "2026-09-20 21:59:01 UTC",
+   "elexon",
+   "2026-09-26 18:29:17.642792 UTC",
+   "2026-09-20 20:00:00 UTC",
+   "2026-09-20 21:59:01 UTC",
+   "f7f5d294-2f8a-452f-812f-e308bb46b435",
+   "1.0.0"
+  ],
+  [
+   "2026-09-20",
+   "44",
+   "2026-09-20 20:30:00 UTC",
+   "26949.0",
+   "NGET-EMFIP-ATL-09202638",
+   "1",
+   "2026-09-20 22:29:01 UTC",
+   "elexon",
+   "2026-09-26 18:29:17.642792 UTC",
+   "2026-09-20 20:30:00 UTC",
+   "2026-09-20 22:29:01 UTC",
+   "f7f5d294-2f8a-452f-812f-e308bb46b435",
+   "1.0.0"
+  ],
+  [
+   "2026-09-20",
+   "45",
+   "2026-09-20 21:00:00 UTC",
+   "25805.0",
+   "NGET-EMFIP-ATL-09202644",
+   "1",
+   "2026-09-20 22:59:01 UTC",
+   "elexon",
+   "2026-09-26 18:29:17.642792 UTC",
+   "2026-09-20 21:00:00 UTC",
+   "2026-09-20 22:59:01 UTC",
+   "f7f5d294-2f8a-452f-812f-e308bb46b435",
+   "1.0.0"
+  ],
+  [
+   "2026-09-20",
+   "46",
+   "2026-09-20 21:30:00 UTC",
+   "25119.0",
+   "NGET-EMFIP-ATL-09202618",
+   "1",
+   "2026-09-20 23:29:02 UTC",
+   "elexon",
+   "2026-09-26 18:29:17.642792 UTC",
+   "2026-09-20 21:30:00 UTC",
+   "2026-09-20 23:29:02 UTC",
+   "f7f5d294-2f8a-452f-812f-e308bb46b435",
+   "1.0.0"
+  ],
+  [
+   "2026-09-20",
+   "47",
+   "2026-09-20 22:00:00 UTC",
+   "24064.0",
+   "NGET-EMFIP-ATL-09202650",
+   "1",
+   "2026-09-20 23:59:02 UTC",
+   "elexon",
+   "2026-09-26 18:29:17.642792 UTC",
+   "2026-09-20 22:00:00 UTC",
+   "2026-09-20 23:59:02 UTC",
+   "f7f5d294-2f8a-452f-812f-e308bb46b435",
+   "1.0.0"
+  ],
+  [
+   "2026-09-20",
+   "48",
+   "2026-09-20 22:30:00 UTC",
+   "22827.0",
+   "NGET-EMFIP-ATL-09212648",
+   "1",
+   "2026-09-21 00:29:01 UTC",
+   "elexon",
+   "2026-09-26 18:29:17.653666 UTC",
+   "2026-09-20 22:30:00 UTC",
+   "2026-09-21 00:29:01 UTC",
+   "f7f5d294-2f8a-452f-812f-e308bb46b435",
+   "1.0.0"
+  ]
+ ],
+ "mark": null
+}

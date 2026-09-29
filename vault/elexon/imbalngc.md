@@ -10,7 +10,7 @@ layer_coverage: bronze, silver
 
 ## Overview
 
-Indicated imbalance — the National Grid Control Centre's published forecast of system imbalance (generation minus demand) used to inform balancing decisions. IMBALNGC is the day/day-ahead view alongside MELNGC (margin) and INDDEM/INDGEN (demand/generation).
+Indicated imbalance — the National Grid Control Centre's published forecast of system imbalance (Indicated Generation minus the Transmission System Demand forecast, per the [Elexon BSC glossary](https://elexon.co.uk/glossary/indicated-imbalance); not INDGEN plus INDDEM) used to inform balancing decisions. IMBALNGC is the day/day-ahead view alongside MELNGC (margin) and INDDEM/INDGEN (demand/generation).
 
 ---
 
@@ -92,7 +92,7 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
 **Path pattern**: `{data_root}/silver/elexon/imbalngc/year=YYYY/month=MM/imbalngc_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.elexon.imbalngc.ImbalNGCTransformer`
 **Pydantic schema**: `gridflow.schemas.elexon.ElexonImbalNGC` — validated fail-soft on the full frame at write time (VTA-SCHEMA-01: invalid rows are logged and counted, never dropped).
-**Dedup key**: `(settlement_date, settlement_period)`
+**Dedup key**: `(settlement_date, settlement_period)`, `unique(keep="last")` with no prior sort, over one UTC publish day's bronze. `boundary` is in neither the key nor the output (`silver/elexon/imbalngc.py:117,127-135`), so one of the 18 boundary rows per half-hour survives, chosen by API row order; in the files checked 2026-09-29 it was `N`.
 **Point-in-time field**: `published_at`
 
 ### Silver schema
@@ -102,10 +102,10 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
 | `settlement_date` | `date` | No | `settlementDate` | Settlement date (BST/GMT calendar). |
 | `settlement_period` | `int` | No | `settlementPeriod` | 1..50 (DST: 46 spring, 50 autumn). |
 | `timestamp_utc` | `datetime[UTC]` | No | _derived_ | Derived from (settlement_date, settlement_period) via `utils/time.settlement_period_to_utc`. |
-| `indicated_imbalance` | `float` | No | `indicatedImbalance` or `imbalance` | MWh. |
+| `indicated_imbalance` | `float` | No | `indicatedImbalance` or `imbalance` | MW (`schemas/elexon.py:338`). |
 | `published_at` | `datetime[UTC]` | Yes | `publishTime` | Publication time / document vintage; bitemporal point-in-time field. |
 | `data_provider` | `str` | No | _derived_ | Default `"elexon"`. |
-| `ingested_at` | `datetime[UTC]` | Yes | _derived_ | Time ingested into bronze. |
+| `ingested_at` | `datetime[UTC]` | Yes | _derived_ | When the silver transform ran: stamped `datetime.now(UTC)` by the transformer (`imbalngc.py:119-125`), not the bronze ingest time. |
 
 ### Silver sample
 
@@ -114,7 +114,7 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
     {
         "settlement_date": "2026-05-06",
         "settlement_period": 9,
-        "timestamp_utc": "2026-05-06T04:00:00+00:00",
+        "timestamp_utc": "2026-05-06T03:00:00+00:00",
         "indicated_imbalance": 77,
         "data_provider": "elexon",
         "ingested_at": "2026-05-08T12:00:00Z"
@@ -132,7 +132,8 @@ None implemented.
 
 ## Known issues and gotchas
 
-- **Day-ahead vs intra-day** publish: same period appears multiple times per `published_at`; the transformer keeps the latest by dedup on `(settlement_date, settlement_period)` — for forecast-vs-outturn analysis, preserve `published_at` upstream.
+- **Day-ahead vs intra-day** publish: same period appears multiple times per `published_at`; the transformer dedups on `(settlement_date, settlement_period)` within one publish day and keeps the last row the API returned, with no sort (`imbalngc.py:117`). The API lists the newest publish first (project check on bronze, 2026-09-29), so that is the day's earliest publish, not the latest. For forecast-vs-outturn analysis, preserve `published_at` upstream.
+- **Sign**: the glossary states none; by its definition a positive value is indicated generation above the demand forecast. gridflow's schema docstring reads negative as system short, positive as long (`schemas/elexon.py:336-339`). Project check 2026-09-29: `imbalance` matched INDGEN minus TSDF `demand` from the same publish and boundary to within 334 MW.
 
 ---
 

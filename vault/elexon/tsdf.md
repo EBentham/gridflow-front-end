@@ -2,7 +2,7 @@
 source: elexon
 dataset_key: tsdf
 vendor: Elexon BMRS
-last_verified: 2026-05-08
+last_verified: 2026-07-31
 layer_coverage: bronze, silver
 ---
 
@@ -92,8 +92,8 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
 **Path pattern**: `{data_root}/silver/elexon/tsdf/year=YYYY/month=MM/tsdf_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.elexon.tsdf.TSDFTransformer`
 **Pydantic schema**: `gridflow.schemas.elexon.ElexonTSDF` — validated fail-soft on the full frame at write time (VTA-SCHEMA-01: invalid rows are logged and counted, never dropped).
-**Dedup key**: _inline in transformer (see `silver/elexon/tsdf.py`)_
-**Point-in-time field**: `ingested_at` (no native PIT field)
+**Dedup key**: `(settlement_date, settlement_period, boundary)` (`silver/elexon/tsdf.py:112-115`), applied within each daily transform (one UTC publish day per silver file)
+**Point-in-time field**: `published_at`, from `publishTime` (`silver/elexon/tsdf.py:98-110`)
 
 ### Silver schema
 
@@ -104,8 +104,9 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
 | `timestamp_utc` | `datetime[UTC]` | No | _derived_ | Derived from (settlement_date, settlement_period) via `utils/time.settlement_period_to_utc`. |
 | `forecast_demand_mw` | `float` | No | `demand` | MW. |
 | `boundary` | `str` | Yes | `boundary` | Transmission-boundary identifier. Observed `B1` in the live bronze sample; the `boundary` query param also accepts `N` (national). Vendor-managed value list — no fixed enumeration. |
+| `published_at` | `datetime[UTC]` | Yes | `publishTime` | Vendor publish time of the surviving vintage (`tsdf.py:98-110`); not in the dedup key. |
 | `data_provider` | `str` | No | _derived_ | Default `"elexon"`. |
-| `ingested_at` | `datetime[UTC]` | Yes | _derived_ | Time ingested into bronze. |
+| `ingested_at` | `datetime[UTC]` | Yes | _derived_ | When the silver transform ran: stamped `datetime.now(UTC)` by the transformer (`tsdf.py:117-123`), not the bronze ingest time. |
 
 ### Silver sample
 
@@ -114,7 +115,7 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
     {
         "settlement_date": "2026-05-06",
         "settlement_period": 9,
-        "timestamp_utc": "2026-05-06T04:00:00+00:00",
+        "timestamp_utc": "2026-05-06T03:00:00+00:00",
         "forecast_demand_mw": 195,
         "boundary": "B1",
         "data_provider": "elexon",
@@ -134,6 +135,8 @@ None implemented.
 ## Known issues and gotchas
 
 - **Transmission-only forecast** — analogous to ITSDO for outturn.
+- **The feed returns 18 boundaries, not one** (live-verified 2026-07-31; supersedes the "Observed `B1`" note on the `boundary` silver field, which reflected a single sampled row, not the response shape). A 24h publish window returned 50,688 rows split evenly across `B1`–`B17` **plus `N`**, 2,816 rows each. `N` is the national figure; `B*` are individual transmission boundaries at much smaller scale (a sampled `B1` row read 210 MW against a same-period national NDF of 22,810 MW). **Any query must filter `boundary = 'N'` for a national-level series** — the silver transformer passes `boundary` through without filtering, so an unfiltered group-by silently returns ~18× the expected rows and a meaningless demand total.
+- **Silver does NOT retain forecast vintages — TSDF cannot be used for forecast-evolution analysis** (live-verified 2026-07-31). The upstream feed *does* republish roughly every 30 minutes (846 vintage-rows per `(settlement_date, settlement_period)` = ~47 publish times × 18 boundaries), but the transformer's dedup key is `(settlement_date, settlement_period, boundary)` with **`published_at` absent from the key** (`silver/elexon/tsdf.py`, `dedup_cols`), so vintages collapse to one `keep="last"` survivor per daily transform. Each silver file holds one UTC publish day (the Elexon publication-window filter on `published_at`, `silver/elexon/_publication_window.py`), so a period keeps one survivor per publish day that covered it, and bronze row order, not publish time, decides which (in the 2026-09-15 file it was the day's earliest publish). `published_at` survives as a *column* but is not a distinguishing key, which makes it look usable when it is not. Contrast [ndf.md](./ndf.md), whose dedup key *does* include `published_at` and therefore preserves the full vintage history. Changing this is a schema decision, not a bug fix — flagged, not assumed.
 
 ---
 

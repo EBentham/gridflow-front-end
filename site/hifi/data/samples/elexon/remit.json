@@ -1,0 +1,404 @@
+{
+ "dataset": "elexon/remit",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "a22f03cfbc55bd6eec245bf9a6690a88ae931865d305365140cb29b7e8175cac",
+ "silver": "elexon/remit",
+ "columns": [
+  {
+   "name": "asset_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "revision_number",
+   "dtype": "Int32",
+   "lineage": false
+  },
+  {
+   "name": "event_start_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_end_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "available_capacity_mw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "unavailable_capacity_mw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_status",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "normal_capacity_mw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "related_information",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "mrid",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "message_type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "message_heading",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "event_type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "unavailability_type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "participant_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "registration_code",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "asset_type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "affected_unit",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "affected_unit_eic",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "bidding_zone",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "fuel_type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "cause",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "data_provider",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "ingested_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "T_PEMB-41",
+   "5",
+   "2026-09-16 22:01:00 UTC",
+   "2026-09-19 18:14:33 UTC",
+   "0.0",
+   "394.0",
+   "2026-09-18 15:18:04 UTC",
+   "Active",
+   "465.0",
+   "Estimated End Date / Time changed to 19 Sep 2026 18:14 (GMT); Detailed MEL profile has changed",
+   "11XINNOGY------2-NGET-RMT-00218399",
+   "UnavailabilitiesOfElectricityFacilities",
+   "Actual Availability of Generation Unit",
+   "Production unavailability",
+   "Unplanned",
+   "INNOGY01",
+   "11XINNOGY------2",
+   "Production",
+   "PEMB-41",
+   "48W00000PEMB-41K",
+   "10YGB----------A",
+   "Fossil Gas",
+   "Turbine / Generator",
+   "elexon",
+   "2026-09-26 18:32:07.830444 UTC",
+   "2026-09-18 15:18:04 UTC",
+   "2026-09-26 18:32:07.819432 UTC",
+   "947c5090-6f35-4754-ac0c-9be10cb280d7",
+   "2.0.0"
+  ],
+  [
+   "T_PEMB-41",
+   "6",
+   "2026-09-16 22:01:00 UTC",
+   "2026-09-19 22:14:33 UTC",
+   "0.0",
+   "394.0",
+   "2026-09-18 15:18:05 UTC",
+   "Active",
+   "465.0",
+   "Estimated End Date / Time changed to 19 Sep 2026 22:14 (GMT); Detailed MEL profile has changed",
+   "11XINNOGY------2-NGET-RMT-00218399",
+   "UnavailabilitiesOfElectricityFacilities",
+   "Actual Availability of Generation Unit",
+   "Production unavailability",
+   "Unplanned",
+   "INNOGY01",
+   "11XINNOGY------2",
+   "Production",
+   "PEMB-41",
+   "48W00000PEMB-41K",
+   "10YGB----------A",
+   "Fossil Gas",
+   "Turbine / Generator",
+   "elexon",
+   "2026-09-26 18:32:07.830444 UTC",
+   "2026-09-18 15:18:05 UTC",
+   "2026-09-26 18:32:07.819432 UTC",
+   "947c5090-6f35-4754-ac0c-9be10cb280d7",
+   "2.0.0"
+  ],
+  [
+   "T_PEMB-41",
+   "7",
+   "2026-09-16 22:01:00 UTC",
+   "2026-09-19 18:14:33 UTC",
+   "0.0",
+   "394.0",
+   "2026-09-18 15:18:05 UTC",
+   "Active",
+   "465.0",
+   "Estimated End Date / Time changed to 19 Sep 2026 18:14 (GMT); Detailed MEL profile has changed",
+   "11XINNOGY------2-NGET-RMT-00218399",
+   "UnavailabilitiesOfElectricityFacilities",
+   "Actual Availability of Generation Unit",
+   "Production unavailability",
+   "Unplanned",
+   "INNOGY01",
+   "11XINNOGY------2",
+   "Production",
+   "PEMB-41",
+   "48W00000PEMB-41K",
+   "10YGB----------A",
+   "Fossil Gas",
+   "Turbine / Generator",
+   "elexon",
+   "2026-09-26 18:32:07.830444 UTC",
+   "2026-09-18 15:18:05 UTC",
+   "2026-09-26 18:32:07.819432 UTC",
+   "947c5090-6f35-4754-ac0c-9be10cb280d7",
+   "2.0.0"
+  ],
+  [
+   "T_PEMB-41",
+   "8",
+   "2026-09-16 22:01:00 UTC",
+   "2026-09-19 16:14:33 UTC",
+   "0.0",
+   "394.0",
+   "2026-09-18 15:18:06 UTC",
+   "Active",
+   "465.0",
+   "Estimated End Date / Time changed to 19 Sep 2026 16:14 (GMT); Detailed MEL profile has changed",
+   "11XINNOGY------2-NGET-RMT-00218399",
+   "UnavailabilitiesOfElectricityFacilities",
+   "Actual Availability of Generation Unit",
+   "Production unavailability",
+   "Unplanned",
+   "INNOGY01",
+   "11XINNOGY------2",
+   "Production",
+   "PEMB-41",
+   "48W00000PEMB-41K",
+   "10YGB----------A",
+   "Fossil Gas",
+   "Turbine / Generator",
+   "elexon",
+   "2026-09-26 18:32:07.830444 UTC",
+   "2026-09-18 15:18:06 UTC",
+   "2026-09-26 18:32:07.819432 UTC",
+   "947c5090-6f35-4754-ac0c-9be10cb280d7",
+   "2.0.0"
+  ],
+  [
+   "T_PEMB-41",
+   "9",
+   "2026-09-16 22:01:00 UTC",
+   "2026-09-20 00:14:33 UTC",
+   "0.0",
+   "394.0",
+   "2026-09-19 05:06:53 UTC",
+   "Active",
+   "465.0",
+   "Estimated End Date / Time changed to 20 Sep 2026 00:14 (GMT); Detailed MEL profile has changed",
+   "11XINNOGY------2-NGET-RMT-00218399",
+   "UnavailabilitiesOfElectricityFacilities",
+   "Actual Availability of Generation Unit",
+   "Production unavailability",
+   "Unplanned",
+   "INNOGY01",
+   "11XINNOGY------2",
+   "Production",
+   "PEMB-41",
+   "48W00000PEMB-41K",
+   "10YGB----------A",
+   "Fossil Gas",
+   "Turbine / Generator",
+   "elexon",
+   "2026-09-26 18:32:07.847118 UTC",
+   "2026-09-19 05:06:53 UTC",
+   "2026-09-26 18:32:07.842071 UTC",
+   "947c5090-6f35-4754-ac0c-9be10cb280d7",
+   "2.0.0"
+  ],
+  [
+   "T_PEMB-41",
+   "10",
+   "2026-09-16 22:01:00 UTC",
+   "2026-09-19 15:59:33 UTC",
+   "0.0",
+   "394.0",
+   "2026-09-19 12:38:59 UTC",
+   "Active",
+   "465.0",
+   "Estimated End Date / Time changed to 19 Sep 2026 15:59 (GMT); Detailed MEL profile has changed",
+   "11XINNOGY------2-NGET-RMT-00218399",
+   "UnavailabilitiesOfElectricityFacilities",
+   "Actual Availability of Generation Unit",
+   "Production unavailability",
+   "Unplanned",
+   "INNOGY01",
+   "11XINNOGY------2",
+   "Production",
+   "PEMB-41",
+   "48W00000PEMB-41K",
+   "10YGB----------A",
+   "Fossil Gas",
+   "Turbine / Generator",
+   "elexon",
+   "2026-09-26 18:32:07.847118 UTC",
+   "2026-09-19 12:38:59 UTC",
+   "2026-09-26 18:32:07.842071 UTC",
+   "947c5090-6f35-4754-ac0c-9be10cb280d7",
+   "2.0.0"
+  ],
+  [
+   "T_PEMB-41",
+   "11",
+   "2026-09-16 22:01:00 UTC",
+   "2026-09-19 15:59:33 UTC",
+   "403.0",
+   "0.0",
+   "2026-09-19 12:47:56 UTC",
+   "Active",
+   "465.0",
+   "Change in current availability to 403MW",
+   "11XINNOGY------2-NGET-RMT-00218399",
+   "UnavailabilitiesOfElectricityFacilities",
+   "Actual Availability of Generation Unit",
+   "Production unavailability",
+   "Unplanned",
+   "INNOGY01",
+   "11XINNOGY------2",
+   "Production",
+   "PEMB-41",
+   "48W00000PEMB-41K",
+   "10YGB----------A",
+   "Fossil Gas",
+   "Turbine / Generator",
+   "elexon",
+   "2026-09-26 18:32:07.847118 UTC",
+   "2026-09-19 12:47:56 UTC",
+   "2026-09-26 18:32:07.842071 UTC",
+   "947c5090-6f35-4754-ac0c-9be10cb280d7",
+   "2.0.0"
+  ],
+  [
+   "T_PEMB-41",
+   "12",
+   "2026-09-16 22:01:00 UTC",
+   "2026-09-19 15:59:33 UTC",
+   "403.0",
+   "0.0",
+   "2026-09-19 16:01:14 UTC",
+   "Inactive",
+   "465.0",
+   "Status changed to Completed",
+   "11XINNOGY------2-NGET-RMT-00218399",
+   "UnavailabilitiesOfElectricityFacilities",
+   "Actual Availability of Generation Unit",
+   "Production unavailability",
+   "Unplanned",
+   "INNOGY01",
+   "11XINNOGY------2",
+   "Production",
+   "PEMB-41",
+   "48W00000PEMB-41K",
+   "10YGB----------A",
+   "Fossil Gas",
+   "Turbine / Generator",
+   "elexon",
+   "2026-09-26 18:32:07.847118 UTC",
+   "2026-09-19 16:01:14 UTC",
+   "2026-09-26 18:32:07.842071 UTC",
+   "947c5090-6f35-4754-ac0c-9be10cb280d7",
+   "2.0.0"
+  ]
+ ],
+ "mark": null
+}

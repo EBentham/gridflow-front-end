@@ -1,0 +1,274 @@
+{
+ "dataset": "elexon/soso",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "ae36212b45a561f92e8860feeb49a0d94faabe06f0434784204ed10e04066f00",
+ "silver": "elexon/soso",
+ "columns": [
+  {
+   "name": "trader_unit",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "trade_price",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "trade_direction",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "contract_identification",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "settlement_date",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "trade_quantity_mw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "sender_identification",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "receiver_identification",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "resource_provider",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "start_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "end_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "data_provider",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "ingested_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "EWIC_EG",
+   "492.51",
+   "Bid",
+   "EG_20260915_1200_9",
+   "2026-09-15",
+   "25.0",
+   "2026-09-15 12:00:00 UTC",
+   "10X1001A1001A515",
+   "10X1001A1001A59Q",
+   "10X1001A1001A531",
+   "2026-09-15 12:00:00 UTC",
+   null,
+   "2026-09-15 10:03:10 UTC",
+   "elexon",
+   "2026-09-26 18:31:55.956707 UTC",
+   "2026-09-15 12:00:00 UTC",
+   "2026-09-15 10:03:10 UTC",
+   "af0b4918-8871-4f8f-b9cf-4c623006d847",
+   "1.0.0"
+  ],
+  [
+   "EWIC_EG",
+   "-61.02",
+   "Offer",
+   "EG_20260915_1200_1",
+   "2026-09-15",
+   "25.0",
+   "2026-09-15 12:00:00 UTC",
+   "10X1001A1001A515",
+   "10X1001A1001A59Q",
+   "10X1001A1001A531",
+   "2026-09-15 12:00:00 UTC",
+   null,
+   "2026-09-15 10:03:10 UTC",
+   "elexon",
+   "2026-09-26 18:31:55.956707 UTC",
+   "2026-09-15 12:00:00 UTC",
+   "2026-09-15 10:03:10 UTC",
+   "af0b4918-8871-4f8f-b9cf-4c623006d847",
+   "1.0.0"
+  ],
+  [
+   "EWIC_NG",
+   "89.07",
+   "Bid",
+   "NG_20260915_1200_25",
+   "2026-09-15",
+   "25.0",
+   "2026-09-15 12:00:00 UTC",
+   "10X1001A1001A515",
+   "10X1001A1001A59Q",
+   "10X1001A1001A515",
+   "2026-09-15 12:00:00 UTC",
+   null,
+   "2026-09-15 10:03:10 UTC",
+   "elexon",
+   "2026-09-26 18:31:55.956707 UTC",
+   "2026-09-15 12:00:00 UTC",
+   "2026-09-15 10:03:10 UTC",
+   "af0b4918-8871-4f8f-b9cf-4c623006d847",
+   "1.0.0"
+  ],
+  [
+   "EWIC_NG",
+   "306.54",
+   "Offer",
+   "NG_20260915_1200_17",
+   "2026-09-15",
+   "25.0",
+   "2026-09-15 12:00:00 UTC",
+   "10X1001A1001A515",
+   "10X1001A1001A59Q",
+   "10X1001A1001A515",
+   "2026-09-15 12:00:00 UTC",
+   null,
+   "2026-09-15 10:03:10 UTC",
+   "elexon",
+   "2026-09-26 18:31:55.956707 UTC",
+   "2026-09-15 12:00:00 UTC",
+   "2026-09-15 10:03:10 UTC",
+   "af0b4918-8871-4f8f-b9cf-4c623006d847",
+   "1.0.0"
+  ],
+  [
+   "GL1_EG",
+   "492.51",
+   "Bid",
+   "GL_20260915_1200_9",
+   "2026-09-15",
+   "25.0",
+   "2026-09-15 12:00:00 UTC",
+   "10X1001A1001A515",
+   "10X1001A1001A59Q",
+   "47X000000000386O",
+   "2026-09-15 12:00:00 UTC",
+   null,
+   "2026-09-15 10:03:10 UTC",
+   "elexon",
+   "2026-09-26 18:31:55.956707 UTC",
+   "2026-09-15 12:00:00 UTC",
+   "2026-09-15 10:03:10 UTC",
+   "af0b4918-8871-4f8f-b9cf-4c623006d847",
+   "1.0.0"
+  ],
+  [
+   "GL1_EG",
+   "-61.02",
+   "Offer",
+   "GL_20260915_1200_1",
+   "2026-09-15",
+   "25.0",
+   "2026-09-15 12:00:00 UTC",
+   "10X1001A1001A515",
+   "10X1001A1001A59Q",
+   "47X000000000386O",
+   "2026-09-15 12:00:00 UTC",
+   null,
+   "2026-09-15 10:03:10 UTC",
+   "elexon",
+   "2026-09-26 18:31:55.956707 UTC",
+   "2026-09-15 12:00:00 UTC",
+   "2026-09-15 10:03:10 UTC",
+   "af0b4918-8871-4f8f-b9cf-4c623006d847",
+   "1.0.0"
+  ],
+  [
+   "MOYLE_SN",
+   "854.31",
+   "Bid",
+   "SO_20260915_1200_9",
+   "2026-09-15",
+   "25.0",
+   "2026-09-15 12:00:00 UTC",
+   "10X1001A1001A515",
+   "10X1001A1001A59Q",
+   "10XNITSO-12345-O",
+   "2026-09-15 12:00:00 UTC",
+   null,
+   "2026-09-15 10:03:11 UTC",
+   "elexon",
+   "2026-09-26 18:31:55.956707 UTC",
+   "2026-09-15 12:00:00 UTC",
+   "2026-09-15 10:03:11 UTC",
+   "af0b4918-8871-4f8f-b9cf-4c623006d847",
+   "1.0.0"
+  ],
+  [
+   "MOYLE_SN",
+   "-97.64",
+   "Offer",
+   "SO_20260915_1200_1",
+   "2026-09-15",
+   "25.0",
+   "2026-09-15 12:00:00 UTC",
+   "10X1001A1001A515",
+   "10X1001A1001A59Q",
+   "10XNITSO-12345-O",
+   "2026-09-15 12:00:00 UTC",
+   null,
+   "2026-09-15 10:03:11 UTC",
+   "elexon",
+   "2026-09-26 18:31:55.956707 UTC",
+   "2026-09-15 12:00:00 UTC",
+   "2026-09-15 10:03:11 UTC",
+   "af0b4918-8871-4f8f-b9cf-4c623006d847",
+   "1.0.0"
+  ]
+ ],
+ "mark": null
+}

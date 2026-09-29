@@ -1,0 +1,132 @@
+{
+ "dataset": "elexon/uou2t14d",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "75e79cc81231a8e225fd3a994f277249d992636d85673e282aef1516ab5ce105",
+ "kernel": "gridflow_models",
+ "source": "elexon",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.elexon",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.elexon.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.elexon.query(\"uou2t14d\", \"2026-09-23\", \"2026-10-05\")\ndf[\"published_at\"] = df.published_at.dt.tz_convert(\"UTC\")\npub = df[df.published_at.dt.strftime(\"%Y-%m-%d\") == \"2026-09-21\"]\npub.published_at.unique()",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<DatetimeArray>\n['2026-09-21 20:00:00+00:00']\nLength: 1, dtype: datetime64[us, UTC]"
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "units = [\"T_PEHE-1\", \"T_HEYM11\", \"T_SGRWO-6\"]\nwide = pub[pub.bm_unit_id.isin(units)].pivot(\n    index=\"settlement_date\", columns=\"bm_unit_id\", values=\"output_usable_mw\")\nwide.rename_axis(index=None, columns=None).iloc[5:10]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "T_HEYM11",
+      "T_PEHE-1",
+      "T_SGRWO-6"
+     ],
+     "index": [
+      "2026-09-28",
+      "2026-09-29",
+      "2026-09-30",
+      "2026-10-01",
+      "2026-10-02"
+     ],
+     "rows": [
+      [
+       "0.0",
+       "0.0",
+       "194.0"
+      ],
+      [
+       "0.0",
+       "0.0",
+       "277.0"
+      ],
+      [
+       "262.0",
+       "1180.0",
+       "256.0"
+      ],
+      [
+       "360.0",
+       "1180.0",
+       "178.0"
+      ],
+      [
+       "476.0",
+       "1180.0",
+       "165.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "wide[[\"T_PEHE-1\", \"T_SGRWO-6\", \"T_HEYM11\"]].plot(\n    drawstyle=\"steps-post\", style=[\"-\", \"--\", \"-\"], ylabel=\"MW\", figsize=(8, 3.5),\n    color=[\"#C77E3C\", \"#3E8C97\", \"#155A6E\"])",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: xlabel='settlement_date', ylabel='MW'>"
+    },
+    {
+     "kind": "image",
+     "src": "uou2t14d-5.png",
+     "width": 716,
+     "height": 369
+    }
+   ]
+  }
+ ]
+}

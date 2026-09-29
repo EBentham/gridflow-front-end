@@ -1,0 +1,196 @@
+{
+ "dataset": "elexon/mid",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "fdcd96ca56106cf5c00e665733f5c32daed784300f502bf55800e6c02fdc337d",
+ "silver": "elexon/mid",
+ "columns": [
+  {
+   "name": "settlement_date",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "settlement_period",
+   "dtype": "Int32",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "data_provider_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "market_index_price",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "market_index_volume",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "data_provider",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "ingested_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "vintage_policy",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2026-09-20",
+   "32",
+   "2026-09-20 14:30:00 UTC",
+   "APXMIDP",
+   "-12.14",
+   "3406.15",
+   "elexon",
+   "2026-09-26 18:31:37.641982 UTC",
+   "2026-09-20 14:30:00 UTC",
+   "2026-09-26 18:31:37.632985 UTC",
+   "0d410e04-2c8e-4c6c-9425-903ae3bdf945",
+   "1.1.0",
+   "ingest-clock"
+  ],
+  [
+   "2026-09-20",
+   "32",
+   "2026-09-20 14:30:00 UTC",
+   "N2EXMIDP",
+   "0.0",
+   "0.0",
+   "elexon",
+   "2026-09-26 18:31:37.641982 UTC",
+   "2026-09-20 14:30:00 UTC",
+   "2026-09-26 18:31:37.632985 UTC",
+   "0d410e04-2c8e-4c6c-9425-903ae3bdf945",
+   "1.1.0",
+   "ingest-clock"
+  ],
+  [
+   "2026-09-20",
+   "33",
+   "2026-09-20 15:00:00 UTC",
+   "APXMIDP",
+   "-19.03",
+   "2884.75",
+   "elexon",
+   "2026-09-26 18:31:37.641982 UTC",
+   "2026-09-20 15:00:00 UTC",
+   "2026-09-26 18:31:37.632985 UTC",
+   "0d410e04-2c8e-4c6c-9425-903ae3bdf945",
+   "1.1.0",
+   "ingest-clock"
+  ],
+  [
+   "2026-09-20",
+   "33",
+   "2026-09-20 15:00:00 UTC",
+   "N2EXMIDP",
+   "0.0",
+   "0.0",
+   "elexon",
+   "2026-09-26 18:31:37.641982 UTC",
+   "2026-09-20 15:00:00 UTC",
+   "2026-09-26 18:31:37.632985 UTC",
+   "0d410e04-2c8e-4c6c-9425-903ae3bdf945",
+   "1.1.0",
+   "ingest-clock"
+  ],
+  [
+   "2026-09-20",
+   "34",
+   "2026-09-20 15:30:00 UTC",
+   "APXMIDP",
+   "38.19",
+   "3728.5",
+   "elexon",
+   "2026-09-26 18:31:37.641982 UTC",
+   "2026-09-20 15:30:00 UTC",
+   "2026-09-26 18:31:37.632985 UTC",
+   "0d410e04-2c8e-4c6c-9425-903ae3bdf945",
+   "1.1.0",
+   "ingest-clock"
+  ],
+  [
+   "2026-09-20",
+   "34",
+   "2026-09-20 15:30:00 UTC",
+   "N2EXMIDP",
+   "0.0",
+   "0.0",
+   "elexon",
+   "2026-09-26 18:31:37.641982 UTC",
+   "2026-09-20 15:30:00 UTC",
+   "2026-09-26 18:31:37.632985 UTC",
+   "0d410e04-2c8e-4c6c-9425-903ae3bdf945",
+   "1.1.0",
+   "ingest-clock"
+  ],
+  [
+   "2026-09-20",
+   "35",
+   "2026-09-20 16:00:00 UTC",
+   "APXMIDP",
+   "103.7",
+   "3820.3",
+   "elexon",
+   "2026-09-26 18:31:37.641982 UTC",
+   "2026-09-20 16:00:00 UTC",
+   "2026-09-26 18:31:37.632985 UTC",
+   "0d410e04-2c8e-4c6c-9425-903ae3bdf945",
+   "1.1.0",
+   "ingest-clock"
+  ],
+  [
+   "2026-09-20",
+   "35",
+   "2026-09-20 16:00:00 UTC",
+   "N2EXMIDP",
+   "0.0",
+   "0.0",
+   "elexon",
+   "2026-09-26 18:31:37.641982 UTC",
+   "2026-09-20 16:00:00 UTC",
+   "2026-09-26 18:31:37.632985 UTC",
+   "0d410e04-2c8e-4c6c-9425-903ae3bdf945",
+   "1.1.0",
+   "ingest-clock"
+  ]
+ ],
+ "mark": null
+}

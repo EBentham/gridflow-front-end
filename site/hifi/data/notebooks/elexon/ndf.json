@@ -1,0 +1,143 @@
+{
+ "dataset": "elexon/ndf",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "ded46f4a7f78b3e644f20602f4c0367d78b8c99f57c1386b2a9fdc05abc36e4d",
+ "kernel": "gridflow_models",
+ "source": "elexon",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.elexon",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.elexon.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "ndf = data.elexon.query(\"ndf\", \"2026-09-14\", \"2026-09-20\")\nindo = data.elexon.query(\"indo\", \"2026-09-14\", \"2026-09-20\")\nfor df in (ndf, indo):\n    df[\"timestamp_utc\"] = df.timestamp_utc.dt.tz_convert(\"UTC\")\nndf[\"published_at\"] = ndf.published_at.dt.tz_convert(\"UTC\")",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "cols = [\"timestamp_utc\", \"national_demand_mw\"]\nmorning = ndf[ndf.published_at.dt.strftime(\"%H:%M\") == \"07:45\"][cols]\nlast = ndf.sort_values(\"published_at\").groupby(\"timestamp_utc\").tail(1)[cols]\nboth = morning.merge(last, on=\"timestamp_utc\").merge(\n    indo[[\"timestamp_utc\", \"initial_demand_outturn_mw\"]], on=\"timestamp_utc\")\nboth.columns = [\"timestamp_utc\", \"ndf_0745_mw\", \"ndf_last_mw\", \"indo_mw\"]\nboth = both.sort_values(\"timestamp_utc\", ignore_index=True)\nboth.head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "ndf_0745_mw",
+      "ndf_last_mw",
+      "indo_mw"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2026-09-14 04:00:00+00:00",
+       "20176.0",
+       "20196.0",
+       "19260.0"
+      ],
+      [
+       "2026-09-14 04:30:00+00:00",
+       "20464.0",
+       "20553.0",
+       "19799.0"
+      ],
+      [
+       "2026-09-14 05:00:00+00:00",
+       "22701.0",
+       "22876.0",
+       "22042.0"
+      ],
+      [
+       "2026-09-14 05:30:00+00:00",
+       "24020.0",
+       "24287.0",
+       "23737.0"
+      ],
+      [
+       "2026-09-14 06:00:00+00:00",
+       "25797.0",
+       "26172.0",
+       "25401.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "err = both.set_index(\"timestamp_utc\")[[\"ndf_0745_mw\", \"ndf_last_mw\"]].sub(both.indo_mw.values, axis=0)\nerr.abs().mean().round()",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "ndf_0745_mw    875.0\nndf_last_mw    574.0\ndtype: float64"
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "source": "err.plot(ylabel=\"forecast minus INDO, MW\", color=[\"#155A6E\", \"#C77E3C\"], figsize=(8, 3.5))",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: xlabel='timestamp_utc', ylabel='forecast minus INDO, MW'>"
+    },
+    {
+     "kind": "image",
+     "src": "ndf-6.png",
+     "width": 716,
+     "height": 367
+    }
+   ]
+  }
+ ]
+}

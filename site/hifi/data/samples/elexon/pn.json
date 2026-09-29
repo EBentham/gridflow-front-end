@@ -1,0 +1,183 @@
+{
+ "dataset": "elexon/pn",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "a2269a2d5513e4ecd13e8b71b4f983e072787f4f2e539ec890fa7d80e1ddea56",
+ "silver": "elexon/pn",
+ "columns": [
+  {
+   "name": "bm_unit_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "level_from",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "level_to",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "settlement_date",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "settlement_period",
+   "dtype": "Int32",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "data_provider",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "ingested_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2__ALOND000",
+   "-240.0",
+   "-251.0",
+   "2026-09-20",
+   "10",
+   "2026-09-20 03:30:00 UTC",
+   "elexon",
+   "2026-09-26 18:35:21.245511 UTC",
+   "2026-09-20 03:30:00 UTC",
+   "2026-09-26 18:35:19.993307 UTC",
+   "8c5afc2f-3ac6-4722-937f-623d69fab1aa",
+   "1.0.0"
+  ],
+  [
+   "2__BCMRO002",
+   "0.0",
+   "-42.0",
+   "2026-09-20",
+   "10",
+   "2026-09-20 03:30:00 UTC",
+   "elexon",
+   "2026-09-26 18:35:21.245511 UTC",
+   "2026-09-20 03:30:00 UTC",
+   "2026-09-26 18:35:19.993307 UTC",
+   "8c5afc2f-3ac6-4722-937f-623d69fab1aa",
+   "1.0.0"
+  ],
+  [
+   "E_ARNKB-1",
+   "-40.0",
+   "0.0",
+   "2026-09-20",
+   "10",
+   "2026-09-20 03:30:00 UTC",
+   "elexon",
+   "2026-09-26 18:35:21.245511 UTC",
+   "2026-09-20 03:30:00 UTC",
+   "2026-09-26 18:35:19.993307 UTC",
+   "8c5afc2f-3ac6-4722-937f-623d69fab1aa",
+   "1.0.0"
+  ],
+  [
+   "I_I2D-INCM1",
+   "-110.0",
+   "-110.0",
+   "2026-09-20",
+   "10",
+   "2026-09-20 03:30:00 UTC",
+   "elexon",
+   "2026-09-26 18:35:21.245511 UTC",
+   "2026-09-20 03:30:00 UTC",
+   "2026-09-26 18:35:19.993307 UTC",
+   "8c5afc2f-3ac6-4722-937f-623d69fab1aa",
+   "1.0.0"
+  ],
+  [
+   "T_DINO-5",
+   "-276.0",
+   "-275.0",
+   "2026-09-20",
+   "10",
+   "2026-09-20 03:30:00 UTC",
+   "elexon",
+   "2026-09-26 18:35:21.245511 UTC",
+   "2026-09-20 03:30:00 UTC",
+   "2026-09-26 18:35:19.993307 UTC",
+   "8c5afc2f-3ac6-4722-937f-623d69fab1aa",
+   "1.0.0"
+  ],
+  [
+   "T_HEYM27",
+   "640.0",
+   "640.0",
+   "2026-09-20",
+   "10",
+   "2026-09-20 03:30:00 UTC",
+   "elexon",
+   "2026-09-26 18:35:21.245511 UTC",
+   "2026-09-20 03:30:00 UTC",
+   "2026-09-26 18:35:19.993307 UTC",
+   "8c5afc2f-3ac6-4722-937f-623d69fab1aa",
+   "1.0.0"
+  ],
+  [
+   "T_PEMB-11",
+   "0.0",
+   "0.0",
+   "2026-09-20",
+   "10",
+   "2026-09-20 03:30:00 UTC",
+   "elexon",
+   "2026-09-26 18:35:21.245511 UTC",
+   "2026-09-20 03:30:00 UTC",
+   "2026-09-26 18:35:19.993307 UTC",
+   "8c5afc2f-3ac6-4722-937f-623d69fab1aa",
+   "1.0.0"
+  ],
+  [
+   "T_SGRWO-6",
+   "345.0",
+   "345.0",
+   "2026-09-20",
+   "10",
+   "2026-09-20 03:30:00 UTC",
+   "elexon",
+   "2026-09-26 18:35:21.245511 UTC",
+   "2026-09-20 03:30:00 UTC",
+   "2026-09-26 18:35:19.993307 UTC",
+   "8c5afc2f-3ac6-4722-937f-623d69fab1aa",
+   "1.0.0"
+  ]
+ ],
+ "mark": null
+}

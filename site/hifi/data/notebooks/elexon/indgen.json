@@ -1,0 +1,155 @@
+{
+ "dataset": "elexon/indgen",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "bfbb7b17cb7e519c9f8999f3c70ce3ad2a28a5ae928b27cdacd15357b08cec3b",
+ "kernel": "gridflow_models",
+ "source": "elexon",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.elexon",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.elexon.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "import pandas as pd\ncols = {\n    \"indgen\": \"indicated_generation_mw\",\n    \"inddem\": \"indicated_demand_mw\",\n    \"imbalngc\": \"indicated_imbalance\",\n    \"melngc\": \"indicated_margin\",\n    \"tsdf\": \"forecast_demand_mw\",\n}\npub = pd.Timestamp(\"2026-09-17 00:17\", tz=\"UTC\")\nparts = []\nfor name, col in cols.items():\n    df = data.elexon.query(name, \"2026-09-17\", \"2026-09-17\")\n    df = df[df.published_at.dt.tz_convert(\"UTC\") == pub]\n    if \"boundary\" in df:\n        df = df[df.boundary == \"N\"]\n    ts = df.timestamp_utc.dt.tz_convert(\"UTC\")\n    parts.append(df.set_index(ts)[col].rename(name))\nnat = pd.concat(parts, axis=1).sort_index()",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "nat.reset_index().head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "indgen",
+      "inddem",
+      "imbalngc",
+      "melngc",
+      "tsdf"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2026-09-17 00:30:00+00:00",
+       "25277.0",
+       "-16171.0",
+       "1214.0",
+       "27644.0",
+       "24063.0"
+      ],
+      [
+       "2026-09-17 01:00:00+00:00",
+       "25421.0",
+       "-17165.0",
+       "1374.0",
+       "28188.0",
+       "24047.0"
+      ],
+      [
+       "2026-09-17 01:30:00+00:00",
+       "25002.0",
+       "-17375.0",
+       "1083.0",
+       "29866.0",
+       "23919.0"
+      ],
+      [
+       "2026-09-17 02:00:00+00:00",
+       "25017.0",
+       "-17315.0",
+       "1556.0",
+       "30644.0",
+       "23461.0"
+      ],
+      [
+       "2026-09-17 02:30:00+00:00",
+       "25234.0",
+       "-18313.0",
+       "1969.0",
+       "31033.0",
+       "23265.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "check = nat.indgen - nat.imbalngc - nat.tsdf\ncheck.agg([\"min\", \"max\"])",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "min   -62.0\nmax     0.0\ndtype: float64"
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "source": "nat[[\"indgen\", \"tsdf\", \"melngc\", \"imbalngc\"]].plot(\n    ylabel=\"MW\", figsize=(8, 3.5),\n    color=[\"#155A6E\", \"#C77E3C\", \"#66793B\", \"#3E8C97\"])",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: xlabel='timestamp_utc', ylabel='MW'>"
+    },
+    {
+     "kind": "image",
+     "src": "indgen-6.png",
+     "width": 716,
+     "height": 334
+    }
+   ]
+  }
+ ]
+}

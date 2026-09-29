@@ -1,0 +1,127 @@
+{
+ "dataset": "elexon/fuelinst",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "431f41db6eec7b7068710ae3a5b3bc6e78d4962fbd1c42f882ebda9fd85b7f33",
+ "kernel": "gridflow_models",
+ "source": "elexon",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.elexon",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.elexon.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.elexon.query(\"fuelinst\", \"2026-09-19\", \"2026-09-20\")\ndf = df.drop_duplicates([\"timestamp_utc\", \"fuel_type\"])\ndf[\"timestamp_utc\"] = df.timestamp_utc.dt.tz_convert(\"UTC\")",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df.sort_values([\"timestamp_utc\", \"fuel_type\"])[[\"timestamp_utc\", \"fuel_type\", \"generation_mw\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "fuel_type",
+      "generation_mw"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2026-09-19 00:00:00+00:00",
+       "BIOMASS",
+       "1203.0"
+      ],
+      [
+       "2026-09-19 00:00:00+00:00",
+       "CCGT",
+       "3424.0"
+      ],
+      [
+       "2026-09-19 00:00:00+00:00",
+       "COAL",
+       "0.0"
+      ],
+      [
+       "2026-09-19 00:00:00+00:00",
+       "INTELEC",
+       "-1023.0"
+      ],
+      [
+       "2026-09-19 00:00:00+00:00",
+       "INTEW",
+       "45.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "ints = df[df.fuel_type.str.startswith(\"INT\")]\nnet = ints.groupby(\"timestamp_utc\").generation_mw.sum()\nnet.plot(ylabel=\"MW\", color=\"#155A6E\", figsize=(8, 3.5))",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: xlabel='timestamp_utc', ylabel='MW'>"
+    },
+    {
+     "kind": "image",
+     "src": "fuelinst-5.png",
+     "width": 716,
+     "height": 369
+    }
+   ]
+  }
+ ]
+}

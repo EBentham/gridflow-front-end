@@ -1,0 +1,19 @@
+{
+  "dataset": "elexon/remit",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "00bf2986bb798e7a311a68846420fb0335b2c4a0f993cd3efef8ad34e6e7635d",
+  "type": "bar",
+  "unit": "messages",
+  "caption": "",
+  "value_column": null,
+  "aggregation": "count",
+  "window": null,
+  "provenance": {"duplicates_dropped": 812, "files": 14, "rows_matched": 1353, "rows_read": 2291, "rows_used": 541, "silver": "elexon/remit"},
+  "spec": {"aggregation": "count", "dedup": {"on": ["mrid"], "order_by": "revision_number"}, "filter": [{"column": "message_type", "op": "eq", "value": "UnavailabilitiesOfElectricityFacilities"}, {"column": "timestamp_utc", "op": "ge", "value": "2026-09-13T00:00:00"}, {"column": "timestamp_utc", "op": "lt", "value": "2026-09-22T00:00:00"}], "group": "fuel_type", "group_map": {"Biomass": "biomass", "Fossil Gas": "gas", "Hydro Pumped Storage": "hydro", "Hydro Water Reservoir": "hydro", "Nuclear": "nuclear", "Other": "other", "Wind Offshore": "wind", "Wind Onshore": "wind"}, "group_null": "no_fuel", "silver": "elexon/remit", "sort": "value_desc", "type": "bar", "unit": "messages"},
+  "x_kind": "category",
+  "x": ["gas", "no_fuel", "biomass", "wind", "hydro", "nuclear", "other"],
+  "series": [
+    {"key": "count", "values": [246, 99, 79, 70, 31, 8, 8]}
+  ]
+}

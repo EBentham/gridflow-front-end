@@ -56,7 +56,7 @@
       ],
       [
         "mid",
-        "market index, the GB day-ahead benchmark"
+        "market index price and volume, per provider"
       ]
     ],
     "order": 0

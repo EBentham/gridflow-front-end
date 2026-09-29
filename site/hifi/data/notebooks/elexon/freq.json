@@ -1,0 +1,121 @@
+{
+ "dataset": "elexon/freq",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "609286c6c499679e90e6a8fc9df8f08fdeb726dfef208a968394fed78a9a7adc",
+ "kernel": "gridflow_models",
+ "source": "elexon",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.elexon",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.elexon.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.elexon.query(\"freq\", \"2026-09-17\", \"2026-09-17\")",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df[[\"timestamp_utc\", \"frequency_hz\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "frequency_hz"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2026-09-17 01:00:00+01:00",
+       "49.970"
+      ],
+      [
+       "2026-09-17 01:00:00+01:00",
+       "49.970"
+      ],
+      [
+       "2026-09-17 01:00:15+01:00",
+       "49.943"
+      ],
+      [
+       "2026-09-17 01:00:30+01:00",
+       "49.921"
+      ],
+      [
+       "2026-09-17 01:00:45+01:00",
+       "49.914"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "df.plot(x=\"timestamp_utc\", y=\"frequency_hz\", ylabel=\"Hz\",\n        color=\"#155A6E\", figsize=(8, 3.5))",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: xlabel='timestamp_utc', ylabel='Hz'>"
+    },
+    {
+     "kind": "image",
+     "src": "freq-5.png",
+     "width": 703,
+     "height": 334
+    }
+   ]
+  }
+ ]
+}

@@ -198,14 +198,18 @@ def test_every_new_template_page_renders() -> None:
 
 def test_a_page_without_a_page_block_is_blank(tmp_path: Path) -> None:
     """Ruling 30: the hero's breadcrumb, name and id, nothing else, and no planning words."""
-    build.build(DEFAULT_VAULT, tmp_path, frozenset({"elexon/agpt", "neso/carbon_intensity"}))
-    page = (tmp_path / "data-sources" / "elexon" / "agpt.html").read_text(encoding="utf-8")
+    build.build(
+        DEFAULT_VAULT, tmp_path, frozenset({"entsoe/water_reservoirs", "neso/carbon_intensity"})
+    )
+    page = (tmp_path / "data-sources" / "entsoe" / "water_reservoirs.html").read_text(
+        encoding="utf-8"
+    )
     assert re.findall(r'<section class="stratum stratum--(\w+)', page) == ["sky"]
     # not `.ds`, which ends in its own deep band: site.js gives a blank page the site footer
     assert '<main id="main" class="ds-blank">' in page
-    assert '<h1 class="h-hero ds-hero__h" id="ds-h">Actual generation per type</h1>' in page
-    assert '<code class="ds-chip">elexon/agpt</code>' in page
-    assert 'href="../elexon.html"' in page and "ds-facts" not in page and "data-chart" not in page
+    assert '<h1 class="h-hero ds-hero__h" id="ds-h">Water reservoirs and hydro storage</h1>' in page
+    assert '<code class="ds-chip">entsoe/water_reservoirs</code>' in page
+    assert 'href="../entsoe.html"' in page and "ds-facts" not in page and "data-chart" not in page
     assert not re.search(r"soon|planned|coming|placeholder|not yet", page, re.IGNORECASE)
     family = (tmp_path / "data-sources" / "neso" / "national-carbon-intensity.html").read_text(
         encoding="utf-8"

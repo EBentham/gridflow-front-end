@@ -1,0 +1,183 @@
+{
+ "dataset": "elexon/ndf",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "fd26977c7dd791da22e83a0d5bb48bc7a41e48d778b797e2a482c27f99ce7d5d",
+ "silver": "elexon/ndf",
+ "columns": [
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "national_demand_mw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "settlement_period",
+   "dtype": "Int32",
+   "lineage": false
+  },
+  {
+   "name": "settlement_date",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "forecast_type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "data_provider",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "ingested_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2026-09-16 07:45:00 UTC",
+   "28734.0",
+   "36",
+   "2026-09-17",
+   "2026-09-17 16:30:00 UTC",
+   "day_ahead",
+   "elexon",
+   "2026-09-26 18:33:10.470784 UTC",
+   "2026-09-17 16:30:00 UTC",
+   "2026-09-16 07:45:00 UTC",
+   "7f2ec946-7843-499d-b85e-c09c7bbf8d3f",
+   "1.0.0"
+  ],
+  [
+   "2026-09-16 11:18:00 UTC",
+   "28015.0",
+   "36",
+   "2026-09-17",
+   "2026-09-17 16:30:00 UTC",
+   "day_ahead",
+   "elexon",
+   "2026-09-26 18:33:10.470784 UTC",
+   "2026-09-17 16:30:00 UTC",
+   "2026-09-16 11:18:00 UTC",
+   "7f2ec946-7843-499d-b85e-c09c7bbf8d3f",
+   "1.0.0"
+  ],
+  [
+   "2026-09-16 17:47:00 UTC",
+   "27658.0",
+   "36",
+   "2026-09-17",
+   "2026-09-17 16:30:00 UTC",
+   "day_ahead",
+   "elexon",
+   "2026-09-26 18:33:10.470784 UTC",
+   "2026-09-17 16:30:00 UTC",
+   "2026-09-16 17:47:00 UTC",
+   "7f2ec946-7843-499d-b85e-c09c7bbf8d3f",
+   "1.0.0"
+  ],
+  [
+   "2026-09-16 19:47:00 UTC",
+   "27062.0",
+   "36",
+   "2026-09-17",
+   "2026-09-17 16:30:00 UTC",
+   "day_ahead",
+   "elexon",
+   "2026-09-26 18:33:10.470784 UTC",
+   "2026-09-17 16:30:00 UTC",
+   "2026-09-16 19:47:00 UTC",
+   "7f2ec946-7843-499d-b85e-c09c7bbf8d3f",
+   "1.0.0"
+  ],
+  [
+   "2026-09-16 21:47:00 UTC",
+   "26697.0",
+   "36",
+   "2026-09-17",
+   "2026-09-17 16:30:00 UTC",
+   "day_ahead",
+   "elexon",
+   "2026-09-26 18:33:10.470784 UTC",
+   "2026-09-17 16:30:00 UTC",
+   "2026-09-16 21:47:00 UTC",
+   "7f2ec946-7843-499d-b85e-c09c7bbf8d3f",
+   "1.0.0"
+  ],
+  [
+   "2026-09-17 06:46:00 UTC",
+   "26625.0",
+   "36",
+   "2026-09-17",
+   "2026-09-17 16:30:00 UTC",
+   "day_ahead",
+   "elexon",
+   "2026-09-26 18:33:10.544385 UTC",
+   "2026-09-17 16:30:00 UTC",
+   "2026-09-17 06:46:00 UTC",
+   "7f2ec946-7843-499d-b85e-c09c7bbf8d3f",
+   "1.0.0"
+  ],
+  [
+   "2026-09-17 09:46:00 UTC",
+   "26554.0",
+   "36",
+   "2026-09-17",
+   "2026-09-17 16:30:00 UTC",
+   "day_ahead",
+   "elexon",
+   "2026-09-26 18:33:10.544385 UTC",
+   "2026-09-17 16:30:00 UTC",
+   "2026-09-17 09:46:00 UTC",
+   "7f2ec946-7843-499d-b85e-c09c7bbf8d3f",
+   "1.0.0"
+  ],
+  [
+   "2026-09-17 16:18:00 UTC",
+   "26554.0",
+   "36",
+   "2026-09-17",
+   "2026-09-17 16:30:00 UTC",
+   "day_ahead",
+   "elexon",
+   "2026-09-26 18:33:10.544385 UTC",
+   "2026-09-17 16:30:00 UTC",
+   "2026-09-17 16:18:00 UTC",
+   "7f2ec946-7843-499d-b85e-c09c7bbf8d3f",
+   "1.0.0"
+  ]
+ ],
+ "mark": null
+}

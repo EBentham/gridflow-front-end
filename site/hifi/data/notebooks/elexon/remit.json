@@ -1,0 +1,141 @@
+{
+ "dataset": "elexon/remit",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "1f92977f19efdf61c69f2c86d624e83d7f4aebd756db79d6dca0d9a0f90e209e",
+ "kernel": "gridflow_models",
+ "source": "elexon",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.elexon",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.elexon.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.elexon.query(\"remit\", \"2026-09-13\", \"2026-09-21\")",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df[[\"asset_id\", \"event_start_time\", \"event_end_time\", \"unavailable_capacity_mw\", \"revision_number\", \"event_status\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "asset_id",
+      "event_start_time",
+      "event_end_time",
+      "unavailable_capacity_mw",
+      "revision_number",
+      "event_status"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "T_MOWWO-1",
+       "2026-09-12 08:30:00+01:00",
+       "2026-09-13 07:00:00+01:00",
+       "9.0",
+       "2",
+       "Active"
+      ],
+      [
+       "T_HUMR-1",
+       "2026-09-14 18:00:00+01:00",
+       "2026-09-14 23:00:00+01:00",
+       "385.0",
+       "3",
+       "Dismissed"
+      ],
+      [
+       "T_KEAD-1",
+       "2030-08-16 23:00:00+01:00",
+       "2030-09-24 16:00:00+01:00",
+       "755.0",
+       "1",
+       "Active"
+      ],
+      [
+       "T_DRAXX-4",
+       "2026-09-13 16:15:00+01:00",
+       "2026-09-13 16:50:00+01:00",
+       "345.0",
+       "2",
+       "Dismissed"
+      ],
+      [
+       "T_DRAXX-4",
+       "2026-09-13 03:58:00+01:00",
+       "2026-09-13 10:13:00+01:00",
+       "645.0",
+       "4",
+       "Active"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "import matplotlib.pyplot as plt\nnuc = df[(df.fuel_type == \"Nuclear\") & (df.event_status == \"Active\")]\nnuc = nuc.sort_values(\"event_start_time\", ascending=False)\nfig, ax = plt.subplots(figsize=(8, 3.5))\nax.hlines(nuc.asset_id, nuc.event_start_time, nuc.event_end_time,\n          lw=8, color=\"#155A6E\")\nax.set_xlabel(\"event window, UK time\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "remit-5.png",
+     "width": 731,
+     "height": 337
+    }
+   ]
+  }
+ ]
+}

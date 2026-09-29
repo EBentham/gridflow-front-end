@@ -1,0 +1,222 @@
+{
+ "dataset": "elexon/agws",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "170c01a57bb0ae8e71bd913750686dc5498dbd6305a241fcaa2f480a4e643453",
+ "silver": "elexon/agws",
+ "columns": [
+  {
+   "name": "settlement_date",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "settlement_period",
+   "dtype": "Int32",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "psr_type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "generation_mw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "business_type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "document_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "document_revision",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "data_provider",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "ingested_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2026-09-25",
+   "1",
+   "2026-09-24 23:00:00 UTC",
+   "Solar",
+   "0.0",
+   "Solar generation",
+   "NGET-EMFIP-AGWS-0925260130",
+   "1",
+   "2026-09-25 01:30:01 UTC",
+   "elexon",
+   "2026-09-27 00:10:00.601796 UTC",
+   "2026-09-24 23:00:00 UTC",
+   "2026-09-25 01:30:01 UTC",
+   "c95085e7-8461-4a28-ace9-495c94fbd9cc",
+   "1.0.0"
+  ],
+  [
+   "2026-09-25",
+   "1",
+   "2026-09-24 23:00:00 UTC",
+   "Wind Offshore",
+   "7532.0",
+   "Wind generation",
+   "NGET-EMFIP-AGWS-0925260130",
+   "1",
+   "2026-09-25 01:30:01 UTC",
+   "elexon",
+   "2026-09-27 00:10:00.601796 UTC",
+   "2026-09-24 23:00:00 UTC",
+   "2026-09-25 01:30:01 UTC",
+   "c95085e7-8461-4a28-ace9-495c94fbd9cc",
+   "1.0.0"
+  ],
+  [
+   "2026-09-25",
+   "14",
+   "2026-09-25 05:30:00 UTC",
+   "Solar",
+   "29.0",
+   "Solar generation",
+   "NGET-EMFIP-AGWS-0925260800",
+   "1",
+   "2026-09-25 08:00:01 UTC",
+   "elexon",
+   "2026-09-27 00:10:00.601796 UTC",
+   "2026-09-25 05:30:00 UTC",
+   "2026-09-25 08:00:01 UTC",
+   "c95085e7-8461-4a28-ace9-495c94fbd9cc",
+   "1.0.0"
+  ],
+  [
+   "2026-09-25",
+   "14",
+   "2026-09-25 05:30:00 UTC",
+   "Wind Offshore",
+   "4595.0",
+   "Wind generation",
+   "NGET-EMFIP-AGWS-0925260800",
+   "1",
+   "2026-09-25 08:00:01 UTC",
+   "elexon",
+   "2026-09-27 00:10:00.601796 UTC",
+   "2026-09-25 05:30:00 UTC",
+   "2026-09-25 08:00:01 UTC",
+   "c95085e7-8461-4a28-ace9-495c94fbd9cc",
+   "1.0.0"
+  ],
+  [
+   "2026-09-25",
+   "27",
+   "2026-09-25 12:00:00 UTC",
+   "Solar",
+   "8323.0",
+   "Solar generation",
+   "NGET-EMFIP-AGWS-0925261430",
+   "1",
+   "2026-09-25 14:30:09 UTC",
+   "elexon",
+   "2026-09-27 00:10:00.601796 UTC",
+   "2026-09-25 12:00:00 UTC",
+   "2026-09-25 14:30:09 UTC",
+   "c95085e7-8461-4a28-ace9-495c94fbd9cc",
+   "1.0.0"
+  ],
+  [
+   "2026-09-25",
+   "27",
+   "2026-09-25 12:00:00 UTC",
+   "Wind Offshore",
+   "1694.0",
+   "Wind generation",
+   "NGET-EMFIP-AGWS-0925261430",
+   "1",
+   "2026-09-25 14:30:09 UTC",
+   "elexon",
+   "2026-09-27 00:10:00.601796 UTC",
+   "2026-09-25 12:00:00 UTC",
+   "2026-09-25 14:30:09 UTC",
+   "c95085e7-8461-4a28-ace9-495c94fbd9cc",
+   "1.0.0"
+  ],
+  [
+   "2026-09-25",
+   "46",
+   "2026-09-25 21:30:00 UTC",
+   "Solar",
+   "0.0",
+   "Solar generation",
+   "NGET-EMFIP-AGWS-0926260000",
+   "1",
+   "2026-09-26 00:00:15 UTC",
+   "elexon",
+   "2026-09-27 00:10:00.609588 UTC",
+   "2026-09-25 21:30:00 UTC",
+   "2026-09-26 00:00:15 UTC",
+   "c95085e7-8461-4a28-ace9-495c94fbd9cc",
+   "1.0.0"
+  ],
+  [
+   "2026-09-25",
+   "46",
+   "2026-09-25 21:30:00 UTC",
+   "Wind Offshore",
+   "2174.0",
+   "Wind generation",
+   "NGET-EMFIP-AGWS-0926260000",
+   "1",
+   "2026-09-26 00:00:15 UTC",
+   "elexon",
+   "2026-09-27 00:10:00.609588 UTC",
+   "2026-09-25 21:30:00 UTC",
+   "2026-09-26 00:00:15 UTC",
+   "c95085e7-8461-4a28-ace9-495c94fbd9cc",
+   "1.0.0"
+  ]
+ ],
+ "mark": null
+}
