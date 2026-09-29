@@ -23,11 +23,11 @@ Batch brief: `.planning/v5/p26/BATCH-elexon.md`. Reports: `.planning/v5/p26/elex
 | agws | checker running | a02a65646052893e2 | a11c80668abbefdce | act on the verdict |
 | windfor | checker running | a1ab63925783acd9e | a17288a5f3e21ed79 | act on the verdict |
 | atl | revision 1 done (gaps now break); checker running | ae4cecd8c31375b94 | aa5264d2b291ec745 | act on the verdict |
-| lolpdrm | REVISE (1 major: "random suffix" claim), writer revising | a9a809d3db7a3003d | a0485269512755d5d | re-check |
+| lolpdrm | APPROVED (review 2) | a9a809d3db7a3003d | a0485269512755d5d | done |
 | demand-forecasts (family, lead ndf) | written; checker running | abf8f9353b1213246 | a47d843864370aaca | act on the verdict |
 | boal | APPROVED, nits applied | a31536a58a5a3b972 | adc1711149f93ffb3 | done |
 | disbsad | written (volume by service, 14 to 19 Sep) | a5b3f85429c8bcd8c | — | QUEUED: launch the checker (look at "each reply holds the half-hour starting at `to`", and the £/MWh units from the note only) |
-| market_depth | written (accepted offer volume, 16 to 22 Sep) | aa46a54294f5cafaa | — | QUEUED: launch the checker (look at the same-day-null raw-feed note: vendor behaviour or local holdings?; the MWh vs MW conflict) |
+| market_depth | written; checker running (launched at 71% of the 5-hour window) | aa46a54294f5cafaa | (new) | act on the verdict |
 | netbsad | written; HELD, not in the batch PR (every field is 0 across 674 periods while DISBSAD shows up to 773 MWh: likely a gridflow parse bug) | a5e765b85bf3eff9a | — | research unit first, then check and publish |
 | soso | written (EWIC_EG mean Bid and Offer by start hour, 14 to 18 Sep) | a41b75f70f9993f96 | — | QUEUED: launch the checker (look at Bid/Offer undefined by Elexon; the "£" unit) |
 | pn | written (level_from for three BM units, 16 to 22 Sep) | a1f13e90b72f5b8c5 | — | QUEUED: launch the checker (look at "each kept segment starts its period", and the null `bm_unit_id` line) |

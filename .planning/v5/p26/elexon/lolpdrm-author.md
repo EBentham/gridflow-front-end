@@ -36,9 +36,9 @@ in the eight rows), so it cannot share an axis with MW; the eight rows carry it 
 
 | Claim (field) | Evidence |
 |---|---|
-| title/summary: forecast per settlement period of LOLP and de-rated margin, republished as each period nears | `schemas/elexon.py:710-722` (fields, docstring); bronze 2026-09-15 has 26 publishes carrying period 2026-09-16 17:00 (lol2.py scan); chart shows the same period in two publishes |
+| title/summary: forecast per settlement period of LOLP and de-rated margin, published on BMRS (no author named: nothing evidences who computes it), republished as each period nears | `schemas/elexon.py:710-722` (fields, docstring); bronze 2026-09-15 has 26 publishes carrying period 2026-09-16 17:00 (lol2.py scan); chart shows the same period in two publishes |
 | facts.vendor: dataset LOLPDRM | `connectors/elexon/endpoints.py:225-226` path `/datasets/LOLPDRM` |
-| facts.cadence: repeated through the day; each publish names its half-hour publishing period | vendor field `publishingPeriodCommencingTime` in the note's bronze sample (02:30 for a 02:34 publish) and in bronze; notebook output shows 00:06 and 12:04 publishes on the same day |
+| facts.cadence: republished through the day, as the feed's publish times show | scoped to the feed, no vendor document: bronze `publishTime` values (37 to 48 distinct per day, checker's scan); notebook output shows 00:06 and 12:04 publishes on the same day |
 | facts.grain: one row per settlement period from each day's publishes | `silver/elexon/lolpdrm.py:31-45` reads one bronze day; `:120` `unique(subset=[settlement_date, settlement_period], keep="last")`; `silver/base.py:417` `PARTITION_SOURCE_OFFSETS = (0,)`; bronze day = chunk start date `connectors/elexon/client.py:314` |
 | Key: settlement_date, settlement_period, published_at | across all silver, `group_by(date, period, published_at)` has 0 duplicates; `group_by(date, period)` alone has 528 keys with 2 rows and 60 with 3 (a period is kept once per bronze day that forecast it) |
 | what_it_is: LOLP unitless, 0 to 1 | `schemas/elexon.py:713,721` (`Field(ge=0.0, le=1.0)`, "unitless probability in [0, 1]") |
@@ -83,15 +83,16 @@ The curl example (`format=json`, 3 h window) is valid for the vendor and was lef
 
 ## Transformer behaviour (open question for gridflow, not fixed here)
 
-`lolpdrm.py` concatenates the bronze day's files in `sorted(glob("raw_*.json"))` order (`:42`); file names
-share the run timestamp and end in a random 8-hex suffix, so the order of the day's two 12-hour chunk files is
-arbitrary. Bronze rows arrive newest publish first. `unique(..., keep="last")` (`:120`) with no sort on
+`lolpdrm.py` concatenates the bronze day's files in `sorted(glob("raw_*.json"))` order (`:42`). File names
+are `raw_<fetch second>_<first 8 hex of the body's SHA-256>` (`bronze/writer.py:33-34,57`); the day's two
+12-hour chunk files share the fetch second, so their order is set by the body hash: fixed for a given bronze,
+but unrelated to publish time. Bronze rows arrive newest publish first. `unique(..., keep="last")` (`:120`) with no sort on
 `published_at` therefore keeps the earliest publish carrying each period in whichever file is read last:
 - usual case (00-12 file first): ~00:04 publish for periods to 12:30 that day, ~12:05 publish for the rest;
 - flipped order (seen for 2026-08-02, 08-05, 09-19): ~00:04 publish to 03:30 next day, then ~11:04.
 
-So silver is neither "latest publish" nor a fixed lead time, and a re-transform can keep different publishes
-on different machines. The page states only the code facts (one row per period from each day's publishes) and
+So silver is neither "latest publish" nor a fixed lead time. Re-transforming the same bronze keeps the same
+publishes; only a separate ingest (new fetch time and body) can change the order. The page states only the code facts (one row per period from each day's publishes) and
 names the publishes it charts; it never says "latest" or "day-ahead". Worth a gridflow issue: sort by
 `published_at` before dedup (or keep every publish, as windfor does) and bump `DATASET_VERSION` (still the base
 default `1.0.0`, `base.py:708`).
@@ -129,3 +130,24 @@ Scratchpad `lol-shots/`: `p<width>-o0-*.png` (notebook closed), `p<width>-o1-*.p
 1024, 768 and 390 (390 via a 390 px iframe in `lol-shots/wrap.html`), `u768-*.png`, `u390-*.png`,
 `u1440-*.png` (frame unfolded). Static server on 9724 stopped. Headless Chrome used its own profile
 (`scratchpad/lol-chrome`).
+
+## Revision 1 (2026-09-29): response to `lolpdrm-review.md`
+
+- **Major, vault Known-issues bullet.** "(random suffix)" replaced with "(fetch time, then the first 8 hex
+  digits of the body's SHA-256, `bronze/writer.py:33-34,57`; so fixed for a given bronze but unrelated to
+  publish time)". The rest of the bullet is unchanged. The checker verified it: the survivor is the earliest
+  publish carrying the period in the last-read file (~00:04 plus ~12:05, or ~00:04 plus ~11:04 where the
+  order flips). The report's "Transformer behaviour" section is corrected to match: same bronze, same
+  publishes kept; the "different machines" claim is withdrawn.
+- **Nit, `page.summary`.** "Elexon's forecast, ..." changed to "Forecast, per settlement period, of
+  loss-of-load probability and de-rated margin, published on BMRS and republished as each period draws
+  nearer." (20 words). Nothing in the repo says who computes it.
+- **Nit, `page.facts.cadence`.** Changed to "Republished through the day, as the feed's publish times show".
+  "Half-hour" is dropped, because it is observed rather than documented. The field name is not put in the
+  hero: `publishingPeriodCommencingTime` is a long mono token in a narrow value column at 390.
+- Evidence-table rows for the summary and cadence are updated.
+- **Checks.** Canonical note re-copied to the mirror (`cmp` identical, CRLF kept).
+  `gridflow-build --only elexon/lolpdrm` passes, and `detect.mjs --json` returns `[]`. No artefact changed:
+  the chart spec and select are untouched, and the build's digest check passed.
+- **Not re-screenshotted.** Only hero text changed: the cadence value is shorter than before, and the summary
+  is about the same length.
