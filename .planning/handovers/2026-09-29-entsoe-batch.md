@@ -52,6 +52,13 @@
 | forecast_margin | REVISE (2 majors: uses that need the sign; DE-LU +4,126 unflagged in the notebook; 2 nits); writer resumed | a567036a197b2b0ce | a2c81932ebff15c69 | verdict |
 | outages (family, lead outages_generation) | **HELD** (ruling #46): PT1M points stamped as hours, identity dropped, key collapse, cross-file repeats. Note edits in all 5 notes and mirrors go to a held branch at PR time | a6091df14760f7c08 | — | held |
 
+## SHIPPED 2026-09-29 (ruling #47)
+
+- PR #55 squash-merged as d284745. CI, the deploy and docs-integrity are green, and the live pages are checked.
+- Vault PR quant-vault#56 (docs/v5-p26-entsoe) is open for Bobbo to merge.
+- Held notes are on `docs/v5-p26-entsoe-held` and `v5/p26-entsoe-held`.
+- Process miss: I merged while the PR check docs-integrity was still in progress (it passed afterwards). CLAUDE.md is corrected, since the repo does have PR CI.
+
 ## At PR time
 
 - DONE 2026-09-29 ~21:10 UTC: the 9 held notes (current_balancing_state, procured_balancing_capacity, balancing_energy_bids, aggregated_balancing_energy_bids, outages x5) are parked on `docs/v5-p26-entsoe-held` (vault) and `v5/p26-entsoe-held` (front end, 95b97be), both pushed. They are restored to base on the ship branches. Scratch worktrees: `vault-entsoe-held`, `fe-entsoe-held`.

@@ -20,7 +20,7 @@ uv run gridflow-build --check      # idempotence / content audit; CI fails on dr
 uv run gridflow-drift-check        # verify rendered pages against their vault sources
 ```
 
-CI (`.github/workflows/deploy.yml`) runs `htmlhint` + `lychee` link-checking, then publishes to GitHub Pages — **on push to `main` only; there is no PR-triggered CI.** The merge gate for every PR is a local green `uv run --system-certs --extra build gridflow-build --check` (Avast intercepts TLS). `gridflow-drift-check` calls the vault's **live-API** curl validator — never run it without explicit user confirmation.
+Two workflows. `.github/workflows/ci.yml` (job `docs-integrity`: staleness check, baseline ratchet, `gridflow-build --check`) runs **on every pull request and on push to `main`**, so wait for it to go green before merging. `.github/workflows/deploy.yml` runs `htmlhint` + `lychee` link-checking and publishes to GitHub Pages on push to `main` only. The local merge gate is also a green `uv run --system-certs --extra build gridflow-build --check` (Avast intercepts TLS). `gridflow-drift-check` calls the vault's **live-API** curl validator — never run it without explicit user confirmation.
 
 ## Tech stack
 
