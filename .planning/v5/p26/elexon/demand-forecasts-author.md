@@ -104,3 +104,17 @@ Family page `demand-forecasts` (lead `ndf`; members `ndfd`, `tsdf`, `tsdfd`). Wr
   - A note can choose rows but not column order.
   - Worth considering: pin non-constant columns first, or fold constant columns first.
   - The same will affect any vintage table (NDF, TSDF, and the indicated-day-ahead family).
+
+## Revision 1 (after `demand-forecasts-review.md`, REVISE: 1 major, 3 nits)
+
+- **Major, `page.what_it_is` attribution:**
+  - Now reads "`NDF` forecasts GB national demand, which NESO equates with `INDO`" and "`TSDF` forecasts transmission system demand, which NESO equates with `ITSDO`". This matches the `demand-outturn` wording.
+  - NESO's equivalences are quoted in `indo.md` (#01:244, #01:268).
+- **Nit 1, notebook lead:** "The first cell converts times" is now "The query cell converts times".
+- **Nit 2, boundary count:** the unscoped "17 transmission boundaries `B1` to `B17`" is gone.
+  - `what_it_is` now says "beside other boundary codes (`B1`, `B2` and so on)".
+  - `family.members[tsdf].differs` now says "Transmission demand at `N` plus other boundary codes; one vintage per publish day".
+- **Nit 3, grain:** `facts.grain` now covers all four members (13 words): "NDF: half-hour and publish; TSDF: half-hour, boundary, publish day; NDFD, TSDFD: date, publish". The keys come from `demand_forecast.py:150-153`, `tsdf.py:112-115` and `tsdfd.py:99`.
+- **Optional body note, taken:** `ndfd.md` and `tsdfd.md` say "the fields do not say which daily statistic" instead of "undocumented".
+- **Artefacts:** unchanged. No chart, record-select or notebook-cell edits, so the series, sample and notebook digests still hold.
+- **Checks re-run:** `gridflow-build --only elexon/ndf` passes and `detect.mjs --json` returns `[]`. All four notes are re-copied to the mirror, byte-identical with CRLF kept.
