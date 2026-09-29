@@ -48,7 +48,7 @@
 | installed_capacity | written (DE-LU 2026 capacity by type, bar; 4 zones, daily repeats noted); checker running | ae278337fa1293ec8 | aadbd72a6a196372e | verdict |
 | load-forecasts (family, lead load_forecast) | written (day-ahead DE-LU/FR/NL/BE 14-20 Sep, no issue time); seat: horizon members ship with the A61-only loss stated; checker running | a0639f624b8567137 | a8fde62593ddf835d | verdict |
 | installed_capacity_units | writer running | abc4b218164a9acf8 | | report |
-| water_reservoirs | written (FR only, 4 weekly points in two pieces); seat: ships thin-but-accurate with coverage stated; swap the blank-page test at PR time; checker running | ad11aa4256be63ae4 | | verdict |
+| water_reservoirs | written (FR only, 4 weekly points in two pieces); seat: ships thin-but-accurate with coverage stated; swap the blank-page test at PR time; checker running | ad11aa4256be63ae4 | a328b581d4bd66dc5 | verdict |
 | still queued: forecast_margin, outages (family) | queued | | | writers as slots free (GIE checkers first) |
 
 ## At PR time
