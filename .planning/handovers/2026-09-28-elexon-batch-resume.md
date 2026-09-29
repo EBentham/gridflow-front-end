@@ -29,7 +29,7 @@ Batch brief: `.planning/v5/p26/BATCH-elexon.md`. Reports: `.planning/v5/p26/elex
 | disbsad | written; checker running | a5b3f85429c8bcd8c | aebe91340cd8e1a7c | act on the verdict |
 | market_depth | APPROVED, nits applied | aa46a54294f5cafaa | a8ccdd8aa4d55aa88 | done |
 | netbsad | written; HELD, not in the batch PR (every field is 0 across 674 periods while DISBSAD shows up to 773 MWh: likely a gridflow parse bug) | a5e765b85bf3eff9a | — | research unit first, then check and publish |
-| soso | written; checker running (launched at 76%) | a41b75f70f9993f96 | (new) | act on the verdict |
+| soso | written; checker running (launched at 76%) | a41b75f70f9993f96 | a3d57de07ebfc9143 | act on the verdict |
 | pn | written (level_from for three BM units, 16 to 22 Sep) | a1f13e90b72f5b8c5 | — | QUEUED: launch the checker (look at "each kept segment starts its period", and the null `bm_unit_id` line) |
 | nonbm, fou2t14d, uou2t14d, remit, indicated-day-ahead (family) | not started | — | — | launch writers under the throttle |
 
