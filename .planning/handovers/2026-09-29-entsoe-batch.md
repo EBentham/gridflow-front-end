@@ -41,8 +41,13 @@
 | group 2 rest: dc_link_intraday_transfer_limits | queued | — | — | writers |
 | current_balancing_state | HELD blank (ruling #41): silver has no zone, no sign and wrong times (13l). The note body was corrected but is unchecked | aff7fcf8159bb3639 | — | after the gridflow fix: page block, then checker |
 | procured_balancing_capacity | HELD blank (ruling #42): silver rows are arbitrary picks across 4 countries (13o). The note body was corrected but is unchecked | a7d2508a74e6ebbfa | — | after the gridflow fix |
-| group 3 rest (tell the balancing-energy-bids writer that aggregated_balancing_energy_bids may share the empty-area parse bug, 13o): balancing-energy-bids, congestion-management, actual_generation_units, generation_units_master_data | queued | — | — | writers after the reset |
-| group 4: installed_capacity, installed_capacity_units, water_reservoirs, forecast_margin, load-forecasts, outages | queued | — | — | writers |
+| balancing-energy-bids (family, lead balancing_energy_bids; warned about the 13o empty-area bug) | writer running | a963682b7f587ae52 | | report |
+| congestion-management (family, lead redispatching_internal) | writer running | a696043a3c83b78e1 | | report |
+| actual_generation_units | writer running | aa26b6043c67cd777 | | report |
+| generation_units_master_data | writer running | a20a17cf260cfe31f | | report |
+| installed_capacity | writer running | ae278337fa1293ec8 | | report |
+| load-forecasts (family, lead load_forecast) | writer running | a0639f624b8567137 | | report |
+| still queued: installed_capacity_units, water_reservoirs, forecast_margin, outages (family) | queued | | | writers as slots free (GIE checkers first) |
 
 ## At PR time
 
