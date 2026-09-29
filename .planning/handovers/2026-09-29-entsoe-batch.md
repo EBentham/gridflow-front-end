@@ -42,17 +42,19 @@
 | current_balancing_state | HELD blank (ruling #41): silver has no zone, no sign and wrong times (13l). The note body was corrected but is unchecked | aff7fcf8159bb3639 | — | after the gridflow fix: page block, then checker |
 | procured_balancing_capacity | HELD blank (ruling #42): silver rows are arbitrary picks across 4 countries (13o). The note body was corrected but is unchecked | a7d2508a74e6ebbfa | — | after the gridflow fix |
 | balancing-energy-bids (family, lead balancing_energy_bids) | **HELD** (ruling #44): lead stops at 100 series and drops BE bids at dedup; aggregated area blank. Note edits in both notes and mirrors go to a held branch at PR time | a963682b7f587ae52 | — | held |
-| congestion-management (family, lead redispatching_internal) | REVISE (1 major: stale 'no view' sentence in the costs note; 5 nits); writer resumed | a696043a3c83b78e1 | a40db70347a68ee3a | re-check |
+| congestion-management (family, lead redispatching_internal) | **APPROVED** on re-check | a696043a3c83b78e1 | a40db70347a68ee3a | done |
 | actual_generation_units | **APPROVED** on re-check (clean Dutch sample rows; how-used limited to charted plants) | aa26b6043c67cd777 | a307fc1083fa679bf | done |
 | generation_units_master_data | **APPROVED** (3 optional nits) | a20a17cf260cfe31f | a9307d180d54daee9 | done |
 | installed_capacity | **APPROVED** on re-check (pivot headers fixed) | ae278337fa1293ec8 | aadbd72a6a196372e | done |
 | load-forecasts (family, lead load_forecast) | **APPROVED** on re-check (loss in plain words) | a0639f624b8567137 | a8fde62593ddf835d | done |
-| installed_capacity_units | REVISE (1 major: scope 'every request returns the year document' to our replies; 3 nits); writer resumed | abc4b218164a9acf8 | a9a068a48017c1f65 | re-check |
-| water_reservoirs | **APPROVED** (3 nits; writer fixing them); swap the blank-page test at PR time | ad11aa4256be63ae4 | a328b581d4bd66dc5 | done after nits |
+| installed_capacity_units | **APPROVED** on re-check | abc4b218164a9acf8 | a9a068a48017c1f65 | done |
+| water_reservoirs | **APPROVED** (3 nits fixed); swap the blank-page test at PR time | ad11aa4256be63ae4 | a328b581d4bd66dc5 | done |
 | forecast_margin | writer running | a567036a197b2b0ce | | report |
 | outages (family, lead outages_generation) | writer running | a6091df14760f7c08 | | report |
 
 ## At PR time
+
+- The notebook renderer fix is DONE, uncommitted in p26-entsoe (build.py + theme.css + 7 tests; report `.planning/v5/p26/entsoe/notebook-render-fix.md`); it ships with this PR. The Polars-frame crash in `run_notebooks.py` is out of scope (note it).
 
 - `tests/test_dataset_page.py` uses `entsoe/water_reservoirs` as its blank-page example. If that page gets content,
   switch the test to a page that stays blank; `gie/lng` won't do, because its scenery text says "coming ashore".
