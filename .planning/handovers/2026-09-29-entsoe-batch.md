@@ -42,7 +42,7 @@
 | current_balancing_state | HELD blank (ruling #41): silver has no zone, no sign and wrong times (13l). The note body was corrected but is unchecked | aff7fcf8159bb3639 | — | after the gridflow fix: page block, then checker |
 | procured_balancing_capacity | HELD blank (ruling #42): silver rows are arbitrary picks across 4 countries (13o). The note body was corrected but is unchecked | a7d2508a74e6ebbfa | — | after the gridflow fix |
 | balancing-energy-bids (family, lead balancing_energy_bids) | **HELD** (ruling #44): lead stops at 100 series and drops BE bids at dedup; aggregated area blank. Note edits in both notes and mirrors go to a held branch at PR time | a963682b7f587ae52 | — | held |
-| congestion-management (family, lead redispatching_internal) | writer running | a696043a3c83b78e1 | | report |
+| congestion-management (family, lead redispatching_internal) | written (NL internal redispatch, down series only, 15-21 Sep); seat: ships with the direction loss stated (as A07); checker running | a696043a3c83b78e1 | a40db70347a68ee3a | verdict |
 | actual_generation_units | written (3 NL plants hourly 14-20 Sep); seat: ships with the plant-not-unit defect stated (as 13a); checker running | aa26b6043c67cd777 | a307fc1083fa679bf | verdict |
 | generation_units_master_data | written (unit count by type, 6 zones, no MW); seat: event_time stays in the key, 'Smaller types' label ok; checker running | a20a17cf260cfe31f | a9307d180d54daee9 | verdict |
 | installed_capacity | written (DE-LU 2026 capacity by type, bar; 4 zones, daily repeats noted); checker running | ae278337fa1293ec8 | aadbd72a6a196372e | verdict |
@@ -62,7 +62,7 @@
 
 **Remediation list (Bobbo 2026-09-29):** log each gridflow or data defect as it is found, in gridflow `.planning/BACKLOG.md`
 item 13 and in the vault page `10-projects/gridflow/specs/remediation-from-site-batches.md` (on the branch for PR quant-vault#55).
-Logged so far: 13a to 13y.
+Logged so far: 13a to 13ad.
 
 - Ruling #39, amended by #40: EIC codes in a note's front matter use `-` escapes (the vault scripts split the note on `---`).
   The build now rejects a literal one: guard in `page_fields.parse_page_fields`, tests in `tests/test_front_matter_fence.py`,
