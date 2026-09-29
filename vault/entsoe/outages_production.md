@@ -71,12 +71,12 @@ Live verification 2026-05-08:
 
 **Path pattern**: `{data_root}/bronze/entsoe/outages_production/<year>/<month>/<day>/raw_<uuid>.xml`
 **Format**: Raw XML — one bronze file per inner ZIP entry.
-**Granularity**: One bronze file per outage notification.
+**Granularity**: One bronze file per outage notification. gridflow sends one request per zone per UTC day (`client.py:162-163`) and files it under that day (`client.py:312`), so a multi-day outage is filed again under every day it overlaps.
 
 ### Bronze sample (single outage doc, schematic)
 
 ```xml
-<Unavailability_MarketDocument xmlns="urn:iec62325.351:tc57wg16:451-2:unavailibilitydocument:5:0">
+<Unavailability_MarketDocument xmlns="urn:iec62325.351:tc57wg16:451-6:outagedocument:3:0">
   <type>A77</type>
   <docStatus><value>A05</value></docStatus>
   <TimeSeries>
@@ -87,7 +87,7 @@ Live verification 2026-05-08:
     <production_RegisteredResource.pSRType.psrType>B11</production_RegisteredResource.pSRType.psrType>
     <Available_Period>
       <timeInterval>...</timeInterval>
-      <resolution>PT60M</resolution>
+      <resolution>PT1M</resolution>
       <Point><position>1</position><quantity>250</quantity></Point>
     </Available_Period>
   </TimeSeries>
@@ -102,24 +102,25 @@ Live verification 2026-05-08:
 **Transformer class**: `gridflow.silver.entsoe.outages_h7.OutagesProductionTransformer`
 **Pydantic schema**: `gridflow.schemas.entsoe.EntsoeOutagesProduction`
 **Dedup key**: `(timestamp_utc, area_code, unit_mrid, timeseries_mrid)`
-**Point-in-time (as-of) field**: `available_at` (the bitemporal as-of column written by `BaseSilverTransformer`, reconstructable from bronze sidecars on reingest). `ingested_at` is the transform wall-clock (`datetime.now(UTC)`), **not** a publication vintage, so do not use it as a leak-proof as-of anchor.
+**Point-in-time (as-of) field**: `available_at` (the bitemporal as-of column written by `BaseSilverTransformer`, reconstructable from bronze sidecars on reingest). `ingested_at` is the transform wall-clock (`datetime.now(UTC)`), **not** a publication vintage, so do not use it as a leak-proof as-of anchor. `published_at` is the document `createdDateTime` (`outages_h7.py:107`), the notice's creation time (dates from October 2025 onwards in bronze fetched in 2026), and it feeds `available_at`.
 
 ### Silver schema
 
 | Field | Python type | Nullable | Source field | Notes |
 |-------|-------------|----------|--------------|-------|
-| timestamp_utc | datetime[UTC] | No | Available_Period | tz-aware UTC |
+| timestamp_utc | datetime[UTC] | No | `Available_Period` start + (position - 1) × resolution (`parsers.py:530`) | tz-aware UTC. One row per declared `<Point>`; the period end is not kept. `PT1M` steps by 1 hour (see Known issues). |
 | area_code | str | No | `<biddingZone_Domain.mRID>` | EIC |
 | unit_mrid | str | No | `<production_RegisteredResource.mRID>` | Production unit EIC |
 | unit_name | str | No | `<production_RegisteredResource.name>` | Default "" in canonical. |
 | production_type | str | No | `<production_RegisteredResource.pSRType.psrType>` | Default "" in canonical. EIC PSR. |
 | outage_type | str | No | derived from `<businessType>` | "planned" / "unplanned" |
-| unavailable_mw | float | No | `<Point><quantity>` | MW |
+| unavailable_mw | float | No | `<Point><quantity>` of `Available_Period` | MW. Available or unavailable is unverified (see Known issues). |
 | business_type | str | No | `<businessType>` | Default "" in canonical. Raw. |
 | document_mrid | str | No | root `<mRID>` | Default "" in canonical. |
 | document_status | str | No | `<docStatus><value>` | Default "" in canonical. A05/A09/A13. |
 | timeseries_mrid | str | No | TimeSeries `<mRID>` | Default "" in canonical. |
-| resolution | str | No | parsed | Default "" in canonical. |
+| resolution | str | No | parsed | Default "" in canonical. ISO code as sent (`parsers.py:438`); `PT1M` in every document received 2026. |
+| published_at | datetime[UTC] | Yes | root `<createdDateTime>` | Notice creation time; typed null when absent. |
 | data_provider | str | No | constant | "entsoe" |
 | ingested_at | datetime[UTC] | Yes | derived | optional |
 
@@ -139,7 +140,7 @@ Live verification 2026-05-08:
         "document_mrid": "DOC-001",
         "document_status": "A05",
         "timeseries_mrid": "1",
-        "resolution": "1:00:00",
+        "resolution": "PT1M",
         "data_provider": "entsoe",
         "ingested_at": "2026-05-08T18:00:00+00:00",
     },
@@ -158,10 +159,11 @@ None implemented.
 
 - **GB EMPTY post-Brexit.**
 - **200-record cap** — DE-LU 30-day window observed to return HTTP 400 reason 999 "exceeds maximum 200". Use shorter windows (daily) or split queries by `psrType`.
-- **A77 vs A80 overlap** — A77 production units and A80 generation units are distinct documentTypes but content overlaps for many TSOs. Some TSOs publish to A77 only, others to A80 only. Best practice: ingest both and dedup by `unit_mrid + document_mrid + revision`.
+- **A77 vs A80 overlap** — A77 production units and A80 generation units are distinct documentTypes but content overlaps for many TSOs. Some TSOs publish to A77 only, others to A80 only. Best practice: ingest both and dedup by `unit_mrid + document_mrid + revision`. (Silver has no revision column: the parser reads `revisionNumber`, `parsers.py:139-140`, but `output_cols` drops it, `outages_h7.py:193-209`.)
 - **30-day window for ingestion** — gives reasonable coverage but watch for 200-cap rejection.
-- **Outage status codes** (DocStatus): `A05` Active, `A09` Cancelled, `A13` Withdrawn.
+- **Outage status codes** (DocStatus): `A05` Active, `A09` Cancelled, `A13` Withdrawn. gridflow sends no `DocStatus` (`endpoints.py:86-92`); responses include cancelled documents (402 of 569 document versions in bronze fetched in August and September 2026), kept in silver as `document_status` `A09`. Active documents arrive with `document_status` empty.
 - ZIP archives for multi-document responses, same as A80.
+- **Shared with A80** (details in [outages generation](outages_generation.md)): outages repeat in every daily file they overlap (exempt from the event-window trim, `_event_window.py:193-195`; 569 document versions fetched 933 times over 12 days); `PT1M` points after position 1 are stamped in hours (`parsers.py:35-51`; 90 of 569 versions carry a point past their own period end, up to 2077); `unavailable_mw` meaning unverified (quantity below `nominalP` in 567 of 569 versions, 0 in 121); `BusinessType=A53` only.
 
 ---
 

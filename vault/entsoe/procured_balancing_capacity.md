@@ -18,7 +18,10 @@ products covered by `balancing_energy_bids` and the H7 activated
 prices/quantity datasets).
 
 A TSO procures capacity through tenders on rolling timeframes; this
-dataset reports the total MW under contract for each interval. Useful
+dataset reports the MW procured for each interval, split across many
+TimeSeries: in live responses (FR, NL, BE, DE-LU, 1 to 5 August 2026)
+each series carries one direction, one quantity and one
+`procurement_Price.amount`, so no single series is the area total. Useful
 for: capacity-margin / reserve-adequacy modelling, capacity-payment
 shadow-price modelling, and tracking how reserve procurement levels
 respond to forecasted system stress.
@@ -43,7 +46,7 @@ not cross-zonal — for the cross-zonal counterpart see
 | Method           | GET |
 | Auth             | Query param `securityToken=<ENTSOE_API_KEY>` |
 | Rate limit       | Vendor-published: not documented. Project default: 1 req/s. |
-| Pagination       | `offset` parameter (mandatory, start at 0) per ENTSOE API §4.1; not iterated by current connector. |
+| Pagination       | `offset` parameter (mandatory, start at 0) per ENTSOE API §4.1. The connector pages in steps of 4800 and stops at a page with fewer than 4800 series (`client.py:63`, `client.py:347`); live A15 pages carry 100, so only the first is fetched. |
 | Historical depth | TODO — H8 catalogue, varies by area. GB has no published data. |
 | Publication lag  | After tender close — daily / weekly / monthly cadences depending on `Type_MarketAgreement.Type`. |
 | Response format  | XML (`Balancing_MarketDocument`) |
@@ -78,7 +81,7 @@ curl --ssl-no-revoke -fsS -H "Accept: application/xml" \
 
 **Path pattern**: `{data_root}/bronze/entsoe/procured_balancing_capacity/<year>/<month>/<day>/raw_<uuid>.xml`
 **Format**: Raw XML.
-**Granularity**: One file per (control_area, fetch window, offset page).
+**Granularity**: One file per (zone in `DEFAULT_ZONES`, UTC day window, offset page) (`client.py:249`, `endpoints.py:395`).
 
 ### Bronze sample
 
@@ -108,6 +111,14 @@ From `tests/fixtures/entsoe/procured_balancing_capacity_gb.xml`:
 </Balancing_MarketDocument>
 ```
 
+The fixture does not match live responses. Live A15 documents (bronze of
+1 to 5 August 2026) carry `area_Domain.mRID` once at document level, not
+inside `TimeSeries`; spell the agreement tag `type_MarketAgreement.type`;
+add `businessType` `B95`, `flowDirection.direction`, `mktPSRType.psrType`,
+`curveType` `A03` and (all but BE) `standard_MarketProduct.marketProductType`; and give
+each series one `Point` (position 1) with `quantity` and
+`procurement_Price.amount`, held across its `Period` at `PT15M`.
+
 ---
 
 ## Silver layer
@@ -123,15 +134,18 @@ From `tests/fixtures/entsoe/procured_balancing_capacity_gb.xml`:
 | Field | Python type | Nullable | Source field | Notes |
 |-------|-------------|----------|--------------|-------|
 | `timestamp_utc` | `datetime[UTC]` | No | derived | UTC-aware. |
-| `area_code` | `str` | No | `area_Domain.mRID` | Renamed from `area_domain`. |
+| `area_code` | `str` | No | `area_Domain.mRID` | Renamed from `area_domain`. Empty on live responses: the tag sits at document level and the parser reads it only inside `TimeSeries` (`parsers.py:302`). |
 | `quantity_mw` | `float` | No | `<quantity>` | Procured capacity in MW. |
-| `market_agreement_type` | `str` | No | `<Type_MarketAgreement.Type>` | Default "" in canonical. `A01`=daily, `A02`=weekly, `A03`=monthly, `A04`=yearly. |
-| `business_type` | `str` | No | `<businessType>` | Default "" in canonical. Often empty (TSO-specific tagging). |
+| `market_agreement_type` | `str` | No | `<Type_MarketAgreement.Type>` | Default "" in canonical. `A01`=daily, `A02`=weekly, `A03`=monthly, `A04`=yearly. Empty on live responses: they spell the tag `type_MarketAgreement.type`, which the parser does not match (`parsers.py:320-326`). |
+| `business_type` | `str` | No | `<businessType>` | Default "" in canonical. `B95` on every series in the live responses of 1 to 5 August 2026. |
 | `resolution` | `str` | No | `<resolution>` | Default "" in canonical. |
+| `published_at` | `datetime[UTC]` | Yes | `<createdDateTime>` | Document creation time, within seconds of the fetch (`h8_balancing.py:91`). |
 | `data_provider` | `str` | No | derived | Default "entsoe" in canonical. |
-| `ingested_at` | `datetime` | Yes | derived | Nullable (datetime or None). |
+| `ingested_at` | `datetime` | Yes | derived | Stamped at silver transform time (`h8_balancing.py:99`). |
 
 ### Silver sample
+
+From the GB fixture; live responses do not parse this way (see Known issues).
 
 ```python
 [
@@ -168,10 +182,12 @@ None implemented.
 
 ## Known issues and gotchas
 
-- **GB returns EMPTY.** Live curl on 2026-05-08 returned reason 999: `No matching data found for Data item PROCURED_BALANCING_CAPACITY_R3 [12.3.F] (10YGB----------A)...`.
+- **GB returns EMPTY.** Live curl on 2026-05-08 returned reason 999: `No matching data found for Data item PROCURED_BALANCING_CAPACITY_R3 [12.3.F] (10YGB----------A)...`. The ingest of 1 to 5 August 2026 got the same reason for GB and for IE-SEM (`10Y1001A1001A59C`).
 - **Dedup includes `market_agreement_type`.** Multiple TimeSeries with the same `area_code` but different `Type_MarketAgreement.Type` (daily vs weekly procurement) coexist for the same timestamp. The dedup key `(timestamp_utc, area_code, market_agreement_type)` reflects this.
-- **Pagination not iterated.** `offset=0` hardcoded — same caveat as `balancing_energy_bids`.
-- **`business_type` often empty.** Unlike A86/A37, A15 responses do not always carry per-TimeSeries `businessType` — the dimension that distinguishes records is `Type_MarketAgreement.Type`.
+- **Silver collapses live responses to one row per quarter-hour.** With `area_code` and `market_agreement_type` both empty, the dedup key keeps one row per timestamp across every area, direction and series (`keep="last"`, `h8_balancing.py:104`). For 1 August 2026, the parser yields 8,020 points from the four populated responses; the dedup leaves 96 and the day window 88. Direction is parsed but is not in `output_cols` (`h8_balancing.py:172-182`); `mktPSRType.psrType` is not matched (the parser reads a nested `MktPSRType`, `parsers.py:345`); `procurement_Price.amount` is dropped because the transformer reads `quantity` only (`h8_balancing.py:32`).
+- **Pagination stops after the first page.** The connector pages in steps of 4800 and stops at a page with fewer than 4800 series (`client.py:63`, `client.py:347`). Every populated A15 response of 1 to 5 August 2026 carried exactly 100 series and ended before the day did (DE-LU at 02:00 UTC), so the rest of each day was never requested.
+- **22:00 to 24:00 UTC is lost every day.** Live documents run from 22:00 UTC to 22:00 UTC (the CEST day). The event-window filter (`EVENT_WINDOW_FILTER = True`, `h8_balancing.py:187`) keeps only points inside the requested UTC day, and the previous day's document ends at 22:00 UTC, so those eight quarter-hours land in no silver partition. The classification notes the upper edge as unobserved (`_event_window.py:515-519`).
+- **`business_type` is `B95` throughout.** Every live series of 1 to 5 August 2026 carries `B95`, so it does not distinguish records; neither does `Type_MarketAgreement.Type` while it parses empty.
 
 ### Control-area vs cross-zonal
 
@@ -183,8 +199,8 @@ counterpart is A38, see
 
 ## Implementation delta
 
-- **Connector hardcodes `offset=0`.** Same pagination caveat as `balancing_energy_bids` — for high-cardinality areas this caps results.
-- **`Type_MarketAgreement.Type` filter is documented optional but the dedup key requires it to distinguish rows.** If a future call ever filters to a single agreement type, the dedup remains valid; if it does not filter, the response naturally splits across multiple TimeSeries with distinct `Type_MarketAgreement.Type` values, which the parser surfaces correctly.
+- **Connector pages at the wrong step.** It sends `offset=0`, then steps by 4800 only when a page holds 4800 series (`client.py:347`); live A15 pages hold 100, so results cap at the first 100 series per area and day.
+- **`Type_MarketAgreement.Type` filter is documented optional but the dedup key requires it to distinguish rows.** If a future call ever filters to a single agreement type, the dedup remains valid; if it does not filter, the response splits across multiple TimeSeries, but the parser does not read the live `type_MarketAgreement.type` spelling (`parsers.py:320-326`), so the value parses empty and the rows collapse.
 
 ---
 

@@ -63,6 +63,8 @@ Live verification 2026-05-08:
 - BE 30-day window: HTTP 200, **EMPTY** (Ack 999, same).
 - NL 30-day window: HTTP 200, **EMPTY** (Ack 999, same).
 
+Seen in bronze fetched 22 to 25 September 2026 (gridflow's 1-day requests): one NL document, returned on all four days. It is an unplanned (`businessType` A54) outage of the asset "Borssele Alpha-Zeeuwse Kust Landstation 220kV Zwart" (`asset_PSRType.psrType` B21, `nominalP` 376), period 2026-09-16 15:14 to 2026-09-25 09:00 UTC, one point of 50.71. Every other request got Ack 999.
+
 A79 is structurally extremely sparse — even zones with offshore wind
 (BE, NL, DE, DK) frequently return empty. The dataset is a placeholder
 for future offshore grid hub publications under TYNDP / North Sea Wind
@@ -76,22 +78,23 @@ Power Hub schemes.
 **Format**: Raw XML, immutable.
 **Granularity**: One file per (zone, day).
 
-### Bronze sample (schematic — hypothetical PASS shape)
+### Bronze sample (schematic; element names as in the NL document received September 2026)
 
 ```xml
-<Unavailability_MarketDocument xmlns="urn:iec62325.351:tc57wg16:451-2:unavailibilitydocument:5:0">
+<Unavailability_MarketDocument xmlns="urn:iec62325.351:tc57wg16:451-6:outagedocument:3:0">
   <type>A79</type>
   <docStatus><value>A05</value></docStatus>
   <TimeSeries>
+    <businessType>A54</businessType>
     <biddingZone_Domain.mRID>10YBE----------2</biddingZone_Domain.mRID>
     <Asset_RegisteredResource>
       <mRID>...</mRID><name>MOG-MODULAR-OFFSHORE</name>
     </Asset_RegisteredResource>
-    <Available_Period>
+    <WindPowerFeedin_Period>
       <timeInterval>...</timeInterval>
-      <resolution>PT60M</resolution>
+      <resolution>PT1M</resolution>
       <Point><position>1</position><quantity>500</quantity></Point>
-    </Available_Period>
+    </WindPowerFeedin_Period>
   </TimeSeries>
 </Unavailability_MarketDocument>
 ```
@@ -104,13 +107,13 @@ Power Hub schemes.
 **Transformer class**: `gridflow.silver.entsoe.outages_h7.OutagesOffshoreGridTransformer`
 **Pydantic schema**: `gridflow.schemas.entsoe.EntsoeOutagesOffshoreGrid`
 **Dedup key**: `(timestamp_utc, area_code, asset_mrid, timeseries_mrid)`
-**Point-in-time (as-of) field**: `available_at` (the bitemporal as-of column written by `BaseSilverTransformer`, reconstructable from bronze sidecars on reingest). `ingested_at` is the transform wall-clock (`datetime.now(UTC)`), **not** a publication vintage, so do not use it as a leak-proof as-of anchor.
+**Point-in-time (as-of) field**: `available_at` (the bitemporal as-of column written by `BaseSilverTransformer`, reconstructable from bronze sidecars on reingest). `ingested_at` is the transform wall-clock (`datetime.now(UTC)`), **not** a publication vintage, so do not use it as a leak-proof as-of anchor. `published_at` is the document `createdDateTime` (`outages_h7.py:107`); the NL document's was 2026-09-25 08:34:43 UTC on all four days it was fetched.
 
 ### Silver schema
 
 | Field | Python type | Nullable | Source field | Notes |
 |-------|-------------|----------|--------------|-------|
-| timestamp_utc | datetime[UTC] | No | Available_Period | tz-aware UTC |
+| timestamp_utc | datetime[UTC] | No | `WindPowerFeedin_Period` (or `Available_Period`) start + (position - 1) × resolution (`parsers.py:408-413`, `:530`) | tz-aware UTC. One row per declared `<Point>`; the period end is not kept. |
 | area_code | str | No | `<biddingZone_Domain.mRID>` | EIC |
 | asset_mrid | str | No | `<Asset_RegisteredResource><mRID>` | Default "" in canonical. Asset EIC. |
 | asset_name | str | No | `<Asset_RegisteredResource><name>` | Default "" in canonical. |
@@ -120,7 +123,8 @@ Power Hub schemes.
 | document_mrid | str | No | root `<mRID>` | Default "" in canonical. |
 | document_status | str | No | `<docStatus><value>` | Default "" in canonical. A05/A09/A13. |
 | timeseries_mrid | str | No | TimeSeries `<mRID>` | Default "" in canonical. |
-| resolution | str | No | parsed | Default "" in canonical. |
+| resolution | str | No | parsed | Default "" in canonical. ISO code as sent (`parsers.py:438`), `PT1M` in the NL document. |
+| published_at | datetime[UTC] | Yes | root `<createdDateTime>` | Typed null when absent. |
 | data_provider | str | No | constant | "entsoe" |
 | ingested_at | datetime[UTC] | Yes | derived | optional |
 
@@ -139,7 +143,7 @@ Power Hub schemes.
         "document_mrid": "DOC-001",
         "document_status": "A05",
         "timeseries_mrid": "1",
-        "resolution": "1:00:00",
+        "resolution": "PT1M",
         "data_provider": "entsoe",
         "ingested_at": "2026-05-08T18:00:00+00:00",
     },
@@ -160,7 +164,8 @@ None implemented.
 - **Structurally sparse.** Even GB / BE / NL offshore-wind heavy zones return EMPTY — A79 only fires when offshore grid hub assets have outage notifications, which are rare (offshore grid hubs are still partly hypothetical).
 - **30-day window minimum** as for other outages.
 - **Outage status codes** (DocStatus): `A05` Active, `A09` Cancelled, `A13` Withdrawn.
-- `outage_type` is **nullable / empty-string** in silver because A79 does not always have a `businessType` element; downstream models should treat empty as "unspecified".
+- `outage_type` is **nullable / empty-string** in silver because A79 does not always have a `businessType` element; downstream models should treat empty as "unspecified". (The one document received so far carried `businessType` A54.)
+- **Repeated across daily files.** Exempt from the event-window trim (`_event_window.py:190-192`), so an outage lands in every daily file it is fetched for: the NL document above is 4 silver rows, one per file 22 to 25 September 2026, all with the same values.
 
 ---
 
