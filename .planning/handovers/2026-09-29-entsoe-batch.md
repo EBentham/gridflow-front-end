@@ -37,6 +37,10 @@
 
 ## Seat items
 
+**Remediation list (Bobbo 2026-09-29):** log each gridflow or data defect as it is found, in gridflow `.planning/BACKLOG.md`
+item 13 and in the vault page `10-projects/gridflow/specs/remediation-from-site-batches.md` (on the branch for PR quant-vault#55).
+Logged so far: 13a to 13g.
+
 - Ruling #39, amended by #40: EIC codes in a note's front matter use `-` escapes (the vault scripts split the note on `---`).
   The build now rejects a literal one: guard in `page_fields.parse_page_fields`, tests in `tests/test_front_matter_fence.py`,
   on this branch. Rows and body stay plain, and the dash advisory is accepted. `published_at` is the fetch time.
