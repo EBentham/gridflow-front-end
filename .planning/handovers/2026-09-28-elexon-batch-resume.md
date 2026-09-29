@@ -43,6 +43,10 @@ If a restart kills a running agent, check its report file and the vault note fir
 **USAGE PAUSE (00:45 UTC 2026-09-29, 5-hour window at 81%):** no launches until the reset at 04:00 UTC. A timer
 resumes the batch at about 04:05 UTC. Only the soso checker (a3d57de07ebfc9143) was still running at the pause.
 
+**Rulings 2026-09-29:** #35 column order approved (build `record.select.columns`, then have the boal and
+demand-forecasts writers use it). #36 autonomous: ship the Elexon batch PR to main once all its pages are approved and
+the gates are green, with no preview wait.
+
 **Next, in order:** checker for pn, then writers for nonbm, fou2t14d, uou2t14d, remit and
 indicated-day-ahead. Keep at most 2 agents at a time and stop launching at about 85% of the 5-hour window. Then group
 2 onwards gets a batch PR into main, after Bobbo's look at the preview (republish
