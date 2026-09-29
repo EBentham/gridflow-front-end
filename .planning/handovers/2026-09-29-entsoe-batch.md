@@ -49,10 +49,12 @@
 | load-forecasts (family, lead load_forecast) | **APPROVED** on re-check (loss in plain words) | a0639f624b8567137 | a8fde62593ddf835d | done |
 | installed_capacity_units | **APPROVED** on re-check | abc4b218164a9acf8 | a9a068a48017c1f65 | done |
 | water_reservoirs | **APPROVED** (3 nits fixed); swap the blank-page test at PR time | ad11aa4256be63ae4 | a328b581d4bd66dc5 | done |
-| forecast_margin | written (BE/FR/NL bar, 2026 doc); seat: DE-LU left out with the reason stated (silver drops the sign); checker running | a567036a197b2b0ce | a2c81932ebff15c69 | verdict |
+| forecast_margin | REVISE (2 majors: uses that need the sign; DE-LU +4,126 unflagged in the notebook; 2 nits); writer resumed | a567036a197b2b0ce | a2c81932ebff15c69 | verdict |
 | outages (family, lead outages_generation) | **HELD** (ruling #46): PT1M points stamped as hours, identity dropped, key collapse, cross-file repeats. Note edits in all 5 notes and mirrors go to a held branch at PR time | a6091df14760f7c08 | — | held |
 
 ## At PR time
+
+- DONE 2026-09-29 ~21:10 UTC: the 9 held notes (current_balancing_state, procured_balancing_capacity, balancing_energy_bids, aggregated_balancing_energy_bids, outages x5) are parked on `docs/v5-p26-entsoe-held` (vault) and `v5/p26-entsoe-held` (front end, 95b97be), both pushed. They are restored to base on the ship branches. Scratch worktrees: `vault-entsoe-held`, `fe-entsoe-held`.
 
 - The notebook renderer fix is DONE, uncommitted in p26-entsoe (build.py + theme.css + 7 tests; report `.planning/v5/p26/entsoe/notebook-render-fix.md`); it ships with this PR. The Polars-frame crash in `run_notebooks.py` is out of scope (note it).
 
