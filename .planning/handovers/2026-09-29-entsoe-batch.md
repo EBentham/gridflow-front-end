@@ -7,7 +7,7 @@
   - `vault-p26-entsoe` on branch `docs/v5-p26-entsoe`.
   - If the scratchpad is cleared, recreate both from GitHub.
 - **Throttle (Bobbo 2026-09-29):** "increase the speed... spin up more agents in parallel".
-  - Up to 8 agents at once (raised 18:15 UTC: 27% used with 1h36m left).
+  - Up to 10 agents at once (raised 18:20 UTC: 35% used with 1h31m left).
   - No launches above about 92% of the 5-hour window. The window resets at 19:50 UTC.
 - **Ship:** under ruling #36, as with Elexon.
 
@@ -15,7 +15,7 @@
 
 | Page | State | Writer | Checker | Next |
 |---|---|---|---|---|
-| day_ahead_prices | writer running | a3832f1aa7ea3b06d | — | checker |
+| day_ahead_prices | written (FR, NL, BE, IE-SEM hourly, 14 to 20 Sep; DE-LU excluded, see seat items); checker running | a3832f1aa7ea3b06d | af7698a43e3be4872 | verdict |
 | actual_generation | written (DE-LU stacked, 12 to 18 Sep, B10 excluded); checker running | a764d6bcc53324bb2 | aec318644be7fe476 | verdict |
 | actual_load | written (DE-LU, FR, NL, BE, 15-min, 14 to 20 Sep); checker running | afa2e30d1849a63bd | a24ae1f85e1a79713 | verdict |
 | wind_solar_forecast | written (DE-LU stacked, 14 to 20 Sep; PSR codes corrected); checker running | a21e8456c9ebdbc7f | a2f6ec605542e237d | verdict |
@@ -23,7 +23,9 @@
 | cross_border_flows | written (flows into GB from FR, BE, NL, hourly mean, 14 to 20 Sep); checker running | aaad21b6d79fe8b11 | abd692feda2530f4a | verdict |
 | commercial_schedules | writer running | a31494e4d83ddddc5 | — | checker |
 | net_positions | writer running | affea4b8af88a3d6b | — | checker |
-| group 2 rest: net_transfer_capacity, auction_revenue, capacity-allocated-nominated, dc_link_intraday_transfer_limits | queued | — | — | writers |
+| net_transfer_capacity | writer running | af6a9dcd642a89a55 | — | checker |
+| auction_revenue | writer running | a745ee86e95b1e284 | — | checker |
+| group 2 rest: capacity-allocated-nominated, dc_link_intraday_transfer_limits | queued | — | — | writers |
 | group 3: current_balancing_state, procured_balancing_capacity, balancing-energy-bids, congestion-management, actual_generation_units, generation_units_master_data | queued | — | — | writers |
 | group 4: installed_capacity, installed_capacity_units, water_reservoirs, forecast_margin, load-forecasts, outages | queued | — | — | writers |
 
@@ -51,3 +53,6 @@
   `test_front_matter_fence.py`; the old value checks were removed); `0055438`, the notebook tab truncates.
 - gridflow (from cross_border_flows): gridflow requests one direction per border for eight pairs (`client.py:40-49`),
   so silver can't show both directions. `in_area_code` is the receiving zone; the note said the opposite.
+- gridflow (from day_ahead_prices): DE-LU gets two numbered price sequences per delivery day, up to 322 EUR/MWh apart,
+  and silver keeps whichever the document lists last, so the stored series mixes them. The page leaves DE-LU out of the
+  chart and rows and says so; it ships with that caveat.
