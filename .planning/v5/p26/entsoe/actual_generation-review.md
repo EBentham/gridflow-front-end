@@ -9,7 +9,7 @@ Checked 2026-09-29 against the canonical note (vault worktree, diff vs `origin/m
 ### 1. Blocker: `page.record.fields.timestamp_utc` (and body line 235)
 
 - **What is wrong.** The guide reads "period start plus position times resolution". That puts every row one step late.
-- **Evidence.** The code computes `timestamp = start_dt + (position - 1) * resolution` (`connectors/entsoe/parsers.py:530`). Worked check: the sample row at 12:00Z on 18 September is position 49 of a PT15M period starting at 00:00Z. The page's formula gives 12:15.
+- **Evidence.** The code computes `timestamp = start_dt + (position - 1) * resolution` (`connectors/entsoe/parsers.py:530`). Worked check: in the DE-LU 18 September bronze (`raw_20260921T100729Z_95678982.xml`), every Period has `<start>2026-09-18T00:00Z</start>` and `PT15M`. So the 12:00Z sample row is position 49; the page's formula would put it at 12:15.
 - **Same error in the body.** The silver schema table in the body (note line 235, older text) has the same mistake: "`<Period>` start + position * resolution".
 - **Fix.** For example, "Start of the time step: period start plus (position minus 1) steps of `resolution`, UTC". Correct the body cell to `start + (position - 1) * resolution`.
 
@@ -36,8 +36,9 @@ Checked 2026-09-29 against the canonical note (vault worktree, diff vs `origin/m
 
   - NL solar B16: 1,422 of 2,303 rows. NL wind B18: 1,439 of 2,303. NL wind B19: 1,439 of 2,303.
   - FR B18: 58 of 2,304. BE B18: 45 of 574.
-- **Fix.** The counts above are evidence for the seat, not page content. On the page, say what the vendor sends and what silver does, without local counts. For example:
-  - `what_it_is`: "ENTSO-E also sends a consumption series for some types (in these responses, pumped storage in DE-LU and BE, and most types in NL and IE-SEM). Silver keeps one row per key, so `generation_mw` can hold the consumption figure, and nothing marks which."
+- **Fix.** The counts above are evidence for the seat, not page content. On the page, state the vendor rule (finding 4) and the code fact, and list no zones:
+  - `what_it_is`, for example: "For some types ENTSO-E also sends a consumption series, tagged `outBiddingZone_Domain`. Silver folds both onto one key, so `generation_mw` may be the consumption figure, and nothing marks which."
+  - If a zone list is wanted, it must match the table above in full: BE includes B18, and FR includes B05, B10, B18 and B25.
   - `how_used`: scope the wind and solar bullet, for example "Wind and solar outturn to score `wind_solar_forecast`, in zones without a consumption series (DE-LU)". Or drop "zone by zone". Scope the fuel-mix bullet the same way.
 
 ### 3. Major: `page.facts.cadence` is stated as a general rule
