@@ -91,3 +91,14 @@ Front matter: I added the `page:` block. I left `last_verified` at 2026-05-08 fo
 
 - **The same-day null observation in `raw_feed.note`.** It is dated and scoped ("seen on 1 September 2026"), rests on a bronze file, and states no cause. It is the one place where a local capture informs page wording. Rule on whether it is a vendor-behaviour observation (allowed) or a description of local holdings (not allowed). If it is not allowed, the fallback is to cut the second clause and keep "The most recently fetched response wins each period."
 - **The indicated-imbalance guide line.** It names a unit conflict inside gridflow rather than a unit. Check that this is the right way to report it, rather than simply "as sent".
+
+## Revision 1 (2026-09-29, after `market_depth-review.md`: APPROVE with 2 nits)
+
+- **Nit 1, evidence trail.** I added one bullet under the vault body's "Known issues and gotchas", "Same-day requests return nulls for later periods". It says the following:
+  - A request for the current settlement date returns all 48 periods. The accepted and priced fields are sent as JSON `null` from a period that moves with fetch time.
+  - `offerVolume`/`bidVolume` stay populated about four periods longer, and `indicatedImbalance` is sent for every period.
+  - It cites bronze `market_depth/2026/09/01`: 15 fetches. The first null accepted period is SP10 at 04:15 UTC, SP18 at 07:57 to 08:14 UTC, SP20 at 09:13 UTC and SP24 at 11:17 UTC; for offer/bid it is SP14, SP21 to 22, SP24 and SP28.
+  - It also cites `market_depth.py:42,113` for the latest fetch winning, and says the vendor does not document this.
+  - Before writing it, I re-checked every fetch with a Python pass over the 15 bronze bodies.
+- **Nit 2, wording.** `page.raw_feed.note` now says "returned null accepted volumes for the day's later periods". That is 30 words, inside the budget.
+- **Checks:** the vault note was copied to the mirror (`cmp` clean). `gridflow-build --only elexon/market_depth` is green and `detect.mjs --json` returns `[]`. The rendered page carries the new wording. No artefact was re-generated: the chart spec and `record.select` are unchanged.

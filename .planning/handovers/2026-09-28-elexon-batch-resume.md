@@ -26,8 +26,8 @@ Batch brief: `.planning/v5/p26/BATCH-elexon.md`. Reports: `.planning/v5/p26/elex
 | lolpdrm | APPROVED (review 2) | a9a809d3db7a3003d | a0485269512755d5d | done |
 | demand-forecasts (family, lead ndf) | REVISE (NESO attribution) fixed; re-check running | abf8f9353b1213246 | a47d843864370aaca | act on the re-check |
 | boal | APPROVED, nits applied | a31536a58a5a3b972 | adc1711149f93ffb3 | done |
-| disbsad | written (volume by service, 14 to 19 Sep) | a5b3f85429c8bcd8c | — | QUEUED: launch the checker (look at "each reply holds the half-hour starting at `to`", and the £/MWh units from the note only) |
-| market_depth | APPROVED, 2 nits being applied | aa46a54294f5cafaa | a8ccdd8aa4d55aa88 | done once the nits land |
+| disbsad | written; checker running | a5b3f85429c8bcd8c | aebe91340cd8e1a7c | act on the verdict |
+| market_depth | APPROVED, nits applied | aa46a54294f5cafaa | a8ccdd8aa4d55aa88 | done |
 | netbsad | written; HELD, not in the batch PR (every field is 0 across 674 periods while DISBSAD shows up to 773 MWh: likely a gridflow parse bug) | a5e765b85bf3eff9a | — | research unit first, then check and publish |
 | soso | written (EWIC_EG mean Bid and Offer by start hour, 14 to 18 Sep) | a41b75f70f9993f96 | — | QUEUED: launch the checker (look at Bid/Offer undefined by Elexon; the "£" unit) |
 | pn | written (level_from for three BM units, 16 to 22 Sep) | a1f13e90b72f5b8c5 | — | QUEUED: launch the checker (look at "each kept segment starts its period", and the null `bm_unit_id` line) |
@@ -40,7 +40,7 @@ If a restart kills a running agent, check its report file and the vault note fir
 - At most **2 agents at once** once the current wave drains. No launches above about **85% of the 5-hour window** (75% at about 00:30 UTC on 2026-09-29, reset 04:00 UTC);
   set a timer to resume at the reset. Check with `get_usage` as agents finish. Queued work waits in this table.
 
-**Next, in order:** checkers for disbsad, soso and pn, then writers for nonbm, fou2t14d, uou2t14d, remit and
+**Next, in order:** checkers for soso and pn, then writers for nonbm, fou2t14d, uou2t14d, remit and
 indicated-day-ahead. Keep at most 2 agents at a time and stop launching at about 85% of the 5-hour window. Then group
 2 onwards gets a batch PR into main, after Bobbo's look at the preview (republish
 https://claude.ai/artifact/EYadKREQi3RnpufNwTH6Wf from `<scratch>\p26-elexon\site\hifi`, file list in
