@@ -36,8 +36,8 @@
 | dc_link_intraday_transfer_limits | written (one BritNed line, 1 Aug, 22 points; the vendor publishes rarely); checker running, may recommend a hold | aafc74fa32a44daac | a8e78e2d10063228c | verdict |
 | group 2 rest: dc_link_intraday_transfer_limits | queued | — | — | writers |
 | current_balancing_state | HELD blank (ruling #41): silver has no zone, no sign and wrong times (13l). The note body was corrected but is unchecked | aff7fcf8159bb3639 | — | after the gridflow fix: page block, then checker |
-| procured_balancing_capacity | writer running | a7d2508a74e6ebbfa | — | checker |
-| group 3 rest: balancing-energy-bids, congestion-management, actual_generation_units, generation_units_master_data | queued | — | — | writers after the reset |
+| procured_balancing_capacity | HELD blank (ruling #42): silver rows are arbitrary picks across 4 countries (13o). The note body was corrected but is unchecked | a7d2508a74e6ebbfa | — | after the gridflow fix |
+| group 3 rest (tell the balancing-energy-bids writer that aggregated_balancing_energy_bids may share the empty-area parse bug, 13o): balancing-energy-bids, congestion-management, actual_generation_units, generation_units_master_data | queued | — | — | writers after the reset |
 | group 4: installed_capacity, installed_capacity_units, water_reservoirs, forecast_margin, load-forecasts, outages | queued | — | — | writers |
 
 ## At PR time
@@ -45,13 +45,13 @@
 - `tests/test_dataset_page.py` uses `entsoe/water_reservoirs` as its blank-page example. If that page gets content,
   switch the test to a page that stays blank; `gie/lng` won't do, because its scenery text says "coming ashore".
 - Held pages: restore their mirror notes from origin/main, and leave their artefacts out (same as netbsad and nonbm).
-  **current_balancing_state** is held, so keep its unchecked note-body edits out of both PRs and save them on a held branch.
+  **current_balancing_state** and **procured_balancing_capacity** are held, so keep its unchecked note-body edits out of both PRs and save them on a held branch.
 
 ## Seat items
 
 **Remediation list (Bobbo 2026-09-29):** log each gridflow or data defect as it is found, in gridflow `.planning/BACKLOG.md`
 item 13 and in the vault page `10-projects/gridflow/specs/remediation-from-site-batches.md` (on the branch for PR quant-vault#55).
-Logged so far: 13a to 13n.
+Logged so far: 13a to 13o.
 
 - Ruling #39, amended by #40: EIC codes in a note's front matter use `-` escapes (the vault scripts split the note on `---`).
   The build now rejects a literal one: guard in `page_fields.parse_page_fields`, tests in `tests/test_front_matter_fence.py`,
