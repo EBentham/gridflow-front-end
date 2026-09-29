@@ -10,6 +10,10 @@
   - Up to 10 agents at once (raised 18:20 UTC: 35% used with 1h31m left).
   - No launches above about 92% of the 5-hour window. The window resets at 19:50 UTC.
 - **Ship:** under ruling #36, as with Elexon.
+- **19:03 UTC, 85% used, 47m left:** the capacity family check and the auction_revenue re-check are the last agents
+  running. Nothing more starts before the reset. The 19:53 UTC timer resumes: rows marked "writers after the reset",
+  starting with group 3 (balancing-energy-bids, congestion-management, actual_generation_units,
+  generation_units_master_data), then group 4.
 - **18:57 UTC, 82% used, 53m left:** only checks and fixes for pages already written may start now, up to about
   90%. Nothing new until the 19:50 reset; the resume timer is set for 19:53 UTC.
 - **18:46 UTC, 73% used, 1h04m left:** no new writers. Checks and revisions for pages already written may launch up
@@ -31,9 +35,9 @@
 | commercial_schedules | APPROVED (review 2) | a31494e4d83ddddc5 | a511e8538be41f2c9 | done |
 | net_positions | APPROVED (4 nits; sign correction confirmed) | affea4b8af88a3d6b | a90d8f640060a2b41 | done |
 | net_transfer_capacity | APPROVED (review 2); a dead domain link in the note body is left for the seat (it is not on the page) | af6a9dcd642a89a55 | a57d6b2c71914570c | done |
-| auction_revenue | REVISE (blocker: says ENTSO-E runs the auctions and earns the revenue; TSOs do); writer revising | a745ee86e95b1e284 | a0f2a1125adccad7d | re-check |
+| auction_revenue | Revision 1 done (TSO revenue wording); re-check running | a745ee86e95b1e284 | a0f2a1125adccad7d | verdict |
 | capacity-allocated-nominated (family, lead total_capacity_allocated) | written (allocated into GB from NL and BE, 14 to 21 Sep; ships with the A07-only loss stated); checker running | aa5201e596dbf26ce | a455406fcf3b6a9f0 | verdict |
-| dc_link_intraday_transfer_limits | written (one BritNed line, 1 Aug, 22 points; the vendor publishes rarely); checker running, may recommend a hold | aafc74fa32a44daac | a8e78e2d10063228c | verdict |
+| dc_link_intraday_transfer_limits | APPROVED: the checker said REVISE, not hold, with one major (summary implied all 8 pairs are DC). The seat fixed it within the 22-word budget, then mirrored and rebuilt. 3 nits left | aafc74fa32a44daac | a8e78e2d10063228c | done |
 | group 2 rest: dc_link_intraday_transfer_limits | queued | — | — | writers |
 | current_balancing_state | HELD blank (ruling #41): silver has no zone, no sign and wrong times (13l). The note body was corrected but is unchecked | aff7fcf8159bb3639 | — | after the gridflow fix: page block, then checker |
 | procured_balancing_capacity | HELD blank (ruling #42): silver rows are arbitrary picks across 4 countries (13o). The note body was corrected but is unchecked | a7d2508a74e6ebbfa | — | after the gridflow fix |

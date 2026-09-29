@@ -142,3 +142,27 @@ Left alone, and not used on the page:
 ## Spend
 
 About 260k tokens (the context counter ran from 15.00M to about 14.74M), Opus 5.5 · high, one agent, one Explore (haiku) sub-search, two advisor calls.
+
+## Revision 1 (after `auction_revenue-review.md`, REVISE: 1 blocker, 4 nits)
+
+1. **Blocker, `summary` and `what_it_is`.** The auctions and the revenue are no longer given to ENTSO-E.
+   - `summary` now reads "TSO revenue from daily explicit capacity auctions on GB's borders with the Netherlands and Belgium, in EUR per hour, published by ENTSO-E." (22 words).
+   - `what_it_is` now opens "Revenue from explicit capacity auctions on a border (Article 12.1.A), as ENTSO-E publishes it, …".
+   - This matches the note's overview ("Revenue earned by TSOs"). To stay within 60 words, "the hours of one delivery day" became "a delivery day's hours".
+2. **Nit, `raw_feed.note` and `record.fields.in_area_code`.** Both are now stated as the vendor's answer, not as our fetch history.
+   - The note reads "GB-NL and GB-BE carry a series; the other six answer "no matching data"."
+   - The field reads "The `in_Domain` EIC as requested: GB on the GB-NL and GB-BE series".
+3. **Nit, `facts.grain`.** It now reads "One row per hour and zone pair per file; most hours in two files" (14 words; the first attempt at 15 failed the build budget). `record.key` stays the transformer's identity.
+4. **Nit, body Known issues.** The label is now "(silver, Aug and Sep 2026: 1,296 rows, 744 keys)".
+5. **Nit, A03 citation.** I added a Known-issues bullet that quotes ENTSO-E's curvetypes guide v1.4, §4.3: "only the position where a block change occurs is provided" and "The value of the Qty remains constant within each Block".
+   - It sits next to `parsers.py:533-600`.
+   - The quotes are the reviewer's, from their check C. I did not open the guide myself.
+   - This settles my earlier "A03 semantics" not-verified item.
+
+**Gates and checks:**
+- The mirror matches the vault note byte for byte (`cmp`, CRLF kept).
+- `gridflow-build --only entsoe/auction_revenue` passes.
+- The detector reports only the accepted `em-dash-overuse` advisory.
+- The page has 0 `—`.
+- No artefact changed: the chart spec, sample select and notebook cells are untouched, so there was no re-distil, re-sample or re-run.
+- Screenshots at 1280 and 390 (`scratchpad/ar-shots/rev1-{1280,390}.png`, `rev1top-390.png`, each Chrome call under `timeout 60`) show `scrollWidth` equal to the width. The new summary, grain and raw-feed lines wrap cleanly with nothing clipped.
