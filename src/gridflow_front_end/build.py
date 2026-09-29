@@ -1226,12 +1226,16 @@ def _output_html(out: dict[str, Any], vendor_id: str, handle: str, alt: str) -> 
         # the header only needs one added when a table was captured without it.
         cols = out["columns"]
         width = len(out["rows"][0]) if out["rows"] else len(cols)
-        lead = "" if len(cols) == width + 1 else "<th></th>"
-        head = (
-            f"<tr>{lead}"
-            + "".join(f"<th>{html_escape(c)}</th>" for c in cols)
-            + "</tr>"
-        )
+
+        def tr(labels: list[str]) -> str:
+            return "<tr>" + "".join(f"<th>{html_escape(c)}</th>" for c in labels) + "</tr>"
+
+        if out["rows"] and len(cols) > width + 1 and len(cols) % (width + 1) == 0:
+            # A named index (or columns axis) gives pandas a second header row, the index name over
+            # blanks; the runner stores both rows as one list, so it is cut back into rows here.
+            head = "".join(tr(cols[i : i + width + 1]) for i in range(0, len(cols), width + 1))
+        else:
+            head = tr(cols if len(cols) == width + 1 else ["", *cols])
         body = "".join(
             f"<tr><th>{html_escape(idx)}</th>"
             + "".join(f"<td>{html_escape(v)}</td>" for v in row)
