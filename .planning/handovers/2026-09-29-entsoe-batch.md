@@ -46,7 +46,7 @@
 | actual_generation_units | **APPROVED** on re-check (clean Dutch sample rows; how-used limited to charted plants) | aa26b6043c67cd777 | a307fc1083fa679bf | done |
 | generation_units_master_data | **APPROVED** (3 optional nits) | a20a17cf260cfe31f | a9307d180d54daee9 | done |
 | installed_capacity | revised (pivot headers fixed, 4 nits); re-check running | ae278337fa1293ec8 | aadbd72a6a196372e | re-check |
-| load-forecasts (family, lead load_forecast) | revised (loss stated in words); re-check running | a0639f624b8567137 | a8fde62593ddf835d | re-check |
+| load-forecasts (family, lead load_forecast) | **APPROVED** on re-check (loss in plain words) | a0639f624b8567137 | a8fde62593ddf835d | done |
 | installed_capacity_units | written (unit count by type, 6 zones, 15 Sep fetch; Seraing sample across fetches); checker running | abc4b218164a9acf8 | a9a068a48017c1f65 | verdict |
 | water_reservoirs | written (FR only, 4 weekly points in two pieces); seat: ships thin-but-accurate with coverage stated; swap the blank-page test at PR time; checker running | ad11aa4256be63ae4 | a328b581d4bd66dc5 | verdict |
 | forecast_margin | writer running | a567036a197b2b0ce | | report |
