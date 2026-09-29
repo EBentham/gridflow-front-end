@@ -16,7 +16,7 @@
 | Page | State | Writer | Checker | Next |
 |---|---|---|---|---|
 | day_ahead_prices | writer running | a3832f1aa7ea3b06d | — | checker |
-| actual_generation | writer running | a764d6bcc53324bb2 | — | checker |
+| actual_generation | written (DE-LU stacked, 12 to 18 Sep, B10 excluded); checker running | a764d6bcc53324bb2 | aec318644be7fe476 | verdict |
 | actual_load | writer running | afa2e30d1849a63bd | — | checker |
 | wind_solar_forecast | written (DE-LU stacked, 14 to 20 Sep; PSR codes corrected); checker running | a21e8456c9ebdbc7f | a2f6ec605542e237d | verdict |
 | generation_forecast | written (DE-LU, FR, NL, BE hourly means, 14 to 20 Sep); checker running | a9ca9d520ca0d49ab | a6c61259813ce01e3 | verdict |
@@ -43,3 +43,7 @@
 - gridflow: the ENTSO-E code comment calls `published_at` a "leak-proof forecast issue time", but it is the response's
   createdDateTime, within seconds of the fetch. The parser files `outBiddingZone_Domain` series under the same zone, so the
   dedup keeps the later series (seen on BE, 8 Sep; from generation_forecast).
+- gridflow (from actual_generation): where ENTSO-E sends a separate consumption series for a production type, silver
+  keeps whichever row arrives last, with nothing recording which. 19,623 of 100,831 rows hold consumption, not
+  generation (NL gas reads about 140 MW against more than 7,000 MW generated). The page ships with this stated and a
+  chart that avoids it (seat, same as boal and pn). Add to gridflow BACKLOG at close.
