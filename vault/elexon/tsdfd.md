@@ -85,19 +85,19 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
 **Path pattern**: `{data_root}/silver/elexon/tsdfd/year=YYYY/month=MM/tsdfd_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.elexon.tsdfd.TSDFDTransformer`
 **Pydantic schema**: `gridflow.schemas.elexon.ElexonTSDFD` — validated fail-soft on the full frame at write time (VTA-SCHEMA-01: invalid rows are logged and counted, never dropped).
-**Dedup key**: `(forecast_date)`
-**Point-in-time field**: `ingested_at` (no native PIT field)
+**Dedup key**: `(forecast_date)` (`silver/elexon/tsdfd.py:99`), applied within each daily transform (one UTC publish day per silver file), so a forecast date recurs once per daily publish that covered it
+**Point-in-time field**: `published_at`, from `publishTime` (`silver/elexon/tsdfd.py:84-90`)
 
 ### Silver schema
 
 | Field | Python type | Nullable | Source field | Notes |
 |-------|-------------|----------|--------------|-------|
 | `forecast_date` | `date` | No | `forecastDate` | Forecast delivery date. |
-| `timestamp_utc` | `datetime[UTC]` | No | _derived_ | Derived from (settlement_date, settlement_period) via `utils/time.settlement_period_to_utc`. |
+| `timestamp_utc` | `datetime[UTC]` | No | _derived_ | `forecast_date` at 00:00 UTC (`tsdfd.py:79-82`); not settlement-period derived, unlike NDFD's 23:00 UTC in BST. |
 | `forecast_demand_mw` | `float` | No | `demand` | MW. |
 | `published_at` | `datetime[UTC]` | Yes | `publishTime` | Publication timestamp from API. |
 | `data_provider` | `str` | No | _derived_ | Default `"elexon"`. |
-| `ingested_at` | `datetime[UTC]` | Yes | _derived_ | Time ingested into bronze. |
+| `ingested_at` | `datetime[UTC]` | Yes | _derived_ | When the silver transform ran: stamped `datetime.now(UTC)` by the transformer (`tsdfd.py:101-107`), not the bronze ingest time. |
 
 ### Silver sample
 
@@ -131,7 +131,7 @@ None implemented.
 ## Implementation delta
 
 - **Daily publication** — empty within 3-hour windows.
-- **`forecast_date` rather than `settlement_date`** in silver output (no settlement_period — daily aggregate).
+- **`forecast_date` rather than `settlement_date`** in silver output (no settlement_period — one figure per day; the fields do not say which daily statistic).
 - **Pydantic schema** `ElexonTSDFD` exists in `schemas/elexon.py` and is applied via `BaseSilverTransformer._validate_against_schema` (fail-soft).
 
 ---

@@ -85,35 +85,34 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
 **Path pattern**: `{data_root}/silver/elexon/ndfd/year=YYYY/month=MM/ndfd_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.elexon.demand_forecast.DemandForecastTransformer`
 **Pydantic schema**: `gridflow.schemas.elexon.ElexonDemandForecast`
-**Dedup key**: _inline in transformer (see `silver/elexon/demand_forecast.py`)_
+**Dedup key**: `(settlement_date, settlement_period, forecast_type, published_at)` (`silver/elexon/demand_forecast.py:150-153`): one row per forecast date per publish
 **Point-in-time field**: `published_at`
 
 ### Silver schema
 
 | Field | Python type | Nullable | Source field | Notes |
 |-------|-------------|----------|--------------|-------|
-| `settlement_date` | `date` | No | `settlementDate` | Settlement date (BST/GMT calendar). |
-| `settlement_period` | `int` | No | `settlementPeriod` | 1..50 (DST: 46 spring, 50 autumn). |
-| `timestamp_utc` | `datetime[UTC]` | No | _derived_ | Derived from (settlement_date, settlement_period) via `utils/time.settlement_period_to_utc`. |
+| `settlement_date` | `date` | No | `forecastDate` | The vendor's forecast date: NDFD sends no `settlementDate`, so the transformer copies `forecastDate` here (`demand_forecast.py:86-91`). |
+| `settlement_period` | `int` | No | _derived_ | Always `1`, a placeholder: NDFD sends no `settlementPeriod` (`demand_forecast.py:89-90`). |
+| `timestamp_utc` | `datetime[UTC]` | No | _derived_ | Derived from (settlement_date, 1) via `utils/time.settlement_period_to_utc`: the start of the settlement date, 23:00 UTC the day before in BST. |
 | `forecast_type` | `str` | No | _derived_ | `day_ahead` (NDF) or `2_14_day` (NDFD). |
 | `national_demand_mw` | `float` | No | `nationalDemand` or `demand` | MW. |
-| `transmission_demand_mw` | `float` | Yes | `transmissionSystemDemand` | MW. |
+| `transmission_demand_mw` | `float` | Yes | `transmissionSystemDemand` | MW. Absent from NDFD silver: the feed sends no `transmissionSystemDemand`, and the transformer keeps only columns present (`demand_forecast.py:174`). |
 | `published_at` | `datetime` | Yes | `publishTime` | Publication time of the forecast (Canonical: ElexonDemandForecast.published_at). |
 | `data_provider` | `str` | No | _derived_ | Default `"elexon"`. |
-| `ingested_at` | `datetime[UTC]` | Yes | _derived_ | Time ingested into bronze. |
+| `ingested_at` | `datetime[UTC]` | Yes | _derived_ | When the silver transform ran: stamped `datetime.now(UTC)` by the transformer (`demand_forecast.py:155-160`), not the bronze ingest time. |
 
 ### Silver sample
 
 ```python
 [
     {
-        "settlement_date": "...",
-        "settlement_period": "...",
-        "timestamp_utc": "2026-04-03T00:00:00+00:00",
+        "settlement_date": "2026-04-03",
+        "settlement_period": 1,
+        "timestamp_utc": "2026-04-02T23:00:00+00:00",
         "forecast_type": "2_14_day",
         "national_demand_mw": 27850,
-        "transmission_demand_mw": "...",
-        "issue_time": "...",
+        "published_at": "2026-04-01T13:45:00+00:00",
         "data_provider": "elexon",
         "ingested_at": "2026-05-08T12:00:00Z"
     },
@@ -130,7 +129,7 @@ None implemented.
 
 ## Known issues and gotchas
 
-- **No `settlementPeriod`** in API — silver fills with placeholder 1 (full daily aggregate). Don't join NDFD on settlement_period — join on `forecast_date`.
+- **No `settlementPeriod`** in API — silver fills with placeholder 1 (one figure per day; the fields do not say which daily statistic). Don't join NDFD on settlement_period — join on `settlement_date`, which holds the vendor's `forecastDate` (silver has no `forecast_date` column).
 
 ---
 

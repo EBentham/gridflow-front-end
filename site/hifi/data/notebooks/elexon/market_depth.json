@@ -1,0 +1,129 @@
+{
+ "dataset": "elexon/market_depth",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "cf68f23778ac5b380eed77f35c9f86824d11acad53ad7d38057482cb84c2f50b",
+ "kernel": "gridflow_models",
+ "source": "elexon",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.elexon",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.elexon.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.elexon.query(\"market_depth\", \"2026-09-16\", \"2026-09-22\")\ndf = df.sort_values(\"timestamp_utc\")",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df[[\"settlement_date\", \"settlement_period\", \"total_accepted_offer_volume_mwh\", \"total_accepted_bid_volume_mwh\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "settlement_date",
+      "settlement_period",
+      "total_accepted_offer_volume_mwh",
+      "total_accepted_bid_volume_mwh"
+     ],
+     "index": [
+      "0",
+      "12",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2026-09-16",
+       "1",
+       "1125.618333",
+       "-1324.141667"
+      ],
+      [
+       "2026-09-16",
+       "2",
+       "940.783333",
+       "-935.447500"
+      ],
+      [
+       "2026-09-16",
+       "3",
+       "1019.108335",
+       "-936.780556"
+      ],
+      [
+       "2026-09-16",
+       "4",
+       "913.324997",
+       "-977.046671"
+      ],
+      [
+       "2026-09-16",
+       "5",
+       "796.266667",
+       "-907.883333"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "ax = df.plot(x=\"timestamp_utc\",\n             y=[\"total_accepted_offer_volume_mwh\", \"total_accepted_bid_volume_mwh\"],\n             ylabel=\"MWh\", color=[\"#155A6E\", \"#C77E3C\"], figsize=(8, 3.5))\nax.legend(loc=\"upper center\", bbox_to_anchor=(0.5, -0.3), ncols=2);",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "market_depth-5.png",
+     "width": 716,
+     "height": 405
+    }
+   ]
+  }
+ ]
+}

@@ -21,7 +21,7 @@ page:
     the rows below, each period was published two and a half hours after it began.
   how_used:
     - Solar and wind supply terms for a GB residual-demand or price model.
-    - Scoring a wind forecast such as WINDFOR against outturn, offshore and onshore apart.
+    - Scoring the WINDFOR total wind forecast against onshore plus offshore outturn.
     - Solar outturn per half-hour, which the FUELHH fuel mix does not carry.
   chart:
     type: stacked-area

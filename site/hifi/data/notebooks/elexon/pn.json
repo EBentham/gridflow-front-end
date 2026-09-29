@@ -1,0 +1,133 @@
+{
+ "dataset": "elexon/pn",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "292e9b6ec5b16342045ce177b008d1f694771f748021a3162de5daebbe4153ba",
+ "kernel": "gridflow_models",
+ "source": "elexon",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.elexon",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.elexon.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.elexon.query(\"pn\", \"2026-09-16\", \"2026-09-22\")",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "dino = df[df.bm_unit_id == \"T_DINO-5\"].sort_values(\"timestamp_utc\")\ndino[[\"settlement_date\", \"settlement_period\", \"level_from\", \"level_to\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "settlement_date",
+      "settlement_period",
+      "level_from",
+      "level_to"
+     ],
+     "index": [
+      "2048",
+      "4526",
+      "7004",
+      "9482",
+      "11960"
+     ],
+     "rows": [
+      [
+       "2026-09-16",
+       "1",
+       "0.0",
+       "0.0"
+      ],
+      [
+       "2026-09-16",
+       "2",
+       "0.0",
+       "0.0"
+      ],
+      [
+       "2026-09-16",
+       "3",
+       "0.0",
+       "0.0"
+      ],
+      [
+       "2026-09-16",
+       "4",
+       "0.0",
+       "0.0"
+      ],
+      [
+       "2026-09-16",
+       "5",
+       "0.0",
+       "0.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "dino.plot(x=\"timestamp_utc\", y=\"level_from\", ylabel=\"MW\",\n          color=\"#155A6E\", figsize=(8, 3.5), legend=False)",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: xlabel='timestamp_utc', ylabel='MW'>"
+    },
+    {
+     "kind": "image",
+     "src": "pn-5.png",
+     "width": 708,
+     "height": 369
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,222 @@
+{
+ "dataset": "elexon/disbsad",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "3f39f94e3835f8d5ab64dc12793c8328b705a5fb164dd0fd05a5237e06131e48",
+ "silver": "elexon/disbsad",
+ "columns": [
+  {
+   "name": "settlement_date",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "settlement_period",
+   "dtype": "Int32",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "adjustment_action_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "so_flag",
+   "dtype": "Boolean",
+   "lineage": false
+  },
+  {
+   "name": "stor_flag",
+   "dtype": "Boolean",
+   "lineage": false
+  },
+  {
+   "name": "component",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "cost",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "volume",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "data_provider",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "ingested_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2026-09-17",
+   "42",
+   "2026-09-17 19:30:00 UTC",
+   "1",
+   "true",
+   "false",
+   "System",
+   "475.92",
+   "3.0",
+   "elexon",
+   "2026-09-26 18:31:46.688079 UTC",
+   "2026-09-17 19:30:00 UTC",
+   "2026-09-26 18:31:46.676920 UTC",
+   "de18a9ee-0e59-42d8-b107-948d3f77862e",
+   "1.0.0"
+  ],
+  [
+   "2026-09-17",
+   "42",
+   "2026-09-17 19:30:00 UTC",
+   "2",
+   "true",
+   "false",
+   "System",
+   "490.92",
+   "3.0",
+   "elexon",
+   "2026-09-26 18:31:46.688079 UTC",
+   "2026-09-17 19:30:00 UTC",
+   "2026-09-26 18:31:46.676920 UTC",
+   "de18a9ee-0e59-42d8-b107-948d3f77862e",
+   "1.0.0"
+  ],
+  [
+   "2026-09-17",
+   "42",
+   "2026-09-17 19:30:00 UTC",
+   "50",
+   "true",
+   "false",
+   "System",
+   "2322.5",
+   "12.5",
+   "elexon",
+   "2026-09-26 18:31:46.688079 UTC",
+   "2026-09-17 19:30:00 UTC",
+   "2026-09-26 18:31:46.676920 UTC",
+   "de18a9ee-0e59-42d8-b107-948d3f77862e",
+   "1.0.0"
+  ],
+  [
+   "2026-09-17",
+   "42",
+   "2026-09-17 19:30:00 UTC",
+   "51",
+   "true",
+   "false",
+   "Non-BM LCM",
+   "0.07",
+   "-0.002",
+   "elexon",
+   "2026-09-26 18:31:46.688079 UTC",
+   "2026-09-17 19:30:00 UTC",
+   "2026-09-26 18:31:46.676920 UTC",
+   "de18a9ee-0e59-42d8-b107-948d3f77862e",
+   "1.0.0"
+  ],
+  [
+   "2026-09-17",
+   "42",
+   "2026-09-17 19:30:00 UTC",
+   "52",
+   "true",
+   "false",
+   "Non-BM LCM",
+   "0.18",
+   "-0.005",
+   "elexon",
+   "2026-09-26 18:31:46.688079 UTC",
+   "2026-09-17 19:30:00 UTC",
+   "2026-09-26 18:31:46.676920 UTC",
+   "de18a9ee-0e59-42d8-b107-948d3f77862e",
+   "1.0.0"
+  ],
+  [
+   "2026-09-17",
+   "42",
+   "2026-09-17 19:30:00 UTC",
+   "53",
+   "true",
+   "false",
+   "Non-BM LCM",
+   "0.24",
+   "-0.007",
+   "elexon",
+   "2026-09-26 18:31:46.688079 UTC",
+   "2026-09-17 19:30:00 UTC",
+   "2026-09-26 18:31:46.676920 UTC",
+   "de18a9ee-0e59-42d8-b107-948d3f77862e",
+   "1.0.0"
+  ],
+  [
+   "2026-09-17",
+   "42",
+   "2026-09-17 19:30:00 UTC",
+   "83",
+   "true",
+   "false",
+   "Non-BM LCM",
+   "0.16",
+   "-0.005",
+   "elexon",
+   "2026-09-26 18:31:46.688079 UTC",
+   "2026-09-17 19:30:00 UTC",
+   "2026-09-26 18:31:46.676920 UTC",
+   "de18a9ee-0e59-42d8-b107-948d3f77862e",
+   "1.0.0"
+  ],
+  [
+   "2026-09-17",
+   "42",
+   "2026-09-17 19:30:00 UTC",
+   "84",
+   "false",
+   "false",
+   "Energy",
+   "17.18",
+   "0.1",
+   "elexon",
+   "2026-09-26 18:31:46.688079 UTC",
+   "2026-09-17 19:30:00 UTC",
+   "2026-09-26 18:31:46.676920 UTC",
+   "de18a9ee-0e59-42d8-b107-948d3f77862e",
+   "1.0.0"
+  ]
+ ],
+ "mark": null
+}

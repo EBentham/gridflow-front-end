@@ -7,11 +7,11 @@ layer_coverage: bronze, silver
 page:
   title: Actual total load
   summary: >-
-    Great Britain's actual total load for each half-hour settlement period: one MW figure per
-    period, Elexon data item B0610.
+    Great Britain's actual total load by settlement period: one MW figure per period, Elexon data
+    item B0610.
   facts:
     vendor: Elexon BMRS, dataset ATL (B0610)
-    cadence: One vendor document per settlement period, each published on its own
+    cadence: Each settlement period sent as its own document, as the frame shows
     grain: One row per settlement period
   landscape: power
   what_it_is: >-
@@ -22,7 +22,7 @@ page:
   how_used:
     - A GB total-load actual in the B0610 form, beside INDO and ITSDO.
     - Measuring the gap between total load and INDO national demand by hour.
-    - A load feature for a GB power price model, once missing half-hours are handled.
+    - A total-load feature for a GB power price model.
   chart:
     type: line
     silver: elexon/atl

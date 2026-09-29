@@ -1,0 +1,151 @@
+{
+ "dataset": "elexon/disbsad",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "956c8e8c8e65b810ddf999b672ccc5f0be689768e7ef95f06f12072482083b15",
+ "kernel": "gridflow_models",
+ "source": "elexon",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.elexon",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.elexon.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.elexon.query(\"disbsad\", \"2026-09-14\", \"2026-09-19\")\nkey = [\"settlement_date\", \"settlement_period\", \"adjustment_action_id\", \"component\"]\ndf = df.drop_duplicates(key).sort_values([\"timestamp_utc\", \"component\"])",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df[key + [\"so_flag\", \"cost\", \"volume\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "settlement_date",
+      "settlement_period",
+      "adjustment_action_id",
+      "component",
+      "so_flag",
+      "cost",
+      "volume"
+     ],
+     "index": [
+      "596",
+      "597",
+      "0",
+      "1",
+      "2"
+     ],
+     "rows": [
+      [
+       "2026-09-14",
+       "1",
+       "1",
+       "NaN",
+       "True",
+       "0.0",
+       "0.0"
+      ],
+      [
+       "2026-09-14",
+       "2",
+       "1",
+       "NaN",
+       "True",
+       "0.0",
+       "0.0"
+      ],
+      [
+       "2026-09-14",
+       "3",
+       "1",
+       "NaN",
+       "True",
+       "0.0",
+       "0.0"
+      ],
+      [
+       "2026-09-14",
+       "4",
+       "1",
+       "NaN",
+       "True",
+       "0.0",
+       "0.0"
+      ],
+      [
+       "2026-09-14",
+       "5",
+       "1",
+       "NaN",
+       "True",
+       "0.0",
+       "0.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "vol = (df.assign(component=df.component.fillna(\"none\"))\n         .pivot_table(index=\"timestamp_utc\", columns=\"component\", values=\"volume\",\n                      aggfunc=\"sum\", fill_value=0)\n       [[\"Energy\", \"Non-BM LCM\", \"System\"]])\nvol.plot(ylabel=\"MWh\", color=[\"#155A6E\", \"#8A6D3B\", \"#C0703E\"], figsize=(8, 3.5))",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: xlabel='timestamp_utc', ylabel='MWh'>"
+    },
+    {
+     "kind": "image",
+     "src": "disbsad-5.png",
+     "width": 699,
+     "height": 370
+    }
+   ]
+  }
+ ]
+}

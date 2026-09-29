@@ -1,0 +1,123 @@
+{
+ "dataset": "elexon/lolpdrm",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "a8609c88b25dbde7b3c5bbd7fc836b29b51debfbf00ab5f1be99fdb079777057",
+ "kernel": "gridflow_models",
+ "source": "elexon",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.elexon",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.elexon.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.elexon.query(\"lolpdrm\", \"2026-09-13\", \"2026-09-17\")\nfor col in [\"timestamp_utc\", \"published_at\"]:\n    df[col] = df[col].dt.tz_convert(\"UTC\")\ndf = df[df.published_at.dt.day.isin([13, 14, 15])]",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df.sort_values([\"timestamp_utc\", \"published_at\"])[[\"timestamp_utc\", \"published_at\", \"derated_margin_mw\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "published_at",
+      "derated_margin_mw"
+     ],
+     "index": [
+      "0",
+      "11",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2026-09-13 01:00:00+00:00",
+       "2026-09-13 00:06:57+00:00",
+       "17076.781"
+      ],
+      [
+       "2026-09-13 01:30:00+00:00",
+       "2026-09-13 00:06:57+00:00",
+       "17856.756"
+      ],
+      [
+       "2026-09-13 02:00:00+00:00",
+       "2026-09-13 00:06:57+00:00",
+       "17545.030"
+      ],
+      [
+       "2026-09-13 02:30:00+00:00",
+       "2026-09-13 00:06:57+00:00",
+       "18082.824"
+      ],
+      [
+       "2026-09-13 03:00:00+00:00",
+       "2026-09-13 00:06:57+00:00",
+       "16747.426"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "wide = df.pivot(index=\"timestamp_utc\", columns=\"published_at\", values=\"derated_margin_mw\")\nwide.columns = wide.columns.strftime(\"%d %H:%M\")\nax = wide.plot(ylabel=\"MW\", figsize=(8, 3.5))\nax.legend(title=\"published_at\", loc=\"upper left\", bbox_to_anchor=(1, 1));",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "lolpdrm-5.png",
+     "width": 838,
+     "height": 367
+    }
+   ]
+  }
+ ]
+}

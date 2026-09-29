@@ -1,0 +1,139 @@
+{
+ "dataset": "elexon/boal",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "f10bec2964acb1cfaf5f1a8cde0280e09451f10d583d88104bd63c034563a6ee",
+ "kernel": "gridflow_models",
+ "source": "elexon",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.elexon",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.elexon.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.elexon.query(\"boal\", \"2026-09-19\", \"2026-09-19\")",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df[[\"settlement_period\", \"bm_unit_id\", \"acceptance_number\", \"bid_offer_level_from\", \"bid_offer_level_to\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "settlement_period",
+      "bm_unit_id",
+      "acceptance_number",
+      "bid_offer_level_from",
+      "bid_offer_level_to"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "1",
+       "2__ASTAT009",
+       "15783",
+       "3",
+       "0"
+      ],
+      [
+       "1",
+       "2__BCMRO002",
+       "24846",
+       "17",
+       "1"
+      ],
+      [
+       "1",
+       "2__BCMRO002",
+       "24848",
+       "1",
+       "2"
+      ],
+      [
+       "1",
+       "2__BFLEX004",
+       "27230",
+       "23",
+       "23"
+      ],
+      [
+       "1",
+       "2__BFLEX004",
+       "27229",
+       "23",
+       "23"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "acc = df.drop_duplicates([\"bm_unit_id\", \"acceptance_number\"])\nacc.bm_unit_id.value_counts().head(10).sort_values().plot.barh(\n    xlabel=\"acceptances\", color=\"#155A6E\", figsize=(8, 3.5))",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: xlabel='acceptances', ylabel='bm_unit_id'>"
+    },
+    {
+     "kind": "image",
+     "src": "boal-5.png",
+     "width": 780,
+     "height": 337
+    }
+   ]
+  }
+ ]
+}

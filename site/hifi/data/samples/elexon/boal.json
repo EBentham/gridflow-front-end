@@ -1,0 +1,261 @@
+{
+ "dataset": "elexon/boal",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "e99938581585b88b4cfc925693cd69d597235038deac8c131dab3af0957daedb",
+ "silver": "elexon/boal",
+ "columns": [
+  {
+   "name": "settlement_date",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "settlement_period",
+   "dtype": "Int32",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bm_unit_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "acceptance_number",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "acceptance_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "deem_flag",
+   "dtype": "Boolean",
+   "lineage": false
+  },
+  {
+   "name": "so_flag",
+   "dtype": "Boolean",
+   "lineage": false
+  },
+  {
+   "name": "stor_flag",
+   "dtype": "Boolean",
+   "lineage": false
+  },
+  {
+   "name": "rr_flag",
+   "dtype": "Boolean",
+   "lineage": false
+  },
+  {
+   "name": "bid_offer_level_from",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "bid_offer_level_to",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "data_provider",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "ingested_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2026-09-19",
+   "36",
+   "2026-09-19 16:30:00 UTC",
+   "T_COALB-2",
+   "991",
+   "2026-09-19 16:57:00 UTC",
+   "false",
+   "false",
+   "false",
+   "false",
+   "90",
+   "90",
+   "elexon",
+   "2026-09-26 18:34:31.772787 UTC",
+   "2026-09-19 16:30:00 UTC",
+   "2026-09-26 18:34:31.281312 UTC",
+   "b0880e5a-a136-449f-b3e8-9a0428619c7a",
+   "1.0.0"
+  ],
+  [
+   "2026-09-19",
+   "37",
+   "2026-09-19 17:00:00 UTC",
+   "T_COALB-2",
+   "991",
+   "2026-09-19 16:57:00 UTC",
+   "false",
+   "false",
+   "false",
+   "false",
+   "90",
+   "100",
+   "elexon",
+   "2026-09-26 18:34:31.772787 UTC",
+   "2026-09-19 17:00:00 UTC",
+   "2026-09-26 18:34:31.281312 UTC",
+   "b0880e5a-a136-449f-b3e8-9a0428619c7a",
+   "1.0.0"
+  ],
+  [
+   "2026-09-19",
+   "37",
+   "2026-09-19 17:00:00 UTC",
+   "T_COALB-2",
+   "992",
+   "2026-09-19 17:00:00 UTC",
+   "false",
+   "false",
+   "false",
+   "false",
+   "90",
+   "48",
+   "elexon",
+   "2026-09-26 18:34:31.772787 UTC",
+   "2026-09-19 17:00:00 UTC",
+   "2026-09-26 18:34:31.281312 UTC",
+   "b0880e5a-a136-449f-b3e8-9a0428619c7a",
+   "1.0.0"
+  ],
+  [
+   "2026-09-19",
+   "37",
+   "2026-09-19 17:00:00 UTC",
+   "T_COALB-2",
+   "993",
+   "2026-09-19 17:22:00 UTC",
+   "false",
+   "true",
+   "false",
+   "false",
+   "100",
+   "50",
+   "elexon",
+   "2026-09-26 18:34:31.772787 UTC",
+   "2026-09-19 17:00:00 UTC",
+   "2026-09-26 18:34:31.281312 UTC",
+   "b0880e5a-a136-449f-b3e8-9a0428619c7a",
+   "1.0.0"
+  ],
+  [
+   "2026-09-19",
+   "37",
+   "2026-09-19 17:00:00 UTC",
+   "T_COALB-2",
+   "994",
+   "2026-09-19 17:26:00 UTC",
+   "false",
+   "true",
+   "false",
+   "false",
+   "50",
+   "0",
+   "elexon",
+   "2026-09-26 18:34:31.772787 UTC",
+   "2026-09-19 17:00:00 UTC",
+   "2026-09-26 18:34:31.281312 UTC",
+   "b0880e5a-a136-449f-b3e8-9a0428619c7a",
+   "1.0.0"
+  ],
+  [
+   "2026-09-19",
+   "38",
+   "2026-09-19 17:30:00 UTC",
+   "T_COALB-2",
+   "993",
+   "2026-09-19 17:22:00 UTC",
+   "false",
+   "true",
+   "false",
+   "false",
+   "50",
+   "100",
+   "elexon",
+   "2026-09-26 18:34:31.772787 UTC",
+   "2026-09-19 17:30:00 UTC",
+   "2026-09-26 18:34:31.281312 UTC",
+   "b0880e5a-a136-449f-b3e8-9a0428619c7a",
+   "1.0.0"
+  ],
+  [
+   "2026-09-19",
+   "38",
+   "2026-09-19 17:30:00 UTC",
+   "T_COALB-2",
+   "994",
+   "2026-09-19 17:26:00 UTC",
+   "false",
+   "true",
+   "false",
+   "false",
+   "0",
+   "100",
+   "elexon",
+   "2026-09-26 18:34:31.772787 UTC",
+   "2026-09-19 17:30:00 UTC",
+   "2026-09-26 18:34:31.281312 UTC",
+   "b0880e5a-a136-449f-b3e8-9a0428619c7a",
+   "1.0.0"
+  ],
+  [
+   "2026-09-19",
+   "38",
+   "2026-09-19 17:30:00 UTC",
+   "T_COALB-2",
+   "995",
+   "2026-09-19 17:44:00 UTC",
+   "false",
+   "true",
+   "false",
+   "false",
+   "0",
+   "0",
+   "elexon",
+   "2026-09-26 18:34:31.772787 UTC",
+   "2026-09-19 17:30:00 UTC",
+   "2026-09-26 18:34:31.281312 UTC",
+   "b0880e5a-a136-449f-b3e8-9a0428619c7a",
+   "1.0.0"
+  ]
+ ],
+ "mark": null
+}

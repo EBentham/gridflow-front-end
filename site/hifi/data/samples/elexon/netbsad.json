@@ -1,0 +1,248 @@
+{
+ "dataset": "elexon/netbsad",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "41487071a6335f63f379711d3c4f98b6b5ca0eb2ed27b025df81890c3adca718",
+ "silver": "elexon/netbsad",
+ "columns": [
+  {
+   "name": "settlement_date",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "settlement_period",
+   "dtype": "Int32",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "net_buy_price_cost_adjustment_energy",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "net_buy_price_volume_adjustment_energy",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "net_buy_price_volume_adjustment_system",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "buy_price_price_adjustment",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "net_sell_price_cost_adjustment_energy",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "net_sell_price_volume_adjustment_energy",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "net_sell_price_volume_adjustment_system",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "sell_price_price_adjustment",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "data_provider",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "ingested_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2026-09-21",
+   "33",
+   "2026-09-21 15:00:00 UTC",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "elexon",
+   "2026-09-26 18:30:06.000739 UTC",
+   "2026-09-21 15:00:00 UTC",
+   "2026-09-26 18:30:05.996727 UTC",
+   "bc8bcbd4-07eb-4da1-8e04-6bde4f93f797",
+   "1.0.0"
+  ],
+  [
+   "2026-09-21",
+   "34",
+   "2026-09-21 15:30:00 UTC",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "elexon",
+   "2026-09-26 18:30:06.000739 UTC",
+   "2026-09-21 15:30:00 UTC",
+   "2026-09-26 18:30:05.996727 UTC",
+   "bc8bcbd4-07eb-4da1-8e04-6bde4f93f797",
+   "1.0.0"
+  ],
+  [
+   "2026-09-21",
+   "35",
+   "2026-09-21 16:00:00 UTC",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "elexon",
+   "2026-09-26 18:30:06.000739 UTC",
+   "2026-09-21 16:00:00 UTC",
+   "2026-09-26 18:30:05.996727 UTC",
+   "bc8bcbd4-07eb-4da1-8e04-6bde4f93f797",
+   "1.0.0"
+  ],
+  [
+   "2026-09-21",
+   "36",
+   "2026-09-21 16:30:00 UTC",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "elexon",
+   "2026-09-26 18:30:06.000739 UTC",
+   "2026-09-21 16:30:00 UTC",
+   "2026-09-26 18:30:05.996727 UTC",
+   "bc8bcbd4-07eb-4da1-8e04-6bde4f93f797",
+   "1.0.0"
+  ],
+  [
+   "2026-09-21",
+   "37",
+   "2026-09-21 17:00:00 UTC",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "elexon",
+   "2026-09-26 18:30:06.000739 UTC",
+   "2026-09-21 17:00:00 UTC",
+   "2026-09-26 18:30:05.996727 UTC",
+   "bc8bcbd4-07eb-4da1-8e04-6bde4f93f797",
+   "1.0.0"
+  ],
+  [
+   "2026-09-21",
+   "38",
+   "2026-09-21 17:30:00 UTC",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "elexon",
+   "2026-09-26 18:30:06.000739 UTC",
+   "2026-09-21 17:30:00 UTC",
+   "2026-09-26 18:30:05.996727 UTC",
+   "bc8bcbd4-07eb-4da1-8e04-6bde4f93f797",
+   "1.0.0"
+  ],
+  [
+   "2026-09-21",
+   "39",
+   "2026-09-21 18:00:00 UTC",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "elexon",
+   "2026-09-26 18:30:06.000739 UTC",
+   "2026-09-21 18:00:00 UTC",
+   "2026-09-26 18:30:05.996727 UTC",
+   "bc8bcbd4-07eb-4da1-8e04-6bde4f93f797",
+   "1.0.0"
+  ],
+  [
+   "2026-09-21",
+   "40",
+   "2026-09-21 18:30:00 UTC",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "elexon",
+   "2026-09-26 18:30:06.000739 UTC",
+   "2026-09-21 18:30:00 UTC",
+   "2026-09-26 18:30:05.996727 UTC",
+   "bc8bcbd4-07eb-4da1-8e04-6bde4f93f797",
+   "1.0.0"
+  ]
+ ],
+ "mark": null
+}
