@@ -17,10 +17,10 @@
 |---|---|---|---|---|
 | day_ahead_prices | writer running | a3832f1aa7ea3b06d | — | checker |
 | actual_generation | written (DE-LU stacked, 12 to 18 Sep, B10 excluded); checker running | a764d6bcc53324bb2 | aec318644be7fe476 | verdict |
-| actual_load | writer running | afa2e30d1849a63bd | — | checker |
+| actual_load | written (DE-LU, FR, NL, BE, 15-min, 14 to 20 Sep); checker running | afa2e30d1849a63bd | a24ae1f85e1a79713 | verdict |
 | wind_solar_forecast | written (DE-LU stacked, 14 to 20 Sep; PSR codes corrected); checker running | a21e8456c9ebdbc7f | a2f6ec605542e237d | verdict |
 | generation_forecast | written (DE-LU, FR, NL, BE hourly means, 14 to 20 Sep); checker running | a9ca9d520ca0d49ab | a6c61259813ce01e3 | verdict |
-| cross_border_flows | writer running | aaad21b6d79fe8b11 | — | checker |
+| cross_border_flows | written (flows into GB from FR, BE, NL, hourly mean, 14 to 20 Sep); checker running | aaad21b6d79fe8b11 | abd692feda2530f4a | verdict |
 | commercial_schedules | writer running | a31494e4d83ddddc5 | — | checker |
 | net_positions | writer running | affea4b8af88a3d6b | — | checker |
 | group 2 rest: net_transfer_capacity, auction_revenue, capacity-allocated-nominated, dc_link_intraday_transfer_limits | queued | — | — | writers |
@@ -47,3 +47,7 @@
   keeps whichever row arrives last, with nothing recording which. 19,623 of 100,831 rows hold consumption, not
   generation (NL gas reads about 140 MW against more than 7,000 MW generated). The page ships with this stated and a
   chart that avoids it (seat, same as boal and pn). Add to gridflow BACKLOG at close.
+- Branch commits: `e33083c`, the front-matter guard now reads the raw text only, so escaped codes work anywhere (tests in
+  `test_front_matter_fence.py`; the old value checks were removed); `0055438`, the notebook tab truncates.
+- gridflow (from cross_border_flows): gridflow requests one direction per border for eight pairs (`client.py:40-49`),
+  so silver can't show both directions. `in_area_code` is the receiving zone; the note said the opposite.

@@ -78,7 +78,9 @@ Each family's slug, title and members are fixed in `site/hifi/data/entsoe.json`.
 - **EIC codes (amended by ruling #40):**
   - **In the note's front matter** (the `page:` block, chart keys), a literal `---` is forbidden: the vault's scripts
     split the note on it. The build rejects it. Write the dashes as `\x2D` escapes inside a double-quoted YAML
-    string, for example `"10YFR-RTE\x2D\x2D\x2D\x2D\x2D\x2DC"`; they render as ordinary dashes.
+    string, for example `"10YFR-RTE\x2D\x2D\x2D\x2D\x2D\x2DC"`; they render as ordinary dashes. Since
+    18:25 UTC the guard reads only the raw text, so escaped codes work anywhere in the front matter: keys, filter
+    values, prose fields and notebook cells. No other workaround is needed.
   - **In the sample rows and the note body** below the front matter, write codes plainly. Pick sample rows on merit,
     never to avoid codes.
   - **The detector's "em-dash overuse" finding** counts the `--` padding in rendered codes. It is advisory and

@@ -6,7 +6,8 @@ Writer: Opus 5.5 · high, 2026-09-29. The page is `entsoe/actual_load` ("Actual 
 
 - **Canonical note:** `vault-p26-entsoe/30-vendors/entsoe/datasets/actual_load.md`.
   - It has the `page:` block and five body corrections.
-  - It keeps CRLF (292 of 292 lines).
+  - It keeps CRLF (304 of 304 lines).
+  - Its front matter contains no literal `---`.
   - The mirror `p26-entsoe/vault/entsoe/actual_load.md` is byte-identical (`cmp` clean).
 - **Artefacts:** all three were written by the tools, from real data.
   - `site/hifi/data/series/entsoe/actual_load.json`: `gridflow-distil`, `spec_origin: vault`.
@@ -18,14 +19,20 @@ Writer: Opus 5.5 · high, 2026-09-29. The page is `entsoe/actual_load` ("Actual 
   - `detect.mjs --json` returns one advisory finding, `em-dash-overuse` ("43 em-dashes in body text"). All 43 counts are 39 runs of `--` padding inside the FR, NL and BE EIC codes (frame and notebook head) and the four CLI flags `--start`/`--end`. None is in prose.
   - Seat ruling 1 accepts this finding.
 - **Seat rulings applied (2026-09-29):**
-  1. The EIC codes are written plainly. The frame is back to all four zones at 11:00 and 11:15 UTC on 15 Sep. The notebook head is back to `df[[...]].head()` over all zones. I had first picked DE-LU-only rows to get the detector to `[]`; that is now reverted.
+  1. **EIC codes, as corrected.**
+     - In the front matter, the FR, NL and BE codes appear only as `group_map` keys, with every dash written as a `\x2D` escape in a double-quoted string.
+     - In the sample rows and notebook output they are plain. The frame is all four zones at 11:00 and 11:15 UTC on 15 Sep, and the notebook head covers all zones.
+     - I had first picked DE-LU-only rows to get the detector to `[]`; that is reverted.
   2. The `published_at` guide line reads "Fetch-time stamp: the response's `createdDateTime`, within seconds of the request".
 - **Screenshots:**
   - Widths 1440, 1024 and 768 in headless Chrome; 390 by CDP emulation and by a 390 px iframe.
   - The frame was checked folded and unfolded, and the notebook drawer open.
   - There is no horizontal overflow (scrollWidth equals innerWidth at every width). Nothing is clipped or overlapping in the hero scenery, chart, key note, frame, guide, notebook or stratum labels.
   - The site has no dark scheme: no `prefers-color-scheme` rule in `tokens.css` or `theme.css`, and no toggle. So only the one theme was checked.
-- **Chart:** a `line` of DE-LU (`10Y1001A1001A82H`) total load in MW, every 15-minute value, UTC days 14 to 20 September 2026 (Monday to Sunday; 672 points).
+- **Chart:** a `line`, one series per bidding zone: DE-LU, FR, NL and BE.
+  - `group: area_code`, with a `group_map` from the EICs to `de_lu`, `fr`, `nl` and `be`, and `aggregation: last` (one row per key).
+  - Total load in MW, every 15-minute value, over the UTC days 14 to 20 September 2026 (Monday to Sunday).
+  - 4 series of 672 points; 2,688 rows used; no unmapped groups.
 
 ## Evidence
 
@@ -47,9 +54,10 @@ Writer: Opus 5.5 · high, 2026-09-29. The page is `entsoe/actual_load` ("Actual 
 | `load_mw` = the point's `quantity`, unit `MAW` (record.fields) | `actual_load.py:40` `value_tag="quantity"`, rename at `:59`. Bronze has `<quantity_Measure_Unit.name>MAW</...>` |
 | `resolution` as sent (record.fields, facts.cadence) | `parsers.py:437-438`; `PT15M` in every GL document for 14 to 20 Sep (probe of 28 documents) and in all four zones' rows shown |
 | `published_at` is a fetch-time stamp, the response's `createdDateTime`, within seconds of the request (record.fields; seat ruling 2) | `actual_load.py:76` `with_published_at` reads document `<createdDateTime>` (`_published_at.py`). Across all 104 GL documents in bronze, `createdDateTime` minus sidecar `fetched_at` runs from −3.5 s to +0.1 s |
-| Chart series: 672 points, 35,310.541 to 65,453.589 MW | Committed `series/entsoe/actual_load.json`: `rows_used` 672, `x` 2026-09-14T00:00Z to 2026-09-20T23:45Z |
-| Alt: weekday lows 41 to 44 GW and peaks 63 to 65 GW, 06:45 to 08:45 UTC; weekend peaks 52 and 51 GW; Sunday 35 GW the week's low | Per-day min and max from the committed series: 14th 41,214 / 64,825 (08:45); 15th 44,106 / 64,154 (06:45); 16th 44,259 without the dip / 65,454 (08:15); 17th 43,637 / 63,314 (06:45); 18th 40,632 / 63,023 (07:45); 19th 37,304 / 52,363; 20th 35,311 / 50,910. The alt rounds the 18th's 40.6 to "41" |
-| Key note: a one-interval drop to 39.4 GW at 23:15 UTC on the 16th, as sent | Series: 23:00 46,282.371; 23:15 39,435.413; 23:30 45,556.621. Bronze `2026/09/16/raw_20260921T100306Z_*.xml` position 94 is `39435.41266`, so this is the vendor's value, not a gridflow artefact. Positions 1 to 96 are all declared, so there is no forward-fill |
+| Chart series (caption, alt) | Committed `series/entsoe/actual_load.json`: 4 series of 672 points, `x` 2026-09-14T00:00Z to 2026-09-20T23:45Z, `rows_used` 2688. Ranges: `de_lu` 35,310.541 to 65,453.589; `fr` 31,367.59 to 50,605.26; `nl` 4,094.801 to 11,972.166; `be` 6,808.78 to 11,901.35 |
+| Alt: DE-LU weekday peaks 63 to 65 GW, weekend peaks 52 and 51 GW, Sunday low 35 GW; FR 31 to 51 GW; NL and BE 4 to 12 GW; NL lows near midday, 4.1 GW at 11:00 UTC on the 15th | Per-day DE-LU maxima from the committed series: 64,825; 64,154; 65,454; 63,314; 63,023; then 52,363 and 50,910 at the weekend. DE-LU minimum 35,311 at 02:15 on the 20th. Ranges as in the row above. NL minimum 4,094.801 at 2026-09-15 11:00 UTC |
+| Key note on NL: lows near midday on every day shown | NL's daily minima fall at 11:45, 11:00, 11:15, 10:00, 09:45, 10:45 and 14:00 UTC on 14 to 20 Sep (silver probe) |
+| Key note on DE-LU: a one-interval drop to 39.4 GW at 23:15 UTC on the 16th, as sent | Series: 23:00 46,282.371; 23:15 39,435.413; 23:30 45,556.621. Bronze `2026/09/16/raw_20260921T100306Z_*.xml` position 94 is `39435.41266`, so this is the vendor's value, not a gridflow artefact. Positions 1 to 96 are all declared, so there is no forward-fill |
 | No forward-fill in the charted week | All 28 GL documents from 14 to 20 Sep declare 96 `<Point>` elements (probe) |
 | Frame: all four zones with rows, 11:00 and 11:15 UTC on 15 Sep (DE-LU 60,430.67916; BE 11,673.01; FR 49,653.39; NL 4,094.801 at 11:00) | Committed `samples/entsoe/actual_load.json` (`gridflow-sample`); NL at 11:00 is its lowest value of the charted week |
 | Notebook lead: relation `silver_entsoe_actual_load`, filter on `timestamp_utc`, both ends included, lineage dropped, local-time printing | `_get_method_registry._relation_name_for_dataset("actual_load")` returns `silver_entsoe_actual_load`. gridflow `schema_manifest.py:149` gives the date column `timestamp_utc`. `source.py:401-445` builds an inclusive range predicate. `_BITEMPORAL_EXCLUDE` covers `event_time`, `available_at`, `vintage_policy`, `source_run_id`, `dataset_version`, `month` and `year`. The notebook head prints `2026-09-14 01:00:00+01:00` |
@@ -85,14 +93,16 @@ I did not touch the curl example: it is valid for the vendor, and only the param
 
 ## Template and tool problems (reported, not worked around in shared files)
 
-1. **`---` inside EIC codes blocks per-zone charts.**
-   - FR (`10YFR-RTE------C`), NL (`10YNL----------L`) and BE (`10YBE----------2`) contain `---`.
-   - `chart_spec._check_strings` (`chart_spec.py:111-121`) and `page_fields` (`page_fields.py:379`, `:492`) reject `---` anywhere in a page string, chart value or notebook cell. So a `group_map` from EIC to zone label, a filter on those zones, or a key `codes` naming them cannot be written.
-   - This is why the chart shows DE-LU alone (its EIC has no dashes) and the notebook plots all four zones.
-   - The same limit will hit other ENTSO-E pages with per-zone series: `day_ahead_prices`, `actual_generation`, `cross_border_flows`, `load_forecast` and others.
-   - Suggested fixes:
-     - reject only a line that is exactly `---`, which is what actually breaks front-matter parsing; or
-     - let the chart spec map zones through the connector's short names (`BIDDING_ZONES`).
+1. **`---` inside EIC codes: the escape works for `group_map` keys only.**
+   - The seat's raw-text check (`page_fields.py:596`) passes once the dashes are written as `\x2D`.
+   - The parsed-value checks still reject any string value that decodes to `---`:
+     - `page_fields.py:379` covers every page text field, including key `codes` and `note`;
+     - `page_fields.py:492` covers notebook cells;
+     - `chart_spec._check_strings` (`chart_spec.py:111-121`) covers chart filter values and `group_map` values.
+   - `_check_strings` does not inspect mapping keys, which is why escaped EICs work as `group_map` keys.
+   - A filter value, a key `codes` or any prose naming the FR, NL or BE EIC still fails the build even when escaped. So the key entries for this page carry zone names in `label` and no `codes`.
+   - This limit will hit other ENTSO-E pages that filter on a dashed EIC (`cross_border_flows`, for example).
+   - Suggested fix: now that the raw-text check guards the front matter, drop the parsed-value `---` checks.
 2. **`detect.mjs` counts `--` inside EIC codes as em dashes.**
    - The regex `--(?=\S)` in `engines/regex/detect-text.mjs:314` fires on data.
    - Seat ruling 1 accepts the advisory finding, so the page prints the codes plainly and the detector reports 43.
@@ -103,4 +113,5 @@ I did not touch the curl example: it is valid for the vendor, and only the param
 
 - `what_it_is`: "GB, and IE-SEM on the days charted, get ... code 999". The IE-SEM half rests on bronze evidence scoped to the charted days, not on a vendor statement.
 - `record.fields.published_at`: "within seconds of the request". This follows seat ruling 2 and the bronze measurement over 104 documents (−3.5 s to +0.1 s).
-- The chart shows DE-LU while the title says "by zone". The build's `---` fence check forces this (template problem 1), and the notebook plot carries all four zones.
+- `chart_view.key` NL note "Lows fall near midday on every day shown; cause undocumented." This is measured on the charted week only, and worded that way.
+- The chart's `group_map` keys use `\x2D` escapes. Check that the committed series' `spec.group_map` decodes them to the real EICs: it does, and there are no unmapped groups.
