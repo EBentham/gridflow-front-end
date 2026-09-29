@@ -17,8 +17,8 @@
 |---|---|---|---|---|
 | day_ahead_prices | written (FR, NL, BE, IE-SEM hourly, 14 to 20 Sep; DE-LU excluded, see seat items); checker running | a3832f1aa7ea3b06d | af7698a43e3be4872 | verdict |
 | actual_generation | written (DE-LU stacked, 12 to 18 Sep, B10 excluded); checker running | a764d6bcc53324bb2 | aec318644be7fe476 | verdict |
-| actual_load | written (DE-LU, FR, NL, BE, 15-min, 14 to 20 Sep); checker running | afa2e30d1849a63bd | a24ae1f85e1a79713 | verdict |
-| wind_solar_forecast | REVISE (major: two note passages still carry scrambled codes); writer revising | a21e8456c9ebdbc7f | a2f6ec605542e237d | re-check |
+| actual_load | REVISE (major: GB code 999 stated as an ENTSO-E rule); writer revising | afa2e30d1849a63bd | a24ae1f85e1a79713 | re-check |
+| wind_solar_forecast | Revision 1 done; re-check running | a21e8456c9ebdbc7f | a2f6ec605542e237d | re-check |
 | generation_forecast | APPROVED (review 2) | a9ca9d520ca0d49ab | a6c61259813ce01e3 | done |
 | cross_border_flows | written (flows into GB from FR, BE, NL, hourly mean, 14 to 20 Sep); checker running | aaad21b6d79fe8b11 | abd692feda2530f4a | verdict |
 | commercial_schedules | writer running | a31494e4d83ddddc5 | — | checker |

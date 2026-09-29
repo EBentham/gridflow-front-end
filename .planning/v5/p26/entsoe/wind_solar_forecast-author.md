@@ -80,3 +80,26 @@ Note: vault worktree `30-vendors/entsoe/datasets/wind_solar_forecast.md`, copied
 1. **Detector:** `detect-text.mjs:314` counts `--(?=\S)` as an em-dash, so EIC padding (`10YBE----------2` scores 5) and CLI flags trip `em-dash-overuse` on any ENTSO-E page with BE, NL or FR rows. It is advisory; the seat accepts it (ruling 1). A fix would strip `<code>`/`<td>` text, or ignore hyphen runs inside tokens.
 2. **Front-matter fence:** a hyphenated EIC can never appear in a note's `page:` block, because it contains `---`. `page_fields.py:379` (text fields) and `:492` (notebook cells), plus `chart_spec.py:188` (chart strings), reject it, and the vault tools split notes on `---`. **Resolved by the seat's correction to ruling 1:** in front matter, write such codes as `\x2D` escapes inside double-quoted YAML (for example `"10YFR-RTE\x2D\x2D\x2D\x2D\x2D\x2DC"`); `parse_page_fields` now rejects a literal `---`. This page needs no escapes: its front matter names only DE-LU (`10Y1001A1001A82H`), and `grep` finds no `---` there. The note body keeps codes plain, and the rows come from the sample JSON.
 3. **gridflow_models venv:** `.venv` in the front-end worktree has no `tzdata`, so reading tz-aware silver there fails. I used the gridflow_models venv for probes. This affects only ad hoc probing, not the build.
+
+## Revision 1 (review 1: 1 major, 3 nits)
+
+1. **Major (note body):**
+   - The gotcha "A69 only carries B16, B18, B19 ... B17 (solar thermal) ... we observe only B19" is replaced by: "A69 carries B16 (solar), B18 (wind offshore) and B19 (wind onshore); the September 2026 responses for DE-LU, FR, NL and BE each carry all three." The B17 clause is gone.
+   - The May silver sample (B19 with a solar shape, `resolution: "0:15:00"`) is replaced by the two real DE-LU rows at 22:00 on 14 Sep (B16 0.0 and B19 3,458.69357), with `resolution: "PT15M"` and `published_at` 2026-09-21T10:07:59Z. These are the same rows as the page's sample JSON.
+2. **Nit (fetch gap):** the body's `published_at` note now says "falls within seconds of the sidecar `fetched_at`" instead of "to within a second".
+3. **Nit (A03 fill):**
+   - `raw_feed.note` now reads: "From the ENTSO-E API, one request per zone and UTC day. `gridflow transform` fills the vendor's A03 blocks, keeping one value per target time, zone and code within that day." (30 words.)
+   - New body gotcha: series are `curveType` A03 and the parser forward-fills them (`parsers.py:533-600`).
+4. **Nit (cadence):**
+   - `facts.cadence` now reads "Day-ahead; interval from the response's `resolution`, PT15M or PT60M in these responses".
+   - Body gotcha rescoped: "In the September 2026 responses, DE-LU, FR and NL send PT15M and BE and IE-SEM send PT60M; ENTSO-E states no rule."
+
+Gates after the revision:
+- Mirror is byte-identical; the note is all CRLF (285/285); the front matter has no `---`.
+- `gridflow-build --only entsoe/wind_solar_forecast` passes.
+- The detector gives only the accepted advisory dash count (30, EIC padding and CLI flags); the page has 0 `—`.
+- Artefacts are unchanged: chart spec, select and cells were not touched, so there was no re-distil, re-sample or notebook rerun.
+
+Screenshots (1280 and 390):
+- 390 was shot in an iframe; 1280 through a 1280 px iframe. Direct 1280 shots twice stopped painting below the chart, a headless paint quirk; the iframe renders the whole page.
+- Nothing is clipped or overlapping: the hero with its new cadence text, the chart and key, the new raw-feed note, the request, the commands, the frame, the guide, the notebook panel and related.
