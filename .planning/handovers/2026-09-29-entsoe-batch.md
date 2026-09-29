@@ -19,7 +19,7 @@
 | actual_generation | writer running | a764d6bcc53324bb2 | — | checker |
 | actual_load | writer running | afa2e30d1849a63bd | — | checker |
 | wind_solar_forecast | writer running | a21e8456c9ebdbc7f | — | checker |
-| generation_forecast | writer running | a9ca9d520ca0d49ab | — | checker |
+| generation_forecast | written (DE-LU, FR, NL, BE hourly means, 14 to 20 Sep); reverting EIC escapes per ruling #39 | a9ca9d520ca0d49ab | — | checker |
 | cross_border_flows | writer running | aaad21b6d79fe8b11 | — | checker |
 | group 2: commercial_schedules, net_positions, net_transfer_capacity, auction_revenue, capacity-allocated-nominated, dc_link_intraday_transfer_limits | queued | — | — | writers |
 | group 3: current_balancing_state, procured_balancing_capacity, balancing-energy-bids, congestion-management, actual_generation_units, generation_units_master_data | queued | — | — | writers |
@@ -33,4 +33,9 @@
 
 ## Seat items
 
-_none yet_
+- Ruling #39: EIC codes are written plainly, and the advisory dash finding is accepted. `published_at` is the fetch time.
+- Template fix, on this branch: in `theme.css`, `.nb-tab` now truncates with an ellipsis and `.nb-kern` no longer shrinks, so
+  long `.ipynb` names stop clipping `gridflow_models` at 390. Check it at 390 on generation_forecast.
+- gridflow: the ENTSO-E code comment calls `published_at` a "leak-proof forecast issue time", but it is the response's
+  createdDateTime, within seconds of the fetch. The parser files `outBiddingZone_Domain` series under the same zone, so the
+  dedup keeps the later series (seen on BE, 8 Sep; from generation_forecast).

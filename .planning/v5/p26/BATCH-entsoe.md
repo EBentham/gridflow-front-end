@@ -72,3 +72,15 @@ Each family's slug, title and members are fixed in `site/hifi/data/entsoe.json`.
 - **Samples.** `gridflow-sample` needs eight rows. `record.select.columns` sets which columns print first; put the columns that tell rows apart first.
 - **Thin data.** State a handful of rows or a single date plainly, in domain terms, and never invent a trend. If the rows can't build a page, say so in the report and the seat decides whether to hold it.
 - **No git** in either repo. The seat commits, mirrors and merges.
+
+## Seat rulings for this batch (ruling #39)
+
+- **EIC codes:** write them plainly (for example `10YFR-RTE------C`).
+  - The detector's "em-dash overuse" finding counts the `--` padding inside them.
+  - That finding is advisory, never fails the gate, and is accepted as long as the page's prose has no dashes.
+  - Never escape the codes, and never pick sample rows to avoid them.
+  - The detector gate is: no non-advisory findings.
+- **`published_at` on ENTSO-E forecast tables:** it is the response's `createdDateTime`, within seconds of the fetch.
+  - It is not the forecast's issue time. The gridflow code comment calling it one is wrong (a seat item).
+  - Describe it as a fetch-time stamp.
+- **Notebook header clip at 390:** a long `.ipynb` filename clips the `gridflow_models` label. This is template work that the seat fixes; leave it.
