@@ -1,7 +1,7 @@
 {
   "_about": "The page set and hub content for this vendor: every dataset the site documents, grouped as the hub lists it, with its families. Rendered by gridflow-build.",
   "name": "GIE AGSI+ and ALSI",
-  "intro": "Gas Infrastructure Europe’s two transparency APIs: underground gas storage levels and flows (AGSI+), and LNG terminal inventory and send-out (ALSI).",
+  "intro": "Gas Infrastructure Europe’s two transparency APIs: underground gas storage levels and flows (AGSI+), and LNG terminal send-out (ALSI).",
   "facts": [
     [
       "Market",
@@ -70,7 +70,7 @@
     },
     {
       "name": "LNG (ALSI)",
-      "blurb": "LNG terminal inventory and send-out.",
+      "blurb": "LNG send-out by country, per gas day.",
       "pages": [
         "lng"
       ]
