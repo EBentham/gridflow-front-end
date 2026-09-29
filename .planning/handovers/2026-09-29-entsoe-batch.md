@@ -11,14 +11,14 @@
   - No launches above about 92% of the 5-hour window. The window resets at 19:50 UTC.
 - **Ship:** under ruling #36, as with Elexon.
 - **Pause on new writers (18:34 UTC, 59% used, 1h16m left, rising about 12 points per 7 minutes):** in-flight pages finish
-  their checks and revisions. Groups 3 and 4 start after the 19:50 UTC reset.
+  their checks and revisions. Groups 3 and 4 start after the 19:50 UTC reset. (At 18:38 the rate had slowed, 63% with 1h12m left, so two group-3 writers started.)
 
 ## Per page (agent ids resume with SendMessage)
 
 | Page | State | Writer | Checker | Next |
 |---|---|---|---|---|
 | day_ahead_prices | APPROVED: review 2 left one major ("afternoon" should be "evening": the 19:53 UTC fetches), which the seat fixed, mirrored and rebuilt | a3832f1aa7ea3b06d | af7698a43e3be4872 | done |
-| actual_generation | Revision 1 done; re-check running | a764d6bcc53324bb2 | aec318644be7fe476 | verdict |
+| actual_generation | APPROVED (review 2); optional nits: B07 and B08 are also in the vendor list; "DE-LU" wraps at its hyphen at 1440 | a764d6bcc53324bb2 | aec318644be7fe476 | done |
 | actual_load | APPROVED (review 2) | afa2e30d1849a63bd | a24ae1f85e1a79713 | done |
 | wind_solar_forecast | APPROVED (review 2) | a21e8456c9ebdbc7f | a2f6ec605542e237d | done |
 | generation_forecast | APPROVED (review 2) | a9ca9d520ca0d49ab | a6c61259813ce01e3 | done |
@@ -30,7 +30,9 @@
 | capacity-allocated-nominated (family, lead total_capacity_allocated) | writer running | aa5201e596dbf26ce | — | checker |
 | dc_link_intraday_transfer_limits | writer running (thin: 24 rows, 1 to 5 Aug) | aafc74fa32a44daac | — | checker |
 | group 2 rest: dc_link_intraday_transfer_limits | queued | — | — | writers |
-| group 3: current_balancing_state, procured_balancing_capacity, balancing-energy-bids, congestion-management, actual_generation_units, generation_units_master_data | queued | — | — | writers |
+| current_balancing_state | writer running | aff7fcf8159bb3639 | — | checker |
+| procured_balancing_capacity | writer running | a7d2508a74e6ebbfa | — | checker |
+| group 3 rest: balancing-energy-bids, congestion-management, actual_generation_units, generation_units_master_data | queued | — | — | writers after the reset |
 | group 4: installed_capacity, installed_capacity_units, water_reservoirs, forecast_margin, load-forecasts, outages | queued | — | — | writers |
 
 ## At PR time
