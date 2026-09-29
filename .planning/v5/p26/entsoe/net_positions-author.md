@@ -70,6 +70,7 @@ I left one stale item alone: "Point-in-time field: `none`" (silver now carries `
   - The page therefore says "a project reading" and cites the DE-LU check.
   - For the seat: if the Postman guide can be read, it may settle this.
 - **NL sign agreement is only 0.44** (corr 0.63). NL's generation minus load averages -5,341 MW while its position averages +2,045 MW export. That points to incomplete NL generation coverage in `actual_generation`, not to a reversed sign, but I have not proven it. The page claims the check for DE-LU only.
+- **entsoe-py's parser has a comment saying that "some values have sign flipped in api output"**, and it takes `abs()` before applying its direction factor. I have not verified that observation. Every value in gridflow silver is positive, and the page's "a size, with no sign" follows the DDD and those rows.
 - **The transform `--end` inclusive semantic** follows the brief and the sibling pages; I did not re-read `runner.py`.
 - **DE-LU is labelled "DE-LU" from its EIC `10Y1001A1001A82H`.** This matches the `actual_generation` area_name "Germany / Luxembourg".
 

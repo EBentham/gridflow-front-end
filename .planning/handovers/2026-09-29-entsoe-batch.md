@@ -24,7 +24,7 @@
 | generation_forecast | APPROVED (review 2) | a9ca9d520ca0d49ab | a6c61259813ce01e3 | done |
 | cross_border_flows | Revision 1 done; re-check running | aaad21b6d79fe8b11 | abd692feda2530f4a | re-check |
 | commercial_schedules | written (into GB from FR, BE, NL, IE-SEM, hourly, 14 to 20 Sep); checker running | a31494e4d83ddddc5 | a511e8538be41f2c9 | verdict |
-| net_positions | writer running | affea4b8af88a3d6b | — | checker |
+| net_positions | written (DE-LU day-ahead export/import bands, 14 to 20 Sep; the note had the sign wrong); checker running | affea4b8af88a3d6b | (checker) | verdict |
 | net_transfer_capacity | writer running | af6a9dcd642a89a55 | — | checker |
 | auction_revenue | writer running | a745ee86e95b1e284 | — | checker |
 | capacity-allocated-nominated (family, lead total_capacity_allocated) | writer running | aa5201e596dbf26ce | — | checker |
@@ -64,3 +64,5 @@ Logged so far: 13a to 13h.
 - gridflow (from day_ahead_prices): DE-LU gets two numbered price sequences per delivery day, up to 322 EUR/MWh apart,
   and silver keeps whichever the document lists last, so the stored series mixes them. The page leaves DE-LU out of the
   chart and rows and says so; it ships with that caveat.
+- Template gap (from net_positions): the chart spec cannot negate a value by a direction column, so a signed line is
+  impossible when ENTSO-E sends size plus direction. The page uses two stacked bands instead.

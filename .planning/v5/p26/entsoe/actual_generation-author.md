@@ -131,3 +131,17 @@ Left alone: the silver sample block still shows `area_name: ""` (a dated May exa
 ## Line endings
 
 The canonical note stays CRLF. The mirror copy is byte-for-byte, so it is CRLF too, where the old mirror was LF. Git in the vault worktree reports `i/lf w/crlf` with `core.autocrlf=true`, so the committed form normalises. Flagged only so the seat is not surprised by a whole-file diff if the front-end repo does not normalise.
+
+## Revision 1 (after `actual_generation-review.md`, REVISE)
+
+| # | Finding | Fix |
+|---|---|---|
+| 1 | Blocker: row time off by one step | `record.fields.timestamp_utc`: "Step start: period start plus (position minus 1) times `resolution`, UTC". Body schema cell: `<Period>` start + (position - 1) * resolution (`connectors/entsoe/parsers.py:530`). |
+| 2 | Major: defect understated | `what_it_is` now says: "For some types ENTSO-E also sends a consumption series; silver folds both onto one key, so `generation_mw` may be the consumption figure, unmarked." No zone list or counts. `record.fields.generation_mw`: "MW (`MAW`); may be the consumption series; B10 here is pumping load". The `how_used` bullets are scoped: DE-LU fuel mix without pumped storage, as charted; wind and solar "where no consumption series is sent"; the GB comparison narrowed to DE-LU. |
+| 3 | Major: cadence stated as a rule | `facts.cadence`: "As sent in these responses: 15-minute DE-LU, FR, NL; half-hourly IE-SEM; hourly BE". |
+| 4 | Nit: TODOs sourced to entsoe-py | Business type row and PSR codes section now cite ENTSO-E's Postman collection "Transparency Platform Restful API" (item 16.1.B&C; `psrType` list for B02, B03, B06, B20, B25). My own WebFetch of that page returned only its title (it renders client-side), so the note says the page checker read it. B07 and B08 stay entsoe-py only. B25's name was not restored on the page (the `what_it_is` budget is used up). |
+| 5 | Nit: alt omits geothermal | Alt now reads "oil, waste, geothermal and other renewables". |
+
+- **Gates.** Front matter has no `---`. The mirror copy is `cmp`-identical (CRLF, 317 lines). `gridflow-build --only entsoe/actual_generation` passes. Detector `[]`. The artefacts are unchanged: the chart spec and sample selection did not change, so no re-distil or re-sample was needed, and the build's digest check passes.
+- **Screenshots** (every Chrome call in `timeout 60`; 1,200 px iframe bands): 1280 and 390. Nothing clipped or overlapping.
+  - At 1280 the hero cadence line wraps at hyphens ("15-" / "minute", "IE-" / "SEM"). It is readable and not clipped. It could be reworded if the seat prefers.
