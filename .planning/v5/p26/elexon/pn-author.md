@@ -29,7 +29,7 @@ Writer: Opus 5.5, 2026-09-29. Screenshot port 9741 (server stopped).
 | Elexon sends each unit's period as segments with a start and end time and a MW level at each (`what_it_is`) | Bronze keys: `dataset, settlementDate, settlementPeriod, timeFrom, timeTo, levelFrom, levelTo, nationalGridBmUnit, bmUnit`. On 2026-09-20, 119,471 non-null unit-periods: 114,782 have one 30-minute segment; the rest have 2 to 6 segments. Example SP10 `2__BCMRO002`: 03:30-03:31 0 to -42, 03:31-03:32 -42 to -42, 03:32-03:33 -42 to -41, 03:33-03:59 -41, 03:59-04:00 -41 to 0. Silver row: `0.0 / -42.0` (visible in the eight rows). |
 | "Here each kept segment starts its period" (`chart_view.caption`, scoped to the window) | Bronze-to-silver join for settlement dates 16 to 22 Sep: every non-null silver row equals the latest capture's segment whose `timeFrom` equals `timestamp_utc`, with no exceptions. The "48 rows on 2026-09-21" exception I first reported was an artefact of my check (see Revision 1). All three charted units match in every period. |
 | BSC definition, "export or import ... absent any acceptances" (`summary`, `what_it_is`) | Elexon glossary, https://www.elexon.co.uk/glossary/physical-notification/, quoted verbatim in the note's Overview (added). |
-| Sign not stated (`chart_view.key[dinorwig].note`) | The Elexon glossary PN and Import entries were read 2026-09-29; neither states which sign is export. The vault domain notes (`20-domain/markets/gb-balancing-mechanism.md`, `20-domain/concepts/bm-units.md`) say nothing about sign. The page describes negative values as shape only. |
+| Negative is import, per the Grid Code (`chart_view.key[dinorwig].note`, chart alt) | Grid Code BC1.A.1.1, NESO BC1 Issue 6 Revision 22, 02 April 2024 (https://www.neso.energy/document/33851/download): "where it is proposed that the BM Unit will be importing, the Physical Notification is negative". The same text is in Issue 3 (2005, Ofgem copy). Both are quoted in the note's Overview. The Elexon glossary entries do not state the sign. |
 | Unit identities: Pembroke 11 CCGT, Dinorwig 5 PS, Seagreen 6 WIND (`chart_view.key`) | Silver `elexon/bmunits_reference`: `T_PEMB-11` "Pembroke Unit 11", CCGT; `T_DINO-5` "Dinorwig 5", PS; `T_SGRWO-6` "Seagreen1 Offshore WF 6", WIND. |
 | Alt numbers (`chart_view.alt`) | Committed series: Pembroke min 0, max 435. Near 430 on 16 Sep (steps up 05:00-05:30 UTC, to 0 at 22:00 UTC), 0 until the 20 Sep ramp (123 at 17:00 UTC, 411 at 17:30 UTC), then 219 to 435. Dinorwig min -293 (2026-09-18 09:30 UTC), max 300. Seagreen min 1, max 354 (19th), 353 on the 20th, 2 on the 22nd. |
 | Notebook plot alt (`notebook.plot_alt`) | `pn-5.png` as rendered, the same `T_DINO-5` values: 300 blocks on six of seven evenings plus the morning of the 18th; stretches of -257 to -293 on the 17th, 18th, 19th and 20th; a -263 dip on 22 Sep 04:00 UTC. |
@@ -42,7 +42,8 @@ Writer: Opus 5.5, 2026-09-29. Screenshot port 9741 (server stopped).
 ## Note-body corrections (canonical vault note)
 
 1. **Overview**: added the verbatim BSC glossary definition with its URL and read date, plus a line that the
-   glossary gives no sign rule. This is the evidence for the page's definition and sign wording.
+   glossary gives no sign rule. Revision 1 added the Grid Code BC1.A.1.1 quotes, which give the sign; they are now
+   cited to NESO Issue 6 Revision 22.
 2. **Silver schema, `bm_unit_id`**: Nullable changed from "No" to "Yes (in practice)". Added the null-`bmUnit`
    units and their collapse into one row per period (`pn.py:58-64,98-101`).
 3. **Silver schema, `level_from` / `level_to`**: changed "at start/end of period" to "of the kept segment".
@@ -63,10 +64,8 @@ The curl example was left unchanged (it is valid for the vendor), and so was `la
 
 ## Unverified
 
-- PN sign convention (which sign is export). It is not in the sources quoted, so the page says so and does not
-  interpret Dinorwig's negative stretches as pumping.
-- Whether the vendor's response order reliably lists a unit's period-start segment last. It held for 16 to 22 Sep
-  apart from the re-capture case, but it is not a code or vendor rule. The page scopes the claim with "Here".
+- Whether the vendor's response order reliably lists a unit's period-start segment last. It held for every row
+  from 16 to 22 Sep, but it is not a code or vendor rule. The page scopes the claim with "Here".
 - Vault "Publication lag: ~hour before delivery (gate closure)". Not checked and not used on the page.
 
 ## Open questions and findings for the seat (gridflow, not front-end)
@@ -120,7 +119,7 @@ All five findings are fixed.
      - "where it is proposed that the BM Unit will be importing, the Physical Notification is negative";
      - "a series of MW figures and associated times";
      - the linear-interpolation sentence.
-   - The note body's Overview now quotes all three with the Ofgem URL and says the current NESO issue was not read.
+   - The note body's Overview now quotes all three with the Ofgem URL. Revision 2 cites the current NESO issue instead (see below).
      The NESO code-documents page only points to the online portal `dcm.neso.energy`, with no PDF.
    - The earlier glossary line stays, since it is true of the glossary.
 2. **Major, `record.fields.bm_unit_id`.** It now reads: "Elexon BM unit id; null for units sent without one, one
@@ -149,3 +148,14 @@ All five findings are fixed.
 - 390 through a 390 px iframe, folded and opened: the folded frame shows `bm_unit_id`, `level_from` and `level_to`,
   and the key notes and guide wrap cleanly. The notebook DataFrame output scrolls inside its box, as before.
 - The Chrome profile is left in `scratchpad/pnshots/ud`.
+
+## Revision 2 (the nits in `pn-review-2.md`, page APPROVED)
+
+1. The note body's Overview now cites NESO Grid Code BC1, Issue 6 Revision 22, 02 April 2024
+   (https://www.neso.energy/document/33851/download), BC1.A.1.1. I checked the three quoted sentences against the
+   checker's text of that PDF (`scratchpad/bc1-neso.txt`, lines 780, 809 and 823). The 2005 Issue 3 copy is kept as
+   the same text, and the "was not read" sentence is removed.
+2. Removed or rewritten the stale report lines: the "Sign not stated" evidence row, the note-body correction 1
+   wording, the "Unverified" sign bullet and "apart from the re-capture case".
+3. Result: the mirror is byte-identical and CRLF, `gridflow-build --only elexon/pn` passes, and the detector returns
+   `[]`. The page words are unchanged.
