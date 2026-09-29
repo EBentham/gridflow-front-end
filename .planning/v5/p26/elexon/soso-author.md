@@ -87,3 +87,27 @@ Writer: Opus 5.5, 2026-09-29. Page `elexon/soso`, landscape `market`.
 
 - None blocking. At 768 and 390 the frame folds before `trade_direction`, a key column; expected fold behaviour.
 - The `market` landscape draws turbines, a substation and battery storage; fine for this page.
+
+## Revision 1 (answers `soso-review.md`, 2 major, 3 nit)
+
+1. **major, `notebook.cells[2]`:** the hand-aligned continuation lines are gone. `pivot_table(` and `.plot(` now break
+   after the open parenthesis, with a 4-space hanging indent. Notebook re-run (`run_notebooks.py`, no errors). At 390
+   cell [5] wraps as ordinary lines: no one-letter columns.
+2. **major, `record.select`:** added `columns: [trader_unit, trade_price, trade_direction, contract_identification,
+   settlement_date, trade_quantity_mw]` and re-ran `gridflow-sample`. The same eight rows now lead with trader unit
+   and price: both are in view at 390 (the first two columns), and at 1280 everything through `timestamp_utc` fits.
+   `record.fields` is reordered to the new frame order. The guide still lists the key columns under "Identifies a row".
+3. **nit, caption:** now "the mean of each start hour's eight 25 MW `Bid` contracts, and of its eight `Offer`
+   contracts" (the checker verified n = 8 and 25.0 MW in all 240 hour-direction groups). "`GL1_EG` carries the same
+   prices here" keeps the claim scoped. 40 words.
+4. **nit, sender/receiver lines:** "one value in all eight rows" removed. Each line now names the vendor field
+   (`senderIdentification`, `receiverIdentification`). `resource_provider` also lost "it differs by trader unit
+   here", which repeated the frame.
+5. **nit, `.head()` output:** the cell is now `df[["trade_direction", "trade_price"]].head()`. At 390 the price column
+   sits inside the box (three columns overflowed it; two fit).
+
+Checks: vault note and mirror are byte-identical (`cmp`). `gridflow-build --only elexon/soso` is green and the
+detector returns `[]`. Screenshots at 1280 and 390 (390 px iframe) were taken through a same-origin wrapper that
+opens the notebook drawer. The wrapper was served by my own server on 9734, now stopped. Nothing is clipped or
+overlapping in the hero, chart, raw feed, frame, guide, notebook cells [1] to [5] or the related list. The series is
+unchanged: the chart spec was not edited, so no re-distil was needed.

@@ -131,3 +131,18 @@ bullet gained a dated evidence line: checked 2026-09-29 over silver built from r
 and 2026-09-26 (13 to 21 Sep), 539 keys (1,078 rows) repeat across two adjacent files, all at 00:00 UTC, with identical
 levels; "Elexon does not document this". Fetch dates are from the bronze sidecars' `fetched_at`. Mirror identical
 (`cmp`, 314 of 314 lines CRLF), `--only elexon/boal` green, detector `[]`.
+
+## Revision 3: column order
+
+- `record.select.columns: [bm_unit_id, acceptance_number, acceptance_time, settlement_period, bid_offer_level_from,
+  bid_offer_level_to, so_flag]`, all silver column names (checked against the sample's printed header). `so_flag`
+  is seventh because it flips from false to true inside these eight rows.
+- `record.fields` reordered to the frame order (same wording). The guide still lists the key columns first, per the
+  template: `bm_unit_id`, `acceptance_number`, `settlement_period`, `settlement_date`.
+- `gridflow-sample` re-run: 8 rows, 18 columns, header starts with the seven named columns. Note mirrored (`cmp`
+  identical, 315 of 315 lines CRLF). `--only elexon/boal` green, `detect.mjs --json` `[]`.
+- Screenshots (server on 9731, stopped; Chrome profile folder kept): at 1280 the frame shows unit, acceptance number
+  and time, period, both MW levels and `so_flag`; only `settlement_date`, `timestamp_utc`, the other three flags and
+  the pipeline columns fold. The rows now read apart (levels 90 to 100, 100 to 50, 0 to 100; `so_flag` false then
+  true). At 390 (390 px iframe) unit and acceptance number show and the rest folds behind `…`; nothing clipped or
+  overlapping. Template problem 1 in this report is resolved for 1280 and above.

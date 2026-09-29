@@ -24,14 +24,15 @@ Batch brief: `.planning/v5/p26/BATCH-elexon.md`. Reports: `.planning/v5/p26/elex
 | windfor | checker running | a1ab63925783acd9e | a17288a5f3e21ed79 | act on the verdict |
 | atl | revision 1 done (gaps now break); checker running | ae4cecd8c31375b94 | aa5264d2b291ec745 | act on the verdict |
 | lolpdrm | APPROVED (review 2) | a9a809d3db7a3003d | a0485269512755d5d | done |
-| demand-forecasts (family, lead ndf) | APPROVED (review 2) | abf8f9353b1213246 | a47d843864370aaca | done |
-| boal | APPROVED, follow-up applied (Revision 2) | a31536a58a5a3b972 | adc1711149f93ffb3 | done |
+| demand-forecasts (family, lead ndf) | APPROVED (review 2); column order set (build it with `--only elexon/ndf`: the family slug renders nothing) | abf8f9353b1213246 | a47d843864370aaca | done |
+| boal | APPROVED; column order set (Revision 3) | a31536a58a5a3b972 | adc1711149f93ffb3 | done |
 | disbsad | APPROVED (review 2) | a5b3f85429c8bcd8c | aebe91340cd8e1a7c | done |
 | market_depth | APPROVED, nits applied | aa46a54294f5cafaa | a8ccdd8aa4d55aa88 | done |
 | netbsad | written; HELD, not in the batch PR (every field is 0 across 674 periods while DISBSAD shows up to 773 MWh: likely a gridflow parse bug) | a5e765b85bf3eff9a | — | research unit first, then check and publish |
-| soso | REVISE (2 major: notebook cell unreadable at 390; price and trader unit folded in the frame); writer revising | a41b75f70f9993f96 | a3d57de07ebfc9143 | re-check after the revision |
-| pn | written (level_from for three BM units, 16 to 22 Sep); checker running | a1f13e90b72f5b8c5 | a1f47734a4b13c4d3 | act on the verdict |
-| nonbm, fou2t14d, uou2t14d, remit, indicated-day-ahead (family) | not started | — | — | launch writers under the throttle |
+| soso | APPROVED (review 2) | a41b75f70f9993f96 | a3d57de07ebfc9143 | done |
+| pn | Revision 1 done (Grid Code sign, null-unit loss, column order); re-check running | a1f13e90b72f5b8c5 | a1f47734a4b13c4d3 | act on the verdict |
+| nonbm | writer running (silver has 5 rows, all 1 Apr: sparse or a gap?) | acc464ee4405621aa | — | checker after the writer |
+| fou2t14d, uou2t14d, remit, indicated-day-ahead (family) | not started | — | — | launch writers under the throttle |
 
 If a restart kills a running agent, check its report file and the vault note first, then resume it by id.
 
@@ -50,7 +51,7 @@ the gates are green, with no preview wait.
 **Column order shipped** (PR #53, `e6d44f4`, merged into the batch worktree at `5881dae`, 11:15 UTC). Follow-up: boal
 and demand-forecasts writers set `record.select.columns`, re-sample, rebuild.
 
-**Next, in order:** boal and demand-forecasts column order, then writers for nonbm, fou2t14d, uou2t14d, remit and
+**Next, in order:** writers for fou2t14d, uou2t14d, remit and
 indicated-day-ahead. Keep at most 2 agents at a time and stop launching at about 85% of the 5-hour window. Then group
 2 onwards gets a batch PR into main, after Bobbo's look at the preview (republish
 https://claude.ai/artifact/EYadKREQi3RnpufNwTH6Wf from `<scratch>\p26-elexon\site\hifi`, file list in
