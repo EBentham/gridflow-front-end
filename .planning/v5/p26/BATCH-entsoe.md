@@ -75,11 +75,14 @@ Each family's slug, title and members are fixed in `site/hifi/data/entsoe.json`.
 
 ## Seat rulings for this batch (ruling #39)
 
-- **EIC codes:** write them plainly (for example `10YFR-RTE------C`).
-  - The detector's "em-dash overuse" finding counts the `--` padding inside them.
-  - That finding is advisory, never fails the gate, and is accepted as long as the page's prose has no dashes.
-  - Never escape the codes, and never pick sample rows to avoid them.
-  - The detector gate is: no non-advisory findings.
+- **EIC codes (amended by ruling #40):**
+  - **In the note's front matter** (the `page:` block, chart keys), a literal `---` is forbidden: the vault's scripts
+    split the note on it. The build rejects it. Write the dashes as `\x2D` escapes inside a double-quoted YAML
+    string, for example `"10YFR-RTE\x2D\x2D\x2D\x2D\x2D\x2DC"`; they render as ordinary dashes.
+  - **In the sample rows and the note body** below the front matter, write codes plainly. Pick sample rows on merit,
+    never to avoid codes.
+  - **The detector's "em-dash overuse" finding** counts the `--` padding in rendered codes. It is advisory and
+    accepted as long as the prose has no dashes. The detector gate is: no non-advisory findings.
 - **`published_at` on ENTSO-E forecast tables:** it is the response's `createdDateTime`, within seconds of the fetch.
   - It is not the forecast's issue time. The gridflow code comment calling it one is wrong (a seat item).
   - Describe it as a fetch-time stamp.

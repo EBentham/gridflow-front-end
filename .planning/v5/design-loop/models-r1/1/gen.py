@@ -25,6 +25,7 @@ from pathlib import Path
 HERE = Path(__file__).parent
 DL = HERE.parent.parent
 A_DIR = DL / "p27-r1" / "A"
+sys.dont_write_bytecode = True           # never write caches into round-1 A's folder
 sys.path.insert(0, str(A_DIR))
 
 import frame  # noqa: E402

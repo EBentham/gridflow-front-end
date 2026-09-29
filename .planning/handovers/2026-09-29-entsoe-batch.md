@@ -33,7 +33,9 @@
 
 ## Seat items
 
-- Ruling #39: EIC codes are written plainly, and the advisory dash finding is accepted. `published_at` is the fetch time.
+- Ruling #39, amended by #40: EIC codes in a note's front matter use `-` escapes (the vault scripts split the note on `---`).
+  The build now rejects a literal one: guard in `page_fields.parse_page_fields`, tests in `tests/test_front_matter_fence.py`,
+  on this branch. Rows and body stay plain, and the dash advisory is accepted. `published_at` is the fetch time.
 - Template fix, on this branch: in `theme.css`, `.nb-tab` now truncates with an ellipsis and `.nb-kern` no longer shrinks, so
   long `.ipynb` names stop clipping `gridflow_models` at 390. Check it at 390 on generation_forecast.
 - gridflow: the ENTSO-E code comment calls `published_at` a "leak-proof forecast issue time", but it is the response's

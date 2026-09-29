@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Explorer</title>
+
+</head>
+<body>
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&amp;family=Hanken+Grotesk:ital,wght@0,400..700;1,400..600&amp;family=Red+Hat+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.root{background:#155A6E;color:#1C2B22;font:400 16px/1.6 "Hanken Grotesk",sans-serif;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+.root a{color:inherit;text-decoration-thickness:1.5px;text-underline-offset:4px;text-decoration-color:#66793B}
+.root a:focus-visible{outline:2px solid #AFC64E;outline-offset:3px;border-radius:2px}
+.root h1,.root h2,.root h3{font-family:"Bricolage Grotesque",sans-serif;margin:0;font-optical-sizing:auto}
+.root code{font-family:"Red Hat Mono",monospace;font-size:.9em}
+.layer{position:absolute;left:0;top:0}
+main{position:relative;display:block}
+.st{position:relative;box-sizing:border-box;padding:0 80px}
+.sky{position:relative;box-sizing:border-box;padding:0 80px}
+.mast{display:flex;justify-content:space-between;align-items:baseline;padding-top:26px;color:#F6F4EC;line-height:1.6}
+.brand{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:24px;letter-spacing:-.01em}
+.root .brand{text-decoration:none}
+.mast ul{display:flex;gap:30px;list-style:none;margin:0;padding:0;font-size:15px}
+.mast ul a{text-decoration:none;color:#CFE0DC}
+.mast ul a:hover{color:#F6F4EC}
+.mast ul a[aria-current="page"]{color:#F6F4EC;box-shadow:inset 0 -2px 0 #AFC64E}
+.hero{display:grid;grid-template-columns:860px 374px;column-gap:46px;margin-top:64px;align-items:start}
+.hero h1{color:#F6F4EC;font-weight:760;font-stretch:84%;font-size:86px;line-height:.94;letter-spacing:-.022em}
+.crumb{margin:0 0 18px;font-size:15px;line-height:1.4;color:#B4D0CD}
+.crumb a{color:#CFE0DC;text-decoration-color:#AFC64E}
+.lede{padding-top:14px}
+.lede p{margin:0 0 14px;font-size:17.5px;line-height:1.6;color:#CFE0DC;max-width:58ch}
+.lede p.lead{color:#F6F4EC}
+.lede .n{color:#F6F4EC;font-weight:600}
+.lede code{color:#F6F4EC;font-size:.86em}
+.alt{font-weight:600;color:#F6F4EC;text-decoration-color:#AFC64E}
+.root .alt{text-decoration-color:#AFC64E}
+.facts{margin:4px 0 0}
+.facts div{display:grid;grid-template-columns:96px minmax(0,1fr);column-gap:14px;padding:7px 0;border-top:1px solid rgba(207,224,220,.22)}
+.facts dt{font-size:14px;line-height:1.45;color:#B4D0CD}
+.facts dd{margin:0;font-size:14.5px;line-height:1.45;color:#F6F4EC}
+.facts code{font-size:13.5px}
+.land-svg text,.lab text{font-family:"Hanken Grotesk",sans-serif;font-style:italic;font-size:13.5px}
+.sec h2,.st h2.big{font-size:42px;font-weight:720;font-stretch:88%;line-height:1.02;letter-spacing:-.018em;margin:0 0 16px}
+.st h2.fig-h{font-size:30px;font-weight:700;font-stretch:90%;line-height:1.1;letter-spacing:-.012em;margin:0 0 8px}
+.sec p,.st p.body{margin:0 0 14px;font-size:16px;line-height:1.62;color:#3F4A3B;max-width:58ch}
+.st p code,.st li code,.st dd code{color:#1C2B22}
+.cap{margin:8px 0 0;font-size:14.5px;line-height:1.55;color:#3F4A3B;max-width:66ch}
+.more{font-weight:600;color:#1C2B22}
+.chart{display:block;overflow:visible}
+.chart text{font-family:"Hanken Grotesk",sans-serif;font-size:13px;fill:#3F4A3B}
+.chart text.dl{font-style:italic;font-size:13.5px;fill:#1C2B22}
+.well{margin:0;background:#ECE8DA;border:1px solid rgba(28,43,34,.18);border-radius:3px;padding:10px 14px;font:400 14.5px/1.7 "Red Hat Mono",monospace;color:#1C2B22;white-space:pre;overflow:hidden}
+.well .s{color:#7C5530}
+.well .k{color:#155A6E;font-weight:500}
+.well .c{color:#5d6a55}
+.st-deep{color:#F6F4EC}
+.foot{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:baseline;column-gap:40px;padding:44px 0 56px;border-top:1px solid rgba(207,224,220,.22)}
+.foot ul{display:flex;gap:28px;list-style:none;margin:0;padding:0;font-size:15px}
+.foot ul a{color:#CFE0DC;text-decoration:none}
+.foot ul a:hover{color:#F6F4EC;text-decoration:underline;text-decoration-color:#AFC64E}
+.foot p{grid-column:1 / -1;margin:14px 0 0;font-size:14px;color:#B4D0CD}
+.rot{transform-box:fill-box;transform-origin:center;animation:spin 17s linear infinite}
+.sp2{animation-duration:13s}
+.sp3{animation-duration:21s}
+@keyframes spin{to{transform:rotate(360deg)} }
+@media (prefers-reduced-motion: reduce){.rot{animation:none} }
+.sky{position:relative;box-sizing:border-box;padding:0 80px 8px;background:#155A6E}
+.hero{display:grid;grid-template-columns:720px 500px;column-gap:60px;margin-top:64px;align-items:start}
+.lede{padding-top:10px}
+.lede p{max-width:none}
+.lede code{font-size:14.5px;color:#CFE0DC;margin-left:10px}
+.ground{position:relative}
+.ground .soil{position:absolute;left:0;top:0;z-index:0}
+.ground>section{position:relative;z-index:1}
+.strip{display:block}
+.screens{position:relative}
+.wrapw{margin-top:12px}
+.win{margin:0;background:#F6F4EC;border:1.5px solid #1C2B22;border-radius:4px;overflow:hidden}
+.win-bar{display:flex;align-items:flex-end;gap:2px;height:44px;padding:0 12px;background:#1C2B22}
+.win-bar button{appearance:none;border:0;margin:0;cursor:pointer;padding:12px 18px 13px;border-radius:3px 3px 0 0;background:transparent;color:#CFE0DC;font:500 14.5px/1 "Hanken Grotesk",sans-serif;white-space:nowrap}
+.win-bar button:hover{color:#F6F4EC}
+.win-bar button[aria-selected="true"]{background:#F6F4EC;color:#1C2B22}
+.win-bar button:focus-visible{outline:2px solid #AFC64E;outline-offset:-4px}
+.pane[hidden]{display:none}
+.view{position:relative;border-bottom:1.5px solid #1C2B22}
+.vp{height:780px;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:#5d6a55 #ECE8DA}
+.vp:focus-visible{outline:2px solid #AFC64E;outline-offset:-3px}
+.vp img{display:block;width:100%;height:auto}
+.wcap{margin:0;padding:12px 18px 14px;font-size:14.5px;line-height:1.5;color:#3F4A3B}
+.wnote{margin:14px 0 0;font-size:14.5px;line-height:1.5;color:#3F4A3B;max-width:66ch}
+.built{padding-top:104px;padding-bottom:112px}
+.built h2.big{margin-bottom:34px}
+.tcols{display:grid;grid-template-columns:560px 560px;column-gap:160px}
+.root .kn{font-family:"Bricolage Grotesque",sans-serif;font-size:23px;font-weight:720;font-stretch:90%;line-height:1.1;letter-spacing:-.005em;margin:0 0 9px}
+.kf{margin:0 0 6px;font-size:15.5px;line-height:1.5;font-weight:600;color:#1C2B22;max-width:58ch}
+.kl{margin:6px 0 0;font-size:14.5px;line-height:1.55;color:#3F4A3B;max-width:58ch}
+.kl code{font-size:13.5px;color:#1C2B22}
+.route{margin:58px 0 0}
+.flow{display:block;overflow:visible}
+.flow .lab text{font-family:"Hanken Grotesk",sans-serif;font-style:italic;font-size:14px;fill:#1C2B22}
+.flow .lab text.m{font-family:"Red Hat Mono",monospace;font-style:normal;font-size:13.5px}
+.viewx{display:grid;grid-template-columns:330px 890px;column-gap:60px;margin-top:70px;align-items:start}
+.vtext .kl{max-width:none}
+.well.code{padding:12px 16px 12px 8px;font-size:13.5px;line-height:1.7;white-space:normal}
+.well.code>span{display:grid;grid-template-columns:30px minmax(0,1fr);column-gap:14px}
+.well.code>span.cut{margin-top:.85em}
+.well.code .n{color:#5d6a55;text-align:right;user-select:none}
+.well.code .t{white-space:pre-wrap;padding-left:calc(var(--i) + 2ch);text-indent:-2ch}
+.deep{position:relative;background:#155A6E;color:#F6F4EC;margin-top:-2px}
+.deep .gran{position:absolute;left:0;top:0;z-index:0}
+.deep>*:not(.gran){position:relative;z-index:1}
+.redge{display:block}
+.related{padding-top:52px;padding-bottom:40px}
+.root .rh{font-size:30px;font-weight:700;font-stretch:90%;line-height:1.1;letter-spacing:-.012em;margin:0 0 22px;color:#F6F4EC}
+.related ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:560px 560px;column-gap:160px}
+.root .rn{font-size:23px;font-weight:720;font-stretch:90%;line-height:1.1;margin:0 0 8px}
+.rn a{color:#F6F4EC;text-decoration-color:#AFC64E}
+.related p{margin:0;font-size:15px;line-height:1.55;color:#CFE0DC;max-width:52ch}
+.foot{border-top:1px solid rgba(207,224,220,.22)}
+.ph .sky{padding:0 16px 40px}
+.ph .mast{flex-wrap:wrap;row-gap:10px;padding-top:18px}
+.ph .mast nav{flex:1 1 100%}
+.ph .mast ul{flex-wrap:wrap;column-gap:18px;row-gap:2px}
+.ph .hero{grid-template-columns:minmax(0,1fr);row-gap:18px;margin-top:34px}
+.ph .hero h1{font-size:44px;line-height:.98}
+.ph .lede{padding-top:0}
+.ph .lede p{font-size:16.5px}
+.ph .lede code{display:block;margin:4px 0 0;font-size:13.5px}
+.ph .st{padding:0 16px}
+.ph .wrapw{margin-top:8px}
+.ph .win-bar{flex-wrap:wrap;height:auto;padding:6px;gap:4px}
+.ph .win-bar button{padding:8px 11px;border-radius:3px;font-size:14px}
+.ph .view{height:404px;overflow:hidden}
+.ph .full{display:block;position:relative;width:100%;height:100%}
+.ph .full:focus-visible{outline:2px solid #AFC64E;outline-offset:-3px}
+.ph img.crop{position:absolute;display:block;max-width:none;height:auto}
+.ph .wcap{padding:10px 12px 12px;font-size:14px}
+.ph .wnote{font-size:14px}
+.ph .built{padding-top:64px;padding-bottom:72px}
+.ph .built h2.big{font-size:32px;margin-bottom:24px}
+.ph .tcols{grid-template-columns:minmax(0,1fr);row-gap:30px}
+.ph .route{margin-top:36px}
+.ph .viewx{grid-template-columns:minmax(0,1fr);row-gap:18px;margin-top:40px}
+.ph .well.code{font-size:12px;line-height:1.6;padding:10px 10px 10px 4px}
+.ph .well.code>span{grid-template-columns:22px minmax(0,1fr);column-gap:10px}
+.ph .kl,.ph .kf{overflow-wrap:anywhere}
+.ph .related{padding-top:36px;padding-bottom:28px}
+.ph .related ul{grid-template-columns:minmax(0,1fr);row-gap:24px}
+.ph .foot{grid-template-columns:minmax(0,1fr);row-gap:14px;padding:36px 0 44px}
+.ph .foot ul{flex-wrap:wrap;column-gap:18px;row-gap:6px}
+</style>
+
+<div class="root ph" style="width: 390px; height: 3454px; overflow: hidden; position: relative">
+<main>
+<section class="sky" data-section="opening"><header class="mast"><a class="brand" href="index.html">gridflow</a><nav aria-label="Primary"><ul><li><a href="index.html">Home</a></li><li><a href="data-sources.html">Data sources</a></li><li><a href="architecture.html">Architecture</a></li><li><a href="models.html">Models</a></li><li><a href="explorer.html" aria-current="page">Explorer</a></li><li><a href="index.html#about">About</a></li></ul></nav></header><div class="hero"><h1>Browsing everything gridflow collects</h1><div class="lede"><p class="lead">gridflow explorer is a web app for browsing gridflow’s data: GB and European energy-market data from eight public sources, and the tables gridflow builds from them. A React and TypeScript front end sits on a FastAPI backend that reads gridflow through its own client.</p><p><a class="alt" href="https://github.com/EBentham/gridflow-explorer">The code on GitHub</a> <code>EBentham/gridflow-explorer</code></p></div></div></section><div class="ground"><svg class="soil" width="100%" height="100%" aria-hidden="true"><defs><pattern id="p-stip" width="9" height="9" patternUnits="userSpaceOnUse"><circle cx="2" cy="3" r="1" fill="#8A6F1E"></circle><circle cx="6.5" cy="7.5" r=".8" fill="#8A6F1E"></circle></pattern>
+<pattern id="p-diag" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M0 8 L8 0" stroke="#5E6E6B" stroke-width=".8"></path></pattern>
+<pattern id="p-brick" width="24" height="12" patternUnits="userSpaceOnUse"><path d="M0 11.5 H24 M12 0 V6 M0 6 H24 M0 6 V12" stroke="#7C5530" stroke-width=".8" fill="none"></path></pattern>
+<pattern id="p-soil" width="23" height="17" patternUnits="userSpaceOnUse"><circle cx="4" cy="5" r=".9" fill="#A39A6A"></circle><circle cx="15" cy="12" r="1.1" fill="#A39A6A"></circle><path d="M17 3 h3" stroke="#A39A6A" stroke-width=".9"></path></pattern>
+<pattern id="p-granite" width="46" height="40" patternUnits="userSpaceOnUse"><path d="M8 8 h8 M12 4 v8 M30 26 h8 M34 22 v8 M20 34 h6 M23 31 v6 M40 6 h5 M42.5 3.5 v5" stroke="#3E8C97" stroke-width="1.1"></path></pattern></defs><rect width="100%" height="100%" fill="#ECE8DA"></rect><rect width="100%" height="100%" fill="url(#p-soil)" opacity=".5"></rect></svg><section class="screens" data-section="screens" aria-label="The app, screen by screen"><svg class="strip" width="390" height="116" viewBox="0 0 390 116" aria-hidden="true"><rect x="0" y="0" width="390" height="104" fill="#155A6E"></rect>
+<path d="M-20 20 C-3.3 18 48.3 8.3 80 8 C111.7 7.7 140 18.3 170 18 C200 17.7 231.7 6.3 260 6 C288.3 5.7 315 15.3 340 16 C365 16.7 398.3 11 410 10 L410 104 L-20 104 Z" fill="#297382" opacity="1"></path>
+<path d="M-20 40 C-5 38.3 41.7 32.7 70 30 C98.3 27.3 121.7 23 150 24 C178.3 25 211.7 35.7 240 36 C268.3 36.3 291.7 26.3 320 26 C348.3 25.7 395 32.7 410 34 L410 104 L-20 104 Z" fill="#3E8C97" opacity="1"></path>
+<path d="M69.2 32 L69.6 4 L70.4 4 L70.8 32 Z" fill="#F6F4EC"></path><rect x="69.4" y="3.3" width="2.6" height="1.3" rx="0.5" fill="#F6F4EC"></rect><g transform="translate(69.3,4)"><g class="rot sp2"><circle r="14" fill="none"></circle><path d="M-0.6 0 C-1.3 -4.2 -0.5 -10.6 0 -14 C0.3 -10.1 1.4 -4.2 0.6 0 Z" transform="rotate(5)" fill="#F6F4EC"></path><path d="M-0.6 0 C-1.3 -4.2 -0.5 -10.6 0 -14 C0.3 -10.1 1.4 -4.2 0.6 0 Z" transform="rotate(125)" fill="#F6F4EC"></path><path d="M-0.6 0 C-1.3 -4.2 -0.5 -10.6 0 -14 C0.3 -10.1 1.4 -4.2 0.6 0 Z" transform="rotate(245)" fill="#F6F4EC"></path><circle r="0.7" fill="#F6F4EC"></circle></g></g>
+<path d="M149.1 26 L149.6 -6 L150.4 -6 L150.9 26 Z" fill="#F6F4EC"></path><rect x="149.4" y="-6.8" width="3" height="1.5" rx="0.6" fill="#F6F4EC"></rect><g transform="translate(149.2,-6)"><g class="rot sp3"><circle r="16" fill="none"></circle><path d="M-0.7 0 C-1.4 -4.8 -0.5 -12.2 0 -16 C0.4 -11.5 1.5 -4.8 0.7 0 Z" transform="rotate(34)" fill="#F6F4EC"></path><path d="M-0.7 0 C-1.4 -4.8 -0.5 -12.2 0 -16 C0.4 -11.5 1.5 -4.8 0.7 0 Z" transform="rotate(154)" fill="#F6F4EC"></path><path d="M-0.7 0 C-1.4 -4.8 -0.5 -12.2 0 -16 C0.4 -11.5 1.5 -4.8 0.7 0 Z" transform="rotate(274)" fill="#F6F4EC"></path><circle r="0.8" fill="#F6F4EC"></circle></g></g>
+<path d="M239.3 38 L239.7 12 L240.3 12 L240.7 38 Z" fill="#F6F4EC"></path><rect x="239.5" y="11.3" width="2.4" height="1.2" rx="0.5" fill="#F6F4EC"></rect><g transform="translate(239.4,12)"><g class="rot sp1"><circle r="13" fill="none"></circle><path d="M-0.6 0 C-1.3 -3.9 -0.5 -9.9 0 -13 C0.3 -9.4 1.4 -3.9 0.6 0 Z" transform="rotate(63)" fill="#F6F4EC"></path><path d="M-0.6 0 C-1.3 -3.9 -0.5 -9.9 0 -13 C0.3 -9.4 1.4 -3.9 0.6 0 Z" transform="rotate(183)" fill="#F6F4EC"></path><path d="M-0.6 0 C-1.3 -3.9 -0.5 -9.9 0 -13 C0.3 -9.4 1.4 -3.9 0.6 0 Z" transform="rotate(303)" fill="#F6F4EC"></path><circle r="0.7" fill="#F6F4EC"></circle></g></g>
+<path d="M319.1 28 L319.6 -2 L320.4 -2 L320.9 28 Z" fill="#F6F4EC"></path><rect x="319.4" y="-2.8" width="2.8" height="1.4" rx="0.6" fill="#F6F4EC"></rect><g transform="translate(319.3,-2)"><g class="rot sp2"><circle r="15" fill="none"></circle><path d="M-0.6 0 C-1.3 -4.5 -0.5 -11.4 0 -15 C0.3 -10.8 1.4 -4.5 0.6 0 Z" transform="rotate(92)" fill="#F6F4EC"></path><path d="M-0.6 0 C-1.3 -4.5 -0.5 -11.4 0 -15 C0.3 -10.8 1.4 -4.5 0.6 0 Z" transform="rotate(212)" fill="#F6F4EC"></path><path d="M-0.6 0 C-1.3 -4.5 -0.5 -11.4 0 -15 C0.3 -10.8 1.4 -4.5 0.6 0 Z" transform="rotate(332)" fill="#F6F4EC"></path><circle r="0.8" fill="#F6F4EC"></circle></g></g>
+<path d="M-20 70 C0 69.3 60 65.7 100 66 C140 66.3 183.3 72 220 72 C256.7 72 288.3 66.3 320 66 C351.7 65.7 395 69.3 410 70 L410 106.7 L400 106.1 L380 104.8 L360 103.6 L340 102.8 L320 102.7 L300 102.9 L280 103.2 L260 103.2 L240 102.8 L220 102.2 L200 101.8 L180 101.9 L160 102.8 L140 104.2 L120 105.6 L100 106.7 L80 107 L60 106.4 L40 105.5 L20 104.5 L0 104 L-20 103.9 Z" fill="#AFC64E"></path>
+<path d="M-20 86 C16.7 85.7 128.3 83.7 200 84 C271.7 84.3 375 87.3 410 88" stroke="#66793B" stroke-width="1" fill="none" opacity=".45"></path>
+<path d="M-40 104.1 L-36 104 L-32 104 L-28 104 L-24 103.9 L-20 103.9 L-16 103.9 L-12 103.9 L-8 103.9 L-4 103.9 L0 104 L4 104 L8 104.1 L12 104.3 L16 104.4 L20 104.5 L24 104.7 L28 104.9 L32 105.1 L36 105.3 L40 105.5 L44 105.7 L48 105.9 L52 106.1 L56 106.3 L60 106.4 L64 106.6 L68 106.7 L72 106.8 L76 106.9 L80 107 L84 107 L88 106.9 L92 106.9 L96 106.8 L100 106.7 L104 106.5 L108 106.3 L112 106.1 L116 105.9 L120 105.6 L124 105.4 L128 105.1 L132 104.8 L136 104.5 L140 104.2 L144 103.9 L148 103.6 L152 103.3 L156 103 L160 102.8 L164 102.6 L168 102.4 L172 102.2 L176 102 L180 101.9 L184 101.8 L188 101.8 L192 101.8 L196 101.8 L200 101.8 L204 101.8 L208 101.9 L212 102 L216 102.1 L220 102.2 L224 102.3 L228 102.5 L232 102.6 L236 102.7 L240 102.8 L244 103 L248 103 L252 103.1 L256 103.2 L260 103.2 L264 103.3 L268 103.3 L272 103.3 L276 103.3 L280 103.2 L284 103.2 L288 103.1 L292 103.1 L296 103 L300 102.9 L304 102.9 L308 102.8 L312 102.7 L316 102.7 L320 102.7 L324 102.6 L328 102.6 L332 102.7 L336 102.7 L340 102.8 L344 102.9 L348 103 L352 103.2 L356 103.4 L360 103.6 L364 103.8 L368 104 L372 104.3 L376 104.5 L380 104.8 L384 105.1 L388 105.4 L392 105.6 L396 105.9 L400 106.1 L404 106.4 L408 106.6 L412 106.8 L416 106.9 L420 107 L424 107.1 L428 107.2 L428 113.2 L424 113.1 L420 113 L416 112.9 L412 112.8 L408 112.6 L404 112.4 L400 112.1 L396 111.9 L392 111.6 L388 111.4 L384 111.1 L380 110.8 L376 110.5 L372 110.3 L368 110 L364 109.8 L360 109.6 L356 109.4 L352 109.2 L348 109 L344 108.9 L340 108.8 L336 108.7 L332 108.7 L328 108.6 L324 108.6 L320 108.7 L316 108.7 L312 108.7 L308 108.8 L304 108.9 L300 108.9 L296 109 L292 109.1 L288 109.1 L284 109.2 L280 109.2 L276 109.3 L272 109.3 L268 109.3 L264 109.3 L260 109.2 L256 109.2 L252 109.1 L248 109 L244 109 L240 108.8 L236 108.7 L232 108.6 L228 108.5 L224 108.3 L220 108.2 L216 108.1 L212 108 L208 107.9 L204 107.8 L200 107.8 L196 107.8 L192 107.8 L188 107.8 L184 107.8 L180 107.9 L176 108 L172 108.2 L168 108.4 L164 108.6 L160 108.8 L156 109 L152 109.3 L148 109.6 L144 109.9 L140 110.2 L136 110.5 L132 110.8 L128 111.1 L124 111.4 L120 111.6 L116 111.9 L112 112.1 L108 112.3 L104 112.5 L100 112.7 L96 112.8 L92 112.9 L88 112.9 L84 113 L80 113 L76 112.9 L72 112.8 L68 112.7 L64 112.6 L60 112.4 L56 112.3 L52 112.1 L48 111.9 L44 111.7 L40 111.5 L36 111.3 L32 111.1 L28 110.9 L24 110.7 L20 110.5 L16 110.4 L12 110.3 L8 110.1 L4 110 L0 110 L-4 109.9 L-8 109.9 L-12 109.9 L-16 109.9 L-20 109.9 L-24 109.9 L-28 110 L-32 110 L-36 110 L-40 110.1 Z" fill="#66793B"></path><path d="M-40 104.1 L-36 104 L-32 104 L-28 104 L-24 103.9 L-20 103.9 L-16 103.9 L-12 103.9 L-8 103.9 L-4 103.9 L0 104 L4 104 L8 104.1 L12 104.3 L16 104.4 L20 104.5 L24 104.7 L28 104.9 L32 105.1 L36 105.3 L40 105.5 L44 105.7 L48 105.9 L52 106.1 L56 106.3 L60 106.4 L64 106.6 L68 106.7 L72 106.8 L76 106.9 L80 107 L84 107 L88 106.9 L92 106.9 L96 106.8 L100 106.7 L104 106.5 L108 106.3 L112 106.1 L116 105.9 L120 105.6 L124 105.4 L128 105.1 L132 104.8 L136 104.5 L140 104.2 L144 103.9 L148 103.6 L152 103.3 L156 103 L160 102.8 L164 102.6 L168 102.4 L172 102.2 L176 102 L180 101.9 L184 101.8 L188 101.8 L192 101.8 L196 101.8 L200 101.8 L204 101.8 L208 101.9 L212 102 L216 102.1 L220 102.2 L224 102.3 L228 102.5 L232 102.6 L236 102.7 L240 102.8 L244 103 L248 103 L252 103.1 L256 103.2 L260 103.2 L264 103.3 L268 103.3 L272 103.3 L276 103.3 L280 103.2 L284 103.2 L288 103.1 L292 103.1 L296 103 L300 102.9 L304 102.9 L308 102.8 L312 102.7 L316 102.7 L320 102.7 L324 102.6 L328 102.6 L332 102.7 L336 102.7 L340 102.8 L344 102.9 L348 103 L352 103.2 L356 103.4 L360 103.6 L364 103.8 L368 104 L372 104.3 L376 104.5 L380 104.8 L384 105.1 L388 105.4 L392 105.6 L396 105.9 L400 106.1 L404 106.4 L408 106.6 L412 106.8 L416 106.9 L420 107 L424 107.1 L428 107.2" stroke="#1C2B22" stroke-width="1.5" fill="none"></path></svg><div class="st wrapw"><figure class="win"><div class="win-bar" role="tablist" aria-label="Screens of gridflow explorer"><button type="button" role="tab" id="t-catalogue" aria-controls="p-catalogue" aria-selected="true" tabindex="0">Catalogue</button><button type="button" role="tab" id="t-generation-mix" aria-controls="p-generation-mix" aria-selected="false" tabindex="-1">Generation mix</button><button type="button" role="tab" id="t-system-prices" aria-controls="p-system-prices" aria-selected="false" tabindex="-1">System prices</button><button type="button" role="tab" id="t-historic-mix" aria-controls="p-historic-mix" aria-selected="false" tabindex="-1">Historic mix</button><button type="button" role="tab" id="t-demand-outturn" aria-controls="p-demand-outturn" aria-selected="false" tabindex="-1">Demand outturn</button></div><div class="pane" role="tabpanel" id="p-catalogue" aria-labelledby="t-catalogue"><div class="view"><a class="full" href="../explorer-shots/catalogue-light.png" data-light="../explorer-shots/catalogue-light.png" data-dark="../explorer-shots/catalogue-dark.png"><picture><source media="(prefers-color-scheme: dark)" srcset="../explorer-shots/catalogue-dark.png"><img class="crop" style="width: 993.6px; left: -69px; top: -13.8px" src="../explorer-shots/catalogue-light.png" alt="The explorer’s catalogue: a petrol band with the eight sources and gridflow gold, then Electricity, Gas and Weather columns listing each source with its datasets." width="1440" height="1480"></picture></a></div><p class="wcap">The catalogue it opens on: eight public sources and gridflow gold, grouped Electricity, Gas and Weather. Tap the screen to see it whole.</p></div><div class="pane" role="tabpanel" id="p-generation-mix" aria-labelledby="t-generation-mix" hidden><div class="view"><a class="full" href="../explorer-shots/generation-mix-light.png" data-light="../explorer-shots/generation-mix-light.png" data-dark="../explorer-shots/generation-mix-dark.png"><picture><source media="(prefers-color-scheme: dark)" srcset="../explorer-shots/generation-mix-dark.png"><img class="crop" style="width: 993.6px; left: -81.4px; top: -9.7px" src="../explorer-shots/generation-mix-light.png" alt="The Generation mix screen: GB generation per half-hour stacked by fuel over seven days, with the fuel key, the mean mix for one day and a table of the days." width="1440" height="1047" loading="lazy"></picture></a></div><p class="wcap">Generation mix, pinned in the side rail: GB generation stacked by fuel. Tap the screen to see it whole.</p></div><div class="pane" role="tabpanel" id="p-system-prices" aria-labelledby="t-system-prices" hidden><div class="view"><a class="full" href="../explorer-shots/system-prices-light.png" data-light="../explorer-shots/system-prices-light.png" data-dark="../explorer-shots/system-prices-dark.png"><picture><source media="(prefers-color-scheme: dark)" srcset="../explorer-shots/system-prices-dark.png"><img class="crop" style="width: 993.6px; left: -81.4px; top: -9.7px" src="../explorer-shots/system-prices-light.png" alt="The System prices screen: the imbalance price per half-hour over seven days with net imbalance volume below it, a key, a table of the days and the runs below zero." width="1440" height="1174" loading="lazy"></picture></a></div><p class="wcap">System prices, pinned in the side rail: the imbalance price per half-hour, with net imbalance volume on the same clock. Tap the screen to see it whole.</p></div><div class="pane" role="tabpanel" id="p-historic-mix" aria-labelledby="t-historic-mix" hidden><div class="view"><a class="full" href="../explorer-shots/historic-mix-light.png" data-light="../explorer-shots/historic-mix-light.png" data-dark="../explorer-shots/historic-mix-dark.png"><picture><source media="(prefers-color-scheme: dark)" srcset="../explorer-shots/historic-mix-dark.png"><img class="crop" style="width: 993.6px; left: -81.4px; top: -151.8px" src="../explorer-shots/historic-mix-light.png" alt="The Historic generation mix screen: NESO’s generation by fuel as monthly means from 2009 to 2026, carbon intensity below, and the mix by year as a bar and a table." width="1440" height="1935" loading="lazy"></picture></a></div><p class="wcap">Historic mix: NESO’s generation by fuel from 2009 to 2026, with carbon intensity and the mix by year. Tap the screen to see it whole.</p></div><div class="pane" role="tabpanel" id="p-demand-outturn" aria-labelledby="t-demand-outturn" hidden><div class="view"><a class="full" href="../explorer-shots/demand-outturn-light.png" data-light="../explorer-shots/demand-outturn-light.png" data-dark="../explorer-shots/demand-outturn-dark.png"><picture><source media="(prefers-color-scheme: dark)" srcset="../explorer-shots/demand-outturn-dark.png"><img class="crop" style="width: 993.6px; left: -81.4px; top: -20.7px" src="../explorer-shots/demand-outturn-light.png" alt="The Demand outturn screen: national demand per half-hour over seven days, transmission demand below it, and the gap between them with a table of the days." width="1440" height="1397" loading="lazy"></picture></a></div><p class="wcap">Demand outturn: Elexon’s national and transmission system demand per half-hour. Tap the screen to see it whole.</p></div></figure><p class="wnote">It isn’t hosted, so these are screenshots from its own screenshot tool, light or dark to match your system.</p></div></section><section class="st built" data-section="built" aria-labelledby="h-built"><h2 class="big" id="h-built">How it’s built</h2><div class="tcols"><div class="tcol"><h3 class="kn">Front end</h3><p class="kf">React 19, TypeScript, Vite, Recharts and React Router.</p><p class="kl">No component kit and no CSS framework: its own design tokens as CSS custom properties, light and dark themes, and one shared chart theme.</p><p class="kl">One dataset page template with three bodies: series as a chart, event feeds as a filterable table, reference tables as a plain table.</p><p class="kl">Its own screenshot tool, headless Chrome through puppeteer-core, takes every screen in light and dark.</p></div><div class="tcol"><h3 class="kn">Backend</h3><p class="kf">Python, FastAPI on uvicorn, Polars, and DuckDB opened read-only per request.</p><p class="kl">It reads gridflow only through gridflow’s own client, <code>GridflowClient</code>, never raw file paths.</p><p class="kl">Endpoints serve the source manifest, a dataset’s rows and its coverage, forecast runs from the gold forecast store, and a job that runs gridflow’s ingestion to fill a missing range.</p></div></div><div class="route"><svg class="flow" width="358" height="222" viewBox="0 0 358 222" role="img" aria-label="The route of a request: from the browser running the React app, to FastAPI, to GridflowClient, to DuckDB, which reads gridflow's silver and gold tables."><path d="M14 12 V150" fill="none" stroke="#1C2B22" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M14 12 V150" fill="none" stroke="#AFC64E" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"></path><path d="M14 150 C14 176 34 176 34 198 V208" fill="none" stroke="#1C2B22" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M14 150 C14 176 34 176 34 198 V208" fill="none" stroke="#AFC64E" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"></path><path d="M14 150 V208" fill="none" stroke="#1C2B22" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M14 150 V208" fill="none" stroke="#AFC64E" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="14" cy="12" r="6.5" fill="#ECE8DA" stroke="#1C2B22" stroke-width="2"></circle><circle cx="14" cy="12" r="2.2" fill="#1C2B22"></circle><circle cx="14" cy="58" r="6.5" fill="#ECE8DA" stroke="#1C2B22" stroke-width="2"></circle><circle cx="14" cy="58" r="2.2" fill="#1C2B22"></circle><circle cx="14" cy="104" r="6.5" fill="#ECE8DA" stroke="#1C2B22" stroke-width="2"></circle><circle cx="14" cy="104" r="2.2" fill="#1C2B22"></circle><circle cx="14" cy="150" r="5.2" fill="#1C2B22"></circle><circle cx="14" cy="208" r="6" fill="#DCE2DF" stroke="#1C2B22" stroke-width="2"></circle><circle cx="14" cy="208" r="2" fill="#1C2B22"></circle><circle cx="34" cy="208" r="6" fill="#E9DDAF" stroke="#1C2B22" stroke-width="2"></circle><circle cx="34" cy="208" r="2" fill="#1C2B22"></circle><g class="lab"><text x="36" y="17">browser (React)</text><text x="36" y="63">FastAPI</text><text x="36" y="109" class="m">GridflowClient</text><text x="36" y="155">DuckDB</text><text x="50" y="213">silver and gold</text></g></svg></div><div class="viewx"><div class="vtext"><h3 class="kn">A view is a small typed file</h3><p class="kl">Each dataset view is its own folder, <code>src/views/&lt;source&gt;/&lt;family&gt;/</code>, and the app finds views by a file glob: adding a view is adding a folder, with no central list to edit.</p><p class="kl">This is the market index price view. The line numbers are the file’s; the gaps are lines left out.</p></div><pre class="well code" aria-label="Lines 13 to 36 of the market index price view, index.tsx, with some lines left out"><span><span class="n">13</span><span class="t" style="--i: 0ch"><span class="k">import</span> { defineView } <span class="k">from</span> <span class="s">'../../define'</span></span></span><span class="cut"><span class="n">18</span><span class="t" style="--i: 0ch"><span class="k">const</span> view = defineView({</span></span><span><span class="n">19</span><span class="t" style="--i: 2ch">title: <span class="s">'Market index price'</span>,</span></span><span class="cut"><span class="n">25</span><span class="t" style="--i: 2ch">datasets: [</span></span><span><span class="n">26</span><span class="t" style="--i: 4ch">{</span></span><span><span class="n">27</span><span class="t" style="--i: 6ch">id: <span class="s">'mid'</span>,</span></span><span><span class="n">28</span><span class="t" style="--i: 6ch">body: <span class="s">'series'</span>,</span></span><span><span class="n">29</span><span class="t" style="--i: 6ch">label: <span class="s">'Market index'</span>,</span></span><span><span class="n">30</span><span class="t" style="--i: 6ch">title: <span class="s">'Price per half-hour'</span>,</span></span><span><span class="n">31</span><span class="t" style="--i: 6ch">values: [</span></span><span><span class="n">32</span><span class="t" style="--i: 8ch">{ column: PRICE, label: <span class="s">'Price'</span>, color: <span class="s">'var(--chart-price)'</span> },</span></span><span><span class="n">33</span><span class="t" style="--i: 8ch">{ column: VOLUME, label: <span class="s">'Volume'</span>, color: <span class="s">'var(--chart-fan-soft)'</span> },</span></span><span><span class="n">34</span><span class="t" style="--i: 6ch">],</span></span><span class="cut"><span class="n">36</span><span class="t" style="--i: 6ch">chart: { mark: <span class="s">'line'</span>, values: [PRICE], lower: false, belowZero: true, axisWidth: AXIS_WIDTH },</span></span></pre></div></section></div><div class="deep" data-section="foot"><svg class="gran" width="100%" height="100%" aria-hidden="true"><defs><pattern id="p-gran-d" width="46" height="40" patternUnits="userSpaceOnUse"><path d="M8 8 h8 M12 4 v8 M30 26 h8 M34 22 v8 M20 34 h6 M23 31 v6 M40 6 h5 M42.5 3.5 v5" stroke="#3E8C97" stroke-width="1.1"></path></pattern></defs><rect width="100%" height="100%" fill="url(#p-gran-d)" opacity=".5"></rect></svg><svg class="redge" width="390" height="44" viewBox="0 0 390 44" aria-hidden="true"><defs><pattern id="p-stip" width="9" height="9" patternUnits="userSpaceOnUse"><circle cx="2" cy="3" r="1" fill="#8A6F1E"></circle><circle cx="6.5" cy="7.5" r=".8" fill="#8A6F1E"></circle></pattern>
+<pattern id="p-diag" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M0 8 L8 0" stroke="#5E6E6B" stroke-width=".8"></path></pattern>
+<pattern id="p-brick" width="24" height="12" patternUnits="userSpaceOnUse"><path d="M0 11.5 H24 M12 0 V6 M0 6 H24 M0 6 V12" stroke="#7C5530" stroke-width=".8" fill="none"></path></pattern>
+<pattern id="p-soil" width="23" height="17" patternUnits="userSpaceOnUse"><circle cx="4" cy="5" r=".9" fill="#A39A6A"></circle><circle cx="15" cy="12" r="1.1" fill="#A39A6A"></circle><path d="M17 3 h3" stroke="#A39A6A" stroke-width=".9"></path></pattern>
+<pattern id="p-granite" width="46" height="40" patternUnits="userSpaceOnUse"><path d="M8 8 h8 M12 4 v8 M30 26 h8 M34 22 v8 M20 34 h6 M23 31 v6 M40 6 h5 M42.5 3.5 v5" stroke="#3E8C97" stroke-width="1.1"></path></pattern></defs><path d="M-40 30.1 C-36.7 30.3 -26.7 30.5 -20 31.3 C-13.3 32.1 -6.7 33.9 0 35 C6.7 36.1 13.3 37.6 20 37.8 C26.7 38 33.3 37.5 40 36.3 C46.7 35.2 53.3 32.7 60 30.9 C66.7 29.1 73.3 26.6 80 25.3 C86.7 24.1 93.3 23.4 100 23.4 C106.7 23.4 113.3 24.6 120 25.4 C126.7 26.1 133.3 27.4 140 27.7 C146.7 28 153.3 27.9 160 27.2 C166.7 26.6 173.3 24.9 180 23.9 C186.7 23 193.3 21.6 200 21.4 C206.7 21.2 213.3 21.7 220 22.7 C226.7 23.7 233.3 26 240 27.4 C246.7 28.9 253.3 30.9 260 31.6 C266.7 32.3 273.3 32.3 280 31.6 C286.7 30.9 293.3 29 300 27.6 C306.7 26.1 313.3 24 320 23 C326.7 21.9 333.3 21.4 340 21.3 C346.7 21.1 353.3 22 360 22.2 C366.7 22.4 373.3 22.9 380 22.3 C386.7 21.7 393.3 20.3 400 18.6 C406.7 16.9 416.7 13 420 11.9 L430 -4 L-40 -4 Z" fill="#ECE8DA"></path><path d="M-40 30.1 C-36.7 30.3 -26.7 30.5 -20 31.3 C-13.3 32.1 -6.7 33.9 0 35 C6.7 36.1 13.3 37.6 20 37.8 C26.7 38 33.3 37.5 40 36.3 C46.7 35.2 53.3 32.7 60 30.9 C66.7 29.1 73.3 26.6 80 25.3 C86.7 24.1 93.3 23.4 100 23.4 C106.7 23.4 113.3 24.6 120 25.4 C126.7 26.1 133.3 27.4 140 27.7 C146.7 28 153.3 27.9 160 27.2 C166.7 26.6 173.3 24.9 180 23.9 C186.7 23 193.3 21.6 200 21.4 C206.7 21.2 213.3 21.7 220 22.7 C226.7 23.7 233.3 26 240 27.4 C246.7 28.9 253.3 30.9 260 31.6 C266.7 32.3 273.3 32.3 280 31.6 C286.7 30.9 293.3 29 300 27.6 C306.7 26.1 313.3 24 320 23 C326.7 21.9 333.3 21.4 340 21.3 C346.7 21.1 353.3 22 360 22.2 C366.7 22.4 373.3 22.9 380 22.3 C386.7 21.7 393.3 20.3 400 18.6 C406.7 16.9 416.7 13 420 11.9 L430 -4 L-40 -4 Z" fill="url(#p-soil)" opacity=".5"></path><path d="M-40 30.1 C-36.7 30.3 -26.7 30.5 -20 31.3 C-13.3 32.1 -6.7 33.9 0 35 C6.7 36.1 13.3 37.6 20 37.8 C26.7 38 33.3 37.5 40 36.3 C46.7 35.2 53.3 32.7 60 30.9 C66.7 29.1 73.3 26.6 80 25.3 C86.7 24.1 93.3 23.4 100 23.4 C106.7 23.4 113.3 24.6 120 25.4 C126.7 26.1 133.3 27.4 140 27.7 C146.7 28 153.3 27.9 160 27.2 C166.7 26.6 173.3 24.9 180 23.9 C186.7 23 193.3 21.6 200 21.4 C206.7 21.2 213.3 21.7 220 22.7 C226.7 23.7 233.3 26 240 27.4 C246.7 28.9 253.3 30.9 260 31.6 C266.7 32.3 273.3 32.3 280 31.6 C286.7 30.9 293.3 29 300 27.6 C306.7 26.1 313.3 24 320 23 C326.7 21.9 333.3 21.4 340 21.3 C346.7 21.1 353.3 22 360 22.2 C366.7 22.4 373.3 22.9 380 22.3 C386.7 21.7 393.3 20.3 400 18.6 C406.7 16.9 416.7 13 420 11.9" stroke="#1C2B22" stroke-width="2" fill="none" stroke-linejoin="round"></path></svg><section class="st related" aria-labelledby="h-rel"><h2 class="rh" id="h-rel">The rest of gridflow</h2><ul><li><h3 class="rn"><a href="architecture.html">Architecture</a></h3><p>How gridflow is built, from raw responses in bronze to the DuckDB file over silver and gold.</p></li><li><h3 class="rn"><a href="models.html">Models</a></h3><p>gridflow-models, a separate Python library that reads gridflow’s silver tables for forecasts and a day-ahead price.</p></li></ul></section><footer class="st st-deep"><div class="foot"><a class="brand" href="index.html">gridflow</a><ul><li><a href="data-sources.html">Data sources</a></li><li><a href="architecture.html">Architecture</a></li><li><a href="models.html">Models</a></li><li><a href="explorer.html">Explorer</a></li><li><a href="index.html#about">About</a></li><li><a href="https://github.com/EBentham/gridflow">GitHub</a></li></ul></div></footer></div>
+</main>
+</div>
+
+<script>
+(function () {
+  var tabs = [].slice.call(document.querySelectorAll('.win [role="tab"]'));
+  function pick(t) {
+    tabs.forEach(function (x) {
+      var on = x === t;
+      x.setAttribute('aria-selected', on ? 'true' : 'false');
+      x.tabIndex = on ? 0 : -1;
+      document.getElementById(x.getAttribute('aria-controls')).hidden = !on;
+    });
+  }
+  tabs.forEach(function (t, i) {
+    t.addEventListener('click', function () { pick(t); });
+    t.addEventListener('keydown', function (e) {
+      var k = e.key, j = k === 'ArrowRight' ? i + 1 : k === 'ArrowLeft' ? i - 1 : k === 'Home' ? 0 : k === 'End' ? tabs.length - 1 : null;
+      if (j === null) return;
+      e.preventDefault();
+      var n = tabs[(j + tabs.length) % tabs.length];
+      pick(n); n.focus();
+    });
+  });
+  var mq = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+  function hrefs() {
+    [].forEach.call(document.querySelectorAll('.win a.full'), function (a) {
+      a.href = mq && mq.matches ? a.getAttribute('data-dark') : a.getAttribute('data-light');
+    });
+  }
+  hrefs();
+  if (mq && mq.addEventListener) mq.addEventListener('change', hrefs);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Built, drawing</title>
+
+</head>
+<body>
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&amp;family=Hanken+Grotesk:ital,wght@0,400..700;1,400..600&amp;family=Red+Hat+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.root{background:#155A6E;color:#1C2B22;font:400 16px/1.6 "Hanken Grotesk",sans-serif;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+.root a{color:inherit;text-decoration-thickness:1.5px;text-underline-offset:4px;text-decoration-color:#66793B}
+.root a:focus-visible{outline:2px solid #AFC64E;outline-offset:3px;border-radius:2px}
+.root h1,.root h2,.root h3{font-family:"Bricolage Grotesque",sans-serif;margin:0;font-optical-sizing:auto}
+.root code{font-family:"Red Hat Mono",monospace;font-size:.9em}
+.layer{position:absolute;left:0;top:0}
+main{position:relative;display:block}
+.st{position:relative;box-sizing:border-box;padding:0 80px}
+.sky{position:relative;box-sizing:border-box;padding:0 80px}
+.mast{display:flex;justify-content:space-between;align-items:baseline;padding-top:26px;color:#F6F4EC;line-height:1.6}
+.brand{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:24px;letter-spacing:-.01em}
+.root .brand{text-decoration:none}
+.mast ul{display:flex;gap:30px;list-style:none;margin:0;padding:0;font-size:15px}
+.mast ul a{text-decoration:none;color:#CFE0DC}
+.mast ul a:hover{color:#F6F4EC}
+.mast ul a[aria-current="page"]{color:#F6F4EC;box-shadow:inset 0 -2px 0 #AFC64E}
+.hero{display:grid;grid-template-columns:860px 374px;column-gap:46px;margin-top:64px;align-items:start}
+.hero h1{color:#F6F4EC;font-weight:760;font-stretch:84%;font-size:86px;line-height:.94;letter-spacing:-.022em}
+.crumb{margin:0 0 18px;font-size:15px;line-height:1.4;color:#B4D0CD}
+.crumb a{color:#CFE0DC;text-decoration-color:#AFC64E}
+.lede{padding-top:14px}
+.lede p{margin:0 0 14px;font-size:17.5px;line-height:1.6;color:#CFE0DC;max-width:58ch}
+.lede p.lead{color:#F6F4EC}
+.lede .n{color:#F6F4EC;font-weight:600}
+.lede code{color:#F6F4EC;font-size:.86em}
+.alt{font-weight:600;color:#F6F4EC;text-decoration-color:#AFC64E}
+.root .alt{text-decoration-color:#AFC64E}
+.facts{margin:4px 0 0}
+.facts div{display:grid;grid-template-columns:96px minmax(0,1fr);column-gap:14px;padding:7px 0;border-top:1px solid rgba(207,224,220,.22)}
+.facts dt{font-size:14px;line-height:1.45;color:#B4D0CD}
+.facts dd{margin:0;font-size:14.5px;line-height:1.45;color:#F6F4EC}
+.facts code{font-size:13.5px}
+.land-svg text,.lab text{font-family:"Hanken Grotesk",sans-serif;font-style:italic;font-size:13.5px}
+.sec h2,.st h2.big{font-size:42px;font-weight:720;font-stretch:88%;line-height:1.02;letter-spacing:-.018em;margin:0 0 16px}
+.st h2.fig-h{font-size:30px;font-weight:700;font-stretch:90%;line-height:1.1;letter-spacing:-.012em;margin:0 0 8px}
+.sec p,.st p.body{margin:0 0 14px;font-size:16px;line-height:1.62;color:#3F4A3B;max-width:58ch}
+.st p code,.st li code,.st dd code{color:#1C2B22}
+.cap{margin:8px 0 0;font-size:14.5px;line-height:1.55;color:#3F4A3B;max-width:66ch}
+.more{font-weight:600;color:#1C2B22}
+.chart{display:block;overflow:visible}
+.chart text{font-family:"Hanken Grotesk",sans-serif;font-size:13px;fill:#3F4A3B}
+.chart text.dl{font-style:italic;font-size:13.5px;fill:#1C2B22}
+.well{margin:0;background:#ECE8DA;border:1px solid rgba(28,43,34,.18);border-radius:3px;padding:10px 14px;font:400 14.5px/1.7 "Red Hat Mono",monospace;color:#1C2B22;white-space:pre;overflow:hidden}
+.well .s{color:#7C5530}
+.well .k{color:#155A6E;font-weight:500}
+.well .c{color:#5d6a55}
+.st-deep{color:#F6F4EC}
+.foot{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:baseline;column-gap:40px;padding:44px 0 56px;border-top:1px solid rgba(207,224,220,.22)}
+.foot ul{display:flex;gap:28px;list-style:none;margin:0;padding:0;font-size:15px}
+.foot ul a{color:#CFE0DC;text-decoration:none}
+.foot ul a:hover{color:#F6F4EC;text-decoration:underline;text-decoration-color:#AFC64E}
+.foot p{grid-column:1 / -1;margin:14px 0 0;font-size:14px;color:#B4D0CD}
+.rot{transform-box:fill-box;transform-origin:center;animation:spin 17s linear infinite}
+.sp2{animation-duration:13s}
+.sp3{animation-duration:21s}
+@keyframes spin{to{transform:rotate(360deg)} }
+@media (prefers-reduced-motion: reduce){.rot{animation:none} }
+.sky{position:relative;box-sizing:border-box;padding:0 80px 40px;background:#155A6E}
+.hero{display:grid;grid-template-columns:780px 440px;column-gap:60px;margin-top:64px;align-items:start}
+.lede{padding-top:10px}
+.lede .repo{margin-top:22px;color:#F6F4EC}
+.lede .repo code{font-size:15px}
+.ground{position:relative;background:#155A6E}
+.gnd,.flow,.trail{position:absolute;left:0;top:0;display:block;overflow:visible}
+.gnd{z-index:0}
+.flow{z-index:1}
+.trail{z-index:3;pointer-events:none}
+.gin{position:relative;z-index:2;padding:370px 80px 0}
+.flow .lab text{font-family:"Hanken Grotesk",sans-serif;font-style:italic;font-size:14px;fill:#1C2B22}
+.flow .lab text.m{font-family:"Red Hat Mono",monospace;font-style:normal;font-size:13px}
+.flow .lab text.hs{paint-order:stroke;stroke:#DCE2DF;stroke-width:5px;stroke-linejoin:round}
+.flow .lab text.ht{paint-order:stroke;stroke:#ECE8DA;stroke-width:5px;stroke-linejoin:round}
+.root h2{font-size:42px;font-weight:720;font-stretch:88%;line-height:1.02;letter-spacing:-.018em;color:#1C2B22}
+.root h3{font-size:23px;font-weight:720;font-stretch:90%;line-height:1.1;letter-spacing:-.005em;color:#1C2B22;margin:0 0 8px}
+.thead{display:grid;grid-template-columns:520px 560px;column-gap:80px;align-items:end}
+.thead p,.built p,.re p{margin:0;font-size:16px;line-height:1.62;color:#3F4A3B;max-width:58ch}
+.step{margin:0;display:grid;column-gap:40px;align-items:start}
+.step.s1{margin-top:64px;grid-template-columns:1003px minmax(0,1fr)}
+.step.s2{margin-top:84px;grid-template-columns:minmax(0,1fr) 883px}
+.step.s3{margin-top:84px;grid-template-columns:963px minmax(0,1fr)}
+.scap{padding-top:66px;max-width:320px}
+.s2 .scap{padding-top:76px;max-width:340px}
+.scap h3{margin-top:14px}
+.scap p{margin:0;font-size:15px;line-height:1.55;color:#3F4A3B}
+.scap p.open{margin-top:10px;font-size:14px}
+.scap .open a{color:#1C2B22;font-weight:600}
+.open .dk{display:none}
+.jn{display:block;box-sizing:content-box;width:24px;height:24px;border:2px solid #1C2B22;border-radius:50%;background:#F6F4EC;font:700 13px/24px "Hanken Grotesk",sans-serif;text-align:center;color:#1C2B22;font-variant-numeric:tabular-nums}
+.win{box-sizing:content-box;border:1.5px solid #1C2B22;border-radius:4px;overflow:hidden;background:#F6F4EC}
+.wbar{display:flex;justify-content:space-between;align-items:flex-end;height:40px;background:#1C2B22;padding:0 18px 0 12px}
+.wtab{background:#F6F4EC;color:#1C2B22;padding:11px 18px 12px;border-radius:3px 3px 0 0;font:600 14px/1 "Hanken Grotesk",sans-serif;white-space:nowrap}
+.wname{align-self:center;color:#CFE0DC;font:400 13.5px/1 "Red Hat Mono",monospace;white-space:nowrap}
+.wbody{position:relative;overflow:hidden}
+.wbody picture{display:block}
+.wbody img{position:absolute;display:block;max-width:none}
+.ring{position:absolute;box-sizing:border-box;border:3px solid #AFC64E;outline:1.5px solid #1C2B22;border-radius:5px}
+.built{margin-top:120px}
+.built h2{margin:0 0 30px}
+.bcol{width:660px}
+.fe p+p{margin-top:12px}
+.be{margin-top:120px}
+.wt{margin:22px 0 8px;font-size:13.5px;line-height:1.4;color:#3F4A3B}
+.wt code{font-size:12.5px;color:#1C2B22}
+.root .well{font-size:13px;line-height:1.7;overflow-x:auto;scrollbar-width:none}
+.built p code{color:#1C2B22}
+.bspace{height:0}
+.rest{display:grid;grid-template-columns:420px minmax(0,1fr) minmax(0,1fr);column-gap:60px;align-items:start;padding-bottom:110px}
+.rest h2{margin:0}
+.re h3{margin:4px 0 8px}
+.re h3 a{text-decoration-color:#66793B}
+.deep{position:relative;background:#155A6E;color:#F6F4EC;margin-top:-2px}
+.deep .gran{position:absolute;left:0;top:0;z-index:0}
+.deep>*:not(.gran){position:relative;z-index:1}
+.redge{display:block}
+.foot{border-top:0}
+@media (prefers-color-scheme: dark){
+.wtab{background:transparent;color:#F6F4EC;box-shadow:inset 0 -2px 0 #AFC64E}
+.open .lt{display:none}
+.open .dk{display:inline}
+}
+.gin{padding:70px 80px 96px}
+.nw{white-space:nowrap}
+.root .built{margin-top:0}
+.built h2{margin:0 0 30px}
+.flow .lab text.hg{paint-order:stroke;stroke:#E9DDAF;stroke-width:5px;stroke-linejoin:round}
+.flow .lab tspan.m{font-family:"Red Hat Mono",monospace;font-style:normal;font-size:13px}
+.va .bcol{width:520px}
+.va .fe p,.va .be p{font-size:17.5px;line-height:1.55;color:#3F4A3B;max-width:40ch}
+.va .be{margin-top:170px}
+.does{list-style:none;margin:0;padding:0;width:560px}
+.does li{margin:0}
+.does li+li{margin-top:150px}
+.does li:nth-child(3){margin-top:230px}
+.does p{margin:0;font-size:19px;line-height:1.45;color:#1C2B22;max-width:38ch}
+.does .tech{color:#3F4A3B}
+.vc .dslot{height:0}
+.vc h2{margin-bottom:0}
+.cpara{margin:0;font-size:17.5px;line-height:1.6;color:#3F4A3B;max-width:58ch}
+</style>
+
+<div class="root" style="width: 1440px; height: 927px; overflow: hidden; position: relative">
+<main>
+<div class="ground" data-t="ground"><svg class="gnd" width="1440" height="927" viewBox="0 0 1440 927" aria-hidden="true"><defs><pattern id="p-stip" width="9" height="9" patternUnits="userSpaceOnUse"><circle cx="2" cy="3" r="1" fill="#8A6F1E"></circle><circle cx="6.5" cy="7.5" r=".8" fill="#8A6F1E"></circle></pattern>
+<pattern id="p-diag" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M0 8 L8 0" stroke="#5E6E6B" stroke-width=".8"></path></pattern>
+<pattern id="p-brick" width="24" height="12" patternUnits="userSpaceOnUse"><path d="M0 11.5 H24 M12 0 V6 M0 6 H24 M0 6 V12" stroke="#7C5530" stroke-width=".8" fill="none"></path></pattern>
+<pattern id="p-soil" width="23" height="17" patternUnits="userSpaceOnUse"><circle cx="4" cy="5" r=".9" fill="#A39A6A"></circle><circle cx="15" cy="12" r="1.1" fill="#A39A6A"></circle><path d="M17 3 h3" stroke="#A39A6A" stroke-width=".9"></path></pattern>
+<pattern id="p-granite" width="46" height="40" patternUnits="userSpaceOnUse"><path d="M8 8 h8 M12 4 v8 M30 26 h8 M34 22 v8 M20 34 h6 M23 31 v6 M40 6 h5 M42.5 3.5 v5" stroke="#3E8C97" stroke-width="1.1"></path></pattern></defs><rect x="0" y="0" width="1440" height="927" fill="#ECE8DA"></rect><rect x="0" y="0" width="1440" height="927" fill="url(#p-soil)" opacity=".5"></rect><path d="M-40 293.1 C-20 293 40 292.5 80 292.5 C120 292.5 160 294.1 200 293 C240 291.9 280 288.3 320 285.9 C360 283.4 400 279.2 440 278.3 C480 277.4 520 279.3 560 280.6 C600 281.9 640 285.1 680 285.9 C720 286.8 760 285.5 800 285.6 C840 285.8 880 285.2 920 286.8 C960 288.4 1000 293 1040 295.2 C1080 297.4 1120 300.1 1160 300.1 C1200 300 1240 296.7 1280 295.1 C1320 293.5 1360 291.1 1400 290.5 C1440 289.8 1500 291.2 1520 291.3 L1480 937 L-40 937 Z" fill="#DCE2DF"></path><path d="M-40 293.1 C-20 293 40 292.5 80 292.5 C120 292.5 160 294.1 200 293 C240 291.9 280 288.3 320 285.9 C360 283.4 400 279.2 440 278.3 C480 277.4 520 279.3 560 280.6 C600 281.9 640 285.1 680 285.9 C720 286.8 760 285.5 800 285.6 C840 285.8 880 285.2 920 286.8 C960 288.4 1000 293 1040 295.2 C1080 297.4 1120 300.1 1160 300.1 C1200 300 1240 296.7 1280 295.1 C1320 293.5 1360 291.1 1400 290.5 C1440 289.8 1500 291.2 1520 291.3 L1480 937 L-40 937 Z" fill="url(#p-diag)" opacity=".22"></path><path d="M-40 608.7 C-20 607.5 40 602.9 80 601.8 C120 600.7 160 601 200 602.2 C240 603.3 280 607.2 320 608.7 C360 610.2 400 610.7 440 611 C480 611.3 520 609.8 560 610.6 C600 611.3 640 613.8 680 615.5 C720 617.2 760 620.5 800 620.9 C840 621.2 880 619.1 920 617.5 C960 615.8 1000 612.1 1040 610.9 C1080 609.6 1120 610.2 1160 610 C1200 609.8 1240 610.6 1280 609.6 C1320 608.6 1360 605.3 1400 603.9 C1440 602.4 1500 601.4 1520 600.9 L1480 937 L-40 937 Z" fill="#E9DDAF"></path><path d="M-40 608.7 C-20 607.5 40 602.9 80 601.8 C120 600.7 160 601 200 602.2 C240 603.3 280 607.2 320 608.7 C360 610.2 400 610.7 440 611 C480 611.3 520 609.8 560 610.6 C600 611.3 640 613.8 680 615.5 C720 617.2 760 620.5 800 620.9 C840 621.2 880 619.1 920 617.5 C960 615.8 1000 612.1 1040 610.9 C1080 609.6 1120 610.2 1160 610 C1200 609.8 1240 610.6 1280 609.6 C1320 608.6 1360 605.3 1400 603.9 C1440 602.4 1500 601.4 1520 600.9 L1480 937 L-40 937 Z" fill="url(#p-stip)" opacity=".26"></path><path d="M-40 293.1 C-20 293 40 292.5 80 292.5 C120 292.5 160 294.1 200 293 C240 291.9 280 288.3 320 285.9 C360 283.4 400 279.2 440 278.3 C480 277.4 520 279.3 560 280.6 C600 281.9 640 285.1 680 285.9 C720 286.8 760 285.5 800 285.6 C840 285.8 880 285.2 920 286.8 C960 288.4 1000 293 1040 295.2 C1080 297.4 1120 300.1 1160 300.1 C1200 300 1240 296.7 1280 295.1 C1320 293.5 1360 291.1 1400 290.5 C1440 289.8 1500 291.2 1520 291.3 M-40 608.7 C-20 607.5 40 602.9 80 601.8 C120 600.7 160 601 200 602.2 C240 603.3 280 607.2 320 608.7 C360 610.2 400 610.7 440 611 C480 611.3 520 609.8 560 610.6 C600 611.3 640 613.8 680 615.5 C720 617.2 760 620.5 800 620.9 C840 621.2 880 619.1 920 617.5 C960 615.8 1000 612.1 1040 610.9 C1080 609.6 1120 610.2 1160 610 C1200 609.8 1240 610.6 1280 609.6 C1320 608.6 1360 605.3 1400 603.9 C1440 602.4 1500 601.4 1520 600.9" stroke="#1C2B22" stroke-width="1.5" fill="none"></path></svg><svg class="flow" width="1440" height="927" viewBox="0 0 1440 927" role="img" aria-label="Drawing of a request: the browser running the React app calls FastAPI, FastAPI reads through GridflowClient, and GridflowClient reads DuckDB over gridflow's silver and gold tables."><path d="M250 228.8 V344.8" fill="none" stroke="#1C2B22" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M250 228.8 V344.8" fill="none" stroke="#AFC64E" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"></path><path d="M250 408.8 V456.8" fill="none" stroke="#1C2B22" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M250 408.8 V456.8" fill="none" stroke="#AFC64E" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"></path><path d="M250 514.8 V557.8" fill="none" stroke="#1C2B22" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M250 514.8 V557.8" fill="none" stroke="#AFC64E" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"></path><path d="M195.6 576.8 L100 566.8 M195.6 658.8 L100 648.8" stroke="#1C2B22" stroke-width=".9" opacity=".6"></path><rect x="78" y="554.8" width="44" height="9" fill="#DCE2DF" stroke="#1C2B22" stroke-width=".9"></rect><path d="M89 555.8 V562.8 M100 555.8 V562.8 M111 555.8 V562.8" stroke="#1C2B22" stroke-width=".6" opacity=".38"></path><rect x="78" y="565.8" width="44" height="9" fill="#DCE2DF" stroke="#1C2B22" stroke-width=".9"></rect><path d="M89 566.8 V573.8 M100 566.8 V573.8 M111 566.8 V573.8" stroke="#1C2B22" stroke-width=".6" opacity=".38"></path><rect x="78" y="644.8" width="44" height="9" fill="#E9DDAF" stroke="#1C2B22" stroke-width=".9"></rect><path d="M89 645.8 V652.8 M100 645.8 V652.8 M111 645.8 V652.8" stroke="#1C2B22" stroke-width=".6" opacity=".38"></path><rect x="78" y="655.8" width="44" height="9" fill="#E9DDAF" stroke="#1C2B22" stroke-width=".9"></rect><path d="M89 656.8 V663.8 M100 656.8 V663.8 M111 656.8 V663.8" stroke="#1C2B22" stroke-width=".6" opacity=".38"></path><path d="M304.4 576.8 L400 566.8 M304.4 658.8 L400 648.8" stroke="#1C2B22" stroke-width=".9" opacity=".6"></path><rect x="378" y="554.8" width="44" height="9" fill="#DCE2DF" stroke="#1C2B22" stroke-width=".9"></rect><path d="M389 555.8 V562.8 M400 555.8 V562.8 M411 555.8 V562.8" stroke="#1C2B22" stroke-width=".6" opacity=".38"></path><rect x="378" y="565.8" width="44" height="9" fill="#DCE2DF" stroke="#1C2B22" stroke-width=".9"></rect><path d="M389 566.8 V573.8 M400 566.8 V573.8 M411 566.8 V573.8" stroke="#1C2B22" stroke-width=".6" opacity=".38"></path><rect x="378" y="644.8" width="44" height="9" fill="#E9DDAF" stroke="#1C2B22" stroke-width=".9"></rect><path d="M389 645.8 V652.8 M400 645.8 V652.8 M411 645.8 V652.8" stroke="#1C2B22" stroke-width=".6" opacity=".38"></path><rect x="378" y="655.8" width="44" height="9" fill="#E9DDAF" stroke="#1C2B22" stroke-width=".9"></rect><path d="M389 656.8 V663.8 M400 656.8 V663.8 M411 656.8 V663.8" stroke="#1C2B22" stroke-width=".6" opacity=".38"></path><rect x="184" y="142.8" width="132" height="86" rx="3" fill="#F6F4EC" stroke="#1C2B22" stroke-width="1.5"></rect><rect x="184.8" y="143.6" width="130.5" height="12" rx="2" fill="#1C2B22"></rect><rect x="193.2" y="147" width="34.3" height="8.6" fill="#F6F4EC"></rect><path d="M199.8 201.6 H302.8" stroke="#1C2B22" stroke-width=".7" opacity=".4"></path><path d="M199.8 193.4 L209.2 183.8 L218.6 191 L227.9 176.5 L237.3 196.8 L246.6 206.4 L256 204.5 L265.4 186.2 L274.7 178.9 L284.1 181.4 L293.4 188.6 L302.8 185.2" stroke="#3E8C97" stroke-width="1.6" fill="none" stroke-linejoin="round"></path><path d="M196.8 162.9 V218.1 H304.8" stroke="#1C2B22" stroke-width="1" fill="none"></path><rect x="190" y="344.8" width="120" height="64" rx="3" fill="#F6F4EC" stroke="#1C2B22" stroke-width="1.5"></rect><circle cx="205.6" cy="352.8" r="3.9" fill="#AFC64E" stroke="#1C2B22" stroke-width=".9"></circle><path d="M218.8 352.8 H264.4" stroke="#1C2B22" stroke-width="1.4" opacity=".7"></path><circle cx="205.6" cy="368.8" r="3.9" fill="#AFC64E" stroke="#1C2B22" stroke-width=".9"></circle><path d="M218.8 368.8 H276.4" stroke="#1C2B22" stroke-width="1.4" opacity=".7"></path><path d="M191 360.8 H309" stroke="#1C2B22" stroke-width=".6" opacity=".35"></path><circle cx="205.6" cy="384.8" r="3.9" fill="#AFC64E" stroke="#1C2B22" stroke-width=".9"></circle><path d="M218.8 384.8 H264.4" stroke="#1C2B22" stroke-width="1.4" opacity=".7"></path><path d="M191 376.8 H309" stroke="#1C2B22" stroke-width=".6" opacity=".35"></path><circle cx="205.6" cy="400.8" r="3.9" fill="#AFC64E" stroke="#1C2B22" stroke-width=".9"></circle><path d="M218.8 400.8 H276.4" stroke="#1C2B22" stroke-width="1.4" opacity=".7"></path><path d="M191 392.8 H309" stroke="#1C2B22" stroke-width=".6" opacity=".35"></path><rect x="202" y="456.8" width="96" height="58" rx="3" fill="#F6F4EC" stroke="#1C2B22" stroke-width="1.5"></rect><rect x="203" y="457.8" width="94" height="12.9" fill="#ECE8DA"></rect><path d="M202 470.7 H298" stroke="#1C2B22" stroke-width="1.2"></path><rect x="203" y="471.2" width="94" height="13.7" fill="#EFEBDF"></rect><rect x="203" y="500.6" width="94" height="13.7" fill="#EFEBDF"></rect><path d="M234 457.8 V513.8 M266 457.8 V513.8" stroke="#1C2B22" stroke-width=".7" opacity=".4"></path><path d="M210.6 463.8 h16.3 M210.6 478.1 h16.3 M210.6 492.8 h16.3 M210.6 507.5 h16.3 M242.3 463.8 h16.3 M242.3 478.1 h16.3 M242.3 492.8 h16.3 M242.3 507.5 h16.3 M275 463.8 h16.3 M275 478.1 h16.3 M275 492.8 h16.3 M275 507.5 h16.3" stroke="#1C2B22" stroke-width="1.5" opacity=".7"></path><path d="M182 570.8 V662.8 A68 13 0 0 0 318 662.8 V570.8 Z" fill="#F6F4EC" stroke="#1C2B22" stroke-width="1.5"></path><ellipse cx="250" cy="570.8" rx="68" ry="13" fill="#F6F4EC" stroke="#1C2B22" stroke-width="1.5"></ellipse><path d="M182 605.8 A68 13 0 0 0 318 605.8" stroke="#1C2B22" stroke-width=".8" fill="none" opacity=".45"></path><path d="M182 637.1 A68 13 0 0 0 318 637.1" stroke="#1C2B22" stroke-width=".8" fill="none" opacity=".45"></path><circle cx="250" cy="228.8" r="5" fill="#ECE8DA" stroke="#1C2B22" stroke-width="1.8"></circle><circle cx="250" cy="228.8" r="1.7" fill="#1C2B22"></circle><circle cx="250" cy="344.8" r="5" fill="#DCE2DF" stroke="#1C2B22" stroke-width="1.8"></circle><circle cx="250" cy="344.8" r="1.7" fill="#1C2B22"></circle><circle cx="250" cy="408.8" r="5" fill="#DCE2DF" stroke="#1C2B22" stroke-width="1.8"></circle><circle cx="250" cy="408.8" r="1.7" fill="#1C2B22"></circle><circle cx="250" cy="456.8" r="5" fill="#DCE2DF" stroke="#1C2B22" stroke-width="1.8"></circle><circle cx="250" cy="456.8" r="1.7" fill="#1C2B22"></circle><circle cx="250" cy="514.8" r="5" fill="#DCE2DF" stroke="#1C2B22" stroke-width="1.8"></circle><circle cx="250" cy="514.8" r="1.7" fill="#1C2B22"></circle><rect x="243" y="274" width="14" height="34" rx="7" fill="#DCE2DF" stroke="#1C2B22" stroke-width="1.6"></rect><path d="M243 283 H257 M243 299 H257" stroke="#1C2B22" stroke-width="1" opacity=".5"></path><g class="lab"><text x="342" y="190.8" class="ht">the page: React and TypeScript</text><text x="342" y="381.8" class="hs">the API: Python and FastAPI</text><text x="342" y="490.8" class="hs"><tspan class="m">GridflowClient</tspan>, gridflow’s own client</text><text x="444" y="654.8" class="hg">DuckDB over silver and gold, read-only</text><text x="100" y="544.8" text-anchor="middle">silver</text><text x="400" y="684.8" text-anchor="middle">gold</text></g></svg><div class="gin"><section class="built vc" data-section="built" aria-labelledby="h-built"><h2 id="h-built" data-t="bh">How it’s built</h2><div class="dslot" data-t="dslot" style="height: 640px"></div><p class="cpara" data-t="cp">The front end is React and TypeScript; the backend is Python. Open a dataset and the page asks the FastAPI backend for it, which reads it from gridflow’s silver and gold tables through DuckDB, <span class="nw">read-only</span>.</p></section></div></div>
+</main>
+</div>
+
+</body>
+</html>

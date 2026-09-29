@@ -1,0 +1,23 @@
+[
+ "A React app over gridflow’s data",
+ "It isn’t hosted, so the screens below are screenshots taken by its own screenshot tool.",
+ "gridflow-explorer on GitHub",
+ "A landscape under a petrol sky: ridges with wind turbines and an energised field. The app window stands on the land line, and a cable runs from its foot into the ground.",
+ "gridflow explorer",
+ "Screens from gridflow explorer",
+ "React 19, TypeScript, Vite, Recharts and React Router.",
+ "No component kit or CSS framework: its own design tokens, light and dark, and one shared chart theme.",
+ "Python, FastAPI on uvicorn, and Polars.",
+ "It serves the source manifest, a dataset’s rows and coverage, forecast runs from the gold forecast store, and a job that runs gridflow’s ingestion to fill a missing range.",
+ "It reads gridflow only through gridflow’s own client, never raw file paths, with DuckDB opened read-only per request.",
+ "The only thing it writes is gridflow’s catalogue, when it asks gridflow to fill a gap.",
+ "GB and European energy-market data from eight public sources: Elexon BMRS, ENTSO-E, NESO Carbon Intensity, NESO Data Portal, ENTSO-G, GIE AGSI+, GIE ALSI and Open-Meteo.",
+ "The tables gridflow builds from them, and its forecast store.",
+ "A dataset view is a small typed folder, found by a file glob: adding a view is adding a folder, with no central list to edit. <code>body: 'series'</code> picks one of the page template’s three bodies: a chart for series, a filterable table for events, a plain table for reference.",
+ "From the market index price view’s <code>index.tsx</code>, the screen above.",
+ "Code excerpt from the market index price view",
+ "How it is built",
+ "The stack in section, under the app window: the React front end in the topsoil just below it, then the FastAPI backend, then GridflowClient over a read-only DuckDB; below them, gridflow's silver and gold. One cable runs from the window down through each of them.",
+ "The pipeline under these tables, and the models that read them, have pages of their own.",
+ "Tap a screen to open it at full size."
+]

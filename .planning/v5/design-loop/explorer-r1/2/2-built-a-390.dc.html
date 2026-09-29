@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Built, plain</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&amp;family=Hanken+Grotesk:ital,wght@0,400..700;1,400..600&amp;family=Red+Hat+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.root{background:#155A6E;color:#1C2B22;font:400 16px/1.6 "Hanken Grotesk",sans-serif;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+.root a{color:inherit;text-decoration-thickness:1.5px;text-underline-offset:4px;text-decoration-color:#66793B}
+.root a:focus-visible{outline:2px solid #AFC64E;outline-offset:3px;border-radius:2px}
+.root h1,.root h2,.root h3{font-family:"Bricolage Grotesque",sans-serif;margin:0;font-optical-sizing:auto}
+.root code{font-family:"Red Hat Mono",monospace;font-size:.9em}
+.layer{position:absolute;left:0;top:0}
+main{position:relative;display:block}
+.st{position:relative;box-sizing:border-box;padding:0 80px}
+.sky{position:relative;box-sizing:border-box;padding:0 80px}
+.mast{display:flex;justify-content:space-between;align-items:baseline;padding-top:26px;color:#F6F4EC;line-height:1.6}
+.brand{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:24px;letter-spacing:-.01em}
+.root .brand{text-decoration:none}
+.mast ul{display:flex;gap:30px;list-style:none;margin:0;padding:0;font-size:15px}
+.mast ul a{text-decoration:none;color:#CFE0DC}
+.mast ul a:hover{color:#F6F4EC}
+.mast ul a[aria-current="page"]{color:#F6F4EC;box-shadow:inset 0 -2px 0 #AFC64E}
+.hero{display:grid;grid-template-columns:860px 374px;column-gap:46px;margin-top:64px;align-items:start}
+.hero h1{color:#F6F4EC;font-weight:760;font-stretch:84%;font-size:86px;line-height:.94;letter-spacing:-.022em}
+.crumb{margin:0 0 18px;font-size:15px;line-height:1.4;color:#B4D0CD}
+.crumb a{color:#CFE0DC;text-decoration-color:#AFC64E}
+.lede{padding-top:14px}
+.lede p{margin:0 0 14px;font-size:17.5px;line-height:1.6;color:#CFE0DC;max-width:58ch}
+.lede p.lead{color:#F6F4EC}
+.lede .n{color:#F6F4EC;font-weight:600}
+.lede code{color:#F6F4EC;font-size:.86em}
+.alt{font-weight:600;color:#F6F4EC;text-decoration-color:#AFC64E}
+.root .alt{text-decoration-color:#AFC64E}
+.facts{margin:4px 0 0}
+.facts div{display:grid;grid-template-columns:96px minmax(0,1fr);column-gap:14px;padding:7px 0;border-top:1px solid rgba(207,224,220,.22)}
+.facts dt{font-size:14px;line-height:1.45;color:#B4D0CD}
+.facts dd{margin:0;font-size:14.5px;line-height:1.45;color:#F6F4EC}
+.facts code{font-size:13.5px}
+.land-svg text,.lab text{font-family:"Hanken Grotesk",sans-serif;font-style:italic;font-size:13.5px}
+.sec h2,.st h2.big{font-size:42px;font-weight:720;font-stretch:88%;line-height:1.02;letter-spacing:-.018em;margin:0 0 16px}
+.st h2.fig-h{font-size:30px;font-weight:700;font-stretch:90%;line-height:1.1;letter-spacing:-.012em;margin:0 0 8px}
+.sec p,.st p.body{margin:0 0 14px;font-size:16px;line-height:1.62;color:#3F4A3B;max-width:58ch}
+.st p code,.st li code,.st dd code{color:#1C2B22}
+.cap{margin:8px 0 0;font-size:14.5px;line-height:1.55;color:#3F4A3B;max-width:66ch}
+.more{font-weight:600;color:#1C2B22}
+.chart{display:block;overflow:visible}
+.chart text{font-family:"Hanken Grotesk",sans-serif;font-size:13px;fill:#3F4A3B}
+.chart text.dl{font-style:italic;font-size:13.5px;fill:#1C2B22}
+.well{margin:0;background:#ECE8DA;border:1px solid rgba(28,43,34,.18);border-radius:3px;padding:10px 14px;font:400 14.5px/1.7 "Red Hat Mono",monospace;color:#1C2B22;white-space:pre;overflow:hidden}
+.well .s{color:#7C5530}
+.well .k{color:#155A6E;font-weight:500}
+.well .c{color:#5d6a55}
+.st-deep{color:#F6F4EC}
+.foot{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:baseline;column-gap:40px;padding:44px 0 56px;border-top:1px solid rgba(207,224,220,.22)}
+.foot ul{display:flex;gap:28px;list-style:none;margin:0;padding:0;font-size:15px}
+.foot ul a{color:#CFE0DC;text-decoration:none}
+.foot ul a:hover{color:#F6F4EC;text-decoration:underline;text-decoration-color:#AFC64E}
+.foot p{grid-column:1 / -1;margin:14px 0 0;font-size:14px;color:#B4D0CD}
+.rot{transform-box:fill-box;transform-origin:center;animation:spin 17s linear infinite}
+.sp2{animation-duration:13s}
+.sp3{animation-duration:21s}
+@keyframes spin{to{transform:rotate(360deg)} }
+@media (prefers-reduced-motion: reduce){.rot{animation:none} }
+.sky{position:relative;box-sizing:border-box;padding:0 80px 40px;background:#155A6E}
+.hero{display:grid;grid-template-columns:780px 440px;column-gap:60px;margin-top:64px;align-items:start}
+.lede{padding-top:10px}
+.lede .repo{margin-top:22px;color:#F6F4EC}
+.lede .repo code{font-size:15px}
+.ground{position:relative;background:#155A6E}
+.gnd,.flow,.trail{position:absolute;left:0;top:0;display:block;overflow:visible}
+.gnd{z-index:0}
+.flow{z-index:1}
+.trail{z-index:3;pointer-events:none}
+.gin{position:relative;z-index:2;padding:370px 80px 0}
+.flow .lab text{font-family:"Hanken Grotesk",sans-serif;font-style:italic;font-size:14px;fill:#1C2B22}
+.flow .lab text.m{font-family:"Red Hat Mono",monospace;font-style:normal;font-size:13px}
+.flow .lab text.hs{paint-order:stroke;stroke:#DCE2DF;stroke-width:5px;stroke-linejoin:round}
+.flow .lab text.ht{paint-order:stroke;stroke:#ECE8DA;stroke-width:5px;stroke-linejoin:round}
+.root h2{font-size:42px;font-weight:720;font-stretch:88%;line-height:1.02;letter-spacing:-.018em;color:#1C2B22}
+.root h3{font-size:23px;font-weight:720;font-stretch:90%;line-height:1.1;letter-spacing:-.005em;color:#1C2B22;margin:0 0 8px}
+.thead{display:grid;grid-template-columns:520px 560px;column-gap:80px;align-items:end}
+.thead p,.built p,.re p{margin:0;font-size:16px;line-height:1.62;color:#3F4A3B;max-width:58ch}
+.step{margin:0;display:grid;column-gap:40px;align-items:start}
+.step.s1{margin-top:64px;grid-template-columns:1003px minmax(0,1fr)}
+.step.s2{margin-top:84px;grid-template-columns:minmax(0,1fr) 883px}
+.step.s3{margin-top:84px;grid-template-columns:963px minmax(0,1fr)}
+.scap{padding-top:66px;max-width:320px}
+.s2 .scap{padding-top:76px;max-width:340px}
+.scap h3{margin-top:14px}
+.scap p{margin:0;font-size:15px;line-height:1.55;color:#3F4A3B}
+.scap p.open{margin-top:10px;font-size:14px}
+.scap .open a{color:#1C2B22;font-weight:600}
+.open .dk{display:none}
+.jn{display:block;box-sizing:content-box;width:24px;height:24px;border:2px solid #1C2B22;border-radius:50%;background:#F6F4EC;font:700 13px/24px "Hanken Grotesk",sans-serif;text-align:center;color:#1C2B22;font-variant-numeric:tabular-nums}
+.win{box-sizing:content-box;border:1.5px solid #1C2B22;border-radius:4px;overflow:hidden;background:#F6F4EC}
+.wbar{display:flex;justify-content:space-between;align-items:flex-end;height:40px;background:#1C2B22;padding:0 18px 0 12px}
+.wtab{background:#F6F4EC;color:#1C2B22;padding:11px 18px 12px;border-radius:3px 3px 0 0;font:600 14px/1 "Hanken Grotesk",sans-serif;white-space:nowrap}
+.wname{align-self:center;color:#CFE0DC;font:400 13.5px/1 "Red Hat Mono",monospace;white-space:nowrap}
+.wbody{position:relative;overflow:hidden}
+.wbody picture{display:block}
+.wbody img{position:absolute;display:block;max-width:none}
+.ring{position:absolute;box-sizing:border-box;border:3px solid #AFC64E;outline:1.5px solid #1C2B22;border-radius:5px}
+.built{margin-top:120px}
+.built h2{margin:0 0 30px}
+.bcol{width:660px}
+.fe p+p{margin-top:12px}
+.be{margin-top:120px}
+.wt{margin:22px 0 8px;font-size:13.5px;line-height:1.4;color:#3F4A3B}
+.wt code{font-size:12.5px;color:#1C2B22}
+.root .well{font-size:13px;line-height:1.7;overflow-x:auto;scrollbar-width:none}
+.built p code{color:#1C2B22}
+.bspace{height:0}
+.rest{display:grid;grid-template-columns:420px minmax(0,1fr) minmax(0,1fr);column-gap:60px;align-items:start;padding-bottom:110px}
+.rest h2{margin:0}
+.re h3{margin:4px 0 8px}
+.re h3 a{text-decoration-color:#66793B}
+.deep{position:relative;background:#155A6E;color:#F6F4EC;margin-top:-2px}
+.deep .gran{position:absolute;left:0;top:0;z-index:0}
+.deep>*:not(.gran){position:relative;z-index:1}
+.redge{display:block}
+.foot{border-top:0}
+@media (prefers-color-scheme: dark){
+.wtab{background:transparent;color:#F6F4EC;box-shadow:inset 0 -2px 0 #AFC64E}
+.open .lt{display:none}
+.open .dk{display:inline}
+}
+.ph .sky{padding:0 16px 26px}
+.ph .mast{flex-wrap:wrap;row-gap:10px;padding-top:18px}
+.ph .mast nav{flex:1 1 100%}
+.ph .mast ul{flex-wrap:wrap;column-gap:18px;row-gap:2px}
+.ph .hero{grid-template-columns:minmax(0,1fr);row-gap:18px;margin-top:34px}
+.ph .hero h1{font-size:44px;line-height:.98}
+.ph .lede{padding-top:0}
+.ph .lede p{font-size:16.5px}
+.ph .gin{padding:224px 16px 0}
+.ph h2{font-size:31px}
+.ph h3{font-size:20px}
+.ph .thead{grid-template-columns:minmax(0,1fr);row-gap:12px}
+.ph .thead p{font-size:15.5px}
+.ph .step,.ph .step.s1,.ph .step.s2,.ph .step.s3{grid-template-columns:minmax(0,1fr);row-gap:14px;margin-top:40px}
+.ph .step.s1{margin-top:30px}
+.ph .scap,.ph .s2 .scap{padding-top:0;max-width:none}
+.ph .scap h3{margin-top:10px}
+.ph .wbar{height:34px;padding:0 10px 0 6px}
+.ph .wtab{padding:9px 12px 10px;font-size:13px}
+.ph .wname{font-size:12px}
+.ph .built{margin-top:64px}
+.ph .built h2{margin-bottom:22px}
+.ph .bcol{width:auto;padding-left:116px}
+.ph .be{margin-top:84px}
+.ph .built p{font-size:15px;line-height:1.55}
+.ph .wt code{font-size:11.5px}
+.ph .root .well,.ph .well{font-size:12px;line-height:1.65;padding:8px 10px}
+.ph .rest{grid-template-columns:minmax(0,1fr);row-gap:22px;padding-bottom:70px}
+.ph .flow .lab text{font-size:12.5px}
+.ph .flow .lab text.m{font-size:11px}
+.ph .st{padding:0 16px}
+.ph .foot{grid-template-columns:minmax(0,1fr);row-gap:14px;padding:36px 0 44px}
+.ph .foot ul{flex-wrap:wrap;column-gap:18px;row-gap:6px}
+.gin{padding:70px 80px 96px}
+.nw{white-space:nowrap}
+.root .built{margin-top:0}
+.built h2{margin:0 0 30px}
+.flow .lab text.hg{paint-order:stroke;stroke:#E9DDAF;stroke-width:5px;stroke-linejoin:round}
+.flow .lab tspan.m{font-family:"Red Hat Mono",monospace;font-style:normal;font-size:13px}
+.va .bcol{width:520px}
+.va .fe p,.va .be p{font-size:17.5px;line-height:1.55;color:#3F4A3B;max-width:40ch}
+.va .be{margin-top:170px}
+.does{list-style:none;margin:0;padding:0;width:560px}
+.does li{margin:0}
+.does li+li{margin-top:150px}
+.does li:nth-child(3){margin-top:230px}
+.does p{margin:0;font-size:19px;line-height:1.45;color:#1C2B22;max-width:38ch}
+.does .tech{color:#3F4A3B}
+.vc .dslot{height:0}
+.vc h2{margin-bottom:0}
+.cpara{margin:0;font-size:17.5px;line-height:1.6;color:#3F4A3B;max-width:58ch}
+.ph .gin{padding:44px 16px 64px}
+.ph .va .bcol{width:auto;padding-left:116px}
+.ph .va .fe p,.ph .va .be p{font-size:15.5px}
+.ph .va .be{margin-top:96px}
+.ph .does{width:auto;padding-left:116px}
+.ph .does p{font-size:16px}
+.ph .does li+li{margin-top:96px}
+.ph .does li:nth-child(3){margin-top:140px}
+.ph .cpara{font-size:15.5px}
+.ph .flow .lab tspan.m{font-size:11.5px}
+</style>
+</helmet>
+<div class="root ph" style="width: 390px; height: 664px; overflow: hidden; position: relative">
+<main>
+<div class="ground" data-t="ground"><svg class="gnd" width="390" height="664" viewBox="0 0 390 664" aria-hidden="true"><defs><pattern id="p-stip" width="9" height="9" patternUnits="userSpaceOnUse"><circle cx="2" cy="3" r="1" fill="#8A6F1E"></circle><circle cx="6.5" cy="7.5" r=".8" fill="#8A6F1E"></circle></pattern>
+<pattern id="p-diag" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M0 8 L8 0" stroke="#5E6E6B" stroke-width=".8"></path></pattern>
+<pattern id="p-brick" width="24" height="12" patternUnits="userSpaceOnUse"><path d="M0 11.5 H24 M12 0 V6 M0 6 H24 M0 6 V12" stroke="#7C5530" stroke-width=".8" fill="none"></path></pattern>
+<pattern id="p-soil" width="23" height="17" patternUnits="userSpaceOnUse"><circle cx="4" cy="5" r=".9" fill="#A39A6A"></circle><circle cx="15" cy="12" r="1.1" fill="#A39A6A"></circle><path d="M17 3 h3" stroke="#A39A6A" stroke-width=".9"></path></pattern>
+<pattern id="p-granite" width="46" height="40" patternUnits="userSpaceOnUse"><path d="M8 8 h8 M12 4 v8 M30 26 h8 M34 22 v8 M20 34 h6 M23 31 v6 M40 6 h5 M42.5 3.5 v5" stroke="#3E8C97" stroke-width="1.1"></path></pattern></defs><rect x="0" y="0" width="390" height="664" fill="#ECE8DA"></rect><rect x="0" y="0" width="390" height="664" fill="url(#p-soil)" opacity=".5"></rect><path d="M-40 259.4 C-30 259.1 0 257.8 20 257.5 C40 257.3 60 258.3 80 257.9 C100 257.4 120 256.2 140 254.8 C160 253.4 180 250.3 200 249.4 C220 248.5 240 248.5 260 249.4 C280 250.2 300 253.2 320 254.5 C340 255.8 360 256.7 380 257.1 C400 257.6 430 257 440 257 L430 674 L-40 674 Z" fill="#DCE2DF"></path><path d="M-40 259.4 C-30 259.1 0 257.8 20 257.5 C40 257.3 60 258.3 80 257.9 C100 257.4 120 256.2 140 254.8 C160 253.4 180 250.3 200 249.4 C220 248.5 240 248.5 260 249.4 C280 250.2 300 253.2 320 254.5 C340 255.8 360 256.7 380 257.1 C400 257.6 430 257 440 257 L430 674 L-40 674 Z" fill="url(#p-diag)" opacity=".22"></path><path d="M-40 505.8 C-30 504.9 0 501.7 20 500.5 C40 499.3 60 498.2 80 498.6 C100 499.1 120 501.8 140 503.2 C160 504.7 180 506.7 200 507.4 C220 508.1 240 507.2 260 507.4 C280 507.6 300 507.8 320 508.5 C340 509.2 360 511.4 380 511.6 C400 511.9 430 510.2 440 510 L430 674 L-40 674 Z" fill="#E9DDAF"></path><path d="M-40 505.8 C-30 504.9 0 501.7 20 500.5 C40 499.3 60 498.2 80 498.6 C100 499.1 120 501.8 140 503.2 C160 504.7 180 506.7 200 507.4 C220 508.1 240 507.2 260 507.4 C280 507.6 300 507.8 320 508.5 C340 509.2 360 511.4 380 511.6 C400 511.9 430 510.2 440 510 L430 674 L-40 674 Z" fill="url(#p-stip)" opacity=".26"></path><path d="M-40 259.4 C-30 259.1 0 257.8 20 257.5 C40 257.3 60 258.3 80 257.9 C100 257.4 120 256.2 140 254.8 C160 253.4 180 250.3 200 249.4 C220 248.5 240 248.5 260 249.4 C280 250.2 300 253.2 320 254.5 C340 255.8 360 256.7 380 257.1 C400 257.6 430 257 440 257 M-40 505.8 C-30 504.9 0 501.7 20 500.5 C40 499.3 60 498.2 80 498.6 C100 499.1 120 501.8 140 503.2 C160 504.7 180 506.7 200 507.4 C220 508.1 240 507.2 260 507.4 C280 507.6 300 507.8 320 508.5 C340 509.2 360 511.4 380 511.6 C400 511.9 430 510.2 440 510" stroke="#1C2B22" stroke-width="1.5" fill="none"></path></svg><svg class="flow" width="390" height="664" viewBox="0 0 390 664" role="img" aria-label="Drawing of a request: the browser running the React app calls FastAPI, FastAPI reads through GridflowClient, and GridflowClient reads DuckDB over gridflow's silver and gold tables."><path d="M56 153.6 V299.7" fill="none" stroke="#1C2B22" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M56 153.6 V299.7" fill="none" stroke="#AFC64E" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"></path><path d="M56 343.7 V391.7" fill="none" stroke="#1C2B22" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M56 343.7 V391.7" fill="none" stroke="#AFC64E" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"></path><path d="M56 431.7 V471.7" fill="none" stroke="#1C2B22" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M56 431.7 V471.7" fill="none" stroke="#AFC64E" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"></path><rect x="17" y="101.6" width="78" height="52" rx="3" fill="#F6F4EC" stroke="#1C2B22" stroke-width="1.5"></rect><rect x="17.8" y="102.4" width="76.5" height="8" rx="2" fill="#1C2B22"></rect><rect x="22.5" y="104.4" width="20.3" height="6" fill="#F6F4EC"></rect><path d="M26.4 137.9 H87.2" stroke="#1C2B22" stroke-width=".7" opacity=".4"></path><path d="M26.4 132.9 L31.9 127.1 L37.4 131.4 L43 122.7 L48.5 134.9 L54 140.8 L59.5 139.6 L65.1 128.5 L70.6 124.2 L76.1 125.6 L81.7 130 L87.2 128" stroke="#3E8C97" stroke-width="1.6" fill="none" stroke-linejoin="round"></path><path d="M23.4 112.9 V149 H89.2" stroke="#1C2B22" stroke-width="1" fill="none"></path><rect x="20" y="299.7" width="72" height="44" rx="3" fill="#F6F4EC" stroke="#1C2B22" stroke-width="1.5"></rect><circle cx="29.4" cy="305.2" r="3" fill="#AFC64E" stroke="#1C2B22" stroke-width=".9"></circle><path d="M37.3 305.2 H64.6" stroke="#1C2B22" stroke-width="1.4" opacity=".7"></path><circle cx="29.4" cy="316.2" r="3" fill="#AFC64E" stroke="#1C2B22" stroke-width=".9"></circle><path d="M37.3 316.2 H71.8" stroke="#1C2B22" stroke-width="1.4" opacity=".7"></path><path d="M21 310.7 H91" stroke="#1C2B22" stroke-width=".6" opacity=".35"></path><circle cx="29.4" cy="327.2" r="3" fill="#AFC64E" stroke="#1C2B22" stroke-width=".9"></circle><path d="M37.3 327.2 H64.6" stroke="#1C2B22" stroke-width="1.4" opacity=".7"></path><path d="M21 321.7 H91" stroke="#1C2B22" stroke-width=".6" opacity=".35"></path><circle cx="29.4" cy="338.2" r="3" fill="#AFC64E" stroke="#1C2B22" stroke-width=".9"></circle><path d="M37.3 338.2 H71.8" stroke="#1C2B22" stroke-width="1.4" opacity=".7"></path><path d="M21 332.7 H91" stroke="#1C2B22" stroke-width=".6" opacity=".35"></path><rect x="24" y="391.7" width="64" height="40" rx="3" fill="#F6F4EC" stroke="#1C2B22" stroke-width="1.5"></rect><rect x="25" y="392.7" width="62" height="8.6" fill="#ECE8DA"></rect><path d="M24 401.3 H88" stroke="#1C2B22" stroke-width="1.2"></path><rect x="25" y="401.8" width="62" height="9.1" fill="#EFEBDF"></rect><rect x="25" y="422" width="62" height="9.1" fill="#EFEBDF"></rect><path d="M45.3 392.7 V430.7 M66.7 392.7 V430.7" stroke="#1C2B22" stroke-width=".7" opacity=".4"></path><path d="M29.8 396.5 h10.9 M29.8 406.3 h10.9 M29.8 416.5 h10.9 M29.8 426.6 h10.9 M50.9 396.5 h10.9 M50.9 406.3 h10.9 M50.9 416.5 h10.9 M50.9 426.6 h10.9 M72.6 396.5 h10.9 M72.6 406.3 h10.9 M72.6 416.5 h10.9 M72.6 426.6 h10.9" stroke="#1C2B22" stroke-width="1.5" opacity=".7"></path><path d="M20 479.7 V539.7 A36 8 0 0 0 92 539.7 V479.7 Z" fill="#F6F4EC" stroke="#1C2B22" stroke-width="1.5"></path><ellipse cx="56" cy="479.7" rx="36" ry="8" fill="#F6F4EC" stroke="#1C2B22" stroke-width="1.5"></ellipse><path d="M20 502.5 A36 8 0 0 0 92 502.5" stroke="#1C2B22" stroke-width=".8" fill="none" opacity=".45"></path><path d="M20 522.9 A36 8 0 0 0 92 522.9" stroke="#1C2B22" stroke-width=".8" fill="none" opacity=".45"></path><circle cx="56" cy="153.6" r="4" fill="#ECE8DA" stroke="#1C2B22" stroke-width="1.8"></circle><circle cx="56" cy="153.6" r="1.3" fill="#1C2B22"></circle><circle cx="56" cy="299.7" r="4" fill="#DCE2DF" stroke="#1C2B22" stroke-width="1.8"></circle><circle cx="56" cy="299.7" r="1.3" fill="#1C2B22"></circle><circle cx="56" cy="343.7" r="4" fill="#DCE2DF" stroke="#1C2B22" stroke-width="1.8"></circle><circle cx="56" cy="343.7" r="1.3" fill="#1C2B22"></circle><circle cx="56" cy="391.7" r="4" fill="#DCE2DF" stroke="#1C2B22" stroke-width="1.8"></circle><circle cx="56" cy="391.7" r="1.3" fill="#1C2B22"></circle><circle cx="56" cy="431.7" r="4" fill="#DCE2DF" stroke="#1C2B22" stroke-width="1.8"></circle><circle cx="56" cy="431.7" r="1.3" fill="#1C2B22"></circle><g transform="translate(56 257.8) scale(0.6) translate(-56 -257.8)"><rect x="49" y="240.8" width="14" height="34" rx="7" fill="#DCE2DF" stroke="#1C2B22" stroke-width="1.6"></rect><path d="M49 249.8 H63 M49 265.8 H63" stroke="#1C2B22" stroke-width="1" opacity=".5"></path></g><g class="lab"><text x="56" y="93.6" text-anchor="middle" class="ht">browser</text><text x="56" y="290.7" text-anchor="middle" class="hs">FastAPI</text><text x="56" y="382.7" text-anchor="middle" class="m hs">GridflowClient</text><text x="56" y="565.7" text-anchor="middle">DuckDB</text></g></svg><div class="gin"><section class="built va" data-section="built" aria-labelledby="h-built"><h2 id="h-built" data-t="bh">How it’s built</h2><div class="bcol"><div class="fe" data-t="fe"><h3>Front end</h3><p>React and TypeScript, drawing every dataset as charts and tables, in light and dark.</p></div><div class="be" data-t="be"><h3>Backend</h3><p>Python, with a FastAPI backend that reads gridflow’s silver and gold tables through DuckDB, <span class="nw">read-only</span>.</p></div></div><div class="bspace" data-t="bspace" style="height: 178px"></div></section></div></div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":664}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -114,6 +114,15 @@ Writer: Opus 5.5 · high, 2026-09-29. Screenshot port 9805 (server stopped).
    - I narrowed the frame to DE-LU plus BE, using `area_code lt "10YC"`, a plain string comparison that names no dashed code. I also narrowed the notebook head to DE-LU. That gives 14 runs and `[]`.
    - Other ENTSO-E pages with multi-zone frames will hit this. Consider treating EIC tokens as code in the detector, or accept the advisory.
 
+## Seat ruling applied (2026-09-29, EIC codes)
+
+- Reverted the `\x2D` escapes: the `group_map` keys now hold the plain EIC codes. The key `codes` stay `DE-LU`, `FR`, `NL`, `BE`, because `page_fields` rejects `---` in string values.
+- The frame is back on merit: 12:00 and 13:00 UTC on 20 September, all four zones (`timestamp_utc in [...]`, no area filter). The notebook head is back to all zones, sorted.
+- Re-distilled (the spec digest is unchanged), re-sampled, re-ran the notebook, re-mirrored (`cmp` identical, CRLF) and rebuilt `--only`.
+- Detector: the only finding is `em-dash-overuse` (advisory, 43). Every count comes from EIC `--` padding and the `--start`/`--end` flags; the rendered page has 0 em dashes.
+- Residual risk, for the seat: the raw front matter now contains `---` inside the `group_map` keys. `gridflow_drift_check.py:129` and `derive_machine_catalog.py:180` do `text.split("---", 2)`, so those vault tools will cut this note's front matter short. The same applies to every ENTSO-E note that writes these codes plainly.
+- Template problems 3 (detector) and 2 (the workaround) above are superseded by this ruling. Problem 1 (the 390 notebook header) is left for the seat.
+
 ## Spend
 
 One writer session (Opus 5.5 · high). The advisor was rate-limited, so it was not consulted.

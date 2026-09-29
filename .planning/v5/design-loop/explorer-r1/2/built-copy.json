@@ -1,0 +1,40 @@
+{
+ "a": [
+  "React and TypeScript, drawing every dataset as charts and tables, in light and dark.",
+  "Python, with a FastAPI backend that reads gridflow’s silver and gold tables through DuckDB, read-only."
+ ],
+ "a-390": [
+  "React and TypeScript, drawing every dataset as charts and tables, in light and dark.",
+  "Python, with a FastAPI backend that reads gridflow’s silver and gold tables through DuckDB, read-only."
+ ],
+ "b": [
+  "Draws every dataset as charts and tables, in light and dark",
+  "React and TypeScript",
+  "Serves each dataset’s rows to the page",
+  "a Python API built with FastAPI",
+  "Reads gridflow’s silver and gold tables, read-only",
+  "DuckDB, through gridflow’s own client"
+ ],
+ "b-390": [
+  "Draws every dataset as charts and tables, in light and dark",
+  "React and TypeScript",
+  "Serves each dataset’s rows to the page",
+  "a Python API built with FastAPI",
+  "Reads gridflow’s silver and gold tables, read-only",
+  "DuckDB, through gridflow’s own client"
+ ],
+ "c": [
+  "The front end is React and TypeScript; the backend is Python. Open a dataset and the page asks the FastAPI backend for it, which reads it from gridflow’s silver and gold tables through DuckDB, read-only.",
+  "the page: React and TypeScript",
+  "the API: Python and FastAPI",
+  "DuckDB over silver and gold, read-only",
+  "GridflowClient, gridflow’s own client"
+ ],
+ "c-390": [
+  "The front end is React and TypeScript; the backend is Python. Open a dataset and the page asks the FastAPI backend for it, which reads it from gridflow’s silver and gold tables through DuckDB, read-only.",
+  "the page: React, TypeScript",
+  "the API: Python, FastAPI",
+  "DuckDB, read-only",
+  "GridflowClient"
+ ]
+}

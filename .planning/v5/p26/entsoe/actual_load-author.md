@@ -15,7 +15,11 @@ Writer: Opus 5.5 · high, 2026-09-29. The page is `entsoe/actual_load` ("Actual 
   - No staged chart spec or authored override existed, so there was nothing to delete.
 - **Build and detector:**
   - `gridflow-build --only entsoe/actual_load` succeeds. Its "5 error(s) on pages not rendered by --only" belong to other authors' pages.
-  - `detect.mjs --json` returns `[]`.
+  - `detect.mjs --json` returns one advisory finding, `em-dash-overuse` ("43 em-dashes in body text"). All 43 counts are 39 runs of `--` padding inside the FR, NL and BE EIC codes (frame and notebook head) and the four CLI flags `--start`/`--end`. None is in prose.
+  - Seat ruling 1 accepts this finding.
+- **Seat rulings applied (2026-09-29):**
+  1. The EIC codes are written plainly. The frame is back to all four zones at 11:00 and 11:15 UTC on 15 Sep. The notebook head is back to `df[[...]].head()` over all zones. I had first picked DE-LU-only rows to get the detector to `[]`; that is now reverted.
+  2. The `published_at` guide line reads "Fetch-time stamp: the response's `createdDateTime`, within seconds of the request".
 - **Screenshots:**
   - Widths 1440, 1024 and 768 in headless Chrome; 390 by CDP emulation and by a 390 px iframe.
   - The frame was checked folded and unfolded, and the notebook drawer open.
@@ -42,12 +46,12 @@ Writer: Opus 5.5 · high, 2026-09-29. The page is `entsoe/actual_load` ("Actual 
 | `area_code` = EIC as sent (record.fields) | `parsers.py:293-297` takes `outBiddingZone_Domain.mRID` into `in_domain`; `actual_load.py` renames it to `area_code` with no remap |
 | `load_mw` = the point's `quantity`, unit `MAW` (record.fields) | `actual_load.py:40` `value_tag="quantity"`, rename at `:59`. Bronze has `<quantity_Measure_Unit.name>MAW</...>` |
 | `resolution` as sent (record.fields, facts.cadence) | `parsers.py:437-438`; `PT15M` in every GL document for 14 to 20 Sep (probe of 28 documents) and in all four zones' rows shown |
-| `published_at` = response `createdDateTime`, which matched the request time (record.fields) | `actual_load.py:76` `with_published_at` reads document `<createdDateTime>` (`_published_at.py`). Across all 104 GL documents in bronze, `createdDateTime` minus sidecar `fetched_at` runs from −3.5 s to +0.1 s |
+| `published_at` is a fetch-time stamp, the response's `createdDateTime`, within seconds of the request (record.fields; seat ruling 2) | `actual_load.py:76` `with_published_at` reads document `<createdDateTime>` (`_published_at.py`). Across all 104 GL documents in bronze, `createdDateTime` minus sidecar `fetched_at` runs from −3.5 s to +0.1 s |
 | Chart series: 672 points, 35,310.541 to 65,453.589 MW | Committed `series/entsoe/actual_load.json`: `rows_used` 672, `x` 2026-09-14T00:00Z to 2026-09-20T23:45Z |
 | Alt: weekday lows 41 to 44 GW and peaks 63 to 65 GW, 06:45 to 08:45 UTC; weekend peaks 52 and 51 GW; Sunday 35 GW the week's low | Per-day min and max from the committed series: 14th 41,214 / 64,825 (08:45); 15th 44,106 / 64,154 (06:45); 16th 44,259 without the dip / 65,454 (08:15); 17th 43,637 / 63,314 (06:45); 18th 40,632 / 63,023 (07:45); 19th 37,304 / 52,363; 20th 35,311 / 50,910. The alt rounds the 18th's 40.6 to "41" |
 | Key note: a one-interval drop to 39.4 GW at 23:15 UTC on the 16th, as sent | Series: 23:00 46,282.371; 23:15 39,435.413; 23:30 45,556.621. Bronze `2026/09/16/raw_20260921T100306Z_*.xml` position 94 is `39435.41266`, so this is the vendor's value, not a gridflow artefact. Positions 1 to 96 are all declared, so there is no forward-fill |
 | No forward-fill in the charted week | All 28 GL documents from 14 to 20 Sep declare 96 `<Point>` elements (probe) |
-| Frame: eight DE-LU rows, 05:00 to 06:45 UTC on 15 Sep | Committed `samples/entsoe/actual_load.json` (`gridflow-sample`) |
+| Frame: all four zones with rows, 11:00 and 11:15 UTC on 15 Sep (DE-LU 60,430.67916; BE 11,673.01; FR 49,653.39; NL 4,094.801 at 11:00) | Committed `samples/entsoe/actual_load.json` (`gridflow-sample`); NL at 11:00 is its lowest value of the charted week |
 | Notebook lead: relation `silver_entsoe_actual_load`, filter on `timestamp_utc`, both ends included, lineage dropped, local-time printing | `_get_method_registry._relation_name_for_dataset("actual_load")` returns `silver_entsoe_actual_load`. gridflow `schema_manifest.py:149` gives the date column `timestamp_utc`. `source.py:401-445` builds an inclusive range predicate. `_BITEMPORAL_EXCLUDE` covers `event_time`, `available_at`, `vintage_policy`, `source_run_id`, `dataset_version`, `month` and `year`. The notebook head prints `2026-09-14 01:00:00+01:00` |
 | plot_alt: DE-LU 35 to 65 GW, FR 31 to 51 GW, BE and NL 4 to 12 GW, NL lows near midday, about 4,100 MW on the 15th | Silver probe for 14 to 20 Sep: DE-LU 35,311 to 65,454; FR 31,368 to 50,605; BE 6,809 to 11,901; NL 4,095 (11:00 UTC on the 15th) to 11,972. NL's daily minima fall between 09:45 and 14:00 UTC. The PNG shows the same shapes |
 | `related` pages resolve | The build's related check passes: `entsoe/load_forecast` (lead of `load-forecasts`), `entsoe/actual_generation`, `entsoe/day_ahead_prices` and `elexon/indo` (lead of `demand-outturn`) |
@@ -91,13 +95,12 @@ I did not touch the curl example: it is valid for the vendor, and only the param
      - let the chart spec map zones through the connector's short names (`BIDDING_ZONES`).
 2. **`detect.mjs` counts `--` inside EIC codes as em dashes.**
    - The regex `--(?=\S)` in `engines/regex/detect-text.mjs:314` fires on data.
-   - The page's four CLI flags (`--start`, `--end`) already count 4. The page text is about 7,950 characters, so the rule fires once the count reaches 16.
-   - Printing the three dashed EICs cost 13, so they can't appear anywhere on the page (frame rows or notebook output) without failing the detector.
-   - That is why the frame is eight DE-LU rows, and why notebook cell 4 filters to DE-LU before `.head()`. The first draft, with a four-zone frame and head, scored 43.
-   - Suggested fix: skip `<code>`, `<pre>` and frame table cells in the em-dash analyser, or ignore runs of three or more hyphens.
+   - Seat ruling 1 accepts the advisory finding, so the page prints the codes plainly and the detector reports 43.
+   - A permanent fix would give every ENTSO-E page a true `[]`: skip `<code>`, `<pre>` and frame table cells in the em-dash analyser, or ignore runs of three or more hyphens.
 3. **Minor.** The copied `shot.mjs` CDP script names its Chrome profile under `%TEMP%` by timestamp. I left the folder in place, as the rules say.
 
 ## Checker, look hardest at
 
 - `what_it_is`: "GB, and IE-SEM on the days charted, get ... code 999". The IE-SEM half rests on bronze evidence scoped to the charted days, not on a vendor statement.
-- `record.fields.published_at`: "matched the request time when checked". This is a project measurement over 104 documents, worded as such.
+- `record.fields.published_at`: "within seconds of the request". This follows seat ruling 2 and the bronze measurement over 104 documents (−3.5 s to +0.1 s).
+- The chart shows DE-LU while the title says "by zone". The build's `---` fence check forces this (template problem 1), and the notebook plot carries all four zones.

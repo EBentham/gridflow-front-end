@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Explorer</title>
+
+</head>
+<body>
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&amp;family=Hanken+Grotesk:ital,wght@0,400..700;1,400..600&amp;family=Red+Hat+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.root{background:#155A6E;color:#1C2B22;font:400 16px/1.6 "Hanken Grotesk",sans-serif;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+.root a{color:inherit;text-decoration-thickness:1.5px;text-underline-offset:4px;text-decoration-color:#66793B}
+.root a:focus-visible{outline:2px solid #AFC64E;outline-offset:3px;border-radius:2px}
+.root h1,.root h2,.root h3{font-family:"Bricolage Grotesque",sans-serif;margin:0;font-optical-sizing:auto}
+.root code{font-family:"Red Hat Mono",monospace;font-size:.9em}
+.layer{position:absolute;left:0;top:0}
+main{position:relative;display:block}
+.st{position:relative;box-sizing:border-box;padding:0 80px}
+.sky{position:relative;box-sizing:border-box;padding:0 80px}
+.mast{display:flex;justify-content:space-between;align-items:baseline;padding-top:26px;color:#F6F4EC;line-height:1.6}
+.brand{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:24px;letter-spacing:-.01em}
+.root .brand{text-decoration:none}
+.mast ul{display:flex;gap:30px;list-style:none;margin:0;padding:0;font-size:15px}
+.mast ul a{text-decoration:none;color:#CFE0DC}
+.mast ul a:hover{color:#F6F4EC}
+.mast ul a[aria-current="page"]{color:#F6F4EC;box-shadow:inset 0 -2px 0 #AFC64E}
+.hero{display:grid;grid-template-columns:860px 374px;column-gap:46px;margin-top:64px;align-items:start}
+.hero h1{color:#F6F4EC;font-weight:760;font-stretch:84%;font-size:86px;line-height:.94;letter-spacing:-.022em}
+.crumb{margin:0 0 18px;font-size:15px;line-height:1.4;color:#B4D0CD}
+.crumb a{color:#CFE0DC;text-decoration-color:#AFC64E}
+.lede{padding-top:14px}
+.lede p{margin:0 0 14px;font-size:17.5px;line-height:1.6;color:#CFE0DC;max-width:58ch}
+.lede p.lead{color:#F6F4EC}
+.lede .n{color:#F6F4EC;font-weight:600}
+.lede code{color:#F6F4EC;font-size:.86em}
+.alt{font-weight:600;color:#F6F4EC;text-decoration-color:#AFC64E}
+.root .alt{text-decoration-color:#AFC64E}
+.facts{margin:4px 0 0}
+.facts div{display:grid;grid-template-columns:96px minmax(0,1fr);column-gap:14px;padding:7px 0;border-top:1px solid rgba(207,224,220,.22)}
+.facts dt{font-size:14px;line-height:1.45;color:#B4D0CD}
+.facts dd{margin:0;font-size:14.5px;line-height:1.45;color:#F6F4EC}
+.facts code{font-size:13.5px}
+.land-svg text,.lab text{font-family:"Hanken Grotesk",sans-serif;font-style:italic;font-size:13.5px}
+.sec h2,.st h2.big{font-size:42px;font-weight:720;font-stretch:88%;line-height:1.02;letter-spacing:-.018em;margin:0 0 16px}
+.st h2.fig-h{font-size:30px;font-weight:700;font-stretch:90%;line-height:1.1;letter-spacing:-.012em;margin:0 0 8px}
+.sec p,.st p.body{margin:0 0 14px;font-size:16px;line-height:1.62;color:#3F4A3B;max-width:58ch}
+.st p code,.st li code,.st dd code{color:#1C2B22}
+.cap{margin:8px 0 0;font-size:14.5px;line-height:1.55;color:#3F4A3B;max-width:66ch}
+.more{font-weight:600;color:#1C2B22}
+.chart{display:block;overflow:visible}
+.chart text{font-family:"Hanken Grotesk",sans-serif;font-size:13px;fill:#3F4A3B}
+.chart text.dl{font-style:italic;font-size:13.5px;fill:#1C2B22}
+.well{margin:0;background:#ECE8DA;border:1px solid rgba(28,43,34,.18);border-radius:3px;padding:10px 14px;font:400 14.5px/1.7 "Red Hat Mono",monospace;color:#1C2B22;white-space:pre;overflow:hidden}
+.well .s{color:#7C5530}
+.well .k{color:#155A6E;font-weight:500}
+.well .c{color:#5d6a55}
+.st-deep{color:#F6F4EC}
+.foot{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:baseline;column-gap:40px;padding:44px 0 56px;border-top:1px solid rgba(207,224,220,.22)}
+.foot ul{display:flex;gap:28px;list-style:none;margin:0;padding:0;font-size:15px}
+.foot ul a{color:#CFE0DC;text-decoration:none}
+.foot ul a:hover{color:#F6F4EC;text-decoration:underline;text-decoration-color:#AFC64E}
+.foot p{grid-column:1 / -1;margin:14px 0 0;font-size:14px;color:#B4D0CD}
+.rot{transform-box:fill-box;transform-origin:center;animation:spin 17s linear infinite}
+.sp2{animation-duration:13s}
+.sp3{animation-duration:21s}
+@keyframes spin{to{transform:rotate(360deg)} }
+@media (prefers-reduced-motion: reduce){.rot{animation:none} }
+.sky{position:relative;box-sizing:border-box;padding:0 80px 40px;background:#155A6E}
+.hero{display:grid;grid-template-columns:780px 440px;column-gap:60px;margin-top:64px;align-items:start}
+.lede{padding-top:10px}
+.lede .repo{margin-top:22px;color:#F6F4EC}
+.lede .repo code{font-size:15px}
+.ground{position:relative;background:#155A6E}
+.gnd,.flow,.trail{position:absolute;left:0;top:0;display:block;overflow:visible}
+.gnd{z-index:0}
+.flow{z-index:1}
+.trail{z-index:3;pointer-events:none}
+.gin{position:relative;z-index:2;padding:370px 80px 0}
+.flow .lab text{font-family:"Hanken Grotesk",sans-serif;font-style:italic;font-size:14px;fill:#1C2B22}
+.flow .lab text.m{font-family:"Red Hat Mono",monospace;font-style:normal;font-size:13px}
+.flow .lab text.hs{paint-order:stroke;stroke:#DCE2DF;stroke-width:5px;stroke-linejoin:round}
+.flow .lab text.ht{paint-order:stroke;stroke:#ECE8DA;stroke-width:5px;stroke-linejoin:round}
+.root h2{font-size:42px;font-weight:720;font-stretch:88%;line-height:1.02;letter-spacing:-.018em;color:#1C2B22}
+.root h3{font-size:23px;font-weight:720;font-stretch:90%;line-height:1.1;letter-spacing:-.005em;color:#1C2B22;margin:0 0 8px}
+.thead{display:grid;grid-template-columns:520px 560px;column-gap:80px;align-items:end}
+.thead p,.built p,.re p{margin:0;font-size:16px;line-height:1.62;color:#3F4A3B;max-width:58ch}
+.step{margin:0;display:grid;column-gap:40px;align-items:start}
+.step.s1{margin-top:64px;grid-template-columns:1003px minmax(0,1fr)}
+.step.s2{margin-top:84px;grid-template-columns:minmax(0,1fr) 883px}
+.step.s3{margin-top:84px;grid-template-columns:963px minmax(0,1fr)}
+.scap{padding-top:66px;max-width:320px}
+.s2 .scap{padding-top:76px;max-width:340px}
+.scap h3{margin-top:14px}
+.scap p{margin:0;font-size:15px;line-height:1.55;color:#3F4A3B}
+.scap p.open{margin-top:10px;font-size:14px}
+.scap .open a{color:#1C2B22;font-weight:600}
+.open .dk{display:none}
+.jn{display:block;box-sizing:content-box;width:24px;height:24px;border:2px solid #1C2B22;border-radius:50%;background:#F6F4EC;font:700 13px/24px "Hanken Grotesk",sans-serif;text-align:center;color:#1C2B22;font-variant-numeric:tabular-nums}
+.win{box-sizing:content-box;border:1.5px solid #1C2B22;border-radius:4px;overflow:hidden;background:#F6F4EC}
+.wbar{display:flex;justify-content:space-between;align-items:flex-end;height:40px;background:#1C2B22;padding:0 18px 0 12px}
+.wtab{background:#F6F4EC;color:#1C2B22;padding:11px 18px 12px;border-radius:3px 3px 0 0;font:600 14px/1 "Hanken Grotesk",sans-serif;white-space:nowrap}
+.wname{align-self:center;color:#CFE0DC;font:400 13.5px/1 "Red Hat Mono",monospace;white-space:nowrap}
+.wbody{position:relative;overflow:hidden}
+.wbody picture{display:block}
+.wbody img{position:absolute;display:block;max-width:none}
+.ring{position:absolute;box-sizing:border-box;border:3px solid #AFC64E;outline:1.5px solid #1C2B22;border-radius:5px}
+.built{margin-top:120px}
+.built h2{margin:0 0 30px}
+.bcol{width:660px}
+.fe p+p{margin-top:12px}
+.be{margin-top:120px}
+.wt{margin:22px 0 8px;font-size:13.5px;line-height:1.4;color:#3F4A3B}
+.wt code{font-size:12.5px;color:#1C2B22}
+.root .well{font-size:13px;line-height:1.7;overflow-x:auto;scrollbar-width:none}
+.built p code{color:#1C2B22}
+.bspace{height:0}
+.nw{white-space:nowrap}
+.does{list-style:none;margin:0;padding:0;width:560px}
+.does li{margin:0}
+.does li+li{margin-top:150px}
+.does li:nth-child(3){margin-top:230px}
+.built .does p{margin:0;font-size:19px;line-height:1.45;color:#1C2B22;max-width:38ch}
+.does .tech{color:#3F4A3B}
+.rest{display:grid;grid-template-columns:420px minmax(0,1fr) minmax(0,1fr);column-gap:60px;align-items:start;padding-bottom:110px}
+.rest h2{margin:0}
+.re h3{margin:4px 0 8px}
+.re h3 a{text-decoration-color:#66793B}
+.deep{position:relative;background:#155A6E;color:#F6F4EC;margin-top:-2px}
+.deep .gran{position:absolute;left:0;top:0;z-index:0}
+.deep>*:not(.gran){position:relative;z-index:1}
+.redge{display:block}
+.foot{border-top:0}
+@media (prefers-color-scheme: dark){
+.wtab{background:transparent;color:#F6F4EC;box-shadow:inset 0 -2px 0 #AFC64E}
+.open .lt{display:none}
+.open .dk{display:inline}
+}
+.ph .sky{padding:0 16px 26px}
+.ph .mast{flex-wrap:wrap;row-gap:10px;padding-top:18px}
+.ph .mast nav{flex:1 1 100%}
+.ph .mast ul{flex-wrap:wrap;column-gap:18px;row-gap:2px}
+.ph .hero{grid-template-columns:minmax(0,1fr);row-gap:18px;margin-top:34px}
+.ph .hero h1{font-size:44px;line-height:.98}
+.ph .lede{padding-top:0}
+.ph .lede p{font-size:16.5px}
+.ph .gin{padding:224px 16px 0}
+.ph h2{font-size:31px}
+.ph h3{font-size:20px}
+.ph .thead{grid-template-columns:minmax(0,1fr);row-gap:12px}
+.ph .thead p{font-size:15.5px}
+.ph .step,.ph .step.s1,.ph .step.s2,.ph .step.s3{grid-template-columns:minmax(0,1fr);row-gap:14px;margin-top:40px}
+.ph .step.s1{margin-top:30px}
+.ph .scap,.ph .s2 .scap{padding-top:0;max-width:none}
+.ph .scap h3{margin-top:10px}
+.ph .wbar{height:34px;padding:0 10px 0 6px}
+.ph .wtab{padding:9px 12px 10px;font-size:13px}
+.ph .wname{font-size:12px}
+.ph .built{margin-top:64px}
+.ph .built h2{margin-bottom:22px}
+.ph .bcol{width:auto;padding-left:116px}
+.ph .be{margin-top:84px}
+.ph .built p{font-size:15px;line-height:1.55}
+.ph .wt code{font-size:11.5px}
+.ph .root .well,.ph .well{font-size:12px;line-height:1.65;padding:8px 10px}
+.ph .does{width:auto;padding-left:116px}
+.ph .built .does p{font-size:16px;line-height:1.45}
+.ph .does li+li{margin-top:96px}
+.ph .does li:nth-child(3){margin-top:140px}
+.ph .rest{grid-template-columns:minmax(0,1fr);row-gap:22px;padding-bottom:70px}
+.ph .flow .lab text{font-size:12.5px}
+.ph .flow .lab text.m{font-size:11px}
+.ph .st{padding:0 16px}
+.ph .foot{grid-template-columns:minmax(0,1fr);row-gap:14px;padding:36px 0 44px}
+.ph .foot ul{flex-wrap:wrap;column-gap:18px;row-gap:6px}
+</style>
+
+<div class="root ph" style="width: 390px; height: 3823px; overflow: hidden; position: relative">
+<main>
+<section class="sky" data-section="opening"><header class="mast"><a class="brand" href="index.html">gridflow</a><nav aria-label="Primary"><ul><li><a href="index.html">Home</a></li><li><a href="data-sources.html">Data sources</a></li><li><a href="architecture.html">Architecture</a></li><li><a href="models.html">Models</a></li><li><a href="explorer.html" aria-current="page">Explorer</a></li><li><a href="index.html#about">About</a></li></ul></nav></header><div class="hero"><h1>A React front end over gridflow’s data</h1><div class="lede"><p class="lead">gridflow explorer is a web app for browsing everything gridflow collects: GB and European energy-market data from eight public sources, plus the tables gridflow builds from them.</p><p>A React and TypeScript front end over a Python backend that reads gridflow through its own client.</p><p>It is not hosted, so it is shown here in screenshots from its own screenshot tool, in light and dark.</p><p class="repo">Source on GitHub: <a class="alt" href="https://github.com/EBentham/gridflow-explorer"><code>EBentham/<wbr>gridflow-explorer</code></a></p></div></div></section><div class="ground" data-t="ground"><svg class="gnd" width="390" height="2934" viewBox="0 0 390 2934" aria-hidden="true"><defs><pattern id="p-stip" width="9" height="9" patternUnits="userSpaceOnUse"><circle cx="2" cy="3" r="1" fill="#8A6F1E"></circle><circle cx="6.5" cy="7.5" r=".8" fill="#8A6F1E"></circle></pattern>
+<pattern id="p-diag" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M0 8 L8 0" stroke="#5E6E6B" stroke-width=".8"></path></pattern>
+<pattern id="p-brick" width="24" height="12" patternUnits="userSpaceOnUse"><path d="M0 11.5 H24 M12 0 V6 M0 6 H24 M0 6 V12" stroke="#7C5530" stroke-width=".8" fill="none"></path></pattern>
+<pattern id="p-soil" width="23" height="17" patternUnits="userSpaceOnUse"><circle cx="4" cy="5" r=".9" fill="#A39A6A"></circle><circle cx="15" cy="12" r="1.1" fill="#A39A6A"></circle><path d="M17 3 h3" stroke="#A39A6A" stroke-width=".9"></path></pattern>
+<pattern id="p-granite" width="46" height="40" patternUnits="userSpaceOnUse"><path d="M8 8 h8 M12 4 v8 M30 26 h8 M34 22 v8 M20 34 h6 M23 31 v6 M40 6 h5 M42.5 3.5 v5" stroke="#3E8C97" stroke-width="1.1"></path></pattern></defs><rect x="0" y="0" width="390" height="236" fill="#155A6E"></rect><path d="M-40 176.1 L-36 176 L-32 176 L-28 176 L-24 175.9 L-20 175.9 L-16 175.9 L-12 175.9 L-8 175.9 L-4 175.9 L0 176 L4 176 L8 176.1 L12 176.3 L16 176.4 L20 176.5 L24 176.7 L28 176.9 L32 177.1 L36 177.3 L40 177.5 L44 177.7 L48 177.9 L52 178.1 L56 178.3 L60 178.4 L64 178.6 L68 178.7 L72 178.8 L76 178.9 L80 179 L84 179 L88 178.9 L92 178.9 L96 178.8 L100 178.7 L104 178.5 L108 178.3 L112 178.1 L116 177.9 L120 177.6 L124 177.4 L128 177.1 L132 176.8 L136 176.5 L140 176.2 L144 175.9 L148 175.6 L152 175.3 L156 175 L160 174.8 L164 174.6 L168 174.4 L172 174.2 L176 174 L180 173.9 L184 173.8 L188 173.8 L192 173.8 L196 173.8 L200 173.8 L204 173.8 L208 173.9 L212 174 L216 174.1 L220 174.2 L224 174.3 L228 174.5 L232 174.6 L236 174.7 L240 174.8 L244 175 L248 175 L252 175.1 L256 175.2 L260 175.2 L264 175.3 L268 175.3 L272 175.3 L276 175.3 L280 175.2 L284 175.2 L288 175.1 L292 175.1 L296 175 L300 174.9 L304 174.9 L308 174.8 L312 174.7 L316 174.7 L320 174.7 L324 174.6 L328 174.6 L332 174.7 L336 174.7 L340 174.8 L344 174.9 L348 175 L352 175.2 L356 175.4 L360 175.6 L364 175.8 L368 176 L372 176.3 L376 176.5 L380 176.8 L384 177.1 L388 177.4 L392 177.6 L396 177.9 L400 178.1 L404 178.4 L408 178.6 L412 178.8 L416 178.9 L420 179 L424 179.1 L428 179.2 L430 2944 L-40 2944 Z" fill="#ECE8DA"></path><path d="M-40 176.1 L-36 176 L-32 176 L-28 176 L-24 175.9 L-20 175.9 L-16 175.9 L-12 175.9 L-8 175.9 L-4 175.9 L0 176 L4 176 L8 176.1 L12 176.3 L16 176.4 L20 176.5 L24 176.7 L28 176.9 L32 177.1 L36 177.3 L40 177.5 L44 177.7 L48 177.9 L52 178.1 L56 178.3 L60 178.4 L64 178.6 L68 178.7 L72 178.8 L76 178.9 L80 179 L84 179 L88 178.9 L92 178.9 L96 178.8 L100 178.7 L104 178.5 L108 178.3 L112 178.1 L116 177.9 L120 177.6 L124 177.4 L128 177.1 L132 176.8 L136 176.5 L140 176.2 L144 175.9 L148 175.6 L152 175.3 L156 175 L160 174.8 L164 174.6 L168 174.4 L172 174.2 L176 174 L180 173.9 L184 173.8 L188 173.8 L192 173.8 L196 173.8 L200 173.8 L204 173.8 L208 173.9 L212 174 L216 174.1 L220 174.2 L224 174.3 L228 174.5 L232 174.6 L236 174.7 L240 174.8 L244 175 L248 175 L252 175.1 L256 175.2 L260 175.2 L264 175.3 L268 175.3 L272 175.3 L276 175.3 L280 175.2 L284 175.2 L288 175.1 L292 175.1 L296 175 L300 174.9 L304 174.9 L308 174.8 L312 174.7 L316 174.7 L320 174.7 L324 174.6 L328 174.6 L332 174.7 L336 174.7 L340 174.8 L344 174.9 L348 175 L352 175.2 L356 175.4 L360 175.6 L364 175.8 L368 176 L372 176.3 L376 176.5 L380 176.8 L384 177.1 L388 177.4 L392 177.6 L396 177.9 L400 178.1 L404 178.4 L408 178.6 L412 178.8 L416 178.9 L420 179 L424 179.1 L428 179.2 L430 2944 L-40 2944 Z" fill="url(#p-soil)" opacity=".5"></path><path d="M-40 2218.7 C-30 2218.4 0 2217.2 20 2216.9 C40 2216.7 60 2217.7 80 2217.3 C100 2216.8 120 2215.6 140 2214.2 C160 2212.8 180 2209.7 200 2208.8 C220 2207.9 240 2207.9 260 2208.8 C280 2209.6 300 2212.6 320 2213.9 C340 2215.2 360 2216.1 380 2216.5 C400 2216.9 430 2216.4 440 2216.4 L430 2944 L-40 2944 Z" fill="#DCE2DF"></path><path d="M-40 2218.7 C-30 2218.4 0 2217.2 20 2216.9 C40 2216.7 60 2217.7 80 2217.3 C100 2216.8 120 2215.6 140 2214.2 C160 2212.8 180 2209.7 200 2208.8 C220 2207.9 240 2207.9 260 2208.8 C280 2209.6 300 2212.6 320 2213.9 C340 2215.2 360 2216.1 380 2216.5 C400 2216.9 430 2216.4 440 2216.4 L430 2944 L-40 2944 Z" fill="url(#p-diag)" opacity=".22"></path><path d="M-40 2446.8 C-30 2445.9 0 2442.7 20 2441.5 C40 2440.3 60 2439.1 80 2439.6 C100 2440 120 2442.7 140 2444.2 C160 2445.6 180 2447.6 200 2448.3 C220 2449 240 2448.1 260 2448.3 C280 2448.5 300 2448.8 320 2449.5 C340 2450.2 360 2452.3 380 2452.6 C400 2452.8 430 2451.2 440 2450.9 L430 2944 L-40 2944 Z" fill="#E9DDAF"></path><path d="M-40 2446.8 C-30 2445.9 0 2442.7 20 2441.5 C40 2440.3 60 2439.1 80 2439.6 C100 2440 120 2442.7 140 2444.2 C160 2445.6 180 2447.6 200 2448.3 C220 2449 240 2448.1 260 2448.3 C280 2448.5 300 2448.8 320 2449.5 C340 2450.2 360 2452.3 380 2452.6 C400 2452.8 430 2451.2 440 2450.9 L430 2944 L-40 2944 Z" fill="url(#p-stip)" opacity=".26"></path><path d="M-40 176.1 L-36 176 L-32 176 L-28 176 L-24 175.9 L-20 175.9 L-16 175.9 L-12 175.9 L-8 175.9 L-4 175.9 L0 176 L4 176 L8 176.1 L12 176.3 L16 176.4 L20 176.5 L24 176.7 L28 176.9 L32 177.1 L36 177.3 L40 177.5 L44 177.7 L48 177.9 L52 178.1 L56 178.3 L60 178.4 L64 178.6 L68 178.7 L72 178.8 L76 178.9 L80 179 L84 179 L88 178.9 L92 178.9 L96 178.8 L100 178.7 L104 178.5 L108 178.3 L112 178.1 L116 177.9 L120 177.6 L124 177.4 L128 177.1 L132 176.8 L136 176.5 L140 176.2 L144 175.9 L148 175.6 L152 175.3 L156 175 L160 174.8 L164 174.6 L168 174.4 L172 174.2 L176 174 L180 173.9 L184 173.8 L188 173.8 L192 173.8 L196 173.8 L200 173.8 L204 173.8 L208 173.9 L212 174 L216 174.1 L220 174.2 L224 174.3 L228 174.5 L232 174.6 L236 174.7 L240 174.8 L244 175 L248 175 L252 175.1 L256 175.2 L260 175.2 L264 175.3 L268 175.3 L272 175.3 L276 175.3 L280 175.2 L284 175.2 L288 175.1 L292 175.1 L296 175 L300 174.9 L304 174.9 L308 174.8 L312 174.7 L316 174.7 L320 174.7 L324 174.6 L328 174.6 L332 174.7 L336 174.7 L340 174.8 L344 174.9 L348 175 L352 175.2 L356 175.4 L360 175.6 L364 175.8 L368 176 L372 176.3 L376 176.5 L380 176.8 L384 177.1 L388 177.4 L392 177.6 L396 177.9 L400 178.1 L404 178.4 L408 178.6 L412 178.8 L416 178.9 L420 179 L424 179.1 L428 179.2 L428 185.2 L424 185.1 L420 185 L416 184.9 L412 184.8 L408 184.6 L404 184.4 L400 184.1 L396 183.9 L392 183.6 L388 183.4 L384 183.1 L380 182.8 L376 182.5 L372 182.3 L368 182 L364 181.8 L360 181.6 L356 181.4 L352 181.2 L348 181 L344 180.9 L340 180.8 L336 180.7 L332 180.7 L328 180.6 L324 180.6 L320 180.7 L316 180.7 L312 180.7 L308 180.8 L304 180.9 L300 180.9 L296 181 L292 181.1 L288 181.1 L284 181.2 L280 181.2 L276 181.3 L272 181.3 L268 181.3 L264 181.3 L260 181.2 L256 181.2 L252 181.1 L248 181 L244 181 L240 180.8 L236 180.7 L232 180.6 L228 180.5 L224 180.3 L220 180.2 L216 180.1 L212 180 L208 179.9 L204 179.8 L200 179.8 L196 179.8 L192 179.8 L188 179.8 L184 179.8 L180 179.9 L176 180 L172 180.2 L168 180.4 L164 180.6 L160 180.8 L156 181 L152 181.3 L148 181.6 L144 181.9 L140 182.2 L136 182.5 L132 182.8 L128 183.1 L124 183.4 L120 183.6 L116 183.9 L112 184.1 L108 184.3 L104 184.5 L100 184.7 L96 184.8 L92 184.9 L88 184.9 L84 185 L80 185 L76 184.9 L72 184.8 L68 184.7 L64 184.6 L60 184.4 L56 184.3 L52 184.1 L48 183.9 L44 183.7 L40 183.5 L36 183.3 L32 183.1 L28 182.9 L24 182.7 L20 182.5 L16 182.4 L12 182.3 L8 182.1 L4 182 L0 182 L-4 181.9 L-8 181.9 L-12 181.9 L-16 181.9 L-20 181.9 L-24 181.9 L-28 182 L-32 182 L-36 182 L-40 182.1 Z" fill="#66793B"></path><path d="M-20 80 C-5 78 40 68.3 70 68 C100 67.7 130 78.3 160 78 C190 77.7 221.7 66.3 250 66 C278.3 65.7 303.3 75.3 330 76 C356.7 76.7 396.7 71 410 70 L410 146 L-20 146 Z" fill="#297382" opacity="1"></path>
+<path d="M-20 98 C-6.7 96.3 33.3 90.3 60 88 C86.7 85.7 113.3 83 140 84 C166.7 85 193.3 93.7 220 94 C246.7 94.3 268.3 86.3 300 86 C331.7 85.7 391.7 91 410 92 L410 146 L-20 146 Z" fill="#3E8C97" opacity="1"></path>
+<path d="M59.3 90 L59.7 64 L60.3 64 L60.7 90 Z" fill="#F6F4EC"></path><rect x="59.5" y="63.4" width="2.4" height="1.2" rx="0.5" fill="#F6F4EC"></rect><g transform="translate(59.4,64)"><g class="rot sp2"><circle r="13" fill="none"></circle><path d="M-0.6 0 C-1.3 -3.9 -0.5 -9.9 0 -13 C0.3 -9.4 1.4 -3.9 0.6 0 Z" transform="rotate(5)" fill="#F6F4EC"></path><path d="M-0.6 0 C-1.3 -3.9 -0.5 -9.9 0 -13 C0.3 -9.4 1.4 -3.9 0.6 0 Z" transform="rotate(125)" fill="#F6F4EC"></path><path d="M-0.6 0 C-1.3 -3.9 -0.5 -9.9 0 -13 C0.3 -9.4 1.4 -3.9 0.6 0 Z" transform="rotate(245)" fill="#F6F4EC"></path><circle r="0.7" fill="#F6F4EC"></circle></g></g>
+<path d="M139.1 86 L139.6 56 L140.4 56 L140.9 86 Z" fill="#F6F4EC"></path><rect x="139.4" y="55.2" width="2.8" height="1.4" rx="0.6" fill="#F6F4EC"></rect><g transform="translate(139.3,56)"><g class="rot sp3"><circle r="15" fill="none"></circle><path d="M-0.6 0 C-1.3 -4.5 -0.5 -11.4 0 -15 C0.3 -10.8 1.4 -4.5 0.6 0 Z" transform="rotate(34)" fill="#F6F4EC"></path><path d="M-0.6 0 C-1.3 -4.5 -0.5 -11.4 0 -15 C0.3 -10.8 1.4 -4.5 0.6 0 Z" transform="rotate(154)" fill="#F6F4EC"></path><path d="M-0.6 0 C-1.3 -4.5 -0.5 -11.4 0 -15 C0.3 -10.8 1.4 -4.5 0.6 0 Z" transform="rotate(274)" fill="#F6F4EC"></path><circle r="0.8" fill="#F6F4EC"></circle></g></g>
+<path d="M219.3 96 L219.7 72 L220.3 72 L220.7 96 Z" fill="#F6F4EC"></path><rect x="219.5" y="71.4" width="2.2" height="1.1" rx="0.4" fill="#F6F4EC"></rect><g transform="translate(219.4,72)"><g class="rot sp1"><circle r="12" fill="none"></circle><path d="M-0.6 0 C-1.3 -3.6 -0.5 -9.1 0 -12 C0.3 -8.6 1.4 -3.6 0.6 0 Z" transform="rotate(63)" fill="#F6F4EC"></path><path d="M-0.6 0 C-1.3 -3.6 -0.5 -9.1 0 -12 C0.3 -8.6 1.4 -3.6 0.6 0 Z" transform="rotate(183)" fill="#F6F4EC"></path><path d="M-0.6 0 C-1.3 -3.6 -0.5 -9.1 0 -12 C0.3 -8.6 1.4 -3.6 0.6 0 Z" transform="rotate(303)" fill="#F6F4EC"></path><circle r="0.6" fill="#F6F4EC"></circle></g></g>
+<path d="M299.2 88 L299.6 60 L300.4 60 L300.8 88 Z" fill="#F6F4EC"></path><rect x="299.4" y="59.3" width="2.6" height="1.3" rx="0.5" fill="#F6F4EC"></rect><g transform="translate(299.3,60)"><g class="rot sp2"><circle r="14" fill="none"></circle><path d="M-0.6 0 C-1.3 -4.2 -0.5 -10.6 0 -14 C0.3 -10.1 1.4 -4.2 0.6 0 Z" transform="rotate(92)" fill="#F6F4EC"></path><path d="M-0.6 0 C-1.3 -4.2 -0.5 -10.6 0 -14 C0.3 -10.1 1.4 -4.2 0.6 0 Z" transform="rotate(212)" fill="#F6F4EC"></path><path d="M-0.6 0 C-1.3 -4.2 -0.5 -10.6 0 -14 C0.3 -10.1 1.4 -4.2 0.6 0 Z" transform="rotate(332)" fill="#F6F4EC"></path><circle r="0.7" fill="#F6F4EC"></circle></g></g>
+<path d="M-20 120 C-1.7 119.3 53.3 115.7 90 116 C126.7 116.3 165 122 200 122 C235 122 265 116.3 300 116 C335 115.7 391.7 119.3 410 120 L410 178.7 L400 178.1 L380 176.8 L360 175.6 L340 174.8 L320 174.7 L300 174.9 L280 175.2 L260 175.2 L240 174.8 L220 174.2 L200 173.8 L180 173.9 L160 174.8 L140 176.2 L120 177.6 L100 178.7 L80 179 L60 178.4 L40 177.5 L20 176.5 L0 176 L-20 175.9 Z" fill="#AFC64E"></path>
+<path d="M-20 136 C16.7 135.7 128.3 133.7 200 134 C271.7 134.3 375 137.3 410 138 M-20 156 C20 155.7 148.3 153.7 220 154 C291.7 154.3 378.3 157.3 410 158" stroke="#66793B" stroke-width="1" fill="none" opacity=".45"></path>
+<g transform="translate(10 177.5) scale(0.5) translate(-10 -177.5)"><path d="M10 177.5 V127.5 M46 177.5 V127.5 M7 127.5 H49 M10 127.5 L46 153.5 M46 127.5 L10 153.5 M10 153.5 H46 M58 177.5 V127.5 M94 177.5 V127.5 M55 127.5 H97 M58 127.5 L94 153.5 M94 127.5 L58 153.5 M58 153.5 H94 M18 127.5 v6 M28 127.5 v6 M38 127.5 v6 M66 127.5 v6 M76 127.5 v6 M86 127.5 v6 M18 133.5 H86" stroke="#1C2B22" stroke-width="1.2" fill="none"></path>
+<rect x="16" y="160.5" width="22" height="17" fill="#A39A6A" stroke="#1C2B22" stroke-width=".9"></rect>
+<path d="M19 163.5 V174.5 M22 163.5 V174.5 M25 163.5 V174.5 M28 163.5 V174.5 M31 163.5 V174.5 M34 163.5 V174.5 M21 160.5 v-6 M27 160.5 v-7 M33 160.5 v-6" stroke="#1C2B22" stroke-width=".7"></path>
+<rect x="66" y="160.5" width="22" height="17" fill="#A39A6A" stroke="#1C2B22" stroke-width=".9"></rect>
+<path d="M69 163.5 V174.5 M72 163.5 V174.5 M75 163.5 V174.5 M78 163.5 V174.5 M81 163.5 V174.5 M84 163.5 V174.5 M71 160.5 v-6 M77 160.5 v-7 M83 160.5 v-6" stroke="#1C2B22" stroke-width=".7"></path>
+<path d="M0 177.5 v-12 M12 177.5 v-12 M24 177.5 v-12 M36 177.5 v-12 M48 177.5 v-12 M60 177.5 v-12 M72 177.5 v-12 M84 177.5 v-12 M96 177.5 v-12 M0 166.5 H106" stroke="#1C2B22" stroke-width=".6" opacity=".65"></path></g>
+<path d="M82.2 179 L83.2 115 L84.8 115 L85.8 179 Z" fill="#F6F4EC"></path><rect x="82.7" y="113.4" width="5.9" height="3" rx="1.2" fill="#F6F4EC"></rect><g transform="translate(82.5,114.9)"><g class="rot sp1"><circle r="32" fill="none"></circle><path d="M-1.3 0 C-2.8 -9.6 -1.1 -24.3 0 -32 C0.7 -23 3 -9.6 1.3 0 Z" transform="rotate(25)" fill="#F6F4EC"></path><path d="M-1.3 0 C-2.8 -9.6 -1.1 -24.3 0 -32 C0.7 -23 3 -9.6 1.3 0 Z" transform="rotate(145)" fill="#F6F4EC"></path><path d="M-1.3 0 C-2.8 -9.6 -1.1 -24.3 0 -32 C0.7 -23 3 -9.6 1.3 0 Z" transform="rotate(265)" fill="#F6F4EC"></path><circle r="1.7" fill="#F6F4EC"></circle></g></g>
+<path d="M104.3 178.4 L105.2 120.4 L106.8 120.4 L107.7 178.4 Z" fill="#F6F4EC"></path><rect x="104.8" y="119" width="5.4" height="2.8" rx="1.1" fill="#F6F4EC"></rect><g transform="translate(104.6,120.4)"><g class="rot sp2"><circle r="29" fill="none"></circle><path d="M-1.2 0 C-2.5 -8.7 -1 -22 0 -29 C0.7 -20.9 2.7 -8.7 1.2 0 Z" transform="rotate(65)" fill="#F6F4EC"></path><path d="M-1.2 0 C-2.5 -8.7 -1 -22 0 -29 C0.7 -20.9 2.7 -8.7 1.2 0 Z" transform="rotate(185)" fill="#F6F4EC"></path><path d="M-1.2 0 C-2.5 -8.7 -1 -22 0 -29 C0.7 -20.9 2.7 -8.7 1.2 0 Z" transform="rotate(305)" fill="#F6F4EC"></path><circle r="1.5" fill="#F6F4EC"></circle></g></g>
+<path d="M124.5 177.2 L125.3 125.2 L126.7 125.2 L127.5 177.2 Z" fill="#F6F4EC"></path><rect x="125" y="123.9" width="4.8" height="2.5" rx="1" fill="#F6F4EC"></rect><g transform="translate(124.8,125.2)"><g class="rot sp3"><circle r="26" fill="none"></circle><path d="M-1.1 0 C-2.2 -7.8 -0.9 -19.8 0 -26 C0.6 -18.7 2.4 -7.8 1.1 0 Z" transform="rotate(105)" fill="#F6F4EC"></path><path d="M-1.1 0 C-2.2 -7.8 -0.9 -19.8 0 -26 C0.6 -18.7 2.4 -7.8 1.1 0 Z" transform="rotate(225)" fill="#F6F4EC"></path><path d="M-1.1 0 C-2.2 -7.8 -0.9 -19.8 0 -26 C0.6 -18.7 2.4 -7.8 1.1 0 Z" transform="rotate(345)" fill="#F6F4EC"></path><circle r="1.4" fill="#F6F4EC"></circle></g></g>
+<g transform="translate(152 173.8) scale(.62)"><path d="M4 -60 L114.7 -64 L120 0 L0 0 Z" fill="#66793B"></path>
+<path d="M20 -58 V-59.9 M33.8 -58 V-59.9 M47.6 -58 V-59.9 M61.4 -58 V-59.9 M75.2 -58 V-59.9 M89 -58 V-59.9 M102.8 -58 V-59.9" stroke="#1C2B22" stroke-width=".9"></path>
+<path d="M14 -59.9 L109.1 -59.9 L106.4 -64.5 L11.2 -64.5 Z" fill="#AFC64E" stroke="#1C2B22" stroke-width=".9" stroke-linejoin="round"></path>
+<path d="M18.1 -59.9 L15.4 -64.5 M22.3 -59.9 L19.5 -64.5 M26.4 -59.9 L23.6 -64.5 M30.5 -59.9 L27.8 -64.5 M34.7 -59.9 L31.9 -64.5 M38.8 -59.9 L36.1 -64.5 M43 -59.9 L40.2 -64.5 M47.1 -59.9 L44.3 -64.5 M51.2 -59.9 L48.5 -64.5 M55.4 -59.9 L52.6 -64.5 M59.5 -59.9 L56.8 -64.5 M63.7 -59.9 L60.9 -64.5 M67.8 -59.9 L65 -64.5 M71.9 -59.9 L69.2 -64.5 M76.1 -59.9 L73.3 -64.5 M80.2 -59.9 L77.5 -64.5 M84.4 -59.9 L81.6 -64.5 M88.5 -59.9 L85.7 -64.5 M92.6 -59.9 L89.9 -64.5 M96.8 -59.9 L94 -64.5 M100.9 -59.9 L98.2 -64.5 M105.1 -59.9 L102.3 -64.5 M12.6 -62.2 H107.7" stroke="#1C2B22" stroke-width=".55" opacity=".4"></path>
+<path d="M18.8 -45 V-47.4 M36.2 -45 V-47.4 M53.6 -45 V-47.4 M71 -45 V-47.4 M88.4 -45 V-47.4 M105.8 -45 V-47.4" stroke="#1C2B22" stroke-width=".9"></path>
+<path d="M12.8 -47.4 L109.9 -47.4 L106.4 -53.2 L9.3 -53.2 Z" fill="#AFC64E" stroke="#1C2B22" stroke-width=".9" stroke-linejoin="round"></path>
+<path d="M18 -47.4 L14.5 -53.2 M23.2 -47.4 L19.8 -53.2 M28.5 -47.4 L25 -53.2 M33.7 -47.4 L30.2 -53.2 M38.9 -47.4 L35.4 -53.2 M44.1 -47.4 L40.6 -53.2 M49.3 -47.4 L45.9 -53.2 M54.6 -47.4 L51.1 -53.2 M59.8 -47.4 L56.3 -53.2 M65 -47.4 L61.5 -53.2 M70.2 -47.4 L66.7 -53.2 M75.4 -47.4 L72 -53.2 M80.7 -47.4 L77.2 -53.2 M85.9 -47.4 L82.4 -53.2 M91.1 -47.4 L87.6 -53.2 M96.3 -47.4 L92.8 -53.2 M101.5 -47.4 L98.1 -53.2 M106.8 -47.4 L103.3 -53.2 M11.1 -50.3 H108.2" stroke="#1C2B22" stroke-width=".55" opacity=".4"></path>
+<path d="M17.5 -32 V-35 M38.8 -32 V-35 M60.1 -32 V-35 M81.4 -32 V-35 M102.7 -32 V-35" stroke="#1C2B22" stroke-width=".9"></path>
+<path d="M11.5 -35 L110.8 -35 L106.5 -42.1 L7.2 -42.1 Z" fill="#AFC64E" stroke="#1C2B22" stroke-width=".9" stroke-linejoin="round"></path>
+<path d="M17.9 -35 L13.6 -42.1 M24.3 -35 L20 -42.1 M30.7 -35 L26.4 -42.1 M37.1 -35 L32.8 -42.1 M43.5 -35 L39.2 -42.1 M49.8 -35 L45.6 -42.1 M56.2 -35 L52 -42.1 M62.6 -35 L58.4 -42.1 M69 -35 L64.8 -42.1 M75.4 -35 L71.1 -42.1 M81.8 -35 L77.5 -42.1 M88.2 -35 L83.9 -42.1 M94.6 -35 L90.3 -42.1 M101 -35 L96.7 -42.1 M107.4 -35 L103.1 -42.1 M9.4 -38.5 H108.7" stroke="#1C2B22" stroke-width=".55" opacity=".4"></path>
+<path d="M16.1 -18 V-21.6 M41.6 -18 V-21.6 M67.1 -18 V-21.6 M92.6 -18 V-21.6" stroke="#1C2B22" stroke-width=".9"></path>
+<path d="M10.1 -21.6 L111.7 -21.6 L106.6 -30.1 L5 -30.1 Z" fill="#AFC64E" stroke="#1C2B22" stroke-width=".9" stroke-linejoin="round"></path>
+<path d="M17.8 -21.6 L12.7 -30.1 M25.4 -21.6 L20.3 -30.1 M33.1 -21.6 L28 -30.1 M40.7 -21.6 L35.6 -30.1 M48.4 -21.6 L43.3 -30.1 M56 -21.6 L50.9 -30.1 M63.7 -21.6 L58.6 -30.1 M71.3 -21.6 L66.2 -30.1 M79 -21.6 L73.9 -30.1 M86.6 -21.6 L81.5 -30.1 M94.3 -21.6 L89.2 -30.1 M101.9 -21.6 L96.8 -30.1 M109.6 -21.6 L104.5 -30.1 M7.6 -25.8 H109.2" stroke="#1C2B22" stroke-width=".55" opacity=".4"></path>
+<path d="M14.6 -4 V-8.2 M44.6 -4 V-8.2 M74.6 -4 V-8.2 M104.6 -4 V-8.2" stroke="#1C2B22" stroke-width=".9"></path>
+<path d="M8.6 -8.2 L112.7 -8.2 L106.7 -18.2 L2.6 -18.2 Z" fill="#AFC64E" stroke="#1C2B22" stroke-width=".9" stroke-linejoin="round"></path>
+<path d="M17.6 -8.2 L11.6 -18.2 M26.6 -8.2 L20.6 -18.2 M35.6 -8.2 L29.6 -18.2 M44.6 -8.2 L38.6 -18.2 M53.6 -8.2 L47.6 -18.2 M62.6 -8.2 L56.6 -18.2 M71.6 -8.2 L65.6 -18.2 M80.6 -8.2 L74.6 -18.2 M89.6 -8.2 L83.6 -18.2 M98.6 -8.2 L92.6 -18.2 M107.6 -8.2 L101.6 -18.2 M5.6 -13.2 H109.7" stroke="#1C2B22" stroke-width=".55" opacity=".4"></path>
+<path d="M2 0.5 v-9 M7.3 0.5 v-9 M12.6 0.5 v-9 M17.9 0.5 v-9 M23.2 0.5 v-9 M28.5 0.5 v-9 M33.8 0.5 v-9 M39.1 0.5 v-9 M44.4 0.5 v-9 M49.7 0.5 v-9 M55 0.5 v-9 M60.3 0.5 v-9 M65.6 0.5 v-9 M70.9 0.5 v-9 M76.2 0.5 v-9 M81.5 0.5 v-9 M86.9 0.5 v-9 M92.2 0.5 v-9 M97.5 0.5 v-9 M102.8 0.5 v-9 M108.1 0.5 v-9 M113.4 0.5 v-9 M118.7 0.5 v-9 M0 -6 L120 -6" stroke="#1C2B22" stroke-width=".7" opacity=".7"></path></g>
+<path d="M228 174.8 A8 8 0 0 1 244 174.8 Z" fill="#A5713C" stroke="#1C2B22" stroke-width=".8"></path>
+<path d="M244 174.8 A8 8 0 0 1 260 174.8 Z" fill="#A5713C" stroke="#1C2B22" stroke-width=".8"></path>
+<g transform="translate(266 175.1) scale(0.4) translate(-266 -175.1)"><rect x="316" y="145.1" width="70" height="30" fill="#F6F4EC" stroke="#1C2B22" stroke-width="1"></rect>
+<path d="M322 153.1 H380 M322 163.1 H380" stroke="#1C2B22" stroke-width=".6" opacity=".3"></path>
+<path d="M266 175.1 V135.1 Q291 105.1 316 135.1 V175.1 Z" fill="#155A6E" stroke="#1C2B22" stroke-width="1.1"></path>
+<path d="M270 135.1 Q291 111.1 312 135.1" stroke="#F6F4EC" stroke-width=".8" opacity=".35" fill="none"></path>
+<rect x="392" y="117.1" width="6" height="58" fill="#F6F4EC" stroke="#1C2B22" stroke-width=".9"></rect></g>
+<g transform="translate(330 174.9) scale(0.4) translate(-330 -174.9)"><rect x="390.7" y="79.2" width="6.4" height="55.2" fill="#F6F4EC" stroke="#1C2B22" stroke-width=".9" ></rect>
+<rect x="409.1" y="71.9" width="6.4" height="62.6" fill="#F6F4EC" stroke="#1C2B22" stroke-width=".9" ></rect>
+<path d="M390.7 84.7 h6.4 M409.1 77.4 h6.4" stroke="#C77E3C" stroke-width="2.8"></path>
+<rect x="387" y="132.6" width="13.8" height="42.3" fill="#C77E3C" stroke="#1C2B22" stroke-width=".9" ></rect>
+<rect x="405.4" y="132.6" width="13.8" height="42.3" fill="#C77E3C" stroke="#1C2B22" stroke-width=".9" ></rect>
+<rect x="330" y="145.5" width="57" height="29.4" fill="#C77E3C" stroke="#1C2B22" stroke-width=".9" ></rect>
+<rect x="307.9" y="160.2" width="22.1" height="14.7" fill="#F6F4EC" stroke="#1C2B22" stroke-width=".9" ></rect>
+<path d="M333.7 154.7 H383.4 M333.7 163.9 H383.4" stroke="#F6F4EC" stroke-width=".8" stroke-dasharray="3 3" opacity=".8"></path>
+<path d="M330 145.5 L358.5 139.9 L387 145.5" fill="#C77E3C" stroke="#1C2B22" stroke-width=".9" stroke-linejoin="round"></path></g>
+<rect x="362" y="168.3" width="20" height="8" fill="#C77E3C" stroke="#1C2B22" stroke-width=".7"></rect><rect x="375" y="158.3" width="4" height="10" fill="#F6F4EC" stroke="#1C2B22" stroke-width=".7"></rect>
+<path d="M-40 176.1 L-36 176 L-32 176 L-28 176 L-24 175.9 L-20 175.9 L-16 175.9 L-12 175.9 L-8 175.9 L-4 175.9 L0 176 L4 176 L8 176.1 L12 176.3 L16 176.4 L20 176.5 L24 176.7 L28 176.9 L32 177.1 L36 177.3 L40 177.5 L44 177.7 L48 177.9 L52 178.1 L56 178.3 L60 178.4 L64 178.6 L68 178.7 L72 178.8 L76 178.9 L80 179 L84 179 L88 178.9 L92 178.9 L96 178.8 L100 178.7 L104 178.5 L108 178.3 L112 178.1 L116 177.9 L120 177.6 L124 177.4 L128 177.1 L132 176.8 L136 176.5 L140 176.2 L144 175.9 L148 175.6 L152 175.3 L156 175 L160 174.8 L164 174.6 L168 174.4 L172 174.2 L176 174 L180 173.9 L184 173.8 L188 173.8 L192 173.8 L196 173.8 L200 173.8 L204 173.8 L208 173.9 L212 174 L216 174.1 L220 174.2 L224 174.3 L228 174.5 L232 174.6 L236 174.7 L240 174.8 L244 175 L248 175 L252 175.1 L256 175.2 L260 175.2 L264 175.3 L268 175.3 L272 175.3 L276 175.3 L280 175.2 L284 175.2 L288 175.1 L292 175.1 L296 175 L300 174.9 L304 174.9 L308 174.8 L312 174.7 L316 174.7 L320 174.7 L324 174.6 L328 174.6 L332 174.7 L336 174.7 L340 174.8 L344 174.9 L348 175 L352 175.2 L356 175.4 L360 175.6 L364 175.8 L368 176 L372 176.3 L376 176.5 L380 176.8 L384 177.1 L388 177.4 L392 177.6 L396 177.9 L400 178.1 L404 178.4 L408 178.6 L412 178.8 L416 178.9 L420 179 L424 179.1 L428 179.2" stroke="#1C2B22" stroke-width="1.5" fill="none"></path><path d="M-40 2218.7 C-30 2218.4 0 2217.2 20 2216.9 C40 2216.7 60 2217.7 80 2217.3 C100 2216.8 120 2215.6 140 2214.2 C160 2212.8 180 2209.7 200 2208.8 C220 2207.9 240 2207.9 260 2208.8 C280 2209.6 300 2212.6 320 2213.9 C340 2215.2 360 2216.1 380 2216.5 C400 2216.9 430 2216.4 440 2216.4 M-40 2446.8 C-30 2445.9 0 2442.7 20 2441.5 C40 2440.3 60 2439.1 80 2439.6 C100 2440 120 2442.7 140 2444.2 C160 2445.6 180 2447.6 200 2448.3 C220 2449 240 2448.1 260 2448.3 C280 2448.5 300 2448.8 320 2449.5 C340 2450.2 360 2452.3 380 2452.6 C400 2452.8 430 2451.2 440 2450.9" stroke="#1C2B22" stroke-width="1.5" fill="none"></path></svg><svg class="flow" width="390" height="2934" viewBox="0 0 390 2934" role="img" aria-label="Drawing of a request: the browser running the React app calls FastAPI, FastAPI reads through GridflowClient, and GridflowClient reads DuckDB over gridflow's silver and gold tables."><path d="M56 2143.5 V2257" fill="none" stroke="#1C2B22" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M56 2143.5 V2257" fill="none" stroke="#AFC64E" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"></path><path d="M56 2301 V2331" fill="none" stroke="#1C2B22" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M56 2301 V2331" fill="none" stroke="#AFC64E" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"></path><path d="M56 2371 V2412.6" fill="none" stroke="#1C2B22" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M56 2371 V2412.6" fill="none" stroke="#AFC64E" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"></path><rect x="17" y="2091.5" width="78" height="52" rx="3" fill="#F6F4EC" stroke="#1C2B22" stroke-width="1.5"></rect><rect x="17.8" y="2092.2" width="76.5" height="8" rx="2" fill="#1C2B22"></rect><rect x="22.5" y="2094.3" width="20.3" height="6" fill="#F6F4EC"></rect><path d="M26.4 2127.7 H87.2" stroke="#1C2B22" stroke-width=".7" opacity=".4"></path><path d="M26.4 2122.8 L31.9 2116.9 L37.4 2121.3 L43 2112.6 L48.5 2124.8 L54 2130.6 L59.5 2129.5 L65.1 2118.4 L70.6 2114 L76.1 2115.5 L81.7 2119.9 L87.2 2117.8" stroke="#3E8C97" stroke-width="1.6" fill="none" stroke-linejoin="round"></path><path d="M23.4 2102.7 V2138.9 H89.2" stroke="#1C2B22" stroke-width="1" fill="none"></path><rect x="20" y="2257" width="72" height="44" rx="3" fill="#F6F4EC" stroke="#1C2B22" stroke-width="1.5"></rect><circle cx="29.4" cy="2262.5" r="3" fill="#AFC64E" stroke="#1C2B22" stroke-width=".9"></circle><path d="M37.3 2262.5 H64.6" stroke="#1C2B22" stroke-width="1.4" opacity=".7"></path><circle cx="29.4" cy="2273.5" r="3" fill="#AFC64E" stroke="#1C2B22" stroke-width=".9"></circle><path d="M37.3 2273.5 H71.8" stroke="#1C2B22" stroke-width="1.4" opacity=".7"></path><path d="M21 2268 H91" stroke="#1C2B22" stroke-width=".6" opacity=".35"></path><circle cx="29.4" cy="2284.5" r="3" fill="#AFC64E" stroke="#1C2B22" stroke-width=".9"></circle><path d="M37.3 2284.5 H64.6" stroke="#1C2B22" stroke-width="1.4" opacity=".7"></path><path d="M21 2279 H91" stroke="#1C2B22" stroke-width=".6" opacity=".35"></path><circle cx="29.4" cy="2295.5" r="3" fill="#AFC64E" stroke="#1C2B22" stroke-width=".9"></circle><path d="M37.3 2295.5 H71.8" stroke="#1C2B22" stroke-width="1.4" opacity=".7"></path><path d="M21 2290 H91" stroke="#1C2B22" stroke-width=".6" opacity=".35"></path><rect x="24" y="2331" width="64" height="40" rx="3" fill="#F6F4EC" stroke="#1C2B22" stroke-width="1.5"></rect><rect x="25" y="2332" width="62" height="8.6" fill="#ECE8DA"></rect><path d="M24 2340.6 H88" stroke="#1C2B22" stroke-width="1.2"></path><rect x="25" y="2341.1" width="62" height="9.1" fill="#EFEBDF"></rect><rect x="25" y="2361.4" width="62" height="9.1" fill="#EFEBDF"></rect><path d="M45.3 2332 V2370 M66.7 2332 V2370" stroke="#1C2B22" stroke-width=".7" opacity=".4"></path><path d="M29.8 2335.8 h10.9 M29.8 2345.7 h10.9 M29.8 2355.8 h10.9 M29.8 2366 h10.9 M50.9 2335.8 h10.9 M50.9 2345.7 h10.9 M50.9 2355.8 h10.9 M50.9 2366 h10.9 M72.6 2335.8 h10.9 M72.6 2345.7 h10.9 M72.6 2355.8 h10.9 M72.6 2366 h10.9" stroke="#1C2B22" stroke-width="1.5" opacity=".7"></path><path d="M20 2420.6 V2480.6 A36 8 0 0 0 92 2480.6 V2420.6 Z" fill="#F6F4EC" stroke="#1C2B22" stroke-width="1.5"></path><ellipse cx="56" cy="2420.6" rx="36" ry="8" fill="#F6F4EC" stroke="#1C2B22" stroke-width="1.5"></ellipse><path d="M20 2443.4 A36 8 0 0 0 92 2443.4" stroke="#1C2B22" stroke-width=".8" fill="none" opacity=".45"></path><path d="M20 2463.8 A36 8 0 0 0 92 2463.8" stroke="#1C2B22" stroke-width=".8" fill="none" opacity=".45"></path><circle cx="56" cy="2143.5" r="4" fill="#ECE8DA" stroke="#1C2B22" stroke-width="1.8"></circle><circle cx="56" cy="2143.5" r="1.3" fill="#1C2B22"></circle><circle cx="56" cy="2257" r="4" fill="#DCE2DF" stroke="#1C2B22" stroke-width="1.8"></circle><circle cx="56" cy="2257" r="1.3" fill="#1C2B22"></circle><circle cx="56" cy="2301" r="4" fill="#DCE2DF" stroke="#1C2B22" stroke-width="1.8"></circle><circle cx="56" cy="2301" r="1.3" fill="#1C2B22"></circle><circle cx="56" cy="2331" r="4" fill="#DCE2DF" stroke="#1C2B22" stroke-width="1.8"></circle><circle cx="56" cy="2331" r="1.3" fill="#1C2B22"></circle><circle cx="56" cy="2371" r="4" fill="#DCE2DF" stroke="#1C2B22" stroke-width="1.8"></circle><circle cx="56" cy="2371" r="1.3" fill="#1C2B22"></circle><g transform="translate(56 2217.2) scale(0.6) translate(-56 -2217.2)"><rect x="49" y="2200.2" width="14" height="34" rx="7" fill="#DCE2DF" stroke="#1C2B22" stroke-width="1.6"></rect><path d="M49 2209.2 H63 M49 2225.2 H63" stroke="#1C2B22" stroke-width="1" opacity=".5"></path></g><g class="lab"><text x="56" y="2083.5" text-anchor="middle" class="ht">browser</text><text x="56" y="2248" text-anchor="middle" class="hs">FastAPI</text><text x="56" y="2322" text-anchor="middle" class="m hs">GridflowClient</text><text x="56" y="2506.6" text-anchor="middle">DuckDB</text></g></svg><div class="gin"><section class="tour" data-section="tour" aria-labelledby="h-tour"><div class="thead"><h2 id="h-tour">From the catalogue to a chart in two clicks</h2><p>Each source has a page; each dataset family has a page. Time series get charts; event feeds and reference tables get tables.</p></div><figure class="step s1" data-t="step-cat"><figcaption class="scap" data-t="cap-cat"><span class="jn" aria-hidden="true">1</span><h3>All sources</h3><p>The app opens on the catalogue: the eight sources and gridflow gold, grouped Electricity, Gas and Weather.</p><p class="open"><a class="lt" href="../explorer-shots/catalogue-light.png">See the whole screen</a><a class="dk" href="../explorer-shots/catalogue-dark.png">See the whole screen</a></p></figcaption><div class="win" data-t="win-cat" style="width: 355px"><div class="wbar"><span class="wtab">All sources</span><span class="wname">gridflow explorer</span></div><div class="wbody" style="height: 260px"><picture><source srcset="../explorer-shots/catalogue-dark.png" media="(prefers-color-scheme: dark)"><img src="../explorer-shots/catalogue-light.png" alt="The gridflow explorer catalogue: a petrol band naming the eight sources and gridflow gold, then columns for Electricity, Gas and Weather, with Elexon BMRS first under Electricity." width="1200" height="1233" style="width: 1200px; height: 1233.3px; left: -100px; top: -278.3px"></picture><span class="ring" data-t="ring-cat" aria-hidden="true" style="left: 55px; top: 122.5px; width: 105px; height: 26.7px"></span></div></div></figure><figure class="step s2" data-t="step-elx"><figcaption class="scap" data-t="cap-elx"><span class="jn" aria-hidden="true">2</span><h3>Elexon BMRS</h3><p>One click on Elexon BMRS: its datasets, how often gridflow fetches each, and the screens that read them.</p><p class="open"><a class="lt" href="../explorer-shots/source-elexon-light.png">See the whole screen</a><a class="dk" href="../explorer-shots/source-elexon-dark.png">See the whole screen</a></p></figcaption><div class="win" data-t="win-elx" style="width: 355px"><div class="wbar"><span class="wtab">Elexon BMRS</span><span class="wname">gridflow explorer</span></div><div class="wbody" style="height: 300px"><picture><source srcset="../explorer-shots/source-elexon-dark.png" media="(prefers-color-scheme: dark)"><img src="../explorer-shots/source-elexon-light.png" alt="The Elexon BMRS page in gridflow explorer: its time series in groups, how often gridflow fetches each, and the Explorer screens that read them, Market index price among them." width="1065" height="1036" style="width: 1065px; height: 1036.2px; left: -88.8px; top: -118.3px"></picture><span class="ring" data-t="ring-elx" aria-hidden="true" style="left: 5.9px; top: 250px; width: 352px; height: 42.9px"></span></div></div></figure><figure class="step s3" data-t="step-mip"><figcaption class="scap" data-t="cap-mip"><span class="jn" aria-hidden="true">3</span><h3>Market index price</h3><p>From the Elexon page, Market index price: each half-hour’s price over seven days, its extremes labelled and the runs below zero banded.</p><p class="open"><a class="lt" href="../explorer-shots/market-index-price-light.png">See the whole screen</a><a class="dk" href="../explorer-shots/market-index-price-dark.png">See the whole screen</a></p></figcaption><div class="win" data-t="win-mip" style="width: 355px"><div class="wbar"><span class="wtab">Market index price</span><span class="wname">gridflow explorer</span></div><div class="wbody" style="height: 269px"><picture><source srcset="../explorer-shots/market-index-price-dark.png" media="(prefers-color-scheme: dark)"><img src="../explorer-shots/market-index-price-light.png" alt="The Market index price page in gridflow explorer: the price per half-hour from 16 to 22 September 2026 in pounds per MWh, highest 207.07 on Mon 21 at 18:00, lowest minus 19.03 on Sun 20 at 16:00, the runs below zero banded, and a key of the latest half-hour and the window's range beside it." width="957" height="931" style="width: 957.3px; height: 931.4px; left: -380.3px; top: -261.9px"></picture></div></div></figure></section><section class="built" data-section="built" aria-labelledby="h-built"><h2 id="h-built" data-t="bh">How it’s built</h2><ul class="does"><li data-t="i0"><p>Draws every dataset as charts and tables, in light and dark: <span class="tech">React and TypeScript</span>.</p></li><li data-t="i1"><p>Serves each dataset’s rows to the page: <span class="tech">a Python API built with FastAPI</span>.</p></li><li data-t="i2"><p>Reads gridflow’s silver and gold tables, <span class="nw">read-only</span>: <span class="tech">DuckDB, through gridflow’s own client</span>.</p></li></ul><div class="bspace" data-t="bspace" style="height: 56px"></div></section><section class="rest" data-section="links" data-t="rest" aria-labelledby="h-rest"><h2 id="h-rest">The rest of gridflow</h2><div class="re"><h3><a href="architecture.html">Architecture</a></h3><p>Raw API responses land in bronze, cleaned and typed tables settle in silver, and cross-source joins and derived columns sit in gold.</p></div><div class="re"><h3><a href="models.html">Models</a></h3><p>gridflow-models is a separate Python library that reads gridflow’s silver tables.</p></div></section></div><svg class="trail" width="390" height="2934" viewBox="0 0 390 2934" aria-hidden="true"></svg></div><div class="deep" data-section="foot"><svg class="gran" width="100%" height="100%" aria-hidden="true"><defs><pattern id="p-gran-d" width="46" height="40" patternUnits="userSpaceOnUse"><path d="M8 8 h8 M12 4 v8 M30 26 h8 M34 22 v8 M20 34 h6 M23 31 v6 M40 6 h5 M42.5 3.5 v5" stroke="#3E8C97" stroke-width="1.1"></path></pattern></defs><rect width="100%" height="100%" fill="url(#p-gran-d)" opacity=".5"></rect></svg><svg class="redge" width="390" height="44" viewBox="0 0 390 44" aria-hidden="true"><defs><pattern id="p-stip" width="9" height="9" patternUnits="userSpaceOnUse"><circle cx="2" cy="3" r="1" fill="#8A6F1E"></circle><circle cx="6.5" cy="7.5" r=".8" fill="#8A6F1E"></circle></pattern>
+<pattern id="p-diag" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M0 8 L8 0" stroke="#5E6E6B" stroke-width=".8"></path></pattern>
+<pattern id="p-brick" width="24" height="12" patternUnits="userSpaceOnUse"><path d="M0 11.5 H24 M12 0 V6 M0 6 H24 M0 6 V12" stroke="#7C5530" stroke-width=".8" fill="none"></path></pattern>
+<pattern id="p-soil" width="23" height="17" patternUnits="userSpaceOnUse"><circle cx="4" cy="5" r=".9" fill="#A39A6A"></circle><circle cx="15" cy="12" r="1.1" fill="#A39A6A"></circle><path d="M17 3 h3" stroke="#A39A6A" stroke-width=".9"></path></pattern>
+<pattern id="p-granite" width="46" height="40" patternUnits="userSpaceOnUse"><path d="M8 8 h8 M12 4 v8 M30 26 h8 M34 22 v8 M20 34 h6 M23 31 v6 M40 6 h5 M42.5 3.5 v5" stroke="#3E8C97" stroke-width="1.1"></path></pattern></defs><path d="M-40 30.1 C-36.7 30.3 -26.7 30.5 -20 31.3 C-13.3 32.1 -6.7 33.9 0 35 C6.7 36.1 13.3 37.6 20 37.8 C26.7 38 33.3 37.5 40 36.3 C46.7 35.2 53.3 32.7 60 30.9 C66.7 29.1 73.3 26.6 80 25.3 C86.7 24.1 93.3 23.4 100 23.4 C106.7 23.4 113.3 24.6 120 25.4 C126.7 26.1 133.3 27.4 140 27.7 C146.7 28 153.3 27.9 160 27.2 C166.7 26.6 173.3 24.9 180 23.9 C186.7 23 193.3 21.6 200 21.4 C206.7 21.2 213.3 21.7 220 22.7 C226.7 23.7 233.3 26 240 27.4 C246.7 28.9 253.3 30.9 260 31.6 C266.7 32.3 273.3 32.3 280 31.6 C286.7 30.9 293.3 29 300 27.6 C306.7 26.1 313.3 24 320 23 C326.7 21.9 333.3 21.4 340 21.3 C346.7 21.1 353.3 22 360 22.2 C366.7 22.4 373.3 22.9 380 22.3 C386.7 21.7 393.3 20.3 400 18.6 C406.7 16.9 416.7 13 420 11.9 L430 -4 L-40 -4 Z" fill="#E9DDAF"></path><path d="M-40 30.1 C-36.7 30.3 -26.7 30.5 -20 31.3 C-13.3 32.1 -6.7 33.9 0 35 C6.7 36.1 13.3 37.6 20 37.8 C26.7 38 33.3 37.5 40 36.3 C46.7 35.2 53.3 32.7 60 30.9 C66.7 29.1 73.3 26.6 80 25.3 C86.7 24.1 93.3 23.4 100 23.4 C106.7 23.4 113.3 24.6 120 25.4 C126.7 26.1 133.3 27.4 140 27.7 C146.7 28 153.3 27.9 160 27.2 C166.7 26.6 173.3 24.9 180 23.9 C186.7 23 193.3 21.6 200 21.4 C206.7 21.2 213.3 21.7 220 22.7 C226.7 23.7 233.3 26 240 27.4 C246.7 28.9 253.3 30.9 260 31.6 C266.7 32.3 273.3 32.3 280 31.6 C286.7 30.9 293.3 29 300 27.6 C306.7 26.1 313.3 24 320 23 C326.7 21.9 333.3 21.4 340 21.3 C346.7 21.1 353.3 22 360 22.2 C366.7 22.4 373.3 22.9 380 22.3 C386.7 21.7 393.3 20.3 400 18.6 C406.7 16.9 416.7 13 420 11.9 L430 -4 L-40 -4 Z" fill="url(#p-stip)" opacity=".26"></path><path d="M-40 30.1 C-36.7 30.3 -26.7 30.5 -20 31.3 C-13.3 32.1 -6.7 33.9 0 35 C6.7 36.1 13.3 37.6 20 37.8 C26.7 38 33.3 37.5 40 36.3 C46.7 35.2 53.3 32.7 60 30.9 C66.7 29.1 73.3 26.6 80 25.3 C86.7 24.1 93.3 23.4 100 23.4 C106.7 23.4 113.3 24.6 120 25.4 C126.7 26.1 133.3 27.4 140 27.7 C146.7 28 153.3 27.9 160 27.2 C166.7 26.6 173.3 24.9 180 23.9 C186.7 23 193.3 21.6 200 21.4 C206.7 21.2 213.3 21.7 220 22.7 C226.7 23.7 233.3 26 240 27.4 C246.7 28.9 253.3 30.9 260 31.6 C266.7 32.3 273.3 32.3 280 31.6 C286.7 30.9 293.3 29 300 27.6 C306.7 26.1 313.3 24 320 23 C326.7 21.9 333.3 21.4 340 21.3 C346.7 21.1 353.3 22 360 22.2 C366.7 22.4 373.3 22.9 380 22.3 C386.7 21.7 393.3 20.3 400 18.6 C406.7 16.9 416.7 13 420 11.9" stroke="#1C2B22" stroke-width="2" fill="none" stroke-linejoin="round"></path></svg><footer class="st st-deep"><div class="foot"><a class="brand" href="index.html">gridflow</a><ul><li><a href="data-sources.html">Data sources</a></li><li><a href="architecture.html">Architecture</a></li><li><a href="models.html">Models</a></li><li><a href="explorer.html">Explorer</a></li><li><a href="index.html#about">About</a></li><li><a href="https://github.com/EBentham/gridflow">GitHub</a></li></ul></div></footer></div>
+</main>
+</div>
+
+</body>
+</html>

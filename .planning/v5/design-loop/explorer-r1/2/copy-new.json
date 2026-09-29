@@ -1,0 +1,22 @@
+[
+ "A React and TypeScript front end over a Python backend that reads gridflow through its own client.",
+ "It is not hosted, so it is shown here in screenshots from its own screenshot tool, in light and dark.",
+ "Source on GitHub:",
+ "A React front end over gridflow’s data",
+ "browser (React)",
+ "DuckDB over silver and gold",
+ "Drawing of a request: the browser running the React app calls FastAPI, FastAPI reads through GridflowClient, and GridflowClient reads DuckDB over gridflow's silver and gold tables.",
+ "From the catalogue to a chart in two clicks",
+ "The app opens on the catalogue: the eight sources and gridflow gold, grouped Electricity, Gas and Weather.",
+ "See the whole screen",
+ "One click on Elexon BMRS: its datasets, how often gridflow fetches each, and the screens that read them.",
+ "From the Elexon page, Market index price: each half-hour’s price over seven days, its extremes labelled and the runs below zero banded.",
+ "Draws every dataset as charts and tables, in light and dark",
+ "React and TypeScript",
+ "Serves each dataset’s rows to the page",
+ "a Python API built with FastAPI",
+ "Reads gridflow’s silver and gold tables, read-only",
+ "DuckDB, through gridflow’s own client",
+ "How it’s built",
+ "The rest of gridflow"
+]
