@@ -25,7 +25,7 @@
 | cross_border_flows | APPROVED (review 2), line-cite nit applied by the seat | aaad21b6d79fe8b11 | abd692feda2530f4a | done |
 | commercial_schedules | written (into GB from FR, BE, NL, IE-SEM, hourly, 14 to 20 Sep); checker running | a31494e4d83ddddc5 | a511e8538be41f2c9 | verdict |
 | net_positions | written (DE-LU day-ahead export/import bands, 14 to 20 Sep; the note had the sign wrong); checker running | affea4b8af88a3d6b | a90d8f640060a2b41 | verdict |
-| net_transfer_capacity | written (day-ahead NTC into GB from FR, IE-SEM, BE, NL, 8 to 21 Sep); checker running | af6a9dcd642a89a55 | (ntc-checker) | verdict |
+| net_transfer_capacity | written (day-ahead NTC into GB from FR, IE-SEM, BE, NL, 8 to 21 Sep); checker running | af6a9dcd642a89a55 | a57d6b2c71914570c | verdict |
 | auction_revenue | writer running | a745ee86e95b1e284 | — | checker |
 | capacity-allocated-nominated (family, lead total_capacity_allocated) | writer running | aa5201e596dbf26ce | — | checker |
 | dc_link_intraday_transfer_limits | writer running (thin: 24 rows, 1 to 5 Aug) | aafc74fa32a44daac | — | checker |
@@ -45,7 +45,7 @@
 
 **Remediation list (Bobbo 2026-09-29):** log each gridflow or data defect as it is found, in gridflow `.planning/BACKLOG.md`
 item 13 and in the vault page `10-projects/gridflow/specs/remediation-from-site-batches.md` (on the branch for PR quant-vault#55).
-Logged so far: 13a to 13h.
+Logged so far: 13a to 13i.
 
 - Ruling #39, amended by #40: EIC codes in a note's front matter use `-` escapes (the vault scripts split the note on `---`).
   The build now rejects a literal one: guard in `page_fields.parse_page_fields`, tests in `tests/test_front_matter_fence.py`,
