@@ -36,7 +36,7 @@
 | net_positions | APPROVED (4 nits; sign correction confirmed) | affea4b8af88a3d6b | a90d8f640060a2b41 | done |
 | net_transfer_capacity | APPROVED (review 2); a dead domain link in the note body is left for the seat (it is not on the page) | af6a9dcd642a89a55 | a57d6b2c71914570c | done |
 | auction_revenue | APPROVED (review 2); nit: the A03 citation says §4.3 but should be §4 | a745ee86e95b1e284 | a0f2a1125adccad7d | done |
-| capacity-allocated-nominated (family, lead total_capacity_allocated) | written (allocated into GB from NL and BE, 14 to 21 Sep; ships with the A07-only loss stated); REVISE (1 major: say GB sends A01, A06, A07 and silver keeps A07; scope the exceeds claim to A07; 7 nits). Writer resumed at 88% | aa5201e596dbf26ce | a455406fcf3b6a9f0 | re-check |
+| capacity-allocated-nominated (family, lead total_capacity_allocated) | written (allocated into GB from NL and BE, 14 to 21 Sep; ships with the A07-only loss stated); APPROVED on re-check (all 8 findings fixed; review-2) | aa5201e596dbf26ce | a455406fcf3b6a9f0 | done |
 | dc_link_intraday_transfer_limits | APPROVED: the checker said REVISE, not hold, with one major (summary implied all 8 pairs are DC). The seat fixed it within the 22-word budget, then mirrored and rebuilt. 3 nits left | aafc74fa32a44daac | a8e78e2d10063228c | done |
 | group 2 rest: dc_link_intraday_transfer_limits | queued | — | — | writers |
 | current_balancing_state | HELD blank (ruling #41): silver has no zone, no sign and wrong times (13l). The note body was corrected but is unchecked | aff7fcf8159bb3639 | — | after the gridflow fix: page block, then checker |
