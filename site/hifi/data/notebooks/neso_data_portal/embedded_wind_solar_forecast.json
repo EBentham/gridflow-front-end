@@ -1,0 +1,135 @@
+{
+ "dataset": "neso_data_portal/embedded_wind_solar_forecast",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "a24c34c44c33e6b16a21445cd91cb79fa286a7621e764a45dd78ab0df6c83386",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.neso_data_portal.query(\"embedded_wind_solar_forecast\", \"2026-08-20\", \"2026-09-02\")\ndf = df.sort_values([\"settlement_date\", \"settlement_period\"], ignore_index=True)\ndf[\"issue_time\"] = df[\"issue_time\"].dt.tz_convert(\"UTC\")",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df[[\"settlement_date\", \"settlement_period\", \"issue_time\", \"embedded_solar_forecast\", \"embedded_wind_forecast\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "settlement_date",
+      "settlement_period",
+      "issue_time",
+      "embedded_solar_forecast",
+      "embedded_wind_forecast"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2026-08-20",
+       "45",
+       "2026-08-20 21:25:00+00:00",
+       "0.0",
+       "857.0"
+      ],
+      [
+       "2026-08-20",
+       "46",
+       "2026-08-20 21:25:00+00:00",
+       "0.0",
+       "847.0"
+      ],
+      [
+       "2026-08-20",
+       "47",
+       "2026-08-20 21:25:00+00:00",
+       "0.0",
+       "846.0"
+      ],
+      [
+       "2026-08-20",
+       "48",
+       "2026-08-20 21:25:00+00:00",
+       "0.0",
+       "850.0"
+      ],
+      [
+       "2026-08-21",
+       "1",
+       "2026-08-20 21:25:00+00:00",
+       "0.0",
+       "862.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "df.plot(y=[\"embedded_solar_forecast\", \"embedded_wind_forecast\"], ylabel=\"MW\",\n        xlabel=\"settlement periods from the first in the issue\",\n        color=[\"#AFC64E\", \"#155A6E\"], figsize=(8, 3.5));",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "embedded_wind_solar_forecast-5.png",
+     "width": 716,
+     "height": 337
+    }
+   ]
+  }
+ ]
+}
