@@ -55,9 +55,9 @@ page:
   locations:
     title: Where the weather is taken
     caption: >-
-      The 12 points gridflow requests at GB wind farms, and the archive grid point answering each.
-      Triton Knoll's is 17.7 km away on the Lincolnshire coast, so its statistics describe that coast,
-      not the farm. Charted sites keep their colours.
+      The 12 points gridflow requests for wind farms, each with the grid point answering it.
+      Triton Knoll's point lies 28 km west of the farm, answered on the coast, so its statistics describe
+      the coast. Charted sites keep their colours.
   raw_feed:
     note: >-
       One request per location; bronze files each location's response under the window's first
