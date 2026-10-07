@@ -61,3 +61,4 @@ Earlier milestones keep their decisions phase-local (`phases/`, `docs/adr/`).
 | 53 | 2026-10-07T02:42Z | 26 | PROXY-SOURCED | ENTSOG cmp held blank (class 3): silver keeps 0 of 54 auction premiums a day, 25 of 291 unavailable-capacity and 2 of 43 requests (1 Aug only); request stamps all null. No notes edited. Ratify at close. |
 | 54 | 2026-10-07T10:03Z | 26 | OWNER | Last v5 pages shipped after Bobbo's review: PR #57 (c2c6027), 17 pages plus weather map, capacity and cmp held; vault PR #59 merged; deploy live. Post-compaction spend ~1.7M subagent tokens. |
 | 55 | 2026-10-07T10:39Z | 26 | OWNER | v5 closed at Bobbo's go-ahead: farm names verified, Triton Knoll caption fixed (PR #58), vault PRs 60-61 merged; tag v5-complete on aa723a7; close note MILESTONE-COMPLETE-v5.md. |
+| 56 | 2026-10-07T10:45Z | 26 | OWNER | Bobbo ratified every v5 proxy-sourced ruling (5, 6, 7, 9, 10, 11, 27, 36-47, 52, 53): 'I ratify the v5 proxy-sourced rulings'. |

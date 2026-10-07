@@ -41,7 +41,7 @@ The `v5` tag marks the cutover (`fffc826`, PR #46). It was pushed before the dat
 
 ## For Bobbo at close
 
-- **Ratify the proxy-sourced rulings** in `.planning/RULINGS.md`. Each is a seat or agent call made under
+- **RATIFIED 2026-10-07 (ruling 56).** ~~Ratify the proxy-sourced rulings~~ in `.planning/RULINGS.md`. Each is a seat or agent call made under
   autonomous mode: 5, 6, 7, 9, 10, 11, 27, 36 to 47, 52, 53. Paste: "I ratify the v5 proxy-sourced rulings listed in
   MILESTONE-COMPLETE-v5.md", or name any to revisit.
 
