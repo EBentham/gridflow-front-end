@@ -1,0 +1,161 @@
+{
+ "dataset": "entsog/firm_available",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "072d47623a7db083343c0d6be5339b79ba9485444ce68c13c6f2fb7d4881d3af",
+ "kernel": "gridflow_models",
+ "source": "entsog",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.entsog",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.entsog.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "avail = data.entsog.query(\"firm_available\", \"2026-09-13\", \"2026-09-21\")\nbooked = data.entsog.query(\"firm_booked\", \"2026-09-13\", \"2026-09-21\")",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "key = [\"timestamp_utc\", \"operator_key\", \"point_key\", \"direction_key\"]\nmoffat = (avail[key + [\"value\"]].rename(columns={\"value\": \"available\"})\n          .merge(booked[key + [\"value\"]].rename(columns={\"value\": \"booked\"}), on=key))\nmoffat = moffat[(moffat.point_key == \"ITP-00495\") & (moffat.direction_key == \"entry\")]\nmoffat = moffat.sort_values(\"timestamp_utc\").assign(\n    timestamp_utc=lambda d: d.timestamp_utc.dt.tz_convert(\"UTC\"),\n    available_plus_booked=lambda d: d.available + d.booked)\nmoffat[[\"timestamp_utc\", \"available\", \"booked\", \"available_plus_booked\"]]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "available",
+      "booked",
+      "available_plus_booked"
+     ],
+     "index": [
+      "3",
+      "7",
+      "11",
+      "15",
+      "19",
+      "23",
+      "27",
+      "31",
+      "35"
+     ],
+     "rows": [
+      [
+       "2026-09-13 04:00:00+00:00",
+       "145654424.0",
+       "287713576.0",
+       "433368000.0"
+      ],
+      [
+       "2026-09-14 04:00:00+00:00",
+       "162488829.0",
+       "270879171.0",
+       "433368000.0"
+      ],
+      [
+       "2026-09-15 04:00:00+00:00",
+       "170379342.0",
+       "262988658.0",
+       "433368000.0"
+      ],
+      [
+       "2026-09-16 04:00:00+00:00",
+       "170371375.0",
+       "262996625.0",
+       "433368000.0"
+      ],
+      [
+       "2026-09-17 04:00:00+00:00",
+       "170379481.0",
+       "262988519.0",
+       "433368000.0"
+      ],
+      [
+       "2026-09-18 04:00:00+00:00",
+       "170299881.0",
+       "263068119.0",
+       "433368000.0"
+      ],
+      [
+       "2026-09-19 04:00:00+00:00",
+       "170746545.0",
+       "262621455.0",
+       "433368000.0"
+      ],
+      [
+       "2026-09-20 04:00:00+00:00",
+       "170746023.0",
+       "262621977.0",
+       "433368000.0"
+      ],
+      [
+       "2026-09-21 04:00:00+00:00",
+       "163891514.0",
+       "269476486.0",
+       "433368000.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "moffat.plot(x=\"timestamp_utc\", y=[\"available\", \"booked\"], color=[\"#155A6E\", \"#C77E3C\"],\n            ylabel=\"kWh/d\", figsize=(8, 3.5))",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: xlabel='timestamp_utc', ylabel='kWh/d'>"
+    },
+    {
+     "kind": "image",
+     "src": "firm_available-5.png",
+     "width": 703,
+     "height": 358
+    }
+   ]
+  }
+ ]
+}
