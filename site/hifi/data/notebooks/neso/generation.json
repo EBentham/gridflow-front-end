@@ -1,0 +1,157 @@
+{
+ "dataset": "neso/generation",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "575de34abb45eab479f0938a9d3c70d83b9633868d67975f46d27c1bf39c4310",
+ "kernel": "gridflow_models",
+ "source": "neso",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "gen = data.neso.query(\"generation\", \"2026-09-14\", \"2026-09-20\")\ngen[\"timestamp_utc\"] = gen.timestamp_utc.dt.tz_convert(\"UTC\")\ngen = gen.sort_values([\"timestamp_utc\", \"fuel\"], ignore_index=True)",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "gen[[\"timestamp_utc\", \"fuel\", \"generation_percentage\"]].head(9)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "fuel",
+      "generation_percentage"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8"
+     ],
+     "rows": [
+      [
+       "2026-09-14 00:00:00+00:00",
+       "biomass",
+       "10.6"
+      ],
+      [
+       "2026-09-14 00:00:00+00:00",
+       "coal",
+       "0.0"
+      ],
+      [
+       "2026-09-14 00:00:00+00:00",
+       "gas",
+       "44.8"
+      ],
+      [
+       "2026-09-14 00:00:00+00:00",
+       "hydro",
+       "1.8"
+      ],
+      [
+       "2026-09-14 00:00:00+00:00",
+       "imports",
+       "8.1"
+      ],
+      [
+       "2026-09-14 00:00:00+00:00",
+       "nuclear",
+       "15.1"
+      ],
+      [
+       "2026-09-14 00:00:00+00:00",
+       "other",
+       "1.0"
+      ],
+      [
+       "2026-09-14 00:00:00+00:00",
+       "solar",
+       "0.0"
+      ],
+      [
+       "2026-09-14 00:00:00+00:00",
+       "wind",
+       "18.6"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "mix = gen.pivot(index=\"timestamp_utc\", columns=\"fuel\", values=\"generation_percentage\")\nmix.sum(axis=1).describe().round(1)",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "count    336.0\nmean     100.0\nstd        0.1\nmin       99.8\n25%      100.0\n50%      100.0\n75%      100.0\nmax      100.2\ndtype: float64"
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "source": "colours = {\"nuclear\": \"#155A6E\", \"biomass\": \"#A5713C\", \"hydro\": \"#7FA7B0\",\n           \"coal\": \"#333333\", \"other\": \"#A39A6A\", \"gas\": \"#C77E3C\",\n           \"imports\": \"#66793B\", \"wind\": \"#3E8C97\", \"solar\": \"#AFC64E\"}\nax = mix[list(colours)].plot.area(color=colours, ylabel=\"percent\", linewidth=0,\n                                  figsize=(8, 3.5))\nax.legend(loc=\"center left\", bbox_to_anchor=(1, 0.5), fontsize=8);",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "generation-6.png",
+     "width": 786,
+     "height": 369
+    }
+   ]
+  }
+ ]
+}

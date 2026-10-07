@@ -99,8 +99,10 @@ None implemented.
 
 - Official docs use UTC timestamps ending in `Z`; keep joins in UTC.
 - The connector sends no query parameters; all documented inputs are path parameters.
-- Actual carbon intensity values can be null or absent, especially before post-period estimates are available.
-- For `intensity_period`, GB clock-change days can have 46 or 50 settlement periods in implementation even though official docs describe period 1-48.
+- (Corrected 2026-10-06, v5 page author.) The two bullets that stood here described the intensity routes (null `actual`, `intensity_period` clock-change counts) and do not apply: this route has no intensity fields (`silver/neso/carbon_intensity.py:559-586`).
+- **Filed under the ingest start date, not the row's date.** `/generation` takes no inputs (`requires_window` is false, `connectors/neso/endpoints.py:135-140`), so one call per run; its bronze is filed under the ingest window's start date (`data_date=window_start.date()`, `connectors/neso/carbon_intensity.py:79`) and silver keeps that date. Measured 2026-10-06: the one capture held, fetched 2026-09-27T00:32Z, is filed under 2026-09-26 (`generation_current_20260926.parquet`) and holds the half-hour `from` 2026-09-27T00:00Z, nine fuels summing to 99.9. Query by `timestamp_utc`, not by file date.
+- The silver sample above predates the bronze sample and was copied from `generation`; the shape is right, the values are not from `/generation`.
+- Same stamp convention and fuel composition as `generation` (see that note's Known issues); one row per fuel cannot be lag-tested on its own.
 
 ---
 

@@ -1,0 +1,20 @@
+{
+  "_about": "Weather sites for the map on this dataset's page: coordinates from gridflow's endpoints.py, answered grid points and statistics from silver. Written by gridflow-distil --locations; gridflow-build reads it.",
+  "dataset": "openmeteo/historical_demand",
+  "generated_by": "gridflow-distil --locations",
+  "kind": "demand",
+  "locations_from": "gridflow src/gridflow/connectors/openmeteo/endpoints.py, DEMAND_LOCATIONS",
+  "endpoints_sha256": "3974af2ab525919ec7ed42d9c06377edcae3d1df47373d8a878e5add18ff7bb4",
+  "silver": "open_meteo/historical_demand",
+  "window": {"end": "2025-12-31", "hours": 35064, "start": "2022-01-01"},
+  "hdd_base_c": 15.5,
+  "sites": [
+    {"answered": {"lat": 51.493847, "lon": -0.163025}, "configured": {"lat": "51.5074", "lon": "-0.1278"}, "group": null, "name": "london", "offset_km": 2.9, "stats": {"coldest_at": "2022-12-16T22:00Z", "coldest_c": -5.5, "hdd_per_year": 1717.9, "mean_temp_c": 11.954}},
+    {"answered": {"lat": 52.47803, "lon": -1.840149}, "configured": {"lat": "52.4862", "lon": "-1.8904"}, "group": null, "name": "birmingham", "offset_km": 3.5, "stats": {"coldest_at": "2024-01-17T23:00Z", "coldest_c": -5.2, "hdd_per_year": 2035.8, "mean_temp_c": 10.663}},
+    {"answered": {"lat": 53.46221, "lon": -2.232819}, "configured": {"lat": "53.4808", "lon": "-2.2426"}, "group": null, "name": "manchester", "offset_km": 2.2, "stats": {"coldest_at": "2025-01-08T23:00Z", "coldest_c": -7.8, "hdd_per_year": 1917.9, "mean_temp_c": 10.921}},
+    {"answered": {"lat": 53.813705, "lon": -1.560699}, "configured": {"lat": "53.8008", "lon": "-1.5491"}, "group": null, "name": "leeds", "offset_km": 1.6, "stats": {"coldest_at": "2023-03-11T04:00Z", "coldest_c": -7.0, "hdd_per_year": 2085.6, "mean_temp_c": 10.367}},
+    {"answered": {"lat": 55.85237, "lon": -4.224487}, "configured": {"lat": "55.8642", "lon": "-4.2518"}, "group": null, "name": "glasgow", "offset_km": 2.2, "stats": {"coldest_at": "2022-12-14T09:00Z", "coldest_c": -7.3, "hdd_per_year": 2265.1, "mean_temp_c": 9.613}},
+    {"answered": {"lat": 51.493847, "lon": -3.260864}, "configured": {"lat": "51.4816", "lon": "-3.1791"}, "group": null, "name": "cardiff", "offset_km": 5.8, "stats": {"coldest_at": "2022-12-16T07:00Z", "coldest_c": -5.5, "hdd_per_year": 1726.8, "mean_temp_c": 11.538}},
+    {"answered": {"lat": 54.586994, "lon": -5.846436}, "configured": {"lat": "54.5973", "lon": "-5.9301"}, "group": null, "name": "belfast", "offset_km": 5.5, "stats": {"coldest_at": "2023-03-10T22:00Z", "coldest_c": -3.8, "hdd_per_year": 2043.0, "mean_temp_c": 10.203}}
+  ]
+}

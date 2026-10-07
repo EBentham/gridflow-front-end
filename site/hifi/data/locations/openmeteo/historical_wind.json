@@ -1,0 +1,24 @@
+{
+  "_about": "Weather sites for the map on this dataset's page: coordinates from gridflow's endpoints.py, answered grid points and statistics from silver. Written by gridflow-distil --locations; gridflow-build reads it.",
+  "dataset": "openmeteo/historical_wind",
+  "generated_by": "gridflow-distil --locations",
+  "kind": "wind",
+  "locations_from": "gridflow src/gridflow/connectors/openmeteo/endpoints.py, WIND_LOCATIONS",
+  "endpoints_sha256": "3974af2ab525919ec7ed42d9c06377edcae3d1df47373d8a878e5add18ff7bb4",
+  "silver": "open_meteo/historical_wind",
+  "window": {"end": "2025-12-31", "hours": 35064, "start": "2022-01-01"},
+  "sites": [
+    {"answered": {"lat": 54.938488, "lon": 1.968191}, "configured": {"lat": "54.95", "lon": "1.95"}, "group": "Offshore, southern North Sea", "name": "dogger_bank", "offset_km": 1.7, "stats": {"mean_100m_mps": 9.849, "p90_100m_mps": 16.028}},
+    {"answered": {"lat": 53.884007, "lon": 1.737452}, "configured": {"lat": "53.88", "lon": "1.79"}, "group": "Offshore, southern North Sea", "name": "hornsea", "offset_km": 3.5, "stats": {"mean_100m_mps": 9.565, "p90_100m_mps": 15.5}},
+    {"answered": {"lat": 52.47803, "lon": 2.509294}, "configured": {"lat": "52.50", "lon": "2.50"}, "group": "Offshore, southern North Sea", "name": "east_anglia", "offset_km": 2.5, "stats": {"mean_100m_mps": 9.495, "p90_100m_mps": 15.408}},
+    {"answered": {"lat": 53.391914, "lon": 0.171429}, "configured": {"lat": "53.45", "lon": "0.42"}, "group": "Offshore, southern North Sea", "name": "triton_knoll", "offset_km": 17.7, "stats": {"mean_100m_mps": 7.875, "p90_100m_mps": 12.361}},
+    {"answered": {"lat": 54.024605, "lon": -3.488373}, "configured": {"lat": "54.04", "lon": "-3.52"}, "group": "Offshore, Irish Sea", "name": "walney", "offset_km": 2.7, "stats": {"mean_100m_mps": 9.296, "p90_100m_mps": 15.417}},
+    {"answered": {"lat": 53.46221, "lon": -3.606873}, "configured": {"lat": "53.46", "lon": "-3.59"}, "group": "Offshore, Irish Sea", "name": "gwynt_y_mor", "offset_km": 1.1, "stats": {"mean_100m_mps": 8.594, "p90_100m_mps": 14.528}},
+    {"answered": {"lat": 58.24253, "lon": -2.96051}, "configured": {"lat": "58.26", "lon": "-2.89"}, "group": "Offshore, Moray / Forth", "name": "beatrice", "offset_km": 4.6, "stats": {"mean_100m_mps": 9.341, "p90_100m_mps": 15.139}},
+    {"answered": {"lat": 56.625656, "lon": -1.878906}, "configured": {"lat": "56.59", "lon": "-1.93"}, "group": "Offshore, Moray / Forth", "name": "seagreen", "offset_km": 5.0, "stats": {"mean_100m_mps": 9.538, "p90_100m_mps": 15.25}},
+    {"answered": {"lat": 57.18805, "lon": -4.394897}, "configured": {"lat": "57.20", "lon": "-4.40"}, "group": "Onshore, Scotland", "name": "highland_central", "offset_km": 1.4, "stats": {"mean_100m_mps": 7.061, "p90_100m_mps": 11.944}},
+    {"answered": {"lat": 55.85237, "lon": -2.571411}, "configured": {"lat": "55.85", "lon": "-2.50"}, "group": "Onshore, Scotland", "name": "borders_crystalrig", "offset_km": 4.5, "stats": {"mean_100m_mps": 7.84, "p90_100m_mps": 12.631}},
+    {"answered": {"lat": 55.641476, "lon": -4.198791}, "configured": {"lat": "55.69", "lon": "-4.27"}, "group": "Onshore, Scotland", "name": "whitelee", "offset_km": 7.0, "stats": {"mean_100m_mps": 7.681, "p90_100m_mps": 12.389}},
+    {"answered": {"lat": 51.704742, "lon": -3.606567}, "configured": {"lat": "51.69", "lon": "-3.61"}, "group": "Onshore, Wales", "name": "pen_y_cymoedd", "offset_km": 1.7, "stats": {"mean_100m_mps": 6.894, "p90_100m_mps": 11.139}}
+  ]
+}

@@ -1,0 +1,129 @@
+{
+ "dataset": "neso_data_portal/daily_wind_availability",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "9701a8918c681e6d0f6b16013d02efdcf44ce985e64175bfb7bf7c24143b0cd0",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.neso_data_portal.query(\"daily_wind_availability\", \"2026-08-22\", \"2026-09-03\")\ndf[\"published_at\"] = df[\"published_at\"].dt.tz_convert(\"UTC\")",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df.sort_values([\"availability_date\", \"bmu_id\"])[[\"bmu_id\", \"availability_date\", \"availability_mw\", \"published_at\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "bmu_id",
+      "availability_date",
+      "availability_mw",
+      "published_at"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "ABRBO-1",
+       "2026-08-22",
+       "99.0",
+       "2026-08-20 21:20:07.510686+00:00"
+      ],
+      [
+       "ABRTW-1",
+       "2026-08-22",
+       "36.0",
+       "2026-08-20 21:20:07.510686+00:00"
+      ],
+      [
+       "ACHLW-1",
+       "2026-08-22",
+       "10.0",
+       "2026-08-20 21:20:07.510686+00:00"
+      ],
+      [
+       "ACHRW-1",
+       "2026-08-22",
+       "43.0",
+       "2026-08-20 21:20:07.510686+00:00"
+      ],
+      [
+       "ACHYW-1",
+       "2026-08-22",
+       "38.0",
+       "2026-08-20 21:20:07.510686+00:00"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "total = df[df.availability_mw >= 0].groupby(\"availability_date\")[\"availability_mw\"].sum()\nax = total.plot(ylabel=\"MW\", figsize=(8, 3.5), marker=\"o\", ylim=(0, 30000))",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "daily_wind_availability-5.png",
+     "width": 724,
+     "height": 375
+    }
+   ]
+  }
+ ]
+}

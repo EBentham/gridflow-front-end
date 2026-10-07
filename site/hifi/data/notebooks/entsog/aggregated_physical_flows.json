@@ -1,0 +1,165 @@
+{
+ "dataset": "entsog/aggregated_physical_flows",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "3088af77aff18dc2ed8734ef2827d1fc8849253fac088c5c13c0d9c36dc754d7",
+ "kernel": "gridflow_models",
+ "source": "entsog",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.entsog",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.entsog.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "agg = data.entsog.query(\"aggregated_physical_flows\", \"2026-09-13\", \"2026-09-21\")\npts = data.entsog.query(\"physical_flows\", \"2026-09-13\", \"2026-09-21\")\nagg[\"timestamp_utc\"] = agg.timestamp_utc.dt.tz_convert(\"UTC\")\npts[\"timestamp_utc\"] = pts.timestamp_utc.dt.tz_convert(\"UTC\")",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "wide = (agg.pivot(index=\"timestamp_utc\", columns=\"adjacent_systems_key\", values=\"value\")\n        .rename_axis(columns=None))\nwide",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "LNG Terminals",
+      "Production",
+      "Storage",
+      "timestamp_utc",
+      "",
+      "",
+      ""
+     ],
+     "index": [
+      "2026-09-13 04:00:00+00:00",
+      "2026-09-14 04:00:00+00:00",
+      "2026-09-15 04:00:00+00:00",
+      "2026-09-16 04:00:00+00:00",
+      "2026-09-17 04:00:00+00:00",
+      "2026-09-18 04:00:00+00:00",
+      "2026-09-19 04:00:00+00:00",
+      "2026-09-20 04:00:00+00:00",
+      "2026-09-21 04:00:00+00:00"
+     ],
+     "rows": [
+      [
+       "54248476.0",
+       "322977312.0",
+       "134058118.0"
+      ],
+      [
+       "63905474.0",
+       "356287010.0",
+       "72026868.0"
+      ],
+      [
+       "71911354.0",
+       "427221235.0",
+       "0.0"
+      ],
+      [
+       "71944652.0",
+       "442996575.0",
+       "23003243.0"
+      ],
+      [
+       "54259575.0",
+       "449602261.0",
+       "16008476.0"
+      ],
+      [
+       "54254024.0",
+       "452816220.0",
+       "0.0"
+      ],
+      [
+       "54248476.0",
+       "434975163.0",
+       "0.0"
+      ],
+      [
+       "54248476.0",
+       "433035977.0",
+       "0.0"
+      ],
+      [
+       "113764382.0",
+       "383537205.0",
+       "378788337.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "named = agg.assign(point_label=agg.points_names.str.split(\"|\")).explode(\"point_label\")\nng = pts[(pts.operator_key == \"UK-TSO-0001\") & (pts.direction_key == \"entry\")]\nsummed = (named.merge(ng[[\"timestamp_utc\", \"point_label\", \"flow_gwh_per_day\"]],\n                      on=[\"timestamp_utc\", \"point_label\"])\n          .groupby([\"adjacent_systems_key\", \"timestamp_utc\"]).flow_gwh_per_day.sum())\ngap = agg.set_index([\"adjacent_systems_key\", \"timestamp_utc\"]).value / 1e6 - summed\ngap.abs().groupby(level=0).max().round(6).rename(\"largest gap, GWh/d\")",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "adjacent_systems_key\nLNG Terminals    0.0\nProduction       0.0\nStorage          0.0\nName: largest gap, GWh/d, dtype: float64"
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "source": "wide[[\"Production\", \"Storage\", \"LNG Terminals\"]].plot(\n    ylabel=\"kWh/d\", color=[\"#155A6E\", \"#66793B\", \"#C77E3C\"], figsize=(8, 3.5))",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: xlabel='timestamp_utc', ylabel='kWh/d'>"
+    },
+    {
+     "kind": "image",
+     "src": "aggregated_physical_flows-6.png",
+     "width": 698,
+     "height": 358
+    }
+   ]
+  }
+ ]
+}

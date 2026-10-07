@@ -1,0 +1,19 @@
+{
+  "dataset": "neso_data_portal/daily_wind_availability",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "2e55c3bc5468e949108c345f5fd282f81a674affb8b07428e86d84313321d697",
+  "type": "line",
+  "unit": "MW",
+  "caption": "",
+  "value_column": "availability_mw",
+  "aggregation": "sum",
+  "window": {"end": "2026-09-03", "rule": "fixed", "start": "2026-08-22"},
+  "provenance": {"duplicates_dropped": 0, "files": 1, "null_values_dropped": 0, "rows_matched": 3575, "rows_read": 3589, "rows_used": 3575, "silver": "neso_data_portal/daily_wind_availability", "silver_first": "2026-08-22", "silver_last": "2026-09-03"},
+  "spec": {"aggregation": "sum", "dedup": {"on": ["bmu_id", "availability_date"], "order_by": "published_at"}, "filter": [{"column": "availability_mw", "op": "ge", "value": 0}], "silver": "neso_data_portal/daily_wind_availability", "time": "availability_date", "type": "line", "unit": "MW", "value": "availability_mw", "window": {"end": "2026-09-03", "start": "2026-08-22"}},
+  "x_kind": "time",
+  "x": ["2026-08-22", "2026-08-23", "2026-08-24", "2026-08-25", "2026-08-26", "2026-08-27", "2026-08-28", "2026-08-29", "2026-08-30", "2026-08-31", "2026-09-01", "2026-09-02", "2026-09-03"],
+  "series": [
+    {"key": "availability_mw", "values": [25744.0, 25968.0, 25751.0, 25786.0, 25598.0, 25665.0, 25381.0, 25381.0, 25381.0, 26215.0, 26474.0, 26474.0, 26474.0]}
+  ]
+}

@@ -1,0 +1,151 @@
+{
+ "dataset": "entsog/urgent_market_messages",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "703de6ad233cb316cebbe5cf9cba8ca3dc368e4fcb449af1c1bb5559876854ad",
+ "kernel": "gridflow_models",
+ "source": "entsog",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.entsog",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.entsog.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "from datetime import date\ndf = data.entsog.query(\"urgent_market_messages\", \"2000-01-01\", date.today())",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "msgs = df.sort_values(\"version_number\").drop_duplicates(\"thread_id\", keep=\"last\")\nmsgs[[\"thread_id\", \"version_number\", \"market_participant_name\", \"event_type\", \"event_start\", \"event_stop\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "thread_id",
+      "version_number",
+      "market_participant_name",
+      "event_type",
+      "event_start",
+      "event_stop"
+     ],
+     "index": [
+      "0",
+      "1",
+      "7",
+      "8",
+      "14"
+     ],
+     "rows": [
+      [
+       "0000000000000000000038576",
+       "001",
+       "Open Grid Europe",
+       "NaN",
+       "2021-10-01 05:00:00+01:00",
+       "2030-01-01 05:00:00+00:00"
+      ],
+      [
+       "0000000000000000000038749",
+       "001",
+       "Open Grid Europe",
+       "NaN",
+       "2021-10-01 05:00:00+01:00",
+       "2030-01-01 05:00:00+00:00"
+      ],
+      [
+       "23120110X1001A1001A39W005",
+       "001",
+       "Elering AS",
+       "Transmission system unavailability",
+       "2022-12-30 05:00:00+00:00",
+       "2029-12-31 05:00:00+00:00"
+      ],
+      [
+       "23120110X1001A1001A39W017",
+       "001",
+       "Elering AS",
+       "NaN",
+       "2022-09-23 05:00:00+01:00",
+       "2031-04-27 05:00:00+01:00"
+      ],
+      [
+       "24042921X000000001008P001",
+       "001",
+       "GRTgaz Deutschland",
+       "NaN",
+       "2024-05-01 05:00:00+01:00",
+       "2026-09-30 05:00:00+01:00"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "msgs[\"event_type\"].fillna(\"none (an Other message)\").value_counts()",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "event_type\nnone (an Other message)               48\nTransmission system unavailability    47\nOther unavailability                   5\nCompressor station unavailability      1\nName: count, dtype: int64"
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "source": "import matplotlib.pyplot as plt\n# status at the highest version sent; is_latest_version can be No throughout\noge = msgs[(msgs.market_participant_key == \"DE-TSO-0009\") & (msgs.message_type == \"Gas\")\n           & (msgs.event_status == \"Active\")].sort_values(\"event_start\", ascending=False)\nlabels = oge.affected_asset_name + \", from \" + oge.event_start.dt.strftime(\"%d %b %Y\")\nfig, ax = plt.subplots(figsize=(8, 4))\nax.hlines(labels, oge.event_start, oge.event_stop, lw=8, color=\"#155A6E\")\nax.set_xlabel(\"event window, UK time\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "urgent_market_messages-6.png",
+     "width": 1006,
+     "height": 375
+    }
+   ]
+  }
+ ]
+}

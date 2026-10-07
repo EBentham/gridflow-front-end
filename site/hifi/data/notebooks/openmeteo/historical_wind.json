@@ -1,0 +1,145 @@
+{
+ "dataset": "openmeteo/historical_wind",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "afd476c99cbedd1d7a6abf84e4a26050284c76765ad971c9bfbbf7fa1757a149",
+ "kernel": "gridflow_models",
+ "source": "open_meteo",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.open_meteo",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.open_meteo.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.open_meteo.query(\"historical_wind\", \"2025-09-29\", \"2025-10-05\")\ndf[\"timestamp_utc\"] = df[\"timestamp_utc\"].dt.tz_convert(\"UTC\")\ndf = df.sort_values([\"timestamp_utc\", \"location\"], ignore_index=True)",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df[[\"timestamp_utc\", \"location\", \"wind_speed_10m_mps\", \"wind_speed_100m_mps\", \"wind_gusts_10m_mps\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "location",
+      "wind_speed_10m_mps",
+      "wind_speed_100m_mps",
+      "wind_gusts_10m_mps"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2025-09-29 00:00:00+00:00",
+       "beatrice",
+       "0.305556",
+       "0.416667",
+       "1.388889"
+      ],
+      [
+       "2025-09-29 00:00:00+00:00",
+       "borders_crystalrig",
+       "1.694444",
+       "3.777778",
+       "2.888889"
+      ],
+      [
+       "2025-09-29 00:00:00+00:00",
+       "dogger_bank",
+       "5.666667",
+       "6.194444",
+       "7.388889"
+      ],
+      [
+       "2025-09-29 00:00:00+00:00",
+       "east_anglia",
+       "2.944444",
+       "2.944444",
+       "4.194444"
+      ],
+      [
+       "2025-09-29 00:00:00+00:00",
+       "gwynt_y_mor",
+       "2.611111",
+       "2.694444",
+       "4.194444"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "shear = df.wind_speed_100m_mps / df.wind_speed_10m_mps\nshear.groupby(df.location).median().round(2).sort_values()",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "location\neast_anglia           1.11\nhornsea               1.18\ndogger_bank           1.20\ngwynt_y_mor           1.21\nwalney                1.25\nbeatrice              1.26\nseagreen              1.27\nborders_crystalrig    1.59\ntriton_knoll          1.59\nhighland_central      1.59\nwhitelee              1.59\npen_y_cymoedd         1.77\ndtype: float64"
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "source": "sites = [\"beatrice\", \"walney\", \"hornsea\", \"whitelee\"]\nwide = df[df.location.isin(sites)].pivot(index=\"timestamp_utc\", columns=\"location\", values=\"wind_speed_100m_mps\")[sites]\nwide.plot(ylabel=\"wind speed at 100 m, m/s\", color=[\"#155A6E\", \"#3E8C97\", \"#66793B\", \"#C77E3C\"], figsize=(8, 3.5));",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "historical_wind-6.png",
+     "width": 690,
+     "height": 369
+    }
+   ]
+  }
+ ]
+}

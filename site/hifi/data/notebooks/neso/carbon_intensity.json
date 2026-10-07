@@ -1,0 +1,143 @@
+{
+ "dataset": "neso/carbon_intensity",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "f3f955e9803cf479e00269aabf46c2b9de003ed4324c93c1d8710dade2a4c521",
+ "kernel": "gridflow_models",
+ "source": "neso",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "ci = data.neso.query(\"carbon_intensity\", \"2026-09-14\", \"2026-09-20\")\nci[\"timestamp_utc\"] = ci.timestamp_utc.dt.tz_convert(\"UTC\")\nci = ci.sort_values(\"timestamp_utc\", ignore_index=True)",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "ci[[\"timestamp_utc\", \"forecast_gco2_kwh\", \"actual_gco2_kwh\", \"intensity_index\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "forecast_gco2_kwh",
+      "actual_gco2_kwh",
+      "intensity_index"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2026-09-14 00:00:00+00:00",
+       "198.0",
+       "194.0",
+       "high"
+      ],
+      [
+       "2026-09-14 00:30:00+00:00",
+       "190.0",
+       "189.0",
+       "high"
+      ],
+      [
+       "2026-09-14 01:00:00+00:00",
+       "200.0",
+       "185.0",
+       "high"
+      ],
+      [
+       "2026-09-14 01:30:00+00:00",
+       "195.0",
+       "189.0",
+       "high"
+      ],
+      [
+       "2026-09-14 02:00:00+00:00",
+       "188.0",
+       "183.0",
+       "high"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "err = ci.forecast_gco2_kwh - ci.actual_gco2_kwh\nerr.abs().describe().round(1)",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "count    336.0\nmean       9.6\nstd       11.8\nmin        0.0\n25%        3.0\n50%        6.0\n75%       12.0\nmax      108.0\ndtype: float64"
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "source": "ci.set_index(\"timestamp_utc\")[[\"forecast_gco2_kwh\", \"actual_gco2_kwh\"]].plot(\n    ylabel=\"gCO2/kWh\", color=[\"#C77E3C\", \"#155A6E\"], figsize=(8, 3.5))",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: xlabel='timestamp_utc', ylabel='gCO2/kWh'>"
+    },
+    {
+     "kind": "image",
+     "src": "carbon_intensity-6.png",
+     "width": 699,
+     "height": 369
+    }
+   ]
+  }
+ ]
+}

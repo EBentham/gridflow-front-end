@@ -10,7 +10,7 @@ layer_coverage: bronze, silver
 
 ## Overview
 
-All transmission connection points visible on the ENTSOG map.
+All transmission connection points visible on the ENTSOG map. CORRECTED 2026-10-07: ENTSOG's API manual (v2.1, section 2.2) says this endpoint returns the main points only, not sub points, and points to `/operatorPointDirections` for all points; operator-specific points such as `ITP-00495` (Moffat, GNI side) are absent here.
 
 This is a reference / inventory dataset — no time dimension, but
 inventory does change weekly when ENTSOG approves new operators or points.
@@ -107,11 +107,23 @@ curl --ssl-no-revoke -fsS \
 
 ## Silver layer
 
-**Path pattern**: `{data_root}/silver/entsog/connection_points.parquet` (single-file overwrite — `reference_dataset=True`)
+**Path pattern**: `{data_root}/silver/entsog/connection_points/connection_points.parquet` (CORRECTED 2026-10-07: `silver/base.py:834` gives each dataset its own folder; `generic.py:284` writes the file there) (single-file overwrite — `reference_dataset=True`)
 **Transformer class**: `gridflow.silver.entsog.generic.GenericEntsogJsonTransformer (subclass ConnectionPointsTransformer)`
 **Pydantic schema**: Generic — no Pydantic schema declared
-**Dedup key**: `(id)` if present, else inventory key (e.g. `point_key`, `operator_key`)
-**Point-in-time field**: `last_update_date_time` (records carry per-row update timestamps)
+**Dedup key** (CORRECTED 2026-10-07): vendor `id`, keep last (`silver/entsog/generic.py:193-199`); every record of this register carries one (the `dataSet` digit then the natural key). Without `id` the subset would be every column but `timestamp_utc`. Silver reads only the newest bronze capture (`generic.py:112-116,128-129,252-259`), so no capture is repeated.
+**Point-in-time field**: **none — CORRECTED 2026-08-13.** The live payload
+carries **no** `lastUpdateDateTime` and no other recognised timestamp: all 29
+fields were checked against gridflow's `_TIMESTAMP_PRIORITY`
+(`periodFrom`/`publicationDateTime`/`eventStart`/`auctionFrom`/`capacityFrom`/
+`validFrom`/`lastUpdateDateTime`) and **none** matched. Live-probe verified
+2026-08-04 (`/connectionPoints?limit=3&offset=0`); evidence: gridflow
+`.planning/phases/R3-test-integrity/probes/entsog_connection_points.json`.
+> **⚠ Consequence (gridflow unit N-17, hazard confirmed LIVE):** with no
+> recognised column, no `timestamp_utc` is derived and
+> `BaseSilverTransformer._event_time_expr` falls through to
+> `event_time = target_date` — so **every silver row is stamped with the date
+> the pipeline happened to run**, not a vendor-published instant. Unfixed; the
+> fix is a T2 unit (an event-time contract for date-agnostic reference data).
 
 ### Silver schema
 
@@ -119,7 +131,7 @@ curl --ssl-no-revoke -fsS \
 |-------|-------------|----------|--------------|-------|
 | point_key | str | Yes | pointKey |  |
 | point_label | str | Yes | pointLabel |  |
-| is_single_operator | bool | Yes | isSingleOperator |  |
+| is_single_operator | str | Yes | isSingleOperator |  |
 | point_tooltip | str | Yes | pointTooltip |  |
 | point_eic_code | str | Yes | pointEicCode |  |
 | control_point_type | str | Yes | controlPointType |  |
@@ -129,7 +141,7 @@ curl --ssl-no-revoke -fsS \
 | commercial_type | str | Yes | commercialType |  |
 | import_from_country_key | str | Yes | importFromCountryKey |  |
 | import_from_country_label | str | Yes | importFromCountryLabel |  |
-| has_virtual_point | str | Yes | hasVirtualPoint |  |
+| has_virtual_point | bool | Yes | hasVirtualPoint |  |
 | virtual_point_key | str | Yes | virtualPointKey |  |
 | virtual_point_label | str | Yes | virtualPointLabel |  |
 | has_data | bool | Yes | hasData |  |
@@ -141,7 +153,7 @@ curl --ssl-no-revoke -fsS \
 | is_cross_border | bool | Yes | isCrossBorder |  |
 | eu_crossing | str | Yes | euCrossing |  |
 | is_invalid | bool | Yes | isInvalid |  |
-| is_macro_point | bool | Yes | isMacroPoint |  |
+| is_macro_point | null (sent null) | Yes | isMacroPoint |  |
 | is_cam_relevant | bool | Yes | isCAMRelevant |  |
 | is_pipe_in_pipe | bool | Yes | isPipeInPipe |  |
 | is_cmp_relevant | bool | Yes | isCMPRelevant |  |
@@ -149,6 +161,7 @@ curl --ssl-no-revoke -fsS \
 | data_set | str | int | Yes | dataSet |  |
 | data_provider | str | No | derived | Always `entsog` |
 | ingested_at | datetime[UTC] | No | derived | Wall-clock at silver write |
+| event_time, available_at, source_run_id, dataset_version | lineage | No | derived | Pipeline lineage columns (`silver/base.py`); row added 2026-10-07 |
 
 ### Silver sample
 
@@ -202,7 +215,7 @@ None implemented.
 ## Known issues and gotchas
 
 - **No date filter — pagination required**: reference endpoints accept `limit` + `offset`. Default `limit` is small; pass `limit=1000` (or the full inventory size) and iterate offset for full extracts.
-- **`hasData=1` shrinks operatorPointDirections / operators**: filters out points/operators without any operational data. Useful as a discovery filter, but loses validity-period rows for points that recently went dormant.
+- **`hasData=1`** (CORRECTED 2026-10-07): ENTSOG's API manual (v2.1, section 2.4.7) documents it for operator point directions only: it keeps the directions of TSOs that publish their REG715 data. gridflow also sends it to `/operators`, where the manual does not document it; the 27 Sep 2026 response still lists storage, LNG, hydrogen and electricity operators. The claim that it drops dormant validity-period rows is unverified.
 - **Field-case duplicates**: `isCAMRelevant` (uppercase CAM) appears here while `isCamRelevant` appears in operationalData. Generic silver coalesces both into `is_cam_relevant`.
 - **Reference data refresh schedule**: weekly in `config/sources.yaml`. Static-ish, but new points and operator changes do appear when ENTSOG approves them.
 - **`bzKey` separators**: balancing zone keys often contain trailing dashes (`UK---------`) — preserve as-is, do not strip.

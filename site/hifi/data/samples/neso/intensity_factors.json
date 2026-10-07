@@ -1,0 +1,131 @@
+{
+ "dataset": "neso/intensity_factors",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "06611806d224275f8298201cbfade6e53ee67b1b22ac9a4afc295694fc6ed216",
+ "silver": "neso/intensity_factors",
+ "columns": [
+  {
+   "name": "fuel",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "factor_gco2_kwh",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "data_provider",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "ingested_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "coal",
+   "937.0",
+   "neso",
+   "2026-09-26 17:43:49.425301 UTC",
+   "2026-09-26 00:00:00 UTC",
+   "2026-09-26 17:43:49.424301 UTC",
+   "06156457-608a-47df-b5f9-39c9f2a2a38a",
+   "1.0.0"
+  ],
+  [
+   "dutch_imports",
+   "474.0",
+   "neso",
+   "2026-09-26 17:43:49.425301 UTC",
+   "2026-09-26 00:00:00 UTC",
+   "2026-09-26 17:43:49.424301 UTC",
+   "06156457-608a-47df-b5f9-39c9f2a2a38a",
+   "1.0.0"
+  ],
+  [
+   "french_imports",
+   "53.0",
+   "neso",
+   "2026-09-26 17:43:49.425301 UTC",
+   "2026-09-26 00:00:00 UTC",
+   "2026-09-26 17:43:49.424301 UTC",
+   "06156457-608a-47df-b5f9-39c9f2a2a38a",
+   "1.0.0"
+  ],
+  [
+   "gas_combined_cycle",
+   "394.0",
+   "neso",
+   "2026-09-26 17:43:49.425301 UTC",
+   "2026-09-26 00:00:00 UTC",
+   "2026-09-26 17:43:49.424301 UTC",
+   "06156457-608a-47df-b5f9-39c9f2a2a38a",
+   "1.0.0"
+  ],
+  [
+   "gas_open_cycle",
+   "651.0",
+   "neso",
+   "2026-09-26 17:43:49.425301 UTC",
+   "2026-09-26 00:00:00 UTC",
+   "2026-09-26 17:43:49.424301 UTC",
+   "06156457-608a-47df-b5f9-39c9f2a2a38a",
+   "1.0.0"
+  ],
+  [
+   "irish_imports",
+   "458.0",
+   "neso",
+   "2026-09-26 17:43:49.425301 UTC",
+   "2026-09-26 00:00:00 UTC",
+   "2026-09-26 17:43:49.424301 UTC",
+   "06156457-608a-47df-b5f9-39c9f2a2a38a",
+   "1.0.0"
+  ],
+  [
+   "other",
+   "300.0",
+   "neso",
+   "2026-09-26 17:43:49.425301 UTC",
+   "2026-09-26 00:00:00 UTC",
+   "2026-09-26 17:43:49.424301 UTC",
+   "06156457-608a-47df-b5f9-39c9f2a2a38a",
+   "1.0.0"
+  ],
+  [
+   "wind",
+   "0.0",
+   "neso",
+   "2026-09-26 17:43:49.425301 UTC",
+   "2026-09-26 00:00:00 UTC",
+   "2026-09-26 17:43:49.424301 UTC",
+   "06156457-608a-47df-b5f9-39c9f2a2a38a",
+   "1.0.0"
+  ]
+ ],
+ "mark": null
+}

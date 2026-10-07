@@ -10,9 +10,10 @@ layer_coverage: bronze, silver
 
 ## Overview
 
-Hourly weather forecast for the next 1–16 days at 7 GB population
+Hourly weather forecast for the next 1–16 days at 7 UK population
 centres (London, Birmingham, Manchester, Leeds, Glasgow, Cardiff,
-Belfast). Taken from whichever NWP model the Open-Meteo router
+Belfast; Belfast is in Northern Ireland, outside GB, and
+`connectors/openmeteo/endpoints.py:55` calls the list "UK"). Taken from whichever NWP model the Open-Meteo router
 currently selects (typically ECMWF, GFS, or ICON depending on grid cell
 and lead time). Used as the forward-looking demand-weather feed —
 temperature drives heating/cooling load, snow drives winter-peak load
@@ -134,7 +135,7 @@ connector request adds `wind_direction_10m`, `relative_humidity_2m`,
 **Transformer class**: `gridflow.silver.openmeteo.forecast.ForecastDemandWeather`
 **Pydantic schema**: `gridflow.schemas.weather.DemandWeather`
 **Dedup key**: `(timestamp_utc, location)` — `df.unique(subset=["timestamp_utc", "location"], keep="last")`
-**Point-in-time field**: `available_at` — bitemporal stamp from `BaseSilverTransformer` (F0). No `forecast_run_at`; older vintages overwritten on re-ingest.
+**Point-in-time field**: `available_at` — bitemporal stamp from `BaseSilverTransformer` (F0). No `forecast_run_at`; older vintages overwritten on re-ingest. With `VINTAGE_POLICY = None` and no re-ingest, `available_at` is the silver build clock (`silver/base.py:1181`), and `ingested_at` is too (`silver/openmeteo/historical.py:260`); the fetch time lives only in the bronze sidecar (`fetched_at`, `written_at`; `bronze/writer.py:57-79`).
 
 ### Silver schema
 
@@ -148,10 +149,10 @@ connector request adds `wind_direction_10m`, `relative_humidity_2m`,
 | `wind_speed_10m_mps` | `float` | Yes | `hourly.wind_speed_10m[i]` | Wind speed 10 m above ground, m/s |
 | `wind_direction_10m_deg` | `float` | Yes | `hourly.wind_direction_10m[i]` | Wind direction 10 m, degrees (0=N, 90=E) |
 | `relative_humidity_2m_pct` | `float` | Yes | `hourly.relative_humidity_2m[i]` | Relative humidity 2 m, % |
-| `precipitation_mm` | `float` | Yes | `hourly.precipitation[i]` | Precipitation total per hour, mm |
-| `shortwave_radiation_wm2` | `float` | Yes | `hourly.shortwave_radiation[i]` | Mean shortwave radiation (GHI), W/m² |
+| `precipitation_mm` | `float` | Yes | `hourly.precipitation[i]` | Precipitation summed over the hour before the stamp, mm ([docs](https://open-meteo.com/en/docs): "Preceding hour sum") |
+| `shortwave_radiation_wm2` | `float` | Yes | `hourly.shortwave_radiation[i]` | Shortwave radiation (GHI) averaged over the hour before the stamp, W/m² (docs: "Preceding hour mean") |
 | `surface_pressure_hpa` | `float` | Yes | `hourly.surface_pressure[i]` | Surface pressure, hPa |
-| `snowfall_cm` | `float` | Yes | `hourly.snowfall[i]` | New-snow water equivalent per hour, cm |
+| `snowfall_cm` | `float` | Yes | `hourly.snowfall[i]` | Snowfall over the hour before the stamp, cm of snow, not water equivalent (docs: "Preceding hour sum", in cm) |
 | `snow_depth_m` | `float` | Yes | `hourly.snow_depth[i]` | Standing snow depth, m |
 | `hdd_k` | `float` | Yes | derived | `max(15.5 - temperature_2m, 0)` — heating degree-hours, base 15.5 °C |
 | `cdd_k` | `float` | Yes | derived | `max(temperature_2m - 22.0, 0)` — cooling degree-hours, base 22.0 °C |
@@ -232,7 +233,14 @@ None implemented.
   connector does **not** pin a model today.
 - **Forecast vintages overwritten.** Each silver build replaces the
   forecast for any given `(timestamp_utc, location)` pair with the
-  latest fetch. There is no `forecast_run_at` / lead-time column —
+  latest fetch in the one bronze partition it reads for that day: the
+  day's own window-start partition if it has files, else the nearest
+  earlier one (`silver/openmeteo/historical.py:178-212`, files sorted by
+  their fetch-time name, then `unique(keep="last")` at line 258). The
+  connector sends the run's `--start`/`--end` as `start_date`/`end_date`
+  unchanged (`connectors/openmeteo/client.py:109-116`), so a window that
+  begins before the fetch returns hours already past, and silver cannot
+  tell those from hours forecast ahead. There is no `forecast_run_at` / lead-time column —
   cross-vintage analysis (e.g. "how did the day-ahead forecast at
   lead -24h compare to the realised value?") is **not supported** by
   the current silver layer.

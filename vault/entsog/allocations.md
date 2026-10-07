@@ -10,7 +10,7 @@ layer_coverage: bronze, silver
 
 ## Overview
 
-Final capacity quantities confirmed and assigned to shippers (post-nomination).
+Allocated gas quantities in kWh/d per operator, point, direction and gas day (quantities, not capacity), with `flowStatus` `Provisional` or `Confirmed`. National Gas TSO sends only not-applicable placeholder rows at the requested points (see Known issues).
 
 The dataset is one of 19 indicators served by the same `/operationalData`
 endpoint. The (operator, point, direction) tuple selects which physical
@@ -21,7 +21,7 @@ indicator-specific units for content/quality series).
 
 → Related concepts:
   [Gas day](../../../20-domain/concepts/gas-day.md)
-  [Nominations vs allocations](../../../20-domain/markets/gas-nominations.md)
+  [Nominations, renominations and allocations](nominations.md)
 
 ---
 
@@ -36,7 +36,7 @@ indicator-specific units for content/quality series).
 | Rate limit       | Not vendor-published; project default 5 req/s, validation throttled to 1 req/s |
 | Pagination       | `limit` + `offset`; project sets `limit=-1` (all records) |
 | Historical depth | Approx. 2010 onwards (operator-dependent) |
-| Publication lag  | Same-day for `Provisional` flow status; revised within ~1 week |
+| Publication lag  | Not vendor-documented here. 2026-08/09 bronze: `lastUpdateDateTime` 28 to 170 h after the gas-day start, placeholders excepted; `flowStatus` `Provisional`, later `Confirmed` |
 | Response format  | JSON |
 | Indicator | `Allocation` (exact-case — vendor rejects lowercase or hyphen variants) |
 | Time zone | `timeZone=UCT` (ENTSOG's spelling — note the typo; not `UTC`) |
@@ -138,15 +138,16 @@ curl --ssl-no-revoke -fsS \
 **Path pattern**: `{data_root}/silver/entsog/allocations/year=YYYY/month=MM/allocations_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.entsog.GenericEntsogJsonTransformer (subclass AllocationsTransformer)`
 **Pydantic schema**: `Generic — no Pydantic schema declared`
-**Dedup key**: `(timestamp_utc, point_key, operator_key, direction_key)` — fields uniquely identifying one daily record per series
-**Point-in-time field**: `last_update_date_time`
+**Dedup key**: the vendor `id`, `keep="last"`, within each day's bronze read (`silver/entsog/generic.py:193-199`). The `id` concatenates indicator, period, operator, point, direction and unit, so `(timestamp_utc, operator_key, point_key, direction_key)` is unique in 2026-08/09 silver (14 gas days x 7 rows).
+**Point-in-time field**: none used by the pipeline. `last_update_date_time` is the vendor's `lastUpdateDateTime` as sent, converted to UTC (`generic.py:181-183`); `ingested_at` is the silver transform time (`generic.py:201-206`).
 
 ### Silver schema
 
 | Field | Python type | Nullable | Source field | Notes |
 |-------|-------------|----------|--------------|-------|
-| id | str | int | Yes | id |  |
-| data_set | str | int | Yes | dataSet |  |
+| timestamp_utc | datetime[UTC] | Yes | derived | `period_from` copied (`generic.py:185-187`): the gas-day start, `periodFrom` 06:00+02:00 as sent, 04:00 UTC, on every valued 2026-08/09 row |
+| id | str | Yes | id | Dedup key (see above) |
+| data_set | Int64 | Yes | dataSet |  |
 | indicator | str | Yes | indicator |  |
 | period_type | str | Yes | periodType |  |
 | period_from | datetime[UTC] | Yes | periodFrom |  |
@@ -158,10 +159,10 @@ curl --ssl-no-revoke -fsS \
 | point_label | str | Yes | pointLabel |  |
 | tso_item_identifier | str | Yes | tsoItemIdentifier |  |
 | direction_key | str | Yes | directionKey |  |
-| unit | str | Yes | unit |  |
+| unit | str | Yes | unit | As sent, not converted; `kWh/d` on every 2026-08/09 row |
 | item_remarks | str | Yes | itemRemarks |  |
 | general_remarks | str | Yes | generalRemarks |  |
-| value | float | Yes | value |  |
+| value | float | Yes | value | In the row's `unit`, not converted; sent as null or `""`, it is null (Float64 cast with `strict=False`, `generic.py:189-191`) |
 | last_update_date_time | datetime[UTC] | Yes | lastUpdateDateTime |  |
 | is_unlimited | bool | Yes | isUnlimited |  |
 | flow_status | str | Yes | flowStatus |  |
@@ -170,13 +171,16 @@ curl --ssl-no-revoke -fsS \
 | capacity_type | str | Yes | capacityType |  |
 | capacity_booking_status | str | Yes | capacityBookingStatus |  |
 | is_cam_relevant | bool | Yes | isCamRelevant |  |
-| is_na | str | Yes | isNA |  |
+| is_na | Int64 | Yes | isNA | 1 on the not-applicable placeholder rows |
 | original_period_from | datetime[UTC] | Yes | originalPeriodFrom |  |
-| is_cmp_relevant | bool | Yes | isCmpRelevant |  |
+| is_cmp_relevant | str | Yes | isCmpRelevant | Text here: the placeholders send `""` (see Known issues) |
 | booking_platform_key | str | Yes | bookingPlatformKey |  |
 | booking_platform_label | str | Yes | bookingPlatformLabel |  |
 | booking_platform_url | str | Yes | bookingPlatformURL |  |
 | interruption_calculation_remark | str | Yes | interruptionCalculationRemark |  |
+| point_type | str | Yes | pointType | Null on the placeholder rows |
+| id_point_type | Int64 | Yes | idPointType | Null on the placeholder rows |
+| is_archived | bool | Yes | isArchived | Null on the placeholder rows |
 | data_provider | str | No | derived | Always `entsog` |
 | ingested_at | datetime[UTC] | No | derived | Wall-clock at silver write |
 
@@ -189,8 +193,8 @@ curl --ssl-no-revoke -fsS \
         "data_set": 1,
         "indicator": "Allocation",
         "period_type": "day",
-        "period_from": "2026-05-06T05:00:00+02:00",
-        "period_to": "2026-05-07T05:00:00+02:00",
+        "period_from": "2026-05-06T03:00:00+00:00",
+        "period_to": "2026-05-07T03:00:00+00:00",
         "operator_key": "UK-TSO-0001",
         "tso_eic_code": "21X-GB-A-A0A0A-7",
         "operator_label": "National Gas TSO",
@@ -201,8 +205,8 @@ curl --ssl-no-revoke -fsS \
         "unit": "kWh/d",
         "item_remarks": "Commercial Flows only available at Entry points in the GB regime",
         "general_remarks": "",
-        "value": "",
-        "last_update_date_time": "2025-02-20T14:02:39+01:00",
+        "value": null,
+        "last_update_date_time": "2025-02-20T13:02:39+00:00",
         "is_unlimited": null,
         "flow_status": "",
         "interruption_type": null,
@@ -241,6 +245,8 @@ None implemented.
 - **Datetime placeholders**: `lastUpdateDateTime` and `originalPeriodFrom` may be empty strings, `"-"`, `"N/A"`, or human-formatted strings (`"Jan 15 2024 06:00AM"`). `parse_entsog_datetime` returns `None` for unparseable values rather than raising.
 - **`directionKey` casing varies**: lowercase (`entry`/`exit`) in `/operationalData`; capitalised (`Exit`) in `/cmpUnsuccessfulRequests`. Don't compare with `==` across families.
 - **Period offset is +02:00 (CET)**: even with `timeZone=UCT`, `periodFrom` carries `+02:00` (CEST in summer / `+01:00` in winter). The silver transformer's `parse_entsog_datetime` converts to UTC.
+- **Requested versus returned (2026-08/09 bronze, 14 gas days)**: the connector sends nine `pointDirection` filters (`connectors/entsog/endpoints.py:24-34`); every response returns seven rows. The two BBL company filters (`UK-TSO-0004ITP-00063entry`/`exit`, Julianadorp/Balgzand) return nothing. With `limit=-1`, `meta.count` is 7 against `meta.total` 8; what `total` counts is unverified.
+- **National Gas TSO placeholders**: its three requested rows are not-applicable placeholders on every 2026-08/09 gas day: `value` sent as `""` (null in silver), `isNA` 1, `periodFrom` 05:00+02:00 (03:00 UTC, an hour before the other rows' gas-day start, so this table has two `timestamp_utc` values per day), `lastUpdateDateTime` 2025-02-20, and an `id` with no gas-day date, only a fixed 2026-2027 range (`1AllocationdayUK-TSO-0001ITP-00005exitkWh/d2026-01-012027-01-01_NA2`) that recurs every day; dedup is per daily partition, so each day keeps one. Remarks: "Commercial Flows only available at Entry points in the GB regime" (Bacton) and "Virtual Point, currently Moffat is only Unidirectional exit" (Moffat entry). Their empty strings make silver `is_cmp_relevant` a String column here, Boolean in nominations and renominations.
 
 
 
@@ -257,7 +263,7 @@ None implemented.
 
 - Used as raw input to gas balance / interconnector flow features in `gridflow_models/`.
 - Target candidates: directional flow magnitude (entry vs exit per point).
-- Filter on `flowStatus == 'Confirmed'` for backtesting; `Provisional` for live model serving.
+- Drop the `is_na == 1` placeholder rows first; then filter on `flow_status == 'Confirmed'` for backtesting, `Provisional` for live model serving.
 - Join with `operator_point_directions` to attach country, balancing zone, and CAM-relevant flags.
 
 ---

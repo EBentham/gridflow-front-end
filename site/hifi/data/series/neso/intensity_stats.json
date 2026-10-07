@@ -1,0 +1,19 @@
+{
+  "dataset": "neso/intensity_stats",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "cf34de455480b9d5eb222efb7badfb3da600b92107c9334cfec398b70d81f64c",
+  "type": "line",
+  "unit": "gCO2/kWh",
+  "caption": "",
+  "value_column": "average_gco2_kwh",
+  "aggregation": "last",
+  "window": {"end": "2026-09-21", "rule": "fixed", "start": "2026-09-13"},
+  "provenance": {"files": 2, "null_values_dropped": 0, "rows_matched": 14, "rows_read": 14, "rows_used": 9, "silver": "neso/intensity_stats_block", "silver_first": "2026-08-01T00:00:00Z", "silver_last": "2026-09-21T00:00:00Z"},
+  "spec": {"aggregation": "last", "silver": "neso/intensity_stats_block", "time": "timestamp_utc", "type": "line", "unit": "gCO2/kWh", "value": "average_gco2_kwh", "window": {"end": "2026-09-21", "start": "2026-09-13"}},
+  "x_kind": "time",
+  "x": ["2026-09-13T00:00:00Z", "2026-09-14T00:00:00Z", "2026-09-15T00:00:00Z", "2026-09-16T00:00:00Z", "2026-09-17T00:00:00Z", "2026-09-18T00:00:00Z", "2026-09-19T00:00:00Z", "2026-09-20T00:00:00Z", "2026-09-21T00:00:00Z"],
+  "series": [
+    {"key": "average_gco2_kwh", "values": [168.0, 146.0, 77.0, 113.0, 65.0, 61.0, 60.0, 84.0, 164.0]}
+  ]
+}

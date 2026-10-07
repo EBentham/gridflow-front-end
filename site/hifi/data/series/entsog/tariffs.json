@@ -1,0 +1,19 @@
+{
+  "dataset": "entsog/tariffs",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "a5f7849ecdb83e6c627210d23a188e9e6c7a2e75017af9f30310ed7aad85ef53",
+  "type": "bar",
+  "unit": "EUR/(kWh/h)/y",
+  "caption": "",
+  "value_column": "applicable_tariff_per_eurk_wh_h_value",
+  "aggregation": "max",
+  "window": null,
+  "provenance": {"duplicates_dropped": 32, "files": 5, "null_values_dropped": 0, "rows_matched": 40, "rows_read": 61220, "rows_used": 8, "silver": "entsog/tariffs"},
+  "spec": {"aggregation": "max", "dedup": {"on": ["id"], "order_by": "id"}, "filter": [{"column": "product_type", "op": "eq", "value": "Yearly"}, {"column": "tariff_capacity_type", "op": "eq", "value": "Firm"}, {"column": "applicable_tariff_per_eurk_wh_h_unit", "op": "eq", "value": "Euro/(kWh/h)/y"}, {"column": "operator_point_direction", "op": "in", "value": ["uk-tso-0004itp-00207exit", "uk-tso-0004itp-00207entry", "uk-tso-0003itp-00005entry", "uk-tso-0003itp-00005exit", "uk-tso-0003itp-00061entry", "uk-tso-0003itp-00061exit", "be-tso-0001itp-00061entry", "be-tso-0001itp-00061exit"]}], "group": "operator_point_direction", "group_map": {"be-tso-0001itp-00061entry": "fluxys_zeebrugge_entry", "be-tso-0001itp-00061exit": "fluxys_zeebrugge_exit", "uk-tso-0003itp-00005entry": "iuk_bacton_entry", "uk-tso-0003itp-00005exit": "iuk_bacton_exit", "uk-tso-0003itp-00061entry": "iuk_zeebrugge_entry", "uk-tso-0003itp-00061exit": "iuk_zeebrugge_exit", "uk-tso-0004itp-00207entry": "bbl_bacton_entry", "uk-tso-0004itp-00207exit": "bbl_bacton_exit"}, "silver": "entsog/tariffs", "sort": "value_desc", "type": "bar", "unit": "EUR/(kWh/h)/y", "value": "applicable_tariff_per_eurk_wh_h_value"},
+  "x_kind": "category",
+  "x": ["fluxys_zeebrugge_entry", "bbl_bacton_entry", "bbl_bacton_exit", "fluxys_zeebrugge_exit", "iuk_bacton_entry", "iuk_bacton_exit", "iuk_zeebrugge_entry", "iuk_zeebrugge_exit"],
+  "series": [
+    {"key": "applicable_tariff_per_eurk_wh_h_value", "values": [19.32, 8.76, 8.76, 8.112, 3.637, 3.637, 3.637, 3.637]}
+  ]
+}

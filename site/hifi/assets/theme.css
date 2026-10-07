@@ -524,7 +524,8 @@ pre .ln { display: block; padding-left: calc((var(--i, 0) + 2) * 1ch); text-inde
 .ds-hero__h { color: var(--on-petrol); }
 .ds-keys { display: flex; flex-wrap: wrap; gap: 8px 10px; margin-top: 22px; }
 .ds-chip {
-  display: inline-block; padding: 3px 9px; border: 1.5px solid var(--on-petrol-2); border-radius: var(--radius);
+  display: inline-block; max-width: 100%; overflow-wrap: anywhere;
+  padding: 3px 9px; border: 1.5px solid var(--on-petrol-2); border-radius: var(--radius);
   font: 500 15px/1.4 var(--mono); color: var(--on-petrol);
 }
 .ds-one { margin: 4px 0 18px; font-size: var(--fs-lede); line-height: 1.6; color: var(--on-petrol); }

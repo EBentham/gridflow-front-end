@@ -50,7 +50,7 @@ curl --ssl-no-revoke -X GET \
 
 **Path pattern**: `{data_root}/bronze/neso/intensity_stats_block/<year>/<month>/<day>/raw_<timestamp>_<hash>.json`
 **Format**: Raw JSON, as received. Immutable after write, with `.meta.json` provenance sidecar.
-**Granularity**: One file per API call; range and daily routes may produce one file per chunk/day/period.
+**Granularity**: One file per request window of at most 14 days, filed under the window's first day (`data_date=window_start.date()`, `connectors/neso/carbon_intensity.py:79`). Silver reads only that exact partition, so a window's rows land in one silver file named for its first day.
 
 ### Bronze sample
 
@@ -77,7 +77,7 @@ curl --ssl-no-revoke -X GET \
 | max_gco2_kwh | float | Yes | intensity.max | Maximum carbon intensity in block. |
 | average_gco2_kwh | float | Yes | intensity.average | Average carbon intensity in block. |
 | min_gco2_kwh | float | Yes | intensity.min | Minimum carbon intensity in block. |
-| intensity_index | str | No | intensity.index | Docs category string. |
+| intensity_index | str | No | intensity.index | Docs category string: one of very low, low, moderate, high, very high in docs (recorded in `carbon_intensity.md`, silver schema `intensity_index` row). |
 | data_provider | str | No | derived | Always neso. |
 | ingested_at | datetime[UTC] | No | derived | Silver transform timestamp. |
 
@@ -99,15 +99,15 @@ None implemented.
 
 - Official docs use UTC timestamps ending in `Z`; keep joins in UTC.
 - The connector sends no query parameters; all documented inputs are path parameters.
-- Actual carbon intensity values can be null or absent, especially before post-period estimates are available.
-- For `intensity_period`, GB clock-change days can have 46 or 50 settlement periods in implementation even though official docs describe period 1-48.
+- The response sends `max`, `average` and `min` as bare numbers with no unit (bronze bodies, e.g. `bronze/neso/intensity_stats_block/2026/09/13/`); `gCO2/kWh` is gridflow's column label (`_transform_stats`, `silver/neso/carbon_intensity.py:501-528`).
 
 ---
 
 ## Implementation delta
 
 - **`from` / `to` placeholders**: official docs and `config/sources.yaml` use `{from}` and `{to}`; `src/gridflow/connectors/neso/endpoints.py` uses `{from_dt}` and `{to_dt}` internally before formatting the same path.
-- **`max_query_days`**: official docs allow 30 days for statistics; connector chunks with `max_query_days: 14`, which is conservative rather than incomplete.
+- **`max_query_days`**: official docs allow 30 days for statistics; the connector chunks at 14 days with its own constant `_MAX_DAYS_PER_REQUEST = 14` (`connectors/neso/carbon_intensity.py:21`, chunk loop `:149-164`), which matches `max_query_days: 14` in `config/sources.yaml`.
+- **`block` is always 24 hours**: `DEFAULT_STATS_BLOCK_HOURS = 24` (`connectors/neso/endpoints.py:16`, set as the endpoint default at `:132`); the runner calls `connector.fetch(ds, ds_start, end_dt)` with no extra parameters (`pipeline/runner.py:947`) and the CLI has no block option, so every silver row is a 24-hour block.
 
 ---
 

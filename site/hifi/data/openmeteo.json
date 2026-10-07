@@ -1,7 +1,7 @@
 {
   "_about": "The page set and hub content for this vendor: every dataset the site documents, grouped as the hub lists it, with its families. Rendered by gridflow-build.",
   "name": "Open-Meteo",
-  "intro": "Weather from Open-Meteo: the ERA5 archive and forecasts at GB demand cities, wind sites and solar sites.",
+  "intro": "Weather from Open-Meteo: its archive (a blend of reanalysis and forecast models) and forecasts at UK demand cities, GB wind sites and solar sites.",
   "facts": [
     [
       "Market",
@@ -35,20 +35,20 @@
   "landscape": "power",
   "landing": {
     "bronze": "bronze/open_meteo/",
-    "desc": "Weather archive and forecasts at GB demand cities, wind and solar sites",
+    "desc": "Weather archive and forecasts at UK demand cities, GB wind and solar sites",
     "fact": "hourly, no API key",
     "start": [
       [
         "historical_demand",
-        "ERA5 at 7 demand cities"
+        "archive at 7 demand cities"
       ],
       [
         "historical_wind",
-        "ERA5 at 12 wind sites, 10 m and 100 m"
+        "archive at 12 wind sites, 10 m and 100 m"
       ],
       [
         "historical_solar",
-        "ERA5 at 6 solar sites"
+        "archive at 6 solar sites"
       ],
       [
         "forecast_wind",

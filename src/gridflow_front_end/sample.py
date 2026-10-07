@@ -56,14 +56,65 @@ def _scan(silver_root: Path, silver: str) -> pl.LazyFrame:
     if not files:
         raise SampleError(f"no parquet files under {table_dir}")
     # Newest file first: its schema (the current transformer's columns, in
-    # order) is the reference; older files lacking a column get nulls.
-    return pl.scan_parquet(
-        files[::-1], hive_partitioning=False, missing_columns="insert", extra_columns="ignore"
-    )
+    # order) is the reference; older files lacking a column get nulls. A column
+    # can be all-null (type Null) in one daily file and String in the next
+    # (ENTSOG generic silver), so frames are stacked to a common supertype.
+    columns = list(pl.read_parquet_schema(files[-1]))
+    frames = [pl.scan_parquet(f, hive_partitioning=False) for f in files[::-1]]
+    return pl.concat(frames, how="diagonal_relaxed").select(columns)
+
+
+# Polars' markdown table is read back by splitting rows on "|" and cells on line ends, so a value
+# holding either (ENTSOG point lists such as "Isle of Grain|Milford Haven") would split its own
+# cell. They print as private-use stand-ins and are put back once each cell is cut out.
+_MASKS = (("|", "\ue000"), ("\r\n", "\ue001"), ("\n", "\ue002"), ("\r", "\ue003"))
+_STAND_INS = "[\ue000-\ue003]"
+
+
+def _mask(expr: pl.Expr) -> pl.Expr:
+    for raw, stand_in in _MASKS:
+        expr = expr.str.replace_all(raw, stand_in, literal=True)
+    return expr
+
+
+def _unmask(cell: str) -> str:
+    for raw, stand_in in _MASKS:
+        cell = cell.replace(stand_in, raw)
+    return cell
+
+
+def _masked(df: pl.DataFrame) -> pl.DataFrame:
+    """``df`` with ``|`` and line ends masked in its String and List(String) columns."""
+    exprs: list[pl.Expr] = []
+    for name, dtype in df.schema.items():
+        if dtype == pl.String:
+            text, masked = df[name], _mask(pl.col(name))
+        elif isinstance(dtype, pl.List) and dtype.inner == pl.String:
+            text, masked = df[name].list.join(""), pl.col(name).list.eval(_mask(pl.element()))
+        else:
+            continue
+        if text.str.contains(_STAND_INS).any():
+            raise SampleError(f"column {name!r} holds a character the table reader uses as a mask")
+        exprs.append(masked)
+    return df.with_columns(exprs) if exprs else df
 
 
 def polars_text(df: pl.DataFrame) -> list[list[str]]:
-    """Every cell as Polars prints it in a table (no shape, no dtype row)."""
+    """Every cell as Polars prints it in a table (no shape, no dtype row).
+
+    A ``|`` or a line end inside a value is kept: it is masked while Polars prints and restored in
+    the cell, so the cell reads as Polars prints the value.
+
+    Args:
+        df: The eight sample rows, in print order.
+
+    Returns:
+        One list of cell strings per row.
+
+    Raises:
+        SampleError: The printed table cannot be read back cell for cell.
+    """
+    df = _masked(df)
     with pl.Config(
         tbl_formatting="ASCII_MARKDOWN",
         tbl_hide_column_data_types=True,
@@ -79,9 +130,9 @@ def polars_text(df: pl.DataFrame) -> list[list[str]]:
     head = [c.strip() for c in lines[0].strip("|").split("|")]
     if head != df.columns:
         raise SampleError(f"could not read Polars' table header back: {head}")
-    body = [[c.strip() for c in ln.strip("|").split("|")] for ln in lines[2:]]
+    body = [[_unmask(c.strip()) for c in ln.strip("|").split("|")] for ln in lines[2:]]
     if len(body) != df.height or any(len(b) != df.width for b in body):
-        raise SampleError("a value contains '|'; Polars' table cannot be read back")
+        raise SampleError("Polars' table cannot be read back cell for cell")
     return body
 
 

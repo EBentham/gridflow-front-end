@@ -10,7 +10,7 @@ layer_coverage: bronze, silver
 
 ## Overview
 
-Simulated tariff costs for representative product types.
+Simulated tariff costs for representative product types. ENTSOG lists it in its standardised tariff table as "Simulation of costs for flowing 1 GWh/d/y at IP (in local currency and euro)" (ENTSOG, TAR NC transparency workshop slides, December 2016, slide "TRA PF Standardised Table: contents" (`TAR0762_161208_TAR_NC_Transparency_for TRA_WS_Rev2.pdf`)). Each operator sets the basis of its own figure; see Known issues.
 
 ---
 
@@ -36,8 +36,10 @@ Simulated tariff costs for representative product types.
 | `from` | date | Yes | Window start | `2026-05-06` |
 | `to` | date | Yes | Window end | `2026-05-06` |
 | `timeZone` | str | Yes | `UCT` | `UCT` |
-| `countryKey` | str | No | Filter to one country (recommended) | `UK` |
+| `countryKey` | str | No | The connector sends `UK` (`connectors/entsog/endpoints.py:187,196`); it does not limit the response to UK operators (see Known issues) | `UK` |
 | `limit` | int | No | `-1` returns all | `-1` |
+
+The connector sends one request per covered UTC day with `from` = `to` = that day (`connectors/entsog/client.py:78-102`), so `--end` on `gridflow ingest` is exclusive.
 
 ### Working curl example
 
@@ -126,69 +128,90 @@ curl --ssl-no-revoke -fsS \
 **Path pattern**: `{data_root}/silver/entsog/tariff_simulations/year=YYYY/month=MM/tariff_simulations_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.entsog.generic.GenericEntsogJsonTransformer (subclass TariffSimulationsTransformer)`
 **Pydantic schema**: Generic — no Pydantic schema declared
-**Dedup key**: `(id)` if present, else all non-`timestamp_utc` columns
-**Point-in-time field**: `last_update_date_time` or `publication_date_time` (UMM)
+**Dedup key**: the vendor `id`, `keep="last"`, within one bronze day's read (`silver/entsog/generic.py:193-199`). There is no dedup across days, so every fetched day's partition holds the full set again: 2026-08-01 to 05 hold 2,782 ids a day and 13,910 silver rows, five copies identical apart from `ingested_at` and `available_at`. Within one day the key (`operator_key`, `point_key`, `direction_key`, `tariff_capacity_type`, `product_type`) is unique (project check).
+**Bronze read filter**: none. `tariffs` and `tariff_simulations` are exempt from the gas-day filter the other generic ENTSOG datasets apply (`generic.py:297-317`, VTA-ENTSOG-TARIFF-01), so silver keeps every bronze record: 2,782 bronze records and 2,782 silver rows on each of 2026-08-01 to 05.
+**Point-in-time field**: none used by the pipeline. `timestamp_utc` is a copy of `period_from`, the start of the one-year tariff period, not a fetch or publication time (`silver/entsog/generic.py:181-187`). `last_update_date_time` is the vendor's `lastUpdateDateTime` in UTC; `ingested_at` is the silver transform time (`generic.py:201-206`). The fetched day appears only in the partition file name.
 
 ### Silver schema
 
 | Field | Python type | Nullable | Source field | Notes |
 |-------|-------------|----------|--------------|-------|
+| timestamp_utc | datetime[UTC] | Yes | derived | Copy of `period_from`, the tariff period start (`generic.py:185-187`) |
+| period_from | datetime[UTC] | Yes | periodFrom | Tariff period start, UTC |
+| period_to | datetime[UTC] | Yes | periodTo |  |
+| indicator | null (no values) | Yes | indicator |  |
+| period_type | null (no values) | Yes | periodType |  |
+| operator_key | str | Yes | operatorKey |  |
+| operator_label | null (no values) | Yes | operatorLabel |  |
+| tso_eic_code | str | Yes | tsoEicCode |  |
+| point_key | str | Yes | pointKey |  |
+| point_label | str | Yes | pointLabel |  |
 | direction_key | str | Yes | directionKey |  |
+| unit | null (no values) | Yes | unit |  |
+| value | float | Yes | value |  |
+| id | str | Yes | id | Dedup key within a day |
 | operator | str | Yes | operator |  |
 | operator_point_direction | str | Yes | operatorPointDirection |  |
 | country_code | str | Yes | countryCode |  |
 | connection | str | Yes | connection |  |
-| connection_remarks | str | Yes | connectionRemarks |  |
+| connection_remarks | null (no values) | Yes | connectionRemarks |  |
 | from_bz | str | Yes | fromBZ |  |
 | to_bz | str | Yes | toBZ |  |
 | tariff_capacity_type | str | Yes | tariffCapacityType |  |
 | tariff_capacity_unit | str | Yes | tariffCapacityUnit |  |
-| tariff_capacity_remarks | str | Yes | tariffCapacityRemarks |  |
+| tariff_capacity_remarks | null (no values) | Yes | tariffCapacityRemarks |  |
 | product_type | str | Yes | productType |  |
 | operator_currency | str | Yes | operatorCurrency |  |
-| product_simulation_cost_in_local_currency | str | Yes | productSimulationCostInLocalCurrency |  |
-| product_simulation_cost_in_euro | str | Yes | productSimulationCostInEURO |  |
+| product_simulation_cost_in_local_currency | str | Yes | productSimulationCostInLocalCurrency | Text; `N/A` when not sent |
+| product_simulation_cost_in_euro | str | Yes | productSimulationCostInEURO | Text; `N/A` when not sent |
 | product_simulation_cost_remarks | str | Yes | productSimulationCostRemarks |  |
-| exchange_rate_reference_date | datetime[UTC] | Yes | exchangeRateReferenceDate |  |
+| exchange_rate_reference_date | str | Yes | exchangeRateReferenceDate | Kept as text, as sent (`N/A` for euro operators) |
 | remarks | str | Yes | remarks |  |
 | tariff_period_remarks | str | Yes | tariffPeriodRemarks |  |
-| display_order | str | Yes | displayOrder |  |
-| point_type | str | Yes | pointType |  |
-| id_point_type | str | Yes | idPointType |  |
+| display_order | int | Yes | displayOrder |  |
+| point_type | null (no values) | Yes | pointType |  |
+| id_point_type | null (no values) | Yes | idPointType |  |
 | is_archived | bool | Yes | isArchived |  |
-| id | str | int | Yes | id |  |
-| data_set | str | int | Yes | dataSet |  |
-| indicator | str | Yes | indicator |  |
-| period_type | str | Yes | periodType |  |
-| period_from | datetime[UTC] | Yes | periodFrom |  |
-| period_to | datetime[UTC] | Yes | periodTo |  |
-| operator_key | str | Yes | operatorKey |  |
-| tso_eic_code | str | Yes | tsoEicCode |  |
-| operator_label | str | Yes | operatorLabel |  |
-| point_key | str | Yes | pointKey |  |
-| point_label | str | Yes | pointLabel |  |
+| data_set | int | Yes | dataSet |  |
 | tso_item_identifier | str | Yes | tsoItemIdentifier |  |
-| direction | str | Yes | direction |  |
-| unit | str | Yes | unit |  |
-| item_remarks | str | Yes | itemRemarks |  |
-| general_remarks | str | Yes | generalRemarks |  |
-| value | float | Yes | value |  |
+| direction | null (no values) | Yes | direction |  |
+| item_remarks | null (no values) | Yes | itemRemarks |  |
+| general_remarks | null (no values) | Yes | generalRemarks |  |
 | last_update_date_time | datetime[UTC] | Yes | lastUpdateDateTime |  |
-| is_unlimited | bool | Yes | isUnlimited |  |
-| interruption_type | str | Yes | interruptionType |  |
-| restoration_information | str | Yes | restorationInformation |  |
-| capacity_type | str | Yes | capacityType |  |
-| capacity_booking_status | str | Yes | capacityBookingStatus |  |
-| flow_status | str | Yes | flowStatus |  |
+| is_unlimited | null (no values) | Yes | isUnlimited |  |
+| interruption_type | null (no values) | Yes | interruptionType |  |
+| restoration_information | null (no values) | Yes | restorationInformation |  |
+| capacity_type | null (no values) | Yes | capacityType |  |
+| capacity_booking_status | null (no values) | Yes | capacityBookingStatus |  |
+| flow_status | null (no values) | Yes | flowStatus |  |
 | data_provider | str | No | derived | Always `entsog` |
-| ingested_at | datetime[UTC] | No | derived | Wall-clock at silver write |
+| ingested_at | datetime[UTC] | No | derived | Wall-clock at silver write (`generic.py:201-206`) |
+| event_time | datetime[UTC] | No | derived | Lineage; equals `period_from` here |
+| available_at | datetime[UTC] | No | derived | Lineage |
+| source_run_id | str | No | derived | Lineage |
+| dataset_version | str | No | derived | Lineage, `1.0.0` |
 
 ### Silver sample
+
+Real silver row (BBL company, Bacton (BBL) exit, firm yearly; 2026-08-01 partition), stamps in UTC.
 
 ```python
 [
     {
+        "timestamp_utc": "2025-10-01T04:00:00+00:00",
+        "period_from": "2025-10-01T04:00:00+00:00",
+        "period_to": "2026-10-01T04:00:00+00:00",
+        "indicator": null,
+        "period_type": null,
+        "operator_key": "UK-TSO-0004",
+        "operator_label": null,
+        "tso_eic_code": "21X-NL-B-A0A0A-Q",
+        "point_key": "ITP-00207",
+        "point_label": "Bacton (BBL)",
         "direction_key": "exit",
+        "unit": null,
+        "value": null,
+        "id": "321Z000000000088FFirmYearlyUK-TSO-0004ITP-00207exit2025-10-01T04:00:00+00:00__2026-10-01T04:00:00+00:00",
         "operator": "BBL company",
         "operator_point_direction": "uk-tso-0004itp-00207exit",
         "country_code": "NL",
@@ -211,24 +234,12 @@ curl --ssl-no-revoke -fsS \
         "point_type": null,
         "id_point_type": null,
         "is_archived": false,
-        "id": "321Z000000000088FFirmYearlyUK-TSO-0004ITP-00207exit2025-10-01T04:00:00+00:00__2026-10-01T04:00:00+00:00",
         "data_set": 3,
-        "indicator": null,
-        "period_type": null,
-        "period_from": "2025-10-01T06:00:00+02:00",
-        "period_to": "2026-10-01T06:00:00+02:00",
-        "operator_key": "UK-TSO-0004",
-        "tso_eic_code": "21X-NL-B-A0A0A-Q",
-        "operator_label": null,
-        "point_key": "ITP-00207",
-        "point_label": "Bacton (BBL)",
         "tso_item_identifier": "21Z000000000088F",
         "direction": null,
-        "unit": null,
         "item_remarks": null,
         "general_remarks": null,
-        "value": null,
-        "last_update_date_time": "2025-07-01T14:08:43+02:00",
+        "last_update_date_time": "2025-07-01T12:08:43+00:00",
         "is_unlimited": null,
         "interruption_type": null,
         "restoration_information": null,
@@ -236,7 +247,11 @@ curl --ssl-no-revoke -fsS \
         "capacity_booking_status": null,
         "flow_status": null,
         "data_provider": "entsog",
-        "ingested_at": "2026-05-08T18:00:00+00:00"
+        "ingested_at": "2026-08-16T14:21:50.250023+00:00",
+        "event_time": "2025-10-01T04:00:00+00:00",
+        "available_at": "2026-08-16T14:21:48.590137+00:00",
+        "source_run_id": "00008ab8-0fa9-43ae-9bf7-d49c440b1938",
+        "dataset_version": "1.0.0"
     }
 ]
 ```
@@ -251,10 +266,12 @@ None implemented.
 
 ## Known issues and gotchas
 
-- **`countryKey` filter recommended**: tariffs without country filter return tens of thousands of rows. The connector defaults to `countryKey=UK`.
-- **Mixed currencies and units**: `operatorCurrency` varies (RON, EUR, GBP, etc.). Both local-currency and EUR-converted columns are present (`applicableTariffPerEURKWhDValue` etc.). `exchangeRateReferenceDate` records when the EUR conversion was sampled.
-- **Most rows have many null fields**: tariffs are sparse — different tariff lines populate different cost columns. Don't drop nulls.
-- **Periods**: `productPeriodFrom`/`productPeriodTo` may be null for "evergreen" tariff entries.
+- **`countryKey=UK` does not limit the response**: the connector sends `countryKey=UK` (`connectors/entsog/endpoints.py:187,196`) and the response's `meta.query` echoes it, yet each 2026-08-01 to 05 body holds 2,782 records (`meta.count` = `meta.total`) for operators in 21 country codes, AT to UK. What the parameter filters on is not documented here.
+- **Mixed currencies and units**: `operatorCurrency` varies (RON, EUR, GBP, etc.). Both `productSimulationCostInLocalCurrency` and `productSimulationCostInEURO` are present (2026-08 currencies: EUR, CZK, PLN, HUF, RON, BGN, GBP, DKK); silver keeps both as text (they miss `_looks_numeric`, `generic.py:384-387`). `exchangeRateReferenceDate` records when the EUR conversion was sampled.
+- **Cost not always sent**: 799 of 2,782 records (2026-08) send `N/A` for both costs; the remark often says why (for example `Product Not Available`). Cast to float only after dropping `N/A`.
+- **Periods**: simulations carry only the one-year tariff period (`periodFrom`/`periodTo`); there is no product period. One record per operator, point, direction, capacity type, product and tariff period.
+- **Silver repeats the tariff set once per fetched day**: see Dedup key. `data.entsog.query()` filters on `timestamp_utc` (the tariff period start, `schema_manifest.py:222-223`) and keeps `ingested_at`, so it returns every copy. Deduplicate on `id` before counting or aggregating.
+- **What the cost is**: ENTSOG's wording is "Simulation of costs for flowing 1 GWh/d/y at IP (in local currency and euro)" (see Overview for the source); the cost carries no capacity unit and each operator sets its basis. Operator remarks differ, for example "Cost of flowing 1 GWh/day/year through the IP in EUR taking into account the quarterly multiplier." (22 records) and "The simulation cost is calculated as the sum of the capacity charge applicable for the given point and the commodity" (105). Project check, 2026-08: for 204 yearly records the cost equals the operator's yearly euro kWh/h tariff times 41,667 kWh/h (1 GWh/d); others differ. BBL company sends 365000 EUR for every firm product, daily to yearly.
 
 - **Indicator string is exact-case**: the connector sends the exact human-readable form (`Physical Flow`, `Nomination`, `Available through UIOLI long-term`). Sending lowercase or hyphen variants returns 404.
 - **`timeZone=UCT` (note typo)**: ENTSOG documents the parameter as `timeZone=UCT` rather than `UTC`. The connector spells it the vendor's way. The response `meta.timezone` echoes back `CET` regardless of the request value.
@@ -278,7 +295,7 @@ None implemented.
 
 ## Modelling notes
 
-TODO
+Deduplicate on `id`, drop `N/A`, then cast the two cost columns to float. The cost is money only, with a basis set per operator: read `product_simulation_cost_remarks` before comparing operators.
 
 ---
 

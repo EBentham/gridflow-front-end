@@ -1,0 +1,222 @@
+{
+ "dataset": "openmeteo/historical_solar",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "108cd8430024dc127cda5d195e3e2b41e07be5a2b1c3f9b1e290369c57e9ff4b",
+ "kernel": "gridflow_models",
+ "source": "open_meteo",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.open_meteo",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.open_meteo.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.open_meteo.query(\"historical_solar\", \"2026-06-13\", \"2026-06-19\")\ndf[\"timestamp_utc\"] = df.timestamp_utc.dt.tz_convert(\"UTC\")\ndf = df.sort_values([\"timestamp_utc\", \"location\"], ignore_index=True)\nnoon = df[df.timestamp_utc.dt.hour == 12]\nnoon[[\"timestamp_utc\", \"location\", \"shortwave_radiation_wm2\", \"global_tilted_irradiance_wm2\", \"cloud_cover_pct\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "location",
+      "shortwave_radiation_wm2",
+      "global_tilted_irradiance_wm2",
+      "cloud_cover_pct"
+     ],
+     "index": [
+      "72",
+      "73",
+      "74",
+      "75",
+      "76"
+     ],
+     "rows": [
+      [
+       "2026-06-13 12:00:00+00:00",
+       "cornwall",
+       "879.0",
+       "966.4",
+       "0.0"
+      ],
+      [
+       "2026-06-13 12:00:00+00:00",
+       "east_anglia_norfolk",
+       "493.0",
+       "487.0",
+       "100.0"
+      ],
+      [
+       "2026-06-13 12:00:00+00:00",
+       "kent",
+       "859.0",
+       "946.5",
+       "34.0"
+      ],
+      [
+       "2026-06-13 12:00:00+00:00",
+       "oxfordshire",
+       "864.0",
+       "959.4",
+       "55.0"
+      ],
+      [
+       "2026-06-13 12:00:00+00:00",
+       "sussex",
+       "879.0",
+       "971.9",
+       "8.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "kwh = df.groupby([df.timestamp_utc.dt.date, \"location\"]).shortwave_radiation_wm2.sum() / 1000\nkwh.unstack().round(2)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "location",
+      "cornwall",
+      "east_anglia_norfolk",
+      "kent",
+      "oxfordshire",
+      "sussex",
+      "wiltshire_somerset",
+      "timestamp_utc",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     "index": [
+      "2026-06-13",
+      "2026-06-14",
+      "2026-06-15",
+      "2026-06-16",
+      "2026-06-17",
+      "2026-06-18",
+      "2026-06-19"
+     ],
+     "rows": [
+      [
+       "8.17",
+       "5.98",
+       "8.00",
+       "7.77",
+       "8.12",
+       "8.19"
+      ],
+      [
+       "8.36",
+       "5.83",
+       "7.72",
+       "6.78",
+       "7.34",
+       "7.91"
+      ],
+      [
+       "4.64",
+       "4.97",
+       "6.34",
+       "6.16",
+       "6.64",
+       "6.72"
+      ],
+      [
+       "2.40",
+       "6.00",
+       "6.43",
+       "5.66",
+       "6.75",
+       "4.34"
+      ],
+      [
+       "2.30",
+       "5.55",
+       "6.05",
+       "4.64",
+       "5.37",
+       "3.20"
+      ],
+      [
+       "3.45",
+       "6.00",
+       "5.47",
+       "4.78",
+       "5.25",
+       "4.83"
+      ],
+      [
+       "3.16",
+       "7.93",
+       "8.05",
+       "7.58",
+       "8.10",
+       "6.09"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "c = df[df.location == \"cornwall\"].set_index(\"timestamp_utc\")\nc[[\"direct_radiation_wm2\", \"diffuse_radiation_wm2\"]].plot.area(\n    ylabel=\"W/m², mean of the hour before\", color=[\"#C77E3C\", \"#155A6E\"], figsize=(8, 3.5));",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "historical_solar-5.png",
+     "width": 699,
+     "height": 369
+    }
+   ]
+  }
+ ]
+}

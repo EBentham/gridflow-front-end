@@ -1,0 +1,207 @@
+{
+ "dataset": "neso_data_portal/historic_generation_mix",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "a9bce78e84b7e811d42f8dbaac9b37886ede0a7c1f1a27831c1acd4823b44f1b",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.neso_data_portal.query(\"historic_generation_mix\", \"2026-09-19\", \"2026-09-25\")\ndf = df.sort_values(\"timestamp_utc\")",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df.nlargest(5, \"solar\")[[\"timestamp_utc\", \"solar\", \"wind\", \"wind_emb\", \"gas\", \"generation\"]]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "solar",
+      "wind",
+      "wind_emb",
+      "gas",
+      "generation"
+     ],
+     "index": [
+      "72",
+      "73",
+      "71",
+      "70",
+      "74"
+     ],
+     "rows": [
+      [
+       "2026-09-20 13:00:00+01:00",
+       "13127.0",
+       "12580.0",
+       "3357.0",
+       "2440.0",
+       "36540.0"
+      ],
+      [
+       "2026-09-20 13:30:00+01:00",
+       "13087.0",
+       "12121.0",
+       "3301.0",
+       "2434.0",
+       "35868.0"
+      ],
+      [
+       "2026-09-20 12:30:00+01:00",
+       "12868.0",
+       "12753.0",
+       "3112.0",
+       "2449.0",
+       "35954.0"
+      ],
+      [
+       "2026-09-20 12:00:00+01:00",
+       "12532.0",
+       "13374.0",
+       "3169.0",
+       "2444.0",
+       "36320.0"
+      ],
+      [
+       "2026-09-20 14:00:00+01:00",
+       "12461.0",
+       "11717.0",
+       "3173.0",
+       "2441.0",
+       "35025.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "colours = {\"nuclear\": \"#7B5EA7\", \"biomass\": \"#8C6D31\", \"hydro\": \"#1F77B4\",\n           \"coal\": \"#333333\", \"gas\": \"#E07B39\", \"other\": \"#BDB76B\",\n           \"storage\": \"#17BECF\", \"imports\": \"#999999\", \"wind\": \"#3E8C97\",\n           \"wind_emb\": \"#9ED0D6\", \"solar\": \"#F2C14E\"}\nax = df.plot.area(x=\"timestamp_utc\", y=list(colours), color=colours,\n                  ylabel=\"MW\", linewidth=0, figsize=(8, 3.5))\nax.legend(loc=\"center left\", bbox_to_anchor=(1, 0.5), fontsize=8);",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "historic_generation_mix-5.png",
+     "width": 812,
+     "height": 371
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "source": "m = data.neso_data_portal.query(\"historic_generation_mix\", \"2009-01-01\", \"2017-11-01\")\nm[\"biomass_plus_other\"] = m.biomass + m.other\nprint(\"biomass max before 20:00 UTC, 1 Nov 2017:\",\n      m[m.timestamp_utc < \"2017-11-01 20:00Z\"].biomass.max())\nswitch = m.timestamp_utc.between(\"2017-11-01 18:30Z\", \"2017-11-01 21:00Z\")\nm[switch][[\"timestamp_utc\", \"biomass\", \"other\", \"biomass_plus_other\"]]",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "biomass max before 20:00 UTC, 1 Nov 2017: 0.0"
+    },
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "biomass",
+      "other",
+      "biomass_plus_other"
+     ],
+     "index": [
+      "154885",
+      "154886",
+      "154887",
+      "154888",
+      "154889",
+      "154890"
+     ],
+     "rows": [
+      [
+       "2017-11-01 18:30:00+00:00",
+       "0.0",
+       "1462.0",
+       "1462.0"
+      ],
+      [
+       "2017-11-01 19:00:00+00:00",
+       "0.0",
+       "1463.0",
+       "1463.0"
+      ],
+      [
+       "2017-11-01 19:30:00+00:00",
+       "0.0",
+       "1462.0",
+       "1462.0"
+      ],
+      [
+       "2017-11-01 20:00:00+00:00",
+       "1359.0",
+       "1236.0",
+       "2595.0"
+      ],
+      [
+       "2017-11-01 20:30:00+00:00",
+       "1360.0",
+       "104.0",
+       "1464.0"
+      ],
+      [
+       "2017-11-01 21:00:00+00:00",
+       "1359.0",
+       "104.0",
+       "1463.0"
+      ]
+     ]
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,19 @@
+{
+  "dataset": "entsog/urgent_market_messages",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "80d32469858a93f2b1ff788d65c668e0a6ba53ea33391d9a75c8c75aa0007ff5",
+  "type": "bar",
+  "unit": "messages",
+  "caption": "",
+  "value_column": null,
+  "aggregation": "count",
+  "window": null,
+  "provenance": {"duplicates_dropped": 32, "files": 1, "rows_matched": 133, "rows_read": 133, "rows_used": 101, "silver": "entsog/urgent_market_messages", "unmapped_groups": ["BE-TSO-0001", "DE-TSO-0003", "DE-TSO-0005", "DE-TSO-0006", "DE-TSO-0007", "DE-TSO-0010", "DE-TSO-0017", "DE-TSO-0018", "DK-TSO-0001", "EE-TSO-0001", "HR-TSO-0001", "SI-TSO-0001"]},
+  "spec": {"aggregation": "count", "dedup": {"on": ["thread_id"], "order_by": "version_number"}, "group": "market_participant_key", "group_default": "rest", "group_map": {"CZ-TSO-0001": "net4gas", "DE-TSO-0001": "gascade", "DE-TSO-0004": "natran_de", "DE-TSO-0009": "oge", "DE-TSO-0014": "terranets", "FR-TSO-0003": "natran_fr", "HU-TSO-0001": "fgsz", "LV-TSO-0001": "conexus"}, "silver": "entsog/urgent_market_messages", "sort": "value_desc", "type": "bar", "unit": "messages"},
+  "x_kind": "category",
+  "x": ["oge", "natran_de", "rest", "gascade", "natran_fr", "conexus", "fgsz", "terranets", "net4gas"],
+  "series": [
+    {"key": "count", "values": [31, 21, 17, 12, 5, 4, 4, 4, 3]}
+  ]
+}

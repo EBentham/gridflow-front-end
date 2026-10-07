@@ -1,0 +1,326 @@
+{
+ "dataset": "openmeteo/historical_demand",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "a2cff75949773b0d7dda8dd1dbdf04a90be001f86519b0ee60cbc68a49df6a2c",
+ "silver": "open_meteo/historical_demand",
+ "columns": [
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "location",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "temperature_2m_c",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "hdd_k",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "precipitation_mm",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "snowfall_cm",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "snow_depth_m",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "latitude",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "longitude",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "wind_speed_10m_mps",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "wind_direction_10m_deg",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "relative_humidity_2m_pct",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "shortwave_radiation_wm2",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "surface_pressure_hpa",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "cdd_k",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "air_density_kg_m3",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "data_provider",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "ingested_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "vintage_policy",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2026-01-08 16:00:00 UTC",
+   "birmingham",
+   "2.5",
+   "13.0",
+   "0.7",
+   "0.0",
+   "0.0",
+   "52.47803",
+   "-1.840149",
+   "4.416667",
+   "99.0",
+   "99.0",
+   "9.0",
+   "979.3",
+   "0.0",
+   "1.237657",
+   "open_meteo",
+   "2026-09-06 12:53:30.659026 UTC",
+   "2026-01-08 16:00:00 UTC",
+   "2026-01-13 16:00:00 UTC",
+   "6cc5ac72-efea-4a6f-b069-1b3f1ef1337f",
+   "2.0.0",
+   "open_meteo-historical_demand/vp-2026-09"
+  ],
+  [
+   "2026-01-08 17:00:00 UTC",
+   "birmingham",
+   "1.9",
+   "13.6",
+   "1.1",
+   "0.0",
+   "0.0",
+   "52.47803",
+   "-1.840149",
+   "5.472222",
+   "94.0",
+   "100.0",
+   "0.0",
+   "976.8",
+   "0.0",
+   "1.23719",
+   "open_meteo",
+   "2026-09-06 12:53:30.659026 UTC",
+   "2026-01-08 17:00:00 UTC",
+   "2026-01-13 17:00:00 UTC",
+   "6cc5ac72-efea-4a6f-b069-1b3f1ef1337f",
+   "2.0.0",
+   "open_meteo-historical_demand/vp-2026-09"
+  ],
+  [
+   "2026-01-08 18:00:00 UTC",
+   "birmingham",
+   "1.5",
+   "14.0",
+   "1.4",
+   "0.56",
+   "0.01",
+   "52.47803",
+   "-1.840149",
+   "5.75",
+   "82.0",
+   "99.0",
+   "0.0",
+   "974.1",
+   "0.0",
+   "1.235567",
+   "open_meteo",
+   "2026-09-06 12:53:30.659026 UTC",
+   "2026-01-08 18:00:00 UTC",
+   "2026-01-13 18:00:00 UTC",
+   "6cc5ac72-efea-4a6f-b069-1b3f1ef1337f",
+   "2.0.0",
+   "open_meteo-historical_demand/vp-2026-09"
+  ],
+  [
+   "2026-01-08 19:00:00 UTC",
+   "birmingham",
+   "1.0",
+   "14.5",
+   "3.3",
+   "2.03",
+   "0.02",
+   "52.47803",
+   "-1.840149",
+   "7.138889",
+   "69.0",
+   "100.0",
+   "0.0",
+   "971.6",
+   "0.0",
+   "1.234644",
+   "open_meteo",
+   "2026-09-06 12:53:30.659026 UTC",
+   "2026-01-08 19:00:00 UTC",
+   "2026-01-13 19:00:00 UTC",
+   "6cc5ac72-efea-4a6f-b069-1b3f1ef1337f",
+   "2.0.0",
+   "open_meteo-historical_demand/vp-2026-09"
+  ],
+  [
+   "2026-01-08 20:00:00 UTC",
+   "birmingham",
+   "0.8",
+   "14.7",
+   "4.9",
+   "3.29",
+   "0.05",
+   "52.47803",
+   "-1.840149",
+   "7.472222",
+   "59.0",
+   "100.0",
+   "0.0",
+   "970.0",
+   "0.0",
+   "1.233511",
+   "open_meteo",
+   "2026-09-06 12:53:30.659026 UTC",
+   "2026-01-08 20:00:00 UTC",
+   "2026-01-13 20:00:00 UTC",
+   "6cc5ac72-efea-4a6f-b069-1b3f1ef1337f",
+   "2.0.0",
+   "open_meteo-historical_demand/vp-2026-09"
+  ],
+  [
+   "2026-01-08 21:00:00 UTC",
+   "birmingham",
+   "0.8",
+   "14.7",
+   "3.6",
+   "2.31",
+   "0.06",
+   "52.47803",
+   "-1.840149",
+   "7.777778",
+   "50.0",
+   "100.0",
+   "0.0",
+   "968.6",
+   "0.0",
+   "1.23173",
+   "open_meteo",
+   "2026-09-06 12:53:30.659026 UTC",
+   "2026-01-08 21:00:00 UTC",
+   "2026-01-13 21:00:00 UTC",
+   "6cc5ac72-efea-4a6f-b069-1b3f1ef1337f",
+   "2.0.0",
+   "open_meteo-historical_demand/vp-2026-09"
+  ],
+  [
+   "2026-01-08 22:00:00 UTC",
+   "birmingham",
+   "0.8",
+   "14.7",
+   "2.7",
+   "1.68",
+   "0.08",
+   "52.47803",
+   "-1.840149",
+   "7.555556",
+   "40.0",
+   "99.0",
+   "0.0",
+   "968.0",
+   "0.0",
+   "1.230967",
+   "open_meteo",
+   "2026-09-06 12:53:30.659026 UTC",
+   "2026-01-08 22:00:00 UTC",
+   "2026-01-13 22:00:00 UTC",
+   "6cc5ac72-efea-4a6f-b069-1b3f1ef1337f",
+   "2.0.0",
+   "open_meteo-historical_demand/vp-2026-09"
+  ],
+  [
+   "2026-01-08 23:00:00 UTC",
+   "birmingham",
+   "0.7",
+   "14.8",
+   "2.0",
+   "1.19",
+   "0.08",
+   "52.47803",
+   "-1.840149",
+   "7.527778",
+   "26.0",
+   "99.0",
+   "0.0",
+   "968.2",
+   "0.0",
+   "1.231671",
+   "open_meteo",
+   "2026-09-06 12:53:30.659026 UTC",
+   "2026-01-08 23:00:00 UTC",
+   "2026-01-13 23:00:00 UTC",
+   "6cc5ac72-efea-4a6f-b069-1b3f1ef1337f",
+   "2.0.0",
+   "open_meteo-historical_demand/vp-2026-09"
+  ]
+ ],
+ "mark": null
+}

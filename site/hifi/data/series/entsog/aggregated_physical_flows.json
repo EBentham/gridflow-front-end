@@ -1,0 +1,21 @@
+{
+  "dataset": "entsog/aggregated_physical_flows",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "0a1fe2b81710c5425d09eee8fb28bc502341ed58d3481228d2fcc90235827c27",
+  "type": "line",
+  "unit": "kWh/d",
+  "caption": "",
+  "value_column": "value",
+  "aggregation": "last",
+  "window": {"end": "2026-09-21", "rule": "fixed", "start": "2026-09-13"},
+  "provenance": {"files": 14, "null_values_dropped": 0, "rows_matched": 42, "rows_read": 42, "rows_used": 27, "silver": "entsog/aggregated_physical_flows", "silver_first": "2026-08-01T04:00:00Z", "silver_last": "2026-09-21T04:00:00Z"},
+  "spec": {"aggregation": "last", "filter": [{"column": "operator_key", "op": "eq", "value": "UK-TSO-0001"}, {"column": "direction_key", "op": "eq", "value": "entry"}], "group": "adjacent_systems_key", "group_map": {"LNG Terminals": "lng", "Production": "production", "Storage": "storage"}, "series_order": ["production", "storage", "lng"], "silver": "entsog/aggregated_physical_flows", "time": "timestamp_utc", "type": "line", "unit": "kWh/d", "value": "value", "window": {"end": "2026-09-21", "start": "2026-09-13"}},
+  "x_kind": "time",
+  "x": ["2026-09-13T04:00:00Z", "2026-09-14T04:00:00Z", "2026-09-15T04:00:00Z", "2026-09-16T04:00:00Z", "2026-09-17T04:00:00Z", "2026-09-18T04:00:00Z", "2026-09-19T04:00:00Z", "2026-09-20T04:00:00Z", "2026-09-21T04:00:00Z"],
+  "series": [
+    {"key": "production", "values": [322977312.0, 356287010.0, 427221235.0, 442996575.0, 449602261.0, 452816220.0, 434975163.0, 433035977.0, 383537205.0]},
+    {"key": "storage", "values": [134058118.0, 72026868.0, 0.0, 23003243.0, 16008476.0, 0.0, 0.0, 0.0, 378788337.0]},
+    {"key": "lng", "values": [54248476.0, 63905474.0, 71911354.0, 71944652.0, 54259575.0, 54254024.0, 54248476.0, 54248476.0, 113764382.0]}
+  ]
+}

@@ -1,0 +1,197 @@
+{
+ "dataset": "neso/regional_intensity",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "651e6327f3288dfbc734bbf7ceebbfa5d1a8c25445db065dad8fec15a8e375ed",
+ "kernel": "gridflow_models",
+ "source": "neso",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.neso.query(\"regional_intensity\", \"2026-09-14\", \"2026-09-20\")\ndf[\"timestamp_utc\"] = df.timestamp_utc.dt.tz_convert(\"UTC\")\ndf = df.sort_values([\"timestamp_utc\", \"regionid\", \"fuel\"], ignore_index=True)",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "cols = [\"timestamp_utc\", \"regionid\", \"shortname\", \"fuel\", \"generation_percentage\", \"forecast_gco2_kwh\", \"intensity_index\"]\ndf[df.regionid == 7][cols].head(9)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "regionid",
+      "shortname",
+      "fuel",
+      "generation_percentage",
+      "forecast_gco2_kwh",
+      "intensity_index"
+     ],
+     "index": [
+      "54",
+      "55",
+      "56",
+      "57",
+      "58",
+      "59",
+      "60",
+      "61",
+      "62"
+     ],
+     "rows": [
+      [
+       "2026-09-14 00:00:00+00:00",
+       "7",
+       "South Wales",
+       "biomass",
+       "0.0",
+       "379.0",
+       "very high"
+      ],
+      [
+       "2026-09-14 00:00:00+00:00",
+       "7",
+       "South Wales",
+       "coal",
+       "0.0",
+       "379.0",
+       "very high"
+      ],
+      [
+       "2026-09-14 00:00:00+00:00",
+       "7",
+       "South Wales",
+       "gas",
+       "96.3",
+       "379.0",
+       "very high"
+      ],
+      [
+       "2026-09-14 00:00:00+00:00",
+       "7",
+       "South Wales",
+       "hydro",
+       "0.0",
+       "379.0",
+       "very high"
+      ],
+      [
+       "2026-09-14 00:00:00+00:00",
+       "7",
+       "South Wales",
+       "imports",
+       "0.0",
+       "379.0",
+       "very high"
+      ],
+      [
+       "2026-09-14 00:00:00+00:00",
+       "7",
+       "South Wales",
+       "nuclear",
+       "0.0",
+       "379.0",
+       "very high"
+      ],
+      [
+       "2026-09-14 00:00:00+00:00",
+       "7",
+       "South Wales",
+       "other",
+       "0.0",
+       "379.0",
+       "very high"
+      ],
+      [
+       "2026-09-14 00:00:00+00:00",
+       "7",
+       "South Wales",
+       "solar",
+       "0.0",
+       "379.0",
+       "very high"
+      ],
+      [
+       "2026-09-14 00:00:00+00:00",
+       "7",
+       "South Wales",
+       "wind",
+       "3.7",
+       "379.0",
+       "very high"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "one = df.drop_duplicates([\"timestamp_utc\", \"regionid\"])\none[one.regionid <= 14].groupby(\"shortname\").forecast_gco2_kwh.mean().round().sort_values()",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "shortname\nNorth Scotland                0.0\nSouth Scotland                0.0\nNorth East England            9.0\nNorth Wales & Merseyside     14.0\nNorth West England           17.0\nWest Midlands                50.0\nYorkshire                    64.0\nEast England                 86.0\nLondon                      109.0\nEast Midlands               124.0\nSouth England               132.0\nSouth East England          134.0\nSouth West England          241.0\nSouth Wales                 247.0\nName: forecast_gco2_kwh, dtype: float64"
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "source": "gas = df[(df.fuel == \"gas\") & df.regionid.isin([7, 13, 18, 1])]\nax = gas.pivot(index=\"timestamp_utc\", columns=\"shortname\", values=\"generation_percentage\")[\n    [\"South Wales\", \"London\", \"GB\", \"North Scotland\"]\n].plot(ylabel=\"gas share of generation, %\", color=[\"#C77E3C\", \"#66793B\", \"#155A6E\", \"#3E8C97\"], figsize=(8, 3.5))\nax.legend(ncol=4, loc=\"upper center\", bbox_to_anchor=(0.5, -0.3), frameon=False);",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "regional_intensity-6.png",
+     "width": 699,
+     "height": 404
+    }
+   ]
+  }
+ ]
+}

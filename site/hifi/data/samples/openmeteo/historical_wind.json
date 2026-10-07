@@ -1,0 +1,352 @@
+{
+ "dataset": "openmeteo/historical_wind",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "7a25c1ebda4e80f473acefff9ec938c6754581c8fa97c4812cf49f680fcbe619",
+ "silver": "open_meteo/historical_wind",
+ "columns": [
+  {
+   "name": "location",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "wind_speed_100m_mps",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "wind_speed_10m_mps",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "wind_gusts_10m_mps",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "wind_direction_100m_deg",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "air_density_kg_m3",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "latitude",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "longitude",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "temperature_2m_c",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "surface_pressure_hpa",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "wind_direction_10m_deg",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "cloud_cover_pct",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "cloud_cover_low_pct",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "cloud_cover_mid_pct",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "cloud_cover_high_pct",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "dew_point_2m_c",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "precipitation_mm",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "data_provider",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "ingested_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "vintage_policy",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "beatrice",
+   "2025-10-03 23:00:00 UTC",
+   "34.861111",
+   "27.083333",
+   "42.194444",
+   "223.0",
+   "1.164167",
+   "58.24253",
+   "-2.96051",
+   "12.3",
+   "953.9",
+   "222.0",
+   "100.0",
+   "100.0",
+   "100.0",
+   "42.0",
+   "8.8",
+   "0.4",
+   "open_meteo",
+   "2026-09-06 12:36:17.537292 UTC",
+   "2025-10-03 23:00:00 UTC",
+   "2025-10-08 23:00:00 UTC",
+   "c907c946-c794-4c2c-b91a-ce851670e350",
+   "2.0.0",
+   "open_meteo-historical_wind/vp-2026-09"
+  ],
+  [
+   "highland_central",
+   "2025-10-03 23:00:00 UTC",
+   "23.638889",
+   "15.305556",
+   "30.388889",
+   "232.0",
+   "1.134688",
+   "57.18805",
+   "-4.394897",
+   "5.9",
+   "908.9",
+   "233.0",
+   "100.0",
+   "100.0",
+   "100.0",
+   "84.0",
+   "5.3",
+   "2.0",
+   "open_meteo",
+   "2026-09-06 12:36:17.537292 UTC",
+   "2025-10-03 23:00:00 UTC",
+   "2025-10-08 23:00:00 UTC",
+   "c907c946-c794-4c2c-b91a-ce851670e350",
+   "2.0.0",
+   "open_meteo-historical_wind/vp-2026-09"
+  ],
+  [
+   "hornsea",
+   "2025-10-03 23:00:00 UTC",
+   "22.333333",
+   "16.555556",
+   "24.388889",
+   "228.0",
+   "1.189162",
+   "53.884007",
+   "1.7374517",
+   "16.7",
+   "989.4",
+   "227.0",
+   "100.0",
+   "66.0",
+   "100.0",
+   "100.0",
+   "15.5",
+   "0.9",
+   "open_meteo",
+   "2026-09-06 12:36:17.537292 UTC",
+   "2025-10-03 23:00:00 UTC",
+   "2025-10-08 23:00:00 UTC",
+   "c907c946-c794-4c2c-b91a-ce851670e350",
+   "2.0.0",
+   "open_meteo-historical_wind/vp-2026-09"
+  ],
+  [
+   "pen_y_cymoedd",
+   "2025-10-03 23:00:00 UTC",
+   "14.527778",
+   "8.944444",
+   "19.5",
+   "252.0",
+   "1.17619",
+   "51.704742",
+   "-3.606567",
+   "11.1",
+   "959.7",
+   "251.0",
+   "100.0",
+   "99.0",
+   "100.0",
+   "93.0",
+   "10.6",
+   "1.0",
+   "open_meteo",
+   "2026-09-06 12:36:17.537292 UTC",
+   "2025-10-03 23:00:00 UTC",
+   "2025-10-08 23:00:00 UTC",
+   "c907c946-c794-4c2c-b91a-ce851670e350",
+   "2.0.0",
+   "open_meteo-historical_wind/vp-2026-09"
+  ],
+  [
+   "seagreen",
+   "2025-10-03 23:00:00 UTC",
+   "30.583333",
+   "25.333333",
+   "36.194444",
+   "223.0",
+   "1.185231",
+   "56.625656",
+   "-1.878906",
+   "12.4",
+   "971.5",
+   "223.0",
+   "25.0",
+   "20.0",
+   "13.0",
+   "0.0",
+   "8.1",
+   "0.0",
+   "open_meteo",
+   "2026-09-06 12:36:17.537292 UTC",
+   "2025-10-03 23:00:00 UTC",
+   "2025-10-08 23:00:00 UTC",
+   "c907c946-c794-4c2c-b91a-ce851670e350",
+   "2.0.0",
+   "open_meteo-historical_wind/vp-2026-09"
+  ],
+  [
+   "triton_knoll",
+   "2025-10-03 23:00:00 UTC",
+   "15.055556",
+   "9.861111",
+   "19.388889",
+   "248.0",
+   "1.193487",
+   "53.391914",
+   "0.171429",
+   "16.0",
+   "990.6",
+   "246.0",
+   "100.0",
+   "15.0",
+   "91.0",
+   "100.0",
+   "12.3",
+   "0.1",
+   "open_meteo",
+   "2026-09-06 12:36:17.537292 UTC",
+   "2025-10-03 23:00:00 UTC",
+   "2025-10-08 23:00:00 UTC",
+   "c907c946-c794-4c2c-b91a-ce851670e350",
+   "2.0.0",
+   "open_meteo-historical_wind/vp-2026-09"
+  ],
+  [
+   "walney",
+   "2025-10-03 23:00:00 UTC",
+   "21.833333",
+   "17.055556",
+   "27.111111",
+   "245.0",
+   "1.203985",
+   "54.024605",
+   "-3.488373",
+   "12.9",
+   "988.6",
+   "245.0",
+   "18.0",
+   "10.0",
+   "13.0",
+   "0.0",
+   "9.6",
+   "1.5",
+   "open_meteo",
+   "2026-09-06 12:36:17.537292 UTC",
+   "2025-10-03 23:00:00 UTC",
+   "2025-10-08 23:00:00 UTC",
+   "c907c946-c794-4c2c-b91a-ce851670e350",
+   "2.0.0",
+   "open_meteo-historical_wind/vp-2026-09"
+  ],
+  [
+   "whitelee",
+   "2025-10-03 23:00:00 UTC",
+   "22.027778",
+   "14.472222",
+   "25.805556",
+   "235.0",
+   "1.1677",
+   "55.641476",
+   "-4.198791",
+   "7.2",
+   "939.7",
+   "235.0",
+   "90.0",
+   "48.0",
+   "86.0",
+   "0.0",
+   "5.2",
+   "0.5",
+   "open_meteo",
+   "2026-09-06 12:36:17.537292 UTC",
+   "2025-10-03 23:00:00 UTC",
+   "2025-10-08 23:00:00 UTC",
+   "c907c946-c794-4c2c-b91a-ce851670e350",
+   "2.0.0",
+   "open_meteo-historical_wind/vp-2026-09"
+  ]
+ ],
+ "mark": null
+}

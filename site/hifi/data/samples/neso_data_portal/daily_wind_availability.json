@@ -1,0 +1,157 @@
+{
+ "dataset": "neso_data_portal/daily_wind_availability",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "2c28afab0189583dd86ca5515335194a849383e11fcb98b41ae9a9d534eeba38",
+ "silver": "neso_data_portal/daily_wind_availability",
+ "columns": [
+  {
+   "name": "bmu_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "availability_date",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "availability_mw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "data_provider",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "ABRBO-1",
+   "2026-08-31",
+   "99.0",
+   "2026-08-20 21:20:07.510686 UTC",
+   "2026-08-30 23:00:00 UTC",
+   "neso_data_portal",
+   "2026-08-30 23:00:00 UTC",
+   "2026-08-20 21:20:07.510686 UTC",
+   "e1ceb0ee-8bdc-4187-88e8-cbdd9cd64987",
+   "1.0.0"
+  ],
+  [
+   "ASHWW-1",
+   "2026-08-31",
+   "-1.0",
+   "2026-08-20 21:20:07.510686 UTC",
+   "2026-08-30 23:00:00 UTC",
+   "neso_data_portal",
+   "2026-08-30 23:00:00 UTC",
+   "2026-08-20 21:20:07.510686 UTC",
+   "e1ceb0ee-8bdc-4187-88e8-cbdd9cd64987",
+   "1.0.0"
+  ],
+  [
+   "DBAWO-1",
+   "2026-08-31",
+   "302.0",
+   "2026-08-20 21:20:07.510686 UTC",
+   "2026-08-30 23:00:00 UTC",
+   "neso_data_portal",
+   "2026-08-30 23:00:00 UTC",
+   "2026-08-20 21:20:07.510686 UTC",
+   "e1ceb0ee-8bdc-4187-88e8-cbdd9cd64987",
+   "1.0.0"
+  ],
+  [
+   "FALGW-1",
+   "2026-08-31",
+   "0.0",
+   "2026-08-20 21:20:07.510686 UTC",
+   "2026-08-30 23:00:00 UTC",
+   "neso_data_portal",
+   "2026-08-30 23:00:00 UTC",
+   "2026-08-20 21:20:07.510686 UTC",
+   "e1ceb0ee-8bdc-4187-88e8-cbdd9cd64987",
+   "1.0.0"
+  ],
+  [
+   "HOWBO-1",
+   "2026-08-31",
+   "440.0",
+   "2026-08-20 21:20:07.510686 UTC",
+   "2026-08-30 23:00:00 UTC",
+   "neso_data_portal",
+   "2026-08-30 23:00:00 UTC",
+   "2026-08-20 21:20:07.510686 UTC",
+   "e1ceb0ee-8bdc-4187-88e8-cbdd9cd64987",
+   "1.0.0"
+  ],
+  [
+   "MOWWO-1",
+   "2026-08-31",
+   "40.0",
+   "2026-08-20 21:20:07.510686 UTC",
+   "2026-08-30 23:00:00 UTC",
+   "neso_data_portal",
+   "2026-08-30 23:00:00 UTC",
+   "2026-08-20 21:20:07.510686 UTC",
+   "e1ceb0ee-8bdc-4187-88e8-cbdd9cd64987",
+   "1.0.0"
+  ],
+  [
+   "NNGAO-1",
+   "2026-08-31",
+   "0.0",
+   "2026-08-20 21:20:07.510686 UTC",
+   "2026-08-30 23:00:00 UTC",
+   "neso_data_portal",
+   "2026-08-30 23:00:00 UTC",
+   "2026-08-20 21:20:07.510686 UTC",
+   "e1ceb0ee-8bdc-4187-88e8-cbdd9cd64987",
+   "1.0.0"
+  ],
+  [
+   "WHILW-2",
+   "2026-08-31",
+   "217.0",
+   "2026-08-20 21:20:07.510686 UTC",
+   "2026-08-30 23:00:00 UTC",
+   "neso_data_portal",
+   "2026-08-30 23:00:00 UTC",
+   "2026-08-20 21:20:07.510686 UTC",
+   "e1ceb0ee-8bdc-4187-88e8-cbdd9cd64987",
+   "1.0.0"
+  ]
+ ],
+ "mark": null
+}

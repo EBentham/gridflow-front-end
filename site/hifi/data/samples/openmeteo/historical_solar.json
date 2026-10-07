@@ -1,0 +1,326 @@
+{
+ "dataset": "openmeteo/historical_solar",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "7050f8089e9addb67bc65fad4ab612aaf4b5d0dcc8e7c37a0f071295cc6abc93",
+ "silver": "open_meteo/historical_solar",
+ "columns": [
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "location",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "shortwave_radiation_wm2",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "direct_radiation_wm2",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "diffuse_radiation_wm2",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "global_tilted_irradiance_wm2",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "cloud_cover_low_pct",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "cloud_cover_pct",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "latitude",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "longitude",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "temperature_2m_c",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "direct_normal_irradiance_wm2",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "cloud_cover_mid_pct",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "cloud_cover_high_pct",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "snowfall_cm",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "snow_depth_m",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "data_provider",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "ingested_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "vintage_policy",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2026-06-15 07:00:00 UTC",
+   "cornwall",
+   "265.0",
+   "190.0",
+   "75.0",
+   "154.1",
+   "100.0",
+   "100.0",
+   "50.298767",
+   "-5.061493",
+   "15.9",
+   "578.8",
+   "0.0",
+   "84.0",
+   "0.0",
+   "0.0",
+   "open_meteo",
+   "2026-09-06 12:50:31.305457 UTC",
+   "2026-06-15 07:00:00 UTC",
+   "2026-06-20 07:00:00 UTC",
+   "61e86e79-64df-4c37-b6c7-d9048fb26b6d",
+   "2.0.0",
+   "open_meteo-historical_solar/vp-2026-09"
+  ],
+  [
+   "2026-06-15 08:00:00 UTC",
+   "cornwall",
+   "332.0",
+   "135.0",
+   "197.0",
+   "288.8",
+   "100.0",
+   "100.0",
+   "50.298767",
+   "-5.061493",
+   "16.2",
+   "282.0",
+   "0.0",
+   "100.0",
+   "0.0",
+   "0.0",
+   "open_meteo",
+   "2026-09-06 12:50:31.305457 UTC",
+   "2026-06-15 08:00:00 UTC",
+   "2026-06-20 08:00:00 UTC",
+   "61e86e79-64df-4c37-b6c7-d9048fb26b6d",
+   "2.0.0",
+   "open_meteo-historical_solar/vp-2026-09"
+  ],
+  [
+   "2026-06-15 09:00:00 UTC",
+   "cornwall",
+   "360.0",
+   "67.0",
+   "293.0",
+   "335.7",
+   "100.0",
+   "100.0",
+   "50.298767",
+   "-5.061493",
+   "16.3",
+   "108.5",
+   "0.0",
+   "100.0",
+   "0.0",
+   "0.0",
+   "open_meteo",
+   "2026-09-06 12:50:31.305457 UTC",
+   "2026-06-15 09:00:00 UTC",
+   "2026-06-20 09:00:00 UTC",
+   "61e86e79-64df-4c37-b6c7-d9048fb26b6d",
+   "2.0.0",
+   "open_meteo-historical_solar/vp-2026-09"
+  ],
+  [
+   "2026-06-15 10:00:00 UTC",
+   "cornwall",
+   "390.0",
+   "65.0",
+   "325.0",
+   "369.4",
+   "100.0",
+   "100.0",
+   "50.298767",
+   "-5.061493",
+   "16.2",
+   "88.5",
+   "0.0",
+   "99.0",
+   "0.0",
+   "0.0",
+   "open_meteo",
+   "2026-09-06 12:50:31.305457 UTC",
+   "2026-06-15 10:00:00 UTC",
+   "2026-06-20 10:00:00 UTC",
+   "61e86e79-64df-4c37-b6c7-d9048fb26b6d",
+   "2.0.0",
+   "open_meteo-historical_solar/vp-2026-09"
+  ],
+  [
+   "2026-06-15 11:00:00 UTC",
+   "cornwall",
+   "428.0",
+   "55.0",
+   "373.0",
+   "406.4",
+   "100.0",
+   "100.0",
+   "50.298767",
+   "-5.061493",
+   "16.0",
+   "66.9",
+   "0.0",
+   "100.0",
+   "0.0",
+   "0.0",
+   "open_meteo",
+   "2026-09-06 12:50:31.305457 UTC",
+   "2026-06-15 11:00:00 UTC",
+   "2026-06-20 11:00:00 UTC",
+   "61e86e79-64df-4c37-b6c7-d9048fb26b6d",
+   "2.0.0",
+   "open_meteo-historical_solar/vp-2026-09"
+  ],
+  [
+   "2026-06-15 12:00:00 UTC",
+   "cornwall",
+   "471.0",
+   "74.0",
+   "397.0",
+   "451.5",
+   "87.0",
+   "100.0",
+   "50.298767",
+   "-5.061493",
+   "16.8",
+   "84.6",
+   "0.0",
+   "99.0",
+   "0.0",
+   "0.0",
+   "open_meteo",
+   "2026-09-06 12:50:31.305457 UTC",
+   "2026-06-15 12:00:00 UTC",
+   "2026-06-20 12:00:00 UTC",
+   "61e86e79-64df-4c37-b6c7-d9048fb26b6d",
+   "2.0.0",
+   "open_meteo-historical_solar/vp-2026-09"
+  ],
+  [
+   "2026-06-15 13:00:00 UTC",
+   "cornwall",
+   "696.0",
+   "324.0",
+   "372.0",
+   "711.8",
+   "87.0",
+   "100.0",
+   "50.298767",
+   "-5.061493",
+   "17.2",
+   "364.5",
+   "0.0",
+   "100.0",
+   "0.0",
+   "0.0",
+   "open_meteo",
+   "2026-09-06 12:50:31.305457 UTC",
+   "2026-06-15 13:00:00 UTC",
+   "2026-06-20 13:00:00 UTC",
+   "61e86e79-64df-4c37-b6c7-d9048fb26b6d",
+   "2.0.0",
+   "open_meteo-historical_solar/vp-2026-09"
+  ],
+  [
+   "2026-06-15 14:00:00 UTC",
+   "cornwall",
+   "566.0",
+   "153.0",
+   "413.0",
+   "554.3",
+   "100.0",
+   "100.0",
+   "50.298767",
+   "-5.061493",
+   "16.7",
+   "177.3",
+   "0.0",
+   "100.0",
+   "0.0",
+   "0.0",
+   "open_meteo",
+   "2026-09-06 12:50:31.305457 UTC",
+   "2026-06-15 14:00:00 UTC",
+   "2026-06-20 14:00:00 UTC",
+   "61e86e79-64df-4c37-b6c7-d9048fb26b6d",
+   "2.0.0",
+   "open_meteo-historical_solar/vp-2026-09"
+  ]
+ ],
+ "mark": null
+}

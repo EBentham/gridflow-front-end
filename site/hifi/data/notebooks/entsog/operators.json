@@ -1,0 +1,145 @@
+{
+ "dataset": "entsog/operators",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "5f17556e5545e8ba99d2a5026e0600e4e6f04a52816b42619a65d0deff09892e",
+ "kernel": "gridflow_models",
+ "source": "entsog",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.entsog",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.entsog.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.sql(\"\"\"\n    SELECT operator_key, operator_label, operator_country_key, operator_type_label,\n           membership_label, tso_eic_code, gas_day_start_hour\n    FROM silver_entsog_operators\n    ORDER BY operator_key\n\"\"\")",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df[df.operator_country_key == \"UK\"].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "operator_key",
+      "operator_label",
+      "operator_country_key",
+      "operator_type_label",
+      "membership_label",
+      "tso_eic_code",
+      "gas_day_start_hour"
+     ],
+     "index": [
+      "390",
+      "523",
+      "524",
+      "525",
+      "526"
+     ],
+     "rows": [
+      [
+       "IE-TSO-0001",
+       "GNI (UK)",
+       "UK",
+       "TSO",
+       "EUC",
+       "21X-GB-C-A0A0A-Q",
+       "5.0"
+      ],
+      [
+       "UK-H2O-0001",
+       "ITM",
+       "UK",
+       "H2FO",
+       "Unaffiliated",
+       "NaN",
+       "NaN"
+      ],
+      [
+       "UK-LSO-0001",
+       "Grain LNG",
+       "UK",
+       "LSO",
+       "Unaffiliated",
+       "NaN",
+       "NaN"
+      ],
+      [
+       "UK-LSO-0002",
+       "Dragon LNG",
+       "UK",
+       "LSO",
+       "Unaffiliated",
+       "NaN",
+       "NaN"
+      ],
+      [
+       "UK-LSO-0003",
+       "Halite Energy Group",
+       "UK",
+       "LSO",
+       "Unaffiliated",
+       "NaN",
+       "NaN"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "df[\"operator_type_label\"].value_counts()",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "operator_type_label\nTSO     154\nSSO     108\nH2FO    104\nESO      86\nLSO      51\nETO      12\nPSO      10\nDSO       7\nENA       7\nUTI       6\nBRP       5\nASO       3\nNWO       3\nUSO       1\nName: count, dtype: int64"
+    }
+   ]
+  }
+ ]
+}

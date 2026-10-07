@@ -95,8 +95,9 @@ None implemented.
 
 - Official docs use UTC timestamps ending in `Z`; keep joins in UTC.
 - The connector sends no query parameters; all documented inputs are path parameters.
-- Actual carbon intensity values can be null or absent, especially before post-period estimates are available.
-- For `intensity_period`, GB clock-change days can have 46 or 50 settlement periods in implementation even though official docs describe period 1-48.
+- (Corrected 2026-10-06, v5 page author.) The two bullets that stood here described the intensity routes (null `actual`, `intensity_period` clock-change counts) and do not apply: this route has no intensity fields (`silver/neso/carbon_intensity.py:559-586`).
+- **The window is the 24 hours *before* the ingest start.** The route is not daily-iterated (`connectors/neso/endpoints.py:141-147`), so `_request_specs` cuts the ingest window into 14-day chunks and sends each chunk's start as `from` (`connectors/neso/carbon_intensity.py:149-161`): `--start 2026-08-01 --end 2026-08-02` fetches 31 Jul, not 1 Aug, and a window longer than 14 days fetches one 24-hour slice per chunk, not the whole window. Bronze and silver are filed under the chunk start (`carbon_intensity.py:79`).
+- **Measured 2026-10-06 (v5 page author):** the one response held (`from` 2026-08-01T00:00Z) runs from the half-hour ending 2026-07-31T00:00Z to the one ending 2026-08-01T00:00Z, 49 half-hours of nine fuels each, summing to 99.9 to 100.2. Its one half-hour shared with `generation` (`from` 2026-07-31T23:30Z) is identical on all nine fuels. Against `elexon/fuelhh` it shows the same 30-minute stamp offset as `generation` (differenced gas share vs fuelhh gas MW: 0.94 at +30 min, 0.76 at zero lag; wind 0.80 vs 0.33; biomass 0.89 vs 0.16); see that note.
 
 ---
 

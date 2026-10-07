@@ -33,7 +33,7 @@
         <div class="ds-hero__id">
           <nav class="ds-crumb" aria-label="Breadcrumb"><a href="../../data-sources.html">Data sources</a> / <a href="../{{ v.vendor_id }}.html">{{ v.vendor_label }}</a></nav>
           <h1 class="h-hero ds-hero__h" id="ds-h">{{ v.title }}</h1>
-          <p class="ds-keys">{% for c in v.chips %}<code class="ds-chip"{% if c.id %} id="{{ c.id }}"{% endif %}>{{ c.key }}</code>{% endfor %}</p>
+          <p class="ds-keys">{% for c in v.chips %}<code class="ds-chip"{% if c.id %} id="{{ c.id }}"{% endif %}>{{ c.key | breakable }}</code>{% endfor %}</p>
         </div>
         {%- if not v.blank %}
         <div class="ds-hero__facts">
@@ -87,6 +87,40 @@
         </div>
       </figure>
       {%- endif %}
+      {%- if v.map %}
+      {#- where the data is taken: the sites on a map, each a link to its row in the table (the no-script path);
+          site.js adds the card that opens on hover, focus or tap -#}
+      <figure class="wrap ds-map wm" aria-labelledby="map-h">
+        <figcaption class="ds-chart__head">
+          <h2 class="h-fig" id="map-h">{{ v.map.title }}</h2>
+          <p class="caption">{{ v.map.caption | md_inline | safe }}</p>
+        </figcaption>
+        <div class="ds-map__body">
+          <div class="wm-plot">{{ v.map.svg | safe }}<div class="wm-card" aria-hidden="true" hidden></div></div>
+          <div class="wm-side">
+            <p class="caption wm-hint" hidden>The table scrolls sideways to its statistics.</p>
+            <div class="wm-tw" role="region" tabindex="0" aria-label="The {{ v.map.count }} sites, one row each">
+              <table class="wm-t">
+                <thead><tr>{% for c in v.map.columns %}<th scope="col"{% if c.num %} class="num"{% endif %}>{{ c.text }}</th>{% endfor %}</tr></thead>
+                {%- for g in v.map.groups %}
+                <tbody>
+                  {%- if g.name %}
+                  <tr class="wm-gh"><th scope="colgroup" colspan="{{ v.map.columns | length }}">{{ g.name }}</th></tr>
+                  {%- endif %}
+                  {%- for r in g.rows %}
+                  <tr id="site-{{ r.name }}" data-site="{{ r.name }}"><th scope="row"><span class="wm-sw"{% if r.paint %} style="--p:{{ r.paint }}"{% endif %} aria-hidden="true"></span><span class="wm-n">{{ r.label }}</span> <code class="wm-code">{{ r.name }}</code></th><td class="wm-c">{{ r.requested }}</td><td class="wm-c">{{ r.answered }}</td><td class="num">{{ r.apart }}</td>{% for s in r.stats %}<td{% if s.num %} class="num"{% endif %}>{{ s.text }}{% if s.sub %} <span class="wm-sub">{{ s.sub }}</span>{% endif %}</td>{% endfor %}</tr>
+                  {%- endfor %}
+                </tbody>
+                {%- endfor %}
+              </table>
+            </div>
+            {%- for n in v.map.notes %}
+            <p class="caption wm-note">{{ n | md_inline | safe }}</p>
+            {%- endfor %}
+          </div>
+        </div>
+      </figure>
+      {%- endif %}
     </section>
 
     {#- 3. bronze: the vendor's raw URL and the gridflow calls that ingest it -#}
@@ -102,7 +136,7 @@
           <ul class="ds-variants" aria-label="The variants">
             {%- for m in v.variants %}
             <li id="{{ m.slug }}">
-              <p class="ds-variants__h"><code>{{ m.key }}</code> <span>{{ m.code }}</span></p>
+              <p class="ds-variants__h"><code>{{ m.key }}</code>{% if m.code %} <span>{{ m.code }}</span>{% endif %}</p>
               <p class="ds-variants__d">{{ m.differs | md_inline | safe }}</p>
               <pre class="ds-well">{{ m.request | safe }}</pre>
             </li>

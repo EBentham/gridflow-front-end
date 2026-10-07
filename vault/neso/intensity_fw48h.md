@@ -25,7 +25,7 @@ This dataset represents GB electricity carbon intensity in gCO2/kWh for half-hou
 | Rate limit | Not documented by NESO; Gridflow config uses 10 req/s. |
 | Pagination | None. Dynamic inputs are path segments, not query parameters. |
 | Historical depth | Forecast horizon |
-| Publication lag | Forecast product up to 48 hours ahead |
+| Publication lag | Forecast up to 48 hours ahead; a past `{from}` also returns estimated actuals (the `2026-08-01T00:00Z` call, fetched 2026-08-16, has `actual` on all 97 half-hours, starting with the one ending at `{from}`) |
 | Response format | JSON |
 
 ### Query parameters
@@ -63,7 +63,7 @@ curl --ssl-no-revoke -X GET \
 **Path pattern**: `{data_root}/silver/neso/intensity_fw48h/year=<YYYY>/month=<MM>/intensity_fw48h_<YYYYMMDD>.parquet`
 **Transformer class**: `gridflow.silver.neso.carbon_intensity.IntensityFw48HTransformer`
 **Pydantic schema**: `gridflow.schemas.neso.CarbonIntensity`
-**Dedup key**: `(timestamp_utc)`
+**Dedup key**: `(timestamp_utc)`, within one silver date partition (`silver/neso/carbon_intensity.py:485`); nothing deduplicates across partitions, and the partition date is the request window's first day (`connectors/neso/carbon_intensity.py:79`)
 **Point-in-time field**: `timestamp_utc`
 
 ### Silver schema
@@ -109,7 +109,7 @@ None implemented.
 
 ## Modelling notes
 
-Use `forecast_gco2_kwh` as an ex-ante feature and `actual_gco2_kwh` as an ex-post target or label. Filter null actuals before supervised training, join by `timestamp_utc` to Elexon prices, demand, generation, weather, and interconnector features.
+`forecast_gco2_kwh` is NESO's forecast as served at fetch time, not an issued forecast: NESO sends no issue time and silver keeps the latest fetch per partition (see Known issues in [carbon_intensity](./carbon_intensity.md)), so do not treat it as a verified ex-ante feature. Use `actual_gco2_kwh` as an ex-post target or label. Filter null actuals before supervised training, join by `timestamp_utc` to Elexon prices, demand, generation, weather, and interconnector features.
 
 ---
 
