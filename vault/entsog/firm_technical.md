@@ -10,18 +10,18 @@ layer_coverage: bronze, silver
 
 ## Overview
 
-Total firm technical capacity offered by the operator (engineering capability).
+Total firm technical capacity offered by the operator (engineering capability). Every valued Firm Technical record in 2026-08/09 bronze has a validity period that starts before the fetched gas day, so silver keeps only the not-applicable placeholders (see Known issues).
 
 The dataset is one of 19 indicators served by the same `/operationalData`
 endpoint. The (operator, point, direction) tuple selects which physical
 location to read; the `indicator` query parameter selects which series
 (physical flow, nomination, allocation, etc.) is returned. Records carry
-the daily `periodFrom` / `periodTo` window and a `value` in `kWh/d` (or
+a `periodFrom` / `periodTo` window (for capacity, the record's validity period, from one day to decades) and a `value` in `kWh/d` (or
 indicator-specific units for content/quality series).
 
 → Related concepts:
   [Gas day](../../../20-domain/concepts/gas-day.md)
-  [Nominations vs allocations](../../../20-domain/markets/gas-nominations.md)
+  [Nominations, renominations and allocations](nominations.md)
 
 ---
 
@@ -36,7 +36,7 @@ indicator-specific units for content/quality series).
 | Rate limit       | Not vendor-published; project default 5 req/s, validation throttled to 1 req/s |
 | Pagination       | `limit` + `offset`; project sets `limit=-1` (all records) |
 | Historical depth | Approx. 2010 onwards (operator-dependent) |
-| Publication lag  | Same-day for `Provisional` flow status; revised within ~1 week |
+| Publication lag  | Not vendor-documented here. Records carry their own validity period (`periodFrom`/`periodTo`); `flowStatus` is an empty string on every 2026-08/09 record |
 | Response format  | JSON |
 | Indicator | `Firm Technical` (exact-case — vendor rejects lowercase or hyphen variants) |
 | Time zone | `timeZone=UCT` (ENTSOG's spelling — note the typo; not `UTC`) |
@@ -141,93 +141,90 @@ curl --ssl-no-revoke -fsS \
 **Path pattern**: `{data_root}/silver/entsog/firm_technical/year=YYYY/month=MM/firm_technical_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.entsog.GenericEntsogJsonTransformer (subclass FirmTechnicalTransformer)`
 **Pydantic schema**: `Generic — no Pydantic schema declared`
-**Dedup key**: `(timestamp_utc, point_key, operator_key, direction_key)` — fields uniquely identifying one daily record per series
-**Point-in-time field**: `last_update_date_time`
+**Dedup key**: the vendor `id`, `keep="last"`, within each day's bronze read (`silver/entsog/generic.py:193-199`). The `id` joins indicator, keys, unit and the record's period dates, so `(timestamp_utc, operator_key, point_key, direction_key)` is unique in 2026-08/09 silver.
+**Bronze read filter**: a record is kept only when the local date of its `periodFrom` is the bronze day (`generic.py:157-161`, `:332`; `datetime.py:56-87`); see Known issues.
+**Point-in-time field**: none used by the pipeline. `last_update_date_time` is the vendor's `lastUpdateDateTime`, converted to UTC (`generic.py:181-183`); `ingested_at` is the silver transform time (`generic.py:201-206`).
 
 ### Silver schema
 
 | Field | Python type | Nullable | Source field | Notes |
 |-------|-------------|----------|--------------|-------|
-| id | str | int | Yes | id |  |
-| data_set | str | int | Yes | dataSet |  |
-| indicator | str | Yes | indicator |  |
-| period_type | str | Yes | periodType |  |
+| timestamp_utc | datetime[UTC] | Yes | derived | `period_from` copied (`generic.py:185-187`): the start of the record's validity period in UTC; 04:00 UTC on valued 2026-08/09 rows, 03:00 UTC on not-applicable placeholders |
 | period_from | datetime[UTC] | Yes | periodFrom |  |
 | period_to | datetime[UTC] | Yes | periodTo |  |
+| indicator | str | Yes | indicator |  |
+| period_type | str | Yes | periodType |  |
 | operator_key | str | Yes | operatorKey |  |
-| tso_eic_code | str | Yes | tsoEicCode |  |
 | operator_label | str | Yes | operatorLabel |  |
+| tso_eic_code | str | Yes | tsoEicCode |  |
 | point_key | str | Yes | pointKey |  |
 | point_label | str | Yes | pointLabel |  |
-| tso_item_identifier | str | Yes | tsoItemIdentifier |  |
 | direction_key | str | Yes | directionKey |  |
-| unit | str | Yes | unit |  |
+| unit | str | Yes | unit | As sent, not converted; `kWh/d` on every 2026-08/09 row |
+| value | float | Yes | value | In the row's `unit`, not converted; sent as `""` it is null (Float64 cast with `strict=False`, `generic.py:189-191`) |
+| id | str | Yes | id | Dedup key (see above) |
+| data_set | Int64 | Yes | dataSet |  |
+| tso_item_identifier | str | Yes | tsoItemIdentifier |  |
 | item_remarks | str | Yes | itemRemarks |  |
 | general_remarks | str | Yes | generalRemarks |  |
-| value | float | Yes | value |  |
 | last_update_date_time | datetime[UTC] | Yes | lastUpdateDateTime |  |
-| is_unlimited | bool | Yes | isUnlimited |  |
+| is_unlimited | null | Yes | isUnlimited | Null dtype: null on every 2026-08/09 row |
 | flow_status | str | Yes | flowStatus |  |
-| interruption_type | str | Yes | interruptionType |  |
-| restoration_information | str | Yes | restorationInformation |  |
-| capacity_type | str | Yes | capacityType |  |
-| capacity_booking_status | str | Yes | capacityBookingStatus |  |
-| is_cam_relevant | bool | Yes | isCamRelevant |  |
-| is_na | str | Yes | isNA |  |
+| interruption_type | null | Yes | interruptionType | Null dtype: null on every 2026-08/09 row |
+| restoration_information | null | Yes | restorationInformation | Null dtype: null on every 2026-08/09 row |
+| capacity_type | null | Yes | capacityType | Null dtype: null on every 2026-08/09 row |
+| capacity_booking_status | null | Yes | capacityBookingStatus | Null dtype: null on every 2026-08/09 row |
+| is_cam_relevant | null | Yes | isCamRelevant | Null dtype: null on every 2026-08/09 row |
+| is_na | Int64 | Yes | isNA |  |
 | original_period_from | datetime[UTC] | Yes | originalPeriodFrom |  |
-| is_cmp_relevant | bool | Yes | isCmpRelevant |  |
+| is_cmp_relevant | str | Yes | isCmpRelevant |  |
 | booking_platform_key | str | Yes | bookingPlatformKey |  |
 | booking_platform_label | str | Yes | bookingPlatformLabel |  |
 | booking_platform_url | str | Yes | bookingPlatformURL |  |
-| interruption_calculation_remark | str | Yes | interruptionCalculationRemark |  |
-| point_type | str | Yes | pointType |  |
-| id_point_type | str | Yes | idPointType |  |
-| is_archived | bool | Yes | isArchived |  |
+| interruption_calculation_remark | null | Yes | interruptionCalculationRemark | Null dtype: null on every 2026-08/09 row |
 | data_provider | str | No | derived | Always `entsog` |
-| ingested_at | datetime[UTC] | No | derived | Wall-clock at silver write |
+| ingested_at | datetime[UTC] | No | derived | Silver transform time (`generic.py:201-206`) |
 
 ### Silver sample
 
 ```python
 [
     {
-        "id": "1Firm TechnicaldayUK-TSO-0001ITP-00005exitkWh/d2022-01-012028-05-01",
-        "data_set": 1,
+        "timestamp_utc": "2026-09-21T03:00:00+00:00",
+        "period_from": "2026-09-21T03:00:00+00:00",
+        "period_to": "2026-09-22T03:00:00+00:00",
         "indicator": "Firm Technical",
         "period_type": "day",
-        "period_from": "2022-01-01T06:00:00+01:00",
-        "period_to": "2028-05-01T06:00:00+02:00",
         "operator_key": "UK-TSO-0001",
-        "tso_eic_code": "21X-GB-A-A0A0A-7",
         "operator_label": "National Gas TSO",
-        "point_key": "ITP-00005",
-        "point_label": "Bacton (IUK)",
-        "tso_item_identifier": "21Z000000000083P",
-        "direction_key": "exit",
+        "tso_eic_code": "21X-GB-A-A0A0A-7",
+        "point_key": "ITP-00090",
+        "point_label": "Moffat",
+        "direction_key": "entry",
         "unit": "kWh/d",
-        "item_remarks": "",
+        "value": null,
+        "id": "1Firm TechnicaldayUK-TSO-0001ITP-00090entrykWh/d2026-01-012027-01-01_NA0",
+        "data_set": 1,
+        "tso_item_identifier": "48ZMOFFAT-ENTRYQ",
+        "item_remarks": "Virtual Point, currently Moffat is only Unidirectional exit",
         "general_remarks": "",
-        "value": 518112451,
-        "last_update_date_time": "2026-05-01T02:11:58+02:00",
-        "is_unlimited": "0",
+        "last_update_date_time": "2025-02-20T13:01:12+00:00",
+        "is_unlimited": null,
         "flow_status": "",
-        "interruption_type": "",
-        "restoration_information": "",
-        "capacity_type": "Firm",
+        "interruption_type": null,
+        "restoration_information": null,
+        "capacity_type": null,
         "capacity_booking_status": null,
-        "is_cam_relevant": false,
-        "is_na": null,
-        "original_period_from": null,
-        "is_cmp_relevant": null,
-        "booking_platform_key": null,
-        "booking_platform_label": null,
-        "booking_platform_url": null,
+        "is_cam_relevant": null,
+        "is_na": 1,
+        "original_period_from": "2013-10-01T03:00:00+00:00",
+        "is_cmp_relevant": "",
+        "booking_platform_key": "",
+        "booking_platform_label": "",
+        "booking_platform_url": "",
         "interruption_calculation_remark": null,
-        "point_type": "Cross-Border Transmission IP between EU and ExtEU",
-        "id_point_type": 23,
-        "is_archived": null,
         "data_provider": "entsog",
-        "ingested_at": "2026-05-08T18:00:00+00:00"
+        "ingested_at": "2026-09-26T17:45:17.909053+00:00"
     }
 ]
 ```
@@ -250,6 +247,10 @@ None implemented.
 - **Datetime placeholders**: `lastUpdateDateTime` and `originalPeriodFrom` may be empty strings, `"-"`, `"N/A"`, or human-formatted strings (`"Jan 15 2024 06:00AM"`). `parse_entsog_datetime` returns `None` for unparseable values rather than raising.
 - **`directionKey` casing varies**: lowercase (`entry`/`exit`) in `/operationalData`; capitalised (`Exit`) in `/cmpUnsuccessfulRequests`. Don't compare with `==` across families.
 - **Period offset is +02:00 (CET)**: even with `timeZone=UCT`, `periodFrom` carries `+02:00` (CEST in summer / `+01:00` in winter). The silver transformer's `parse_entsog_datetime` converts to UTC.
+- **Silver drops records whose validity starts before the fetched gas day**: the generic transformer runs the gas-day filter `partition_records_to_target_date` on every dataset that requires dates (`silver/entsog/generic.py:157-161`; `date_window_dataset = endpoint.requires_dates`, `:332`; `datetime.py:56-87`), so a record is kept only when the local date of its `periodFrom` is the bronze day (`datetime.py:191-213`). Capacity records are validity periods (in 2026-08/09 bronze, from one day to 2015-2048), so most are dropped. `tariffs` and `tariff_simulations` are exempt for the same reason (`generic.py:297-306`); capacity indicators are not. 2026-08/09: 126 bronze records (98 with a value) became 28 silver rows (0 with a value).
+- **Not-applicable placeholders**: National Gas TSO `ITP-00090` entry and `ITP-00207` exit send one record a day with `isNA` 1, `value` "" (null in silver), `periodFrom` 05:00+02:00 (03:00 UTC, an hour before valued rows), an `id` ending `_NA<n>` with a fixed 2026-2027 range that recurs every day, and the remarks "Virtual Point, currently Moffat is only Unidirectional exit", "Virtual Point, currently BBL is only Unidirectional entry".
+- **Requested versus returned (2026-08/09 bronze)**: all nine `pointDirection` filters return one record each; `meta.count` equals `meta.total` (9) in every response. Unlike nominations, BBL company's `ITP-00063` filters return values here.
+- **Partition dtype drift**: a column whose rows are all null in one day's response is written with Null dtype in that partition and String in others (see the schema table). `pl.read_parquet` over the table glob fails; read per file and concatenate with `how="diagonal_relaxed"`.
 
 
 
@@ -257,7 +258,7 @@ None implemented.
 
 ## Implementation delta
 
-- **No documented discrepancies** for this indicator. Live API returns the indicator name in `meta.fields` matching the code's exact-case constant in `OPERATIONAL_INDICATORS`.
+- **Silver retention**: the generic gas-day filter drops capacity records whose validity starts before the fetched day (see Known issues). The indicator name matches the code's exact-case constant in `OPERATIONAL_INDICATORS` (`connectors/entsog/endpoints.py:95-115`).
 - **Synthetic fixture**: `tests/fixtures/entsog/physical_flows_response.json` carries placeholder `pointKey: "IUK"` and `operatorKey: "OP-IUK"`. Live data uses real keys (`ITP-00005`, `UK-TSO-0001`). Fixture regeneration is deferred (silver tests depend on the placeholder shape).
 
 ---
@@ -266,7 +267,7 @@ None implemented.
 
 - Used as raw input to gas balance / interconnector flow features in `gridflow_models/`.
 - Target candidates: directional flow magnitude (entry vs exit per point).
-- Filter on `flowStatus == 'Confirmed'` for backtesting; `Provisional` for live model serving.
+- `flow_status` is an empty string on every 2026-08/09 row, so the `Confirmed`/`Provisional` filter used for flows does not apply. Drop `is_na == 1` placeholders, and treat a row's `value` as applying from `period_from` to `period_to`, not only on the gas day it is stamped with.
 - Join with `operator_point_directions` to attach country, balancing zone, and CAM-relevant flags.
 
 ---
