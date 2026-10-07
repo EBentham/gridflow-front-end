@@ -40,7 +40,7 @@ does not carry are silver-null.
 | Rate limit       | Soft limit ~10 000 requests/day per IP (vendor-published, free tier); ~600/min burst. Project caps at 5 req/s in `config/sources.yaml`. |
 | Pagination       | None — chunk via `start_date` / `end_date` (or `forecast_days`) |
 | Historical depth | Forward-looking only — supports `past_days` to stitch up to ~92 days of recent past, but the canonical path for past data is the [archive endpoint](./historical_wind.md) |
-| Publication lag  | Real-time — current run typically refreshed every ~1 hour by the upstream NWP router |
+| Publication lag  | Depends on the model the router picks; vendor docs list update frequencies per model (IFS every 6 hours, ICON every 3 hours, GFS every hour; checked 2026-10-06) |
 | Response format  | JSON (columnar — one parallel array per variable) |
 
 ### Query parameters
@@ -159,7 +159,7 @@ parallel array or carry `null` — silver fills `None`.
 | `longitude` | `float` | No | top-level `longitude` | Float64 |
 | `temperature_2m_c` | `float` | Yes | `hourly.temperature_2m[i]` | °C |
 | `surface_pressure_hpa` | `float` | Yes | `hourly.surface_pressure[i]` | hPa |
-| `precipitation_mm` | `float` | Yes | `hourly.precipitation[i]` | mm/hr |
+| `precipitation_mm` | `float` | Yes | `hourly.precipitation[i]` | mm, sum of the preceding hour (vendor docs) |
 | `wind_speed_10m_mps` | `float` | Yes | `hourly.wind_speed_10m[i]` | m/s at 10m |
 | `wind_speed_80m_mps` | `float` | Yes | `hourly.wind_speed_80m[i]` | m/s at 80m — null if NWP model does not carry |
 | `wind_speed_100m_mps` | `float` | Yes | `hourly.wind_speed_100m[i]` | m/s at 100m |
@@ -273,9 +273,17 @@ None implemented.
 - **Hub-height nulls are model-driven, not silver bugs.** When
   `wind_speed_120m` is null, the underlying NWP model did not
   publish it for that grid cell. Silver does not fabricate values.
-- **Forecast vintages overwritten.** Each silver build replaces the
-  forecast for `(timestamp_utc, location)` with the latest fetch.
-  No `forecast_run_at` column.
+- **Forecast vintages overwritten.** Silver keeps one row per
+  `(timestamp_utc, location)` and no `forecast_run_at` column. The row
+  comes from the bronze partition the transform reads for that day
+  (the exact day, else the nearest earlier one,
+  `silver/base.py:2337-2365`), the latest fetch within it
+  (`keep="last"` over fetch-time-named files); a newer fetch filed under
+  an earlier start date does not win (checked 2026-10-06).
+- **Past windows are fetched like future ones.** The connector sends
+  `start_date`/`end_date` from `--start`/`--end` with no check that they
+  lie ahead (`connectors/openmeteo/client.py:109-116`), and the response
+  names no model run, so a row cannot show when it was forecast.
 - **Approximate site centroids.** Same caveat as
   [historical_wind §approximate locations](./historical_wind.md#known-issues-and-gotchas).
   See ADR-020.

@@ -1,0 +1,223 @@
+{
+ "dataset": "openmeteo/historical_demand",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "9c61dbc570c69ec338a26ee5eb6ebcb8ba9f120ca46fde03804ce4e39cc85272",
+ "kernel": "gridflow_models",
+ "source": "open_meteo",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.open_meteo",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.open_meteo.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.open_meteo.query(\"historical_demand\", \"2026-01-05\", \"2026-01-11\")\ndf[\"timestamp_utc\"] = df.timestamp_utc.dt.tz_convert(\"UTC\")\ndf = df.sort_values([\"timestamp_utc\", \"location\"], ignore_index=True)\ndf[[\"timestamp_utc\", \"location\", \"temperature_2m_c\", \"hdd_k\", \"snowfall_cm\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "location",
+      "temperature_2m_c",
+      "hdd_k",
+      "snowfall_cm"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2026-01-05 00:00:00+00:00",
+       "belfast",
+       "-1.7",
+       "17.2",
+       "0.00"
+      ],
+      [
+       "2026-01-05 00:00:00+00:00",
+       "birmingham",
+       "-1.1",
+       "16.6",
+       "0.07"
+      ],
+      [
+       "2026-01-05 00:00:00+00:00",
+       "cardiff",
+       "-2.0",
+       "17.5",
+       "0.00"
+      ],
+      [
+       "2026-01-05 00:00:00+00:00",
+       "glasgow",
+       "-4.0",
+       "19.5",
+       "0.00"
+      ],
+      [
+       "2026-01-05 00:00:00+00:00",
+       "leeds",
+       "-2.1",
+       "17.6",
+       "0.00"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "hdd_days = df.groupby([df.timestamp_utc.dt.date, \"location\"]).hdd_k.sum() / 24\nhdd_days.unstack().rename_axis(index=None, columns=None).round(1)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "belfast",
+      "birmingham",
+      "cardiff",
+      "glasgow",
+      "leeds",
+      "london",
+      "manchester"
+     ],
+     "index": [
+      "2026-01-05",
+      "2026-01-06",
+      "2026-01-07",
+      "2026-01-08",
+      "2026-01-09",
+      "2026-01-10",
+      "2026-01-11"
+     ],
+     "rows": [
+      [
+       "15.7",
+       "18.1",
+       "17.0",
+       "18.0",
+       "17.2",
+       "16.8",
+       "18.5"
+      ],
+      [
+       "13.2",
+       "15.6",
+       "14.1",
+       "14.2",
+       "14.8",
+       "16.4",
+       "15.4"
+      ],
+      [
+       "12.3",
+       "12.7",
+       "11.6",
+       "14.2",
+       "13.0",
+       "12.6",
+       "12.0"
+      ],
+      [
+       "13.6",
+       "13.7",
+       "11.5",
+       "15.7",
+       "14.6",
+       "11.8",
+       "13.6"
+      ],
+      [
+       "14.4",
+       "14.3",
+       "12.0",
+       "16.8",
+       "13.3",
+       "11.8",
+       "12.9"
+      ],
+      [
+       "14.2",
+       "16.8",
+       "13.2",
+       "14.7",
+       "15.3",
+       "14.1",
+       "15.2"
+      ],
+      [
+       "6.5",
+       "11.2",
+       "7.9",
+       "9.4",
+       "12.0",
+       "11.1",
+       "9.9"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "ax = df.pivot(index=\"timestamp_utc\", columns=\"location\", values=\"temperature_2m_c\").plot(\n    ylabel=\"temperature, °C\", xlabel=\"UTC\", figsize=(8, 3.5))\nax.legend(ncol=4, loc=\"upper center\", bbox_to_anchor=(0.5, -0.3), frameon=False);",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "historical_demand-5.png",
+     "width": 704,
+     "height": 425
+    }
+   ]
+  }
+ ]
+}

@@ -43,7 +43,7 @@ wind-site forecasts, use [forecast_demand](./forecast_demand.md) or
 | Rate limit       | Soft limit ~10 000 requests/day per IP (vendor-published, free tier); ~600/min burst. Project caps at 5 req/s. |
 | Pagination       | None — chunk via `start_date` / `end_date` (or `forecast_days`) |
 | Historical depth | Forward-looking only — supports `past_days` to stitch up to ~92 days of recent past, but the canonical path for past data is the [archive endpoint](./historical_solar.md) |
-| Publication lag  | Real-time — current run typically refreshed every ~1 hour by the upstream NWP router |
+| Publication lag  | Model-dependent; the vendor lists update intervals per model (open-meteo.com/en/docs, read 2026-10-06), e.g. ICON "Every 3 hours", GFS "Every hour", IFS "Every 6 hours". The connector pins no model, and the response does not name the run it came from |
 | Response format  | JSON (columnar — one parallel array per variable) |
 
 ### Query parameters
@@ -70,6 +70,13 @@ Connector requests these `hourly` variables (`endpoints.SOLAR_HOURLY_VARS`):
 `direct_normal_irradiance`, `diffuse_radiation`,
 `global_tilted_irradiance`, `cloud_cover`, `cloud_cover_low`,
 `cloud_cover_mid`, `cloud_cover_high`, `snowfall`, `snow_depth`.
+
+**What a time stamp covers** (vendor variable table, open-meteo.com/en/docs,
+read 2026-10-06): the irradiance variables are a "Preceding hour mean" in
+W/m², so the row stamped 12:00 covers 11:00 to 12:00; `snowfall` is a
+"Preceding hour sum" in cm of snow; `temperature_2m`, the `cloud_cover`
+variables and `snow_depth` are "Instant". Stamps are UTC (`timezone=UTC`).
+See [historical_solar](./historical_solar.md#query-parameters) for the quotes.
 
 ### Working curl example
 
@@ -139,7 +146,7 @@ The silver transformer's `BRONZE_DATASET_PREFIX` is `"forecast_solar"`.
 **Transformer class**: `gridflow.silver.openmeteo.forecast.ForecastSolarWeather`
 **Pydantic schema**: `gridflow.schemas.weather.SolarWeather`
 **Dedup key**: `(timestamp_utc, location)` — `df.unique(subset=["timestamp_utc", "location"], keep="last")`
-**Point-in-time field**: `available_at` — bitemporal stamp from `BaseSilverTransformer` (F0). No `forecast_run_at`; older vintages overwritten on re-ingest.
+**Point-in-time field**: `available_at` — bitemporal stamp from `BaseSilverTransformer` (F0). No `forecast_run_at`; older vintages overwritten on re-transform (which fetch wins: see Known issues).
 
 ### Silver schema
 
@@ -147,8 +154,8 @@ The silver transformer's `BRONZE_DATASET_PREFIX` is `"forecast_solar"`.
 |-------|-------------|----------|--------------|-------|
 | `timestamp_utc` | `datetime[UTC]` | No | `hourly.time[i]` | UTC tz applied |
 | `location` | `str` | No | derived | Site key from `SOLAR_LOCATIONS` |
-| `latitude` | `float` | No | top-level `latitude` | Float64 |
-| `longitude` | `float` | No | top-level `longitude` | Float64 |
+| `latitude` | `float` | No | top-level `latitude` | Float64. The forecast model's grid-cell centre, not the requested site point, and not the archive's cell. Cornwall: requested 50.30, returned 50.30215 |
+| `longitude` | `float` | No | top-level `longitude` | Float64. Grid-cell centre, as `latitude`. Cornwall: requested -5.00, returned -5.004654 |
 | `temperature_2m_c` | `float` | Yes | `hourly.temperature_2m[i]` | °C |
 | `shortwave_radiation_wm2` | `float` | Yes | `hourly.shortwave_radiation[i]` | GHI, W/m² |
 | `direct_radiation_wm2` | `float` | Yes | `hourly.direct_radiation[i]` | Beam on horizontal, W/m² |
@@ -159,7 +166,7 @@ The silver transformer's `BRONZE_DATASET_PREFIX` is `"forecast_solar"`.
 | `cloud_cover_low_pct` | `float` | Yes | `hourly.cloud_cover_low[i]` | % |
 | `cloud_cover_mid_pct` | `float` | Yes | `hourly.cloud_cover_mid[i]` | % |
 | `cloud_cover_high_pct` | `float` | Yes | `hourly.cloud_cover_high[i]` | % |
-| `snowfall_cm` | `float` | Yes | `hourly.snowfall[i]` | New-snow water equivalent per hour, cm |
+| `snowfall_cm` | `float` | Yes | `hourly.snowfall[i]` | Snowfall over the preceding hour in cm of snow, not water equivalent (vendor: divide by 7 for water mm) |
 | `snow_depth_m` | `float` | Yes | `hourly.snow_depth[i]` | Standing snow depth, m |
 | `data_provider` | `str` | No | derived | Constant `"open_meteo"` |
 | `ingested_at` | `datetime[UTC]` | Yes | derived | Wall-clock UTC at silver-build time |
@@ -180,8 +187,8 @@ transformer does NOT carry air density.
     {
         "timestamp_utc": datetime(2026, 5, 8, 11, 0, tzinfo=UTC),
         "location": "cornwall",
-        "latitude": 50.30,
-        "longitude": -5.00,
+        "latitude": 50.30215,
+        "longitude": -5.004654,
         "temperature_2m_c": 14.5,
         "shortwave_radiation_wm2": 580.0,
         "direct_radiation_wm2": 400.0,
@@ -200,8 +207,8 @@ transformer does NOT carry air density.
     {
         "timestamp_utc": datetime(2026, 5, 8, 12, 0, tzinfo=UTC),
         "location": "kent",
-        "latitude": 51.20,
-        "longitude": 0.70,
+        "latitude": 51.202526,
+        "longitude": 0.7145386,
         "temperature_2m_c": 17.0,
         "shortwave_radiation_wm2": 720.0,
         "direct_radiation_wm2": 510.0,
@@ -230,16 +237,12 @@ None implemented.
 
 ## Known issues and gotchas
 
-- **⚠️ On-disk GTI is north-facing (known-wrong) and NOT correctable in place.**
-  The existing `forecast_solar` silver in `{data_root}/silver/open_meteo/forecast_solar/`
-  was fetched at the pre-fix `azimuth=180` (= **north** under Open-Meteo's
-  `0=S / ±180=N` convention) and is understated ~50% at solar noon. Unlike
-  [historical_solar](./historical_solar.md) — re-corrected from the deterministic
-  ERA5 archive on 2026-06-04 — a forecast is a point-in-time **vintage**:
-  re-fetching a past date returns the *current* model run, not the original
-  forecast, so these on-disk vintages **cannot be corrected without changing what
-  they mean** and are left as-is (known-wrong). GHI / DNI / DHI are unaffected.
-  All FUTURE forecasts are correct (connector now sends `azimuth=0`). See OM-04.
+- **On-disk GTI is south-facing (checked 2026-10-06; supersedes the OM-04
+  "north-facing, known-wrong" note).** The pre-fix `azimuth=180` silver is no
+  longer on disk: local silver now holds only 1 to 5 Aug and 13 to 22 Sep 2026,
+  from fetches on 2026-08-16 and 2026-09-26 whose bronze sidecars record
+  `tilt=35&azimuth=0`. Midday (12:00 and 13:00 UTC, clear hours) median
+  GTI/GHI is 1.15 in Aug and 1.40 in Sep, never below 0.8. See OM-04.
 - **No `air_density_kg_m3` on this dataset** — see
   [historical_solar §Known issues and gotchas](./historical_solar.md#known-issues-and-gotchas).
   Solar variable list does not request `surface_pressure`.
@@ -251,9 +254,24 @@ None implemented.
 - **Unpinned NWP model.** Open-Meteo's forecast endpoint uses a router;
   irradiance forecast skill varies by model. If reproducibility
   matters, pin via `models=<id>`.
-- **Forecast vintages overwritten.** Each silver build replaces the
-  forecast for `(timestamp_utc, location)` with the latest fetch. No
-  `forecast_run_at` column.
+- **Forecast vintages overwritten.** No `forecast_run_at` column; one row
+  per `(timestamp_utc, location)`. Silver day D reads one bronze partition
+  per site: the exact date D if it has files, else the nearest earlier one
+  within 35 days (`silver/openmeteo/historical.py:183-197`,
+  `silver/base.py:2337-2365`), keeping only D's hours and, within that
+  partition, the last file in name (fetch-time) order
+  (`historical.py:258`, `unique(keep="last")`). So a newer fetch that
+  started on an earlier date than an existing exact partition does not
+  replace it. `available_at` is the time gridflow stored the response, an
+  ingest-run stamp, not a model run time (`VINTAGE_POLICY =
+  None`, `forecast.py:65`), not a model run time.
+- **Past dates are fetched as asked.** The connector sends `start_date` and
+  `end_date` as given (`connectors/openmeteo/client.py:109-116`) and does
+  not refuse past windows. Every row in local silver was fetched after its
+  target hour (1 to 6 Aug fetched 2026-08-16; 13 to 22 Sep fetched
+  2026-09-26), so none is a forecast made ahead of time. What `/forecast`
+  returns for past dates is not documented in this note; the vendor points
+  to its Historical Forecast API for archived runs.
 - **Approximate site centroids** — see ADR-020. All 6 sites are below
   53° N (south-east bias).
 - **Snow shading.** Same caveat as
@@ -291,10 +309,14 @@ None implemented.
   and a tracker-specific transposition.
 - **Cloud-cover dynamics.** Forecast cloud cover at three heights is
   particularly useful for hour-ahead nowcast features.
-- **Forecast-skill backtests.** Cross-vintage analysis is **not
-  currently possible** without `forecast_run_at` — see Known issues.
-  Pair against [historical_solar](./historical_solar.md) at matching
-  lead times for bias-correction features.
+- **Forecast-skill backtests.** Not possible from the stored rows: there
+  is no `forecast_run_at`, and every stored row was fetched after its
+  target hour (see Known issues), so no row has a positive lead time.
+  Lead-time features against [historical_solar](./historical_solar.md)
+  need forecasts captured ahead of the hour first.
+- **Status of the notes above.** The day-ahead and nowcast uses describe
+  what the forecast host can serve when fetched ahead of time, not what
+  the stored rows hold.
 - **Aggregate forecast.** Sites are GW-capacity-weighted south-east
   hotspots; weight by installed capacity per region for GB-aggregate
   forecast.

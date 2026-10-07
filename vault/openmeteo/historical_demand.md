@@ -4,15 +4,149 @@ dataset_key: historical_demand
 vendor: Open-Meteo
 last_verified: 2026-06-03
 layer_coverage: bronze, silver
+page:
+  title: Weather at UK demand centres
+  summary: >-
+    Hourly weather at seven UK population centres from Open-Meteo's archive and forecast hosts,
+    with heating and cooling degrees derived.
+  facts:
+    vendor: Open-Meteo, Historical Weather API and Forecast API
+    cadence: Hourly values; the archive's ERA5 part arrives about 5 days late
+    grain: One row per UTC hour and city, seven UK cities
+    history: Archive from 1940 (ERA5); forecasts up to 16 days ahead
+  landscape: power
+  what_it_is: >-
+    Nine weather variables at seven cities, London to Belfast, plus derived heating,
+    cooling and air-density columns. `historical_demand` reads the archive; `forecast_demand` the
+    forecast host, with dates sent unchanged. Its fetches asked for windows mostly past, so about one
+    in seven silver rows was fetched before its hour (up to five days ahead), the rest up to about
+    374 hours after.
+  how_used:
+    - Temperature and heating degrees as the main features of a demand model.
+    - Snowfall and snow depth as winter-peak features beside temperature.
+    - "The forecast member's request and columns, a template for capturing real forecasts."
+  chart:
+    type: line
+    silver: open_meteo/historical_demand
+    time: timestamp_utc
+    value: temperature_2m_c
+    filter:
+      - {column: location, op: in, value: [london, glasgow]}
+    group: location
+    series_order: [london, glasgow]
+    aggregation: mean
+    time_bucket: 1d
+    window: {start: "2025-09-01", end: "2026-08-31"}
+    unit: "°C"
+  chart_view:
+    title: Daily mean temperature, London and Glasgow, 2025 to 2026
+    caption: >-
+      Silver `historical_demand`, °C, the mean of the 24 hourly values in each UTC day, 1 September
+      2025 to 31 August 2026, two of the seven cities. `forecast_demand` is not drawn: it keeps no
+      model run time.
+    alt: >-
+      Line chart of daily mean air temperature at 2 m from open_meteo/historical_demand, in °C, for
+      London (clay) and Glasgow (horizon), one point per UTC day from 1 September 2025 to 31 August
+      2026. London starts near 16.4 °C and Glasgow near 14.5 °C; both fall to their lows on 5 January 2026 (London -1.3,
+      Glasgow -2.5) and rise through spring. London peaks at 30.4 °C on 26 June, Glasgow at 20.6 °C
+      on 25 June. London is the warmer on 351 of the 365 days.
+    x_label: UTC day
+    key:
+      - {series: london, label: London, codes: london, paint: clay}
+      - {series: glasgow, label: Glasgow, codes: glasgow, paint: horizon}
+  locations:
+    title: Where the weather is taken
+    caption: >-
+      The seven cities gridflow requests, and the archive grid point Open-Meteo answered from, a few
+      kilometres off; London and Glasgow keep their chart colours. The forecast host answers from its
+      own grid points, not drawn.
+  raw_feed:
+    note: >-
+      One GET per city; `end_date` is inclusive and stamps are UTC. Bronze keeps every fetch, filed
+      under its window's start date; silver keeps one value per hour and city.
+    requests:
+      - "GET https://archive-api.open-meteo.com/v1/archive?latitude=52.4862&longitude=-1.8904&hourly=temperature_2m,wind_speed_10m,wind_direction_10m,relative_humidity_2m,precipitation,shortwave_radiation,surface_pressure,snowfall,snow_depth&start_date=2026-01-05&end_date=2026-01-11&timezone=UTC"
+    commands:
+      - {run: gridflow ingest open_meteo historical_demand --start 2026-01-05 --end 2026-01-11, comment: "bronze; the end date is fetched"}
+      - {run: gridflow transform open_meteo historical_demand --start 2026-01-05 --end 2026-01-11, comment: bronze to silver}
+  record:
+    select:
+      filter:
+        - {column: location, op: eq, value: birmingham}
+        - {column: timestamp_utc, op: ge, value: "2026-01-08T16:00:00+00:00"}
+        - {column: timestamp_utc, op: le, value: "2026-01-08T23:00:00+00:00"}
+      order_by: [timestamp_utc]
+      columns: [timestamp_utc, location, temperature_2m_c, hdd_k, precipitation_mm, snowfall_cm, snow_depth_m]
+    key: [timestamp_utc, location]
+    caption: "From `historical_demand`: Birmingham, 16:00 to 23:00 UTC on 8 January 2026, the hours snowfall began."
+    fields:
+      timestamp_utc: "The vendor's `time`, requested in UTC; sums and means cover the hour before it"
+      location: "City name from gridflow's fixed list of seven, London to Belfast"
+      temperature_2m_c: Air temperature 2 m above ground at the stamp, °C
+      hdd_k: "15.5 °C minus the temperature, floored at 0, in K; gridflow derives it"
+      precipitation_mm: Rain, showers and snow over the preceding hour, mm
+      snowfall_cm: Snow over the preceding hour in cm of snow, not water equivalent
+      snow_depth_m: Snow lying on the ground at the stamp, metres
+      latitude: "Latitude Open-Meteo returns, not the city point gridflow requests"
+      longitude: "Longitude Open-Meteo returns, not the city point gridflow requests"
+      wind_speed_10m_mps: "Wind speed 10 m up at the stamp; the vendor's km/h divided by 3.6"
+      wind_direction_10m_deg: Wind direction 10 m up at the stamp, degrees
+      relative_humidity_2m_pct: Relative humidity 2 m above ground at the stamp, %
+      shortwave_radiation_wm2: Global horizontal irradiance averaged over the preceding hour, W/m²
+      surface_pressure_hpa: Air pressure at the surface at the stamp, hPa
+      cdd_k: "The temperature minus 22.0 °C, floored at 0, in K; gridflow derives it"
+      air_density_kg_m3: "Dry-air density from pressure and temperature, kg/m³; gridflow derives it"
+  notebook:
+    source: open_meteo
+    lead: >-
+      Returns a pandas DataFrame from `silver_open_meteo_historical_demand`, filtered on
+      `timestamp_utc`, both end dates included; lineage columns dropped. The cells sort by hour and
+      city, then turn heating degrees into degree-days.
+    cells:
+      - |
+        df = data.open_meteo.query("historical_demand", "2026-01-05", "2026-01-11")
+        df["timestamp_utc"] = df.timestamp_utc.dt.tz_convert("UTC")
+        df = df.sort_values(["timestamp_utc", "location"], ignore_index=True)
+        df[["timestamp_utc", "location", "temperature_2m_c", "hdd_k", "snowfall_cm"]].head()
+      - |
+        hdd_days = df.groupby([df.timestamp_utc.dt.date, "location"]).hdd_k.sum() / 24
+        hdd_days.unstack().rename_axis(index=None, columns=None).round(1)
+      - |
+        ax = df.pivot(index="timestamp_utc", columns="location", values="temperature_2m_c").plot(
+            ylabel="temperature, °C", xlabel="UTC", figsize=(8, 3.5))
+        ax.legend(ncol=4, loc="upper center", bbox_to_anchor=(0.5, -0.3), frameon=False);
+    needs: 5 to 11 January 2026
+    plot_alt: >-
+      Line plot of hourly 2 m temperature in °C at all seven cities, 5 to 11 January 2026, UTC.
+      Most lines stay between -6 and 7 °C until the 10th; the low is -5.8 °C, Manchester, 01:00
+      on the 6th. All climb on the 11th: Cardiff reaches 11.5 °C at 20:00, and all end between
+      8.9 and 10.1 °C.
+  related:
+    - {dataset: elexon/indo, note: "National demand outturn to fit against these temperatures"}
+    - {dataset: elexon/ndf, note: "Elexon's demand forecast, the benchmark a weather model must beat"}
+    - {dataset: openmeteo/historical_wind, note: "Same archive at wind farm sites, for the supply side"}
+    - {dataset: openmeteo/historical_solar, note: "Same archive at solar sites, adding irradiance on a tilted panel"}
+  family:
+    slug: demand-weather
+    members:
+      - dataset: historical_demand
+        differs: "Archive host; by default blends ECMWF IFS, ERA5 and ERA5-Land"
+        request: "GET https://archive-api.open-meteo.com/v1/archive?latitude=52.4862&longitude=-1.8904&hourly=temperature_2m,wind_speed_10m,wind_direction_10m,relative_humidity_2m,precipitation,shortwave_radiation,surface_pressure,snowfall,snow_depth&start_date=2026-01-05&end_date=2026-01-11&timezone=UTC"
+      - dataset: forecast_demand
+        differs: "Forecast host, own grid cells; silver keeps one value per hour, no run time"
+        request: "GET https://api.open-meteo.com/v1/forecast?latitude=52.4862&longitude=-1.8904&hourly=temperature_2m,wind_speed_10m,wind_direction_10m,relative_humidity_2m,precipitation,shortwave_radiation,surface_pressure,snowfall,snow_depth&start_date=2026-10-06&end_date=2026-10-12&timezone=UTC"
 ---
 
-# Open-Meteo — Historical Demand Weather (ERA5 archive, population centres)
+# Open-Meteo — Historical Demand Weather (archive, population centres)
 
 ## Overview
 
-Hourly historical weather observations derived from the ECMWF ERA5
-reanalysis at 7 GB population centres (London, Birmingham, Manchester,
-Leeds, Glasgow, Cardiff, Belfast). This is the demand-modelling feed —
+Hourly historical weather from Open-Meteo's archive, whose default Best
+Match "combines IFS HRES, ERA5 and ERA5-Land seamlessly" (the connector
+sends no `models` parameter; [Historical Weather API docs](https://open-meteo.com/en/docs/historical-weather-api),
+read 2026-10-06), at 7 UK population centres (London, Birmingham, Manchester,
+Leeds, Glasgow, Cardiff, Belfast; Belfast is in Northern Ireland, outside
+GB, and `connectors/openmeteo/endpoints.py:55` calls the list "UK"). This is the demand-modelling feed —
 temperature drives heating and cooling load, snow and humidity feed
 winter-peak load surprises, and air density (derived in silver) is a
 secondary input for high-load adjustments. ERA5 has multi-decade depth,
@@ -42,7 +176,7 @@ dataset; `DATASET_VERSION` bumped 1.0.0 → 2.0.0.
 | Rate limit       | Soft limit ~10 000 requests/day per IP (vendor-published, free tier); ~600/min burst. Project caps at 5 req/s in `config/sources.yaml`. |
 | Pagination       | None — chunk via `start_date` / `end_date` window |
 | Historical depth | 1940-01-01 (ERA5 reanalysis depth — vendor states "since 1940") |
-| Publication lag  | ~5 days behind real time (ERA5 reanalysis cadence) |
+| Publication lag  | ~5 days behind real time (ERA5 reanalysis cadence; the docs list ERA5 and ERA5-Land as "Daily with 5 days delay" and ECMWF IFS as "Every 6 hours with no delay") |
 | Response format  | JSON (columnar — one parallel array per variable) |
 
 ### Query parameters
@@ -56,7 +190,7 @@ dataset; `DATASET_VERSION` bumped 1.0.0 → 2.0.0.
 | `hourly` | csv string | Yes | Comma-separated variable names — connector requests 9 fields | `temperature_2m,wind_speed_10m,...` |
 | `timezone` | string | No (default `GMT`) | Connector always passes `UTC` | `UTC` |
 | `daily` | csv string | No | Daily-aggregated variables — not used by gridflow | — |
-| `models` | csv string | No | ERA5 model variant override — not used | — |
+| `models` | csv string | No | Model override (default Best Match blends IFS HRES, ERA5, ERA5-Land) — not used | — |
 
 Connector requests these `hourly` variables (`endpoints.DEMAND_HOURLY_VARS`):
 `temperature_2m`, `wind_speed_10m`, `wind_direction_10m`,
@@ -135,7 +269,7 @@ transformer's `BRONZE_DATASET_PREFIX` is `"historical_demand"`; its
 **Transformer class**: `gridflow.silver.openmeteo.historical.HistoricalDemandWeather`
 **Pydantic schema**: `gridflow.schemas.weather.DemandWeather`
 **Dedup key**: `(timestamp_utc, location)` — `df.unique(subset=["timestamp_utc", "location"], keep="last")`
-**Point-in-time field**: `available_at` — bitemporal stamp from `BaseSilverTransformer` (F0). ERA5 archive values are stable once published.
+**Point-in-time field**: `available_at` — bitemporal stamp from `BaseSilverTransformer` (F0). Values from the ERA5 part are stable once published; whether recent hours from the IFS part are later replaced is unverified.
 
 ### Silver schema
 
@@ -149,10 +283,10 @@ transformer's `BRONZE_DATASET_PREFIX` is `"historical_demand"`; its
 | `wind_speed_10m_mps` | `float` | Yes | `hourly.wind_speed_10m[i]` | Wind speed 10 m above ground, m/s |
 | `wind_direction_10m_deg` | `float` | Yes | `hourly.wind_direction_10m[i]` | Wind direction 10 m, degrees (0=N, 90=E) |
 | `relative_humidity_2m_pct` | `float` | Yes | `hourly.relative_humidity_2m[i]` | Relative humidity 2 m, % |
-| `precipitation_mm` | `float` | Yes | `hourly.precipitation[i]` | Precipitation total per hour, mm |
-| `shortwave_radiation_wm2` | `float` | Yes | `hourly.shortwave_radiation[i]` | Mean shortwave radiation (GHI), W/m² |
+| `precipitation_mm` | `float` | Yes | `hourly.precipitation[i]` | Precipitation (rain, showers, snow) summed over the hour before the stamp, mm (docs: "Preceding hour sum") |
+| `shortwave_radiation_wm2` | `float` | Yes | `hourly.shortwave_radiation[i]` | Shortwave radiation (GHI) averaged over the hour before the stamp, W/m² (docs: "Preceding hour mean") |
 | `surface_pressure_hpa` | `float` | Yes | `hourly.surface_pressure[i]` | Surface pressure, hPa |
-| `snowfall_cm` | `float` | Yes | `hourly.snowfall[i]` | New-snow water equivalent per hour, cm |
+| `snowfall_cm` | `float` | Yes | `hourly.snowfall[i]` | Snowfall over the hour before the stamp, cm of snow, not water equivalent (docs: "Snowfall amount of the preceding hour in centimeters") |
 | `snow_depth_m` | `float` | Yes | `hourly.snow_depth[i]` | Standing snow depth, m |
 | `hdd_k` | `float` | Yes | derived | `max(15.5 - temperature_2m, 0)` — heating degree-hours, base 15.5 °C |
 | `cdd_k` | `float` | Yes | derived | `max(temperature_2m - 22.0, 0)` — cooling degree-hours, base 22.0 °C |
@@ -214,6 +348,23 @@ time by `BaseSilverTransformer` per the F0 pattern; `DATASET_VERSION` is
 
 ---
 
+### Vintage policy (ADR-031, added 2026-09-06)
+
+ERA5 archive rows emit no vendor `published_at`. gridflow v0.20 declares a
+**Vintage Policy** on the historical transformer (`silver/openmeteo/historical.py`;
+the forecast transformer sets `VINTAGE_POLICY = None`):
+
+| Field | Value |
+|---|---|
+| name | `open_meteo-historical_demand/vp-2026-09` |
+| lag | **5 days** after the hour — from this page's "~5 days behind real time" ERA5 reanalysis cadence (vault-sourced, not vendor-guaranteed) |
+| applies_before | `2026-08-01T00:00Z` (the August 2026 smoke ingest); earlier `event_time` is reconstructed, later rows keep the ingest clock |
+| rule | `available_at = coalesce(published_at, event_time + 5d)` only when `event_time < applies_before` AND `event_time + 5d < ingest_stamp`; otherwise the ingest stamp |
+
+Every row carries a `vintage_policy` label (policy name / `"ingest-clock"` /
+`"vendor"`); pre-v0.20 parquet reads as null — treat null as unknown. Source of
+truth: `docs/DECISION_LOG/ADR-031-vintage-policy-reconstruction.md`.
+
 ## Gold layer
 
 None implemented.
@@ -232,7 +383,7 @@ None implemented.
 - **ERA5 reanalysis lag.** Roughly 5 days. Calls for `end_date` within
   the last 5 days may return 200 with truncated arrays or null trailing
   values. Plan backfills with this lag in mind.
-- **ERA5 grid-cell snapping.** The `latitude` / `longitude` echoed in
+- **Grid-cell snapping.** The `latitude` / `longitude` echoed in
   the response can differ slightly from the request (snapped to the
   nearest grid cell). Silver stores the *response* values, not the
   request values. Don't dedup on lat/lon.

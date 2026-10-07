@@ -4,14 +4,148 @@ dataset_key: historical_wind
 vendor: Open-Meteo
 last_verified: 2026-06-03
 layer_coverage: bronze, silver
+page:
+  title: Weather at GB wind farms
+  summary: >-
+    Hourly weather at 12 GB wind-farm locations from Open-Meteo's archive and forecast APIs,
+    including wind at 10 m and 100 m.
+  facts:
+    vendor: Open-Meteo, historical weather (archive) and forecast APIs
+    cadence: One value per hour, stamped in UTC
+    grain: One row per hour and wind location
+  landscape: power
+  what_it_is: >-
+    Hourly weather at 12 points near GB wind farms (approximate centres from capacity registers):
+    eight offshore, four onshore. Wind speed at 10 m and 100 m, direction, 10 m gusts, temperature,
+    pressure, cloud, dew point and precipitation; gridflow converts speeds to m/s and derives air
+    density. The forecast member adds 80, 120 and 180 m and keeps no issue time.
+  how_used:
+    - Weather inputs to a GB wind generation model, fitted against `fuelhh` WIND outturn.
+    - Air density and the 10 m to 100 m shear for power-curve corrections.
+  chart:
+    type: line
+    silver: open_meteo/historical_wind
+    time: timestamp_utc
+    value: wind_speed_100m_mps
+    filter:
+      - {column: location, op: in, value: [beatrice, walney, hornsea, whitelee]}
+    group: location
+    series_order: [beatrice, walney, hornsea, whitelee]
+    aggregation: last
+    window: {start: "2025-09-29", end: "2025-10-05"}
+    unit: m/s
+  chart_view:
+    title: 100 m wind, 29 September to 5 October 2025
+    caption: >-
+      Silver `open_meteo/historical_wind` (archive member only), `wind_speed_100m_mps` in m/s,
+      29 September to 5 October 2025 UTC. Four of 12 sites (three offshore coasts, one
+      onshore) over a week from near calm to 34.9. Forecast rows (no issue time) are not drawn.
+    alt: >-
+      Line chart of wind speed at 100 m from open_meteo/historical_wind, in m/s, hourly from 29
+      September to 5 October 2025 UTC, at Beatrice, Walney, Hornsea and Whitelee. All four stay at
+      or below 15.2 m/s to the end of 1 October, with lows of 0.4 at Beatrice and 0.5 at Walney on
+      the 29th and 0.4 at Hornsea on the 30th. On 3 October Walney peaks at 27.0, Whitelee at 26.4
+      and Beatrice at 34.9 (23:00); Hornsea peaks at 24.4 on the 4th. All end between 10.1 and 12.5.
+    x_label: hour, UTC
+    key:
+      - {series: beatrice, label: "Beatrice, offshore", codes: beatrice, note: "Moray Firth; the highest point, 34.9 m/s at 23:00 UTC on 3 October", paint: petrol}
+      - {series: walney, label: "Walney, offshore", codes: walney, note: Irish Sea, paint: horizon}
+      - {series: hornsea, label: "Hornsea, offshore", codes: hornsea, note: Southern North Sea, paint: olive}
+      - {series: whitelee, label: "Whitelee, onshore", codes: whitelee, note: Scotland, paint: clay}
+  locations:
+    title: Where the weather is taken
+    caption: >-
+      The 12 points gridflow requests at GB wind farms, and the archive grid point answering each.
+      Triton Knoll's is 17.7 km away on the Lincolnshire coast, so its statistics describe that coast,
+      not the farm. Charted sites keep their colours.
+  raw_feed:
+    note: >-
+      One request per location; bronze files each location's response under the window's first
+      day. gridflow sends no `models`, so Open-Meteo answers with its default model blend.
+    requests:
+      - "GET https://archive-api.open-meteo.com/v1/archive?latitude=53.88&longitude=1.79&hourly=temperature_2m%2Csurface_pressure%2Cwind_speed_10m%2Cwind_speed_100m%2Cwind_direction_10m%2Cwind_direction_100m%2Cwind_gusts_10m%2Ccloud_cover%2Ccloud_cover_low%2Ccloud_cover_mid%2Ccloud_cover_high%2Cdew_point_2m%2Cprecipitation&start_date=2025-09-29&end_date=2025-10-05&timezone=UTC"
+    commands:
+      - {run: gridflow ingest open_meteo historical_wind --start 2025-09-29 --end 2025-10-05, comment: "bronze; the end date is fetched"}
+      - {run: gridflow transform open_meteo historical_wind --start 2025-09-29 --end 2025-10-05, comment: bronze to silver}
+  record:
+    select:
+      filter:
+        - {column: timestamp_utc, op: eq, value: "2025-10-03T23:00:00Z"}
+        - {column: location, op: in, value: [beatrice, seagreen, highland_central, whitelee, walney, hornsea, triton_knoll, pen_y_cymoedd]}
+      order_by: [location]
+      columns: [location, timestamp_utc, wind_speed_100m_mps, wind_speed_10m_mps, wind_gusts_10m_mps, wind_direction_100m_deg, air_density_kg_m3]
+    key: [timestamp_utc, location]
+    caption: "23:00 UTC on 3 October 2025 at eight of the 12 locations, in alphabetical order."
+    fields:
+      location: "gridflow's name for one of its 12 GB wind locations"
+      timestamp_utc: "The hour Open-Meteo stamps, in UTC because gridflow sends `timezone=UTC`"
+      wind_speed_100m_mps: "Wind speed at 100 m, an instant value; km/h converted to m/s"
+      wind_speed_10m_mps: "Wind speed at 10 m, an instant value; km/h converted to m/s"
+      wind_gusts_10m_mps: "Gust speed at 10 m for the stamped hour; km/h converted to m/s"
+      wind_direction_100m_deg: "Wind direction at 100 m, in degrees"
+      air_density_kg_m3: "Derived by gridflow: dry-air density from surface pressure and 2 m temperature"
+      latitude: "Latitude of the grid point Open-Meteo answered with, not the request's"
+      longitude: "Longitude of the grid point Open-Meteo answered with, not the request's"
+      temperature_2m_c: "Air temperature at 2 m, °C"
+      surface_pressure_hpa: "Surface pressure, hPa"
+      wind_direction_10m_deg: "Wind direction at 10 m, in degrees"
+      cloud_cover_pct: "Total cloud cover, %"
+      cloud_cover_low_pct: "Low cloud cover, %"
+      cloud_cover_mid_pct: "Mid-level cloud cover, %"
+      cloud_cover_high_pct: "High cloud cover, %"
+      dew_point_2m_c: "Dew point at 2 m, °C"
+      precipitation_mm: "Precipitation in mm, summed over the hour before the stamp"
+  notebook:
+    lead: >-
+      Returns a pandas DataFrame from `silver_open_meteo_historical_wind`, filtered on
+      `timestamp_utc`, whole UTC days with both ends included; lineage columns and `vintage_policy`
+      are dropped, `ingested_at` stays.
+    source: open_meteo
+    cells:
+      - |
+        df = data.open_meteo.query("historical_wind", "2025-09-29", "2025-10-05")
+        df["timestamp_utc"] = df["timestamp_utc"].dt.tz_convert("UTC")
+        df = df.sort_values(["timestamp_utc", "location"], ignore_index=True)
+      - |
+        df[["timestamp_utc", "location", "wind_speed_10m_mps", "wind_speed_100m_mps", "wind_gusts_10m_mps"]].head()
+      - |
+        shear = df.wind_speed_100m_mps / df.wind_speed_10m_mps
+        shear.groupby(df.location).median().round(2).sort_values()
+      - |
+        sites = ["beatrice", "walney", "hornsea", "whitelee"]
+        wide = df[df.location.isin(sites)].pivot(index="timestamp_utc", columns="location", values="wind_speed_100m_mps")[sites]
+        wide.plot(ylabel="wind speed at 100 m, m/s", color=["#155A6E", "#3E8C97", "#66793B", "#C77E3C"], figsize=(8, 3.5));
+    needs: 29 September to 5 October 2025
+    plot_alt: >-
+      Line plot of wind_speed_100m_mps against timestamp_utc, 29 September to 5 October 2025, for
+      beatrice (petrol), walney (horizon), hornsea (olive) and whitelee (clay). All four stay under
+      about 19 m/s until 3 October, when beatrice spikes to about 35 m/s late on. On the
+      4th whitelee drops to 10 to 19 m/s; the offshore three stay about 18 to 27.
+  related:
+    - {dataset: elexon/fuelhh, note: "WIND outturn to fit these wind speeds against"}
+    - {dataset: elexon/agws, note: "Offshore and onshore wind generation, to match the location types"}
+    - {dataset: elexon/windfor, note: "GB wind generation forecast, a benchmark for a weather-driven model"}
+    - {dataset: openmeteo/historical_solar, note: "The same archive and model blend at six solar locations"}
+  family:
+    slug: wind-weather
+    members:
+      - dataset: historical_wind
+        differs: "Archive host, default model blend; wind at 10 m and 100 m only"
+        request: "GET https://archive-api.open-meteo.com/v1/archive?latitude=53.88&longitude=1.79&hourly=temperature_2m%2Csurface_pressure%2Cwind_speed_10m%2Cwind_speed_100m%2Cwind_direction_10m%2Cwind_direction_100m%2Cwind_gusts_10m%2Ccloud_cover%2Ccloud_cover_low%2Ccloud_cover_mid%2Ccloud_cover_high%2Cdew_point_2m%2Cprecipitation&start_date=2025-09-29&end_date=2025-10-05&timezone=UTC"
+      - dataset: forecast_wind
+        differs: "Forecast host; adds 80, 120, 180 m; keeps no model run or issue time"
+        request: "GET https://api.open-meteo.com/v1/forecast?latitude=53.88&longitude=1.79&hourly=temperature_2m%2Csurface_pressure%2Cwind_speed_10m%2Cwind_speed_100m%2Cwind_direction_10m%2Cwind_direction_100m%2Cwind_gusts_10m%2Ccloud_cover%2Ccloud_cover_low%2Ccloud_cover_mid%2Ccloud_cover_high%2Cdew_point_2m%2Cprecipitation%2Cwind_speed_80m%2Cwind_speed_120m%2Cwind_speed_180m%2Cwind_direction_80m%2Cwind_direction_120m%2Cwind_direction_180m&start_date=2026-09-13&end_date=2026-09-22&timezone=UTC"
 ---
 
-# Open-Meteo — Historical Wind Weather (ERA5 archive, GB capacity-weighted sites)
+# Open-Meteo — Historical Wind Weather (archive, GB capacity-weighted sites)
 
 ## Overview
 
-Hourly historical wind-relevant weather observations from the ECMWF
-ERA5 reanalysis at **12 capacity-weighted GB wind sites** — 8 offshore
+Hourly historical wind-relevant weather from Open-Meteo's archive API
+(not pure ERA5: the connector sends no `models` parameter,
+`connectors/openmeteo/client.py:109-116`, and the vendor docs say "The
+default Best Match combines IFS HRES, ERA5 and ERA5-Land seamlessly";
+checked 2026-10-06) at **12 capacity-weighted GB wind sites** — 8 offshore
 clusters (Dogger Bank, Hornsea, East Anglia, Triton Knoll, Walney,
 Gwynt y Môr, Beatrice, Seagreen) and 4 onshore (Highland Central,
 Borders Crystal Rig, Whitelee, Pen y Cymoedd). New at F7.5.
@@ -27,10 +161,7 @@ the GB wind sites over hours h0..h1?* For near-real-time use
 weather, use [historical_demand](./historical_demand.md) or
 [historical_solar](./historical_solar.md).
 
-`historical_wind` is **net-new at F7.5** — no F0-era predecessor.
-Historical bronze backfill required (~12 sites × 8 yr × 365 d ≈ 35 000
-location-days; documented in `F7.5-RESULTS.md` but not run during
-phase execution).
+`historical_wind` was added at F7.5; it has no F0-era predecessor.
 
 ---
 
@@ -44,8 +175,8 @@ phase execution).
 | Auth             | None (public, free tier — no key, no header) |
 | Rate limit       | Soft limit ~10 000 requests/day per IP (vendor-published, free tier); ~600/min burst. Project caps at 5 req/s in `config/sources.yaml`. |
 | Pagination       | None — chunk via `start_date` / `end_date` window |
-| Historical depth | 1940-01-01 (ERA5 reanalysis depth — vendor states "since 1940") |
-| Publication lag  | ~5 days behind real time (ERA5 reanalysis cadence) |
+| Historical depth | 1940-01-01 (the depth of the blend's ERA5 component — vendor states "since 1940") |
+| Publication lag  | Not one figure: no model is pinned, and the vendor docs give ERA5 and ERA5-Land "Daily with 5 days delay" but IFS HRES "Every 6 hours with no delay"; the response does not say which model answered an hour (checked 2026-10-06) |
 | Response format  | JSON (columnar — one parallel array per variable) |
 
 ### Query parameters
@@ -84,7 +215,7 @@ hourly entries (7 days × 24 hours), 10m and 100m non-null for all hours.
 
 ## Archive 10m+100m limitation
 
-ERA5 archive reliably exposes only **`wind_speed_10m`** and
+The archive reliably exposes only **`wind_speed_10m`** and
 **`wind_speed_100m`** for hub-height wind. Heights `80m`, `120m`,
 `180m` return `units: "undefined"` and **all-null** values. Verified
 2026-05-09 against:
@@ -102,9 +233,11 @@ correlation.
 `WIND_ARCHIVE_VARS` deliberately excludes `wind_speed_{80,120,180}m`
 and the matching directions to avoid silver carrying empty columns.
 The wider hub-height set is available on the **forecast** endpoint —
-see [forecast_wind](./forecast_wind.md). `WindWeather` accepts the
-null-degradation cleanly (all hub-height fields typed `float | None`),
-so silver shape is identical between archive and forecast.
+see [forecast_wind](./forecast_wind.md). `WindWeather` types all
+hub-height fields `float | None`, but silver shape is **not** identical:
+the transformer writes only the columns of its own variable list
+(`silver/openmeteo/historical.py:296-313`), so this table has no 80m /
+120m / 180m columns at all (checked 2026-10-06).
 
 ---
 
@@ -170,7 +303,7 @@ transformer's `BRONZE_DATASET_PREFIX` is `"historical_wind"`.
 **Transformer class**: `gridflow.silver.openmeteo.historical.HistoricalWindWeather`
 **Pydantic schema**: `gridflow.schemas.weather.WindWeather`
 **Dedup key**: `(timestamp_utc, location)` — `df.unique(subset=["timestamp_utc", "location"], keep="last")`
-**Point-in-time field**: `available_at` — bitemporal stamp from `BaseSilverTransformer` (F0). ERA5 archive values are stable.
+**Point-in-time field**: `available_at` — bitemporal stamp from `BaseSilverTransformer` (F0). Stability of archive values is not documented: the default blend includes IFS HRES, which has no delay, so recent hours may not be ERA5 values.
 
 ### Silver schema
 
@@ -182,17 +315,17 @@ transformer's `BRONZE_DATASET_PREFIX` is `"historical_wind"`.
 | `longitude` | `float` | No | top-level `longitude` | Float64 |
 | `temperature_2m_c` | `float` | Yes | `hourly.temperature_2m[i]` | °C |
 | `surface_pressure_hpa` | `float` | Yes | `hourly.surface_pressure[i]` | hPa |
-| `precipitation_mm` | `float` | Yes | `hourly.precipitation[i]` | mm/hr |
+| `precipitation_mm` | `float` | Yes | `hourly.precipitation[i]` | mm, sum of the preceding hour (vendor docs) |
 | `wind_speed_10m_mps` | `float` | Yes | `hourly.wind_speed_10m[i]` | m/s at 10m |
-| `wind_speed_80m_mps` | `float` | Yes | not requested on archive | **always null on this dataset** — see [Archive limitation](#archive-10m100m-limitation) |
+| `wind_speed_80m_mps` | `float` | Yes | not requested on archive | **column not written on this dataset** — see [Archive limitation](#archive-10m100m-limitation) |
 | `wind_speed_100m_mps` | `float` | Yes | `hourly.wind_speed_100m[i]` | m/s at 100m |
-| `wind_speed_120m_mps` | `float` | Yes | not requested on archive | **always null on this dataset** |
-| `wind_speed_180m_mps` | `float` | Yes | not requested on archive | **always null on this dataset** |
+| `wind_speed_120m_mps` | `float` | Yes | not requested on archive | **column not written on this dataset** |
+| `wind_speed_180m_mps` | `float` | Yes | not requested on archive | **column not written on this dataset** |
 | `wind_direction_10m_deg` | `float` | Yes | `hourly.wind_direction_10m[i]` | degrees (0=N) |
-| `wind_direction_80m_deg` | `float` | Yes | not requested on archive | **always null on this dataset** |
+| `wind_direction_80m_deg` | `float` | Yes | not requested on archive | **column not written on this dataset** |
 | `wind_direction_100m_deg` | `float` | Yes | `hourly.wind_direction_100m[i]` | degrees |
-| `wind_direction_120m_deg` | `float` | Yes | not requested on archive | **always null on this dataset** |
-| `wind_direction_180m_deg` | `float` | Yes | not requested on archive | **always null on this dataset** |
+| `wind_direction_120m_deg` | `float` | Yes | not requested on archive | **column not written on this dataset** |
+| `wind_direction_180m_deg` | `float` | Yes | not requested on archive | **column not written on this dataset** |
 | `wind_gusts_10m_mps` | `float` | Yes | `hourly.wind_gusts_10m[i]` | Peak gust 10m, m/s |
 | `cloud_cover_pct` | `float` | Yes | `hourly.cloud_cover[i]` | Total cover, % |
 | `cloud_cover_low_pct` | `float` | Yes | `hourly.cloud_cover_low[i]` | % |
@@ -204,8 +337,9 @@ transformer's `BRONZE_DATASET_PREFIX` is `"historical_wind"`.
 | `ingested_at` | `datetime[UTC]` | Yes | derived | Wall-clock UTC at silver-build time |
 
 The schema declares 80m / 120m / 180m fields for symmetry with
-`forecast_wind`; on this dataset they are always null because the
-archive endpoint does not expose those heights. Bitemporal columns
+`forecast_wind`; on this dataset the columns are absent, because the
+transformer outputs only `WIND_ARCHIVE_VARS` columns
+(`silver/openmeteo/historical.py:296-313`). Bitemporal columns
 (`event_time`, `available_at`, `source_run_id`, `dataset_version`) are
 stamped at write time; `DATASET_VERSION = "2.0.0"`.
 
@@ -274,6 +408,23 @@ stamped at write time; `DATASET_VERSION = "2.0.0"`.
 
 ---
 
+### Vintage policy (ADR-031, added 2026-09-06)
+
+Archive rows emit no vendor `published_at`. gridflow v0.20 declares a
+**Vintage Policy** on the historical transformer (`silver/openmeteo/historical.py`;
+the forecast transformer sets `VINTAGE_POLICY = None`):
+
+| Field | Value |
+|---|---|
+| name | `open_meteo-historical_wind/vp-2026-09` |
+| lag | **5 days** after the hour — from this page's "~5 days behind real time" ERA5 reanalysis cadence (vault-sourced, not vendor-guaranteed; the default blend's IFS HRES part has no delay, so this is the code's assumption, not a property of every row) |
+| applies_before | `2026-08-01T00:00Z` (the August 2026 smoke ingest); earlier `event_time` is reconstructed, later rows keep the ingest clock |
+| rule | `available_at = coalesce(published_at, event_time + 5d)` only when `event_time < applies_before` AND `event_time + 5d < ingest_stamp`; otherwise the ingest stamp |
+
+Every row carries a `vintage_policy` label (policy name / `"ingest-clock"` /
+`"vendor"`); pre-v0.20 parquet reads as null — treat null as unknown. Source of
+truth: `docs/DECISION_LOG/ADR-031-vintage-policy-reconstruction.md`.
+
 ## Gold layer
 
 None implemented.
@@ -295,11 +446,13 @@ None implemented.
   `archive-api.open-meteo.com`, while [forecast_wind](./forecast_wind.md)
   lives at `api.open-meteo.com`. The connector chooses the correct host
   via the `historical_*` dataset prefix.
-- **ERA5 reanalysis lag.** Roughly 5 days. End_date within the last 5
-  days may return null trailing values.
-- **ERA5 grid-cell snapping.** `latitude` / `longitude` echoed in the
-  response can differ slightly from the request (snapped to the nearest
-  ERA5 grid cell). Silver stores the *response* values.
+- **Archive lag.** No model is pinned. The vendor docs give ERA5 and
+  ERA5-Land a 5-day delay and IFS HRES none, and the response does not
+  say which model answered an hour. End_date within the last 5 days may
+  return null trailing values.
+- **Grid-cell snapping.** `latitude` / `longitude` echoed in the
+  response can differ from the request (snapped to a grid cell of the
+  model that answered). Silver stores the *response* values.
 - **Wind units.** Silver wind speeds and gusts are in **m/s** — the
   connector converts the km/h archive response (`m/s = km/h / 3.6`), so
   the `_mps`-suffixed columns are power-curve-ready.
@@ -321,9 +474,8 @@ None implemented.
   `WIND_FORECAST_VARS` includes the wider set as `WIND_ARCHIVE_VARS +
   (wind_speed_80m, wind_speed_120m, wind_speed_180m, wind_direction_80m,
   wind_direction_120m, wind_direction_180m)`.
-- **Net-new dataset at F7.5.** No bronze on disk; backfill required
-  before this dataset is queryable. Backfill commands are documented
-  in `.planning/phases/F7.5-open-meteo-renewable-extension/F7.5-RESULTS.md`
+- **Added at F7.5.** Backfill commands are documented in
+  `.planning/phases/F7.5-open-meteo-renewable-extension/F7.5-RESULTS.md`
   under "Re-ingest commands".
 - **Approximate locations** — see ADR-020. If a future modelling phase
   needs per-turbine resolution, the location list is upgradable in
