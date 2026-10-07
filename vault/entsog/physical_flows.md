@@ -111,7 +111,7 @@ page:
   related:
     - {dataset: entsog/nominations, note: "Nominations at the same GB points, from the same endpoint"}
     - {dataset: entsog/allocations, note: "Allocations at the same GB points, from the same endpoint"}
-    - {dataset: entsog/aggregated_physical_flows, note: Physical flow summed by balancing zone rather than by point}
+    - {dataset: entsog/aggregated_physical_flows, note: "ENTSOG's British-zone entry totals from production, storage and LNG only"}
     - {dataset: entsog/operator_point_directions, note: "The register of the operator, point and direction keys used here"}
 ---
 
@@ -130,7 +130,7 @@ indicator-specific units for content/quality series).
 
 → Related concepts:
   [Gas day](../../../20-domain/concepts/gas-day.md)
-  [Nominations vs allocations](../../../20-domain/markets/gas-nominations.md)
+  [Nominations, renominations and allocations](nominations.md)
 
 ---
 

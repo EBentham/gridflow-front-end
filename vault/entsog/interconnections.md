@@ -10,7 +10,7 @@ layer_coverage: bronze, silver
 
 ## Overview
 
-Bidirectional interconnections between two transmission systems.
+CORRECTED 2026-10-07: interconnections between an exit system and an entry system (ENTSOG API manual v2.1, section 2.2), one row per point, exit-side operator and entry system. The entry side can be distribution, storage or final consumers, not only transmission. gridflow sends `fromCountryKey=UK`, so only links whose exit side is in the UK are fetched.
 
 This is a reference / inventory dataset — no time dimension, but
 inventory does change weekly when ENTSOG approves new operators or points.
@@ -132,11 +132,11 @@ curl --ssl-no-revoke -fsS \
 
 ## Silver layer
 
-**Path pattern**: `{data_root}/silver/entsog/interconnections.parquet` (single-file overwrite — `reference_dataset=True`)
+**Path pattern**: `{data_root}/silver/entsog/interconnections/interconnections.parquet` (CORRECTED 2026-10-07: `silver/base.py:834` gives each dataset its own folder; `generic.py:284` writes the file there) (single-file overwrite — `reference_dataset=True`)
 **Transformer class**: `gridflow.silver.entsog.generic.GenericEntsogJsonTransformer (subclass InterconnectionsTransformer)`
 **Pydantic schema**: Generic — no Pydantic schema declared
-**Dedup key**: `(id)` if present, else inventory key (e.g. `point_key`, `operator_key`)
-**Point-in-time field**: `last_update_date_time` (records carry per-row update timestamps)
+**Dedup key** (CORRECTED 2026-10-07): vendor `id`, keep last (`silver/entsog/generic.py:193-199`); every record of this register carries one (`4Interconnections`, then point, systems, operator and direction). Without `id` the subset would be every column but `timestamp_utc`. Silver reads only the newest bronze capture (`generic.py:112-116,128-129,252-259`), so no capture is repeated.
+**Point-in-time field** (CORRECTED 2026-10-07): `timestamp_utc` copies `valid_from` (`generic.py:51-59,185-187`), and ENTSOG sends `validFrom` (and `validto`, its spelling) null on every record of the 27 Sep 2026 capture, so `timestamp_utc` is null throughout and gridflow_models `query()` returns no rows. `lastUpdateDateTime` arrives with no offset (`Sep 27 2026  2:18AM`) and `silver/entsog/datetime.py:43-44` labels it UTC: silver shows 02:18 UTC, after the 00:30 UTC fetch; it is most likely local time (inferred: the directions stamp sent the same night is `+02:00`) stamped as UTC. The manual defines none of these fields.
 
 ### Silver schema
 
@@ -159,20 +159,20 @@ curl --ssl-no-revoke -fsS \
 | from_operator_long_label | str | Yes | fromOperatorLongLabel |  |
 | from_point_key | str | Yes | fromPointKey |  |
 | from_point_label | str | Yes | fromPointLabel |  |
-| from_is_cam | str | Yes | fromIsCAM |  |
-| from_is_cmp | str | Yes | fromIsCMP |  |
+| from_is_cam | bool | Yes | fromIsCAM |  |
+| from_is_cmp | bool | Yes | fromIsCMP |  |
 | from_booking_platform_key | str | Yes | fromBookingPlatformKey |  |
 | from_booking_platform_label | str | Yes | fromBookingPlatformLabel |  |
 | from_booking_platform_url | str | Yes | fromBookingPlatformURL |  |
-| to_is_cam | str | Yes | toIsCAM |  |
-| to_is_cmp | str | Yes | toIsCMP |  |
+| to_is_cam | bool | Yes | toIsCAM |  |
+| to_is_cmp | bool | Yes | toIsCMP |  |
 | to_booking_platform_key | str | Yes | toBookingPlatformKey |  |
 | to_booking_platform_label | str | Yes | toBookingPlatformLabel |  |
 | to_booking_platform_url | str | Yes | toBookingPlatformURL |  |
 | from_tso_item_identifier | str | Yes | fromTsoItemIdentifier |  |
-| from_tso_point_label | str | Yes | fromTsoPointLabel |  |
+| from_tso_point_label | null (sent null) | Yes | fromTsoPointLabel |  |
 | from_direction_key | str | Yes | fromDirectionKey |  |
-| from_has_data | str | Yes | fromHasData |  |
+| from_has_data | bool | Yes | fromHasData |  |
 | to_system_label | str | Yes | toSystemLabel |  |
 | to_infrastructure_type_label | str | Yes | toInfrastructureTypeLabel |  |
 | to_country_key | str | Yes | toCountryKey |  |
@@ -186,11 +186,11 @@ curl --ssl-no-revoke -fsS \
 | to_point_key | str | Yes | toPointKey |  |
 | to_point_label | str | Yes | toPointLabel |  |
 | to_direction_key | str | Yes | toDirectionKey |  |
-| to_has_data | str | Yes | toHasData |  |
+| to_has_data | bool | Yes | toHasData |  |
 | to_tso_item_identifier | str | Yes | toTsoItemIdentifier |  |
-| to_tso_point_label | str | Yes | toTsoPointLabel |  |
+| to_tso_point_label | null (sent null) | Yes | toTsoPointLabel |  |
 | valid_from | datetime[UTC] | Yes | validFrom |  |
-| validto | str | Yes | validto |  |
+| validto | null (sent null) | Yes | validto |  |
 | last_update_date_time | datetime[UTC] | Yes | lastUpdateDateTime |  |
 | is_invalid | bool | Yes | isInvalid |  |
 | entry_tp_ne_mo_usage | str | Yes | entryTpNeMoUsage |  |
@@ -199,6 +199,8 @@ curl --ssl-no-revoke -fsS \
 | data_set | str | int | Yes | dataSet |  |
 | data_provider | str | No | derived | Always `entsog` |
 | ingested_at | datetime[UTC] | No | derived | Wall-clock at silver write |
+| timestamp_utc | datetime[UTC] | Yes | derived | Copy of `valid_from`, null on every row (see above) (`generic.py:185-187`); row added 2026-10-07 |
+| event_time, available_at, source_run_id, dataset_version | lineage | No | derived | Pipeline lineage columns (`silver/base.py`); row added 2026-10-07 |
 
 ### Silver sample
 
@@ -277,7 +279,7 @@ None implemented.
 ## Known issues and gotchas
 
 - **No date filter — pagination required**: reference endpoints accept `limit` + `offset`. Default `limit` is small; pass `limit=1000` (or the full inventory size) and iterate offset for full extracts.
-- **`hasData=1` shrinks operatorPointDirections / operators**: filters out points/operators without any operational data. Useful as a discovery filter, but loses validity-period rows for points that recently went dormant.
+- **`hasData=1`** (CORRECTED 2026-10-07): ENTSOG's API manual (v2.1, section 2.4.7) documents it for operator point directions only: it keeps the directions of TSOs that publish their REG715 data. gridflow also sends it to `/operators`, where the manual does not document it; the 27 Sep 2026 response still lists storage, LNG, hydrogen and electricity operators. The claim that it drops dormant validity-period rows is unverified.
 - **Field-case duplicates**: `isCAMRelevant` (uppercase CAM) appears here while `isCamRelevant` appears in operationalData. Generic silver coalesces both into `is_cam_relevant`.
 - **Reference data refresh schedule**: weekly in `config/sources.yaml`. Static-ish, but new points and operator changes do appear when ENTSOG approves them.
 - **`bzKey` separators**: balancing zone keys often contain trailing dashes (`UK---------`) — preserve as-is, do not strip.

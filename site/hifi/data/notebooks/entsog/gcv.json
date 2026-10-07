@@ -1,0 +1,181 @@
+{
+ "dataset": "entsog/gcv",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "0ed65da841fbd6d85dd217b706ba2dc4435294ef8ff11ef926f42e86143caef8",
+ "kernel": "gridflow_models",
+ "source": "entsog",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.entsog",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.entsog.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "members = [\"gcv\", \"wobbe_index\", \"methane_content\", \"hydrogen_content\", \"oxygen_content\"]\nframes = {m: data.entsog.query(m, \"2026-09-13\", \"2026-09-21\") for m in members}",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "key = [\"timestamp_utc\", \"operator_key\", \"point_key\", \"direction_key\"]\niuk = None\nfor m, df in frames.items():\n    part = df[(df.operator_key == \"UK-TSO-0003\") & (df.direction_key == \"entry\")]\n    part = part[key + [\"value\"]].rename(columns={\"value\": m})\n    iuk = part if iuk is None else iuk.merge(part, on=key)\niuk = iuk.sort_values(\"timestamp_utc\").assign(\n    timestamp_utc=lambda d: d.timestamp_utc.dt.tz_convert(\"UTC\"))\niuk[[\"timestamp_utc\"] + members]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "gcv",
+      "wobbe_index",
+      "methane_content",
+      "hydrogen_content",
+      "oxygen_content"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8"
+     ],
+     "rows": [
+      [
+       "2026-09-13 04:00:00+00:00",
+       "11.645",
+       "14.653",
+       "85.390",
+       "0.005",
+       "0.0000"
+      ],
+      [
+       "2026-09-14 04:00:00+00:00",
+       "11.645",
+       "14.653",
+       "85.390",
+       "0.005",
+       "0.0000"
+      ],
+      [
+       "2026-09-15 04:00:00+00:00",
+       "11.645",
+       "14.653",
+       "85.390",
+       "0.005",
+       "0.0000"
+      ],
+      [
+       "2026-09-16 04:00:00+00:00",
+       "11.645",
+       "14.653",
+       "85.390",
+       "0.005",
+       "0.0000"
+      ],
+      [
+       "2026-09-17 04:00:00+00:00",
+       "11.645",
+       "14.653",
+       "85.390",
+       "0.005",
+       "0.0000"
+      ],
+      [
+       "2026-09-18 04:00:00+00:00",
+       "11.645",
+       "14.653",
+       "85.390",
+       "0.005",
+       "0.0000"
+      ],
+      [
+       "2026-09-19 04:00:00+00:00",
+       "11.673",
+       "14.653",
+       "84.868",
+       "0.006",
+       "0.0060"
+      ],
+      [
+       "2026-09-20 04:00:00+00:00",
+       "14.253",
+       "14.901",
+       "86.693",
+       "0.010",
+       "0.0010"
+      ],
+      [
+       "2026-09-21 04:00:00+00:00",
+       "11.602",
+       "14.613",
+       "88.750",
+       "0.009",
+       "0.0004"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "iuk.plot(x=\"timestamp_utc\", y=[\"gcv\", \"wobbe_index\"], color=[\"#C77E3C\", \"#155A6E\"],\n         ylabel=\"kWh/Nm3\", figsize=(8, 3.5))",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: xlabel='timestamp_utc', ylabel='kWh/Nm3'>"
+    },
+    {
+     "kind": "image",
+     "src": "gcv-5.png",
+     "width": 698,
+     "height": 344
+    }
+   ]
+  }
+ ]
+}

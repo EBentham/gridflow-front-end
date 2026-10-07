@@ -1,0 +1,124 @@
+{
+ "dataset": "entsog/tariffs",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "1d83cf057565770426a7a4819717f4bc08a7f3b168ca432466d9d675153813af",
+ "kernel": "gridflow_models",
+ "source": "entsog",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.entsog",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.entsog.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "tariffs = data.entsog.query(\"tariffs\", \"2025-10-01\", \"2026-04-01\").drop_duplicates(\"id\")\ntariffs[\"period_from\"].dt.tz_convert(\"UTC\").value_counts().sort_index()",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "period_from\n2025-10-01 04:00:00+00:00    3351\n2026-01-01 05:00:00+00:00    8715\n2026-04-01 04:00:00+00:00     178\nName: count, dtype: int64"
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "tariffs[\"operator_currency\"].value_counts()",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "operator_currency\nEUR    8083\nHUF     984\nRON     913\nBGN     820\nPLN     656\nCZK     364\nDKK     214\nGBP     210\nName: count, dtype: int64"
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "ng = tariffs[(tariffs.operator_point_direction == \"uk-tso-0001itp-00090exit\")\n             & (tariffs.tariff_capacity_type == \"Firm\")\n             & tariffs.product_type.isin([\"Yearly\", \"Monthly\"])]\nng[[\"product_type\", \"applicable_tariff_per_eurk_wh_h_value\",\n    \"applicable_tariff_per_eurk_wh_h_unit\"]].drop_duplicates()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "product_type",
+      "applicable_tariff_per_eurk_wh_h_value",
+      "applicable_tariff_per_eurk_wh_h_unit"
+     ],
+     "index": [
+      "1709",
+      "1722"
+     ],
+     "rows": [
+      [
+       "Monthly",
+       "0.008326",
+       "Euro/(kWh/h)/m"
+      ],
+      [
+       "Yearly",
+       "0.008326",
+       "Euro/(kWh/h)/y"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "source": "bbl = tariffs[(tariffs.operator_point_direction == \"uk-tso-0004itp-00207exit\")\n              & (tariffs.tariff_capacity_type == \"Firm\") & (tariffs.product_type == \"Monthly\")]\nbbl = bbl.assign(month=bbl.product_period_from.dt.tz_convert(\"UTC\")).sort_values(\"month\")\nbbl.plot(x=\"month\", y=\"applicable_tariff_per_eurk_wh_h_value\", drawstyle=\"steps-post\",\n         color=\"#155A6E\", legend=False, ylabel=\"EUR/(kWh/h)/m\", figsize=(8, 3.5))",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: xlabel='month', ylabel='EUR/(kWh/h)/m'>"
+    },
+    {
+     "kind": "image",
+     "src": "tariffs-6.png",
+     "width": 695,
+     "height": 332
+    }
+   ]
+  }
+ ]
+}

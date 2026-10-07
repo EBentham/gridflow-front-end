@@ -1,0 +1,161 @@
+{
+ "dataset": "entsog/nominations",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "6ca612acd42cf576bca88a9ee6dc6adf5c133211782fd6baacbccedc9f11fedb",
+ "kernel": "gridflow_models",
+ "source": "entsog",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.entsog",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.entsog.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "nom = data.entsog.query(\"nominations\", \"2026-09-13\", \"2026-09-21\")\nren = data.entsog.query(\"renominations\", \"2026-09-13\", \"2026-09-21\")\nalloc = data.entsog.query(\"allocations\", \"2026-09-13\", \"2026-09-21\")",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "key = [\"timestamp_utc\", \"operator_key\", \"point_key\", \"direction_key\"]\nstages = (nom[key + [\"value\"]].rename(columns={\"value\": \"nominated\"})\n          .merge(ren[key + [\"value\"]].rename(columns={\"value\": \"renominated\"}), on=key)\n          .merge(alloc[key + [\"value\"]].rename(columns={\"value\": \"allocated\"}), on=key))\nmoffat = stages[(stages.point_key == \"ITP-00495\") & (stages.direction_key == \"entry\")]\nmoffat = moffat.sort_values(\"timestamp_utc\").assign(\n    timestamp_utc=lambda d: d.timestamp_utc.dt.tz_convert(\"UTC\"))\nmoffat[[\"timestamp_utc\", \"nominated\", \"renominated\", \"allocated\"]]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "nominated",
+      "renominated",
+      "allocated"
+     ],
+     "index": [
+      "1",
+      "6",
+      "11",
+      "13",
+      "16",
+      "21",
+      "26",
+      "30",
+      "34"
+     ],
+     "rows": [
+      [
+       "2026-09-13 04:00:00+00:00",
+       "81288731.0",
+       "180146144.0",
+       "180146144.0"
+      ],
+      [
+       "2026-09-14 04:00:00+00:00",
+       "89935399.0",
+       "164042591.0",
+       "164042591.0"
+      ],
+      [
+       "2026-09-15 04:00:00+00:00",
+       "95147913.0",
+       "149472011.0",
+       "149472011.0"
+      ],
+      [
+       "2026-09-16 04:00:00+00:00",
+       "91910027.0",
+       "154214322.0",
+       "154214322.0"
+      ],
+      [
+       "2026-09-17 04:00:00+00:00",
+       "50164199.0",
+       "140478297.0",
+       "140478297.0"
+      ],
+      [
+       "2026-09-18 04:00:00+00:00",
+       "92307876.0",
+       "142769388.0",
+       "142769388.0"
+      ],
+      [
+       "2026-09-19 04:00:00+00:00",
+       "45664771.0",
+       "131501901.0",
+       "131501901.0"
+      ],
+      [
+       "2026-09-20 04:00:00+00:00",
+       "76735214.0",
+       "155188818.0",
+       "155188818.0"
+      ],
+      [
+       "2026-09-21 04:00:00+00:00",
+       "90763437.0",
+       "180105551.0",
+       "180105551.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "moffat.plot(x=\"timestamp_utc\", y=[\"nominated\", \"renominated\", \"allocated\"],\n            style=[\"-\", \"-\", \"--\"], color=[\"#C77E3C\", \"#155A6E\", \"#66793B\"],\n            ylabel=\"kWh/d\", figsize=(8, 3.5))",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: xlabel='timestamp_utc', ylabel='kWh/d'>"
+    },
+    {
+     "kind": "image",
+     "src": "nominations-5.png",
+     "width": 703,
+     "height": 358
+    }
+   ]
+  }
+ ]
+}

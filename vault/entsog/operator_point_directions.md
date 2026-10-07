@@ -38,7 +38,7 @@ The connector schedule is `weekly` in `config/sources.yaml`.
 |-----------|------|----------|-------------|---------|
 | `limit` | int | Yes | Page size; `-1` returns all | `1000` |
 | `offset` | int | No | Page offset (0-based) | `0` |
-| `hasData` | bool / int | No | Restrict to (operator,point,direction) tuples with operational data | `1` |
+| `hasData` | bool / int | No | Keep only directions of TSOs publishing REG715 data (API manual v2.1, section 2.4.7) | `1` |
 
 ### Working curl example
 
@@ -131,11 +131,11 @@ curl --ssl-no-revoke -fsS \
 
 ## Silver layer
 
-**Path pattern**: `{data_root}/silver/entsog/operator_point_directions.parquet` (single-file overwrite — `reference_dataset=True`)
+**Path pattern**: `{data_root}/silver/entsog/operator_point_directions/operator_point_directions.parquet` (CORRECTED 2026-10-07: `silver/base.py:834` gives each dataset its own folder; `generic.py:284` writes the file there) (single-file overwrite — `reference_dataset=True`)
 **Transformer class**: `gridflow.silver.entsog.generic.GenericEntsogJsonTransformer (subclass OperatorPointDirectionsTransformer)`
 **Pydantic schema**: Generic — no Pydantic schema declared
-**Dedup key**: `(id)` if present, else inventory key (e.g. `point_key`, `operator_key`)
-**Point-in-time field**: `last_update_date_time` (records carry per-row update timestamps)
+**Dedup key** (CORRECTED 2026-10-07): vendor `id`, keep last (`silver/entsog/generic.py:193-199`); every record of this register carries one (the `dataSet` digit then the natural key). Without `id` the subset would be every column but `timestamp_utc`. Silver reads only the newest bronze capture (`generic.py:112-116,128-129,252-259`), so no capture is repeated.
+**Point-in-time field** (CORRECTED 2026-10-07): `timestamp_utc` copies `valid_from`, which outranks `last_update_date_time` in `_TIMESTAMP_PRIORITY` (`generic.py:51-59,185-187`). ENTSOG sends `validFrom` and `validTo` null on every record of the 27 Sep 2026 capture, so `timestamp_utc` is null throughout and gridflow_models `query()`, whose date column is `timestamp_utc` (`silver/schema_manifest.py`), returns no rows. `lastUpdateDateTime` is one stamp shared by all 1,225 records (`+02:00` offset, converted correctly). The manual defines none of these fields; `tp_tso_valid_from` and `tp_tso_valid_to` stay text.
 
 ### Silver schema
 
@@ -167,26 +167,26 @@ curl --ssl-no-revoke -fsS \
 | tp_tso_valid_from | str | Yes | tpTsoValidFrom |  |
 | tp_tso_valid_to | str | Yes | tpTsoValidTo |  |
 | tp_tso_remarks | str | Yes | tpTsoRemarks |  |
-| tp_tso_conversion_factor | float | Yes | tpTsoConversionFactor |  |
+| tp_tso_conversion_factor | str | Yes | tpTsoConversionFactor |  |
 | tp_rmk_grid_conversion_factor_capacity_default | str | Yes | tpRmkGridConversionFactorCapacityDefault |  |
 | tp_tso_gcv_min | str | Yes | tpTsoGCVMin |  |
 | tp_tso_gcv_max | str | Yes | tpTsoGCVMax |  |
 | tp_tso_gcv_remarks | str | Yes | tpTsoGCVRemarks |  |
 | tp_tso_gcv_unit | str | Yes | tpTsoGCVUnit |  |
-| tp_tso_entry_exit_type | str | Yes | tpTsoEntryExitType |  |
-| multi_annual_contracts_is_available | str | Yes | multiAnnualContractsIsAvailable |  |
+| tp_tso_entry_exit_type | null (sent null) | Yes | tpTsoEntryExitType |  |
+| multi_annual_contracts_is_available | bool | Yes | multiAnnualContractsIsAvailable |  |
 | multi_annual_contracts_remarks | str | Yes | multiAnnualContractsRemarks |  |
-| annual_contracts_is_available | str | Yes | annualContractsIsAvailable |  |
+| annual_contracts_is_available | bool | Yes | annualContractsIsAvailable |  |
 | annual_contracts_remarks | str | Yes | annualContractsRemarks |  |
-| half_annual_contracts_is_available | str | Yes | halfAnnualContractsIsAvailable |  |
+| half_annual_contracts_is_available | bool | Yes | halfAnnualContractsIsAvailable |  |
 | half_annual_contracts_remarks | str | Yes | halfAnnualContractsRemarks |  |
-| quarterly_contracts_is_available | str | Yes | quarterlyContractsIsAvailable |  |
+| quarterly_contracts_is_available | bool | Yes | quarterlyContractsIsAvailable |  |
 | quarterly_contracts_remarks | str | Yes | quarterlyContractsRemarks |  |
-| monthly_contracts_is_available | str | Yes | monthlyContractsIsAvailable |  |
+| monthly_contracts_is_available | bool | Yes | monthlyContractsIsAvailable |  |
 | monthly_contracts_remarks | str | Yes | monthlyContractsRemarks |  |
-| daily_contracts_is_available | str | Yes | dailyContractsIsAvailable |  |
+| daily_contracts_is_available | bool | Yes | dailyContractsIsAvailable |  |
 | daily_contracts_remarks | str | Yes | dailyContractsRemarks |  |
-| day_ahead_contracts_is_available | str | Yes | dayAheadContractsIsAvailable |  |
+| day_ahead_contracts_is_available | bool | Yes | dayAheadContractsIsAvailable |  |
 | day_ahead_contracts_remarks | str | Yes | dayAheadContractsRemarks |  |
 | available_contracts_remarks | str | Yes | availableContractsRemarks |  |
 | sentence_cmp_unsuccessful | str | Yes | sentenceCMPUnsuccessful |  |
@@ -211,12 +211,14 @@ curl --ssl-no-revoke -fsS \
 | adjacent_operator_key | str | Yes | adjacentOperatorKey |  |
 | adjacent_country | str | Yes | adjacentCountry |  |
 | point_type | str | Yes | pointType |  |
-| id_point_type | str | Yes | idPointType |  |
+| id_point_type | int | Yes | idPointType |  |
 | adjacent_zones | str | Yes | adjacentZones |  |
 | id | str | int | Yes | id |  |
 | data_set | str | int | Yes | dataSet |  |
 | data_provider | str | No | derived | Always `entsog` |
 | ingested_at | datetime[UTC] | No | derived | Wall-clock at silver write |
+| timestamp_utc | datetime[UTC] | Yes | derived | Copy of `valid_from`, null on every row (see above) (`generic.py:185-187`); row added 2026-10-07 |
+| event_time, available_at, source_run_id, dataset_version | lineage | No | derived | Pipeline lineage columns (`silver/base.py`); row added 2026-10-07 |
 
 ### Silver sample
 
@@ -314,7 +316,8 @@ None implemented.
 ## Known issues and gotchas
 
 - **No date filter — pagination required**: reference endpoints accept `limit` + `offset`. Default `limit` is small; pass `limit=1000` (or the full inventory size) and iterate offset for full extracts.
-- **`hasData=1` shrinks operatorPointDirections / operators**: filters out points/operators without any operational data. Useful as a discovery filter, but loses validity-period rows for points that recently went dormant.
+- **`hasData=1`** (CORRECTED 2026-10-07): ENTSOG's API manual (v2.1, section 2.4.7) documents it for operator point directions only: it keeps the directions of TSOs that publish their REG715 data. gridflow also sends it to `/operators`, where the manual does not document it; the 27 Sep 2026 response still lists storage, LNG, hydrogen and electricity operators. The claim that it drops dormant validity-period rows is unverified.
+- **Not every data-table key is in this register** (added 2026-10-07): in the 27 Sep 2026 capture, 39 of 986 distinct `physical_flows` (operator, point, direction) triples (546 of 13,764 rows, flows 31 Jul to 21 Sep) are absent, for example `BE-TSO-0001 ITP-00065` and `DE-TSO-0003 ITP-00518`. Cause unknown; nominations, allocations, renominations, gas quality, tariff and CMP triples all resolve.
 - **Field-case duplicates**: `isCAMRelevant` (uppercase CAM) appears here while `isCamRelevant` appears in operationalData. Generic silver coalesces both into `is_cam_relevant`.
 - **Reference data refresh schedule**: weekly in `config/sources.yaml`. Static-ish, but new points and operator changes do appear when ENTSOG approves them.
 - **`bzKey` separators**: balancing zone keys often contain trailing dashes (`UK---------`) — preserve as-is, do not strip.

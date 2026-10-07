@@ -1,0 +1,19 @@
+{
+  "dataset": "entsog/operators",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "ccd007347fc398664137fac3588c51f2ae945f6f3056dad5c2e846551f331ded",
+  "type": "bar",
+  "unit": "operators",
+  "caption": "",
+  "value_column": null,
+  "aggregation": "count",
+  "window": null,
+  "provenance": {"files": 1, "rows_matched": 557, "rows_read": 557, "rows_used": 557, "silver": "entsog/operators", "unmapped_groups": ["ASO", "BRP", "DSO", "ENA", "NWO", "USO", "UTI"]},
+  "spec": {"aggregation": "count", "group": "operator_type_label", "group_default": "rest", "group_map": {"ESO": "power_tso", "ETO": "transition", "H2FO": "hydrogen", "LSO": "lng", "PSO": "production", "SSO": "storage", "TSO": "gas_tso"}, "silver": "entsog/operators", "sort": "value_desc", "type": "bar", "unit": "operators"},
+  "x_kind": "category",
+  "x": ["gas_tso", "storage", "hydrogen", "power_tso", "lng", "rest", "transition", "production"],
+  "series": [
+    {"key": "count", "values": [154, 108, 104, 86, 51, 32, 12, 10]}
+  ]
+}

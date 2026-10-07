@@ -10,7 +10,7 @@ layer_coverage: bronze, silver
 
 ## Overview
 
-Methane (CH4) volume fraction of gas delivered at the point.
+Methane (CH4) content of the gas at the point, in `% (mol/mol)` as sent (a molar fraction). In 2026-08/09 bronze, rows come from Interconnector (Bacton (IUK) entry; its exit is 0) and GNI (Moffat (IE) entry) only.
 
 The dataset is one of 19 indicators served by the same `/operationalData`
 endpoint. The (operator, point, direction) tuple selects which physical
@@ -21,7 +21,7 @@ indicator-specific units for content/quality series).
 
 → Related concepts:
   [Gas day](../../../20-domain/concepts/gas-day.md)
-  [Nominations vs allocations](../../../20-domain/markets/gas-nominations.md)
+  [Nominations, renominations and allocations](nominations.md)
 
 ---
 
@@ -36,7 +36,7 @@ indicator-specific units for content/quality series).
 | Rate limit       | Not vendor-published; project default 5 req/s, validation throttled to 1 req/s |
 | Pagination       | `limit` + `offset`; project sets `limit=-1` (all records) |
 | Historical depth | Approx. 2010 onwards (operator-dependent) |
-| Publication lag  | Same-day for `Provisional` flow status; revised within ~1 week |
+| Publication lag  | Not vendor-documented here. 2026-08/09 bronze: `lastUpdateDateTime` 25 h to 29 h after the gas-day start for GNI, 29 h to 52 h for Interconnector; `flowStatus` `Provisional` or `Confirmed` |
 | Response format  | JSON |
 | Indicator | `Methane Content` (exact-case — vendor rejects lowercase or hyphen variants) |
 | Time zone | `timeZone=UCT` (ENTSOG's spelling — note the typo; not `UTC`) |
@@ -103,17 +103,97 @@ curl --ssl-no-revoke -fsS \
 **Path pattern**: `{data_root}/silver/entsog/methane_content/year=YYYY/month=MM/methane_content_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.entsog.GenericEntsogJsonTransformer (subclass MethaneContentTransformer)`
 **Pydantic schema**: `Generic — no Pydantic schema declared`
-**Dedup key**: `(timestamp_utc, point_key, operator_key, direction_key)` — fields uniquely identifying one daily record per series
-**Point-in-time field**: `last_update_date_time`
+**Dedup key**: the vendor `id`, `keep="last"`, within each day's bronze read (`silver/entsog/generic.py:193-199`). The `id` concatenates indicator, period, operator, point, direction and unit, so `(timestamp_utc, operator_key, point_key, direction_key)` is unique in 2026-08/09 silver.
+**Point-in-time field**: none used by the pipeline. `last_update_date_time` is the vendor's `lastUpdateDateTime` as sent, converted to UTC (`generic.py:181-183`); `ingested_at` is the silver transform time (`generic.py:201-206`).
 
 ### Silver schema
 
-_Schema is generic and dynamic — see `src/gridflow/silver/entsog/generic.py`; columns are produced by camelCase→snake_case normalisation of whatever the live response contains._
+| Field | Python type | Nullable | Source field | Notes |
+|-------|-------------|----------|--------------|-------|
+| timestamp_utc | datetime[UTC] | Yes | derived | `period_from` copied (`generic.py:185-187`): the gas-day start, `periodFrom` 06:00+02:00 as sent, 04:00 UTC, on every valued 2026-08/09 row |
+| period_from | datetime[UTC] | Yes | periodFrom |  |
+| period_to | datetime[UTC] | Yes | periodTo |  |
+| indicator | str | Yes | indicator |  |
+| period_type | str | Yes | periodType |  |
+| operator_key | str | Yes | operatorKey |  |
+| operator_label | str | Yes | operatorLabel |  |
+| tso_eic_code | str | Yes | tsoEicCode |  |
+| point_key | str | Yes | pointKey |  |
+| point_label | str | Yes | pointLabel |  |
+| direction_key | str | Yes | directionKey |  |
+| unit | str | Yes | unit | As sent, not converted; `% (mol/mol)` on every 2026-08/09 row; no reference conditions in the response |
+| value | float | Yes | value | In the row's `unit`, not converted (Float64 cast with `strict=False`, `generic.py:189-191`) |
+| id | str | Yes | id | Dedup key (see above) |
+| data_set | Int64 | Yes | dataSet |  |
+| tso_item_identifier | str | Yes | tsoItemIdentifier |  |
+| item_remarks | null | Yes | itemRemarks | Null dtype: null on every 2026-08/09 row |
+| general_remarks | null | Yes | generalRemarks | Null dtype: null on every 2026-08/09 row |
+| last_update_date_time | datetime[UTC] | Yes | lastUpdateDateTime | Vendor stamp, converted to UTC; not used by the pipeline |
+| is_unlimited | null | Yes | isUnlimited | Null dtype: null on every 2026-08/09 row |
+| flow_status | str | Yes | flowStatus | `Provisional` or `Confirmed` |
+| interruption_type | null | Yes | interruptionType | Null dtype: null on every 2026-08/09 row |
+| restoration_information | null | Yes | restorationInformation | Null dtype: null on every 2026-08/09 row |
+| capacity_type | null | Yes | capacityType | Null dtype: null on every 2026-08/09 row |
+| capacity_booking_status | null | Yes | capacityBookingStatus | Null dtype: null on every 2026-08/09 row |
+| is_cam_relevant | bool | Yes | isCamRelevant |  |
+| is_na | null | Yes | isNA | Null dtype: null on every 2026-08/09 row |
+| original_period_from | datetime[UTC] | Yes | originalPeriodFrom |  |
+| is_cmp_relevant | bool | Yes | isCmpRelevant |  |
+| booking_platform_key | str | Yes | bookingPlatformKey |  |
+| booking_platform_label | null | Yes | bookingPlatformLabel | Null dtype: null on every 2026-08/09 row |
+| booking_platform_url | str | Yes | bookingPlatformURL |  |
+| interruption_calculation_remark | null | Yes | interruptionCalculationRemark | Null dtype: null on every 2026-08/09 row |
+| point_type | str | Yes | pointType |  |
+| id_point_type | Int64 | Yes | idPointType |  |
+| is_archived | bool | Yes | isArchived |  |
+| data_provider | str | No | derived | Always `entsog` |
+| ingested_at | datetime[UTC] | No | derived | Silver transform time (`generic.py:201-206`) |
 
 ### Silver sample
 
 ```python
-(empty validation window — see Implementation delta)
+[
+    {
+        "timestamp_utc": "2026-09-21T04:00:00+00:00",
+        "period_from": "2026-09-21T04:00:00+00:00",
+        "period_to": "2026-09-22T04:00:00+00:00",
+        "indicator": "Methane Content",
+        "period_type": "day",
+        "operator_key": "IE-TSO-0002",
+        "operator_label": "GNI",
+        "tso_eic_code": "47X0000000000576",
+        "point_key": "ITP-00495",
+        "point_label": "Moffat (IE)",
+        "direction_key": "entry",
+        "unit": "% (mol/mol)",
+        "value": 87.73,
+        "id": "1Methane Contentday2026-09-212026-09-22IE-TSO-0002ITP-00495entry% (mol/mol)",
+        "data_set": 1,
+        "tso_item_identifier": "21Z000000000081T",
+        "item_remarks": null,
+        "general_remarks": null,
+        "last_update_date_time": "2026-09-22T05:03:49+00:00",
+        "is_unlimited": null,
+        "flow_status": "Provisional",
+        "interruption_type": null,
+        "restoration_information": null,
+        "capacity_type": null,
+        "capacity_booking_status": null,
+        "is_cam_relevant": true,
+        "is_na": null,
+        "original_period_from": null,
+        "is_cmp_relevant": true,
+        "booking_platform_key": "PRISMA",
+        "booking_platform_label": null,
+        "booking_platform_url": "https://platform.prisma-capacity.eu/",
+        "interruption_calculation_remark": null,
+        "point_type": "Cross-Border Transmission IP between EU and ExtEU",
+        "id_point_type": 23,
+        "is_archived": false,
+        "data_provider": "entsog",
+        "ingested_at": "2026-09-26T17:45:45+00:00"
+    }
+]
 ```
 
 ---
@@ -134,6 +214,9 @@ None implemented.
 - **Datetime placeholders**: `lastUpdateDateTime` and `originalPeriodFrom` may be empty strings, `"-"`, `"N/A"`, or human-formatted strings (`"Jan 15 2024 06:00AM"`). `parse_entsog_datetime` returns `None` for unparseable values rather than raising.
 - **`directionKey` casing varies**: lowercase (`entry`/`exit`) in `/operationalData`; capitalised (`Exit`) in `/cmpUnsuccessfulRequests`. Don't compare with `==` across families.
 - **Period offset is +02:00 (CET)**: even with `timeZone=UCT`, `periodFrom` carries `+02:00` (CEST in summer / `+01:00` in winter). The silver transformer's `parse_entsog_datetime` converts to UTC.
+- **Requested versus returned (2026-08/09 bronze, 14 gas days)**: the connector sends nine `pointDirection` filters (`connectors/entsog/endpoints.py:24-34`); every response returns three records: Interconnector's Bacton (IUK) entry and exit and GNI's Moffat (IE) entry. No placeholders. With `limit=-1`, `meta.count` is 3 against `meta.total` 6; what `total` counts is unverified.
+- **Interconnector's exit is zero**: Interconnector's Bacton (IUK) exit `value` is 0 on all 14 gas days of 2026-08/09, `Confirmed` or `Provisional`. Zero is not a gas-quality measurement; treat it as no value.
+- **Repeated values**: Interconnector sends 85.39 on six consecutive gas days, 13 to 18 September 2026, each with its own `lastUpdateDateTime`. Unexplained.
 
 
 
@@ -150,7 +233,7 @@ None implemented.
 
 - Used as raw input to gas balance / interconnector flow features in `gridflow_models/`.
 - Target candidates: directional flow magnitude (entry vs exit per point).
-- Filter on `flowStatus == 'Confirmed'` for backtesting; `Provisional` for live model serving.
+- Drop Interconnector's zero exit rows first. `flow_status` is `Provisional` on every GNI row in 2026-08/09 and mostly `Confirmed` for Interconnector, so a `Confirmed` filter keeps Interconnector only.
 - Join with `operator_point_directions` to attach country, balancing zone, and CAM-relevant flags.
 
 ---
