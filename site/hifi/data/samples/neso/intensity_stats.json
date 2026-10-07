@@ -1,0 +1,183 @@
+{
+ "dataset": "neso/intensity_stats",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "f9922fe7e0fdd831821a0bd53367159fc3a88b4f0f91a11e0deb0ac7049abbd0",
+ "silver": "neso/intensity_stats_block",
+ "columns": [
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "average_gco2_kwh",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "max_gco2_kwh",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "min_gco2_kwh",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "intensity_index",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "period_end_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "data_provider",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "ingested_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2026-09-14 00:00:00 UTC",
+   "146.0",
+   "195.0",
+   "73.0",
+   "moderate",
+   "2026-09-15 00:00:00 UTC",
+   "neso",
+   "2026-09-26 17:43:19.779383 UTC",
+   "2026-09-14 00:00:00 UTC",
+   "2026-09-26 17:43:19.736086 UTC",
+   "8973c3cb-c2fa-44c2-b7f4-54b41233fd19",
+   "1.0.0"
+  ],
+  [
+   "2026-09-15 00:00:00 UTC",
+   "77.0",
+   "156.0",
+   "34.0",
+   "low",
+   "2026-09-16 00:00:00 UTC",
+   "neso",
+   "2026-09-26 17:43:19.779383 UTC",
+   "2026-09-15 00:00:00 UTC",
+   "2026-09-26 17:43:19.736086 UTC",
+   "8973c3cb-c2fa-44c2-b7f4-54b41233fd19",
+   "1.0.0"
+  ],
+  [
+   "2026-09-16 00:00:00 UTC",
+   "113.0",
+   "152.0",
+   "64.0",
+   "moderate",
+   "2026-09-17 00:00:00 UTC",
+   "neso",
+   "2026-09-26 17:43:19.779383 UTC",
+   "2026-09-16 00:00:00 UTC",
+   "2026-09-26 17:43:19.736086 UTC",
+   "8973c3cb-c2fa-44c2-b7f4-54b41233fd19",
+   "1.0.0"
+  ],
+  [
+   "2026-09-17 00:00:00 UTC",
+   "65.0",
+   "102.0",
+   "35.0",
+   "low",
+   "2026-09-18 00:00:00 UTC",
+   "neso",
+   "2026-09-26 17:43:19.779383 UTC",
+   "2026-09-17 00:00:00 UTC",
+   "2026-09-26 17:43:19.736086 UTC",
+   "8973c3cb-c2fa-44c2-b7f4-54b41233fd19",
+   "1.0.0"
+  ],
+  [
+   "2026-09-18 00:00:00 UTC",
+   "61.0",
+   "87.0",
+   "38.0",
+   "low",
+   "2026-09-19 00:00:00 UTC",
+   "neso",
+   "2026-09-26 17:43:19.779383 UTC",
+   "2026-09-18 00:00:00 UTC",
+   "2026-09-26 17:43:19.736086 UTC",
+   "8973c3cb-c2fa-44c2-b7f4-54b41233fd19",
+   "1.0.0"
+  ],
+  [
+   "2026-09-19 00:00:00 UTC",
+   "60.0",
+   "100.0",
+   "38.0",
+   "low",
+   "2026-09-20 00:00:00 UTC",
+   "neso",
+   "2026-09-26 17:43:19.779383 UTC",
+   "2026-09-19 00:00:00 UTC",
+   "2026-09-26 17:43:19.736086 UTC",
+   "8973c3cb-c2fa-44c2-b7f4-54b41233fd19",
+   "1.0.0"
+  ],
+  [
+   "2026-09-20 00:00:00 UTC",
+   "84.0",
+   "164.0",
+   "37.0",
+   "low",
+   "2026-09-21 00:00:00 UTC",
+   "neso",
+   "2026-09-26 17:43:19.779383 UTC",
+   "2026-09-20 00:00:00 UTC",
+   "2026-09-26 17:43:19.736086 UTC",
+   "8973c3cb-c2fa-44c2-b7f4-54b41233fd19",
+   "1.0.0"
+  ],
+  [
+   "2026-09-21 00:00:00 UTC",
+   "164.0",
+   "216.0",
+   "106.0",
+   "moderate",
+   "2026-09-22 00:00:00 UTC",
+   "neso",
+   "2026-09-26 17:43:19.779383 UTC",
+   "2026-09-21 00:00:00 UTC",
+   "2026-09-26 17:43:19.736086 UTC",
+   "8973c3cb-c2fa-44c2-b7f4-54b41233fd19",
+   "1.0.0"
+  ]
+ ],
+ "mark": null
+}

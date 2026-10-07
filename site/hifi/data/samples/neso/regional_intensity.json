@@ -1,0 +1,248 @@
+{
+ "dataset": "neso/regional_intensity",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "d8bfa089a853384e39785b6a338bea71adc1f41a11f35b27a57a14b0d9de13d6",
+ "silver": "neso/regional_intensity",
+ "columns": [
+  {
+   "name": "regionid",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "shortname",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "forecast_gco2_kwh",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "intensity_index",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "fuel",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "generation_percentage",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "actual_gco2_kwh",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "period_end_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "dnoregion",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "postcode",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "data_provider",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "ingested_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "1",
+   "North Scotland",
+   "0.0",
+   "very low",
+   "wind",
+   "99.4",
+   null,
+   "2026-09-17 16:30:00 UTC",
+   "2026-09-17 17:00:00 UTC",
+   "Scottish Hydro Electric Power Distribution",
+   "",
+   "neso",
+   "2026-09-26 17:43:41.185977 UTC",
+   "2026-09-17 16:30:00 UTC",
+   "2026-09-26 17:43:40.950381 UTC",
+   "41f9cba2-f721-4db8-9c7e-d0a3d423e836",
+   "1.0.0"
+  ],
+  [
+   "5",
+   "Yorkshire",
+   "60.0",
+   "low",
+   "wind",
+   "53.5",
+   null,
+   "2026-09-17 16:30:00 UTC",
+   "2026-09-17 17:00:00 UTC",
+   "NPG Yorkshire",
+   "",
+   "neso",
+   "2026-09-26 17:43:41.185977 UTC",
+   "2026-09-17 16:30:00 UTC",
+   "2026-09-26 17:43:40.950381 UTC",
+   "41f9cba2-f721-4db8-9c7e-d0a3d423e836",
+   "1.0.0"
+  ],
+  [
+   "7",
+   "South Wales",
+   "258.0",
+   "very high",
+   "wind",
+   "23.0",
+   null,
+   "2026-09-17 16:30:00 UTC",
+   "2026-09-17 17:00:00 UTC",
+   "WPD South Wales",
+   "",
+   "neso",
+   "2026-09-26 17:43:41.185977 UTC",
+   "2026-09-17 16:30:00 UTC",
+   "2026-09-26 17:43:40.950381 UTC",
+   "41f9cba2-f721-4db8-9c7e-d0a3d423e836",
+   "1.0.0"
+  ],
+  [
+   "11",
+   "South West England",
+   "214.0",
+   "high",
+   "wind",
+   "17.6",
+   null,
+   "2026-09-17 16:30:00 UTC",
+   "2026-09-17 17:00:00 UTC",
+   "WPD South West",
+   "",
+   "neso",
+   "2026-09-26 17:43:41.185977 UTC",
+   "2026-09-17 16:30:00 UTC",
+   "2026-09-26 17:43:40.950381 UTC",
+   "41f9cba2-f721-4db8-9c7e-d0a3d423e836",
+   "1.0.0"
+  ],
+  [
+   "13",
+   "London",
+   "113.0",
+   "moderate",
+   "wind",
+   "37.0",
+   null,
+   "2026-09-17 16:30:00 UTC",
+   "2026-09-17 17:00:00 UTC",
+   "UKPN London",
+   "",
+   "neso",
+   "2026-09-26 17:43:41.185977 UTC",
+   "2026-09-17 16:30:00 UTC",
+   "2026-09-26 17:43:40.950381 UTC",
+   "41f9cba2-f721-4db8-9c7e-d0a3d423e836",
+   "1.0.0"
+  ],
+  [
+   "15",
+   "England",
+   "90.0",
+   "moderate",
+   "wind",
+   "49.5",
+   null,
+   "2026-09-17 16:30:00 UTC",
+   "2026-09-17 17:00:00 UTC",
+   "England",
+   "",
+   "neso",
+   "2026-09-26 17:43:41.185977 UTC",
+   "2026-09-17 16:30:00 UTC",
+   "2026-09-26 17:43:40.950381 UTC",
+   "41f9cba2-f721-4db8-9c7e-d0a3d423e836",
+   "1.0.0"
+  ],
+  [
+   "17",
+   "Wales",
+   "87.0",
+   "low",
+   "wind",
+   "68.5",
+   null,
+   "2026-09-17 16:30:00 UTC",
+   "2026-09-17 17:00:00 UTC",
+   "Wales",
+   "",
+   "neso",
+   "2026-09-26 17:43:41.185977 UTC",
+   "2026-09-17 16:30:00 UTC",
+   "2026-09-26 17:43:40.950381 UTC",
+   "41f9cba2-f721-4db8-9c7e-d0a3d423e836",
+   "1.0.0"
+  ],
+  [
+   "18",
+   "GB",
+   "81.0",
+   "low",
+   "wind",
+   "51.8",
+   null,
+   "2026-09-17 16:30:00 UTC",
+   "2026-09-17 17:00:00 UTC",
+   "GB",
+   "",
+   "neso",
+   "2026-09-26 17:43:41.185977 UTC",
+   "2026-09-17 16:30:00 UTC",
+   "2026-09-26 17:43:40.950381 UTC",
+   "41f9cba2-f721-4db8-9c7e-d0a3d423e836",
+   "1.0.0"
+  ]
+ ],
+ "mark": null
+}

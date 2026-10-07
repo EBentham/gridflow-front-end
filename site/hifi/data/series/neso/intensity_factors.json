@@ -1,0 +1,19 @@
+{
+  "dataset": "neso/intensity_factors",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "f45227632cc2691080861f74c4dae1389523fa27577aae4bb06144abf38f8715",
+  "type": "bar",
+  "unit": "gCO2/kWh",
+  "caption": "",
+  "value_column": "factor_gco2_kwh",
+  "aggregation": "last",
+  "window": null,
+  "provenance": {"files": 1, "null_values_dropped": 0, "rows_matched": 14, "rows_read": 14, "rows_used": 14, "silver": "neso/intensity_factors"},
+  "spec": {"aggregation": "last", "group": "fuel", "group_map": {"biomass": "Biomass", "coal": "Coal", "dutch_imports": "Dutch imports", "french_imports": "French imports", "gas_combined_cycle": "Gas (CCGT)", "gas_open_cycle": "Gas (OCGT)", "hydro": "Hydro", "irish_imports": "Irish imports", "nuclear": "Nuclear", "oil": "Oil", "other": "Other", "pumped_storage": "Pumped storage", "solar": "Solar", "wind": "Wind"}, "silver": "neso/intensity_factors", "sort": "value_desc", "type": "bar", "unit": "gCO2/kWh", "value": "factor_gco2_kwh"},
+  "x_kind": "category",
+  "x": ["Coal", "Oil", "Gas (OCGT)", "Dutch imports", "Irish imports", "Gas (CCGT)", "Other", "Biomass", "French imports", "Hydro", "Nuclear", "Pumped storage", "Solar", "Wind"],
+  "series": [
+    {"key": "factor_gco2_kwh", "values": [937.0, 935.0, 651.0, 474.0, 458.0, 394.0, 300.0, 120.0, 53.0, 0.0, 0.0, 0.0, 0.0, 0.0]}
+  ]
+}

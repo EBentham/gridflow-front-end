@@ -1,0 +1,244 @@
+{
+ "dataset": "neso/intensity_stats",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "4ad95c3283bb78af229540277ac32764599d417cb719a218fa113392f8dd0318",
+ "kernel": "gridflow_models",
+ "source": "neso",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "blk = data.neso.query(\"intensity_stats_block\", \"2026-09-13\", \"2026-09-21\")\nci = data.neso.query(\"carbon_intensity\", \"2026-09-13\", \"2026-09-21\")\nfor df in (blk, ci):\n    df[\"timestamp_utc\"] = df.timestamp_utc.dt.tz_convert(\"UTC\")\nblk = blk.sort_values(\"timestamp_utc\").set_index(\"timestamp_utc\")",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "blk[[\"average_gco2_kwh\", \"max_gco2_kwh\", \"min_gco2_kwh\", \"intensity_index\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "average_gco2_kwh",
+      "max_gco2_kwh",
+      "min_gco2_kwh",
+      "intensity_index",
+      "timestamp_utc",
+      "",
+      "",
+      "",
+      ""
+     ],
+     "index": [
+      "2026-09-13 00:00:00+00:00",
+      "2026-09-14 00:00:00+00:00",
+      "2026-09-15 00:00:00+00:00",
+      "2026-09-16 00:00:00+00:00",
+      "2026-09-17 00:00:00+00:00"
+     ],
+     "rows": [
+      [
+       "168.0",
+       "204.0",
+       "99.0",
+       "moderate"
+      ],
+      [
+       "146.0",
+       "195.0",
+       "73.0",
+       "moderate"
+      ],
+      [
+       "77.0",
+       "156.0",
+       "34.0",
+       "low"
+      ],
+      [
+       "113.0",
+       "152.0",
+       "64.0",
+       "moderate"
+      ],
+      [
+       "65.0",
+       "102.0",
+       "35.0",
+       "low"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "day = (ci.set_index(\"timestamp_utc\").actual_gco2_kwh\n       .resample(\"1D\").agg([\"max\", \"mean\", \"min\"]).add_prefix(\"actual_\"))\nblk[[\"max_gco2_kwh\", \"average_gco2_kwh\", \"min_gco2_kwh\"]].join(day.round(2))",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "max_gco2_kwh",
+      "average_gco2_kwh",
+      "min_gco2_kwh",
+      "actual_max",
+      "actual_mean",
+      "actual_min",
+      "timestamp_utc",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     "index": [
+      "2026-09-13 00:00:00+00:00",
+      "2026-09-14 00:00:00+00:00",
+      "2026-09-15 00:00:00+00:00",
+      "2026-09-16 00:00:00+00:00",
+      "2026-09-17 00:00:00+00:00",
+      "2026-09-18 00:00:00+00:00",
+      "2026-09-19 00:00:00+00:00",
+      "2026-09-20 00:00:00+00:00",
+      "2026-09-21 00:00:00+00:00"
+     ],
+     "rows": [
+      [
+       "204.0",
+       "168.0",
+       "99.0",
+       "204.0",
+       "168.02",
+       "99.0"
+      ],
+      [
+       "195.0",
+       "146.0",
+       "73.0",
+       "195.0",
+       "145.73",
+       "73.0"
+      ],
+      [
+       "156.0",
+       "77.0",
+       "34.0",
+       "156.0",
+       "77.23",
+       "34.0"
+      ],
+      [
+       "152.0",
+       "113.0",
+       "64.0",
+       "152.0",
+       "112.62",
+       "64.0"
+      ],
+      [
+       "102.0",
+       "65.0",
+       "35.0",
+       "102.0",
+       "65.25",
+       "35.0"
+      ],
+      [
+       "87.0",
+       "61.0",
+       "38.0",
+       "87.0",
+       "61.02",
+       "38.0"
+      ],
+      [
+       "100.0",
+       "60.0",
+       "38.0",
+       "100.0",
+       "60.27",
+       "38.0"
+      ],
+      [
+       "164.0",
+       "84.0",
+       "37.0",
+       "164.0",
+       "84.19",
+       "37.0"
+      ],
+      [
+       "216.0",
+       "164.0",
+       "106.0",
+       "216.0",
+       "163.98",
+       "106.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "source": "ax = blk[[\"max_gco2_kwh\", \"average_gco2_kwh\", \"min_gco2_kwh\"]].plot(\n    ylabel=\"gCO2/kWh\", marker=\"o\", figsize=(8, 3.5), color=[\"#C77E3C\", \"#155A6E\", \"#66793B\"])",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "intensity_stats-6.png",
+     "width": 707,
+     "height": 369
+    }
+   ]
+  }
+ ]
+}

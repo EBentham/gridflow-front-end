@@ -1,0 +1,148 @@
+{
+ "dataset": "neso/intensity_factors",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "aa1d8569f012a4a52916e4eceb9acf7fc5f4093872b41ac1ea9ccb26fa2ced5c",
+ "kernel": "gridflow_models",
+ "source": "neso",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.sql(\"\"\"\n    SELECT fuel, factor_gco2_kwh\n    FROM silver_neso_intensity_factors\n    ORDER BY factor_gco2_kwh DESC, fuel\n\"\"\")",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df.head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "fuel",
+      "factor_gco2_kwh"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "coal",
+       "937.0"
+      ],
+      [
+       "oil",
+       "935.0"
+      ],
+      [
+       "gas_open_cycle",
+       "651.0"
+      ],
+      [
+       "dutch_imports",
+       "474.0"
+      ],
+      [
+       "irish_imports",
+       "458.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "df[df[\"fuel\"].str.contains(\"gas|imports\")]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "fuel",
+      "factor_gco2_kwh"
+     ],
+     "index": [
+      "2",
+      "3",
+      "4",
+      "5",
+      "8"
+     ],
+     "rows": [
+      [
+       "gas_open_cycle",
+       "651.0"
+      ],
+      [
+       "dutch_imports",
+       "474.0"
+      ],
+      [
+       "irish_imports",
+       "458.0"
+      ],
+      [
+       "gas_combined_cycle",
+       "394.0"
+      ],
+      [
+       "french_imports",
+       "53.0"
+      ]
+     ]
+    }
+   ]
+  }
+ ]
+}

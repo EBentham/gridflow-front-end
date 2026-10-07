@@ -63,7 +63,7 @@ curl --ssl-no-revoke -X GET \
 **Path pattern**: `{data_root}/silver/neso/intensity_current/year=<YYYY>/month=<MM>/intensity_current_<YYYYMMDD>.parquet`
 **Transformer class**: `gridflow.silver.neso.carbon_intensity.IntensityCurrentTransformer`
 **Pydantic schema**: `gridflow.schemas.neso.CarbonIntensity`
-**Dedup key**: `(timestamp_utc)`
+**Dedup key**: `(timestamp_utc)`, within one silver date partition (`silver/neso/carbon_intensity.py:485`); nothing deduplicates across partitions, and the partition date is the request window's first day (`connectors/neso/carbon_intensity.py:79`)
 **Point-in-time field**: `timestamp_utc`
 
 ### Silver schema
@@ -97,6 +97,7 @@ None implemented.
 - Official docs use UTC timestamps ending in `Z`; keep joins in UTC.
 - The connector sends no query parameters; all documented inputs are path parameters.
 - Actual carbon intensity values can be null or absent, especially before post-period estimates are available.
+- "Current" is NESO's choice: the one capture, fetched 2026-09-27 00:19 UTC, returned the half-hour 2026-09-26 23:30 to 2026-09-27 00:00 UTC, which had already ended (silver `intensity_current`).
 - For `intensity_period`, GB clock-change days can have 46 or 50 settlement periods in implementation even though official docs describe period 1-48.
 
 ---
@@ -109,7 +110,7 @@ None implemented.
 
 ## Modelling notes
 
-Use `forecast_gco2_kwh` as an ex-ante feature and `actual_gco2_kwh` as an ex-post target or label. Filter null actuals before supervised training, join by `timestamp_utc` to Elexon prices, demand, generation, weather, and interconnector features.
+`forecast_gco2_kwh` is NESO's forecast as served at fetch time, not an issued forecast: NESO sends no issue time and silver keeps the latest fetch per partition (see Known issues in [carbon_intensity](./carbon_intensity.md)), so do not treat it as a verified ex-ante feature. Use `actual_gco2_kwh` as an ex-post target or label. Filter null actuals before supervised training, join by `timestamp_utc` to Elexon prices, demand, generation, weather, and interconnector features.
 
 ---
 

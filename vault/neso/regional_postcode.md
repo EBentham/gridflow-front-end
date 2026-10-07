@@ -79,9 +79,9 @@ from the request. Each period row holds `intensity` and `generationmix`.
 | regionid | int | Yes | regionid | NESO region identifier. |
 | dnoregion | str | No | dnoregion | DNO region name. |
 | shortname | str | No | shortname | Short region label. |
-| postcode | str | Yes | postcode | Outward postcode when returned or requested. |
+| postcode | str | No | postcode | Outward postcode on the postcode routes; an empty string, not null, on every other route (`silver/neso/carbon_intensity.py:610-614`). |
 | forecast_gco2_kwh | float | Yes | intensity.forecast | Regional forecast carbon intensity. |
-| actual_gco2_kwh | float | Yes | intensity.actual | Not present in many official examples; nullable. |
+| actual_gco2_kwh | float | Yes | intensity.actual | Regional responses carry no `actual` (see Known issues), so it is null on every regional row. |
 | intensity_index | str | No | intensity.index | Docs category string. |
 | fuel | str | No | generationmix.fuel | Regional generation mix fuel. |
 | generation_percentage | float | Yes | generationmix.perc | Regional fuel share in percent. |
@@ -91,7 +91,7 @@ from the request. Each period row holds `intensity` and `generationmix`.
 ### Silver sample
 
 ```python
-[{"timestamp_utc":"2024-01-15T00:00:00+00:00","period_end_utc":"2024-01-15T00:30:00+00:00","regionid":13,"dnoregion":"UKPN London","shortname":"London","postcode":"RG10","forecast_gco2_kwh":120.0,"actual_gco2_kwh":None,"intensity_index":"low","fuel":"gas","generation_percentage":30.0,"data_provider":"neso","ingested_at":"2026-05-04T00:00:00+00:00"},{"timestamp_utc":"2024-01-15T00:00:00+00:00","period_end_utc":"2024-01-15T00:30:00+00:00","regionid":13,"dnoregion":"UKPN London","shortname":"London","postcode":"RG10","forecast_gco2_kwh":120.0,"actual_gco2_kwh":None,"intensity_index":"low","fuel":"wind","generation_percentage":40.0,"data_provider":"neso","ingested_at":"2026-05-04T00:00:00+00:00"}]
+[{"timestamp_utc":"2024-01-15T00:00:00+00:00","period_end_utc":"2024-01-15T00:30:00+00:00","regionid":12,"dnoregion":"SSE South","shortname":"South England","postcode":"RG10","forecast_gco2_kwh":120.0,"actual_gco2_kwh":None,"intensity_index":"low","fuel":"gas","generation_percentage":30.0,"data_provider":"neso","ingested_at":"2026-05-04T00:00:00+00:00"},{"timestamp_utc":"2024-01-15T00:00:00+00:00","period_end_utc":"2024-01-15T00:30:00+00:00","regionid":12,"dnoregion":"SSE South","shortname":"South England","postcode":"RG10","forecast_gco2_kwh":120.0,"actual_gco2_kwh":None,"intensity_index":"low","fuel":"wind","generation_percentage":40.0,"data_provider":"neso","ingested_at":"2026-05-04T00:00:00+00:00"}]
 ```
 
 ---
@@ -106,7 +106,7 @@ None implemented.
 
 - Official docs use UTC timestamps ending in `Z`; keep joins in UTC.
 - The connector sends no query parameters; all documented inputs are path parameters.
-- Actual carbon intensity values can be null or absent, especially before post-period estimates are available.
+- Regional responses carry no `actual`: NESO's regional examples show `forecast` and `index` only, and no regional bronze body checked on 2026-10-06 had an `actual` key, so `actual_gco2_kwh` is null on every regional row.
 - For `intensity_period`, GB clock-change days can have 46 or 50 settlement periods in implementation even though official docs describe period 1-48.
 
 ---
