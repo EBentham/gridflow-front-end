@@ -43,6 +43,10 @@ PAINT_TOKEN = {
     "khaki": "--fuel-other",
 }
 HATCHES = ("hatch-lines", "hatch-cross", "hatch-dots", "hatch-vertical")
+# Shares rounded by the vendor can sum a little past 100; within this they still end a % axis at 100.
+PERCENT_SLACK = 1.0
+# Two dots closer than this (px) read as one series hiding another.
+COINCIDENT_PX = 2.5
 MONTHS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
 
 
@@ -74,6 +78,11 @@ def fmt_num(v: float, step: float | None = None) -> str:
     With ``step`` (the axis's tick spacing) every label carries the decimals that spacing needs, so a
     tenth-of-a-hertz axis reads 49.9, 50.0, 50.1 rather than 50 three times.
     """
+    if step and step >= 1e5:
+        # an axis in the hundreds of millions (ENTSOG kWh/d) reads 50M, 100M: eleven-character labels
+        # would run off the narrow chart's left margin
+        scale, suffix = (1e9, "bn") if step >= 1e9 else (1e6, "M")
+        return "0" if v == 0 else fmt_num(v / scale, step / scale) + suffix
     if step:
         places = 0
         while places < 4 and abs(step * 10**places - round(step * 10**places)) > 1e-6:
@@ -267,6 +276,11 @@ def _time_axis(
                 centre = (t + min(t + day, hi_edge)) / 2 if span_days <= 9 else t
                 label = f"{d.day} {MONTHS[d.month - 1]}" if not narrow or not ticks else str(d.day)
                 ticks.append((t, label, centre))
+    elif span_days > 400:
+        # a span of years: ticks on 1 January, labelled by the year alone (a day and month would hide it)
+        years = [(t, d) for t, d in _midnights(lo, hi_edge, uk_days) if d.month == 1 and d.day == 1]
+        step = max(1, math.ceil(len(years) / (4 if narrow else 9)))
+        ticks = [(t, str(d.year), t) for i, (t, d) in enumerate(years) if i % step == 0]
     else:
         # weekly ticks on Mondays, or the 1st of each month for long spans
         for t, d in _midnights(lo, hi_edge, uk_days):
@@ -325,8 +339,11 @@ class _Plot:
             f'<text x="{_f(fr.x0 - 10)}" y="{_f(self.Y(v) + 4.5)}" text-anchor="end">{fmt_num(v, self.yt[1] - self.yt[0])}</text>'
             for v in self.yt
         ]
+        # the unit sits above the frame, so a unit wider than the left margin may run right over the
+        # plot rather than off the drawing's left edge (about 7.2 px a character at 13 px)
+        unit_x = max(fr.x0 - 10, len(unit) * 7.2 + 2)
         txt.append(
-            f'<text x="{_f(fr.x0 - 10)}" y="{_f(fr.top - 12)}" text-anchor="end">{html.escape(unit)}</text>'
+            f'<text x="{_f(unit_x)}" y="{_f(fr.top - 12)}" text-anchor="end">{html.escape(unit)}</text>'
         )
         prev_right = -math.inf
         for _t, label, centre in self.ticks:
@@ -386,7 +403,11 @@ def _stacked(chart: dict[str, Any], view: ChartView, fr: Frame, uid: str, narrow
             upper = neg[:]
             neg = [a + min(0.0, v) for a, v in zip(neg, vals)]
             layers.append((entry, neg[:], upper, False))
-    plot = _Plot(fr, ts, min(0.0, min(neg)), max(pos), narrow, _settlement_days(view))
+    top = max(pos)
+    if chart["unit"] == "%" and top <= 100 + PERCENT_SLACK:
+        # shares summing to 100 (100.2 after rounding) end the axis at 100, not at the next step
+        top = 100.0
+    plot = _Plot(fr, ts, min(0.0, min(neg)), top, narrow, _settlement_days(view))
     half = plot.step / 2
     body: list[str] = []
     labels: list[str] = []
@@ -443,6 +464,8 @@ def _lines(chart: dict[str, Any], view: ChartView, fr: Frame, uid: str, narrow: 
     plot = _Plot(fr, ts, floor, hi + pad, narrow, _settlement_days(view))
     half = plot.step / 2
     body: list[str] = []
+    # points already on the plot, by x; a later series that lands on one is coincident there
+    drawn: dict[float, list[float]] = {}
     for s in chart["series"]:
         entry = by_key[s["key"]]
         paint = paint_of(entry)
@@ -450,21 +473,44 @@ def _lines(chart: dict[str, Any], view: ChartView, fr: Frame, uid: str, narrow: 
         dash = "" if paint in PAINT_TOKEN else ' stroke-dasharray="5 3"'
         runs = _runs(ts, s["values"], plot.step)
         n_points = sum(len(r) for r in runs)
+        dots = n_points <= 60
+        mine: list[tuple[float, float]] = []
         for run in runs:
             pts = [(plot.X(t + half), plot.Y(v)) for t, v in run]
-            if len(pts) > 1:
+            # A dot chart (a value a day, say) marks where this series lands on an earlier one: there
+            # the line is dashed, so the line beneath shows through the gaps, and the dot is drawn
+            # small inside the one beneath. A dense line is left solid; its brief near-crossings are
+            # not hidden series.
+            on = [
+                dots and any(abs(y - dy) < COINCIDENT_PX for dy in drawn.get(round(x, 1), ()))
+                for x, y in pts
+            ]
+            i = 0
+            while i < len(pts) - 1:
+                shared = on[i] and on[i + 1]
+                j = i + 1
+                while j < len(pts) - 1 and (on[j] and on[j + 1]) == shared:
+                    j += 1
+                seg_dash = ' stroke-dasharray="6 5"' if shared and not dash else dash
                 body.append(
                     '<path d="M'
-                    + " L".join(f"{_f(x)} {_f(y)}" for x, y in pts)
-                    + f'" fill="none" stroke="{stroke}" stroke-width="1.8" stroke-linejoin="round"{dash}/>'
+                    + " L".join(f"{_f(x)} {_f(y)}" for x, y in pts[i : j + 1])
+                    + f'" fill="none" stroke="{stroke}" stroke-width="1.8" stroke-linejoin="round"{seg_dash}/>'
                 )
-            if n_points <= 60 or len(pts) == 1:
-                body.extend(
-                    f'<circle cx="{_f(x)}" cy="{_f(y)}" r="3.2" fill="{stroke}" stroke="{colour("ink")}" '
-                    f'stroke-width="1"/>'
-                    for x, y in pts
-                )
-    return "".join(body) + plot.axes(chart["unit"], view.x_label)
+                i = j
+            if dots or len(pts) == 1:
+                for (x, y), hidden in zip(pts, on):
+                    r, ring = ("1.7", ".7") if hidden else ("3.2", "1")
+                    body.append(
+                        f'<circle cx="{_f(x)}" cy="{_f(y)}" r="{r}" fill="{stroke}" stroke="{colour("ink")}" '
+                        f'stroke-width="{ring}"/>'
+                    )
+            mine.extend(pts)
+        for x, y in mine:
+            drawn.setdefault(round(x, 1), []).append(y)
+    # the series are drawn over the axes, so a series at zero throughout runs along the x axis in its
+    # own colour instead of vanishing under the ink line
+    return plot.axes(chart["unit"], view.x_label) + "".join(body)
 
 
 def _bars(chart: dict[str, Any], view: ChartView, fr: Frame, uid: str, narrow: bool) -> str:
