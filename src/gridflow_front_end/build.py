@@ -58,7 +58,7 @@ from typing import Any
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 from markupsafe import Markup
 
-from gridflow_front_end import artefacts, chart_spec, chart_svg
+from gridflow_front_end import artefacts, chart_spec, chart_svg, map_svg
 from gridflow_front_end.page_fields import PageFields, anatomy_errors, parse_page_fields
 from gridflow_front_end.paths import DEFAULT_VAULT, REPO_ROOT, SITE_DIR, resolve_vault_path
 
@@ -896,6 +896,7 @@ def make_env() -> Environment:
         keep_trailing_newline=True,
     )
     env.filters["md_inline"] = _markdown_inline
+    env.filters["breakable"] = _breakable
     return env
 
 
@@ -934,6 +935,7 @@ class PageArtefacts:
     chart: dict[str, Any] | None = None
     sample: dict[str, Any] | None = None
     notebook: dict[str, Any] | None = None
+    locations: dict[str, Any] | None = None
 
 
 def highlight(code: str) -> Markup:
@@ -1004,7 +1006,8 @@ def request_lines(request: str) -> Markup:
     head = _url_row(head)
     if not query:
         return well_lines([head])
-    params = query.split("&amp;")
+    # a long comma list (Open-Meteo's hourly=) may wrap after a comma rather than mid-word
+    params = [p.replace(",", ",<wbr>") for p in query.split("&amp;")]
     lines = [f"{head}"] + [f"    {'?' if i == 0 else '&amp;'}{p}" for i, p in enumerate(params)]
     return well_lines(lines)
 
@@ -1019,8 +1022,20 @@ def check_artefacts(doc: DatasetDoc) -> tuple[PageArtefacts, list[str]]:
     try:
         sample = artefacts.load_json(artefacts.sample_path(SITE_DIR, doc.vendor_id, doc.slug))
         notebook = artefacts.load_json(artefacts.notebook_path(SITE_DIR, doc.vendor_id, doc.slug))
+        locations = artefacts.load_json(artefacts.locations_path(SITE_DIR, doc.vendor_id, doc.slug))
     except (ValueError, json.JSONDecodeError) as exc:
         return arts, [f"{key}: {exc}"]
+    if fields.locations is not None:
+        if locations is None:
+            errors.append(
+                f"{key}: page.locations has no committed locations file "
+                "(run gridflow-distil --locations and commit it)"
+            )
+        else:
+            loc_errors = map_svg.check(locations, key)
+            errors.extend(loc_errors)
+            if not loc_errors:
+                arts.locations = locations
     if sample is None:
         errors.append(f"{key}: no sample rows (run gridflow-sample and commit them)")
     elif sample.get("select_sha256") != artefacts.select_digest(silver, fields.record.select):
@@ -1058,7 +1073,7 @@ PIPELINE_COLUMNS = frozenset({"data_provider", "ingested_at", *artefacts.LINEAGE
 # The frame's column widths, as silver prints them (the locked schema board): Red Hat Mono's advance
 # at 13 px, cell padding, the key square and Polars' `…` column. Columns fold into `…` wherever the
 # box is narrower than the columns up to them (container queries, rounded up to _FRAME_STEP px).
-_FRAME_STEP = 10
+_FRAME_STEP = 5
 _FRAME_CH = 7.8
 _FRAME_PAD = 16
 _FRAME_KEY_W = 14
@@ -1340,6 +1355,14 @@ def page_view(
                 ],
             }
 
+    map_v = None
+    if arts.locations is not None and p.locations is not None:
+        map_v = {
+            "title": p.locations.title,
+            "caption": p.locations.caption,
+            **map_svg.render(arts.locations, p.chart_view.key),
+        }
+
     record_v: dict[str, Any] = {}
     if arts.sample is not None:
         record_v, rec_errors = _frame_view(doc, arts.sample)
@@ -1360,11 +1383,13 @@ def page_view(
         by_slug = {m.slug: m for m in members}
         for mem in p.family.members:
             m = by_slug.get(mem.dataset)
+            # A title with no "(CODE)" falls back to the uppercased slug, which is not a vendor code.
+            code = m.api_code if m else ""
             variants.append(
                 {
                     "slug": mem.dataset,
                     "key": f"{doc.vendor_id}/{mem.dataset}",
-                    "code": m.api_code if m else mem.dataset.upper(),
+                    "code": "" if code == mem.dataset.upper() else code,
                     "differs": mem.differs,
                     "request": request_lines(mem.request),
                 }
@@ -1384,6 +1409,7 @@ def page_view(
         "what_it_is": p.what_it_is,
         "how_used": p.how_used,
         "chart": chart_v,
+        "map": map_v,
         "raw": {
             "note": p.raw_feed.note,
             "requests": [request_lines(r) for r in p.raw_feed.requests],
@@ -1952,6 +1978,20 @@ def new_template_pages(vault_path: Path) -> set[tuple[str, str]]:
     return found
 
 
+def orphan_locations(vault_path: Path) -> list[str]:
+    """Committed locations files for a dataset whose note has no ``page.locations`` block."""
+    root = artefacts.locations_dir(SITE_DIR)
+    if not root.is_dir():
+        return []
+    orphans: list[str] = []
+    for path in sorted(root.glob("*/*.json")):
+        note = vault_path / path.parent.name / f"{path.stem}.md"
+        fields = parse_page_fields(note.read_text(encoding="utf-8"))[0] if note.is_file() else None
+        if fields is None or fields.locations is None:
+            orphans.append(path.relative_to(REPO_ROOT).as_posix())
+    return orphans
+
+
 def orphan_artefacts(pages: set[tuple[str, str]]) -> list[str]:
     """Committed sample or notebook files for a dataset that is not on the dataset template."""
     orphans: list[str] = []
@@ -1985,6 +2025,11 @@ def build(
     orphans = orphan_artefacts(_NEW_TEMPLATE_PAGES)
     if orphans:
         _fail("pages", "orphan artefact", [f"{o}: no dataset-template page" for o in orphans])
+    orphans = orphan_locations(vault_path)
+    if orphans:
+        _fail(
+            "pages", "orphan locations", [f"{o}: its note has no page.locations" for o in orphans]
+        )
 
     n_datasets = 0
     n_pages = 0

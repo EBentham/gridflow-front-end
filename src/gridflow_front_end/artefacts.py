@@ -10,6 +10,9 @@ builds from a bare checkout.
 - ``site/hifi/data/samples/<vendor>/<dataset>.json``: written by
   ``gridflow-sample`` (``sample.py``, the ``distil`` extra) from local silver,
   every value formatted by Polars.
+- ``site/hifi/data/locations/<vendor>/<dataset>.json``: the sites a weather dataset is taken
+  at, for the page's map (``gridflow-distil --locations``, ``locations.py``): coordinates from
+  gridflow's code, answered grid points and statistics from local silver.
 - ``site/hifi/data/notebooks/<vendor>/<dataset>.json`` plus its plot image(s):
   written by ``scripts/run_notebooks.py``, run with the gridflow_models
   interpreter, which executes the cells for real on the ``gridflow_models``
@@ -54,6 +57,16 @@ def samples_dir(site_dir: Path) -> Path:
 def notebooks_dir(site_dir: Path) -> Path:
     """Committed executed notebooks, one JSON file (plus images) per dataset."""
     return site_dir / "data" / "notebooks"
+
+
+def locations_dir(site_dir: Path) -> Path:
+    """Committed site files for the weather-location maps, one per dataset."""
+    return site_dir / "data" / "locations"
+
+
+def locations_path(site_dir: Path, vendor: str, dataset: str) -> Path:
+    """Where ``gridflow-distil --locations`` writes one dataset's sites."""
+    return locations_dir(site_dir) / vendor / f"{dataset}.json"
 
 
 def sample_path(site_dir: Path, vendor: str, dataset: str) -> Path:

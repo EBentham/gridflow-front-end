@@ -125,7 +125,12 @@ decisions and their reasons: `.planning/v5/design-loop/p24-decisions.md`.
 2. **Topsoil: what it is and how it is used,** short prose, then the chart with its key beside it. Signed
    series (interconnectors, pumped storage) stack above zero when positive and hang below when negative;
    codes the palette doesn't cover are drawn unpainted with distinct ink hatches; khaki means only the vendor
-   code OTHER. A caveat that matters for reading the chart goes in its caption.
+   code OTHER. A caveat that matters for reading the chart goes in its caption. Then, for weather
+   sites (the Open-Meteo pages), where the data is taken: the locations map, an inline SVG outline of
+   Great Britain and Ireland with a marker at each configured site and a faint dot at the grid cell
+   the API answered, a hover or tap card per site, and a linked table beneath that reads without
+   script. Its statistics are the only ones on a dataset page computed from our own rows (ruling 50),
+   and each says what it was taken from.
 3. **Bronze: the raw feed,** the vendor's raw URL and the gridflow CLI call that ingests it.
 4. **Silver: schema and sample rows, "the frame and its guide"** (re-locked 2026-09-27, replacing "one record,
    then many"): the real sample rows as a Polars frame, exactly as silver prints them (shape line, column

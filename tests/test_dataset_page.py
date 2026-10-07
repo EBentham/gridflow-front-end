@@ -201,7 +201,7 @@ def test_a_page_without_a_page_block_is_blank(tmp_path: Path) -> None:
     build.build(
         DEFAULT_VAULT,
         tmp_path,
-        frozenset({"entsoe/current_balancing_state", "neso/carbon_intensity"}),
+        frozenset({"entsoe/current_balancing_state", "entsoe/outages_generation"}),
     )
     page = (tmp_path / "data-sources" / "entsoe" / "current_balancing_state.html").read_text(
         encoding="utf-8"
@@ -210,17 +210,20 @@ def test_a_page_without_a_page_block_is_blank(tmp_path: Path) -> None:
     # not `.ds`, which ends in its own deep band: site.js gives a blank page the site footer
     assert '<main id="main" class="ds-blank">' in page
     assert '<h1 class="h-hero ds-hero__h" id="ds-h">Current balancing state</h1>' in page
-    assert '<code class="ds-chip">entsoe/current_balancing_state</code>' in page
+    assert '<code class="ds-chip">entsoe/<wbr>current_<wbr>balancing_<wbr>state</code>' in page
     assert 'href="../entsoe.html"' in page and "ds-facts" not in page and "data-chart" not in page
     assert not re.search(r"soon|planned|coming|placeholder|not yet", page, re.IGNORECASE)
-    family = (tmp_path / "data-sources" / "neso" / "national-carbon-intensity.html").read_text(
+    # a held family (no page block on its lead) is blank too, with every member's chip and pointer
+    family = (tmp_path / "data-sources" / "entsoe" / "outages.html").read_text(encoding="utf-8")
+    assert '<main id="main" class="ds-blank">' in family and "data-chart" not in family
+    assert (
+        '<code class="ds-chip" id="outages_offshore_grid">entsoe/<wbr>outages_<wbr>offshore_<wbr>grid</code>'
+        in family
+    )
+    pointer = (tmp_path / "data-sources" / "entsoe" / "outages_offshore_grid.html").read_text(
         encoding="utf-8"
     )
-    assert '<code class="ds-chip" id="intensity_fw48h">neso/intensity_fw48h</code>' in family
-    pointer = (tmp_path / "data-sources" / "neso" / "intensity_fw48h.html").read_text(
-        encoding="utf-8"
-    )
-    assert 'href="national-carbon-intensity.html#intensity_fw48h"' in pointer
+    assert 'href="outages.html#outages_offshore_grid"' in pointer
 
 
 def test_the_page_set_is_149_datasets_on_73_pages() -> None:

@@ -32,6 +32,10 @@ one key (v5 decision D2). The fields follow the locked page anatomy
         key:
           - {series: wind, label: Wind, codes: WIND}
           - {series: ps, label: Pumped storage, codes: PS, note: ..., paint: hatch-cross}
+      locations:                                 # optional: a map of the sites the data is taken at
+        title: Where the weather is taken        # 10 words or fewer
+        caption: ...                             # 40 words or fewer; the sites, coordinates and
+                                                 # stats come from the committed locations file
       # 3. bronze
       raw_feed:
         note: ...                                # 30 words or fewer
@@ -103,6 +107,7 @@ RECORD = "record"
 NOTEBOOK = "notebook"
 RELATED = "related"
 FAMILY = "family"
+LOCATIONS = "locations"
 
 FIELDS = (
     TITLE,
@@ -113,6 +118,7 @@ FIELDS = (
     HOW_USED,
     CHART,
     CHART_VIEW,
+    LOCATIONS,
     RAW_FEED,
     RECORD,
     NOTEBOOK,
@@ -158,6 +164,8 @@ BUDGET = {
     "plot_alt": 60,
     "related_note": 12,
     "differs": 14,
+    "locations_title": 10,
+    "locations_caption": 40,
 }
 HOW_USED_COUNT = (2, 3)
 KEY_MAX = 9
@@ -165,7 +173,7 @@ RELATED_MAX = 4
 CELLS_COUNT = (2, 4)
 REQUESTS_COUNT = (1, 4)
 COMMANDS_COUNT = (1, 3)
-FAMILY_MEMBERS = (2, 12)
+FAMILY_MEMBERS = (2, 18)  # regional carbon intensity reaches one region by 18 routes
 
 # Chart paints: the scenery palette (DESIGN.md "Colour"), plus unpainted
 # hatches for codes the palette does not cover. Khaki is the vendor code OTHER
@@ -226,6 +234,14 @@ class ChartView:
     alt: str = ""
     x_label: str = ""
     key: tuple[KeyEntry, ...] = ()
+
+
+@dataclass(frozen=True)
+class Locations:
+    """The words around a site map; the sites and their statistics live in the locations file."""
+
+    title: str = ""
+    caption: str = ""
 
 
 @dataclass(frozen=True)
@@ -315,6 +331,7 @@ class PageFields:
     how_used: tuple[str, ...] = ()
     chart: dict[str, Any] | None = field(default=None, hash=False, compare=False)
     chart_view: ChartView = field(default_factory=ChartView)
+    locations: Locations | None = None
     raw_feed: RawFeed = field(default_factory=RawFeed)
     record: Record = field(default_factory=Record)
     notebook: Notebook = field(default_factory=Notebook)
@@ -444,6 +461,15 @@ def _read(page: Mapping[str, Any]) -> tuple[PageFields, list[str]]:
         key=tuple(key_entries),
     )
 
+    locations: Locations | None = None
+    if page.get(LOCATIONS) is not None:
+        loc_m = r.mapping(f"{p}.{LOCATIONS}", page.get(LOCATIONS))
+        r.unknown(f"{p}.{LOCATIONS}", loc_m, ("title", "caption"))
+        locations = Locations(
+            title=r.text(f"{p}.locations.title", loc_m.get("title"), required=True),
+            caption=_prose(r.text(f"{p}.locations.caption", loc_m.get("caption"), required=True)),
+        )
+
     raw_m = r.mapping(f"{p}.{RAW_FEED}", page.get(RAW_FEED))
     r.unknown(f"{p}.{RAW_FEED}", raw_m, ("note", "requests", "commands"))
     commands: list[Command] = []
@@ -552,6 +578,7 @@ def _read(page: Mapping[str, Any]) -> tuple[PageFields, list[str]]:
         how_used=how_used,
         chart=_jsonable(chart) if chart is not None else None,  # type: ignore[arg-type]
         chart_view=chart_view,
+        locations=locations,
         raw_feed=raw_feed,
         record=record,
         notebook=notebook,
@@ -682,6 +709,12 @@ def anatomy_errors(fields: PageFields) -> list[str]:
                 e.append(f"{where}.paint: must be one of {list(PAINTS)}")
             elif paint == "khaki" and entry.series != "other":
                 e.append(f"{where}.paint: khaki is the vendor code OTHER only (series 'other')")
+
+    if fields.locations is not None:
+        for name in ("title", "caption"):
+            value = getattr(fields.locations, name)
+            if value:
+                _budget(e, f"{p}.locations.{name}", value, f"locations_{name}")
 
     if RAW_FEED in fields.declared:
         rf = fields.raw_feed

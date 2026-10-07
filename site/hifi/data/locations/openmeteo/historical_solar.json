@@ -1,0 +1,18 @@
+{
+  "_about": "Weather sites for the map on this dataset's page: coordinates from gridflow's endpoints.py, answered grid points and statistics from silver. Written by gridflow-distil --locations; gridflow-build reads it.",
+  "dataset": "openmeteo/historical_solar",
+  "generated_by": "gridflow-distil --locations",
+  "kind": "solar",
+  "locations_from": "gridflow src/gridflow/connectors/openmeteo/endpoints.py, SOLAR_LOCATIONS",
+  "endpoints_sha256": "3974af2ab525919ec7ed42d9c06377edcae3d1df47373d8a878e5add18ff7bb4",
+  "silver": "open_meteo/historical_solar",
+  "window": {"end": "2025-12-31", "hours": 35064, "start": "2022-01-01"},
+  "sites": [
+    {"answered": {"lat": 52.618626, "lon": 1.007463}, "configured": {"lat": "52.62", "lon": "1.05"}, "group": null, "name": "east_anglia_norfolk", "offset_km": 2.9, "stats": {"darkest_kwh_m2": 0.58, "darkest_month": 12, "mean_daily_kwh_m2": 3.161, "sunniest_kwh_m2": 6.09, "sunniest_month": 6}},
+    {"answered": {"lat": 51.21265, "lon": -2.42804}, "configured": {"lat": "51.20", "lon": "-2.50"}, "group": null, "name": "wiltshire_somerset", "offset_km": 5.2, "stats": {"darkest_kwh_m2": 0.632, "darkest_month": 12, "mean_daily_kwh_m2": 3.15, "sunniest_kwh_m2": 6.106, "sunniest_month": 6}},
+    {"answered": {"lat": 51.21265, "lon": 0.647482}, "configured": {"lat": "51.20", "lon": "0.70"}, "group": null, "name": "kent", "offset_km": 3.9, "stats": {"darkest_kwh_m2": 0.663, "darkest_month": 12, "mean_daily_kwh_m2": 3.278, "sunniest_kwh_m2": 6.312, "sunniest_month": 6}},
+    {"answered": {"lat": 50.298767, "lon": -5.061493}, "configured": {"lat": "50.30", "lon": "-5.00"}, "group": null, "name": "cornwall", "offset_km": 4.4, "stats": {"darkest_kwh_m2": 0.707, "darkest_month": 12, "mean_daily_kwh_m2": 3.229, "sunniest_kwh_m2": 6.034, "sunniest_month": 6}},
+    {"answered": {"lat": 50.931458, "lon": -0.160706}, "configured": {"lat": "50.95", "lon": "-0.10"}, "group": null, "name": "sussex", "offset_km": 4.7, "stats": {"darkest_kwh_m2": 0.664, "darkest_month": 12, "mean_daily_kwh_m2": 3.305, "sunniest_kwh_m2": 6.421, "sunniest_month": 6}},
+    {"answered": {"lat": 51.775043, "lon": -1.313873}, "configured": {"lat": "51.75", "lon": "-1.25"}, "group": null, "name": "oxfordshire", "offset_km": 5.2, "stats": {"darkest_kwh_m2": 0.592, "darkest_month": 12, "mean_daily_kwh_m2": 3.099, "sunniest_kwh_m2": 6.03, "sunniest_month": 6}}
+  ]
+}

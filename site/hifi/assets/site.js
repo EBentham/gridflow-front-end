@@ -110,6 +110,135 @@
     });
   });
 
+  // ---------------------------------------------------------------- the weather-site map
+  // Each marker is a link to its table row, so the map works without this. Here, hover or focus on a
+  // marker opens a card with the row's facts beside it; a click or tap pins the card until another tap,
+  // a tap elsewhere or Escape. A marker and its row light together. The card is clamped inside the map's
+  // box, so at any width it stays on screen.
+  document.querySelectorAll(".wm").forEach(function (fig) {
+    var plot = fig.querySelector(".wm-plot");
+    var card = fig.querySelector(".wm-card");
+    var table = fig.querySelector(".wm-t");
+    if (!plot || !card || !table) return;
+    var heads = Array.prototype.map.call(table.querySelectorAll("thead th"), function (th) {
+      return th.textContent;
+    });
+    var pinned = null, shown = null;
+
+    function parts(name) {
+      return {
+        mark: fig.querySelector('.wm-s[data-site="' + name + '"]'),
+        label: fig.querySelector('.wm-labs text[data-site="' + name + '"]'),
+        row: table.querySelector('tr[data-site="' + name + '"]')
+      };
+    }
+    function light(name, on) {
+      var p = parts(name);
+      [p.mark, p.label, p.row].forEach(function (el) { if (el) el.classList.toggle("is-on", on); });
+    }
+    function fill(row) {
+      card.textContent = "";
+      var cells = row.children;
+      var group = row.parentNode.querySelector(".wm-gh th");
+      var h = document.createElement("p");
+      h.className = "wm-card__h";
+      var nameCell = row.querySelector(".wm-n");
+      var name = document.createElement("span");
+      name.className = "wm-card__n";
+      name.textContent = nameCell ? nameCell.textContent : row.getAttribute("data-site");
+      var code = document.createElement("code");
+      code.textContent = row.getAttribute("data-site");
+      h.appendChild(name);
+      h.appendChild(code);
+      if (group) h.appendChild(document.createTextNode(group.textContent));
+      var dl = document.createElement("dl");
+      for (var i = 1; i < cells.length; i++) {
+        var dt = document.createElement("dt"), dd = document.createElement("dd");
+        dt.textContent = heads[i] || "";
+        dd.textContent = cells[i].textContent;
+        if (cells[i].classList.contains("wm-c")) dd.className = "wm-c";
+        dl.appendChild(dt);
+        dl.appendChild(dd);
+      }
+      card.appendChild(h);
+      card.appendChild(dl);
+    }
+    function place(mark) {
+      var box = plot.getBoundingClientRect();
+      var dot = (mark.querySelector(".wm-dot") || mark).getBoundingClientRect();
+      var x = dot.left + dot.width / 2 - box.left, y = dot.top + dot.height / 2 - box.top;
+      var w = card.offsetWidth, h = card.offsetHeight, gap = 16;
+      var left = x + gap, top = y - 24;
+      if (left + w > box.width) left = x - gap - w;
+      if (left < 0) {
+        // no room either side: centre it on the marker, below it (or above when it would run off the box)
+        left = Math.min(Math.max(0, x - w / 2), Math.max(0, box.width - w));
+        top = y + gap + h <= box.height ? y + gap : y - gap - h;
+      }
+      top = Math.min(Math.max(0, top), Math.max(0, box.height - h));
+      card.style.left = left + "px";
+      card.style.top = top + "px";
+    }
+    function show(name) {
+      var p = parts(name);
+      if (!p.mark || !p.row) return;
+      if (shown && shown !== name) light(shown, false);
+      shown = name;
+      light(name, true);
+      fill(p.row);
+      card.hidden = false;
+      place(p.mark);
+    }
+    function hide(name) {
+      if (pinned && pinned !== name) { show(pinned); return; }
+      if (pinned) return;
+      if (shown) light(shown, false);
+      shown = null;
+      card.hidden = true;
+    }
+    function unpin() {
+      var was = pinned;
+      pinned = null;
+      if (was) hide(was);
+    }
+
+    fig.querySelectorAll(".wm-s").forEach(function (mark) {
+      var name = mark.getAttribute("data-site");
+      mark.addEventListener("mouseenter", function () { show(name); });
+      mark.addEventListener("mouseleave", function () { hide(name); });
+      mark.addEventListener("focus", function () { show(name); });
+      mark.addEventListener("blur", function () { hide(name); });
+      mark.addEventListener("click", function (e) {
+        e.preventDefault();
+        if (pinned === name) { unpin(); return; }
+        pinned = name;
+        show(name);
+      });
+    });
+    table.querySelectorAll("tr[data-site]").forEach(function (row) {
+      var name = row.getAttribute("data-site");
+      row.addEventListener("mouseenter", function () { light(name, true); });
+      row.addEventListener("mouseleave", function () { if (shown !== name) light(name, false); });
+    });
+    document.addEventListener("click", function (e) {
+      if (pinned && !e.target.closest(".wm-s") && !card.contains(e.target)) unpin();
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && (pinned || shown)) { pinned = null; hide(shown); }
+    });
+    // where the table is wider than its box, say so: the statistics start off-screen on a phone
+    var box = fig.querySelector(".wm-tw"), hint = fig.querySelector(".wm-hint");
+    function overflow() {
+      if (box && hint) hint.hidden = box.scrollWidth <= box.clientWidth + 1;
+    }
+    overflow();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(overflow);
+    window.addEventListener("resize", function () {
+      if (shown) place(parts(shown).mark);
+      overflow();
+    });
+  });
+
   // ---------------------------------------------------------------- shared page behaviours
 
   // copy buttons on code blocks

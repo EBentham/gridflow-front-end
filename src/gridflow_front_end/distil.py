@@ -12,6 +12,7 @@ Usage
     gridflow-distil                                   # every dataset with a spec
     gridflow-distil --dataset elexon/fuelhh           # just one (repeatable)
     gridflow-distil --silver-path D:/silver --dry-run # report, write nothing
+    gridflow-distil --locations                       # the weather-site maps' files (locations.py)
 
 Needs the ``distil`` extra: ``uv run --extra distil gridflow-distil``.
 
@@ -470,7 +471,20 @@ def main(argv: list[str] | None = None) -> int:
         help="Distil only this dataset; repeatable.",
     )
     parser.add_argument("--dry-run", action="store_true", help="Distil and report, write nothing.")
-    args = parser.parse_args(argv)
+    parser.add_argument(
+        "--locations",
+        action="store_true",
+        help="Write the weather-site files for the Open-Meteo maps instead (see locations.py).",
+    )
+    args, rest = parser.parse_known_args(argv)
+    if args.locations:
+        from gridflow_front_end import locations
+
+        passed = ["--silver-path", args.silver_path] if args.silver_path else []
+        passed += [arg for d in args.dataset for arg in ("--dataset", d)]
+        return locations.main([*passed, *(["--dry-run"] if args.dry_run else []), *rest])
+    if rest:
+        parser.error(f"unrecognised arguments: {' '.join(rest)}")
 
     silver_root = resolve_silver_path(args.silver_path)
     vault_path = resolve_vault_path(args.vault_path)
