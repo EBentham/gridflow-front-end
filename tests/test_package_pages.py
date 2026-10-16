@@ -157,3 +157,23 @@ def test_a_package_note_must_list_the_page_sets_tables(vault: Path) -> None:
     ]
     with pytest.raises(SystemExit):
         build.build_vendor(build.make_env(), VENDOR, vault, vault.parent / "site")
+
+
+def test_a_package_notes_chart_spec_is_distilled_under_the_lead(
+    vault: Path, tmp_path: Path
+) -> None:
+    distil = pytest.importorskip("gridflow_front_end.distil")
+    (vault / VENDOR / "pkg-two.md").write_text(
+        _note(
+            "pkg-two",
+            ["t_a", "t_b"],
+            page="page:\n  chart:\n    type: none\n    reason: A test package.\n",
+        ),
+        encoding="utf-8",
+    )
+    site = tmp_path / "site-dir"
+    (site / "data").mkdir(parents=True)
+    (site / "data" / f"{VENDOR}.json").write_text(json.dumps(_manifest()), encoding="utf-8")
+    sources, errors, _ = distil.discover_specs(site, vault)
+    assert errors == []
+    assert [(s.vendor, s.dataset) for s in sources] == [(VENDOR, "t_a")]

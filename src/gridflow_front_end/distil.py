@@ -34,7 +34,7 @@ from typing import Any
 
 import polars as pl
 
-from gridflow_front_end import chart_spec
+from gridflow_front_end import artefacts, chart_spec
 from gridflow_front_end.page_fields import parse_page_fields
 from gridflow_front_end.paths import SITE_DIR, resolve_silver_path, resolve_vault_path
 
@@ -424,7 +424,8 @@ def discover_specs(
     if vault_path.is_dir():
         for note in sorted(vault_path.glob("*/*.md")):
             fields, page_errors = parse_page_fields(note.read_text(encoding="utf-8"))
-            key = (note.parent.name, note.stem)
+            # a package note's chart is filed under its lead table key
+            key = (note.parent.name, artefacts.note_key(site_dir, note.parent.name, note.stem))
             errors.extend(f"{key[0]}/{key[1]}: {e}" for e in page_errors)
             if fields.chart is not None:
                 vault_charts[key] = fields.chart
