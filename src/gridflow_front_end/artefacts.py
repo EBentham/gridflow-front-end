@@ -79,6 +79,27 @@ def notebook_path(site_dir: Path, vendor: str, dataset: str) -> Path:
     return notebooks_dir(site_dir) / vendor / f"{dataset}.json"
 
 
+def package_leads(manifest: Mapping[str, Any]) -> dict[str, str]:
+    """Package note stem → the table key its page's artefacts are filed under.
+
+    A package note documents every silver table of one vendor package, and silver lives under
+    table keys, so the page's chart, sample, notebook and locations files are filed under its
+    lead table key: the first member of the family whose entry names the note (``note``), or the
+    one table of a ``package_tables`` page. Every other note is filed under its own stem.
+    """
+    leads = {f["note"]: f["members"][0] for f in manifest.get("families", []) if f.get("note")}
+    leads.update(manifest.get("package_tables", {}))
+    return leads
+
+
+def note_key(site_dir: Path, vendor: str, stem: str) -> str:
+    """The dataset key a vault note's artefacts are filed under (see ``package_leads``)."""
+    path = site_dir / "data" / f"{vendor}.json"
+    if not path.is_file():
+        return stem
+    return package_leads(json.loads(path.read_text(encoding="utf-8"))).get(stem, stem)
+
+
 def select_digest(silver: str, select: Mapping[str, Any]) -> str:
     """Digest of the row selection a sample file was made from."""
     return _digest({"silver": silver, "select": dict(select)})

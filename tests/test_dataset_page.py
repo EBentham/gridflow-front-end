@@ -21,7 +21,7 @@ LOCAL_DATA = re.compile(
 
 def _doc(vendor: str, slug: str) -> build.DatasetDoc:
     cfg = build.REAL_VENDORS[vendor]
-    return build.parse_vault_file(DEFAULT_VAULT / vendor / f"{slug}.md", vendor, cfg["label"])
+    return build.read_note(build.note_path(DEFAULT_VAULT, vendor, slug), slug, vendor, cfg["label"])
 
 
 def _new_template_docs() -> list[build.DatasetDoc]:
@@ -35,7 +35,7 @@ def _render(doc: build.DatasetDoc) -> str:
     assert chart_errors == []
     arts.chart = chart
     members = []
-    if doc.page.family is not None:
+    if doc.page.family is not None and not doc.package:
         members = [_doc(doc.vendor_id, m.dataset) for m in doc.page.family.members]
     view, view_errors = build.page_view(doc, arts, members)
     assert view_errors == []
@@ -177,7 +177,7 @@ def test_landscape_scenery_is_never_cropped(kind: str) -> None:
 
 def test_no_page_block_describes_local_data() -> None:
     for doc in _new_template_docs():
-        text = (DEFAULT_VAULT / doc.vendor_id / f"{doc.slug}.md").read_text(encoding="utf-8")
+        text = build.note_path(DEFAULT_VAULT, doc.vendor_id, doc.slug).read_text(encoding="utf-8")
         block = text.split("\npage:", 1)[1].split("\n---", 1)[0]
         assert not LOCAL_DATA.search(block), doc.slug
         assert "—" not in block, f"{doc.slug}: em dash in the page block"
@@ -189,7 +189,7 @@ def test_every_new_template_page_renders() -> None:
     for doc in docs:
         assert (
             parse_page_fields(
-                (DEFAULT_VAULT / doc.vendor_id / f"{doc.slug}.md").read_text(encoding="utf-8")
+                build.note_path(DEFAULT_VAULT, doc.vendor_id, doc.slug).read_text(encoding="utf-8")
             )[1]
             == []
         )
