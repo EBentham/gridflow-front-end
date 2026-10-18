@@ -67,6 +67,24 @@ checks it against `review-rubric.md`. You write only your own dataset's files.
   - `line` for prices, flows, a few series; nulls and time gaps break the line (never interpolate).
   - `bar` for a table with no time axis (counts or a sum by category; `group_null` keeps nulls as a
     category). Never sum a non-additive column (registered capacity per registration is not additive).
+  - **Several columns of one row** (a wide table: one cost column per reason) are series through
+    `values` instead of `value` and `group`, on a line or stacked area. Each item is a column, or
+    `{column, series}` to give it a short series key; `chart_view.key` then names each key once.
+    Series draw in the listed order; a null cell is missing for its own series only:
+    ```yaml
+    values:
+      - {column: thermal_constraints_cost_gbp, series: thermal}
+      - {column: voltage_constraints_cost_gbp, series: voltage}
+    ```
+- **chart_view.y_min** (optional, a number): the y axis floor, which need not be a tick. Without it
+  the axis ends at the tick below the lowest value, so five dates at -£232,717 on a £60M axis floor
+  it at -20M; `y_min: -2000000` ends it just below the data. A floor a little below zero also lifts a
+  line that sits at zero off the axis, so a gap in it reads as a gap (aggregated BSAD's missing
+  2020-21: `y_min: -8`). The build fails a floor above the lowest value drawn. Missing periods are
+  always gaps: a line breaks at a null or an absent period, a stacked area at an absent period or one
+  where every series is null; neither is joined across the gap or drawn at zero.
+- **Long spans** tick on 1 January when three or more fall inside, else every half year or quarter
+  ("Jul 2024", "2025", "Jul"); nothing to set.
 - **chart_view.key**: one entry per series, in the order the reader should read them (top of the stack
   first). Paint: the scenery palette by role (`wind`, `solar`, `gas`, `nuclear`, `imports`, `biomass`,
   `other` default automatically). Codes the palette does not cover are unpainted: `hatch-lines`,
@@ -108,9 +126,15 @@ checks it against `review-rubric.md`. You write only your own dataset's files.
   relation and date column `query()` uses before you write the lead. `query()` orders rows by its date
   column only, so rows within a day come back unordered: sort by `timestamp_utc` before plotting.
 - **notebook.needs**: the window the reader must ingest ("20 to 26 September 2026", or "the BM unit
-  register").
+  register"). It is printed inside "Needs gridflow and gridflow-models installed, with <needs>
+  ingested.", so it must be a short noun phrase: the build rejects a `;`, a full stop at the end, the
+  word ingest, a leading verb (run, download, use ...) or a clause word (will, fails, is ...). A loss
+  or caveat goes in `what_it_is` or the chart caption, not here.
 - **related**: up to 4 datasets that have pages (`site/hifi/data/<vendor>.json` lists them), each with
-  a reason of 12 words or fewer. Say how they relate, not what they are called.
+  a reason of 12 words or fewer. Say how they relate, not what they are called. Name a table key
+  (`elexon/fuelhh`, which links to its page or its family's pointer) or a page slug from the page set
+  (`neso_data_portal/aggregated-bsad`, a package or family page, linked directly). A slug that names
+  no page fails the build.
 
 ## Commands (run from the front-end worktree root)
 
@@ -144,10 +168,34 @@ stash or branch in either repo (the seat commits); edit any file that is not you
 template, CSS and Python are the seat's; report a template problem instead of working around it);
 kill processes.
 
+## Held pages (ruling 6)
+
+A package none of whose tables can be published is a held page: the full anatomy minus rows. Mark the
+lead note `page.held: true` on a family page (each member then gives its own `held:` reason, 16 words
+or fewer) or `page.held: <reason>` on a one-table page. Write the hero and facts (no Key line: it
+comes from `record`), `what_it_is`, `how_used`, the raw feed with each table's files, and `related`.
+Do not write `chart`, `chart_view`, `locations`, `record` or `notebook`, and commit no series, sample
+or notebook: the build fails on any of them. The page lists each table under "The silver tables" with
+its reason, and has no gold stratum. The hub links it like any other page.
+
+```yaml
+page:
+  held: true
+  family:
+    slug: dynamic-containment-4-day-forecast
+    members:
+      - {dataset: dc_forecast_4d, differs: The next four days, request: "GET https://...",
+         held: NESO does not say whether the slash dates are day first or month first.}
+```
+
 ## Family pages (v5 D5)
 
 The family's lead member's note carries the page; `page.family` lists every member with what differs
-(14 words or fewer) and its raw request. Other members keep no `page:` block: their addresses become
+(14 words or fewer) and its raw request. A member with several files (a current and an archive file)
+gives `request` as a list of up to four; each prints as its own rows of the member's well:
+`request: ["GET https://.../dump/<current>", "GET https://.../dump/<archive>"]`. A member whose rows
+the page cannot show adds `held:` with the reason (16 words or fewer); the raw feed prints it under
+the member as "Rows not shown: <held>". Other members keep no `page:` block: their addresses become
 pointers to `<family-slug>.html#<member>`. The chart, frame and notebook come from the lead's silver
 table; say so in the caption if the chart shows one member. The family's slug and members are fixed in
 `site/hifi/data/<vendor>.json` (the page set); `page.family` must name the same slug and members, and
