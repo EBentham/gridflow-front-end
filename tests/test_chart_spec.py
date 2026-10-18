@@ -49,6 +49,61 @@ def test_valid_line_and_bar_specs() -> None:
     assert chart_spec.validate_spec(BAR) == []
 
 
+WIDE: dict[str, Any] = {
+    "type": "stacked-area",
+    "silver": "neso_data_portal/constraint_breakdown",
+    "time": "date",
+    "values": [
+        "thermal_constraints_cost_gbp",
+        {"column": "voltage_constraints_cost_gbp", "series": "voltage"},
+    ],
+    "aggregation": "last",
+    "window": {"start": "2025-04-01", "end": "2026-03-31"},
+    "unit": "£",
+}
+
+
+def test_a_wide_table_spec_lists_its_value_columns() -> None:
+    assert chart_spec.validate_spec(WIDE) == []
+    assert chart_spec.validate_spec(_with(WIDE, type="line", series_order=["voltage"])) == []
+    assert chart_spec.value_columns(WIDE) == [
+        ("thermal_constraints_cost_gbp", "thermal_constraints_cost_gbp"),
+        ("voltage_constraints_cost_gbp", "voltage"),
+    ]
+    assert chart_spec.value_columns(LINE) == []
+
+
+@pytest.mark.parametrize(
+    ("spec", "fragment"),
+    [
+        (_with(WIDE, values=[]), "non-empty list"),
+        (_with(WIDE, values="thermal"), "non-empty list"),
+        (_with(WIDE, values=["a b"]), "values[0]"),
+        (_with(WIDE, values=[{"column": "a"}]), "values[0]"),
+        (_with(WIDE, values=[{"column": "a", "series": " "}]), "values[0].series"),
+        (_with(WIDE, values=["a", "a"]), "listed twice"),
+        (_with(WIDE, values=["a", {"column": "b", "series": "a"}]), "share a series key"),
+        (_with(WIDE, value="a"), "takes no value"),
+        (_with(WIDE, group="fuel_type"), "drop group"),
+        (_with(WIDE, aggregation="count"), "count"),
+        (
+            {
+                "type": "bar",
+                "silver": "a/b",
+                "group": "g",
+                "values": ["x"],
+                "aggregation": "sum",
+                "unit": "MW",
+            },
+            "line or stacked-area",
+        ),
+    ],
+)
+def test_bad_values_lists_are_rejected(spec: dict[str, Any], fragment: str) -> None:
+    errors = chart_spec.validate_spec(spec)
+    assert any(fragment in e for e in errors), errors
+
+
 def test_none_spec_needs_a_reason_and_nothing_else() -> None:
     assert chart_spec.validate_spec({"type": "none", "reason": "identifier-only table"}) == []
     assert chart_spec.validate_spec({"type": "none"})
