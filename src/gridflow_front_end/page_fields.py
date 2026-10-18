@@ -62,7 +62,9 @@ one key (v5 decision D2). The fields follow the locked page anatomy
         plot_alt: ...
       # 6. foot
       related:
-        - {dataset: elexon/fuelinst, note: ...}  # up to 4, 12 words or fewer each
+        - {dataset: elexon/fuelinst, note: ...}  # up to 4, 12 words or fewer each; a table key, or
+                                                 # a page slug (neso_data_portal/aggregated-bsad);
+                                                 # either must be in the page set
       # a family page (v5 D5) adds its variants; the note is the family's lead member
       family:
         slug: demand-outturn
@@ -206,7 +208,8 @@ DEFAULT_PAINT = {
     "other": "khaki",
 }
 
-_DATASET_RE = re.compile(r"^[a-z0-9_]+/[a-z0-9_]+$")
+# a related entry names a table key (``elexon/fuelhh``) or a page slug (``neso_data_portal/aggregated-bsad``)
+_RELATED_RE = re.compile(r"^[a-z0-9_]+/(?:[a-z0-9_]+|[a-z0-9]+(?:-[a-z0-9]+)+)$")
 _SLUG_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 _COLUMN_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 _FENCE = "---"
@@ -789,8 +792,11 @@ def anatomy_errors(fields: PageFields) -> list[str]:
         if not 1 <= len(fields.related) <= RELATED_MAX:
             e.append(f"{p}.related: {len(fields.related)} entries; needs 1 to {RELATED_MAX}")
         for i, rel in enumerate(fields.related):
-            if not _DATASET_RE.match(rel.dataset):
-                e.append(f"{p}.related[{i}].dataset: must be <vendor>/<dataset>")
+            if not _RELATED_RE.match(rel.dataset):
+                e.append(
+                    f"{p}.related[{i}].dataset: must be <vendor>/<table key> or "
+                    "<vendor>/<page-slug>"
+                )
             _budget(e, f"{p}.related[{i}].note", rel.note, "related_note")
 
     if fields.family is not None:

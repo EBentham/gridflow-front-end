@@ -321,6 +321,24 @@ def _all_manifest_slugs() -> dict[str, set[str]]:
     return _MANIFEST_SLUGS_CACHE
 
 
+def _related_targets() -> dict[str, set[str]]:
+    """What a page's related entry may name, per vendor: a table key or a page slug of the page set.
+
+    A table key links to ``<key>.html`` (its page, or the pointer to its family page); a page slug
+    (a package page such as ``aggregated-bsad``, or a family page) links to that page itself.
+    """
+    out: dict[str, set[str]] = {}
+    for vendor_id in REAL_VENDORS:
+        try:
+            manifest = load_manifest(vendor_id)
+        except FileNotFoundError:
+            out[vendor_id] = set()
+            continue
+        pages = {page for group in manifest["groups"] for page in group["pages"]}
+        out[vendor_id] = set(manifest_datasets(manifest)) | pages
+    return out
+
+
 _MD_LINK_TARGET_RE = re.compile(r"^(?P<path>[^#]*\.md)(?P<anchor>#.*)?$")
 
 
@@ -1468,7 +1486,7 @@ def page_view(
         errors.extend(rec_errors)
 
     related = []
-    slugs = _all_manifest_slugs()
+    slugs = _related_targets()
     for rel in p.related:
         vendor, _, slug = rel.dataset.partition("/")
         if slug not in slugs.get(vendor, set()):
