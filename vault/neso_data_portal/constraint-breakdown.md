@@ -4,9 +4,117 @@ package: "constraint-breakdown"
 dataset_key: "constraint_breakdown"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-10
+updated: 2026-10-18
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: Constraint costs and volumes by reason
+  summary: >-
+    NESO's daily cost in pounds and volume in MWh of its actions on the transmission network,
+    split into four reasons.
+  facts:
+    vendor: NESO Data Portal, package Constraint Breakdown Costs and Volume
+    cadence: Daily values; NESO's catalogue lists the update frequency as weekly
+    grain: "One row per date and capture; read the `_latest` view for one per date"
+    history: Yearly April-to-March files from 2017-18, as NESO's catalogue lists them
+  landscape: market
+  what_it_is: >-
+    NESO's daily account of why it acted on the transmission network: a cost in £ and a volume
+    in MWh for each of four reasons, reducing the largest loss, increasing system inertia,
+    voltage and thermal constraints. One file per April-to-March year. NESO says actions can be
+    retagged after the event and the data refreshed, so past dates can change.
+  how_used:
+    - Daily thermal and voltage constraint cost as inputs to balancing-cost models.
+    - "Inertia and largest-loss spend: the cost of limiting the rate of change of frequency."
+    - "Revision studies: compare captures of a yearly file as NESO restates dates."
+  chart:
+    type: line
+    silver: neso_data_portal/constraint_breakdown
+    time: date
+    value: thermal_constraints_cost_gbp
+    dedup: {"on": [date], order_by: published_at}
+    aggregation: last
+    window: {start: "2017-04-01", end: "2026-10-11"}
+    max_points: 3600
+    unit: "£"
+  chart_view:
+    title: Thermal constraint cost per day, 2017 to 2026
+    caption: >-
+      Silver `neso_data_portal/constraint_breakdown`, `thermal_constraints_cost_gbp` in £, one
+      value per date from the newest capture of each yearly file, 1 April 2017 to 11 October 2026.
+      The latest dates can be restated. NESO's 2025-26 file has no row for 8 April 2025.
+    alt: >-
+      Line chart of daily thermal constraint cost from neso_data_portal/constraint_breakdown, in
+      pounds, for each date from 1 April 2017 to 11 October 2026. Through March 2021 the median
+      day each year is £0.2 to £0.4 million and peaks reach £7 to £13 million. Spikes follow:
+      £53.0 million on 24 November 2021 and £62.1 million on 20 July 2022. From April 2024 the
+      yearly median is £3.0 to £4.3 million, and the highest day is £35.5 million on 30 September
+      2026. Five dates fall below zero.
+    x_label: NESO's date; day boundary not stated
+    key:
+      - {series: thermal_constraints_cost_gbp, label: Thermal constraints, codes: Thermal constraints cost, paint: clay, note: "Largest of the four by summed cost in every April-to-March year (2026 part-year). Below zero on five dates."}
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then each yearly file downloaded whole unless
+      its `last_modified` is unchanged. Dates select nothing; silver keeps every capture.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=constraint-breakdown"
+      - "GET https://api.neso.energy/dataset/fb56b46e-cef3-4eb8-9294-0ca19769b7eb/resource/4136a8e2-07c5-4784-8096-28999447a16e/download/constraint-breakdown-2026-2027.csv"
+    commands:
+      - {run: gridflow ingest neso_data_portal constraint_breakdown --last 24h, comment: "whole files; window must end recently"}
+      - {run: gridflow transform neso_data_portal constraint_breakdown --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: resource_id, op: eq, value: 4136a8e2-07c5-4784-8096-28999447a16e}
+        - {column: date, op: in, value: ["2026-09-04", "2026-09-15", "2026-09-28", "2026-10-01"]}
+      order_by: [date, published_at]
+      columns: [date, published_at, thermal_constraints_cost_gbp, thermal_constraints_volume_mwh, voltage_constraints_cost_gbp, voltage_constraints_volume_mwh, increasing_system_inertia_cost_gbp, increasing_system_inertia_volume_mwh, reducing_largest_loss_cost_gbp, reducing_largest_loss_volume_mwh, resource_id, timestamp_utc]
+    key: [resource_id, date, published_at]
+    caption: "Four dates in two captures of the 2026-27 file: NESO restated costs and volumes between uploads."
+    fields:
+      resource_id: "NESO's id for the April-to-March file; with `date`, the code's entity key"
+      date: NESO's date of the costs and volumes; NESO does not state the day boundary
+      published_at: "NESO's last-modified time for the whole file, read as UTC; one per capture"
+      thermal_constraints_cost_gbp: "Thermal constraints, £: actions on flows above circuit capacity between regions (NESO)"
+      thermal_constraints_volume_mwh: Thermal constraints volume, MWh; signed, and NESO does not define the sign
+      voltage_constraints_cost_gbp: "Voltage constraints, £: actions for reactive-power balance and regional voltage (NESO)"
+      voltage_constraints_volume_mwh: Voltage constraints volume, MWh; signed, and NESO does not define the sign
+      increasing_system_inertia_cost_gbp: "Increasing system inertia, £: actions adding synchronous generation (NESO)"
+      increasing_system_inertia_volume_mwh: Increasing system inertia volume, MWh
+      reducing_largest_loss_cost_gbp: "Reducing largest loss, £: cutting the largest credible loss (NESO); zero in these rows"
+      reducing_largest_loss_volume_mwh: Reducing largest loss volume, MWh; NESO's own dictionary example is negative
+      timestamp_utc: "Start of settlement period 1 of `date`, GB local midnight, as UTC; gridflow's anchor"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote the capture to bronze, UTC
+  notebook:
+    lead: >-
+      Returns a pandas DataFrame from the DuckDB view
+      `silver_neso_data_portal_constraint_breakdown_latest`, the newest complete capture of each
+      yearly file, filtered on `date` with both ends included. Lineage columns are dropped; times
+      print in local time.
+    cells:
+      - |
+        df = data.neso_data_portal.query("constraint_breakdown", "2017-04-01", "2026-10-11")
+        cost = [c for c in df.columns if c.endswith("_cost_gbp")][::-1]
+      - |
+        april_year = (df.date.dt.year - (df.date.dt.month < 4)).rename("april_year")
+        (df.groupby(april_year)[cost].sum() / 1e6).round(1)
+      - |
+        open_year = df[df.date >= "2026-04-01"].set_index("date")[cost] / 1e6
+        ax = open_year.plot.area(linewidth=0, ylabel="£ million", figsize=(8, 3.5))
+        ax.legend(loc="upper left", fontsize=8);
+    needs: one capture of every yearly file
+    plot_alt: >-
+      Stacked area plot of the four daily cost columns in £ million, 1 April to 11 October 2026,
+      thermal at the bottom. Thermal is the largest band on most days, with a high of 35.5 on 30
+      September. Voltage reaches 5.4 on 14 June and inertia 2.9 on 26 July; reducing largest loss
+      is zero throughout.
+  related:
+    - {dataset: elexon/disbsad, note: "Per-action cost and volume of balancing trades outside the Balancing Mechanism"}
+    - {dataset: neso_data_portal/aggregated_bsad, note: "NESO's balancing adjustments outside the Balancing Mechanism, net per settlement period"}
+    - {dataset: elexon/system_prices, note: Imbalance prices for the settlement periods of each date}
+    - {dataset: neso_data_portal/historic_generation_mix, note: GB generation by fuel on the same dates}
 ---
 
 # Constraint Breakdown Costs and Volume
@@ -28,8 +136,9 @@ total, not a per-settlement-period series.
 
 1. **One family, ten resources, one per financial year.** `constraint_breakdown` reads ten CSV
    files, 2017-18 to 2026-27, each covering 1 April to 31 March (the 2026-27 file runs to
-   2026-10-01 at its vintage). Silver holds **3,470 rows**, one per date, 2017-04-01 to
-   2026-10-01. All ten resources are SILVER; nothing is held.
+   2026-10-01 at its vintage). At activation silver held **3,470 rows**, one per date,
+   2017-04-01 to 2026-10-01; a 2026-10-16 capture of the 2026-27 file added 194 rows, to
+   2026-10-11 (see The open year). All ten resources are SILVER; nothing is held.
 2. **Two clocks.** The vintage is the CKAN `last_modified` of each captured file (`available_at`
    = `published_at`), which differs per file and can be years after the dates in it. The event
    clock is `date_sp1(date)`: `timestamp_utc` is the **start of settlement period 1 of the date
@@ -86,7 +195,7 @@ is gridflow `@.planning/phases/v0.22-K-BAL-1/K-BAL-1-FACTS.md` and the verificat
 There are no DOC, HOLD or catalogue-only resources in this package: all ten are tabular CSV
 files with an identical header, and every one is read to silver.
 
-**Downloads and captures.** Every resource was captured once, on 2026-10-08 (09:15:12 to
+**Downloads and captures.** At activation every resource was captured once, on 2026-10-08 (09:15:12 to
 09:15:38 UTC), from `api.neso.energy`. Bronze is under
 `C:/gridflow-data/bronze/neso_data_portal/constraint_breakdown/2026/10/08/`, one body and one
 `.meta.json` sidecar per resource. Sizes are physical body sizes and row counts are body rows
@@ -152,7 +261,7 @@ Schema, epoch 1:
 | `published_at` | CKAN `last_modified` of the captured file (ADR-030) |
 | `available_at` | = `published_at` |
 
-**Eligible. Silver: 3,470 rows, 18 columns, from all ten resources.** All ten resources share
+**Eligible. Silver at activation: 3,470 rows, 18 columns, from all ten resources.** All ten resources share
 one header, so there is a single epoch (the header is the nine vendor columns above; the
 transformer is the generic record-driven one, `transformer: null`). Measured on silver
 (2026-10-10):
@@ -275,9 +384,14 @@ nothing to report is `TODO: verify`; zero is a stated value in this series, so d
 
 *The open year.* The 2026-27 file ended at 2026-10-01 at its 2026-10-03 vintage (it lags the
 vintage by two days). A later refresh will re-upload the same resource with a new
-`last_modified`, adding a new whole capture that supersedes this one for that resource
-(`TODO: verify` that NESO updates the same resource id rather than adding a new one). The
-2027-28 resource does not exist yet and would need a new registry resource entry.
+`last_modified`, adding a new whole capture that supersedes this one for that resource.
+Observed on 2026-10-16: NESO re-uploaded the same resource id (`last_modified`
+2026-10-16T06:19:42.715908, 194 rows, 2026-04-01 to 2026-10-11) and gridflow added it as a
+second capture beside the 2026-10-03 one; the `_latest` view takes the newer. NESO restated six
+dates already in the older file (2026-09-03, 09-04, 09-14, 09-15, 09-28 and 10-01): for
+example 2026-09-28 thermal cost 28,998 became 7,873,785 and its thermal volume 1,528 became
+-29,709 (silver, both captures). The 2027-28 resource does not exist yet and would need a new
+registry resource entry.
 
 *Relation to the thermal cost package.* @./thermal-constraint-costs.md publishes a daily
 thermal cost per named boundary group (six groups). Over the 1,644 dates present in both silver
@@ -297,8 +411,9 @@ changed between 2021 and 2026 (2017-18 and 2018-19 on 2021-08-03; 2019-20 on 202
 2020-21 on 2021-06-09; 2021-22 on 2022-06-08; 2022-23 on 2023-04-06; 2023-24 on 2024-04-04;
 2024-25 on 2025-06-16; 2025-26 on 2026-04-07) and the open 2026-27 file last changed on
 2026-10-03, which is consistent with a weekly update of the current year and occasional
-re-uploads of older years. Gridflow captured every resource once, on 2026-10-08, from the
-portal sweep; the activation window was 2026-10-08 to 2026-10-10. A scheduled weekly re-ingest
+re-uploads of older years. At activation gridflow had captured every resource once, on
+2026-10-08, from the portal sweep; the activation window was 2026-10-08 to 2026-10-10 (the
+2026-27 file gained a second capture on 2026-10-16, see The open year). A scheduled weekly re-ingest
 would add a new capture of the 2026-27 file and leave the others unchanged unless NESO
 re-uploads them.
 

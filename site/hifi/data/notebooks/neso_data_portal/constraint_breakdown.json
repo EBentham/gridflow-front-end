@@ -1,0 +1,169 @@
+{
+ "dataset": "neso_data_portal/constraint_breakdown",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "e31c9fbb6e1ebe5894ce45bcf23a3bed7a95f8a7792e56a52b46254151171197",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.neso_data_portal.query(\"constraint_breakdown\", \"2017-04-01\", \"2026-10-11\")\ncost = [c for c in df.columns if c.endswith(\"_cost_gbp\")][::-1]",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "april_year = (df.date.dt.year - (df.date.dt.month < 4)).rename(\"april_year\")\n(df.groupby(april_year)[cost].sum() / 1e6).round(1)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "thermal_constraints_cost_gbp",
+      "voltage_constraints_cost_gbp",
+      "increasing_system_inertia_cost_gbp",
+      "reducing_largest_loss_cost_gbp",
+      "april_year",
+      "",
+      "",
+      "",
+      ""
+     ],
+     "index": [
+      "2017",
+      "2018",
+      "2019",
+      "2020",
+      "2021",
+      "2022",
+      "2023",
+      "2024",
+      "2025",
+      "2026"
+     ],
+     "rows": [
+      [
+       "309.4",
+       "28.3",
+       "2.7",
+       "56.4"
+      ],
+      [
+       "448.2",
+       "23.4",
+       "5.5",
+       "138.1"
+      ],
+      [
+       "419.7",
+       "60.3",
+       "5.6",
+       "205.3"
+      ],
+      [
+       "546.2",
+       "77.2",
+       "27.3",
+       "320.7"
+      ],
+      [
+       "1134.2",
+       "111.2",
+       "60.2",
+       "114.6"
+      ],
+      [
+       "1503.5",
+       "141.4",
+       "103.8",
+       "5.5"
+      ],
+      [
+       "1039.6",
+       "268.3",
+       "82.6",
+       "-0.0"
+      ],
+      [
+       "1710.0",
+       "153.9",
+       "40.8",
+       "0.0"
+      ],
+      [
+       "1956.0",
+       "212.4",
+       "41.4",
+       "0.0"
+      ],
+      [
+       "1449.0",
+       "166.9",
+       "30.4",
+       "0.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "open_year = df[df.date >= \"2026-04-01\"].set_index(\"date\")[cost] / 1e6\nax = open_year.plot.area(linewidth=0, ylabel=\"£ million\", figsize=(8, 3.5))\nax.legend(loc=\"upper left\", fontsize=8);",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "constraint_breakdown-5.png",
+     "width": 690,
+     "height": 353
+    }
+   ]
+  }
+ ]
+}
