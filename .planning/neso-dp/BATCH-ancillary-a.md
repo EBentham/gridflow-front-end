@@ -83,9 +83,13 @@ Several agents share the worktree: keep strictly to your own package's files.
 | H | ab9104ee227505a6f | a3fc7c0cd619579fa | APPROVED round 2, nits fixed; committed fe a5792ff, vault bf7b7f4 |
 | 2 | ac1533bccfac8ccf9 | ab58ec729a213bb03 | APPROVED, nits fixed; committed fe dbb28af, vault e9690f0; ruling: ships from the complete 2026-10-08 capture, truncated 2026-10-16 capture logged as 20i, not on the page |
 | 3 | a620ecd328b3178cb | afc8fb614d6583e8b | APPROVED, nits fixed; committed fe 9d989ff, vault ccb8e58 |
-| 4 | a7c515de865ed2dbe | a2db251ee5aebc2b0 | checking |
-| 5 | a064fc3f999458336 | | writing |
-| 6-10 | | | not started |
+| 4 | a7c515de865ed2dbe | a2db251ee5aebc2b0 | APPROVED (round 2 majors seat-verified) ; committed |
+| 5 | a064fc3f999458336 | a4f740413e7771f79 | APPROVED, nits fixed; committed |
+| 6 | ad98aeca3cfc9a4db | a136e989d13cd2bc9 | APPROVED (round 2 major seat-verified); committed |
+| 7 | ac5d1cc2d76dd8911 | a275028b640f86024 | APPROVED round 2; committed; 20j logged |
+| 8 | adf1a644470e37e3a | a04b7a2ca87b61618 | APPROVED, nits fixed; committed |
+| 9 | abbb4ef8abd514f95 | | writing |
+| 10 | a04615370afb38a68 | | writing |
 
 ## Template follow-ups (seat items, not page findings)
 
