@@ -4,9 +4,140 @@ package: "balancing-reserve-auction-requirement-forecast"
 dataset_keys: ["br_auction_requirement_fc_da", "br_auction_requirement_fc_da_archive", "br_auction_requirement_fc_medium_term"]
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-13
+updated: 2026-10-18
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: Balancing Reserve requirement forecast
+  summary: >-
+    NESO's forecast Balancing Reserve requirement for each daily auction: positive and negative MW
+    for every half-hour service window of the delivery day.
+  facts:
+    vendor: "NESO Data Portal, package `balancing-reserve-auction-requirement-forecast`: three tables from four CSV files"
+    cadence: "Daily (NESO's catalogue); current files are overwritten, earlier days moved to archives"
+    grain: One row per auction date and half-hour service window, 48 on an ordinary day
+  landscape: market
+  what_it_is: >-
+    NESO buys Balancing Reserve, positive and negative reserve held on BM units, in a daily auction
+    for a delivery day of half-hour windows from 23:00 UK time. These files forecast each window's
+    requirement in MW: a medium-term view first, then the day-ahead refinement, in a file NESO
+    replaces daily.
+  how_used:
+    - Requirement against cleared `PBR` and `NBR` MW per window, from NESO's EAC results.
+    - To join EAC results, convert `service_window_start_time` from UK local time to UTC.
+    - Day-ahead positive and negative requirement per window as a reserve-price model feature.
+  chart:
+    type: line
+    silver: neso_data_portal/br_auction_requirement_fc_da
+    time: service_window_start_time
+    time_text: {format: "%Y-%m-%d %H:%M:%S"}
+    filter:
+      - {column: service_delivery_date, op: eq, value: "2026-10-18"}
+    values:
+      - {column: positive_balancing_reserve_requirement_mw, series: positive}
+      - {column: negative_balancing_reserve_requirement_mw, series: negative}
+    aggregation: mean
+    window: {start: "2026-10-17", end: "2026-10-18"}
+    unit: MW
+  chart_view:
+    title: Balancing Reserve requirement by window, 18 October 2026
+    caption: >-
+      Silver `br_auction_requirement_fc_da`, MW: NESO's day-ahead forecast for service day 18
+      October 2026 (auction 17 October), from 23:00 the evening before: one value per half-hour
+      window, drawn at each window's start on the UK clock as NESO writes it.
+    alt: >-
+      Line chart of NESO's day-ahead Balancing Reserve requirement in MW for the 48 half-hour
+      windows of service day 18 October 2026, from 23:00 on 17 October, UK local time. Negative
+      reserve is flat at 1,450 MW. Positive reserve is 200 MW from 23:00, 400 MW from 03:00, 600 MW
+      from 07:00, 500 MW from 11:00, 600 MW from 15:00 and 400 MW from 19:00 to the last window,
+      22:30.
+    x_label: window start, UK local time as written
+    y_min: 0
+    key:
+      - {series: positive, label: Positive reserve, paint: petrol, note: "Steps only at the four-hour EFA block edges from 23:00 this day: 200 to 600 MW."}
+      - {series: negative, label: Negative reserve, paint: clay, note: "NESO gives it as a positive figure: 1,450 MW in every window here."}
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: `package_show`, then each file whole unless `last_modified` is
+      unchanged; its name's hash prefix can change. Dates select nothing. Swap in any table's key.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=balancing-reserve-auction-requirement-forecast"
+    commands:
+      - {run: gridflow ingest neso_data_portal br_auction_requirement_fc_da --last 24h, comment: "whole files; window must end recently"}
+      - {run: gridflow transform neso_data_portal br_auction_requirement_fc_da --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: service_delivery_date, op: eq, value: "2026-10-18"}
+        - {column: service_window, op: in, value: ["1", "8", "9", "16", "17", "24", "25", "48"]}
+      order_by: [service_window_start_time]
+      columns: [service_window, service_window_start_time, positive_balancing_reserve_requirement_mw,
+                negative_balancing_reserve_requirement_mw, auction_date, service_delivery_date,
+                service_window_end_time, forecast_produced_on, forecast_type]
+    key: [auction_date, service_window]
+    caption: "Service day 18 October 2026: its first and last windows and either side of three steps."
+    fields:
+      service_window: "Window number, `1` to `48`; spring drops `5`, `6`, autumn adds `5x`, `6x`"
+      service_window_start_time: Window start, UK local time as NESO writes it; kept as text
+      positive_balancing_reserve_requirement_mw: Positive reserve requirement, MW (NESO's unit)
+      negative_balancing_reserve_requirement_mw: Negative reserve requirement, MW (NESO's unit), given as a positive figure
+      auction_date: Date of the daily auction the forecast is for, as NESO labels it
+      service_delivery_date: Service day the windows belong to; its window 1 starts 23:00 the day before
+      service_window_end_time: "Window end as NESO writes it (`:29` or `:59`); kept as text"
+      forecast_produced_on: Date NESO produced the forecast; a date only, not a publication time
+      forecast_type: "`Dayahead` in this table; the medium-term files say `Medium term`"
+      timestamp_utc: UK midnight opening the delivery date, in UTC; window 1 starts an hour earlier
+      published_at: "NESO's last-modified time for the whole file, read as UTC"
+      bronze_capture_id: Path of the bronze capture the row was read from
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      Reads with `data.sql` from the `_latest` view, the newest capture, because NESO replaces the
+      file daily and a dated `query()` finds rows only for the day it holds.
+    cells:
+      - |
+        df = data.sql("""
+            SELECT auction_date, service_delivery_date, forecast_produced_on, service_window,
+                   service_window_start_time,
+                   positive_balancing_reserve_requirement_mw AS positive_mw,
+                   negative_balancing_reserve_requirement_mw AS negative_mw
+            FROM silver_neso_data_portal_br_auction_requirement_fc_da_latest
+            ORDER BY service_window_start_time, service_window""")
+        df.groupby(["auction_date", "service_delivery_date", "forecast_produced_on"]).size()
+      - |
+        steps = df[df.positive_mw.ne(df.positive_mw.shift())]
+        steps[["service_window", "service_window_start_time", "positive_mw", "negative_mw"]]
+      - |
+        df.set_index(df.service_window_start_time.str[11:16])[["positive_mw", "negative_mw"]].plot(
+            drawstyle="steps-post", color=["#155A6E", "#C77E3C"], ylim=(0, 1600), figsize=(8, 3.5),
+            rot=0, xlabel="window start, UK local time as written", ylabel="requirement, MW");
+    needs: a capture of the day-ahead table
+    plot_alt: >-
+      Step plot of the day-ahead Balancing Reserve requirement in MW for each half-hour window of
+      service day 18 October 2026, from 23:00 on 17 October to 22:30, UK local time as written.
+      Negative reserve (clay) holds 1,450 MW. Positive reserve (petrol) steps 200, 400, 600, 500, 600
+      and 400 MW, changing at 03:00, 07:00, 11:00, 15:00 and 19:00.
+  related:
+    - {dataset: neso_data_portal/eac-auction-results, note: "Cleared `PBR` and `NBR` MW and price for the same windows"}
+    - {dataset: neso_data_portal/eac-br-auction-results, note: Results of the earlier Balancing Reserve auctions}
+    - {dataset: neso_data_portal/quick-reserve-auction-requirement-forecast, note: "The same forecast for Quick Reserve, per service window"}
+    - {dataset: elexon/system_prices, note: Imbalance prices for the half-hours the reserve covers}
+  family:
+    slug: balancing-reserve-auction-requirement-forecast
+    members:
+      - dataset: br_auction_requirement_fc_da
+        differs: Day-ahead forecast; NESO replaces the file daily
+        request: "GET https://api.neso.energy/dataset/6b31e0f0-f711-461c-84bb-4ed4775a9992/resource/019f6fba-4f17-4056-9ef8-31df44ff2e30/download/132671df40b4484aa1638b6c8e9a57a4_balancing-reserve-day-ahead-auction-requirements-forecast.csv"
+      - dataset: br_auction_requirement_fc_da_archive
+        differs: Earlier day-ahead forecasts, moved here as NESO replaces the current file
+        request: "GET https://api.neso.energy/dataset/6b31e0f0-f711-461c-84bb-4ed4775a9992/resource/b9ce03d0-c189-44ef-92e4-c02e91feb65d/download/a0664df3495746588204c88cbfbce45d_balancing-reserve-day-ahead-auction-requirement-forecast-archiv.csv"
+        held: NESO does not say when each archived forecast was published, or whether it is ever amended.
+      - dataset: br_auction_requirement_fc_medium_term
+        differs: "Medium-term forecast without detailed wind and solar forecasts; a current and an archive file"
+        request:
+          - "GET https://api.neso.energy/dataset/6b31e0f0-f711-461c-84bb-4ed4775a9992/resource/a9470515-c1de-4c4b-9597-2d78bf24c29f/download/dd18490b18ff4f449412e3d3b3415a20_balancing-reserve-requirements-medium-term-forecast.csv"
+          - "GET https://api.neso.energy/dataset/6b31e0f0-f711-461c-84bb-4ed4775a9992/resource/fb2e0eea-b1c0-4ba3-a817-0561182a6e26/download/3ec3e0603862483798b0f555ad4bb440_balancing-reserve-requirements-medium-term-forecast-archive.csv"
+        held: Its table includes the archive file, and NESO does not say when archived forecasts were published.
 ---
 
 # Balancing Reserve Auction Requirement Forecast
@@ -69,9 +200,14 @@ handle is the resource id.
   Captured as `raw_20261008T085208Z_fb2e0eea-b1c0-4ba3-a817-0561182a6e26_a29eb9b5.csv`,
   4,476,944 bytes, 46,414 data rows, one header epoch.
 
-Each resource has exactly **one** captured body so far (2026-10-08). Whether a later capture
-amends a row in place, or drops a target, has not been measured (`TODO: verify`, gridflow
-`@.planning/phases/v0.22-K-AS-1/K-AS-1-FACTS.md` g3).
+Each resource has **two** captured bodies (2026-10-08 and 2026-10-16; bronze sidecars under
+`C:/gridflow-data/bronze/neso_data_portal/br_auction_requirement_fc_*/2026/10/`). Measured on
+silver 2026-10-18: in both archives every 2026-10-08 row is present in the 2026-10-16 body with
+equal values, window labels and production dates; each archive gained 432 rows (service days
+2026-10-09 to 2026-10-17). The rows comparable with the 2026-10-08 current files are equal: all 48
+day-ahead rows for 2026-10-09, and all 672 medium-term rows (432 now in the archive, 240 still in
+the current file). Two captures do not make a vendor rule: whether a later capture amends a row
+in place, or drops a target, stays `TODO: verify` (gridflow `@.planning/phases/v0.22-K-AS-1/K-AS-1-FACTS.md` g3).
 
 ## Families
 
@@ -319,8 +455,8 @@ instant and does not prove availability at the start of the production date.
   - Update frequency: Daily
 
 The vendor says the datasets are overwritten daily and the previous entries archived to the
-history file. Captures to date: one per resource (2026-10-08). No scheduled refresh has run
-yet, so the daily behaviour has not been observed across captures. The day-ahead and medium-term
+history file. Captures to date: two per resource (2026-10-08 and 2026-10-16), eight days apart,
+so the daily roll into the archives is seen only across that gap (see Files by disposition). The day-ahead and medium-term
 files are separate series on separate rolling windows: the day-ahead current file covered one
 service day in the capture, the medium-term current file covered 14.
 

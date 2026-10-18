@@ -1,0 +1,141 @@
+{
+ "dataset": "neso_data_portal/br_auction_requirement_fc_da",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "b0aa06fe16086da4ce666975f4588c63b6b216b7c260bed155c03d245b9a0f99",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.sql(\"\"\"\n    SELECT auction_date, service_delivery_date, forecast_produced_on, service_window,\n           service_window_start_time,\n           positive_balancing_reserve_requirement_mw AS positive_mw,\n           negative_balancing_reserve_requirement_mw AS negative_mw\n    FROM silver_neso_data_portal_br_auction_requirement_fc_da_latest\n    ORDER BY service_window_start_time, service_window\"\"\")\ndf.groupby([\"auction_date\", \"service_delivery_date\", \"forecast_produced_on\"]).size()",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "auction_date  service_delivery_date  forecast_produced_on\n2026-10-17    2026-10-18             2026-10-16              48\ndtype: int64"
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "steps = df[df.positive_mw.ne(df.positive_mw.shift())]\nsteps[[\"service_window\", \"service_window_start_time\", \"positive_mw\", \"negative_mw\"]]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "service_window",
+      "service_window_start_time",
+      "positive_mw",
+      "negative_mw"
+     ],
+     "index": [
+      "0",
+      "8",
+      "16",
+      "24",
+      "32",
+      "40"
+     ],
+     "rows": [
+      [
+       "1",
+       "2026-10-17 23:00:00",
+       "200.0",
+       "1450.0"
+      ],
+      [
+       "9",
+       "2026-10-18 03:00:00",
+       "400.0",
+       "1450.0"
+      ],
+      [
+       "17",
+       "2026-10-18 07:00:00",
+       "600.0",
+       "1450.0"
+      ],
+      [
+       "25",
+       "2026-10-18 11:00:00",
+       "500.0",
+       "1450.0"
+      ],
+      [
+       "33",
+       "2026-10-18 15:00:00",
+       "600.0",
+       "1450.0"
+      ],
+      [
+       "41",
+       "2026-10-18 19:00:00",
+       "400.0",
+       "1450.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "df.set_index(df.service_window_start_time.str[11:16])[[\"positive_mw\", \"negative_mw\"]].plot(\n    drawstyle=\"steps-post\", color=[\"#155A6E\", \"#C77E3C\"], ylim=(0, 1600), figsize=(8, 3.5),\n    rot=0, xlabel=\"window start, UK local time as written\", ylabel=\"requirement, MW\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "br_auction_requirement_fc_da-5.png",
+     "width": 707,
+     "height": 342
+    }
+   ]
+  }
+ ]
+}
