@@ -1508,7 +1508,8 @@ def page_view(
                     "key": f"{doc.vendor_id}/{mem.dataset}",
                     "code": "" if code == mem.dataset.upper() else code,
                     "differs": mem.differs,
-                    "request": request_lines(mem.request),
+                    # each file's request as rows of the member's one well
+                    "request": Markup("").join(request_lines(r) for r in mem.requests),
                 }
             )
 

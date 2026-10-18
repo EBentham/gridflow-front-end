@@ -72,6 +72,8 @@ one key (v5 decision D2). The fields follow the locked page anatomy
         slug: demand-outturn
         members:
           - {dataset: indo, differs: ..., request: "GET https://..."}
+          # a member with several files (a current and an archive file) lists each:
+          - {dataset: requirement, differs: ..., request: ["GET https://...", "GET https://..."]}
     ---
 
 Why front matter and not a fenced block in the body: every vault tool already
@@ -181,6 +183,7 @@ RELATED_MAX = 4
 CELLS_COUNT = (2, 4)
 REQUESTS_COUNT = (1, 4)
 COMMANDS_COUNT = (1, 3)
+MEMBER_REQUESTS_MAX = 4  # a member's files: current and archive, or a few yearly files
 FAMILY_MEMBERS = (2, 18)  # regional carbon intensity reaches one region by 18 routes
 
 # Chart paints: the scenery palette (DESIGN.md "Colour"), plus unpainted
@@ -314,11 +317,11 @@ class Related:
 
 @dataclass(frozen=True)
 class FamilyMember:
-    """One variant listed on a family page."""
+    """One variant listed on a family page, with the raw request of each of its files."""
 
     dataset: str
     differs: str
-    request: str = ""
+    requests: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -441,6 +444,14 @@ class _Reader:
 def _prose(text: str) -> str:
     """Folded YAML prose to one line (``>-`` already folds; ``|`` keeps newlines)."""
     return " ".join(text.split())
+
+
+def _requests(r: _Reader, path: str, value: object) -> tuple[str, ...]:
+    """A member's ``request``: one raw request, or a list of them (a current and an archive file)."""
+    if isinstance(value, list):
+        return tuple(r.text(f"{path}[{i}]", v) for i, v in enumerate(value))
+    text = r.text(path, value)
+    return (text,) if text else ()
 
 
 def _read(page: Mapping[str, Any]) -> tuple[PageFields, list[str]]:
@@ -573,7 +584,7 @@ def _read(page: Mapping[str, Any]) -> tuple[PageFields, list[str]]:
                 FamilyMember(
                     dataset=r.text(f"{where}.dataset", mm.get("dataset"), required=True),
                     differs=_prose(r.text(f"{where}.differs", mm.get("differs"), required=True)),
-                    request=r.text(f"{where}.request", mm.get("request")),
+                    requests=_requests(r, f"{where}.request", mm.get("request")),
                 )
             )
         family = Family(
@@ -850,8 +861,12 @@ def anatomy_errors(fields: PageFields) -> list[str]:
         _count(e, f"{p}.family.members", len(fam.members), FAMILY_MEMBERS)
         for i, mem in enumerate(fam.members):
             _budget(e, f"{p}.family.members[{i}].differs", mem.differs, "differs")
-            if not mem.request:
-                e.append(f"{p}.family.members[{i}].request: missing (the variant's raw URL)")
-            elif not re.match(r"^(GET|POST) https://", mem.request):
-                e.append(f"{p}.family.members[{i}].request: must start 'GET https://'")
+            where = f"{p}.family.members[{i}].request"
+            if not mem.requests:
+                e.append(f"{where}: missing (the variant's raw URL)")
+            elif len(mem.requests) > MEMBER_REQUESTS_MAX:
+                e.append(f"{where}: {len(mem.requests)} requests; at most {MEMBER_REQUESTS_MAX}")
+            for req in mem.requests:
+                if not re.match(r"^(GET|POST) https://", req):
+                    e.append(f"{where}: must start 'GET https://'")
     return e

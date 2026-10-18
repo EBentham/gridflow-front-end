@@ -98,3 +98,48 @@ def test_a_clause_in_needs_fails_the_anatomy_check_with_the_rule() -> None:
     errors = anatomy_errors(dataclasses.replace(doc.page, notebook=nb))
     [msg] = [e for e in errors if "notebook.needs" in e]
     assert "noun phrase" in msg and "with <needs> ingested" in msg
+
+
+CURRENT = "GET https://api.neso.energy/datastore/dump/11111111-2222-3333-4444-555555555555"
+ARCHIVE = "GET https://api.neso.energy/datastore/dump/66666666-7777-8888-9999-000000000000"
+
+
+def _dfs_note(request: str) -> str:
+    return (
+        "---\npage:\n  family:\n    slug: demand-flexibility\n    members:\n"
+        f"      - {{dataset: a, differs: Current file, request: {request}}}\n"
+        f'      - {{dataset: b, differs: One file, request: "{CURRENT}"}}\n---\n'
+    )
+
+
+def test_a_member_may_list_each_of_its_files() -> None:
+    from gridflow_front_end.page_fields import parse_page_fields
+
+    fields, errors = parse_page_fields(_dfs_note(f'["{CURRENT}", "{ARCHIVE}"]'))
+    assert errors == []
+    first, second = fields.family.members
+    assert first.requests == (CURRENT, ARCHIVE)
+    assert second.requests == (CURRENT,)
+    assert not [e for e in anatomy_errors(fields) if "request" in e]
+    fields, _ = parse_page_fields(_dfs_note(f'["{CURRENT}", "ftp://x"]'))
+    assert any("members[0].request: must start" in e for e in anatomy_errors(fields))
+    fields, _ = parse_page_fields(_dfs_note(f'["{CURRENT}"' + f', "{CURRENT}"' * 4 + "]"))
+    assert any("5 requests; at most 4" in e for e in anatomy_errors(fields))
+
+
+def test_each_file_is_a_row_of_the_members_well_wrapped_like_one() -> None:
+    doc = _doc("neso_data_portal", "demand_flexibility_utilisation_summary")
+    fam = doc.page.family
+    one = fam.members[0]
+    two = dataclasses.replace(one, requests=(CURRENT, ARCHIVE))
+    single, errors = _view(doc)
+    assert errors == []
+    page = dataclasses.replace(fam, members=(two, *fam.members[1:]))
+    double, errors = _view(_with_page(doc, family=page))
+    assert errors == []
+    html = str(double["variants"][0]["request"])
+    assert html == str(build.request_lines(CURRENT)) + str(build.request_lines(ARCHIVE))
+    assert html.count('<span class="ln">GET ') == 2 and html.count("<wbr>") >= 6
+    # the other members, and a member with one file, render as before
+    assert double["variants"][1:] == single["variants"][1:]
+    assert str(single["variants"][0]["request"]) == str(build.request_lines(one.requests[0]))
