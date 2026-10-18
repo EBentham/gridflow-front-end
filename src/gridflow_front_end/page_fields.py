@@ -29,6 +29,10 @@ one key (v5 decision D2). The fields follow the locked page anatomy
         caption: ...                             # 40 words or fewer; chart-reading caveats go here
         alt: ...                                 # the chart described for a screen reader
         x_label: settlement date; each starts at 23:00 UTC
+        y_min: -2000000                          # optional: the y axis floor, at or below every
+                                                 # value drawn (the build checks); a floor a
+                                                 # little below zero lifts a line that sits at
+                                                 # zero off the axis, so its gaps read as gaps
         key:
           - {series: wind, label: Wind, codes: WIND}
           - {series: ps, label: Pumped storage, codes: PS, note: ..., paint: hatch-cross}
@@ -234,6 +238,7 @@ class ChartView:
     alt: str = ""
     x_label: str = ""
     key: tuple[KeyEntry, ...] = ()
+    y_min: float | None = None
 
 
 @dataclass(frozen=True)
@@ -437,7 +442,11 @@ def _read(page: Mapping[str, Any]) -> tuple[PageFields, list[str]]:
     )
 
     view_m = r.mapping(f"{p}.{CHART_VIEW}", page.get(CHART_VIEW))
-    r.unknown(f"{p}.{CHART_VIEW}", view_m, ("title", "caption", "alt", "x_label", "key"))
+    r.unknown(f"{p}.{CHART_VIEW}", view_m, ("title", "caption", "alt", "x_label", "key", "y_min"))
+    y_min = view_m.get("y_min")
+    if y_min is not None and (not isinstance(y_min, (int, float)) or isinstance(y_min, bool)):
+        r.errors.append(f"{p}.chart_view.y_min: must be a number (the y axis floor)")
+        y_min = None
     key_entries: list[KeyEntry] = []
     for i, entry in enumerate(r.seq(f"{p}.chart_view.key", view_m.get("key"))):
         where = f"{p}.chart_view.key[{i}]"
@@ -459,6 +468,7 @@ def _read(page: Mapping[str, Any]) -> tuple[PageFields, list[str]]:
         alt=_prose(r.text(f"{p}.chart_view.alt", view_m.get("alt"))),
         x_label=r.text(f"{p}.chart_view.x_label", view_m.get("x_label")),
         key=tuple(key_entries),
+        y_min=float(y_min) if y_min is not None else None,
     )
 
     locations: Locations | None = None
