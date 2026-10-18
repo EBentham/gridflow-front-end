@@ -607,6 +607,10 @@ pre .ln { display: block; padding-left: calc((var(--i, 0) + 2) * 1ch); text-inde
 /* rows wrap instead of running past the box (the hang is set on `pre .ln`, below the notebook) */
 .ds-well:has(.ln) { white-space: pre-wrap; overflow-wrap: anywhere; }
 .ds-well .nw { white-space: nowrap; }  /* a flag with its value, a URL segment: never split at a hyphen */
+/* a table key or file id too long for a phone's well breaks at its <wbr>s (after an underscore or a
+   hyphen), below 768 px only: wider, the <wbr>s are taken out (Chrome breaks at one even in nowrap) */
+@media (max-width: 767.98px) { .ds-well .nw-cut { white-space: inherit; } }
+@media (min-width: 768px) { .ds-well .nw-cut wbr { display: none; } }
 .ds-cm { color: var(--muted); }
 .ds-variants { list-style: none; display: grid; grid-template-columns: minmax(0, 1fr); row-gap: 18px; min-width: 0; }
 .ds-variants > li { min-width: 0; }

@@ -143,3 +143,43 @@ def test_each_file_is_a_row_of_the_members_well_wrapped_like_one() -> None:
     # the other members, and a member with one file, render as before
     assert double["variants"][1:] == single["variants"][1:]
     assert str(single["variants"][0]["request"]) == str(build.request_lines(one.requests[0]))
+
+
+def test_a_long_table_key_in_a_command_may_break_at_its_underscores_on_a_phone() -> None:
+    row = str(
+        build.command_row(
+            "gridflow ingest neso_data_portal demand_flexibility_utilisation_summary --last 24h"
+        )
+    )
+    assert (
+        '<span class="nw nw-cut">demand_<wbr>flexibility_<wbr>utilisation_<wbr>summary</span>'
+        in row
+    )
+    # shorter arguments and flags with their values stay whole, as before
+    assert '<span class="nw">neso_data_portal</span>' in row
+    assert '<span class="nw">--last 24h</span>' in row
+    assert str(build.command_row("gridflow ingest elexon system_prices --start 2026-09-16")) == (
+        '<span class="nw">gridflow</span> <span class="nw">ingest</span> '
+        '<span class="nw">elexon</span> <span class="nw">system_prices</span> '
+        '<span class="nw">--start 2026-09-16</span>'
+    )
+
+
+def test_a_long_url_segment_may_break_at_its_hyphens_on_a_phone() -> None:
+    url = "GET https://api.neso.energy/datastore/dump/829e325f-8926-40ab-9dd6-8b7aea6cb244"
+    row = str(build.request_lines(url))
+    assert '<span class="nw">https://api.neso.energy/</span>' in row
+    assert '<span class="nw">datastore/</span><wbr><span class="nw">dump/</span>' in row
+    assert (
+        '<span class="nw nw-cut">829e325f-<wbr>8926-<wbr>40ab-<wbr>9dd6-<wbr>8b7aea6cb244</span>'
+        in row
+    )
+    # a host is never cut, and a short segment with a date keeps its hyphens whole
+    short = str(build.request_lines("GET https://transparency.entsog.eu/api/v1/2026-09-13"))
+    assert "nw-cut" not in short
+
+
+def test_the_cut_points_work_below_768_px_only() -> None:
+    css = (build.SITE_DIR / "assets" / "theme.css").read_text(encoding="utf-8")
+    assert "@media (max-width: 767.98px) { .ds-well .nw-cut { white-space: inherit; } }" in css
+    assert "@media (min-width: 768px) { .ds-well .nw-cut wbr { display: none; } }" in css

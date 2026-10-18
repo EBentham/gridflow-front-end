@@ -1087,11 +1087,34 @@ def _nw(text: str) -> str:
     return f'<span class="nw">{text}</span>'
 
 
+# A command argument or URL segment longer than this (a 38-character table key, a 36-character file
+# id) does not fit one row of a well at phone width, so it may break after its underscores (and a
+# URL segment after its hyphens) there; theme.css releases ``.nw-cut`` below 768 px only, so a
+# wider well keeps every argument and segment whole.
+LONG_ARGUMENT = 30
+_KEY_TOKEN = re.compile(r"[a-z0-9]+(?:_[a-z0-9]+)+")
+
+
+def _argument(escaped: str) -> str:
+    if len(escaped) > LONG_ARGUMENT and _KEY_TOKEN.fullmatch(escaped):
+        return f'<span class="nw nw-cut">{escaped.replace("_", "_<wbr>")}</span>'
+    return _nw(escaped)
+
+
+def _url_segment(escaped: str) -> str:
+    """A path segment kept whole, except that a phone may break a long one after a hyphen."""
+    if len(escaped) > LONG_ARGUMENT and re.search(r"[-_].", escaped):
+        cut = re.sub(r"([-_])(?=.)", lambda m: m.group(1) + "<wbr>", escaped)
+        return f'<span class="nw nw-cut">{cut}</span>'
+    return _nw(escaped)
+
+
 def command_row(run: str) -> Markup:
     """A CLI command whose row may wrap only between arguments, never inside one.
 
     A browser may break after any hyphen, which would split ``--end`` or a date; each flag is
-    kept with its value, and every other argument whole.
+    kept with its value, and every other argument whole. A table key too long for a phone's well
+    may break after an underscore there, and only there (``LONG_ARGUMENT``).
     """
     tokens = run.split(" ")
     parts: list[str] = []
@@ -1101,19 +1124,23 @@ def command_row(run: str) -> Markup:
         if tok.startswith("-") and i + 1 < len(tokens) and not tokens[i + 1].startswith("-"):
             tok = f"{tok} {tokens[i + 1]}"
             i += 1
-        parts.append(_nw(html_escape(tok, quote=False)))
+        parts.append(_argument(html_escape(tok, quote=False)))
         i += 1
     return Markup(" ".join(parts))
 
 
 def _url_row(line: str) -> str:
-    """An escaped request line whose URL may wrap only after a slash, never at a hyphen."""
+    """An escaped request line whose URL may wrap only after a slash, never at a hyphen.
+
+    The exception is a segment too long for a phone's well (``LONG_ARGUMENT``), which may break
+    after a hyphen below 768 px.
+    """
     m = re.match(r"(.*?)(https?://[^/]+/)(.*)$", line)
     if not m:
         return line
     lead, host, path = m.groups()
-    segments = [host, *re.findall(r"[^/]*/|[^/]+$", path)]
-    return lead + "<wbr>".join(_nw(s) for s in segments if s)
+    segments = [_url_segment(s) for s in re.findall(r"[^/]*/|[^/]+$", path) if s]
+    return lead + "<wbr>".join([_nw(host), *segments])
 
 
 def request_lines(request: str) -> Markup:
