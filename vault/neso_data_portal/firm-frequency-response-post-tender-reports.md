@@ -5,8 +5,207 @@ dataset_keys: ["ffr_post_tender_reports_csv", "ffr_post_tender_reports_csv_ext",
 vendor: "NESO Open Data Portal"
 skeleton: false
 layer_coverage: "bronze, silver"
-updated: 2026-10-14
+updated: 2026-10-18
 eligibility: "eligible"
+page:
+  title: Firm Frequency Response post-tender reports
+  summary: >-
+    NESO's report after each monthly Firm Frequency Response tender: the tenders submitted,
+    accepted or rejected, with unit, windows, prices and MW.
+  facts:
+    vendor: "NESO Data Portal, package `firm-frequency-response-post-tender-reports`: 89 uploaded CSV and Excel files"
+    cadence: "A report after each monthly tender (NESO); catalogue update frequency: Not Active"
+    grain: One row per tender submission in a report file
+    history: Reports from TR108 (December 2018) to TR166 (October 2023) in NESO's package
+  landscape: market
+  what_it_is: >-
+    After each monthly Firm Frequency Response tender NESO publishes a report of the tenders
+    submitted, accepted or rejected, with rejection codes, unit, service dates, daily windows, prices
+    and MW offered. A row is a submission, not a delivery. The CSV reports TR139 to TR166, named
+    three ways, form one table; the Excel reports are not shown.
+  how_used:
+    - "Who won each month's FFR tenders: accepted and rejected submissions by unit and company."
+    - Tendered availability fees, £/h, beside the MW offered at each frequency deviation.
+    - "Take the round from `tender_ref`'s first three digits; `timestamp_utc` is capture time."
+  chart:
+    type: bar
+    silver: neso_data_portal/ffr_post_tender_reports_csv_ext
+    filter:
+      - {column: status, op: in, value: [Accepted, "Accepted "]}
+    dedup: {on: [resource_id, tender_ref], order_by: capture_written_at}
+    group: resource_id
+    group_map:
+      "9347c45d-bffd-40ee-aa1e-593b41bde9a4": "TR139 Jul 2021"
+      "fe695206-4729-46f2-a82e-b05ed8552da8": "TR140 Aug 2021"
+      "5e0afd6e-ab83-480a-938b-e0da0223fcbc": "TR141 Sep 2021"
+      "1882b277-6349-4513-9939-b39e1992620b": "TR142 Oct 2021"
+      "990dd811-e65a-4361-87fc-9d07d6c0af45": "TR143 Nov 2021"
+      "ceefff8c-7f61-41dd-b567-42774ca487bc": "TR144 Dec 2021"
+      "61ee31ac-1f2d-4744-add3-bac7878c6010": "TR145 Jan 2022"
+      "66e127dc-5e95-49b5-bc55-915269d09e1a": "TR146 Feb 2022"
+      "fc994d78-f7d0-4a29-9ea7-31121931d04c": "TR148 Apr 2022"
+      "a32e86a6-6bd3-422c-996a-7245dcb9b6ee": "TR149 May 2022"
+      "36164e1d-c6d5-4a58-85b1-74c3a01b0a9b": "TR150 Jun 2022"
+      "fcc91d6f-e35a-4878-a77d-d2882d01c357": "TR151 Jul 2022"
+      "7ed768cf-aa45-4577-bc7f-c1b64e534812": "TR152 Aug 2022"
+      "178b6c47-6b27-403e-9715-87f41b48a84b": "TR153 Sep 2022"
+      "904d2bf0-8396-43c4-8b8a-cafe105fc47c": "TR155 Nov 2022"
+      "fd84c085-4ff8-45b4-b2ee-43ad2b052d9f": "TR156 Dec 2022"
+      "bd7cbfb7-a8cb-4b84-bd69-42abff36af0d": "TR157 Jan 2023"
+      "e15891f5-fd65-437f-823f-2906f238d0af": "TR158 Feb 2023"
+      "41c9403d-9618-4eb9-be69-45b9923bcf3f": "TR159 Mar 2023"
+      "a99bc100-352b-433a-83fc-5514affbbc0e": "TR160 Apr 2023"
+      "3d71f7d1-3dd7-40b1-b5f4-708da72a4f67": "TR161 May 2023"
+      "fd57201c-24f6-4d42-8be2-177dd4b36229": "TR162 Jun 2023"
+      "fbb1ce86-b2f7-405d-94ac-6cef6f14cceb": "TR163 Jul 2023"
+      "2bfa2ab3-7f4e-44d7-a9ab-7342c4b9cd34": "TR164 Aug 2023"
+      "bec39c50-563c-4ed6-8100-8b519dcbf1ef": "TR165 Sep 2023"
+      "59dfabd4-a395-4ddc-a261-2f546a8a3b52": "TR166 Oct 2023"
+    aggregation: count
+    sort: label
+    unit: accepted tenders
+  chart_view:
+    title: Accepted FFR tenders in each monthly report
+    caption: >-
+      Silver `ffr_post_tender_reports_csv_ext`: tenders marked Accepted in each monthly CSV report, a
+      count, not MW. No bars for TR147 and TR154, which gridflow leaves out: one fee written with a
+      thousands comma; ten rows without a tender number.
+    alt: >-
+      Horizontal bar chart from neso_data_portal/ffr_post_tender_reports_csv_ext: accepted tenders
+      in each of 26 monthly CSV reports, TR139 (July 2021) to TR166 (October 2023), with no bars for
+      TR147 and TR154. TR139 to TR141 have 70 each. From TR142 to TR156 the count runs from 131 to
+      171, highest in TR152 (August 2022). It falls to 125 in TR157 and 103 in TR158, then 35 to 47
+      from TR159 to TR163, and 17 to 23 in the last three, lowest in TR166.
+    key:
+      - {series: count, label: Accepted tenders, paint: petrol}
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: `package_show`, then each member's files, one per monthly round (examples
+      below), downloaded again only when `last_modified` changes. One transform reads all three CSV
+      members.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=firm-frequency-response-post-tender-reports"
+    commands:
+      - {run: gridflow ingest neso_data_portal ffr_post_tender_reports_csv --last 24h, comment: "TR144's file, named CSV"}
+      - {run: gridflow ingest neso_data_portal ffr_post_tender_reports_ext --last 24h, comment: "TR142 and TR143, named EXT"}
+      - {run: gridflow pipeline neso_data_portal ffr_post_tender_reports_csv_ext --last 24h, comment: "CSV EXT files, then one table"}
+  record:
+    select:
+      filter:
+        - {column: resource_id, op: eq, value: ceefff8c-7f61-41dd-b567-42774ca487bc}
+        - {column: tender_ref, op: in, value: ["144.198", "144.199", "144.200", "144.201", "144.202", "144.203", "144.204", "144.205"]}
+      dedup: {on: [resource_id, tender_ref], order_by: capture_written_at}
+      order_by: [tender_ref]
+      columns: [tender_ref, status, rejection_codes, tendered_unit, start_date, end_date, availability_fee,
+                primary_response_0_5hz, frame_from_mon_fri, frame_to_mon_fri, frame_duration_mon_fri,
+                tendered_period, high_frequency_response_0_5hz, all_or_nothing_bid, company_name,
+                generation_type, resource_id]
+    key: [resource_id, tender_ref]
+    caption: "TR144 (December 2021), tenders 144.198 to 144.205: dates turn into spreadsheet serials mid-file."
+    fields:
+      tender_ref: "Tender reference, kept as text: the round in its first three digits (NESO)"
+      status: "`Accepted` or `Rejected` at NESO's assessment; one TR165 row adds a trailing space"
+      rejection_codes: "Reason codes for a rejection; NESO points to its FFR market information reports"
+      tendered_unit: "The unit tendered: a BM unit ID, or NESO's unit ID otherwise"
+      start_date: "First service day, as text: `dd/mm/yyyy` or a spreadsheet serial (`44562`: 1 January 2022)"
+      end_date: "Last service day, written the same two ways (`44592`: 31 January 2022)"
+      availability_fee: "Tendered availability fee, £/h (NESO's unit): the main fee all providers tender"
+      primary_response_0_5hz: Primary response MW offered at a 0.5 Hz frequency deviation (NESO)
+      frame_from_mon_fri: "Weekday window start, a clock label such as `2300`; NESO states no time zone"
+      frame_to_mon_fri: "Weekday window end, a clock label; NESO asks for EFA block times"
+      frame_duration_mon_fri: Hours available on each weekday (NESO's unit)
+      tendered_period: "NESO's label for the service period: `dd.mm.yy - dd.mm.yy (n months)`"
+      high_frequency_response_0_5hz: High frequency response MW offered at a 0.5 Hz deviation (NESO)
+      all_or_nothing_bid: "Letter of an all-or-nothing set of bids, as the tenderer wrote it"
+      company_name: The company that submitted the tender
+      generation_type: "Fuel or technology type as written, such as `Battery`"
+      resource_id: "NESO's id for the report file the row was read from"
+      connection_type: "`TO connection` (transmission) or `DNO connection` (distribution), as written"
+      capability_data_table: "Where NESO holds the unit's technical data, as written"
+      frame_from_sat: Saturday window start, a clock label like the weekday one
+      frame_to_sat: Saturday window end, a clock label
+      frame_duration_sat: "Hours available on Saturdays (NESO's description; its unit field is blank)"
+      frame_from_sun_bh: Sunday and bank holiday window start, a clock label
+      frame_to_sun_bh: Sunday and bank holiday window end, a clock label
+      frame_duration_sun_bh: "Hours on Sundays and bank holidays (NESO's comment); its unit field says £"
+      nomination_fee: "Fee per nominated hour, £/h (NESO's unit); text, as some cells hold a dash"
+      window_initiation_fee: "Fee per FFR window instructed, £/window (NESO's unit); kept as text"
+      bmus_only: "Whether ABSVD applies, for BM units only (NESO); spelled several ways"
+      max_part_load_point: "Maximum part-load point, MW (NESO's unit), kept as text"
+      min_part_load_point: "Minimum part-load point, MW (NESO's unit), kept as text"
+      min_mel: "Minimum of the Maximum Export Limit, MW (NESO's unit), kept as text"
+      max_sel: "Maximum of the Stable Export Limit, MW (NESO's unit), kept as text"
+      primary_response_0_2hz: Primary response MW offered at a 0.2 Hz deviation (NESO)
+      primary_response_0_8hz: Primary response MW offered at a 0.8 Hz deviation (NESO)
+      secondary_response_0_2hz: Secondary response MW offered at a 0.2 Hz deviation (NESO)
+      secondary_response_0_5hz: Secondary response MW offered at a 0.5 Hz deviation (NESO)
+      high_frequency_response_0_2hz: High frequency response MW offered at a 0.2 Hz deviation (NESO)
+      detail_change_volume: Whether this tender adds volume to an earlier one (NESO)
+      stacked_onto_tender: The accepted tender this one adds volume to, as written
+      mutually_exclusive_tender: "Bids this one cannot be accepted with, as the tenderer wrote it"
+      auto_response_10s: "Automatic response MW within 10 s of frequency below 49.7 Hz (NESO); text"
+      auto_response_30s: "Automatic response MW within 30 s of frequency below 49.7 Hz (NESO); text"
+      post_code: "Postcode's first four digits (NESO), assets 1 MW and over; none in TR139"
+      comments: The tenderer's comments, as written
+      timestamp_utc: "When gridflow wrote the capture, UTC; not a tender or service time"
+      published_at: "NESO's last-modified time for the report file, read as UTC"
+      bronze_capture_id: "Path of the bronze capture; TR144's sits under the CSV member's folder"
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      Reads with `data.sql` from the `_latest` view: `query()` filters on capture time. Tender
+      162.198 is in three reports (times print in UK time), so the count keeps each tender reference
+      once, under its round.
+    cells:
+      - |
+        df = data.sql("""
+            SELECT tender_ref, trim(status) AS status, rejection_codes, tendered_unit,
+                   availability_fee, primary_response_0_5hz, published_at
+            FROM silver_neso_data_portal_ffr_post_tender_reports_csv_ext_latest""")
+        df["round"] = "TR" + df.tender_ref.str[:3]
+        df[df.tender_ref.duplicated(keep=False)]
+      - |
+        rounds = (df.drop_duplicates("tender_ref")
+                    .pivot_table(index="round", columns="status", values="tender_ref", aggfunc="count"))
+        rounds.tail()
+      - |
+        rounds.plot.bar(stacked=True, color=["#155A6E", "#C77E3C"], figsize=(8, 3.5),
+                        xlabel="tender round", ylabel="tenders");
+    needs: a capture of the three CSV members
+    plot_alt: >-
+      Stacked bar plot of tenders in each round, TR139 to TR166 without TR147 and TR154, each tender
+      reference once: accepted (petrol) under rejected (clay). Totals run 90 to 97 to TR141, peak at
+      310 in TR158, then 149 to 209. Rejected outnumber accepted from TR157; accepted falls to 17 in
+      TR166.
+  related:
+    - {dataset: neso_data_portal/static-firm-frequency-response-auction-results, note: "Static FFR offers in NESO's daily auction, per EFA block"}
+    - {dataset: neso_data_portal/phase-2-ffr-auction-results-summary, note: "Orders and results of NESO's Phase 2 FFR auction trial"}
+    - {dataset: neso_data_portal/dynamic-containment-data, note: "NESO's dynamic frequency response auction results, per unit and EFA block"}
+    - {dataset: neso_data_portal/eac-auction-results, note: "NESO's daily response and reserve auctions, results by unit"}
+  family:
+    slug: firm-frequency-response-post-tender-reports
+    members:
+      - dataset: ffr_post_tender_reports_csv_ext
+        differs: "One CSV per monthly round, TR139 to TR166 except TR147 and TR154"
+        request:
+          - "GET https://api.neso.energy/dataset/1162a519-b66d-48f6-96ae-1a69ff17951f/resource/9347c45d-bffd-40ee-aa1e-593b41bde9a4/download/tr139-post-tender-reports_v1-1.csv"
+          - "GET https://api.neso.energy/dataset/1162a519-b66d-48f6-96ae-1a69ff17951f/resource/59dfabd4-a395-4ddc-a261-2f546a8a3b52/download/tr166-post-tender-reports_v11ext.csv"
+      - dataset: ffr_post_tender_reports_workbook
+        differs: "Excel reports TR108 to TR166; from TR139 they repeat CSV rounds: never add both"
+        request:
+          - "GET https://api.neso.energy/dataset/1162a519-b66d-48f6-96ae-1a69ff17951f/resource/31854ad2-0e98-48ab-8893-dc9b9d473091/download/post-tender-report-tr108-dec-18.xlsx"
+          - "GET https://api.neso.energy/dataset/1162a519-b66d-48f6-96ae-1a69ff17951f/resource/68529290-7992-4891-90bc-68fa9bcb5aeb/download/post-tender-report-tr127-july-2020-ext.xlsx"
+          - "GET https://api.neso.energy/dataset/1162a519-b66d-48f6-96ae-1a69ff17951f/resource/16773f53-c0f9-4b8c-aaee-ad819e93d405/download/post-tender-report-tr127-july-2020-amended-ext.xlsx"
+          - "GET https://api.neso.energy/dataset/1162a519-b66d-48f6-96ae-1a69ff17951f/resource/8bb5bf74-8f5e-44c7-a231-42d1323bfa73/download/post-tender-report-tr166-october-2023-ext.xlsm"
+        held: "TR127 and TR136 have two editions each, and NESO does not say which stands."
+      - dataset: ffr_post_tender_reports_csv
+        differs: "No table of its own: TR144's file, named CSV, is read into `ffr_post_tender_reports_csv_ext`"
+        request: "GET https://api.neso.energy/dataset/1162a519-b66d-48f6-96ae-1a69ff17951f/resource/ceefff8c-7f61-41dd-b567-42774ca487bc/download/tr144-post-tender-reports_v11.csv"
+      - dataset: ffr_post_tender_reports_ext
+        differs: "No table of its own: TR142 and TR143, named EXT, are read into `ffr_post_tender_reports_csv_ext`"
+        request:
+          - "GET https://api.neso.energy/dataset/1162a519-b66d-48f6-96ae-1a69ff17951f/resource/1882b277-6349-4513-9939-b39e1992620b/download/tr142-post-tender-reports_v1-1.csv"
+          - "GET https://api.neso.energy/dataset/1162a519-b66d-48f6-96ae-1a69ff17951f/resource/990dd811-e65a-4361-87fc-9d07d6c0af45/download/tr143-post-tender-reports_v1.1-1.csv"
 ---
 
 # Firm Frequency Response (FFR) Post Tender Reports
@@ -499,6 +698,7 @@ A single bad numeric cell fails the whole capture, so TR123 is held rather than 
 - **Mixed date spellings** in `start_date`/`end_date` (see Time and clock semantics). A typed date column is not offered until a faithful Excel-serial contract exists.
 - **EXT suffix unexplained.** NESO's description and dictionaries do not expand `EXT` or establish a difference between the `CSV`, `CSV EXT` and `EXT` naming; no business dimension is derived from it. TODO: verify with NESO what `EXT` means.
 - **Two header epochs.** Epoch 1 has 43 columns including `Post code`; epoch 2 (TR139) has 42 columns without it. Columns map by source name.
+- **Status spelling.** In the CSV table one row, tender `165.012` in the TR165 resource, has `status` `Accepted ` with a trailing space (checked in silver 2026-10-18: 2,715 `Accepted`, 1 `Accepted `, 2,741 `Rejected`). It is kept byte-equal; filter on the trimmed value.
 - **Dictionary quirks.** `Tender Ref` is typed numeric in the vendor dictionary but is an identifier in the data (example `122.001`) and is stored as a string, never cast.
 - **Cadence.** The vendor update frequency is `Not Active` and the registry refresh is frozen; the latest captured report is TR166 (October 2023). TODO: verify whether NESO has stopped publishing these reports.
 - **No gold or models consumer.** No gold view or models feed reads this family at present.
