@@ -1092,6 +1092,9 @@ def _nw(text: str) -> str:
 # URL segment after its hyphens) there; theme.css releases ``.nw-cut`` below 768 px only, so a
 # wider well keeps every argument and segment whole.
 LONG_ARGUMENT = 30
+# A URL segment longer than this (a CKAN download's 90-character file name) fits no well at any
+# width, so its break points are live everywhere.
+LONG_SEGMENT = 60
 _KEY_TOKEN = re.compile(r"[a-z0-9]+(?:_[a-z0-9]+)+")
 
 
@@ -1105,6 +1108,8 @@ def _url_segment(escaped: str) -> str:
     """A path segment kept whole, except that a phone may break a long one after a hyphen."""
     if len(escaped) > LONG_ARGUMENT and re.search(r"[-_].", escaped):
         cut = re.sub(r"([-_])(?=.)", lambda m: m.group(1) + "<wbr>", escaped)
+        if len(escaped) > LONG_SEGMENT:
+            return f'<span class="nw-long">{cut}</span>'
         return f'<span class="nw nw-cut">{cut}</span>'
     return _nw(escaped)
 
