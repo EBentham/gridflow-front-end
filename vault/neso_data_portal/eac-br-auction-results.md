@@ -7,6 +7,140 @@ skeleton: false
 updated: 2026-10-13
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: Balancing Reserve auction results
+  summary: >-
+    NESO's daily Balancing Reserve auctions on its EAC platform: cleared MW and price per
+    half-hour window, winning units, and every order.
+  facts:
+    vendor: "NESO Data Portal, package `eac-br-auction-results`: four datastore tables"
+    cadence: One auction per delivery day; later auctions are in NESO's newer EAC package
+    grain: "Summary: one row per auction, product (`PBR` or `NBR`) and half-hour window"
+    history: "Delivery windows `2024-03-12T23:00:00` to `2025-10-29T22:30:00` in NESO's archive dump"
+  landscape: market
+  what_it_is: >-
+    NESO buys Balancing Reserve, `PBR` and `NBR` (read as positive and negative reserve on BM units),
+    in one auction per delivery day of half-hour windows. The summary gives cleared MW and clearing
+    price. Across NESO's archive, buy, sell and by-unit executed MW each sum to the summary's: never
+    add two tables. Window times are text with no stated clock.
+  how_used:
+    - Clearing price per window and product, as the target of a reserve-price model.
+    - "Sell-order bid stacks per window: MW offered against price limit, with the outcome."
+    - "Who holds the reserve: MW per BM unit, participant and technology, per window."
+  chart:
+    type: line
+    silver: neso_data_portal/eac_br_results_summary
+    time: delivery_start
+    time_text: {format: "%Y-%m-%dT%H:%M:%S", day: {zone: Europe/London, starts: -1}}
+    value: clearing_price
+    filter:
+      - {column: cleared_volume, op: gt, value: 0}
+    group: auction_product
+    group_map: {PBR: pbr, NBR: nbr}
+    series_order: [pbr, nbr]
+    aggregation: mean
+    window: {start: "2024-03-13", end: "2025-10-29"}
+    unit: "£/MW/h"
+  chart_view:
+    title: Mean Balancing Reserve clearing price, March 2024 to October 2025
+    caption: >-
+      Silver `neso_data_portal/eac_br_results_summary`, £/MW/h: each day's unweighted mean over
+      cleared half-hours; NESO records £0 where nothing cleared, so a day with no clears is a gap. Days
+      run 23:00 to 23:00 UK time (inferred), reading NESO's clockless text as UTC.
+    alt: >-
+      Line chart from neso_data_portal/eac_br_results_summary of the daily mean Balancing Reserve
+      clearing price over cleared half-hours, in £/MW/h, for delivery days 13 March 2024 to 29
+      October 2025. Positive (PBR) clears every day, mostly 2 to 10, lowest at 1.47
+      on 4 July 2024, and spikes in winter: 40.47 on 13 December 2024 and 51.54 on 21 January 2025,
+      the highest. Negative (NBR) stays at or below 1.55, reached in April 2024, with 11 gap days
+      before December; from 4 December 2024 it cleared on two days only, both at 0.
+    x_label: delivery day, 23:00 to 23:00 UK (inferred)
+    key:
+      - {series: pbr, label: Positive (PBR), codes: PBR, paint: petrol}
+      - {series: nbr, label: Negative (NBR), codes: NBR, paint: clay, note: "Gaps are days when no negative reserve cleared; from December 2024 almost every day."}
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then the table's whole datastore dump; run one line
+      per table. Frozen: re-fetched at most weekly, unchanged bodies not stored again.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=eac-br-auction-results"
+    commands:
+      - {run: gridflow pipeline neso_data_portal eac_br_results_summary --last 24h, comment: "summary to bronze, then silver"}
+      - {run: gridflow pipeline neso_data_portal eac_br_results_by_unit --last 24h, comment: "by-unit table, read by the notebook"}
+  record:
+    select:
+      filter:
+        - {column: auction_id, op: eq, value: "947"}
+        - {column: delivery_start, op: in, value: ["2025-01-21T16:00:00", "2025-01-21T16:30:00", "2025-01-21T17:00:00", "2025-01-21T17:30:00"]}
+      order_by: [delivery_start, auction_product]
+      columns: [delivery_start, auction_product, cleared_volume, clearing_price, auction_id, delivery_end, service_type]
+    key: [auction_id, auction_product, delivery_start]
+    caption: "Four evening windows of auction 947 (21 January 2025), both products, as NESO wrote them."
+    fields:
+      delivery_start: "Window start as NESO wrote it, kept as text; NESO states no clock"
+      auction_product: "`PBR` or `NBR`, read as positive or negative reserve; NESO's dictionary lists only codes"
+      cleared_volume: MW bought in the window (NESO's unit); 0 when nothing cleared
+      clearing_price: "Clearing price, £/MW/h (NESO's unit); NESO records 0 where nothing cleared"
+      auction_id: "NESO's auction number, kept as text; one auction per delivery day"
+      delivery_end: Window end as NESO wrote it, kept as text
+      service_type: "NESO's service name, `Balancing Reserve`"
+      timestamp_utc: gridflow's capture time, UTC; not the delivery window
+      published_at: "Null: when NESO first published each result is unknown"
+      bronze_capture_id: Path of the bronze capture the row was read from
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      Reads with `data.sql` from the `_latest` views (newest capture): `query()` would filter on
+      `timestamp_utc`, the capture time. The first query averages price over cleared windows, as the
+      chart does; the second checks by-unit MW.
+    cells:
+      - |
+        data.sql("""
+            SELECT auction_id, auction_product,
+                   COUNT(*) FILTER (WHERE cleared_volume > 0) AS windows_cleared,
+                   ROUND(AVG(cleared_volume), 2) AS mean_mw_per_window,
+                   ROUND(AVG(clearing_price) FILTER (WHERE cleared_volume > 0), 2) AS mean_price_cleared
+            FROM silver_neso_data_portal_eac_br_results_summary_latest
+            WHERE auction_id IN ('943', '945', '947', '949', '951', '953', '955')
+            GROUP BY ALL ORDER BY auction_product DESC, auction_id""")
+      - |
+        pbr = data.sql("""
+            SELECT s.delivery_start, s.cleared_volume, SUM(u.executed_quantity) AS units_mw, s.clearing_price
+            FROM silver_neso_data_portal_eac_br_results_summary_latest s
+            LEFT JOIN silver_neso_data_portal_eac_br_results_by_unit_latest u
+              ON u.auction_product = s.auction_product AND u.delivery_start = s.delivery_start
+            WHERE s.auction_id = '947' AND s.auction_product = 'PBR'
+            GROUP BY ALL ORDER BY s.delivery_start""")
+        pbr.iloc[34:38]
+      - |
+        pbr.index = pbr.delivery_start.str[11:16]
+        pbr.clearing_price.plot(drawstyle="steps-post", color="#155A6E", figsize=(8, 3.5),
+                                xlabel="window start as written; the day opens 23:00, 20 January",
+                                ylabel="PBR clearing price, £/MW/h");
+    needs: a capture of the summary and by-unit tables
+    plot_alt: >-
+      Step plot of the PBR clearing price, in £/MW/h, for each half-hour window of auction 947, from
+      23:00 on 20 January to 22:30 on 21 January 2025 as written. It holds 6.85 to 02:30, is 0 at
+      06:00 and 06:30, peaks at 179.99 at 17:00 and 17:30, and ends at 84.99.
+  related:
+    - {dataset: elexon/bmunits_reference, note: "All `auction_unit` values are National Grid BM unit IDs in the register"}
+    - {dataset: elexon/boal, note: "BM acceptances for the units holding reserve, joined via the register"}
+    - {dataset: elexon/system_prices, note: Imbalance prices for the half-hours the reserve covers}
+  family:
+    slug: eac-br-auction-results
+    members:
+      - dataset: eac_br_results_summary
+        differs: "Cleared MW and clearing price per auction, product and half-hour window"
+        request: "GET https://api.neso.energy/datastore/dump/1b3f2ee1-74a0-4939-a5a3-f01f19e663e4"
+      - dataset: eac_br_results_by_unit
+        differs: "Winning units' MW per window, summing to the summary's; no rows at 0 MW"
+        request: "GET https://api.neso.energy/datastore/dump/5d8e47be-e262-4398-89b0-6f93f636faf6"
+      - dataset: eac_br_results_buy_orders
+        differs: "NESO's price targets for quantities per window; executed MW sums to the summary"
+        request: "GET https://api.neso.energy/datastore/dump/8a549d29-52cd-4016-a04e-c01a3e31bd3a"
+      - dataset: eac_br_results_sell_orders
+        differs: "Every provider order with price limit and outcome; zero-MW orders can read executed"
+        request: "GET https://api.neso.energy/datastore/dump/3f53c38b-d287-41af-b4c8-769abb6e707a"
 ---
 
 # EAC-BR Auction Results
@@ -42,14 +176,34 @@ Supported by National Energy SO Open Data
   mock/test data. That package is held and documented on its own page; never join it to these tables on
   auction id.
 
+**How the four tables reconcile (measured with Polars on silver, 2026-10-18).** For every summary row
+(auction, product, window), the buy orders' `executed_quantity` summed equals `cleared_volume` (57,216 of
+57,216), and so does the sell orders' `executed_quantity` summed over all order types (parent, child and
+substitutable child together). The by-unit table is one row per `auction_unit`, product and window, equal
+to that unit's sell-order executed MW summed (621,111 of 621,111); summed per window it equals
+`cleared_volume` in the 39,673 windows that have unit rows, and the other 17,543 summary windows cleared
+0 MW. Every buy, sell and by-unit row carries its window's summary `clearing_price`. The tables restate
+the same cleared MW from different sides, so never add two of them. All 157 `auction_unit` values match
+`national_grid_bm_unit` in `elexon/bmunits_reference` silver.
+
 **The clock is undocumented.** The resource dictionaries give the role of `deliveryStart`, `deliveryEnd` and
 `orderEntryTime` (delivery window start and end; bid submission time) but do not state the clock of these
 archive exports. The cells are timezone-naive text (single shape `YYYY-MM-DDThh:mm:ss`). The newer EAC
 package's statement that its datetimes are UTC is **not** transferred to this archive. So gridflow keeps
 every time cell as a **raw string**, declares temporal recipe `none`, and does not slice a date out of a
-timestamp. Consumers must not read these strings as UTC or as UK local time. TODO: verify the clock of the
+timestamp. Silver asserts neither UTC nor UK local time; any reading is a stated convention (the site's
+chart reads them as UTC, on the evidence below). TODO: verify the clock of the
 BR archive exports (BR-ARCHIVE-EXPORT-CLOCK); an archive-specific vendor statement or export specification
 would settle it. Until then the question is non-holding because the raw string publishes no clock.
+Evidence toward settling the clock, measured on silver (2026-10-18), not a vendor statement: each of the 596
+auctions covers one day of 30-minute windows whose first start is written `23:00` when that day is in
+GMT and `22:00` when it is in BST, with 46 windows on the spring clock-change days (auctions 189, 1109)
+and 50 on the autumn ones (746, 2081). That is what UTC strings for a 23:00-to-23:00 UK day would show,
+and not what UK local strings would. Corroboration from the sell orders: in 595 of 596 auctions the last
+`order_entry_time` falls 14h44m to 15h29m before the auction's first window string, so it is written one
+hour earlier on BST days (06:31 to 07:16) than on GMT days (07:31 to 08:16), as a fixed UK-time gate
+written in UTC would be (auction 187 is the exception, 29h15m). NESO's companion package gives the auction
+time as 08:15, zone unstated. The cells stay raw strings.
 
 - Publisher group: Ancillary services
 - Registry group: ancillary-services · archetype: EVT

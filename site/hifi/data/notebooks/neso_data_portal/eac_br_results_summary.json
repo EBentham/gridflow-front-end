@@ -1,0 +1,250 @@
+{
+ "dataset": "neso_data_portal/eac_br_results_summary",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "5b4a97a2767cedca2b0f6e2260b591837163c79668aaf32df9929b6020075642",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "data.sql(\"\"\"\n    SELECT auction_id, auction_product,\n           COUNT(*) FILTER (WHERE cleared_volume > 0) AS windows_cleared,\n           ROUND(AVG(cleared_volume), 2) AS mean_mw_per_window,\n           ROUND(AVG(clearing_price) FILTER (WHERE cleared_volume > 0), 2) AS mean_price_cleared\n    FROM silver_neso_data_portal_eac_br_results_summary_latest\n    WHERE auction_id IN ('943', '945', '947', '949', '951', '953', '955')\n    GROUP BY ALL ORDER BY auction_product DESC, auction_id\"\"\")",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "auction_id",
+      "auction_product",
+      "windows_cleared",
+      "mean_mw_per_window",
+      "mean_price_cleared"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13"
+     ],
+     "rows": [
+      [
+       "943",
+       "PBR",
+       "48",
+       "449.73",
+       "12.99"
+      ],
+      [
+       "945",
+       "PBR",
+       "48",
+       "353.38",
+       "37.63"
+      ],
+      [
+       "947",
+       "PBR",
+       "48",
+       "394.96",
+       "51.54"
+      ],
+      [
+       "949",
+       "PBR",
+       "48",
+       "331.25",
+       "26.70"
+      ],
+      [
+       "951",
+       "PBR",
+       "48",
+       "452.19",
+       "8.46"
+      ],
+      [
+       "953",
+       "PBR",
+       "48",
+       "452.21",
+       "4.63"
+      ],
+      [
+       "955",
+       "PBR",
+       "48",
+       "451.67",
+       "6.54"
+      ],
+      [
+       "943",
+       "NBR",
+       "0",
+       "0.00",
+       "NaN"
+      ],
+      [
+       "945",
+       "NBR",
+       "0",
+       "0.00",
+       "NaN"
+      ],
+      [
+       "947",
+       "NBR",
+       "0",
+       "0.00",
+       "NaN"
+      ],
+      [
+       "949",
+       "NBR",
+       "0",
+       "0.00",
+       "NaN"
+      ],
+      [
+       "951",
+       "NBR",
+       "0",
+       "0.00",
+       "NaN"
+      ],
+      [
+       "953",
+       "NBR",
+       "0",
+       "0.00",
+       "NaN"
+      ],
+      [
+       "955",
+       "NBR",
+       "0",
+       "0.00",
+       "NaN"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "pbr = data.sql(\"\"\"\n    SELECT s.delivery_start, s.cleared_volume, SUM(u.executed_quantity) AS units_mw, s.clearing_price\n    FROM silver_neso_data_portal_eac_br_results_summary_latest s\n    LEFT JOIN silver_neso_data_portal_eac_br_results_by_unit_latest u\n      ON u.auction_product = s.auction_product AND u.delivery_start = s.delivery_start\n    WHERE s.auction_id = '947' AND s.auction_product = 'PBR'\n    GROUP BY ALL ORDER BY s.delivery_start\"\"\")\npbr.iloc[34:38]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "delivery_start",
+      "cleared_volume",
+      "units_mw",
+      "clearing_price"
+     ],
+     "index": [
+      "34",
+      "35",
+      "36",
+      "37"
+     ],
+     "rows": [
+      [
+       "2025-01-21T16:00:00",
+       "452.0",
+       "452.0",
+       "139.99"
+      ],
+      [
+       "2025-01-21T16:30:00",
+       "401.0",
+       "401.0",
+       "139.99"
+      ],
+      [
+       "2025-01-21T17:00:00",
+       "379.0",
+       "379.0",
+       "179.99"
+      ],
+      [
+       "2025-01-21T17:30:00",
+       "381.0",
+       "381.0",
+       "179.99"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "pbr.index = pbr.delivery_start.str[11:16]\npbr.clearing_price.plot(drawstyle=\"steps-post\", color=\"#155A6E\", figsize=(8, 3.5),\n                        xlabel=\"window start as written; the day opens 23:00, 20 January\",\n                        ylabel=\"PBR clearing price, £/MW/h\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "eac_br_results_summary-5.png",
+     "width": 699,
+     "height": 337
+    }
+   ]
+  }
+ ]
+}
