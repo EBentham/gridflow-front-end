@@ -1,0 +1,20 @@
+{
+  "dataset": "neso_data_portal/slow_reserve_requirement_fc",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "0e9c7b23da684b36754aa10b5e550f5c9d6eb902ff6cd6ce6ddf3e571e9220a1",
+  "type": "line",
+  "unit": "MW",
+  "caption": "",
+  "value_column": "positive_slow_reserve_requirement_mw",
+  "aggregation": "mean",
+  "window": {"end": "2026-10-31", "rule": "fixed", "start": "2026-09-23"},
+  "provenance": {"files": 1, "null_values_dropped": 0, "rows_matched": 1874, "rows_read": 1874, "rows_used": 1874, "silver": "neso_data_portal/slow_reserve_requirement_fc", "silver_first": "2026-09-23", "silver_last": "2026-10-31"},
+  "spec": {"aggregation": "mean", "filter": [{"column": "published_at", "op": "eq", "value": "2026-09-22T14:48:32.823004"}], "group": "forecast_produced_on", "group_map": {"2026-08-31": "aug", "2026-09-22": "sep"}, "series_order": ["aug", "sep"], "silver": "neso_data_portal/slow_reserve_requirement_fc", "time": "service_delivery_date", "type": "line", "unit": "MW", "value": "positive_slow_reserve_requirement_mw", "window": {"end": "2026-10-31", "start": "2026-09-23"}},
+  "x_kind": "time",
+  "x": ["2026-09-23", "2026-09-24", "2026-09-25", "2026-09-26", "2026-09-27", "2026-09-28", "2026-09-29", "2026-09-30", "2026-10-01", "2026-10-02", "2026-10-03", "2026-10-04", "2026-10-05", "2026-10-06", "2026-10-07", "2026-10-08", "2026-10-09", "2026-10-10", "2026-10-11", "2026-10-12", "2026-10-13", "2026-10-14", "2026-10-15", "2026-10-16", "2026-10-17", "2026-10-18", "2026-10-19", "2026-10-20", "2026-10-21", "2026-10-22", "2026-10-23", "2026-10-24", "2026-10-25", "2026-10-26", "2026-10-27", "2026-10-28", "2026-10-29", "2026-10-30", "2026-10-31"],
+  "series": [
+    {"key": "aug", "values": [1800.0, 1800.0, 1800.0, 1800.0, 1800.0, 1800.0, 1800.0, 1800.0, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]},
+    {"key": "sep", "values": [null, null, null, null, null, null, null, null, 1800.0, 1800.0, 1800.0, 1800.0, 1800.0, 1800.0, 1800.0, 1800.0, 1800.0, 1800.0, 1800.0, 1800.0, 1800.0, 1800.0, 1800.0, 1800.0, 1800.0, 1800.0, 1800.0, 1800.0, 1800.0, 1800.0, 1800.0, 1800.0, 1800.0, 1800.0, 1800.0, 1800.0, 1800.0, 1800.0, 1800.0]}
+  ]
+}

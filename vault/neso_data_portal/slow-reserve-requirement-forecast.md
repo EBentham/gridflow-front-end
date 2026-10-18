@@ -4,9 +4,128 @@ package: "slow-reserve-requirement-forecast"
 dataset_key: "slow_reserve_requirement_fc"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-13
+updated: 2026-10-18
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: Slow Reserve requirement forecast
+  summary: >-
+    NESO's daily forecast of the Slow Reserve it needs to buy: positive and negative MW for every
+    half-hour service window.
+  facts:
+    vendor: "NESO Data Portal, package `slow-reserve-requirement-forecast`: one CSV file, no archive"
+    cadence: "Updated monthly (NESO's catalogue); each auction is daily"
+    grain: One row per auction date and half-hour service window, 48 on an ordinary day
+  landscape: market
+  what_it_is: >-
+    Slow Reserve, positive and negative, reacts to a loss of generation or demand, restoring energy
+    imbalances to plus or minus 0.2 Hz within 15 minutes, NESO says. NESO buys it in a daily auction
+    for a service day of half-hour windows from 23:00 UK time the evening before. This file
+    forecasts each window's requirement in MW.
+  how_used:
+    - Requirement against cleared `PSR` and `NSR` MW per window, from NESO's EAC results.
+    - To join EAC results, convert `service_window_start_time` from UK local time to UTC.
+    - "Point-in-time studies: each capture is one vintage, stamped with the file's `published_at`."
+  chart:
+    type: line
+    silver: neso_data_portal/slow_reserve_requirement_fc
+    time: service_delivery_date
+    value: positive_slow_reserve_requirement_mw
+    group: forecast_produced_on
+    group_map: {"2026-08-31": aug, "2026-09-22": sep}
+    series_order: [aug, sep]
+    filter:
+      - {column: published_at, op: eq, value: "2026-09-22T14:48:32.823004"}
+    aggregation: mean
+    window: {start: "2026-09-23", end: "2026-10-31"}
+    unit: MW
+  chart_view:
+    title: Positive Slow Reserve requirement by service day
+    caption: >-
+      Silver `slow_reserve_requirement_fc`, MW: the positive requirement, mean of each service day's
+      windows, 23 September to 31 October 2026, file last modified 22 September 2026, split by
+      production date. Negative, not drawn, is also 1,800 MW in every window.
+    alt: >-
+      Line chart of NESO's positive Slow Reserve requirement in MW, one point per service day from
+      23 September to 31 October 2026. The line is flat at 1,800 MW throughout: petrol for 23 to 30
+      September, forecasts produced on 31 August, then clay for 1 to 31 October, produced on 22
+      September. The negative requirement is the same, 1,800 MW throughout.
+    x_label: service day (from 23:00 UK time, day before)
+    y_min: 0
+    key:
+      - {series: aug, label: Produced 31 August, paint: petrol, note: "Service days 23 to 30 September: positive and negative both 1,800 MW in every window."}
+      - {series: sep, label: Produced 22 September, paint: clay, note: "Service days 1 to 31 October: positive and negative both 1,800 MW in every window."}
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then the file downloaded whole unless its
+      `last_modified` is unchanged. Dates select nothing.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=slow-reserve-requirement-forecast"
+      - "GET https://api.neso.energy/dataset/87d77cd4-f3c8-4fda-973b-91149ee7a0e6/resource/ccde1a9e-1885-4271-84a3-bb064194bce9/download/slow-reserve-requirement-forecast.csv"
+    commands:
+      - {run: gridflow ingest neso_data_portal slow_reserve_requirement_fc --last 24h, comment: "whole file; window must end recently"}
+      - {run: gridflow transform neso_data_portal slow_reserve_requirement_fc --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: published_at, op: eq, value: "2026-09-22T14:48:32.823004"}
+        - {column: service_delivery_date, op: in, value: ["2026-09-30", "2026-10-01", "2026-10-25"]}
+        - {column: service_window, op: in, value: ["5", "6", "5x", "6x"]}
+      order_by: [service_delivery_date, service_window]
+      columns: [service_delivery_date, service_window, forecast_produced_on, service_window_start_time,
+                positive_slow_reserve_requirement_mw, negative_slow_reserve_requirement_mw,
+                auction_date, service_window_end_time, timestamp_utc, published_at]
+    key: [auction_date, service_window]
+    caption: "Windows 5 and 6 either side of the production-date change, and 25 October's repeated hour."
+    fields:
+      service_delivery_date: Service day the windows belong to; its window 1 starts 23:00 the day before
+      service_window: "`1` to `48`; 25 October adds `5x`, `6x`; NESO's dictionary omits `5`, `6`"
+      forecast_produced_on: Date NESO produced the forecast; a date only, not a publication time
+      service_window_start_time: Window start, UK local time as NESO writes it; kept as text
+      positive_slow_reserve_requirement_mw: Positive Slow Reserve requirement, MW (NESO's unit)
+      negative_slow_reserve_requirement_mw: Negative Slow Reserve requirement, MW (NESO's unit), given as a positive figure
+      auction_date: Date of the daily auction these requirements apply to (NESO)
+      service_window_end_time: "Window end as NESO writes it (`:29` or `:59`); kept as text"
+      timestamp_utc: UK midnight starting the service day, in UTC; window 1 starts an hour earlier
+      published_at: "NESO's last-modified time for the whole file, read as UTC"
+      bronze_capture_id: Path of the bronze capture the row was read from
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      Reads the `_latest` view, the newest capture, with `data.sql` so the cells see every day the
+      file holds; `query()` reads the same view but takes a date range.
+    cells:
+      - |
+        df = data.sql("""
+            SELECT service_delivery_date, auction_date, forecast_produced_on, service_window,
+                   service_window_start_time,
+                   positive_slow_reserve_requirement_mw AS positive_mw,
+                   negative_slow_reserve_requirement_mw AS negative_mw
+            FROM silver_neso_data_portal_slow_reserve_requirement_fc_latest
+            ORDER BY service_delivery_date, service_window_start_time, service_window""")
+        df.groupby("forecast_produced_on").agg(
+            first=("service_delivery_date", "min"), last=("service_delivery_date", "max"),
+            days=("service_delivery_date", "nunique"), windows=("service_window", "count"))
+      - |
+        df.value_counts(["positive_mw", "negative_mw"])
+      - |
+        days = df.drop_duplicates("service_delivery_date").assign(
+            days_ahead=lambda d: (d.service_delivery_date - d.forecast_produced_on).dt.days,
+            produced=lambda d: d.forecast_produced_on.dt.strftime("%Y-%m-%d"))
+        ax = days.pivot(index="service_delivery_date", columns="produced", values="days_ahead").plot(
+            color=["#155A6E", "#C77E3C"], marker="o", ylim=(0, 45), figsize=(8, 3.5), rot=0,
+            xlabel="service day", ylabel="days after production date")
+        ax.legend(title="forecast produced on", loc="upper left");
+    needs: a capture of the requirement file
+    plot_alt: >-
+      Line plot of the days between each forecast's production date and its service day, one point
+      per service day, 23 September to 31 October 2026. Forecasts produced on 31 August (petrol) run
+      23 to 30 days ahead; those produced on 22 September (clay) run 9 to 39 days ahead.
+  related:
+    - {dataset: neso_data_portal/eac-auction-results, note: "Cleared `PSR` and `NSR` MW and price for each half-hour window"}
+    - {dataset: neso_data_portal/quick-reserve-auction-requirement-forecast, note: "Quick Reserve's requirement forecast, with the same columns and key"}
+    - {dataset: neso_data_portal/balancing-reserve-auction-requirement-forecast, note: "Balancing Reserve's requirement forecast, the same windows plus a forecast type"}
+    - {dataset: elexon/system_prices, note: Imbalance prices for the half-hours the reserve covers}
 ---
 
 # Slow Reserve Requirement Forecast
@@ -35,9 +154,10 @@ balancing-mechanism series. It is not a settlement-period table: windows are not
 The package is **eligible**. Its one family has a gridflow silver output and **no hold**. The values
 may be used, subject to the clock and time-label notes below. It has the same layout as the Quick
 Reserve forecast, @./quick-reserve-auction-requirement-forecast.md (the one with the fuller
-write-up of the window and repeated-hour behaviour), and as
-@./balancing-reserve-auction-requirement-forecast.md. The Slow Reserve industry notifications are a
-separate package: @./ancillary-services-important-industry-notifications.md.
+write-up of the window and repeated-hour behaviour), and the same window columns as
+@./balancing-reserve-auction-requirement-forecast.md, whose records add a `forecast_type` column
+(gridflow registry `balancing-reserve-auction-requirement-forecast.json`). The Slow Reserve
+industry notifications are a separate package: @./ancillary-services-important-industry-notifications.md.
 
 - Publisher group: Ancillary services
 - Registry group: ancillary-services · archetype: FC
