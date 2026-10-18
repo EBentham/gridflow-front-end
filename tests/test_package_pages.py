@@ -245,6 +245,7 @@ def test_a_held_package_page_shows_no_rows_and_says_why(vault: Path, tmp_path: P
     ):
         assert absent not in two, absent
     assert '<p class="g-h" id="gh">Rows not shown</p>' in two
+    assert '<h2 class="h-fig" id="sv-h">The silver tables</h2>' in two
     assert re.search(
         r"<dt>neso_<wbr>data_<wbr>portal/<wbr>t_<wbr>a</dt><dd>Its date column\S{1,8}s day and month",
         two,

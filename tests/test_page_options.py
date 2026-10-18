@@ -198,3 +198,11 @@ def test_a_member_of_a_shown_family_may_say_why_its_rows_are_not_shown() -> None
     assert f'<p class="ds-variants__d">Rows not shown: {reason}</p>' in html
     # the page still shows the lead's rows and notebook
     assert 'class="pl"' in html and "Open the demo notebook" in html
+
+
+def test_a_url_segment_too_long_for_any_well_may_break_at_every_width() -> None:
+    name = "b4634e50af5e4d3bb7f610422776a819_dcrequirementshistorical1_d5c3b48a-a0a9-4d57.csv"
+    row = str(build.request_lines(f"GET https://api.neso.energy/dataset/x/download/{name}"))
+    # no nowrap and no nw-cut class, so theme.css never hides its break points
+    assert '<span class="nw-long">b4634e50af5e4d3bb7f610422776a819_<wbr>dcrequirements' in row
+    assert 'class="nw nw-cut">b4634' not in row
