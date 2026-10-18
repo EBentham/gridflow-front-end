@@ -136,7 +136,7 @@
           <ul class="ds-variants" aria-label="The variants">
             {%- for m in v.variants %}
             <li id="{{ m.slug }}">
-              <p class="ds-variants__h"><code>{{ m.key }}</code>{% if m.code %} <span>{{ m.code }}</span>{% endif %}</p>
+              <p class="ds-variants__h"><code>{{ m.key | breakable }}</code>{% if m.code %} <span>{{ m.code }}</span>{% endif %}</p>
               <p class="ds-variants__d">{{ m.differs | md_inline | safe }}</p>
               <pre class="ds-well">{{ m.request | safe }}</pre>
             </li>
