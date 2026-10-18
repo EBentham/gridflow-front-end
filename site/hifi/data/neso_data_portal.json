@@ -64,11 +64,24 @@
       "pages": [
         "historic_generation_mix",
         "embedded_wind_solar_forecast",
-        "daily_wind_availability"
+        "daily_wind_availability",
+        "demand-flexibility"
       ]
     }
   ],
-  "families": [],
+  "families": [
+    {
+      "slug": "demand-flexibility",
+      "title": "Demand Flexibility Service",
+      "note": "demand-flexibility",
+      "members": [
+        "demand_flexibility_utilisation_summary",
+        "demand_flexibility_utilisation_report",
+        "demand_flexibility_industry_notification",
+        "demand_flexibility_service_requirement"
+      ]
+    }
+  ],
   "names": {
     "historic_generation_mix": "Historic GB generation mix",
     "embedded_wind_solar_forecast": "Embedded wind and solar forecast",
