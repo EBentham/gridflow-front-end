@@ -191,7 +191,7 @@
     },
     {
       "slug": "dynamic-containment-4-day-forecast",
-      "title": "Dynamic Containment 4-day forecast",
+      "title": "Dynamic Containment 4 day forecast",
       "note": "dynamic-containment-4-day-forecast",
       "members": [
         "dc_forecast_4d",
