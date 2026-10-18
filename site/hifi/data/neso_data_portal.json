@@ -146,8 +146,8 @@
       "title": "Phase 2 FFR auction results",
       "note": "phase-2-ffr-auction-results-summary",
       "members": [
-        "ffr_phase2_auction_phase_resultsum",
         "ffr_phase2_auction_phase_resultsbyunit",
+        "ffr_phase2_auction_phase_resultsum",
         "ffr_phase2_auction_phase_blockorders",
         "ffr_phase2_auction_phase_block_order",
         "ffr_phase2_auction_phase_linearorders",
