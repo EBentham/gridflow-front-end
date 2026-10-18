@@ -7,6 +7,116 @@ skeleton: false
 updated: 2026-10-13
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: Aggregated balancing services adjustment data
+  summary: >-
+    NESO's net adjustments for balancing actions outside the Balancing Mechanism, per settlement
+    period: cost, volume and a buy and sell price adjuster.
+  facts:
+    vendor: "NESO Data Portal, package `aggregated-bsad`: one CSV file per financial year"
+    cadence: Updated twice daily, as NESO's package text states
+    grain: One row per settlement period and capture; the latest view keeps one
+    history: "NESO lists files from 2013-14, none for 2015-16; gridflow loads 2016-17 on, except 2020-21"
+  landscape: market
+  what_it_is: >-
+    BSAD is how NESO submits balancing actions taken outside the Balancing Mechanism to the BSC,
+    whose rules govern imbalance settlement (NESO). This package nets them per settlement period,
+    with no individual action. The six cost and volume terms are zero in every row shown; the buy
+    price adjuster `bpa` is the one charted.
+  how_used:
+    - NESO's buy price adjuster per settlement period, for imbalance price studies.
+    - Flagging settlement periods with a non-zero adjuster, as a feature beside imbalance prices.
+    - "Setting NESO's files beside Elexon's NETBSAD, whose eight terms carry similar names."
+  chart:
+    type: line
+    silver: neso_data_portal/aggregated_bsad
+    time: settlement_date
+    value: bpa
+    dedup: {"on": [settlement_date, settlement_period], order_by: available_at}
+    aggregation: max
+    window: {start: "2016-04-01", end: "2026-10-15"}
+    max_points: 4500
+    unit: £/MWh
+  chart_view:
+    title: Buy price adjuster, daily maximum, April 2016 to October 2026
+    caption: >-
+      Silver `neso_data_portal/aggregated_bsad`, `bpa` in £/MWh: each settlement day's largest
+      value, 1 April 2016 to 15 October 2026, newest capture per file. No data April 2020 to March
+      2021 (file fails to load); that stretch is the axis, not zero.
+    alt: >-
+      Line chart of the daily maximum buy price adjuster from neso_data_portal/aggregated_bsad, in
+      £/MWh, for settlement days 1 April 2016 to 15 October 2026. The line sits at zero on most
+      days, with spikes below 60 from 2016 to 2023 except three in early 2017, the highest 159.55
+      on 16 January 2017. No line April 2020 to March 2021, only the axis: that
+      file fails to load. After October 2023 only four days rise above
+      zero, the last 10.65 on 15 January 2026, and it stays at zero from April 2026.
+    x_label: settlement date; no file loaded for 2020-21
+    key:
+      - {series: bpa, label: Buy price adjuster, codes: BPA, paint: petrol, note: "No data April 2020 to March 2021: that flat stretch is the axis, not zero."}
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then each financial-year file whole. An upload
+      is skipped if `last_modified` is unchanged; a dump is kept only if its body changed.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=aggregated-bsad"
+      - "GET https://api.neso.energy/dataset/69c869a5-e6c6-4f48-852b-395a05882ef9/resource/15950c77-8f7d-4d12-8f29-25eaab6a5155/download/bs_netbsd_01-04-2016_31-03-2017.csv"
+      - "GET https://api.neso.energy/datastore/dump/44d1e962-1791-4f33-957b-9f090ffc4359"
+    commands:
+      - {run: gridflow ingest neso_data_portal aggregated_bsad --last 24h, comment: "whole files; window must end recently"}
+      - {run: gridflow transform neso_data_portal aggregated_bsad --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: settlement_date, op: eq, value: "2026-01-15"}
+        - {column: settlement_period, op: ge, value: 33}
+        - {column: settlement_period, op: le, value: 40}
+      order_by: [settlement_period]
+      columns: [settlement_date, settlement_period, bpa, spa, ebca, ebva, sbva, esca, esva, ssva, resource_id, timestamp_utc]
+    key: [resource_id, settlement_date, settlement_period]
+    caption: "Settlement date 2026-01-15, periods 33 to 40: `bpa` steps from 10.65 to 9.15, then zero."
+    fields:
+      settlement_date: GB settlement date, as NESO labels it, on the UK local clock (NESO)
+      settlement_period: Half-hour of the settlement day, 1 to 48; 46 or 50 on clock-change days
+      bpa: "Buy price adjuster, £/MWh (NESO); NESO does not state its sign convention"
+      spa: "Sell price adjuster, £/MWh (NESO); NESO does not state its sign convention"
+      ebca: "Energy buy cost adjustment, £ (NESO)"
+      ebva: Energy buy volume adjustment, MWh (NESO)
+      sbva: System buy volume adjustment, MWh (NESO)
+      esca: "Energy sell cost adjustment, £ (NESO)"
+      esva: Energy sell volume adjustment, MWh (NESO)
+      ssva: System sell volume adjustment, MWh (NESO)
+      resource_id: CKAN id of the financial-year file the row came from
+      timestamp_utc: Start of the settlement period, UTC, computed from date and period
+      published_at: "Null: gridflow takes no vendor publication time for this table"
+      bronze_capture_id: Path of the bronze capture the row was read from
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      Returns a pandas DataFrame from the DuckDB view
+      `silver_neso_data_portal_aggregated_bsad_latest`, every row of each file's newest capture,
+      filtered on `settlement_date` with both ends included; lineage columns dropped.
+    cells:
+      - |
+        df = data.neso_data_portal.query("aggregated_bsad", "2016-04-01", "2026-10-15")
+        df = df.sort_values("timestamp_utc")
+      - df.loc[df.bpa != 0, ["settlement_date", "settlement_period", "bpa", "spa", "ebca", "ebva"]].tail()
+      - |
+        s = df.settlement_date.astype("datetime64[ns]")
+        fy = (s.dt.year - (s.dt.month < 4)).rename("year_from_april")
+        df.groupby(fy).bpa.agg(periods_set=lambda b: (b != 0).sum(), highest="max").reset_index()
+      - |
+        (df.bpa != 0).groupby(df.settlement_period).sum().plot.bar(
+            ylabel="periods with bpa set", color="#155A6E", figsize=(8, 3.5));
+    needs: "a capture of NESO's yearly files from 2016-17"
+    plot_alt: >-
+      Bar plot of how many settlement periods had a non-zero `bpa`, for each settlement period 1 to
+      50, 1 April 2016 to 15 October 2026. None before period 14; 3 to 55 across periods 14 to 30;
+      an evening block from 125 at period 31, peaking at 309 at period 36 and falling to 5 at period
+      46; none after.
+  related:
+    - {dataset: elexon/system_prices, note: "Imbalance prices, settled under the BSC that BSAD is submitted to"}
+    - {dataset: elexon/netbsad, note: "Elexon's per-period adjustment terms, with names like these eight"}
+    - {dataset: elexon/disbsad, note: "Elexon's per-action adjustment data; these files carry no action"}
 ---
 
 # Aggregated Balancing Services Adjustment Data (BSAD)
@@ -96,6 +206,12 @@ blank rows removed by the reader (5 each in the 2016-17 to 2019-20 uploads), so 
 The 2020-21 resource's own description says "financial year 2019-20" (a vendor labelling error; the file name is
 `data.csv`).
 
+**Later capture (2026-10-16).** Silver now also holds a second capture of the 2026-27 dump (`available_at`
+2026-10-16 18:38 UTC, 9,600 rows, settlement dates 2026-04-01 to 2026-10-17). The 9,168 periods it shares with the
+2026-10-08 capture are identical in every value column; it adds 432 periods, all zero. The latest view keeps the
+newer capture, so it holds 167,376 rows (176,544 across both captures). Checked 2026-10-18 with Polars over
+`silver/neso_data_portal/aggregated_bsad/**/*.parquet` (full join of the two captures on settlement date and period).
+
 ## Families
 
 ### `aggregated_bsad`
@@ -168,7 +284,8 @@ row).
   CKAN `last_modified` vintage on a family that holds a datastore resource (check V-8), so it uses
   `capture_fallback`. The CKAN `last_modified` is therefore **not** used here: it is 2019-2021 for the upload
   resources, 2022-2023 for two dumps and null for the 2023-24 to 2026-27 dumps. Every loaded row carries a
-  `available_at` of 2026-10-08 (08:13 to 08:16 UTC), a capture time and not a publication time. A point-in-time
+  `available_at` of 2026-10-08 (08:13 to 08:16 UTC), or 2026-10-16 18:38 UTC for the later 2026-27 capture, a
+  capture time and not a publication time. A point-in-time
   query (`WHERE available_at <= :as_of`) therefore sees **no** history before 2026-10-08. `published_at` is null.
   `TODO: verify` the original submission or publication instant of each period; none is published.
 - **Event time: `event_time` = start of the settlement period**, computed by the established `sp_pair` recipe from
@@ -177,14 +294,15 @@ row).
   reading of the date alone would be an hour wrong in summer. The vendor dictionary says the date is "given in
   (Coordinated Universal Time) UTC or UTC+1 during British Summer Time" and that period 1 runs 00:00-00:30; the date
   is a settlement-day label, not an issue instant. The silver data covers `event_time` 2016-03-31T23:00Z to
-  2026-10-08T22:30Z. Period lengths vary on clock-change days: **9 long days with 50 periods** (2016-10-30,
+  2026-10-17T22:30Z (2026-10-08T22:30Z before the 2026-10-16 capture). Period lengths vary on clock-change days: **9 long days with 50 periods** (2016-10-30,
   2017-10-29, 2018-10-28, 2019-10-27, 2021-10-31, 2022-10-30, 2023-10-29, 2024-10-27, 2025-10-26) and **9 short
   days with 46 periods** (2017-03-26, 2018-03-25, 2019-03-31, 2020-03-29, 2022-03-27, 2023-03-26, 2024-03-31,
   2025-03-30, 2026-03-29) are present and valid; nothing is dropped. Background:
   @../../../20-domain/concepts/settlement-period.md.
 - **Rows ahead of their capture.** 29 loaded rows (2026-10-08 periods 20 to 48) have an `event_time` after their
   `available_at`: they are periods that had not yet started when the 2026-27 file was captured at 08:15 UTC. All 29
-  have a zero `bpa`. The vintage never claims earlier availability than the capture, so these are safe for a
+  have a zero `bpa`. The 2026-10-16 capture (18:38 UTC) has 56 such rows, 2026-10-16 periods 41 to 48 and all of
+  2026-10-17, also all zero. The vintage never claims earlier availability than the capture, so these are safe for a
   point-in-time query, and no forward-only exemption is needed (seat ruling 5). `TODO: verify` what the vendor
   publishes for a not-yet-started period (a forward submission or a placeholder zero).
 
@@ -249,8 +367,9 @@ confirmed all three failures at the expected cause (RULINGS 760), and reconcilia
   - Status: Live
 
 The vendor's package text says the dataset "gets updated twice daily"; the registry assumes daily. gridflow has **one
-capture per resource** (all 2026-10-08), so the true refresh rhythm, whether a refresh appends to or replaces a file,
-whether past financial years are ever amended, and what an amendment looks like are unmeasured. `TODO: verify` by
+capture per resource** of 2026-10-08, plus a second capture of the 2026-27 dump on 2026-10-16 that appended 432
+periods and changed none of the 9,168 already captured (Later capture, above). The true refresh rhythm, whether past
+financial years are ever amended, and what an amendment looks like are otherwise unmeasured. `TODO: verify` by
 comparing later captures with the hash-pinned bodies (K-AS-4-FACTS section 2.1). The older financial years carry
 CKAN `last_modified` dates of 2019 to 2023 (null for the last four dumps), so the vendor has not touched the upload
 files since then, but that is a vendor stamp, not a gridflow measurement.
@@ -302,7 +421,7 @@ silently skipped), not a hold on the family.
   will divide by a zero variance. Only `bpa` varies (maximum 159.55 £/MWh in the loaded data, 3,181 non-zero rows,
   falling from 755 in 2016 to a few dozen or fewer a year since 2024: 25 in 2024, 8 in 2025, 19 in 2026 to date). Whether the zeros mean "no adjustment" or "no longer
   reported" is not stated (`TODO: verify`).
-- **Same `available_at` for all history.** Every row carries the 2026-10-08 capture time, so a backtest cannot use this
+- **Same `available_at` for all history.** Every row carries a capture time of 2026-10-08 (2026-10-16 for the newer 2026-27 capture), so a backtest cannot use this
   table to say when a past adjustment became known.
 - **Date format differs by file kind.** `dd/mm/yyyy` in the uploads, ISO in the dumps; handled per epoch. The 50-period
   autumn days are real, not duplicates.
