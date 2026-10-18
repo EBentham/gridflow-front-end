@@ -4,9 +4,146 @@ package: "ancillary-services-important-industry-notifications"
 dataset_keys: ["as_industry_notifications_balancing", "as_industry_notifications_dc_dm_dr", "as_industry_notifications_quick_reserve", "as_industry_notifications_sffr_important", "as_industry_notifications_slow_reserve", "as_industry_notifications_stor_important"]
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-13
+updated: 2026-10-18
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: Ancillary services industry notifications
+  summary: >-
+    NESO's notices on changes to ancillary-service procurement: raised requirements, delayed or
+    failed auctions, outages and archived files, one file per service group.
+  facts:
+    vendor: "NESO Data Portal, package `ancillary-services-important-industry-notifications`: six uploaded CSV files"
+    cadence: Ad hoc, as NESO's catalogue states; gridflow downloads each file whole
+    grain: "One row per notice: issue time, effective times and free text"
+    history: Notices issued from March 2024 in NESO's STOR and DC/DM/DR files
+  landscape: market
+  what_it_is: >-
+    NESO posts a notice when ancillary-service procurement changes: a raised requirement, a delayed
+    or failed auction, a platform outage, an archived file. Each row gives when NESO issued it, when
+    it starts and may stop, and free text. Each service or group has a file, and one notice is
+    often posted to several, sometimes reworded. NESO gives no notice id.
+  how_used:
+    - "Flags for auction days NESO called unusual: raised requirements, delays, failed auctions."
+    - Dates when an enduring change took effect, for requirement and auction series.
+    - "Point-in-time work: treat a notice as known from `published_at`, the file's vintage."
+  chart:
+    type: bar
+    silver: neso_data_portal/as_industry_notifications_dc_dm_dr
+    filter:
+      - {column: published_at, op: eq, value: "2026-08-19T15:12:17.130148"}
+    group: service
+    group_map: {"DC, DM, DR": all_three, DM: dm, DC: dc, "DM, DR": dm_dr, "DC, DM": dc_dm}
+    aggregation: count
+    sort: value_desc
+    unit: notices
+  chart_view:
+    title: DC, DM and DR notices by service label
+    caption: >-
+      Silver `as_industry_notifications_dc_dm_dr`, one member of this family: every notice in
+      NESO's file last modified 19 August 2026, counted by its `service` value. A combined label is
+      one value as NESO writes it, not split into services.
+    alt: >-
+      Horizontal bar chart counting notices by service label in
+      neso_data_portal/as_industry_notifications_dc_dm_dr, NESO's file last modified 19 August 2026.
+      The combined label DC, DM, DR has 12 notices, DM alone 11, DC alone 3, and DC, DM and DM, DR
+      one each.
+    key:
+      - {series: all_three, label: "DC, DM and DR", codes: "DC, DM, DR", paint: hatch-lines, note: "Mostly auction-result delays, new columns, EAC outages and archiving."}
+      - {series: dm, label: DM alone, codes: DM, paint: petrol, note: "Dynamic Moderation: here each one raises the DM requirement, for one auction or onwards."}
+      - {series: dc, label: DC alone, codes: DC, paint: petrol, note: "Dynamic Containment: two Data Portal maintenance notices and one raised DC requirement."}
+      - {series: dc_dm, label: DC and DM, codes: "DC, DM", paint: hatch-lines, note: "An extra 100 MW of DC and DM in the 29 May 2026 auction."}
+      - {series: dm_dr, label: DM and DR, codes: "DM, DR", paint: hatch-lines, note: "DM raised to 300 MW and DR to 480 MW, from 3 February 2025 delivery."}
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: `package_show`, then each file downloaded whole unless its
+      `last_modified` is unchanged. Dates select nothing. Swap in any member's key.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=ancillary-services-important-industry-notifications"
+    commands:
+      - {run: gridflow ingest neso_data_portal as_industry_notifications_balancing --last 24h, comment: "whole file; window must end recently"}
+      - {run: gridflow transform neso_data_portal as_industry_notifications_balancing --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      silver: neso_data_portal/as_industry_notifications_balancing
+      filter:
+        - {column: published_at, op: eq, value: "2026-09-04T10:50:39.380805"}
+        - {column: timestamp_utc, op: ge, value: "2026-03-26T00:00:00Z"}
+      order_by: [notification_issued_date_time]
+      columns: [notification_issued_date_time, effective_from_date_time, effective_to_date_time, service, notes,
+                description, published_at, timestamp_utc]
+    key: [notification_issued_date_time]
+    caption: "The eight newest notices in NESO's Balancing Reserve file, last modified 4 September 2026."
+    fields:
+      notification_issued_date_time: "When NESO issued the notice, UK local time in the file, as UTC"
+      effective_from_date_time: "When the notice takes effect (NESO), UK local time converted to UTC"
+      effective_to_date_time: "When NESO expects it to stop applying, as UTC; blank cells kept null"
+      service: "The service it concerns, as NESO writes it; `BR` in these rows"
+      notes: "NESO's free-text note; three 2025 notes in this file sit one row off"
+      description: The notice itself, NESO's free text, kept exactly as written
+      published_at: "NESO's last-modified time for the whole file, as UTC; can precede an issue time"
+      timestamp_utc: "The issue time again, in UTC: the column `query()` filters on"
+      bronze_capture_id: Path of the bronze capture the row was read from
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      `query()` reads each table's `_latest` view, filtering `timestamp_utc`, the issue time, by UTC
+      day, both ends included; times come back in the machine's zone, UK here. The next cell finds
+      issue times several files share.
+    cells:
+      - |
+        import pandas as pd
+        files = ["balancing", "dc_dm_dr", "quick_reserve", "slow_reserve", "stor_important"]
+        frames = []
+        for f in files:
+            t = data.neso_data_portal.query("as_industry_notifications_" + f, "2024-01-01", "2026-09-30")
+            frames.append(t.assign(file=f))
+        df = pd.concat(frames, ignore_index=True)
+        df.groupby("file").tail(1)[["file", "notification_issued_date_time", "effective_from_date_time", "notes"]]
+      - |
+        shared = df.groupby("notification_issued_date_time", as_index=False).agg(
+            files=("file", "nunique"), texts=("description", "nunique"), which=("file", ", ".join))
+        shared[shared.files > 1].tail(6)
+      - |
+        import matplotlib.pyplot as plt, matplotlib.dates as mdates
+        fig, ax = plt.subplots(figsize=(8, 3))
+        ax.scatter(df.notification_issued_date_time, df.file, marker="|", s=300, color="#155A6E")
+        ax.xaxis.set_major_locator(mdates.MonthLocator((1, 7)))
+        ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %Y"))
+        ax.set_xlabel("notice issued");
+    needs: one capture of each file except SFFR's
+    plot_alt: >-
+      Strip plot of issue times, one tick per notice, for the five files from March 2024 to
+      September 2026. STOR's ticks end in April 2025 and Slow Reserve's begin in March 2026. Ticks
+      line up across files where one notice was posted to several, most often DC/DM/DR with Quick
+      Reserve.
+  related:
+    - {dataset: neso_data_portal/eac-auction-results, note: "The daily EAC auctions most of these notices are about"}
+    - {dataset: neso_data_portal/dynamic-moderation-requirements, note: The DM requirement that many DC/DM/DR notices raise}
+    - {dataset: neso_data_portal/balancing-reserve-auction-requirement-forecast, note: "The PBR and NBR requirement some Balancing Reserve notices change"}
+    - {dataset: neso_data_portal/short-term-operating-reserve-stor-day-ahead-auction-results, note: The STOR auctions whose delays and failures the STOR file reports}
+  family:
+    slug: ancillary-services-important-industry-notifications
+    members:
+      - dataset: as_industry_notifications_balancing
+        differs: "Balancing Reserve: requirement changes, EAC outages, negative-reserve valuation days; `service` `BR`"
+        request: "GET https://api.neso.energy/dataset/fc8dadc7-235d-44b0-bab2-320dc76095de/resource/13f8f6b1-690b-4695-993e-dbc26f9bbe54/download/balancing-reserve-important-industry-notifications.csv"
+      - dataset: as_industry_notifications_dc_dm_dr
+        differs: "Dynamic Containment, Moderation and Regulation; one `service` value can name several"
+        request: "GET https://api.neso.energy/dataset/fc8dadc7-235d-44b0-bab2-320dc76095de/resource/5d6c5cf8-7f18-43d9-ab8c-ba3f88352f30/download/dc-dm-dr-important-industry-notifications.csv"
+      - dataset: as_industry_notifications_quick_reserve
+        differs: "Quick Reserve; no `service` column; often issued with the DC/DM/DR notices"
+        request: "GET https://api.neso.energy/dataset/fc8dadc7-235d-44b0-bab2-320dc76095de/resource/a72085a8-e167-406d-8504-ed72d7e142af/download/qr-important-industry-notifications.csv"
+      - dataset: as_industry_notifications_slow_reserve
+        differs: "Slow Reserve; no `service` column; NESO's file starts 26 March 2026"
+        request: "GET https://api.neso.energy/dataset/fc8dadc7-235d-44b0-bab2-320dc76095de/resource/11a90fe4-27c1-46b5-9619-016f2752413d/download/sr-important-industry-notifications.csv"
+      - dataset: as_industry_notifications_stor_important
+        differs: "Mostly STOR auction delays and failures; can take effect before its issue time"
+        request: "GET https://api.neso.energy/dataset/fc8dadc7-235d-44b0-bab2-320dc76095de/resource/1dbebd85-6b42-4d8f-8542-16a83d17dc14/download/stor-important-industry-notifications.csv"
+      - dataset: as_industry_notifications_sffr_important
+        differs: Static FFR notices, same columns as Balancing Reserve
+        request: "GET https://api.neso.energy/dataset/fc8dadc7-235d-44b0-bab2-320dc76095de/resource/9b51636d-fca5-4d00-946b-4e19770f1904/download/sffr-important-industry-notifications.csv"
+        held: 'One row: blank description, note "Example note", dates that could be day or month first.'
 ---
 
 # Ancillary Services Important Industry Notifications
@@ -467,6 +604,16 @@ The `year`/`month` partition is the **capture** month: even the 2024 issue label
 - **`Service` can be a list-like string.** DC/DM/DR carries values such as `DC, DM, DR`. Filter
   with equality on the exact string or parse it yourself.
 - **Two shapes.** Quick Reserve and Slow Reserve have no `service`. Their service is the family.
+- **One notice, several files.** The five eligible files hold 67 rows but 43 distinct issue labels
+  (2026-10-08 captures): 17 labels occur in two to four files, usually with identical text, but
+  two (2024-03-28 14:00Z, 2026-03-26 14:45Z) and the eclipse notice (2026-08-07 14:35Z) are
+  reworded per service. Do not count a union of the files as distinct notices.
+- **Balancing Reserve notes sit one row off.** In the Balancing Reserve body the 2025-11-25 notice
+  (EAC production outage) carries the note "This is an enduring change for the EAC sandbox
+  environment...", the 2025-11-30 forecast-upload notice carries "...for the EAC PRODUCTION
+  environment", and the 2025-10-08 sandbox notice has none. The DC/DM/DR and Quick Reserve files
+  put those notes on the sandbox and production notices. Checked against the raw CSV, so it is
+  the vendor's content, kept byte-equal; trust Notes in this file only with care.
 - **Notices describe other datasets.** A notice such as the Slow Reserve archiving notice concerns
   the EAC auction datasets, which live in other NESO packages. The text is not machine-readable:
   there is no structured link from a notice to the dataset it concerns.
