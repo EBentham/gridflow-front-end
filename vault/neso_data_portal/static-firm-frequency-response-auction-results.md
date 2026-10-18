@@ -7,6 +7,137 @@ skeleton: false
 updated: 2026-10-13
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: Static FFR day-ahead auction results
+  summary: >-
+    NESO's daily Static Firm Frequency Response auction: every unit's offer for each EFA block,
+    accepted or rejected, with the block's clearing price.
+  facts:
+    vendor: "NESO Data Portal, package `static-firm-frequency-response-auction-results`: two uploaded CSV files"
+    cadence: Daily (NESO's catalogue); gridflow downloads each file whole
+    grain: "Results: one row per unit, EFA date and EFA block"
+    history: Delivery dates from 1 April 2023 in NESO's results file
+  landscape: market
+  what_it_is: >-
+    NESO buys Static Firm Frequency Response in a daily auction for the six EFA blocks of each
+    delivery day; block 1 starts at 23:00 the evening before. Each row is one unit's offer for one
+    block: MW and price offered, accepted or rejected, MW accepted, and the block's clearing price,
+    which NESO says all accepted units are paid.
+  how_used:
+    - Clearing price per EFA block, as revenue history for Static FFR providers.
+    - "Offer stacks per block: who offered how many MW, at what price, who won."
+    - "Place rows in time by `date` and `efa`: `timestamp_utc` is the date's UK midnight."
+  chart:
+    type: line
+    silver: neso_data_portal/sffr_auction_results_main
+    time: date
+    value: clearing_price
+    filter:
+      - {column: efa, op: in, value: [1, 5]}
+    dedup: {on: [date, efa], order_by: capture_written_at}
+    group: efa
+    group_map: {"5": efa5, "1": efa1}
+    series_order: [efa5, efa1]
+    aggregation: mean
+    window: {start: "2023-04-01", end: "2026-10-17"}
+    unit: "£/MWh"
+  chart_view:
+    title: Static FFR clearing price in EFA blocks 1 and 5
+    caption: >-
+      Silver `sffr_auction_results_main`, £/MWh as NESO labels it: the clearing price of blocks 1 and
+      5 on each EFA date, one price per block in NESO's results, 1 April 2023 to 17 October 2026.
+    alt: >-
+      Line chart from neso_data_portal/sffr_auction_results_main: Static FFR clearing price, £/MWh,
+      for EFA blocks 1 and 5 on 1,296 EFA dates, 1 April 2023 to 17 October 2026. Block 5: median
+      6.50, 10 or more on 224 dates, highest 16.57 on 30 December 2023. Block 1: median 1.55, under 1
+      on 445 dates, highest 5.86 on 24 October 2023, lowest 0.40 on eleven dates in November and
+      December 2024. Block 5 is above block 1 on 1,291 dates; both are 0.60 on 28 April 2026, block
+      5's lowest.
+    x_label: EFA date of delivery, as NESO labels it
+    key:
+      - {series: efa5, label: Block 5, paint: clay, note: "NESO labels it 15:00 to 19:00 on the EFA date."}
+      - {series: efa1, label: Block 1, paint: petrol, note: "NESO labels it 23:00 the evening before to 03:00; 1.50 from 19 April to 16 June 2025."}
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: `package_show`, then each file downloaded whole unless its
+      `last_modified` is unchanged. Dates select nothing. Swap in either table's key.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=static-firm-frequency-response-auction-results"
+    commands:
+      - {run: gridflow ingest neso_data_portal sffr_auction_results_main --last 24h, comment: "whole file; window must end recently"}
+      - {run: gridflow transform neso_data_portal sffr_auction_results_main --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: date, op: eq, value: "2026-10-08"}
+        - {column: efa, op: eq, value: 2}
+        - {column: unit, op: in, value: [PGFFR-5, PGFFR-9, PGHAT-1, ENDSR-2, LEV-FRU05, CITY01, PGFFR-8, PGCOV-1]}
+        - {column: capture_written_at, op: ge, value: "2026-10-16T00:00:00Z"}
+      order_by: [price, rank]
+      columns: [date, efa, unit, status, price, clearing_price, volume, accepted_volume, rank, provider,
+                technology_type, delivery_start, delivery_end, service, location]
+    key: [date, unit, efa]
+    caption: "Block 2, 8 October 2026: its five dearest accepted offers and three cheapest rejected."
+    fields:
+      date: "EFA date of delivery (NESO); block 1 starts 23:00 the evening before"
+      efa: "EFA block of the date, `1` to `6` (NESO: six in 24 hours)"
+      unit: "The unit offered, as NESO names it: the unit that delivers if awarded"
+      status: "`Accepted` or `Rejected`, as NESO's auction algorithm cleared the offer"
+      price: "Price offered, £/MWh (NESO's unit)"
+      clearing_price: "The block's clearing price, £/MWh: NESO says all accepted units are paid it"
+      volume: MW offered by the unit for the block (NESO's unit)
+      accepted_volume: "MW accepted (NESO's unit); a rejected offer here shows `0.0`, not null"
+      rank: "Random rank NESO gives each offer before the auction, for clustered offers"
+      provider: The provider offering the unit, as NESO writes it
+      technology_type: "Technology as NESO writes it; null where NESO leaves it blank"
+      delivery_start: "Block start as NESO writes it, kept as text; NESO states no clock"
+      delivery_end: Block end as NESO writes it, kept as text
+      service: "Service name; `SFFR` in these rows"
+      location: "A postcode, `AGG` or `Agg` (undefined by NESO), an outward code, or null"
+      timestamp_utc: "UK midnight starting the EFA date's calendar day, as UTC; not the block start"
+      published_at: "NESO's last-modified time for the whole file, read as UTC"
+      bronze_capture_id: Path of the bronze capture the row was read from
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      `query()` reads the `_latest` view, the newest capture, filtering `date` with both ends
+      included. The next cell totals each block's offers and accepted MW and keeps its one clearing
+      price.
+    cells:
+      - |
+        df = data.neso_data_portal.query("sffr_auction_results_main", "2026-10-01", "2026-10-07")
+        df = df.sort_values(["date", "efa", "price", "rank"])
+        df[["date", "efa", "unit", "status", "volume", "price", "clearing_price"]].head()
+      - |
+        blocks = (df.groupby(["date", "efa"], as_index=False)
+                    .agg(offers=("unit", "size"), offered_mw=("volume", "sum"),
+                         accepted_mw=("accepted_volume", "sum"), prices=("clearing_price", "nunique"),
+                         clearing_price=("clearing_price", "first")))
+        blocks[blocks.date == "2026-10-07"]
+      - |
+        blocks.clearing_price.plot(drawstyle="steps-post", color="#155A6E", figsize=(8, 3.5),
+                xlabel="EFA blocks, 1 to 7 October 2026, six per EFA date",
+                ylabel="clearing price, £/MWh");
+    needs: a capture of the results file
+    plot_alt: >-
+      Step plot of the Static FFR clearing price per EFA block, £/MWh, for the 42 blocks of EFA dates
+      1 to 7 October 2026. Each day repeats one shape: blocks 1, 2 and 4 from 1.52 to 2.37, block 3
+      at 6.28 or 6.29, block 5 from 6.60 to 7.34 and block 6 at 9.27, or 9.41 on 3 October.
+  related:
+    - {dataset: neso_data_portal/static-firm-frequency-response-requirement, note: "NESO's forecast MW requirement for the same EFA blocks"}
+    - {dataset: neso_data_portal/eac-auction-results, note: "NESO's daily auctions for dynamic response and reserve, by unit"}
+    - {dataset: neso_data_portal/firm-frequency-response-post-tender-reports, note: "Offers and decisions in NESO's monthly Firm Frequency Response tenders"}
+    - {dataset: neso_data_portal/phase-2-ffr-auction-results-summary, note: "Orders and results of NESO's Phase 2 FFR auction trial"}
+  family:
+    slug: static-firm-frequency-response-auction-results
+    members:
+      - dataset: sffr_auction_results_main
+        differs: "Every offer per unit and EFA block: MW and price, accepted or rejected"
+        request: "GET https://api.neso.energy/dataset/75457796-f9de-49c2-8e64-81f97131c56a/resource/76bc5d39-c39f-490b-984e-58eb8ff296ef/download/static-firm-frequency-response-auction-results_76bc5d39-c39f-490b-984e-58eb8ff296ef_patch.csv"
+      - dataset: sffr_auction_results_buy_orders
+        differs: "NESO's buy curve per EFA date and block: ten bands, 25 to 250 MW"
+        request: "GET https://api.neso.energy/dataset/75457796-f9de-49c2-8e64-81f97131c56a/resource/f9f4b295-6de6-4379-9211-b0b2117a0c48/download/static-firm-frequency-response-buy-order_f9f4b295-6de6-4379-9211-b0b2117a0c48_patch.csv"
+        held: "NESO's dictionary calls the band cells prices, with no money unit: MW on nine, one blank."
 ---
 
 # Static Firm Frequency Response auction results
@@ -144,7 +275,8 @@ becomes `c_25`, and so on.
 - **`EFA`**: the Electricity Forward Agreement block number. A dimensionless block identifier, not a
   physical quantity. Observed values: `1` to `6`.
 - **Band columns `25` ... `250`**: the dictionary titles each "Volume band in MWs procured on buy
-  curve" and describes the cell as "the price relevant for up to this volume limit". So the **header**
+  curve" and describes the cell as "the price relevant for up to this volume limit" (in the
+  description field on seven bands, in the comment field on `175`, `200` and `225`). So the **header**
   is a volume threshold and the **cell** is described as a price. The dictionary lists the unit of nine
   of these columns as `MW`, which is the unit of the *threshold*, not of a price; the entry for `200`
   has an empty unit. **No monetary unit is stated for any band cell** (see Holds). Nothing is
@@ -163,7 +295,8 @@ established unit** (`TODO: verify`, held). The band thresholds in the headers ar
    [Static FFR auction Q&A](https://www.neso.energy/document/277286/download)). Every historical
    row from 2023 onward therefore carries the same 2026 `available_at`; an as-of query before
    2026-10-08T10:16:20Z sees **no** rows. `TODO: verify` the vendor's original publication instants
-   and whether past curves are amended in place at the daily refresh: one capture exists.
+   and whether past curves are amended in place at the daily refresh: a second capture (2026-10-16,
+   7,770 rows to EFA date 2026-10-17) repeats all 7,722 earlier rows unchanged; one comparison only.
 2. **Event time (temporal recipe `date_sp1` on `efa_date`).** `timestamp_utc` and `event_time` are
    equal on every row and are the **UK local midnight at the start of the delivery date, expressed in
    UTC** (a calendar-date storage anchor). For a summer date that is 23:00 UTC the previous evening;
@@ -187,7 +320,7 @@ values and no band statistics, because the family is held.
 
 **Row counts and shape (silver, 2026-10-13).** 7,722 rows, 7,722 distinct on the entity key, 0
 validation failures, 0 blank rows excluded; the planned and activated counts agree (RULINGS 731).
-Silver layout: one Parquet file under
+Silver layout: one Parquet file per capture (2026-10-08 and 2026-10-16) under
 `C:/gridflow-data/silver/neso_data_portal/sffr_auction_results_buy_orders/year=2026/month=10/`; the
 partition is the **capture** date. Columns (20): the twelve vendor columns, then `timestamp_utc`,
 `published_at`, `bronze_capture_id`, `capture_written_at`, `event_time`, `available_at`,
@@ -255,7 +388,8 @@ Schema, epoch 1:
   Price for given EFA"), £/MWh.
 - **`Technology Type`**: free text (dictionary example `Battery`). Blank on 275 rows.
 - **`Location`**: the dictionary says the postcode of where the unit is located; kept as served.
-  Blank on 275 rows.
+  Blank on 275 rows. Not always a postcode: the 2026-10-16 capture has `AGG` on 123,664 rows, `Agg`
+  on 3,423 and the outward code `BN44` on 251; the dictionary does not define `AGG`.
 - **`Rank`**: the dictionary says every bid gets a random rank before the auction runs, to order
   clustered bids. A dimensionless ordinal, not a volume or a price. Observed values: 1 to 42.
 
@@ -277,7 +411,9 @@ length to get MWh without a vendor statement.
    backtest cannot rely on this table to say when a historical result became known. These are event
    records, so the forward-target rule for forecasts (RULINGS 529) does not apply to them. `TODO:
    verify` the vendor's original publication moment per result and whether past rows are amended in
-   place at the daily refresh: one capture exists.
+   place at the daily refresh: a second capture (2026-10-16, `last_modified`
+   2026-10-16T10:46:09.594804, 231,369 rows to date 2026-10-17) repeats all 229,631 earlier rows with
+   every vendor column unchanged; one comparison only.
 2. **Event time (temporal recipe `date_sp1` on `date`).** `timestamp_utc` and `event_time` are equal
    on every row and are the **UK local midnight at the start of the delivery date, expressed in
    UTC**: for a summer date it is 23:00 UTC the previous evening (delivery date 2026-07-01 gives
@@ -335,7 +471,7 @@ ranges):
 | `Price` | 0.01 to 100 £/MWh |
 | `Clearing Price` | 0.4 to 16.57 £/MWh |
 
-Silver layout: one Parquet file under
+Silver layout: one Parquet file per capture (2026-10-08 and 2026-10-16) under
 `C:/gridflow-data/silver/neso_data_portal/sffr_auction_results_main/year=2026/month=10/`; the
 partition is the **capture** date. Columns (23): the fifteen vendor columns, then `timestamp_utc`,
 `published_at`, `bronze_capture_id`, `capture_written_at`, `event_time`, `available_at`,
@@ -351,8 +487,9 @@ family.
 
 The vendor says the package is updated daily. The two captures taken on 2026-10-08 are newer than
 the 2026-10-06 catalogue snapshot, which agrees with a refresh at least every couple of days, but
-one capture per resource exists to date, so the real rhythm, and whether a refresh replaces the whole
-file or appends to it (the file names end `_patch.csv`), are unmeasured. `TODO: verify` by comparing
+two captures per resource exist (2026-10-08 and 2026-10-16), so the real rhythm is unmeasured. Each
+2026-10-16 file is again the whole history from delivery date 2023-04-01 (the file names end
+`_patch.csv`), with every earlier row unchanged. `TODO: verify` by comparing
 later complete captures with the hash-pinned bodies above.
 
 ## Licence and attribution
@@ -396,6 +533,11 @@ gridflow output**, and the family must not feed a model or a gold view until the
   and the explicit `efa` are the only placement; `TODO: verify` how the labels and the 14,400-second
   naive durations behave on the autumn and spring change dates.
 - **Zero accepted volume is a result.** See Sentinels. Do not treat it as missing.
+- **One clearing price per block, not always an accepted offer's price.** In the 2026-10-16 capture
+  each of the 7,776 date-EFA blocks carries one `Clearing Price` and at least one `Accepted` row; in
+  122 blocks the price is above every accepted offer, and 963 `Rejected` offers equal it. `Rank` does
+  not order those ties consistently. NESO states only "Price paid for all accepted unit for all
+  awarded contracts"; `TODO: verify` how the price is set.
 - **No order id.** The grain is unit x date x block. A second bid from the same unit in the same
   block would break the key; none occurs in this capture.
 - **Dictionary versus body.** The dictionary examples show day-first slash dates and ISO-8601 unit

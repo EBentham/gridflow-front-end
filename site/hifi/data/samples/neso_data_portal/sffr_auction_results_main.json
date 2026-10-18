@@ -1,0 +1,326 @@
+{
+ "dataset": "neso_data_portal/sffr_auction_results_main",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "b626112932a644e19601522965288d8f2f5567427e484df9d686fbbef9b517d0",
+ "silver": "neso_data_portal/sffr_auction_results_main",
+ "columns": [
+  {
+   "name": "date",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "efa",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "unit",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "status",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "price",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "clearing_price",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "volume",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "accepted_volume",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "rank",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "provider",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "technology_type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "delivery_start",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "delivery_end",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "service",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "location",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2026-10-08",
+   "2",
+   "PGFFR-5",
+   "Accepted",
+   "1.67",
+   "2.0",
+   "18.0",
+   "18.0",
+   "27",
+   "Peak Gen Power 6 Limited",
+   "Diesel",
+   "2026-10-08 03:00:00",
+   "2026-10-08 07:00:00",
+   "SFFR",
+   "CF64 5RP",
+   "2026-10-07 23:00:00 UTC",
+   "2026-10-16 10:46:09.594804 UTC",
+   "bronze/neso_data_portal/sffr_auction_results_main/2026/10/16/raw_20261016T204319Z_76bc5d39-c39f-490b-984e-58eb8ff296ef_eaed7e5e.csv",
+   "2026-10-16 20:43:19.842067 UTC",
+   "2026-10-07 23:00:00 UTC",
+   "2026-10-16 10:46:09.594804 UTC",
+   "drain-3d05d505-4f33-4f32-ad25-df7416c927a9",
+   "1+e1"
+  ],
+  [
+   "2026-10-08",
+   "2",
+   "PGFFR-9",
+   "Accepted",
+   "1.89",
+   "2.0",
+   "20.0",
+   "20.0",
+   "38",
+   "Peak Gen Power 18 Limited",
+   "Diesel",
+   "2026-10-08 03:00:00",
+   "2026-10-08 07:00:00",
+   "SFFR",
+   "PO9 1HS",
+   "2026-10-07 23:00:00 UTC",
+   "2026-10-16 10:46:09.594804 UTC",
+   "bronze/neso_data_portal/sffr_auction_results_main/2026/10/16/raw_20261016T204319Z_76bc5d39-c39f-490b-984e-58eb8ff296ef_eaed7e5e.csv",
+   "2026-10-16 20:43:19.842067 UTC",
+   "2026-10-07 23:00:00 UTC",
+   "2026-10-16 10:46:09.594804 UTC",
+   "drain-3d05d505-4f33-4f32-ad25-df7416c927a9",
+   "1+e1"
+  ],
+  [
+   "2026-10-08",
+   "2",
+   "PGHAT-1",
+   "Accepted",
+   "1.95",
+   "2.0",
+   "6.0",
+   "6.0",
+   "17",
+   "Peak Gen Power Limited",
+   "Diesel",
+   "2026-10-08 03:00:00",
+   "2026-10-08 07:00:00",
+   "SFFR",
+   "AL10 9TR",
+   "2026-10-07 23:00:00 UTC",
+   "2026-10-16 10:46:09.594804 UTC",
+   "bronze/neso_data_portal/sffr_auction_results_main/2026/10/16/raw_20261016T204319Z_76bc5d39-c39f-490b-984e-58eb8ff296ef_eaed7e5e.csv",
+   "2026-10-16 20:43:19.842067 UTC",
+   "2026-10-07 23:00:00 UTC",
+   "2026-10-16 10:46:09.594804 UTC",
+   "drain-3d05d505-4f33-4f32-ad25-df7416c927a9",
+   "1+e1"
+  ],
+  [
+   "2026-10-08",
+   "2",
+   "ENDSR-2",
+   "Accepted",
+   "1.98",
+   "2.0",
+   "1.3",
+   "1.3",
+   "13",
+   "GRIDBEYOND LIMITED",
+   "Load Response",
+   "2026-10-08 03:00:00",
+   "2026-10-08 07:00:00",
+   "SFFR",
+   "AGG",
+   "2026-10-07 23:00:00 UTC",
+   "2026-10-16 10:46:09.594804 UTC",
+   "bronze/neso_data_portal/sffr_auction_results_main/2026/10/16/raw_20261016T204319Z_76bc5d39-c39f-490b-984e-58eb8ff296ef_eaed7e5e.csv",
+   "2026-10-16 20:43:19.842067 UTC",
+   "2026-10-07 23:00:00 UTC",
+   "2026-10-16 10:46:09.594804 UTC",
+   "drain-3d05d505-4f33-4f32-ad25-df7416c927a9",
+   "1+e1"
+  ],
+  [
+   "2026-10-08",
+   "2",
+   "LEV-FRU05",
+   "Accepted",
+   "2.0",
+   "2.0",
+   "0.8",
+   "0.8",
+   "31",
+   "Levelise Limited",
+   "Batteries",
+   "2026-10-08 03:00:00",
+   "2026-10-08 07:00:00",
+   "SFFR",
+   "AGG",
+   "2026-10-07 23:00:00 UTC",
+   "2026-10-16 10:46:09.594804 UTC",
+   "bronze/neso_data_portal/sffr_auction_results_main/2026/10/16/raw_20261016T204319Z_76bc5d39-c39f-490b-984e-58eb8ff296ef_eaed7e5e.csv",
+   "2026-10-16 20:43:19.842067 UTC",
+   "2026-10-07 23:00:00 UTC",
+   "2026-10-16 10:46:09.594804 UTC",
+   "drain-3d05d505-4f33-4f32-ad25-df7416c927a9",
+   "1+e1"
+  ],
+  [
+   "2026-10-08",
+   "2",
+   "CITY01",
+   "Rejected",
+   "2.0",
+   "2.0",
+   "1.0",
+   "0.0",
+   "33",
+   "CITY ENERGY MANAGEMENT SERVICES LIMITED",
+   "Load Response",
+   "2026-10-08 03:00:00",
+   "2026-10-08 07:00:00",
+   "SFFR",
+   "FK2 7XP",
+   "2026-10-07 23:00:00 UTC",
+   "2026-10-16 10:46:09.594804 UTC",
+   "bronze/neso_data_portal/sffr_auction_results_main/2026/10/16/raw_20261016T204319Z_76bc5d39-c39f-490b-984e-58eb8ff296ef_eaed7e5e.csv",
+   "2026-10-16 20:43:19.842067 UTC",
+   "2026-10-07 23:00:00 UTC",
+   "2026-10-16 10:46:09.594804 UTC",
+   "drain-3d05d505-4f33-4f32-ad25-df7416c927a9",
+   "1+e1"
+  ],
+  [
+   "2026-10-08",
+   "2",
+   "PGFFR-8",
+   "Rejected",
+   "2.11",
+   "2.0",
+   "20.0",
+   "0.0",
+   "14",
+   "Peak Gen Power 11 Limited",
+   "Diesel",
+   "2026-10-08 03:00:00",
+   "2026-10-08 07:00:00",
+   "SFFR",
+   "RG42 5NG",
+   "2026-10-07 23:00:00 UTC",
+   "2026-10-16 10:46:09.594804 UTC",
+   "bronze/neso_data_portal/sffr_auction_results_main/2026/10/16/raw_20261016T204319Z_76bc5d39-c39f-490b-984e-58eb8ff296ef_eaed7e5e.csv",
+   "2026-10-16 20:43:19.842067 UTC",
+   "2026-10-07 23:00:00 UTC",
+   "2026-10-16 10:46:09.594804 UTC",
+   "drain-3d05d505-4f33-4f32-ad25-df7416c927a9",
+   "1+e1"
+  ],
+  [
+   "2026-10-08",
+   "2",
+   "PGCOV-1",
+   "Rejected",
+   "2.17",
+   "2.0",
+   "6.0",
+   "0.0",
+   "7",
+   "Peak Gen Power Limited",
+   "Diesel",
+   "2026-10-08 03:00:00",
+   "2026-10-08 07:00:00",
+   "SFFR",
+   "CV2 2SZ",
+   "2026-10-07 23:00:00 UTC",
+   "2026-10-16 10:46:09.594804 UTC",
+   "bronze/neso_data_portal/sffr_auction_results_main/2026/10/16/raw_20261016T204319Z_76bc5d39-c39f-490b-984e-58eb8ff296ef_eaed7e5e.csv",
+   "2026-10-16 20:43:19.842067 UTC",
+   "2026-10-07 23:00:00 UTC",
+   "2026-10-16 10:46:09.594804 UTC",
+   "drain-3d05d505-4f33-4f32-ad25-df7416c927a9",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}
