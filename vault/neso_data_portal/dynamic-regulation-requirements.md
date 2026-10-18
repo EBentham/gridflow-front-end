@@ -4,9 +4,129 @@ package: "dynamic-regulation-requirements"
 dataset_key: "dr_requirements"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-13
+updated: 2026-10-18
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: Dynamic Regulation requirements
+  summary: >-
+    NESO's latest view of the Dynamic Regulation it needs: MW for the low and high products in
+    each EFA block.
+  facts:
+    vendor: "NESO Data Portal, package `dynamic-regulation-requirements`: one CSV file, no archive"
+    cadence: "Ad hoc (NESO's catalogue); NESO publishes updates in the same file"
+    grain: One row per EFA date and service, with six EFA block columns
+  landscape: market
+  what_it_is: >-
+    Dynamic Regulation is a NESO frequency response service, with a low (`DRL`) and a high (`DRH`)
+    product. NESO's file, titled Indicative DR Requirements and called its latest view, gives MW
+    before overholding per EFA date for six EFA blocks. Blocks run on the UK clock from 23:00 the
+    evening before; block 1 lasts 3 or 5 hours at clock changes.
+  how_used:
+    - Requirement per block against cleared `DRL` and `DRH` MW in NESO's EAC results.
+    - To join EAC results, convert each block's UK start time to UTC.
+    - "Point-in-time studies: each capture is one vintage, stamped with the file's `published_at`."
+  chart:
+    type: line
+    silver: neso_data_portal/dr_requirements
+    time: efa_date
+    value: efa1
+    group: service
+    series_order: [DRH, DRL]
+    filter:
+      - {column: published_at, op: eq, value: "2026-09-22T14:48:17.409242"}
+    aggregation: mean
+    window: {start: "2026-09-23", end: "2026-10-31"}
+    unit: MW
+  chart_view:
+    title: Dynamic Regulation requirement in EFA block 1, by date
+    caption: >-
+      Silver `dr_requirements`, MW before overholding: EFA block 1 (from 23:00 the evening before,
+      UK time) per EFA date, 23 September to 31 October 2026, NESO's 22 September file. Every block
+      on every date in the file is 480 MW.
+    alt: >-
+      Line chart of NESO's Dynamic Regulation requirement for EFA block 1 in MW, one point per EFA
+      date from 23 September to 31 October 2026. Both lines are flat at 480 MW across all 39 dates
+      and lie on top of each other: the high product, DRH, solid, and the low product, DRL, drawn
+      dashed over it. Every block on every date in the file is also 480 MW.
+    x_label: EFA date
+    y_min: 0
+    key:
+      - {series: DRH, label: High product, codes: DRH, paint: petrol, note: "480 MW in every block, all 39 dates in this file; the low line runs along it."}
+      - {series: DRL, label: Low product, codes: DRL, paint: clay, note: "480 MW in every block on all 39 dates, drawn dashed over the high line."}
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then the file downloaded whole unless its
+      `last_modified` is unchanged. Dates select nothing.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=dynamic-regulation-requirements"
+      - "GET https://api.neso.energy/dataset/bcc9b338-00a4-4858-a1ed-0b7728048462/resource/d6c576b9-91d5-4c48-bf6d-300c7d7aa6ad/download/dr-requirements.csv"
+    commands:
+      - {run: gridflow ingest neso_data_portal dr_requirements --last 24h, comment: "whole file; window must end recently"}
+      - {run: gridflow transform neso_data_portal dr_requirements --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: published_at, op: eq, value: "2026-09-22T14:48:17.409242"}
+        - {column: efa_date, op: in, value: ["2026-09-23", "2026-10-25", "2026-10-26", "2026-10-31"]}
+      order_by: [efa_date, service]
+      columns: [efa_date, service, efa1, efa2, efa3, efa4, efa5, efa6, timestamp_utc, published_at]
+    key: [efa_date, service]
+    caption: "First and last dates; around 25 October's clock change `timestamp_utc` goes from 23:00 to 00:00 UTC."
+    fields:
+      efa_date: EFA date of the requirement; block 1 starts 23:00 UK time the evening before
+      service: "`DRL` (low) or `DRH` (high); NESO's dictionary writes `DR-L` and `DR-H`"
+      efa1: Block 1, 23:00 to 03:00 UK time, MW before overholding (NESO)
+      efa2: Block 2, 03:00 to 07:00 UK time, MW before overholding (NESO)
+      efa3: Block 3, 07:00 to 11:00 UK time, MW before overholding (NESO)
+      efa4: Block 4, 11:00 to 15:00 UK time, MW before overholding (NESO)
+      efa5: Block 5, 15:00 to 19:00 UK time, MW before overholding (NESO)
+      efa6: Block 6, 19:00 to 23:00 UK time, MW before overholding (NESO)
+      timestamp_utc: UK midnight starting calendar date `efa_date`, in UTC; block 1 starts an hour earlier
+      published_at: "NESO's last-modified time for the whole file, read as UTC"
+      bronze_capture_id: Path of the bronze capture the row was read from
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      Reads the `_latest` view, the newest capture, with `data.sql` so the cells see every date the
+      file holds and show `published_at` in UTC; `query()` reads the same view but takes a date range.
+    cells:
+      - |
+        df = data.sql("""
+            SELECT efa_date, service, efa1, efa2, efa3, efa4, efa5, efa6,
+                   published_at AT TIME ZONE 'UTC' AS published_utc
+            FROM silver_neso_data_portal_dr_requirements_latest
+            ORDER BY efa_date, service""")
+        df.groupby("service").agg(
+            first=("efa_date", "min"), last=("efa_date", "max"),
+            dates=("efa_date", "count"), published_utc=("published_utc", "max")).reset_index()
+      - |
+        blocks = [f"efa{i}" for i in range(1, 7)]
+        long = df.melt(["efa_date", "service"], blocks, var_name="block", value_name="mw")
+        long.groupby("service").mw.agg(["min", "max", "count"]).reset_index()
+      - |
+        import pandas as pd
+        n = long.block.str[3:].astype(int)
+        local = long.efa_date + pd.to_timedelta(4 * n - 5, unit="h")
+        long["start_utc"] = local.dt.tz_localize("Europe/London").dt.tz_convert("UTC")
+        low = long[long.service.eq("DRL")].sort_values("start_utc")
+        low["hours"] = low.start_utc.diff().shift(-1).dt.total_seconds() / 3600
+        low[low.efa_date.eq("2026-10-25")][["efa_date", "block", "start_utc", "hours", "mw"]]
+      - |
+        wide = long.pivot_table(index="start_utc", columns="service", values="mw")
+        wide[["DRH", "DRL"]].plot(
+            drawstyle="steps-post", style=["-", "--"], color=["#155A6E", "#C77E3C"], lw=2,
+            ylim=(0, 600), figsize=(8, 3.5), xlabel="EFA block start, UTC", ylabel="requirement, MW");
+    needs: a capture of the requirement file
+    plot_alt: >-
+      Step plot of NESO's Dynamic Regulation requirement in MW at each EFA block start in UTC, from
+      22:00 on 22 September to 19:00 on 31 October 2026. The high product, DRH (solid petrol), and
+      the low product, DRL (dashed clay), both hold 480 MW throughout.
+  related:
+    - {dataset: neso_data_portal/eac-auction-results, note: "Cleared `DRL` and `DRH` MW and price for each EFA block"}
+    - {dataset: neso_data_portal/dynamic-moderation-requirements, note: "The same requirement layout for Dynamic Moderation, `DML` and `DMH`"}
+    - {dataset: neso_data_portal/long-term-forecasts-for-dc-dm-dr-requirements, note: "NESO's twelve-month outlook for this service, as weights over bands"}
+    - {dataset: elexon/freq, note: The system frequency Dynamic Regulation responds to}
 ---
 
 # Dynamic Regulation Requirements
