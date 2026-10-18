@@ -74,7 +74,16 @@ Several agents share the worktree: keep strictly to your own package's files.
 
 | # | Writer | Checker | State |
 |---|---|---|---|
-| 1 | ad9562a4783453cd8 | | writing |
-| 11 | a76d9b8cd4fa20a83 | | writing |
-| H | ab9104ee227505a6f | | writing |
-| 2-10 | | | not started |
+| 1 | ad9562a4783453cd8 | a50242a7703a8ea1e | APPROVED round 2; committed fe 739b914, vault 5be3d3d |
+| 11 | a76d9b8cd4fa20a83 | aafbabed80d91a79c | checking; defects 20g, 20h logged |
+| H | ab9104ee227505a6f | a3fc7c0cd619579fa | APPROVED round 2, nits fixed; committed fe a5792ff, vault bf7b7f4 |
+| 2 | ac1533bccfac8ccf9 | | writing |
+| 3 | a620ecd328b3178cb | | writing |
+| 4-10 | | | not started |
+
+## Template follow-ups (seat items, not page findings)
+
+- A family member lists at most four requests; EAC sell orders read 36 files (current month plus monthly archives).
+- At 768 the folded frame can show no value column until unfolded; the unfolded frame scrolls sideways.
+- The notebook preview breaks long names mid-word at 768 and 390.
+- A series file built from local window times stamps them with `Z` (display is right; the file label is misleading).
