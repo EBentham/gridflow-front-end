@@ -4,9 +4,183 @@ package: "phase-2-ffr-auction-results-summary"
 dataset_keys: ["ffr_phase2_auction_phase_block_order", "ffr_phase2_auction_phase_blockorders", "ffr_phase2_auction_phase_linear_orders", "ffr_phase2_auction_phase_linearorders", "ffr_phase2_auction_phase_results_sum", "ffr_phase2_auction_phase_results_unit", "ffr_phase2_auction_phase_resultsbyunit", "ffr_phase2_auction_phase_resultsum", "ffr_phase2_blockorders_archive", "ffr_phase2_linearorders_archive", "ffr_phase2_result_summary_archive", "ffr_phase2_results_by_unit_archive"]
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-14
+updated: 2026-10-18
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: Phase 2 FFR auction results
+  summary: >-
+    NESO's results and orders from its Phase 2 Firm Frequency Response auction trial: DLH and LFS
+    response, bought in four-hour blocks.
+  facts:
+    vendor: "NESO Data Portal, package `phase-2-ffr-auction-results-summary`: 16 CSV files, four ZIPs"
+    cadence: "Not Active in NESO's metadata; files last changed March 2021 to March 2022"
+    grain: "Results by unit: one row per unit, service, EFA date and four-hour block"
+    history: By-unit results for EFA dates 7 December 2019 to 30 November 2021
+  landscape: market
+  what_it_is: >-
+    In its Phase 2 trial NESO bought two response products, Dynamic Low High (`DLH`) and Low
+    Frequency Static (`LFS`), in 42 four-hour EFA blocks a week. Results give each unit's cleared MW
+    and clearing price; orders give providers' sell orders and National Grid ESO's bid curve. A
+    weekly file repeats the yearly files' last week: never add them.
+  how_used:
+    - Clearing price per block for DLH and LFS, December 2019 to November 2021.
+    - "Who won what: MW per unit and company, block by block."
+    - "Bid stacks: providers' sell orders against National Grid ESO's bid curve per block."
+  chart:
+    type: line
+    silver: neso_data_portal/ffr_phase2_auction_phase_resultsbyunit
+    time: efa_date
+    value: clearing_price
+    dedup: {on: [service, efa_date, efa], order_by: published_at}
+    group: service
+    group_map: {DLH: dlh, LFS: lfs}
+    series_order: [dlh, lfs]
+    aggregation: mean
+    window: {start: "2019-12-07", end: "2021-11-30"}
+    unit: "£/MW/h"
+  chart_view:
+    title: Daily mean clearing price, December 2019 to November 2021
+    caption: >-
+      Silver `ffr_phase2_auction_phase_resultsbyunit`, £/MW/h: each EFA date's unweighted mean over
+      its cleared four-hour blocks, one price per block (all units in a charted block share it).
+      The by-unit results have no EFA dates 20 to 26 March 2021.
+    alt: >-
+      Line chart from neso_data_portal/ffr_phase2_auction_phase_resultsbyunit of the daily mean
+      clearing price over each EFA date's blocks, in £/MW/h, 7 December 2019 to 30 November 2021.
+      LFS is almost flat: median 4.06, lowest 3.24 on 19 August 2020, highest 4.10. DLH swings
+      between 1.00 on 12 March 2021 and 11.35 on 9 February 2021, median 7.87, and is above LFS on
+      686 of 715 days. Both lines break for 20 to 26 March 2021; DLH also for 1 to 3 September 2021.
+    x_label: EFA date, as NESO labels each row
+    key:
+      - {series: dlh, label: Dynamic Low High, codes: DLH, paint: petrol, note: "No results for EFA dates 1 to 3 September 2021."}
+      - {series: lfs, label: Low Frequency Static, codes: LFS, paint: clay}
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: `package_show`, then each uploaded CSV or ZIP file; a file is
+      downloaded again only when its `last_modified` changes.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=phase-2-ffr-auction-results-summary"
+    commands:
+      - {run: gridflow ingest neso_data_portal ffr_phase2_auction_phase_resultsbyunit --last 24h, comment: the three yearly files}
+      - {run: gridflow ingest neso_data_portal ffr_phase2_auction_phase_results_unit --last 24h, comment: the weekly file}
+      - {run: gridflow transform neso_data_portal ffr_phase2_auction_phase_resultsbyunit --last 24h, comment: _latest keeps each repeated row once}
+  record:
+    select:
+      silver: neso_data_portal/ffr_phase2_auction_phase_resultsbyunit
+      filter:
+        - {column: efa_date, op: eq, value: "2021-07-24"}
+        - {column: efa, op: eq, value: 1}
+        - {column: service, op: eq, value: LFS}
+        - {column: unit_name, op: in, value: [UF_GBD02, UF_GBD03, UF_GBD05, UF_GBD06, UF_GBD12, UF_GBD14, UF_GBD15, UF_KWP01]}
+      order_by: [unit_name]
+      columns: [unit_name, efa_date, efa, service, cleared_volume, clearing_price, cancelled, company, delivery_start, delivery_end]
+    key: [unit_name, efa_date, efa, service]
+    caption: "Eight of nine LFS units in block 1 of 24 July 2021; two carry NESO's cancellation."
+    fields:
+      unit_name: The unit providing the response, as NESO names it
+      efa_date: "NESO's EFA date; its dictionary calls it the delivery end's date"
+      efa: "Four-hour block of the week, 1 to 42 (NESO: six a day)"
+      service: "`DLH` (Dynamic Low High) or `LFS` (Low Frequency Static)"
+      cleared_volume: MW accepted for the unit at the clearing price (NESO's unit)
+      clearing_price: "Clearing price for the service and block, £/MW/h (NESO's unit)"
+      cancelled: "NESO's cancellation note, kept as text; null on rows without one"
+      company: The trial member that bid the unit
+      delivery_start: "Block start as NESO wrote it, kept as text; NESO states no clock"
+      delivery_end: Block end as NESO wrote it, kept as text
+      timestamp_utc: "UK midnight starting the EFA date's calendar day, as UTC; not the block start"
+      published_at: "When NESO last changed the file (CKAN `last_modified`), not first publication"
+      bronze_capture_id: Path of the bronze capture the row was read from
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      `query()` reads the `_latest` view, filtering `efa_date` with both ends included. The next
+      cell sums units' MW per block, rows NESO marks cancelled included, and keeps its one price.
+    cells:
+      - |
+        df = data.neso_data_portal.query("ffr_phase2_auction_phase_resultsbyunit", "2021-07-24", "2021-07-30")
+        df = df.sort_values(["efa_date", "efa", "service", "unit_name"])
+        df[["efa_date", "efa", "service", "unit_name", "cleared_volume", "clearing_price", "cancelled"]].head()
+      - |
+        blocks = (df.groupby(["efa_date", "efa", "service"], as_index=False)
+                    .agg(units=("unit_name", "nunique"), cleared_mw=("cleared_volume", "sum"),
+                         prices=("clearing_price", "nunique"), clearing_price=("clearing_price", "first")))
+        blocks[blocks.efa_date == "2021-07-24"]
+      - |
+        week = blocks.pivot(index=["efa_date", "efa"], columns="service", values="clearing_price")
+        week[["DLH", "LFS"]].droplevel("efa_date").plot(drawstyle="steps-post", color=["#155A6E", "#C77E3C"], figsize=(8, 3.5),
+                xlabel="EFA block of the week, 1 to 42, EFA dates 24 to 30 July 2021",
+                ylabel="clearing price, £/MW/h");
+    needs: a capture of the 2021-2022 by-unit file
+    plot_alt: >-
+      Step plot of DLH and LFS clearing prices per EFA block, £/MW/h, blocks 1 to 42 of EFA dates
+      24 to 30 July 2021. LFS is 5.40 in each day's first two blocks and 3.40 otherwise. DLH runs
+      5.04 to 11.22 (block 21) and breaks where no DLH unit cleared: each day's last block and
+      block 40.
+  related:
+    - {dataset: neso_data_portal/dynamic-containment-data, note: "Dynamic Containment results in the same unit-and-block shape, from September 2021"}
+    - {dataset: neso_data_portal/static-firm-frequency-response-auction-results, note: "Static FFR auctions per unit and EFA block, from April 2023"}
+    - {dataset: neso_data_portal/eac-auction-results, note: "Response auctions on NESO's EAC platform, from November 2023"}
+    - {dataset: neso_data_portal/firm-frequency-response-post-tender-reports, note: Firm Frequency Response bought by tender rather than by auction}
+  family:
+    slug: phase-2-ffr-auction-results-summary
+    members:
+      - dataset: ffr_phase2_auction_phase_resultsbyunit
+        differs: "Each unit's cleared MW and its block's clearing price, £/MW/h, three yearly files"
+        request:
+          - "GET https://api.neso.energy/dataset/2d649d03-fb37-46a2-ae82-9e651438b559/resource/15d7fa42-1c8d-4a79-86f8-890cf9228794/download/phase-2-ffr-auction-resultsbyunit-masterdata-2019-2020.csv"
+          - "GET https://api.neso.energy/dataset/2d649d03-fb37-46a2-ae82-9e651438b559/resource/52faffc9-e804-44d8-b222-dd0821d79e7d/download/phase-2-ffr-auction-resultsbyunit-masterdata-2020-2021.csv"
+          - "GET https://api.neso.energy/dataset/2d649d03-fb37-46a2-ae82-9e651438b559/resource/feafb7ab-7db6-406e-a46f-bbcf6ed92ba1/download/phase-2-ffr-auction-resultsbyunit-masterdata-2021-2022.csv"
+      - dataset: ffr_phase2_auction_phase_resultsum
+        differs: Total cleared volume and clearing price per service and block, three yearly files
+        request:
+          - "GET https://api.neso.energy/dataset/2d649d03-fb37-46a2-ae82-9e651438b559/resource/8b5fa222-f39f-4eea-9475-728ea8365ff3/download/phase-2-ffr-auction-resultsummary-masterdata-2019-2020.csv"
+          - "GET https://api.neso.energy/dataset/2d649d03-fb37-46a2-ae82-9e651438b559/resource/279572a9-21c9-4e1e-a7c8-7aed233f8936/download/phase-2-ffr-auction-resultsummary-masterdata-2020-2021.csv"
+          - "GET https://api.neso.energy/dataset/2d649d03-fb37-46a2-ae82-9e651438b559/resource/920105e5-a5e3-4bed-83ce-ab6901cc1b84/download/phase-2-ffr-auction-resultsummary-masterdata-2021-2022.csv"
+        held: "NESO's dictionaries disagree on the clearing price's unit: £/MW, per MW per hour, or none."
+      - dataset: ffr_phase2_auction_phase_blockorders
+        differs: "Providers' block sell orders in three yearly files: price, volume, executed or rejected"
+        request:
+          - "GET https://api.neso.energy/dataset/2d649d03-fb37-46a2-ae82-9e651438b559/resource/979329c3-5587-4b08-a900-5520b58b2d8f/download/phase-2-ffr-auction-blockorders-masterdata-2019-2020.csv"
+          - "GET https://api.neso.energy/dataset/2d649d03-fb37-46a2-ae82-9e651438b559/resource/c074d827-ad03-4b11-b22e-8bbc96be3bab/download/phase-2-ffr-auction-blockorders-masterdata-2020-2021.csv"
+          - "GET https://api.neso.energy/dataset/2d649d03-fb37-46a2-ae82-9e651438b559/resource/89467af0-a577-4bba-9955-f8c380a78923/download/phase-2-ffr-auction-blockorders-masterdata-2021-2022.csv"
+        held: NESO's yearly files write order IDs in scientific notation, so no order can be identified.
+      - dataset: ffr_phase2_auction_phase_block_order
+        differs: "Last week in NESO's files, with full order IDs; the yearly file repeats it"
+        request: "GET https://api.neso.energy/dataset/2d649d03-fb37-46a2-ae82-9e651438b559/resource/edfb5b8f-4415-45e6-b378-57020c41e96b/download/ngeso_fra-weekly_2021-11-26_blockorders.csv"
+      - dataset: ffr_phase2_auction_phase_linearorders
+        differs: "National Grid ESO's bid curve per block, up to four points, three yearly files"
+        request:
+          - "GET https://api.neso.energy/dataset/2d649d03-fb37-46a2-ae82-9e651438b559/resource/47ceb316-e284-4e14-bb67-76067a8f9562/download/phase-2-ffr-auction-linearorders-masterdata-2019-2020.csv"
+          - "GET https://api.neso.energy/dataset/2d649d03-fb37-46a2-ae82-9e651438b559/resource/404a1de1-5fe9-4569-815a-394e83af96eb/download/phase-2-ffr-auction-linearorders-masterdata-2020-2021.csv"
+          - "GET https://api.neso.energy/dataset/2d649d03-fb37-46a2-ae82-9e651438b559/resource/eb394ce7-20c6-4434-a263-470b2896fd7b/download/phase-2-ffr-auction-linearorders-masterdata-2021-2022.csv"
+      - dataset: ffr_phase2_auction_phase_linear_orders
+        differs: "Last week in NESO's files, with full IDs; the yearly file repeats its curves"
+        request: "GET https://api.neso.energy/dataset/2d649d03-fb37-46a2-ae82-9e651438b559/resource/5cce4cb6-c270-488f-96c7-9f5cd7476898/download/ngeso_fra-weekly_2021-11-26_linearorders.csv"
+      - dataset: ffr_phase2_auction_phase_results_sum
+        differs: "Weekly results summary file, EFA dates 27 November to 3 December 2021"
+        request: "GET https://api.neso.energy/dataset/2d649d03-fb37-46a2-ae82-9e651438b559/resource/a9659701-f0d4-40d2-91f1-31f4bac0619d/download/ngeso_fra-weekly_2021-11-26_resultsummary.csv"
+        held: No table of its own; its rows repeat the results summary's, whose price unit is unsettled.
+      - dataset: ffr_phase2_auction_phase_results_unit
+        differs: "Weekly file: EFA dates 27 to 30 November 2021, repeated in the yearly file"
+        request: "GET https://api.neso.energy/dataset/2d649d03-fb37-46a2-ae82-9e651438b559/resource/87ee8fc4-11ae-4575-b734-99548aab2d98/download/ngeso_fra-weekly_2021-11-26_resultsbyunit.csv"
+        held: No table of its own; its rows repeat yearly rows of the results by unit table.
+      - dataset: ffr_phase2_result_summary_archive
+        differs: "Earlier results summaries: a ZIP of two files dated 22 and 29 November 2019"
+        request: "GET https://api.neso.energy/dataset/2d649d03-fb37-46a2-ae82-9e651438b559/resource/3928f192-97a5-4b4f-9234-0dcc9ad071a0/download/resultsummary-2019-11-22-to-2019-11-29.zip"
+        held: "No NESO dictionary for these files: what their dates and blocks mean is unknown."
+      - dataset: ffr_phase2_results_by_unit_archive
+        differs: "Earlier by-unit results: a ZIP of two files dated 22 and 29 November 2019"
+        request: "GET https://api.neso.energy/dataset/2d649d03-fb37-46a2-ae82-9e651438b559/resource/a99410bb-5501-4292-a308-eb7c16b1b3f4/download/resultbyunit-2019-11-22-to-2019-11-29.zip"
+        held: "No NESO dictionary; the 22 November 2019 file gives two volumes for one unit and block."
+      - dataset: ffr_phase2_blockorders_archive
+        differs: "Earlier block orders: a ZIP of two files dated 22 and 29 November 2019"
+        request: "GET https://api.neso.energy/dataset/2d649d03-fb37-46a2-ae82-9e651438b559/resource/e988552e-8bc1-43db-af15-cff01e40d83c/download/blockorders-2019-11-22-to-2019-11-29.zip"
+        held: "NESO gives no dictionary for these files: their price unit and time zone are unknown."
+      - dataset: ffr_phase2_linearorders_archive
+        differs: "Earlier bid curves of up to 16 points: seven files dated 2019 to 2020"
+        request: "GET https://api.neso.energy/dataset/2d649d03-fb37-46a2-ae82-9e651438b559/resource/7ab29f1c-4da1-4f36-b611-cb74f62737fc/download/linearorders-2019-11-22-to-2020-01-03.zip"
+        held: "NESO gives no dictionary for these files: their price unit and time zone are unknown."
 ---
 
 # Phase 2: FFR Auction Results Summary
@@ -304,7 +478,7 @@ publish the same four tables under the same headers. The relationship was measur
 
 | Pair | Weekly rows | Master rows | Relationship |
 |---|---:|---:|---|
-| Block order / BlockOrders | 379 | 85,662 | Same table. Weekly `OrderID`s are full-digit; master ones are in scientific notation. **No trustworthy identifier-based equivalence** |
+| Block order / BlockOrders | 379 | 85,662 | Same table. Weekly `OrderID`s are full-digit; master ones are in scientific notation. **No trustworthy identifier-based equivalence**; on the member, portfolio, price, volume, status, block-code, EFA and delivery columns (delivery times parsed from either spelling) the 379 weekly rows equal, as a multiset, the 379 master rows delivering in that week (measured 2026-10-18) |
 | Linear orders / LinearOrders | 84 | 8,232 | All 84 weekly (MarketName, DeliveryStart) keys occur in the masters when the date spellings are parsed; the **full rows differ** |
 | Results by unit / ResultsByUnit | 201 | 69,006 | All 201 weekly business keys, **and their normalised full rows**, occur in the masters |
 | Results summary / ResultSummary | 84 | 8,652 | Same: all 84 weekly keys and rows occur in the masters |
@@ -595,7 +769,12 @@ columns, `resource_id` and the 8 gridflow columns (31). **Status: eligible.**
 - **Typing.** As the weekly table: `p1`..`v2` `float64`, `p3`..`v4` `string` with `NA` in 36 rows of the
   2021-2022 master.
 - **Relation to the weekly file.** The weekly file's 84 (MarketName, DeliveryStart) keys also occur here with
-  different full rows; the two stay separate families, never unioned.
+  different full rows; the two stay separate families, never unioned. Measured in silver on 2026-10-18: the 84
+  pairs agree on `efa`, `executed_volume` and every `p1`..`v4` cell, and differ only in `order_id`,
+  `order_period_id`, `trade_id` and `order_entry_time` (spelled differently, and the master drops the seconds).
+- **Identifiers.** The 2020-2021 and 2021-2022 masters write `order_id`, `order_period_id` and `trade_id` in
+  scientific notation on every row (4,284 and 2,940 rows, as the block-order masters do); the 2019-2020 master
+  keeps full identifiers. The key above does not use them (measured in silver, 2026-10-18).
 - **Clocks.** Vintage CKAN `last_modified` per resource; event recipe `none` (capture time). Time cells are
   raw naive strings, spelled ISO-like in the 2019-2020 master and `DD/MM/YYYY HH:MM` in the other two.
 
@@ -983,8 +1162,8 @@ by-unit member is held back from silver. Nothing about their values is published
 - **All delivery, delivery-end and order-entry strings are naive with an undocumented export clock**
   (PHASE2-EXPORT-CLOCK). The weekly and master files spell them differently, and the 2019-2020 linear
   master uses the ISO-like spelling the weekly files use.
-- **Master order identifiers are collapsed** to scientific notation in all three block-order masters. Do not
-  attempt to rebuild an order identity from them (held).
+- **Master order identifiers are collapsed** to scientific notation in all three block-order masters (held),
+  and in the 2020-2021 and 2021-2022 linear-order masters. Do not attempt to rebuild an order identity from them.
 - **Order prices are published as £/MW but the trial documents describe hourly prices**; the by-unit prices
   are explicitly £/MW/h. Do not compare an order price with a clearing price without resolving the unit.
 - **Literal `NA` strings are values**: `block_code_prm` (block), `p3`..`v4` (linear). They are not nulls and
