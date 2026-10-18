@@ -826,7 +826,12 @@ def parse_vault_file(
         page=page,
         page_errors=page_errors,
         package=fm.get("package", "").strip('"'),
-        dataset_keys=_parse_key_list(fm.get("dataset_keys", "")),
+        # A single-table package note names its one table as `dataset_key` instead.
+        dataset_keys=_parse_key_list(fm["dataset_keys"])
+        if "dataset_keys" in fm
+        else [fm["dataset_key"].strip('"')]
+        if fm.get("package") and fm.get("dataset_key")
+        else [],
     )
 
 
