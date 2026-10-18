@@ -241,6 +241,34 @@ def _midnights(lo: float, hi: float, uk: bool) -> list[tuple[float, dt.date]]:
         d += dt.timedelta(days=1)
 
 
+def _season_ticks(
+    firsts: Sequence[tuple[float, dt.date]], narrow: bool
+) -> list[tuple[float, str, float]]:
+    """Half-yearly ticks, or quarterly where those are too few, for a span of one to three years.
+
+    Too short for three 1 January ticks, too long for monthly ones. A 1 January tick reads as the
+    year; any other tick names its month, with the year where the year is not yet on the axis.
+    """
+    marks: list[tuple[float, dt.date]] = []
+    for months in (6, 3):
+        marks = [(t, d) for t, d in firsts if (d.month - 1) % months == 0]
+        if len(marks) >= 3:
+            break
+    if narrow and len(marks) > 4:
+        marks = list(marks[:: math.ceil(len(marks) / 4)])
+    ticks: list[tuple[float, str, float]] = []
+    shown: int | None = None
+    for t, d in marks:
+        if d.month == 1:
+            label = str(d.year)
+        else:
+            month = MONTHS[d.month - 1]
+            label = month if d.year == shown else f"{month} {d.year}"
+        shown = d.year
+        ticks.append((t, label, t))
+    return ticks
+
+
 def _time_axis(
     ts: Sequence[float], fr: Frame, narrow: bool, uk_days: bool = False
 ) -> tuple[list[tuple[float, str, float]], float, float]:
@@ -284,10 +312,15 @@ def _time_axis(
                 label = f"{d.day} {MONTHS[d.month - 1]}" if not narrow or not ticks else str(d.day)
                 ticks.append((t, label, centre))
     elif span_days > 400:
-        # a span of years: ticks on 1 January, labelled by the year alone (a day and month would hide it)
-        years = [(t, d) for t, d in _midnights(lo, hi_edge, uk_days) if d.month == 1 and d.day == 1]
-        step = max(1, math.ceil(len(years) / (4 if narrow else 9)))
-        ticks = [(t, str(d.year), t) for i, (t, d) in enumerate(years) if i % step == 0]
+        firsts = [(t, d) for t, d in _midnights(lo, hi_edge, uk_days) if d.day == 1]
+        years = [(t, d) for t, d in firsts if d.month == 1]
+        if len(years) >= 3:
+            # a span of years: ticks on 1 January, labelled by the year alone (a day and month
+            # would hide it)
+            step = max(1, math.ceil(len(years) / (4 if narrow else 9)))
+            ticks = [(t, str(d.year), t) for i, (t, d) in enumerate(years) if i % step == 0]
+        else:
+            ticks = _season_ticks(firsts, narrow)
     else:
         # weekly ticks on Mondays, or the 1st of each month for long spans
         for t, d in _midnights(lo, hi_edge, uk_days):
