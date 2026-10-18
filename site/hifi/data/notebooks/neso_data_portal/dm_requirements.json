@@ -1,0 +1,151 @@
+{
+ "dataset": "neso_data_portal/dm_requirements",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "6e579ecf7a172a13554da85f0f1e60dcb00c5bbccdf83146914dc7fd3a024c80",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.sql(\"\"\"\n    SELECT efa_date, service, efa1, efa2, efa3, efa4, efa5, efa6,\n           published_at AT TIME ZONE 'UTC' AS published_utc\n    FROM silver_neso_data_portal_dm_requirements_latest\n    ORDER BY efa_date, service\"\"\")\ndf.groupby(\"service\").agg(\n    first=(\"efa_date\", \"min\"), last=(\"efa_date\", \"max\"),\n    dates=(\"efa_date\", \"count\"), published_utc=(\"published_utc\", \"max\"))",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "first",
+      "last",
+      "dates",
+      "published_utc",
+      "service",
+      "",
+      "",
+      "",
+      ""
+     ],
+     "index": [
+      "DMH",
+      "DML"
+     ],
+     "rows": [
+      [
+       "2026-09-23",
+       "2026-10-31",
+       "39",
+       "2026-09-22 14:48:12.082389"
+      ],
+      [
+       "2026-09-23",
+       "2026-10-31",
+       "39",
+       "2026-09-22 14:48:12.082389"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "blocks = [f\"efa{i}\" for i in range(1, 7)]\ndf.drop_duplicates([\"service\", *blocks])[[\"service\", *blocks]]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "service",
+      "efa1",
+      "efa2",
+      "efa3",
+      "efa4",
+      "efa5",
+      "efa6"
+     ],
+     "index": [
+      "0",
+      "1"
+     ],
+     "rows": [
+      [
+       "DMH",
+       "570.0",
+       "510.0",
+       "510.0",
+       "510.0",
+       "510.0",
+       "570.0"
+      ],
+      [
+       "DML",
+       "530.0",
+       "500.0",
+       "500.0",
+       "530.0",
+       "500.0",
+       "530.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "first = df[df.efa_date == df.efa_date.min()].set_index(\"service\")[blocks].T\nfirst.index = [b[3:] for b in blocks]\nax = first.plot.bar(\n    color=[\"#155A6E\", \"#C77E3C\"], ylim=(0, 750), figsize=(8, 3.5), rot=0,\n    xlabel=\"EFA block (1 opens 23:00 UK time the evening before)\", ylabel=\"requirement, MW\")\nax.legend(title=\"service\", loc=\"upper center\", ncols=2);",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "dm_requirements-5.png",
+     "width": 699,
+     "height": 337
+    }
+   ]
+  }
+ ]
+}

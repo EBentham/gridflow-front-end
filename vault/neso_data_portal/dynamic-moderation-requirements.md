@@ -4,9 +4,121 @@ package: "dynamic-moderation-requirements"
 dataset_key: "dm_requirements"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-13
+updated: 2026-10-18
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: Dynamic Moderation requirements
+  summary: >-
+    NESO's latest view of the Dynamic Moderation it needs: MW for the low and high products in
+    each EFA block.
+  facts:
+    vendor: "NESO Data Portal, package `dynamic-moderation-requirements`: one CSV file, no archive"
+    cadence: "Ad hoc (NESO's catalogue); NESO publishes updates in the same file"
+    grain: One row per EFA date and service, with six EFA block columns
+  landscape: market
+  what_it_is: >-
+    Dynamic Moderation is a NESO frequency response service, with a low (`DML`) and a high (`DMH`)
+    product. NESO's file, titled Indicative DM Requirements and called its latest view, gives MW
+    before overholding per EFA date for six EFA blocks. Blocks run on the UK clock from 23:00 the
+    evening before; block 1 lasts 3 or 5 hours at clock changes.
+  how_used:
+    - Requirement per block against cleared `DML` and `DMH` MW in NESO's EAC results.
+    - To join EAC results, convert each block's UK start time to UTC.
+    - "Point-in-time studies: each capture is one vintage, stamped with the file's `published_at`."
+  chart:
+    type: line
+    silver: neso_data_portal/dm_requirements
+    time: efa_date
+    value: efa1
+    group: service
+    series_order: [DMH, DML]
+    filter:
+      - {column: published_at, op: eq, value: "2026-09-22T14:48:12.082389"}
+    aggregation: mean
+    window: {start: "2026-09-23", end: "2026-10-31"}
+    unit: MW
+  chart_view:
+    title: Dynamic Moderation requirement in EFA block 1, by date
+    caption: >-
+      Silver `dm_requirements`, MW before overholding: EFA block 1 (23:00 the evening before to
+      03:00, UK time) for each EFA date, 23 September to 31 October 2026, from the file NESO last
+      modified on 22 September 2026.
+    alt: >-
+      Line chart of NESO's Dynamic Moderation requirement for EFA block 1 in MW, one point per EFA
+      date from 23 September to 31 October 2026. Both lines are flat across the 39 dates: the high
+      product, DMH, at 570 MW and the low product, DML, at 530 MW.
+    x_label: EFA date
+    y_min: 0
+    key:
+      - {series: DMH, label: High product, codes: DMH, paint: petrol, note: "570 MW on all 39 dates here; every block repeats on every date in this file."}
+      - {series: DML, label: Low product, codes: DML, paint: clay, note: "530 MW on all 39 dates here."}
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then the file downloaded whole unless its
+      `last_modified` is unchanged. Dates select nothing.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=dynamic-moderation-requirements"
+      - "GET https://api.neso.energy/dataset/c6e7dc26-64c3-4651-a664-16a8512768ab/resource/2aae8747-776d-4fe5-af9c-adcf38f1af8a/download/dm-requirements.csv"
+    commands:
+      - {run: gridflow ingest neso_data_portal dm_requirements --last 24h, comment: "whole file; window must end recently"}
+      - {run: gridflow transform neso_data_portal dm_requirements --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: published_at, op: eq, value: "2026-09-22T14:48:12.082389"}
+        - {column: efa_date, op: in, value: ["2026-09-23", "2026-10-25", "2026-10-26", "2026-10-31"]}
+      order_by: [efa_date, service]
+      columns: [efa_date, service, efa1, efa2, efa3, efa4, efa5, efa6, timestamp_utc, published_at]
+    key: [efa_date, service]
+    caption: "First and last dates; around 25 October's clock change `timestamp_utc` goes from 23:00 to 00:00 UTC."
+    fields:
+      efa_date: EFA date of the requirement; block 1 starts 23:00 UK time the evening before
+      service: "`DML` (low) or `DMH` (high); NESO's column dictionary lists Dynamic Regulation's `DR-L`, `DR-H`"
+      efa1: Block 1, 23:00 to 03:00 UK time, MW before overholding (NESO)
+      efa2: Block 2, 03:00 to 07:00 UK time, MW before overholding (NESO)
+      efa3: Block 3, 07:00 to 11:00 UK time, MW before overholding (NESO)
+      efa4: Block 4, 11:00 to 15:00 UK time, MW before overholding (NESO)
+      efa5: Block 5, 15:00 to 19:00 UK time, MW before overholding (NESO)
+      efa6: Block 6, 19:00 to 23:00 UK time, MW before overholding (NESO)
+      timestamp_utc: UK midnight starting calendar date `efa_date`, in UTC; block 1 starts an hour earlier
+      published_at: "NESO's last-modified time for the whole file, read as UTC"
+      bronze_capture_id: Path of the bronze capture the row was read from
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      Reads with `data.sql` from the `_latest` view, the newest capture, because NESO updates the
+      file in place and a dated `query()` on `efa_date` finds only the dates a capture holds.
+    cells:
+      - |
+        df = data.sql("""
+            SELECT efa_date, service, efa1, efa2, efa3, efa4, efa5, efa6,
+                   published_at AT TIME ZONE 'UTC' AS published_utc
+            FROM silver_neso_data_portal_dm_requirements_latest
+            ORDER BY efa_date, service""")
+        df.groupby("service").agg(
+            first=("efa_date", "min"), last=("efa_date", "max"),
+            dates=("efa_date", "count"), published_utc=("published_utc", "max"))
+      - |
+        blocks = [f"efa{i}" for i in range(1, 7)]
+        df.drop_duplicates(["service", *blocks])[["service", *blocks]]
+      - |
+        first = df[df.efa_date == df.efa_date.min()].set_index("service")[blocks].T
+        first.index = [b[3:] for b in blocks]
+        ax = first.plot.bar(
+            color=["#155A6E", "#C77E3C"], ylim=(0, 750), figsize=(8, 3.5), rot=0,
+            xlabel="EFA block (1 opens 23:00 UK time the evening before)", ylabel="requirement, MW")
+        ax.legend(title="service", loc="upper center", ncols=2);
+    needs: a capture of the requirement file
+    plot_alt: >-
+      Bar plot of NESO's Dynamic Moderation requirement in MW for EFA blocks 1 to 6 of EFA date 23
+      September 2026. High, DMH (petrol): 570 MW in blocks 1 and 6, 510 MW in blocks 2 to 5. Low,
+      DML (clay): 530 MW in blocks 1, 4 and 6, 500 MW in blocks 2, 3 and 5.
+  related:
+    - {dataset: neso_data_portal/eac-auction-results, note: "Cleared `DML` and `DMH` MW and price for each EFA block"}
+    - {dataset: neso_data_portal/dynamic-regulation-requirements, note: "The same requirement layout for Dynamic Regulation, `DRL` and `DRH`"}
+    - {dataset: neso_data_portal/long-term-forecasts-for-dc-dm-dr-requirements, note: "NESO's twelve-month outlook for this service, as weights over bands"}
+    - {dataset: elexon/freq, note: The system frequency Dynamic Moderation responds to}
 ---
 
 # Dynamic Moderation Requirements
@@ -121,8 +233,10 @@ and CRLF line endings; the existing CSV reader handles both and the first header
   2026-10-31T00:00:00Z). This is a **date-label anchor**, not the start of EFA block 1 and not the start of
   any block: an EFA day begins at 23:00 local time on the previous calendar date, and the six blocks run on
   the UK local clock. The engine cannot compose a date plus block label into a row-specific instant
-  (RULINGS 572/588, 720), so the six blocks stay wide and no block start is derived. `TODO: verify` the
-  EFA block boundaries against NESO's EAC guidance before anyone composes block instants. The date format
+  (RULINGS 572/588, 720), so the six blocks stay wide and no block start is derived. The EFA block
+  boundaries are NESO's own: EFA 1 runs 23:00 local on the previous date to 03:00, then four-hour blocks
+  to 23:00, so EFA 1 is 3 hours on the spring clock-change date and 5 on the autumn one (EAC explainer
+  Appendix B; DC history dictionary; @.planning/phases/v0.22-K-AS-1/K-AS-1-FACTS.md §5.1). The date format
   is `%d/%m/%Y` (day first; confirmed in the body, e.g. `23/09/2026`).
 
 **Whole-capture semantics.** `latest` is `whole_capture`: each capture is a replacement view of the table.
@@ -136,7 +250,9 @@ capture. That is a measurement of one capture and must not be generalised.
 
 **Value ranges.** From FACTS (§4.6), as measured in the single capture: `efa1` 530 to 570, `efa2` 500 to
 510, `efa3` 500 to 510, `efa4` 510 to 530, `efa5` 500 to 510, `efa6` 530 to 570 (MW). The captured values
-are whole numbers. These are one capture's observations, not vendor limits.
+are whole numbers. Each service carries one block profile on all 39 dates of the capture (`DMH` 570,
+510, 510, 510, 510, 570; `DML` 530, 500, 500, 530, 500, 530; silver, 2026-10-18). These are one
+capture's observations, not vendor limits.
 
 ## Bronze capture
 
