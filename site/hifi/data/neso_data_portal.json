@@ -1,7 +1,7 @@
 {
   "_about": "The page set and hub content for this vendor: every dataset the site documents, grouped as the hub lists it, with its families. Rendered by gridflow-build.",
   "name": "NESO Data Portal",
-  "intro": "NESO’s open-data portal, a CKAN file catalogue. gridflow reads three of its files: the GB generation mix since 2009, the embedded wind and solar forecast, and daily wind availability per BM unit.",
+  "intro": "NESO’s open-data portal, a CKAN catalogue of file packages in sixteen data groups. gridflow finds a package through CKAN’s API and downloads its files whole.",
   "facts": [
     [
       "Market",
@@ -16,10 +16,6 @@
       "`api.neso.energy`"
     ],
     [
-      "Grain",
-      "Half-hourly for the generation mix and the embedded forecast; daily per BM unit for wind availability"
-    ],
-    [
       "Connector",
       "`connectors/neso_data_portal/client.py`"
     ]
@@ -30,7 +26,11 @@
   "latest_views": [
     "historic_generation_mix",
     "embedded_wind_solar_forecast",
-    "daily_wind_availability"
+    "daily_wind_availability",
+    "demand_flexibility_utilisation_summary",
+    "eac_br_results_summary",
+    "aggregated_bsad",
+    "constraint_breakdown"
   ],
   "notebook": {
     "source": "neso_data_portal",
