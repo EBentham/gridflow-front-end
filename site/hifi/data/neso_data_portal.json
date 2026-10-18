@@ -65,7 +65,10 @@
         "historic_generation_mix",
         "embedded_wind_solar_forecast",
         "daily_wind_availability",
-        "demand-flexibility"
+        "demand-flexibility",
+        "eac-br-auction-results",
+        "aggregated-bsad",
+        "constraint-breakdown"
       ]
     }
   ],
@@ -80,12 +83,29 @@
         "demand_flexibility_industry_notification",
         "demand_flexibility_service_requirement"
       ]
+    },
+    {
+      "slug": "eac-br-auction-results",
+      "title": "Balancing Reserve auction results",
+      "note": "eac-br-auction-results",
+      "members": [
+        "eac_br_results_summary",
+        "eac_br_results_by_unit",
+        "eac_br_results_buy_orders",
+        "eac_br_results_sell_orders"
+      ]
     }
   ],
   "names": {
     "historic_generation_mix": "Historic GB generation mix",
     "embedded_wind_solar_forecast": "Embedded wind and solar forecast",
-    "daily_wind_availability": "Daily wind availability"
+    "daily_wind_availability": "Daily wind availability",
+    "aggregated-bsad": "Aggregated BSAD",
+    "constraint-breakdown": "Constraint breakdown"
   },
-  "dropped": {}
+  "dropped": {},
+  "package_tables": {
+    "aggregated-bsad": "aggregated_bsad",
+    "constraint-breakdown": "constraint_breakdown"
+  }
 }
