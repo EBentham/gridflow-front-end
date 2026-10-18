@@ -1,0 +1,128 @@
+{
+ "dataset": "neso_data_portal/qr_auction_requirement_fc",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "5677626c6e7500995059cb5dc8106203fcd6692c792f41ee90d662c190b1b62e",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.sql(\"\"\"\n    SELECT auction_date, service_delivery_date, forecast_produced_on, service_window,\n           service_window_start_time,\n           positive_quick_reserve_requirement_mw AS positive_mw,\n           negative_quick_reserve_requirement_mw AS negative_mw,\n           published_at AT TIME ZONE 'UTC' AS published_utc\n    FROM silver_neso_data_portal_qr_auction_requirement_fc_latest\n    ORDER BY service_delivery_date,\n             strptime(service_window_start_time, '%d/%m/%Y %H:%M'), service_window\"\"\")\ndf.groupby(\"forecast_produced_on\").agg(\n    first=(\"service_delivery_date\", \"min\"), last=(\"service_delivery_date\", \"max\"),\n    days=(\"service_delivery_date\", \"nunique\"), published_utc=(\"published_utc\", \"max\"))",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "first",
+      "last",
+      "days",
+      "published_utc",
+      "forecast_produced_on",
+      "",
+      "",
+      "",
+      ""
+     ],
+     "index": [
+      "2026-08-31",
+      "2026-09-22"
+     ],
+     "rows": [
+      [
+       "2026-09-23",
+       "2026-09-30",
+       "8",
+       "2026-09-22 14:48:27.491459"
+      ],
+      [
+       "2026-10-01",
+       "2026-10-31",
+       "31",
+       "2026-09-22 14:48:27.491459"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "df[[\"positive_mw\", \"negative_mw\"]].value_counts()",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "positive_mw  negative_mw\n500.0        300.0          1404\n300.0        300.0           470\nName: count, dtype: int64"
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "low = df[df.positive_mw.lt(500)].groupby(\"service_delivery_date\").service_window\nlow.agg([\"first\", \"last\", \"size\"]).value_counts()",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "first  last  size\n2      13    12      38\n             14       1\nName: count, dtype: int64"
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "source": "day = df[df.service_delivery_date.astype(str) == \"2026-10-01\"]\nday.set_index(day.service_window_start_time.str[11:16])[[\"positive_mw\", \"negative_mw\"]].plot(\n    drawstyle=\"steps-post\", color=[\"#155A6E\", \"#C77E3C\"], ylim=(0, 600), figsize=(8, 3.5),\n    rot=0, xlabel=\"window start, UK local time as written\", ylabel=\"requirement, MW\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "qr_auction_requirement_fc-6.png",
+     "width": 699,
+     "height": 342
+    }
+   ]
+  }
+ ]
+}

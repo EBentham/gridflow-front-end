@@ -4,9 +4,131 @@ package: "quick-reserve-auction-requirement-forecast"
 dataset_key: "qr_auction_requirement_fc"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-13
+updated: 2026-10-18
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: Quick Reserve requirement forecast
+  summary: >-
+    NESO's forecast Quick Reserve requirement for each daily auction: positive and negative MW for
+    every half-hour service window.
+  facts:
+    vendor: "NESO Data Portal, package `quick-reserve-auction-requirement-forecast`: one CSV file, no archive"
+    cadence: "Updated monthly (NESO's catalogue); each auction is daily"
+    grain: One row per auction date and half-hour service window, 48 on an ordinary day
+  landscape: market
+  what_it_is: >-
+    Quick Reserve, positive and negative, is NESO's reserve for reacting to pre-fault disturbances
+    and bringing frequency back near 50.0 Hz. NESO buys it in a daily auction for a delivery day of
+    half-hour windows from 23:00 UK time the evening before. This file forecasts each window's
+    requirement in MW; NESO updates it monthly.
+  how_used:
+    - Requirement against cleared `PQR` and `NQR` MW per window, from NESO's EAC results.
+    - To join EAC results, convert `service_window_start_time` from UK local time to UTC.
+    - "Point-in-time studies: each capture is one vintage, stamped with the file's `published_at`."
+  chart:
+    type: line
+    silver: neso_data_portal/qr_auction_requirement_fc
+    time: service_window_start_time
+    time_text: {format: "%d/%m/%Y %H:%M"}
+    filter:
+      - {column: service_delivery_date, op: eq, value: "2026-10-01"}
+    values:
+      - {column: positive_quick_reserve_requirement_mw, series: positive}
+      - {column: negative_quick_reserve_requirement_mw, series: negative}
+    aggregation: mean
+    window: {start: "2026-09-30", end: "2026-10-01"}
+    unit: MW
+  chart_view:
+    title: Quick Reserve requirement by window, 1 October 2026
+    caption: >-
+      Silver `qr_auction_requirement_fc`, MW: NESO's forecast for service day 1 October 2026
+      (auction 30 September, produced 22 September), each half-hour window from 23:00 the evening
+      before, drawn at its start on the UK clock as NESO writes it.
+    alt: >-
+      Line chart of NESO's forecast Quick Reserve requirement in MW for the 48 half-hour windows of
+      service day 1 October 2026, from 23:00 on 30 September, UK local time. Negative reserve is flat
+      at 300 MW. Positive reserve is 500 MW in the first window, 300 MW from 23:30 to the window
+      starting 05:00, where the two lines meet, and 500 MW from 05:30 to the last window, 22:30.
+    x_label: window start, UK local time as written
+    y_min: 0
+    key:
+      - {series: positive, label: Positive reserve, paint: petrol, note: "300 MW for windows starting 23:30 to 05:00, else 500 MW; the same every day in this file."}
+      - {series: negative, label: Negative reserve, paint: clay, note: "300 MW in every window of every day in this file."}
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then the file downloaded whole unless its
+      `last_modified` is unchanged. Dates select nothing.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=quick-reserve-auction-requirement-forecast"
+      - "GET https://api.neso.energy/dataset/7247a5da-563e-4159-b8c1-e388e39ff5a2/resource/f012de08-b258-408b-bc41-f885e183f97f/download/qr.csv"
+    commands:
+      - {run: gridflow ingest neso_data_portal qr_auction_requirement_fc --last 24h, comment: "whole file; window must end recently"}
+      - {run: gridflow transform neso_data_portal qr_auction_requirement_fc --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: service_delivery_date, op: in, value: ["2026-09-30", "2026-10-01"]}
+        - {column: service_window, op: in, value: ["1", "2", "13", "14"]}
+      order_by: [service_delivery_date]
+      columns: [auction_date, service_window, positive_quick_reserve_requirement_mw,
+                negative_quick_reserve_requirement_mw, forecast_produced_on, service_window_start_time,
+                service_delivery_date, service_window_end_time]
+    key: [auction_date, service_window]
+    caption: "Service days 30 September and 1 October around both steps, from forecasts produced on different dates."
+    fields:
+      auction_date: Date of the daily auction these requirements apply to (NESO)
+      service_window: "`1` to `48`; autumn change day adds `5x`, `6x`; NESO's dictionary omits `5`, `6`"
+      service_window_start_time: Window start, UK local time as NESO writes it, day first; kept as text
+      positive_quick_reserve_requirement_mw: Positive Quick Reserve requirement, MW (NESO's unit)
+      negative_quick_reserve_requirement_mw: Negative Quick Reserve requirement, MW (NESO's unit), given as a positive figure
+      forecast_produced_on: Date NESO produced the forecast; a date only, not a publication time
+      service_delivery_date: Service day the windows belong to; its window 1 starts 23:00 the day before
+      service_window_end_time: "Window end as NESO writes it (`:29` or `:59`); kept as text"
+      timestamp_utc: UK midnight starting calendar date `service_delivery_date`, in UTC; window 1 starts an hour earlier
+      published_at: "NESO's last-modified time for the whole file, read as UTC"
+      bronze_capture_id: Path of the bronze capture the row was read from
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      Reads with `data.sql` from the `_latest` view, the newest capture, because NESO updates the
+      file monthly and a dated `query()` on `service_delivery_date` finds only the days a capture
+      holds.
+    cells:
+      - |
+        df = data.sql("""
+            SELECT auction_date, service_delivery_date, forecast_produced_on, service_window,
+                   service_window_start_time,
+                   positive_quick_reserve_requirement_mw AS positive_mw,
+                   negative_quick_reserve_requirement_mw AS negative_mw,
+                   published_at AT TIME ZONE 'UTC' AS published_utc
+            FROM silver_neso_data_portal_qr_auction_requirement_fc_latest
+            ORDER BY service_delivery_date,
+                     strptime(service_window_start_time, '%d/%m/%Y %H:%M'), service_window""")
+        df.groupby("forecast_produced_on").agg(
+            first=("service_delivery_date", "min"), last=("service_delivery_date", "max"),
+            days=("service_delivery_date", "nunique"), published_utc=("published_utc", "max"))
+      - |
+        df[["positive_mw", "negative_mw"]].value_counts()
+      - |
+        low = df[df.positive_mw.lt(500)].groupby("service_delivery_date").service_window
+        low.agg(["first", "last", "size"]).value_counts()
+      - |
+        day = df[df.service_delivery_date.astype(str) == "2026-10-01"]
+        day.set_index(day.service_window_start_time.str[11:16])[["positive_mw", "negative_mw"]].plot(
+            drawstyle="steps-post", color=["#155A6E", "#C77E3C"], ylim=(0, 600), figsize=(8, 3.5),
+            rot=0, xlabel="window start, UK local time as written", ylabel="requirement, MW");
+    needs: a capture of the requirement file
+    plot_alt: >-
+      Step plot of NESO's forecast Quick Reserve requirement in MW for each half-hour window of
+      service day 1 October 2026, from 23:00 on 30 September to 22:30, UK local time as written.
+      Negative reserve (clay) holds 300 MW. Positive reserve (petrol) is 500 MW at 23:00, 300 MW from
+      23:30, where the lines meet, and 500 MW from 05:30.
+  related:
+    - {dataset: neso_data_portal/eac-auction-results, note: "Cleared `PQR` and `NQR` MW and price for the same windows"}
+    - {dataset: neso_data_portal/slow-reserve-requirement-forecast, note: The same file layout and key for Slow Reserve}
+    - {dataset: neso_data_portal/balancing-reserve-auction-requirement-forecast, note: "Balancing Reserve's forecast, on the same half-hour service windows"}
+    - {dataset: elexon/freq, note: The system frequency Quick Reserve helps bring back near 50 Hz}
 ---
 
 # Quick Reserve Auction Requirement Forecast
@@ -191,6 +313,9 @@ excluded. The body has **38 service days with 48 windows and one with 50** (the 
 2026-10-25): 38 x 48 + 50 = 1,874. The requirement values observed are: positive requirement
 **300 MW on 470 rows and 500 MW on 1,404 rows**; negative requirement **300 MW on all 1,874 rows**.
 These are single-capture observations of a forecast, not a vendor-stated range.
+Every service day in the capture carries the same profile (silver, 2026-10-18): positive 500 MW in
+window `1`, 300 MW in windows `2` to `13` (and `5x`, `6x` on 2026-10-25), 500 MW in windows `14` to
+`48`, under both production dates.
 
 Silver layout: one Parquet file per capture under
 `C:/gridflow-data/silver/neso_data_portal/qr_auction_requirement_fc/year=2026/month=10/`. The
@@ -277,3 +402,5 @@ Reserve; the five held families are listed on their own pages.
 @./balancing-reserve-auction-requirement-forecast.md. The Dynamic requirement and long-term
 tables are in @./dynamic-moderation-requirements.md,
 @./dynamic-regulation-requirements.md and @./long-term-forecasts-for-dc-dm-dr-requirements.md.
+Slow Reserve has the same eight-column layout, key, clocks and temporal recipe (gridflow registry
+`slow-reserve-requirement-forecast.json`): @./slow-reserve-requirement-forecast.md.
