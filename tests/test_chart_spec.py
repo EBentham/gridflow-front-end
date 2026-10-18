@@ -8,7 +8,7 @@ from typing import Any
 
 import pytest
 
-from gridflow_front_end import chart_spec
+from gridflow_front_end import build, chart_spec
 from gridflow_front_end.page_fields import parse_page_fields
 from gridflow_front_end.paths import DEFAULT_VAULT, SITE_DIR
 
@@ -143,7 +143,7 @@ def test_committed_specs_are_valid_and_their_series_current() -> None:
     assert series_files
     for path in series_files:
         vendor, dataset = path.parent.name, path.stem
-        note = DEFAULT_VAULT / vendor / f"{dataset}.md"
+        note = build.note_path(DEFAULT_VAULT, vendor, dataset)
         vault_chart = parse_page_fields(note.read_text(encoding="utf-8"))[0].chart
         spec, _origin, _notes = chart_spec.resolve_spec(SITE_DIR, vendor, dataset, vault_chart)
         assert spec is not None, path
