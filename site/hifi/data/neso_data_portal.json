@@ -107,5 +107,766 @@
   "package_tables": {
     "aggregated-bsad": "aggregated_bsad",
     "constraint-breakdown": "constraint_breakdown"
+  },
+  "catalogue": {
+    "_about": "NESO's catalogue as the hub draws it: its data groups in portal order, each with NESO's description and its packages (NESO's titles and CKAN names). `page_packages` names the CKAN package of a page not named after it; a package is a link when a page in `groups` documents it. `plan` lays the groups out as plots: a slug is one plot, `row` sets its children side by side, `col` stacks them; `wide` from 1100 px, `narrow` below, and `tag_narrow` plots carry their name beneath them when narrow.",
+    "page_packages": {
+      "historic_generation_mix": "historic-generation-mix",
+      "embedded_wind_solar_forecast": "embedded-wind-and-solar-forecasts",
+      "daily_wind_availability": "daily-wind-availability"
+    },
+    "plan": {
+      "wide": [
+        {
+          "row": [
+            "ancillary-services",
+            {
+              "col": [
+                {
+                  "row": [
+                    "balancing-costs",
+                    "constraint-management"
+                  ]
+                },
+                "trading"
+              ]
+            }
+          ]
+        },
+        {
+          "row": [
+            "demand",
+            "generation",
+            {
+              "col": [
+                "carbon-intensity",
+                "demand-flexibility-service"
+              ]
+            }
+          ]
+        },
+        {
+          "row": [
+            {
+              "col": [
+                "fes-pathways-to-net-zero",
+                {
+                  "row": [
+                    "electricity-market-reform",
+                    "strategic-energy-planning"
+                  ]
+                }
+              ]
+            },
+            "system",
+            "interconnectors",
+            {
+              "col": [
+                "network-charges",
+                "connection-registers",
+                "data-portal-changes-and-known-issues"
+              ]
+            }
+          ]
+        }
+      ],
+      "narrow": [
+        {
+          "col": [
+            "ancillary-services",
+            {
+              "row": [
+                "balancing-costs",
+                "constraint-management",
+                "trading"
+              ]
+            }
+          ]
+        },
+        {
+          "col": [
+            {
+              "row": [
+                "demand",
+                "generation"
+              ]
+            },
+            {
+              "row": [
+                "carbon-intensity",
+                "demand-flexibility-service"
+              ]
+            }
+          ]
+        },
+        {
+          "col": [
+            "fes-pathways-to-net-zero",
+            {
+              "row": [
+                "system",
+                "interconnectors"
+              ]
+            },
+            {
+              "row": [
+                "network-charges",
+                "connection-registers"
+              ]
+            },
+            {
+              "row": [
+                "electricity-market-reform",
+                "strategic-energy-planning",
+                "data-portal-changes-and-known-issues"
+              ]
+            }
+          ]
+        }
+      ],
+      "tag_narrow": [
+        "electricity-market-reform",
+        "strategic-energy-planning",
+        "data-portal-changes-and-known-issues"
+      ]
+    },
+    "groups": [
+      {
+        "name": "Ancillary services",
+        "slug": "ancillary-services",
+        "blurb": "Data on services that balance demand and supply including Fast Reserve, Firm Frequency Response and STOR.",
+        "packages": [
+          {
+            "title": "Aggregated Balancing Services Adjustment Data (BSAD)",
+            "slug": "aggregated-bsad"
+          },
+          {
+            "title": "Ancillary Services Important Industry Notifications",
+            "slug": "ancillary-services-important-industry-notifications"
+          },
+          {
+            "title": "Balancing Reserve Auction Requirement Forecast",
+            "slug": "balancing-reserve-auction-requirement-forecast"
+          },
+          {
+            "title": "Balancing Services Adjustment Data (BSAD) Forward Contracts",
+            "slug": "balancing-services-adjustment-data-forward-contracts"
+          },
+          {
+            "title": "Contract Transfer of Obligation",
+            "slug": "contract-transfer-of-obligation"
+          },
+          {
+            "title": "Disaggregated Balancing Services Adjustment Data (BSAD)",
+            "slug": "disaggregated-bsad"
+          },
+          {
+            "title": "Dynamic Containment 4 Day Forecast",
+            "slug": "dynamic-containment-4-day-forecast"
+          },
+          {
+            "title": "Dynamic Containment, Regulation and Moderation auction results",
+            "slug": "dynamic-containment-data"
+          },
+          {
+            "title": "Dynamic Moderation Requirements",
+            "slug": "dynamic-moderation-requirements"
+          },
+          {
+            "title": "Dynamic Regulation Requirements",
+            "slug": "dynamic-regulation-requirements"
+          },
+          {
+            "title": "EAC mock auction results",
+            "slug": "eac-mock-auction-results"
+          },
+          {
+            "title": "EAC-BR Auction Results",
+            "slug": "eac-br-auction-results"
+          },
+          {
+            "title": "EAC-BR Mock Auction Results",
+            "slug": "eac-br-mock-auction-results"
+          },
+          {
+            "title": "Enduring Auction Capability (EAC) auction results",
+            "slug": "eac-auction-results"
+          },
+          {
+            "title": "Firm Frequency Response (FFR) Post Tender Reports",
+            "slug": "firm-frequency-response-post-tender-reports"
+          },
+          {
+            "title": "Long-Term Forecasts for DC, DM and DR Requirements",
+            "slug": "long-term-forecasts-for-dc-dm-dr-requirements"
+          },
+          {
+            "title": "Non-BM ancillary service dispatch platform (ASDP) instructions",
+            "slug": "non-bm-ancillary-service-dispatch-platform-asdp-instructions"
+          },
+          {
+            "title": "Non-BM Ancillary Service Dispatch Platform (ASDP) Window Prices",
+            "slug": "non-bm-ancillary-service-dispatch-platform-asdp-window-prices"
+          },
+          {
+            "title": "Obligatory Reactive Power Service (ORPS)",
+            "slug": "obligatory-reactive-power-service-orps-utilisation"
+          },
+          {
+            "title": "Open Balancing Platform (OBP) - Non-BM Instructions",
+            "slug": "obp-non-bm-reserve-instructions"
+          },
+          {
+            "title": "Open Balancing Platform (OBP) - Non-BM Physical Notifications (PN)",
+            "slug": "obp-non-bm-physical-notifications"
+          },
+          {
+            "title": "Open Balancing Platform (OBP) - Non-BM Reserve Availability MW and Utilisation Price",
+            "slug": "obp-reserve-availability-utilisation-price"
+          },
+          {
+            "title": "Optional Downward Flexibility Management (ODFM) Market Information",
+            "slug": "optional-downward-flexibility-management-odfm-market-information"
+          },
+          {
+            "title": "Phase 2: FFR Auction Results Summary",
+            "slug": "phase-2-ffr-auction-results-summary"
+          },
+          {
+            "title": "Quick Reserve Auction Requirement Forecast",
+            "slug": "quick-reserve-auction-requirement-forecast"
+          },
+          {
+            "title": "Short Term Operating Reserve (STOR) Day Ahead Auction Results",
+            "slug": "short-term-operating-reserve-stor-day-ahead-auction-results"
+          },
+          {
+            "title": "Short Term Operating Reserve (STOR) day ahead buy curve",
+            "slug": "short-term-operating-reserve-stor-day-ahead-buy-curve"
+          },
+          {
+            "title": "Short Term Operating Reserve (STOR) Windows",
+            "slug": "stor-windows"
+          },
+          {
+            "title": "Slow Reserve Requirement Forecast",
+            "slug": "slow-reserve-requirement-forecast"
+          },
+          {
+            "title": "Static Firm Frequency Response auction results",
+            "slug": "static-firm-frequency-response-auction-results"
+          },
+          {
+            "title": "Static Firm Frequency Response Requirement",
+            "slug": "static-firm-frequency-response-requirement"
+          }
+        ]
+      },
+      {
+        "name": "Balancing costs",
+        "slug": "balancing-costs",
+        "blurb": "Data on forecast and historic balancing costs, including BSUoS and Balancing Services charging reports.",
+        "packages": [
+          {
+            "title": "BSUoS Fixed Tariffs",
+            "slug": "bsuos-fixed-tariffs"
+          },
+          {
+            "title": "Constraint Breakdown Costs and Volume",
+            "slug": "constraint-breakdown"
+          },
+          {
+            "title": "Current Balancing Services Use of System (BSUoS) Charges",
+            "slug": "current-balancing-services-use-of-system-bsuos-data"
+          },
+          {
+            "title": "Daily Balancing Services Use of System (BSUoS) Cost Data",
+            "slug": "daily-balancing-costs-balancing-services-use-of-system"
+          },
+          {
+            "title": "Daily Balancing Services Use of System (BSUoS) Forecast",
+            "slug": "balancing-services-use-of-system-bsuos-daily-forecast"
+          },
+          {
+            "title": "Daily Balancing Services Use of System (BSUoS) Volume Data",
+            "slug": "daily-balancing-volume-balancing-services-use-of-system"
+          },
+          {
+            "title": "Great Britain System Inertia Bid and Offer Costs",
+            "slug": "gb-system-inertia-bid-and-offer-costs"
+          },
+          {
+            "title": "Monthly Balancing Services Use of System (BSUoS) Forecast Data",
+            "slug": "bsuos-monthly-forecast"
+          },
+          {
+            "title": "Skip Rates",
+            "slug": "skip-rates"
+          }
+        ]
+      },
+      {
+        "name": "Carbon intensity",
+        "slug": "carbon-intensity",
+        "blurb": "Data providing an indicative trend of regional and national carbon intensity of the GB electricity system.",
+        "packages": [
+          {
+            "title": "Carbon Intensity of Balancing Actions",
+            "slug": "carbon-intensity-of-balancing-actions"
+          },
+          {
+            "title": "Country Carbon Intensity Forecast",
+            "slug": "country-carbon-intensity-forecast"
+          },
+          {
+            "title": "Historic generation mix and carbon intensity",
+            "slug": "historic-generation-mix"
+          },
+          {
+            "title": "National Carbon Intensity Forecast",
+            "slug": "national-carbon-intensity-forecast"
+          },
+          {
+            "title": "Regional Carbon Intensity Forecast",
+            "slug": "regional-carbon-intensity-forecast"
+          }
+        ]
+      },
+      {
+        "name": "Connection registers",
+        "slug": "connection-registers",
+        "blurb": "Data showing the latest contracted position, published twice weekly.",
+        "packages": [
+          {
+            "title": "Embedded Register",
+            "slug": "embedded-register"
+          },
+          {
+            "title": "Interconnector Register",
+            "slug": "interconnector-register"
+          },
+          {
+            "title": "Transmission Entry Capacity (TEC) register",
+            "slug": "transmission-entry-capacity-tec-register"
+          }
+        ]
+      },
+      {
+        "name": "Constraint management",
+        "slug": "constraint-management",
+        "blurb": "Data on historic costs and forecast constraint volumes.",
+        "packages": [
+          {
+            "title": "24 Months Ahead Constraint Cost Forecast",
+            "slug": "24-months-ahead-constraint-cost-forecast"
+          },
+          {
+            "title": "24 Months Ahead Constraint Limits",
+            "slug": "24-months-ahead-constraint-limits"
+          },
+          {
+            "title": "Constraint Management Intertrip Service Information (CMIS)",
+            "slug": "constraint-management-intertrip-service-information-cmis"
+          },
+          {
+            "title": "Day Ahead Constraint Flows and Limits",
+            "slug": "day-ahead-constraint-flows-and-limits"
+          },
+          {
+            "title": "Operational Transparency Forum - Network congestion data",
+            "slug": "operational-transparency-forum-network-congestion-data"
+          },
+          {
+            "title": "Thermal Constraint Costs",
+            "slug": "thermal-constraint-costs"
+          },
+          {
+            "title": "Voltage System Costs",
+            "slug": "outturn-voltage-costs"
+          },
+          {
+            "title": "Week Ahead Overnight Voltage Requirement",
+            "slug": "voltage-requirement"
+          }
+        ]
+      },
+      {
+        "name": "Data Portal changes and known issues",
+        "slug": "data-portal-changes-and-known-issues",
+        "blurb": "Refer to this area for any upcoming changes to the NESO Data Portal along with any known issues that we are working to resolve.",
+        "packages": [
+          {
+            "title": "Data Portal: Planned Changes & Known Issues",
+            "slug": "data-portal-planned-changes-known-issues"
+          }
+        ]
+      },
+      {
+        "name": "Demand",
+        "slug": "demand",
+        "blurb": "Forecast and historic data for demand, interconnectors, pump storage, and wind and solar generation.",
+        "packages": [
+          {
+            "title": "2 Day Ahead Demand Forecast",
+            "slug": "2-day-ahead-demand-forecast"
+          },
+          {
+            "title": "2-14 Days Ahead Demand Forecast",
+            "slug": "2-14-days-ahead-national-demand-forecast"
+          },
+          {
+            "title": "7 Day Ahead Demand Forecast",
+            "slug": "7-day-ahead-national-forecast"
+          },
+          {
+            "title": "Day Ahead Demand Forecast",
+            "slug": "1-day-ahead-demand-forecast"
+          },
+          {
+            "title": "Day Ahead Half Hourly Demand Forecast Performance",
+            "slug": "day-ahead-half-hourly-demand-forecast-performance"
+          },
+          {
+            "title": "Demand Data Update",
+            "slug": "daily-demand-update"
+          },
+          {
+            "title": "Demand Profile Dates",
+            "slug": "demand-profile-dates"
+          },
+          {
+            "title": "Historic Demand Data",
+            "slug": "historic-demand-data"
+          },
+          {
+            "title": "Long Term (2-52 weeks ahead) National Demand Forecast",
+            "slug": "long-term-2-52-weeks-ahead-national-demand-forecast"
+          },
+          {
+            "title": "National Demand Balancing Mechanism Units",
+            "slug": "national-demand-balancing-mechanism-units"
+          },
+          {
+            "title": "School Holiday Percentages",
+            "slug": "school-holiday-percentages"
+          },
+          {
+            "title": "Transitional Regional Energy Strategic Plan (tRESP) - Demand Pathways",
+            "slug": "tresp-demand-pathways"
+          },
+          {
+            "title": "Transmission Losses",
+            "slug": "transmission-losses"
+          }
+        ]
+      },
+      {
+        "name": "Demand Flexibility Service",
+        "slug": "demand-flexibility-service",
+        "blurb": "Data for our test and live DFS events.",
+        "packages": [
+          {
+            "title": "Demand Flexibility Service",
+            "slug": "demand-flexibility"
+          },
+          {
+            "title": "Demand Flexibility Service 2022/23: Live Events",
+            "slug": "demand-flexibility-service-live-events"
+          },
+          {
+            "title": "Demand Flexibility Service 2022/23: Test Events",
+            "slug": "demand-flexibility-service-test-events"
+          },
+          {
+            "title": "Demand Flexibility Service 2023/24",
+            "slug": "demand-flexibility-service"
+          }
+        ]
+      },
+      {
+        "name": "Electricity Market Reform",
+        "slug": "electricity-market-reform",
+        "blurb": "Data on the Capacity Market and Contract for Difference for renewable energy administered by the Electricity Market Reform Delivery Body.",
+        "packages": [
+          {
+            "title": "Capacity Market Register",
+            "slug": "capacity-market-register"
+          }
+        ]
+      },
+      {
+        "name": "FES: Pathways to Net Zero",
+        "slug": "fes-pathways-to-net-zero",
+        "blurb": "Data on a range of different ways to de-carbonise and shape the future energy system, working towards the 2050 target.",
+        "packages": [
+          {
+            "title": "Building Heat Model",
+            "slug": "building-heat-model"
+          },
+          {
+            "title": "FES: Pathways to Net Zero Building Block Data",
+            "slug": "future-energy-scenario-fes-building-block-data"
+          },
+          {
+            "title": "FES: Pathways to Net Zero – Electricity Demand Summary Data table (ED1)",
+            "slug": "fes-electricity-demand-summary-data-table-ed1"
+          },
+          {
+            "title": "FES: Pathways to Net Zero – Electricity Supply Data Table (ES1)",
+            "slug": "future-energy-scenario-electricity-supply-data-table-es1"
+          },
+          {
+            "title": "FES: Pathways to Net Zero – European Electricity Supply Data Table (ES2)",
+            "slug": "fes-european-electricity-supply-data-table-es2"
+          },
+          {
+            "title": "FES: Pathways to Net Zero – Flexibility Data table (FLX1)",
+            "slug": "fes-flexibility-data-table-data-table-flx1"
+          },
+          {
+            "title": "FES: Pathways to Net Zero – Natural Gas demand definitions Data table (ED4)",
+            "slug": "fes-natural-gas-demand-definitions-ed4"
+          },
+          {
+            "title": "FES: Pathways to Net Zero – Natural Gas, Residential and non-domestic (I&C) Heat Demand Summary Data table (ED3)",
+            "slug": "fes-natural-gas-residential-and-non-domestic-i-c-heat-demand-summary-data-table-ed3"
+          },
+          {
+            "title": "FES: Pathways to Net Zero – Road Transport Notes Data Table (ED6)",
+            "slug": "fes-road-transport-notes-data-table-ed6"
+          },
+          {
+            "title": "FES: Pathways to Net Zero – Road Transport Summary Data table (ED5)",
+            "slug": "fes-road-transport-summary-data-table-ed5"
+          },
+          {
+            "title": "FES: Pathways to Net Zero – Whole System & Gas Supply - Emissions Data table (WS2)",
+            "slug": "fes-whole-system-gas-supply-emissions-data-table-ws2"
+          },
+          {
+            "title": "FES: Pathways to Net Zero – Whole System & Gas Supply Data table (WS1)",
+            "slug": "fes-whole-system-gas-supply-data-table-ws1"
+          },
+          {
+            "title": "Levelised cost of green hydrogen",
+            "slug": "levelised-cost-of-green-hydrogen"
+          },
+          {
+            "title": "Local Authority Level Spatial Heat Model Outputs (FES)",
+            "slug": "local-authority-level-spatial-heat-model-outputs-fes"
+          },
+          {
+            "title": "Regional breakdown of FES data (Electricity)",
+            "slug": "regional-breakdown-of-fes-data-electricity"
+          },
+          {
+            "title": "Resource Adequacy in the 2030s",
+            "slug": "resource-adequacy-in-2030s"
+          }
+        ]
+      },
+      {
+        "name": "Generation",
+        "slug": "generation",
+        "blurb": "Forecast volumes and cost for reserve margin, wind generation, and generation by fuel type.",
+        "packages": [
+          {
+            "title": "14 Days Ahead Operational Metered Wind Forecasts",
+            "slug": "14-days-ahead-operational-metered-wind-forecasts"
+          },
+          {
+            "title": "14 Days Ahead Wind Forecasts",
+            "slug": "14-days-ahead-wind-forecasts"
+          },
+          {
+            "title": "Daily & Weekly NRAPM (Negative Reserve Active Power Margin) Forecast",
+            "slug": "negative-reserve-active-power-margin-nrapm-forecast"
+          },
+          {
+            "title": "Daily operational planning margin requirement (OPMR)",
+            "slug": "daily-opmr"
+          },
+          {
+            "title": "Daily Wind Availability",
+            "slug": "daily-wind-availability"
+          },
+          {
+            "title": "Day Ahead Wind Forecast",
+            "slug": "day-ahead-wind-forecast"
+          },
+          {
+            "title": "Embedded Wind and Solar Forecasts",
+            "slug": "embedded-wind-and-solar-forecasts"
+          },
+          {
+            "title": "Monthly operational metered wind output",
+            "slug": "monthly-operational-metered-wind-output"
+          },
+          {
+            "title": "Transitional Regional Energy Strategic Plan (tRESP) - Generation Pathways",
+            "slug": "tresp-generation-pathways"
+          },
+          {
+            "title": "Weekly operational planning margin requirement (OPMR)",
+            "slug": "weekly-opmr"
+          },
+          {
+            "title": "Weekly Wind Availability",
+            "slug": "weekly-wind-availability"
+          },
+          {
+            "title": "Wind BOA Volumes",
+            "slug": "wind-bmu-boa-volumes"
+          }
+        ]
+      },
+      {
+        "name": "Interconnectors",
+        "slug": "interconnectors",
+        "blurb": "Data relating to operational restrictions limiting interconnector flows connected to GB.",
+        "packages": [
+          {
+            "title": "BritNed - NESO's Intraday Trading Limit",
+            "slug": "brit-ned"
+          },
+          {
+            "title": "ElecLink - NESO's Net Transfer Capacity",
+            "slug": "eleclink"
+          },
+          {
+            "title": "IFA - NESO's Intraday Transfer Limit",
+            "slug": "ifa"
+          },
+          {
+            "title": "IFA2 - NESO's Intraday Transfer Limit",
+            "slug": "ifa2"
+          },
+          {
+            "title": "NemoLink - NESO's Net Transfer Capacity",
+            "slug": "nemolink"
+          },
+          {
+            "title": "North Sea Link - NESO's Net Transfer Capacity",
+            "slug": "nsl"
+          },
+          {
+            "title": "Viking Link - NESO's Net Transfer Capacity",
+            "slug": "viking"
+          }
+        ]
+      },
+      {
+        "name": "Network charges",
+        "slug": "network-charges",
+        "blurb": "TNUoS tariffs and publications associated with TNUoS revenue and charges.",
+        "packages": [
+          {
+            "title": "Assistance for Areas of High Electricity Distribution Costs (AAHEDC) Tariffs",
+            "slug": "aahedc-tariffs"
+          },
+          {
+            "title": "GIS Boundaries for GB Generation Charging Zones",
+            "slug": "gis-boundaries-for-gb-generation-charging-zones"
+          },
+          {
+            "title": "Transmission Network Use of System (TNUoS) Tariffs",
+            "slug": "transmission-network-use-of-system-tnuos-tariffs"
+          }
+        ]
+      },
+      {
+        "name": "Strategic Energy Planning",
+        "slug": "strategic-energy-planning",
+        "blurb": "Data used in strategic energy planning, including in the development of the first Strategic Spatial Energy Plan.",
+        "packages": [
+          {
+            "title": "Strategic Spatial Energy Plan (SSEP) Onshore Publication Zone Shapefile",
+            "slug": "ssep-onshore-publication-zone-shapefile"
+          }
+        ]
+      },
+      {
+        "name": "System",
+        "slug": "system",
+        "blurb": "System-wide data including historic system frequency data.",
+        "packages": [
+          {
+            "title": "ETYS GB Transmission System Boundaries",
+            "slug": "etys-gb-transmission-system-boundaries"
+          },
+          {
+            "title": "GIS Boundaries for GB DNO Licence Areas",
+            "slug": "gis-boundaries-for-gb-dno-license-areas"
+          },
+          {
+            "title": "GIS Boundaries for GB Grid Supply Points",
+            "slug": "gis-boundaries-for-gb-grid-supply-points"
+          },
+          {
+            "title": "Monthly Utilisation data of Voltage Contracted units",
+            "slug": "monthly-utilisation-data-of-voltage-contracted-units"
+          },
+          {
+            "title": "Stability midterm (Y-1) utilisation report",
+            "slug": "stability-midterm-y-1-utilisation-report"
+          },
+          {
+            "title": "Stability Pathfinder service information",
+            "slug": "stability-pathfinder-service-information"
+          },
+          {
+            "title": "System Frequency",
+            "slug": "system-frequency-data"
+          },
+          {
+            "title": "System Inertia",
+            "slug": "system-inertia"
+          },
+          {
+            "title": "System Inertia Cost",
+            "slug": "system-inertia-cost"
+          },
+          {
+            "title": "System Operating Plan (SOP)",
+            "slug": "system-operating-plan-sop"
+          }
+        ]
+      },
+      {
+        "name": "Trading",
+        "slug": "trading",
+        "blurb": "We trade power exchange, forward energy, and balancing contracts to meet forecast energy needs, in advance of the balancing mechanism.",
+        "packages": [
+          {
+            "title": "Balancing Services Contract Enactment",
+            "slug": "balancing-services-contract-enactment"
+          },
+          {
+            "title": "Day-Ahead Power Exchange prices (Nord Pool)",
+            "slug": "day-ahead-power-exchange-prices-nordpool"
+          },
+          {
+            "title": "Historic GTMA (Grid Trade Master Agreement) Trades Data",
+            "slug": "historic-gtma-grid-trade-master-agreement-trades-data"
+          },
+          {
+            "title": "Index Linked Contracted Energy Volume",
+            "slug": "index-linked-contract-volume"
+          },
+          {
+            "title": "Interconnector Requirement and Auction Summary Data",
+            "slug": "interconnector-requirement-and-auction-summary-data"
+          },
+          {
+            "title": "Super Stable Export Limit Contract Enactment",
+            "slug": "super-stable-export-limit-contract-enactment"
+          },
+          {
+            "title": "Upcoming trades",
+            "slug": "upcoming-trades"
+          }
+        ]
+      }
+    ]
   }
 }
