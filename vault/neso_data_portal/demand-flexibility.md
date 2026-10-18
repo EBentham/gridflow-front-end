@@ -7,6 +7,137 @@ skeleton: false
 updated: 2026-10-14
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: Demand Flexibility Service
+  summary: >-
+    NESO's Demand Flexibility Service: for each half-hour window, the volume asked, the bids
+    accepted and their cost, and later what was delivered.
+  facts:
+    vendor: "NESO Data Portal, package `demand-flexibility`: four tables from seven CSV files"
+    cadence: Ad hoc, as NESO's catalogue states
+    grain: "Summary: one row per delivery window and requirement type; the report adds DFS unit"
+    history: "Archive 29 Nov 2024 to 27 Mar 2026; current file starts 14 Apr 2026"
+  landscape: market
+  what_it_is: >-
+    NESO buys flexibility in half-hour windows: providers bid volume and price per DFS unit, and
+    NESO accepts bids. The summary totals each window, later adding settled delivery; the report
+    lists every bid. NESO's newest summary file puts two events in one window, which silver's key
+    (no `event_id`) cannot hold, so this page stops at the 6 October 2026 file.
+  how_used:
+    - DFS cost and accepted MW per day or per event, as a balancing-cost feature.
+    - "Bid stacks from the report: Accepted and Rejected volume against price, per window."
+    - Settled against accepted MW per window; settlement arrives later, so not at auction time.
+  chart:
+    type: line
+    silver: neso_data_portal/demand_flexibility_utilisation_summary
+    time: delivery_date
+    value: dfs_provider_bids_accepted_total_cost_gbp
+    group: event_type
+    group_map: {Downwards: downwards, Upwards: upwards}
+    group_null: archive
+    series_order: [archive, downwards, upwards]
+    aggregation: sum
+    window: {start: "2024-11-29", end: "2026-10-06"}
+    unit: "£"
+  chart_view:
+    title: Accepted DFS cost per day, November 2024 to October 2026
+    caption: >-
+      Silver table `demand_flexibility_utilisation_summary`, £: each delivery date's
+      indicative accepted cost, summed over its windows, `Live` and `Test`, 29 November 2024 to 6
+      October 2026. Days with no windows are absent; a day with nothing accepted is drawn at zero.
+    alt: >-
+      Line chart of daily accepted DFS cost from neso_data_portal/demand_flexibility_utilisation_summary,
+      in £, for delivery dates 29 November 2024 to 6 October 2026, one point per day with windows.
+      Archive-file days peak at £200,159 on 8 January 2025 and £197,660 on 22 January 2025; after
+      January 2025 they stay below £54,000. Downwards days from 14 April 2026 peak at £139,293 on 24
+      June 2026 and reach £93,909 on 22 September 2026. Upwards days sit at or near zero, except
+      £27,373 on 30 August 2026.
+    x_label: delivery date; days with no windows absent
+    key:
+      - {series: archive, label: Archive file, paint: olive, note: "Rows from NESO's archive file carry no event type."}
+      - {series: downwards, label: Downwards events, codes: Downwards, paint: petrol, note: "NESO's label; the file does not define the direction."}
+      - {series: upwards, label: Upwards events, codes: Upwards, paint: clay, note: "`Live` Upwards days never top £10 here; 30 August and 13 September 2026 are `Test`."}
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then each of the table's files downloaded
+      whole, unless its `last_modified` is unchanged. Dates select nothing. Swap in any table's key.
+    commands:
+      - {run: gridflow ingest neso_data_portal demand_flexibility_utilisation_summary --last 24h, comment: "whole files; window must end recently"}
+      - {run: gridflow transform neso_data_portal demand_flexibility_utilisation_summary --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: delivery_date, op: in, value: ["2026-03-27", "2026-06-24"]}
+        - {column: window_from, op: in, value: ["16:00", "16:30", "18:00", "18:30"]}
+      order_by: [delivery_date, window_from]
+      columns: [delivery_date, window_from, service_requirement_type, event_type, dfs_procured_mw, settled_volume_mw,
+                dfs_provider_bids_accepted_total_cost_gbp, settled_cost_gbp, service_requirement_mw, event_id, window_to,
+                window_from_utc, window_to_utc, event_tag, resource_id]
+    key: [resource_id, delivery_date, window_from, service_requirement_type]
+    caption: "Four windows each of 27 March 2026 (archive file) and 24 June 2026 (current file)."
+    fields:
+      delivery_date: Delivery date of the window, as NESO labels it
+      window_from: "Window start, NESO's `HH:MM` label in UK local time; kept as text"
+      service_requirement_type: "`Live` or `Test`, NESO's type of requirement"
+      event_type: "NESO's `Upwards` or `Downwards` flexibility, not defined further; null in archive rows"
+      service_requirement_mw: Requirement NESO published for the window, MW
+      dfs_procured_mw: "Total accepted MW; in current windows, the report's Accepted bids summed: never add both"
+      dfs_provider_bids_accepted_total_cost_gbp: "Indicative accepted cost, £ (NESO); current windows: accepted MW × price × 0.5 h"
+      settled_volume_mw: Delivered volume, MW, once settled (NESO); can be negative; null until then
+      settled_cost_gbp: Cost of the delivered volume, £, once settled; can be negative; null until then
+      event_id: "NESO's event number in the current file; null in archive rows"
+      window_to: "Window end, NESO's `HH:MM` label; kept as text"
+      window_from_utc: "Window start in UTC, NESO's label; null in archive rows"
+      window_to_utc: "Window end in UTC, NESO's label; null in archive rows"
+      event_tag: "`Energy` or `System`, NESO's tag for the event; null in archive rows"
+      resource_id: "CKAN id of the file the row came from: archive or current"
+      timestamp_utc: Start of the delivery date's first settlement period, UTC; not the window start
+      published_at: "NESO's last-modified time for the whole file, read as UTC"
+      bronze_capture_id: Path of the bronze capture the row was read from
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      Returns pandas DataFrames from each table's `_latest` view (every row of each file's newest
+      loaded capture), filtered on `delivery_date`, both ends included; lineage columns dropped. A
+      Rejected bid's `dfs_procured_mw` is volume offered, not bought.
+    cells:
+      - |
+        day = "2026-09-11"
+        s = data.neso_data_portal.query("demand_flexibility_utilisation_summary", day, day)
+        r = data.neso_data_portal.query("demand_flexibility_utilisation_report", day, day)
+      - |
+        bids = r.pivot_table(index="window_from", columns="status", values="dfs_procured_mw", aggfunc="sum")
+        both = s.set_index("window_from")[["service_requirement_mw", "dfs_procured_mw"]].join(bids)
+        both.columns = ["asked_mw", "summary_mw", "accepted_mw", "rejected_mw"]
+        both
+      - |
+        both[["accepted_mw", "rejected_mw"]].plot.bar(
+            stacked=True, ylabel="MW bid", rot=0, color=["#155A6E", "#C77E3C"], figsize=(8, 3.5));
+    needs: the summary and report tables for 11 September 2026
+    plot_alt: >-
+      Stacked bar plot of bid volume in MW for each window from 17:00 to 20:30 on 11 September 2026:
+      accepted bids (petrol) under rejected bids (clay). Accepted volume is 127.5 and 127.3 MW at
+      19:00 and 19:30 and at most 2.4 MW elsewhere; rejected bids run from 34.0 to 73.6 MW in every
+      window.
+  related:
+    - {dataset: elexon/system_prices, note: "Imbalance prices for the same half-hours as each window"}
+    - {dataset: elexon/indo, note: National demand outturn for the same half-hours}
+    - {dataset: neso_data_portal/historic_generation_mix, note: The generation mix in the same half-hours}
+  family:
+    slug: demand-flexibility
+    members:
+      - dataset: demand_flexibility_utilisation_summary
+        differs: "Window totals for both seasons; current-season MW and cost sum the report's Accepted bids"
+        request: "GET https://api.neso.energy/dataset/829e325f-8926-40ab-9dd6-8b7aea6cb244/resource/705e573c-ddac-4675-b410-82916b35c4fe/download/dfs-utilisation-report-summary.csv"
+      - dataset: demand_flexibility_utilisation_report
+        differs: "Bids per DFS unit, Accepted or Rejected; current season only (archive file repeats rows)"
+        request: "GET https://api.neso.energy/dataset/829e325f-8926-40ab-9dd6-8b7aea6cb244/resource/3ebf77d7-05df-466e-a023-dc45a90efeea/download/dfs-utilisation-report.csv"
+      - dataset: demand_flexibility_industry_notification
+        differs: "Notices that a requirement was published, by date; archive file only, no event id"
+        request: "GET https://api.neso.energy/dataset/829e325f-8926-40ab-9dd6-8b7aea6cb244/resource/3d042450-b556-450f-a4b5-cdb075cdf9c1/download/dfs-industry-notification.csv"
+      - dataset: demand_flexibility_service_requirement
+        differs: "Rows not shown: NESO does not say when each requirement was first published"
+        request: "GET https://api.neso.energy/dataset/829e325f-8926-40ab-9dd6-8b7aea6cb244/resource/3635fd80-49d7-4d02-964d-cc8c08d50302/download/dfs-service-requirement.csv"
 ---
 
 # Demand Flexibility Service
@@ -98,8 +229,9 @@ silver; @.planning/v0.22-RESULTS.md section DFS-a; RULINGS 809):
 | Utilisation Summary (current) | [dfs-utilisation-report-summary.csv](https://api.neso.energy/dataset/829e325f-8926-40ab-9dd6-8b7aea6cb244/resource/705e573c-ddac-4675-b410-82916b35c4fe/download/dfs-utilisation-report-summary.csv) | 2026-10-06T11:06:52 | 1,230 | 1,230 |
 
 Package silver total **19,584 rows**: 17,214 in the three eligible families (191 + 14,663 + 2,360) and 2,370 in the held
-requirement family. The failed archive report (9,950 bronze rows) is not in silver. Every resource has **exactly one observed capture**
-(2026-10-08), so same-resource amendments cannot be measured yet. The current requirement resource's
+requirement family. The failed archive report (9,950 bronze rows) is not in silver. At activation every resource had **exactly one observed capture**
+(2026-10-08). The current report, summary and requirement files were captured again on 2026-10-16 and only the
+report's second capture loaded; the summary and requirement captures failed (recorded under each family). The current requirement resource's
 `last_modified` was 2026-10-06T09:48 in the 2026-10-06 catalogue snapshot and 2026-10-08T09:47 in the capture:
 the current resources are re-published in place, so a later capture will carry a later vintage and replace the rows
 of that resource.
@@ -248,7 +380,9 @@ split on the quoting, not on commas. Identifiers (`event_id`) are strings byte-e
 only by `service_requirement_type`, so **`delivery_date` plus window start alone is not a key**. Within the current
 resource `event_id` links to the report and summary; `TODO: verify` EVENT-ID-NAMESPACE (a vendor reset policy), so
 never use an Event-ID-only join across resources or time. Vendor guarantee of the composite key: `TODO: verify`.
-`TODO: verify` ENDPOINT-CLOSURE (inclusive or exclusive `window_to`): ends are kept literal.
+`TODO: verify` ENDPOINT-CLOSURE (inclusive or exclusive `window_to`): ends are kept literal. The 2026-10-16 current
+capture failed to parse: six rows give `Delivery Date` as `16-10-2026` against the registry format `%d/%m/%Y`
+(failure record `state/neso_data_portal/completion_failures/demand_flexibility_service_requirement/4f251541bc6cd8d5480886eb1ce1dccb.json`).
 
 ### `demand_flexibility_utilisation_report`
 
@@ -453,7 +587,7 @@ verify` SIGNED-SETTLEMENT-SEMANTICS. Zero accepted quantity and cost are real va
 zero runs) and are kept. No lexical repair, no bound, no sign change.
 
 **Identity.** Key (`resource_id`, `delivery_date`, `window_from`, `service_requirement_type`): 1,130 of 1,130 archive and
-1,230 of 1,230 current rows are unique. The current resource has 142 distinct Event IDs (against 113 in the report); why the report has fewer events is not stated (`TODO: verify`). Vendor guarantee of the composite key: `TODO: verify`.
+1,230 of 1,230 current rows are unique. The current resource has 142 distinct Event IDs (against 113 in the report); why the report has fewer events is not stated (`TODO: verify`). Vendor guarantee of the composite key: `TODO: verify`. **Recorded failure of the 2026-10-16 current capture:** NESO's file then ran an Upwards and a Downwards event in the same windows (events 151/152, 154/155, 157/158, 160/161 and 162/163, delivery 12 to 16 October 2026), so 88 rows share the key, which has no `event_id`, and the capture failed `DuplicateEntityKeyError` (failure record `state/neso_data_portal/completion_failures/demand_flexibility_utilisation_summary/ce9d3de8bdfd69f558b7bb6cf4db8b61.json`). The `_latest` view keeps the 2026-10-06 file until the key is fixed.
 
 ## Cadence
 
@@ -463,8 +597,8 @@ zero runs) and are kept. No lexical repair, no bound, no sign change.
 
 The vendor says email alerts are triggered by any modification to the files. The current resources are re-published in
 place (the current requirement resource's `last_modified` moved from 2026-10-06 to 2026-10-08 between the catalogue
-snapshot and the capture), while the Archive 2025/2026 resources carry March and April 2026 stamps. gridflow has **one
-capture per resource** (all on 2026-10-08), so whether a refresh appends to or replaces a file, and whether earlier
+snapshot and the capture), while the Archive 2025/2026 resources carry March and April 2026 stamps. gridflow had **one
+capture per resource** at activation (all on 2026-10-08; the current files again on 2026-10-16), so whether a refresh appends to or replaces a file, and whether earlier
 rows are ever amended, is unmeasured: `TODO: verify` by comparing later captures with the hash-pinned bodies.
 
 ## Licence and attribution
