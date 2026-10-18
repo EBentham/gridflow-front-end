@@ -47,6 +47,10 @@ silver `C:\gridflow-data\silver\neso_data_portal\<table>\` (read only, lazily, s
 | H | Held batch: `dynamic-containment-4-day-forecast` (`dc_forecast_4d`, `dc_forecast_4d_history`), `long-term-forecasts-for-dc-dm-dr-requirements` (`dc_dm_dr_long_term_fc`), `eac-mock-auction-results` (8 `eac_mock_results_*` tables), `eac-br-mock-auction-results` (4 `eac_br_mock_results_*` tables) | every table held | 9952 | 9972 |
 
 Known risks:
+- **Truncated captures (found 2026-10-18, defect 20i):** a re-check on 2026-10-16 stored a cut-off copy of at least one
+  datastore table and its `_latest` view serves it. Before relying on `_latest` or `query()`, compare row counts across
+  your table's captures; if the newest fell, build artefacts from the last complete capture, report it as a defect, and
+  say nothing about it on the page (no local-data references).
 - **EAC auction results:** 36.3M rows (`sell_orders` 32.3M). Read lazily, select columns, never collect a whole
   table. The ledger notes sell-order times are raw strings. The showcase EAC BR page found the workbench `query()`
   filters EAC tables on capture time (remediation 20c): check whether the same holds here before writing the notebook.
@@ -75,11 +79,13 @@ Several agents share the worktree: keep strictly to your own package's files.
 | # | Writer | Checker | State |
 |---|---|---|---|
 | 1 | ad9562a4783453cd8 | a50242a7703a8ea1e | APPROVED round 2; committed fe 739b914, vault 5be3d3d |
-| 11 | a76d9b8cd4fa20a83 | aafbabed80d91a79c | checking; defects 20g, 20h logged |
+| 11 | a76d9b8cd4fa20a83 | aafbabed80d91a79c | APPROVED (round 3 fixes seat-verified); committed fe 2988786, vault 8514454 |
 | H | ab9104ee227505a6f | a3fc7c0cd619579fa | APPROVED round 2, nits fixed; committed fe a5792ff, vault bf7b7f4 |
-| 2 | ac1533bccfac8ccf9 | | writing |
-| 3 | a620ecd328b3178cb | | writing |
-| 4-10 | | | not started |
+| 2 | ac1533bccfac8ccf9 | ab58ec729a213bb03 | APPROVED, nits fixed; committed fe dbb28af, vault e9690f0; ruling: ships from the complete 2026-10-08 capture, truncated 2026-10-16 capture logged as 20i, not on the page |
+| 3 | a620ecd328b3178cb | afc8fb614d6583e8b | APPROVED, nits fixed; committed fe 9d989ff, vault ccb8e58 |
+| 4 | a7c515de865ed2dbe | a2db251ee5aebc2b0 | checking |
+| 5 | a064fc3f999458336 | | writing |
+| 6-10 | | | not started |
 
 ## Template follow-ups (seat items, not page findings)
 
@@ -87,3 +93,5 @@ Several agents share the worktree: keep strictly to your own package's files.
 - At 768 the folded frame can show no value column until unfolded; the unfolded frame scrolls sideways.
 - The notebook preview breaks long names mid-word at 768 and 390.
 - A series file built from local window times stamps them with `Z` (display is right; the file label is misleading).
+- The notebook tab label clips at 390 px (EAC auction results).
+- The notebook runner adds a stray column to grouped tables (seen in EAC results, DM, DR notebooks).
