@@ -4,9 +4,125 @@ package: "static-firm-frequency-response-requirement"
 dataset_key: "sffr_requirement"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-13
+updated: 2026-10-18
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: Static FFR requirement
+  summary: >-
+    NESO's forecast of the Static Firm Frequency Response it needs: MW for each of six EFA blocks
+    per EFA date.
+  facts:
+    vendor: "NESO Data Portal, package `static-firm-frequency-response-requirement`: one CSV file, no archive"
+    cadence: "Updated monthly (NESO's catalogue); SFFR is bought in a daily auction"
+    grain: One row per EFA date, with six EFA block columns
+  landscape: market
+  what_it_is: >-
+    Static Firm Frequency Response (SFFR) is a NESO frequency response service, bought in a daily
+    auction. NESO's file, titled Static Firm Frequency Response Requirement, forecasts the MW
+    needed before overholding per EFA date for six EFA blocks, updated monthly. Blocks run
+    on the UK clock from 23:00 the evening before; block 1 lasts 3 or 5 hours at clock changes.
+  how_used:
+    - Requirement per block against cleared SFFR MW in NESO's daily auction results.
+    - Join those results on EFA date and block number (`efa`), not on `timestamp_utc`.
+    - "Point-in-time studies: each capture is one vintage, stamped with the file's `published_at`."
+  chart:
+    type: line
+    silver: neso_data_portal/sffr_requirement
+    time: efa_date
+    value: efa1
+    group: service
+    series_order: [SFFR]
+    filter:
+      - {column: published_at, op: eq, value: "2026-09-22T14:48:22.737387"}
+    aggregation: mean
+    window: {start: "2026-09-23", end: "2026-10-31"}
+    unit: MW
+  chart_view:
+    title: Static FFR requirement in EFA block 1, by date
+    caption: >-
+      Silver `sffr_requirement`, MW before overholding: EFA block 1 (from 23:00 the evening before,
+      UK time) per EFA date, 23 September to 31 October 2026, NESO's 22 September file. Every block
+      on every date in the file is 250 MW.
+    alt: >-
+      Line chart of NESO's Static Firm Frequency Response requirement for EFA block 1 in MW, one
+      point per EFA date from 23 September to 31 October 2026. The line is flat at 250 MW across
+      all 39 dates. Every block on every date in the file is also 250 MW.
+    x_label: EFA date
+    y_min: 0
+    key:
+      - {series: SFFR, label: Static FFR, codes: SFFR, paint: petrol, note: "250 MW in every block on all 39 dates in this file."}
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then the file downloaded whole unless its
+      `last_modified` is unchanged. Dates select nothing.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=static-firm-frequency-response-requirement"
+      - "GET https://api.neso.energy/dataset/1f641071-ffc1-4fca-b83e-2c30772530a3/resource/bf236101-7167-4351-9fa0-c0b2e7c85747/download/sffr-data.csv"
+    commands:
+      - {run: gridflow ingest neso_data_portal sffr_requirement --last 24h, comment: "whole file; window must end recently"}
+      - {run: gridflow transform neso_data_portal sffr_requirement --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: published_at, op: eq, value: "2026-09-22T14:48:22.737387"}
+        - {column: efa_date, op: in, value: ["2026-09-23", "2026-09-24", "2026-10-24", "2026-10-25", "2026-10-26", "2026-10-27", "2026-10-30", "2026-10-31"]}
+      order_by: [efa_date]
+      columns: [efa_date, service, efa1, efa2, efa3, efa4, efa5, efa6, timestamp_utc, published_at]
+    key: [efa_date]
+    caption: "First, last and clock-change dates; from 26 October `timestamp_utc` is 00:00 UTC, not 23:00."
+    fields:
+      efa_date: EFA date of the requirement; block 1 starts 23:00 UK time the evening before
+      service: "`SFFR`, Static Firm Frequency Response, on every row of this file"
+      efa1: Block 1, 23:00 to 03:00 UK time, MW before overholding (NESO)
+      efa2: Block 2, 03:00 to 07:00 UK time, MW before overholding (NESO)
+      efa3: Block 3, 07:00 to 11:00 UK time, MW before overholding (NESO)
+      efa4: Block 4, 11:00 to 15:00 UK time, MW before overholding (NESO)
+      efa5: Block 5, 15:00 to 19:00 UK time, MW before overholding (NESO)
+      efa6: Block 6, 19:00 to 23:00 UK time, MW before overholding (NESO)
+      timestamp_utc: Calendar date `efa_date` at UK midnight, in UTC; block 1 begins an hour before
+      published_at: "NESO's last-modified time for the whole file, read as UTC"
+      bronze_capture_id: Path of the bronze capture the row was read from
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      Reads the `_latest` view, the newest capture, with `data.sql` so the cells see every date the
+      file holds and show `published_at` in UTC; `query()` reads the same view but takes a date range.
+    cells:
+      - |
+        df = data.sql("""
+            SELECT efa_date, service, efa1, efa2, efa3, efa4, efa5, efa6,
+                   published_at AT TIME ZONE 'UTC' AS published_utc
+            FROM silver_neso_data_portal_sffr_requirement_latest
+            ORDER BY efa_date""")
+        df.groupby("service").agg(
+            first=("efa_date", "min"), last=("efa_date", "max"),
+            dates=("efa_date", "count"), published_utc=("published_utc", "max")).reset_index()
+      - |
+        blocks = [f"efa{i}" for i in range(1, 7)]
+        long = df.melt(["efa_date", "service"], blocks, var_name="block", value_name="mw")
+        long.groupby("block").mw.agg(["min", "max", "count"]).reset_index()
+      - |
+        import pandas as pd
+        n = long.block.str[3:].astype(int)
+        local = long.efa_date + pd.to_timedelta(4 * n - 5, unit="h")
+        long["start_utc"] = local.dt.tz_localize("Europe/London").dt.tz_convert("UTC")
+        long = long.sort_values("start_utc")
+        long["hours"] = long.start_utc.diff().shift(-1).dt.total_seconds() / 3600
+        long[long.efa_date.eq("2026-10-25")][["efa_date", "block", "start_utc", "hours", "mw"]]
+      - |
+        long.set_index("start_utc").mw.plot(
+            drawstyle="steps-post", color="#155A6E", lw=2, ylim=(0, 300), figsize=(8, 3.5),
+            xlabel="EFA block start, UTC", ylabel="requirement, MW");
+    needs: a capture of the requirement file
+    plot_alt: >-
+      Step plot of NESO's Static FFR requirement in MW at each EFA block start in UTC, from 22:00
+      on 22 September to 19:00 on 31 October 2026. The line holds 250 MW throughout.
+  related:
+    - {dataset: neso_data_portal/static-firm-frequency-response-auction-results, note: "Cleared SFFR MW and clearing price for each EFA date and block"}
+    - {dataset: neso_data_portal/dynamic-regulation-requirements, note: "The same EFA block layout, for low and high Dynamic Regulation"}
+    - {dataset: neso_data_portal/dynamic-moderation-requirements, note: "The same EFA block layout, for low and high Dynamic Moderation"}
+    - {dataset: elexon/freq, note: The system frequency Static FFR responds to}
 ---
 
 # Static Firm Frequency Response Requirement
@@ -123,8 +239,12 @@ existing CSV reader handles both and the first header is read as `EFA_DATE`.
   block label into a row-specific instant (RULINGS 572/588, 720), so the six blocks stay wide and no block
   start is derived. The block boundaries used in the batch research are the AS-1 EFA definition (EFA 1 from
   23:00 on the previous date to 03:00, then 03:00-07:00, 07:00-11:00, 11:00-15:00, 15:00-19:00, 19:00-23:00,
-  all local time); gridflow does not apply them to any column. `TODO: verify` those boundaries against
-  NESO's EAC guidance before anyone composes block instants. The date format is `%d/%m/%Y` (day first;
+  all local time); gridflow does not apply them to any column. NESO's own SFFR auction results confirm
+  those boundaries for this service: `delivery_start` and `delivery_end` per `efa` run 23:00 on the
+  previous date to 03:00, then four-hour blocks to 23:00, on the UK local wall clock, unchanged on the
+  clock-change dates 2025-03-30, 2025-10-26 and 2026-03-29 (silver `sffr_auction_results_main`, capture
+  published 2026-10-16, read 2026-10-18). NESO's EAC guidance itself was not read; SFFR is not an EAC
+  product. The date format is `%d/%m/%Y` (day first;
   confirmed in the body, e.g. `23/09/2026`).
 
 **Whole-capture semantics.** `latest` is `whole_capture`: each capture is a replacement view of the table.
