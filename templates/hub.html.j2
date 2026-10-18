@@ -1,7 +1,8 @@
 {#- A vendor hub, direction A "Sections" (p27 round 1, ruling 31). The page descends through the strata:
     the sky holds the name, the intro, the facts and the drawing; bronze holds every page in the vendor's
-    page set, in groups; silver names the DuckDB views; gold shows the notebook call. On wide screens
-    hubs.js runs one cable from the drawing down a lane in the margin, tapping each group.
+    page set, in groups (or, for a vendor with a catalogue, the plot plan in _partials/plan.html.j2);
+    silver names the DuckDB views; gold shows the notebook call. On wide screens hubs.js runs
+    one cable from the drawing down a lane in the margin, tapping each group.
     `v` is the view model built by build.hub_view() from site/hifi/data/<vendor>.json. -#}
 <!doctype html>
 <html lang="en">
@@ -40,6 +41,9 @@
     <section class="stratum stratum--bronze" aria-labelledby="sets-h">
       <p class="stratum__name" aria-hidden="true">bronze</p>
       <div class="wrap">
+        {%- if v.plan %}
+        {% include "_partials/plan.html.j2" %}
+        {%- else %}
         <div class="hub-head">
           <h2 class="h-sec" id="sets-h">{{ v.groups_title }}</h2>
           {%- if v.groups_note %}
@@ -64,6 +68,7 @@
           </ul>
         </section>
         {%- endfor %}
+        {%- endif %}
       </div>
     </section>
 

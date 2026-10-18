@@ -24,6 +24,8 @@ def _note(stem: str, tables: list[str], page: str = "") -> str:
 
 def _manifest() -> dict[str, Any]:
     m = copy.deepcopy(REAL_LOAD_MANIFEST(VENDOR))
+    # these pages are made up, so NESO's catalogue has no packages for them: the hub lists them as beds
+    m.pop("catalogue", None)
     m["groups"] = [{"name": "", "blurb": "", "pages": ["pkg-two", "pkg-one"]}]
     m["families"] = [
         {"slug": "pkg-two", "title": "Package two", "note": "pkg-two", "members": ["t_a", "t_b"]}

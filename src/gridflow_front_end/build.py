@@ -47,6 +47,7 @@ from __future__ import annotations
 
 import argparse
 import filecmp
+import itertools
 import json
 import math
 import re
@@ -1624,8 +1625,193 @@ def _hub_rows(
     return rows
 
 
+# The catalogue plan (hub round 2, design v5): each data group is a plot whose area is its package
+# count, in bands that are CSS grids. The wide composition is drawn at the 1280 px content width with
+# the plots _PLAN_WIDE_H tall in all; the narrow one at a 390 px phone's 358 px, with _PLAN_NARROW_U
+# px² of ground per package. Columns become ``fr`` shares and rows fixed heights, so every plot keeps
+# its area at any width.
+_PLAN_WIDE_W = 1280.0
+_PLAN_WIDE_H = 1040.0
+_PLAN_NARROW_W = 358.0
+_PLAN_NARROW_U = 3600.0
+_Rect = tuple[float, float, float, float]
+
+
+def _plan_slugs(node: Any) -> list[str]:
+    """The group slugs a plan node covers, in order."""
+    if isinstance(node, str):
+        return [node]
+    ((_, children),) = node.items()
+    return [s for c in children for s in _plan_slugs(c)]
+
+
+def _plan_place(node: Any, rect: _Rect, sizes: dict[str, int], out: dict[str, _Rect]) -> None:
+    """Split ``rect`` among a node's children in proportion to their package counts."""
+    if isinstance(node, str):
+        out[node] = rect
+        return
+    ((kind, children),) = node.items()
+    x, y, w, h = rect
+    total = sum(sizes[s] for s in _plan_slugs(node))
+    at = 0.0
+    for child in children:
+        share = sum(sizes[s] for s in _plan_slugs(child)) / total
+        if kind == "row":
+            _plan_place(child, (x + at * w, y, share * w, h), sizes, out)
+        else:
+            _plan_place(child, (x, y + at * h, w, share * h), sizes, out)
+        at += share
+
+
+def _plan_grid(
+    band: Any, ref_w: float, unit: float, sizes: dict[str, int], tagged: set[str]
+) -> tuple[str, str, dict[str, str], list[str]]:
+    """Lay one band out as grid tracks.
+
+    Returns the column template, the row template, each plot's ``grid-area`` and the plots in
+    reading order. A band holding a ``tagged`` plot gains a last row, ``var(--tagrow)``, that the
+    tagged plots reach down into for the name set beneath them.
+    """
+    height = sum(sizes[s] for s in _plan_slugs(band)) * unit / ref_w
+    rects: dict[str, _Rect] = {}
+    _plan_place(band, (0.0, 0.0, ref_w, height), sizes, rects)
+    xs = sorted({round(v, 2) for x, _, w, _ in rects.values() for v in (x, x + w)})
+    ys = sorted({round(v, 2) for _, y, _, h in rects.values() for v in (y, y + h)})
+    cols = " ".join(f"{b - a:.2f}fr" for a, b in itertools.pairwise(xs))
+    rows = [f"calc({b - a:.2f}px * var(--k))" for a, b in itertools.pairwise(ys)]
+    tag_row = bool(tagged & set(rects))
+    if tag_row:
+        rows.append("var(--tagrow)")
+    areas: dict[str, str] = {}
+    for slug, (x, y, w, h) in rects.items():
+        r0, r1 = ys.index(round(y, 2)) + 1, ys.index(round(y + h, 2)) + 1
+        c0, c1 = xs.index(round(x, 2)) + 1, xs.index(round(x + w, 2)) + 1
+        if slug in tagged:
+            r1 += 1
+        areas[slug] = f"{r0} / {c0} / {r1} / {c1}"
+    order = sorted(rects, key=lambda s: (round(rects[s][1]), rects[s][0]))
+    return cols, " ".join(rows), areas, order
+
+
+def _package_title(title: str, group: str) -> str:
+    """A NESO package title as the plan lists it: no dashes, and no repeat of its group's name."""
+    for sep in (" – ", " — ", " - "):
+        if title.startswith(group + sep):
+            title = title[len(group) + len(sep) :]
+    for dash in (" – ", " — ", " - "):
+        title = title.replace(dash, ": ")
+    return title
+
+
+def catalogue_pages(manifest: dict) -> dict[str, str]:
+    """CKAN package slug → the page in the page set that documents it.
+
+    A page is matched to its package by name, or through the catalogue's ``page_packages``.
+    """
+    renames: dict[str, str] = manifest["catalogue"].get("page_packages", {})
+    pages = [p for g in manifest["groups"] for p in g["pages"]]
+    return {renames.get(p, p): p for p in pages}
+
+
+def catalogue_errors(vendor_id: str, manifest: dict) -> list[str]:
+    """Structural checks on a vendor's catalogue: unique slugs, every page found, a whole plan."""
+    cat = manifest.get("catalogue")
+    if cat is None:
+        return []
+    errors: list[str] = []
+    groups = [g["slug"] for g in cat["groups"]]
+    packages = [p["slug"] for g in cat["groups"] for p in g["packages"]]
+    if len(groups) != len(set(groups)):
+        errors.append(f"{vendor_id}: a data group is listed twice in the catalogue")
+    if len(packages) != len(set(packages)):
+        errors.append(f"{vendor_id}: a package is listed twice in the catalogue")
+    pages = [p for g in manifest["groups"] for p in g["pages"]]
+    stray = sorted(set(cat.get("page_packages", {})) - set(pages))
+    if stray:
+        errors.append(
+            f"{vendor_id}: catalogue.page_packages names pages not in the page set: {stray}"
+        )
+    found = catalogue_pages(manifest)
+    if len(found) != len(pages):
+        errors.append(f"{vendor_id}: two pages document the same catalogue package")
+    missing = sorted(page for slug, page in found.items() if slug not in set(packages))
+    if missing:
+        errors.append(f"{vendor_id}: pages with no package in the catalogue: {missing}")
+    plan = cat["plan"]
+    for kind in ("wide", "narrow"):
+        placed = [s for band in plan[kind] for s in _plan_slugs(band)]
+        if sorted(placed) != sorted(groups):
+            errors.append(f"{vendor_id}: the {kind} plan must place every data group once")
+    wide = [sorted(_plan_slugs(b)) for b in plan["wide"]]
+    if wide != [sorted(_plan_slugs(b)) for b in plan["narrow"]]:
+        errors.append(f"{vendor_id}: the wide and narrow plans must hold the same bands")
+    if not set(plan.get("tag_narrow", [])) <= set(groups):
+        errors.append(f"{vendor_id}: catalogue.plan.tag_narrow names unknown data groups")
+    return errors
+
+
+def catalogue_view(vendor_id: str, manifest: dict) -> dict[str, Any]:
+    """The catalogue as a plot plan: bands of plots, each followed by its groups' package lists.
+
+    A package is a link when a page in the page set documents it; every other package is listed
+    by name.
+    """
+    cat = manifest["catalogue"]
+    by_slug = {g["slug"]: g for g in cat["groups"]}
+    sizes = {s: len(g["packages"]) for s, g in by_slug.items()}
+    total = sum(sizes.values())
+    pages = catalogue_pages(manifest)
+    tagged = set(cat["plan"].get("tag_narrow", []))
+    wide_unit = _PLAN_WIDE_W * _PLAN_WIDE_H / total
+    bands = []
+    for wide, narrow in zip(cat["plan"]["wide"], cat["plan"]["narrow"], strict=True):
+        cols_w, rows_w, areas_w, order = _plan_grid(wide, _PLAN_WIDE_W, wide_unit, sizes, set())
+        cols_n, rows_n, areas_n, _ = _plan_grid(
+            narrow, _PLAN_NARROW_W, _PLAN_NARROW_U, sizes, tagged
+        )
+        groups = []
+        for slug in order:
+            g = by_slug[slug]
+            rows = [
+                {
+                    "title": _package_title(p["title"], g["name"]),
+                    "href": f"{vendor_id}/{pages[p['slug']]}.html" if p["slug"] in pages else "",
+                }
+                for p in g["packages"]
+            ]
+            n, here = len(rows), sum(1 for r in rows if r["href"])
+            count = f"{n} package{'' if n == 1 else 's'}"
+            groups.append(
+                {
+                    "slug": slug,
+                    "name": g["name"],
+                    "blurb": g["blurb"],
+                    "count": count,
+                    "count_here": f"{count}, {here} with a page here" if here else count,
+                    "area_w": areas_w[slug],
+                    "area_n": areas_n[slug],
+                    "tag": slug in tagged,
+                    "rows": rows,
+                }
+            )
+        bands.append(
+            {
+                "cols_w": cols_w,
+                "rows_w": rows_w,
+                "cols_n": cols_n,
+                "rows_n": rows_n,
+                "tagged": bool(tagged & set(order)),
+                "groups": groups,
+            }
+        )
+    return {"bands": bands, "n_groups": len(by_slug), "n_packages": total}
+
+
 def hub_view(vendor_id: str, manifest: dict, docs: dict[str, DatasetDoc]) -> dict[str, Any]:
-    """The vendor hub (direction A, "Sections"): hero and facts, the grouped datasets, silver, gold."""
+    """The vendor hub (direction A, "Sections"): hero and facts, the grouped datasets, silver, gold.
+
+    A vendor whose manifest carries a ``catalogue`` lists it as a plot plan in place of the groups.
+    """
     n = manifest_total_count(manifest)
     facts = [
         (
@@ -1638,7 +1824,12 @@ def hub_view(vendor_id: str, manifest: dict, docs: dict[str, DatasetDoc]) -> dic
         )
         for k, v in manifest["facts"]
     ]
-    facts.append(("Datasets", Markup(str(n))))
+    plan = catalogue_view(vendor_id, manifest) if "catalogue" in manifest else None
+    if plan:
+        facts.append(("Data groups", Markup(str(plan["n_groups"]))))
+        facts.append(("Packages", Markup(str(plan["n_packages"]))))
+    else:
+        facts.append(("Datasets", Markup(str(n))))
     groups = []
     for i, g in enumerate(manifest["groups"]):
         groups.append(
@@ -1652,7 +1843,20 @@ def hub_view(vendor_id: str, manifest: dict, docs: dict[str, DatasetDoc]) -> dic
     keys = manifest["source_keys"]
     views = " or ".join(f"<code>silver_{k}_{{dataset}}</code>" for k in keys)
     latest = manifest.get("latest_views", [])
-    if latest:
+    if plan:
+        # every table of a catalogue vendor is append-only with a _latest view (gridflow
+        # silver/neso_data_portal: APPEND_ONLY on each transformer; latest_views.py's two modes)
+        silver = {
+            "title": "In silver, every capture is kept",
+            "text": Markup(
+                f"Each table is one DuckDB view, {views}. Every table is append-only: a later "
+                "publication never overwrites an earlier one, and each capture is its own Parquet "
+                "file. Its <code>_latest</code> view returns either the newest row for each key or "
+                "every row of the newest complete capture, as the table needs."
+            ),
+            "views": [f"silver_{keys[0]}_{d}_latest" for d in latest],
+        }
+    elif latest:
         how_many = (
             f"All {_count_word(n)}" if len(latest) == n else _count_word(len(latest)).capitalize()
         )
@@ -1697,6 +1901,7 @@ def hub_view(vendor_id: str, manifest: dict, docs: dict[str, DatasetDoc]) -> dic
             else "The datasets"
         ),
         "groups_note": manifest.get("groups_note", ""),
+        "plan": plan,
         "silver": silver,
         "well": well,
     }
@@ -1955,7 +2160,9 @@ def build_vendor(
             f"{DEFAULT_VAULT.relative_to(REPO_ROOT)}/."
         )
     vault_slugs = {p.stem for p in vendor_dir.glob("*.md")}
-    errors = manifest_errors(vendor_id, manifest, vault_slugs)
+    errors = manifest_errors(vendor_id, manifest, vault_slugs) + catalogue_errors(
+        vendor_id, manifest
+    )
     if errors:
         _fail(vendor_id, "page set", errors)
     out_dataset_dir = out_root / "data-sources" / vendor_id

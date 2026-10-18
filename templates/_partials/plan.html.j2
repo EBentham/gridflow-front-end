@@ -1,0 +1,43 @@
+{#- The catalogue as a plot plan (hub round 2, design v5), for a vendor whose manifest has a
+    `catalogue`. Each data group is a plot drawn to its package count, each package a small square:
+    solid when a page here documents it, open otherwise. Every group's list follows its band and is
+    open without script; hubs.js closes them and opens one plot at a time. `v.plan` is
+    build.catalogue_view(). -#}
+<div class="plan-head">
+          <div class="hub-head">
+            <h2 class="h-sec" id="sets-h">The catalogue by data group</h2>
+            <p>Each plot is one of NESO’s data groups, drawn to the number of packages it holds; each small square inside it is one package. Open a plot for its packages.</p>
+          </div>
+          <ul class="plan-key" aria-label="Key to the plan">
+            <li><i aria-hidden="true"></i>a package with its own page here</li>
+            <li><i class="o" aria-hidden="true"></i>a package listed in NESO’s catalogue</li>
+          </ul>
+        </div>
+        <section class="bed plan" aria-label="{{ v.name }} data groups">
+          <span class="term term--solo" data-tap="bronze" aria-hidden="true"></span>
+          {%- for b in v.plan.bands %}
+          <div class="band{% if b.tagged %} band--tagged{% endif %}" style="--cols-w: {{ b.cols_w }}; --rows-w: {{ b.rows_w }}; --cols-n: {{ b.cols_n }}; --rows-n: {{ b.rows_n }}">
+            {%- for g in b.groups %}
+            <button class="plot{% if g.tag %} plot--tag{% endif %}" type="button" aria-expanded="true" aria-controls="g-{{ g.slug }}" data-g="{{ g.slug }}" style="--a-w: {{ g.area_w }}; --a-n: {{ g.area_n }}"><span class="plot__in"><span class="plot__name">{{ g.name }}</span><span class="plot__n">{{ g.count }}</span><span class="plot__d" aria-hidden="true">{{ g.blurb }}</span><span class="plot__marks" aria-hidden="true">{% for r in g.rows %}<i{% if not r.href %} class="o"{% endif %}></i>{% endfor %}</span></span></button>
+            {%- endfor %}
+          </div>
+          <div class="scheds">
+            {%- for g in b.groups %}
+            <section class="sched" id="g-{{ g.slug }}" aria-labelledby="g-{{ g.slug }}-h">
+              <span class="sched__lead" aria-hidden="true"></span>
+              <div class="sched__head">
+                <h3 class="h-entry" id="g-{{ g.slug }}-h">{{ g.name }}</h3>
+                <p class="sched__d">{{ g.blurb }}</p>
+                <p class="sched__n">{{ g.count_here }}</p>
+                <button class="sched__x" type="button" hidden>Close</button>
+              </div>
+              <ul class="sched__rows">
+                {%- for r in g.rows %}
+                <li data-i="{{ loop.index0 }}">{% if r.href %}<a href="{{ r.href }}">{{ r.title }}</a>{% else %}{{ r.title }}{% endif %}</li>
+                {%- endfor %}
+              </ul>
+            </section>
+            {%- endfor %}
+          </div>
+          {%- endfor %}
+        </section>

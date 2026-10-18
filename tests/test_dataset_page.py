@@ -247,7 +247,10 @@ def test_hubs_and_landing_link_every_page(tmp_path: Path) -> None:
             for page in g["pages"]:
                 assert f'href="{vendor_id}/{page}.html"' in hub
                 assert (tmp_path / "data-sources" / vendor_id / f"{page}.html").is_file()
-        assert f"<dt>Datasets</dt><dd>{build.manifest_total_count(m)}</dd>" in hub
+        if "catalogue" in m:
+            assert "<dt>Datasets</dt>" not in hub
+        else:
+            assert f"<dt>Datasets</dt><dd>{build.manifest_total_count(m)}</dd>" in hub
         assert "—" not in hub and not LOCAL_DATA.search(hub)
     assert "—" not in landing and not LOCAL_DATA.search(landing)
 
