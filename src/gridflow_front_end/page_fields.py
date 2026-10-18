@@ -58,7 +58,9 @@ one key (v5 decision D2). The fields follow the locked page anatomy
       notebook:
         lead: ...                                # 35 words or fewer
         cells: ['df = data.elexon.query("fuelhh", "2026-09-20", "2026-09-26")', ...]
-        needs: 20 to 26 September 2026           # "... with <needs> ingested."
+        needs: 20 to 26 September 2026           # a noun phrase: the page prints "Needs gridflow
+                                                 # and gridflow-models installed, with <needs>
+                                                 # ingested." No clause, verb, ';' or full stop
         plot_alt: ...
       # 6. foot
       related:
@@ -213,6 +215,17 @@ _RELATED_RE = re.compile(r"^[a-z0-9_]+/(?:[a-z0-9_]+|[a-z0-9]+(?:-[a-z0-9]+)+)$"
 _SLUG_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 _COLUMN_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 _FENCE = "---"
+
+# ``notebook.needs`` is printed inside "with <needs> ingested.", so it must be a noun phrase. These
+# catch the clauses writers have put there: a verb to start it, or a word that makes it a sentence.
+NEEDS_LEADING_VERBS = frozenset(
+    {"ingest", "install", "run", "download", "fetch", "load", "use", "read", "get", "pull", "call"}
+    | {"need", "needs", "require", "requires", "have", "has", "is", "are"}
+)
+NEEDS_CLAUSE_WORDS = frozenset(
+    {"will", "would", "can", "cannot", "can't", "won't", "must", "should", "fail", "fails"}
+    | {"failed", "is", "are", "was", "were", "isn't", "aren't", "does", "doesn't", "don't"}
+)
 
 
 def words(text: str) -> int:
@@ -650,6 +663,28 @@ def _count(errors: list[str], path: str, n: int, bounds: tuple[int, int]) -> Non
         errors.append(f"{path}: {n} entries; needs {lo} to {hi}")
 
 
+def needs_problem(needs: str) -> str | None:
+    """Why a ``notebook.needs`` value would not read inside "with <needs> ingested.", or None.
+
+    Args:
+        needs: The note's ``notebook.needs``.
+    """
+    text = needs.strip()
+    tokens = [w.strip(",.:()`'\"").lower() for w in text.split()]
+    if ";" in text:
+        return "it holds a ';' (two clauses)"
+    if text.endswith("."):
+        return "it ends with a full stop (the template ends the sentence)"
+    if "ingest" in text.lower():
+        return "it says 'ingest' (the template already does)"
+    if tokens and tokens[0] in NEEDS_LEADING_VERBS:
+        return f"it starts with the verb {tokens[0]!r}"
+    clause = next((w for w in tokens if w in NEEDS_CLAUSE_WORDS), None)
+    if clause:
+        return f"it holds {clause!r}, which makes it a clause"
+    return None
+
+
 def anatomy_errors(fields: PageFields) -> list[str]:
     """Required fields and word budgets for a note on the new template.
 
@@ -782,6 +817,15 @@ def anatomy_errors(fields: PageFields) -> list[str]:
             e.append(f"{p}.notebook.needs: missing")
         else:
             _budget(e, f"{p}.notebook.needs", nb.needs, "needs")
+            problem = needs_problem(nb.needs)
+            if problem:
+                e.append(
+                    f"{p}.notebook.needs: {problem}. The page prints 'Needs gridflow and "
+                    "gridflow-models installed, with <needs> ingested.', so write a short noun "
+                    "phrase naming what to ingest, such as '20 to 26 September 2026' or 'the "
+                    "summary and report tables for 11 September 2026'; a loss or caveat belongs "
+                    "in what_it_is or the chart caption"
+                )
         if nb.plot_alt:
             _budget(e, f"{p}.notebook.plot_alt", nb.plot_alt, "plot_alt")
         for i, cell in enumerate(nb.cells):
