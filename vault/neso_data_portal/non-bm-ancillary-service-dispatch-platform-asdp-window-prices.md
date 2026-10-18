@@ -7,6 +7,40 @@ skeleton: false
 updated: 2026-10-13
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: NESO gives `WindowPrice` no unit, and does not say if times are UTC or UK local.
+  title: ASDP window prices
+  summary: >-
+    Price changes that Non-BM reserve providers sent to NESO's dispatch platform, ASDP, for
+    settlement windows in 2025 and 2026.
+  facts:
+    vendor: "NESO Data Portal: two datastore tables, one per calendar year"
+    cadence: "NESO lists it as not active: the services moved to its Open Balancing Platform"
+    grain: One row per window-price change a provider sent
+  landscape: market
+  what_it_is: >-
+    Providers of Non-BM STOR and Fast Reserve (outside the Balancing Mechanism) told NESO a price for
+    each settlement window through its dispatch platform, ASDP. Each row gives provider, asset,
+    service, window, price and creation time. `EntryID` points to the instruction table but repeats,
+    so it identifies no row. The Open Balancing Platform (OBP) uses other ids: never join the two.
+  how_used:
+    - Which assets and providers offered Non-BM Fast Reserve and STOR through ASDP
+    - How often each asset changed its window price
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then each year's datastore dump, kept only if its
+      body changed. gridflow re-checks it at most weekly.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=non-bm-ancillary-service-dispatch-platform-asdp-window-prices"
+      - "GET https://api.neso.energy/datastore/dump/91749b29-d98a-4565-b126-bd021253b3af"
+      - "GET https://api.neso.energy/datastore/dump/832e6702-3007-4424-9146-8d35db8b2fe4"
+    commands:
+      - {run: gridflow ingest neso_data_portal asdp_window_prices --last 24h, comment: "both dumps to bronze"}
+      - {run: gridflow transform neso_data_portal asdp_window_prices --last 24h, comment: "the capture's date to silver"}
+  related:
+    - {dataset: neso_data_portal/non-bm-ancillary-service-dispatch-platform-asdp-instructions, note: "The ASDP dispatch instructions that `EntryID` points to"}
+    - {dataset: neso_data_portal/obp-reserve-availability-utilisation-price, note: "Reserve prices on OBP, where these services moved; never join on ids"}
+    - {dataset: neso_data_portal/obp-non-bm-reserve-instructions, note: Non-BM reserve instructions on OBP}
 ---
 
 # Non-BM Ancillary Service Dispatch Platform (ASDP) Window Prices

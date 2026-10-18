@@ -7,6 +7,57 @@ skeleton: false
 updated: 2026-10-13
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: true
+  title: ORPS reactive power utilisation
+  summary: >-
+    NESO's monthly record of how much reactive power each unit was asked to absorb or produce,
+    with the default payment rates.
+  facts:
+    vendor: "NESO Data Portal, ORPS package: four CSV files, a workbook and two PDFs"
+    cadence: Monthly, as NESO lists it; updated mid-month with data to two months earlier
+    grain: "Utilisation: one row per unit, with lead, lag and total per month"
+  landscape: market
+  what_it_is: >-
+    Grid Code generators must be able to absorb or produce reactive power, which NESO calls on to
+    manage voltage near their connection. These files give each unit's monthly utilisation, lead
+    (read as absorbed) and lag (read as produced) apart, in MVArh as NESO's package text states;
+    the historic file's dictionary says MVAr. Another table holds default payment rate
+    inputs.
+  how_used:
+    - Which units NESO calls on for reactive power, month by month
+    - "The two default rates NESO pays for reactive power, in £/MVArh, by month"
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: `package_show`, then each file whole unless `last_modified` is
+      unchanged. Bronze only: the workbook, PDFs and newer long file, which repeats a complete row.
+    commands:
+      - {run: gridflow ingest neso_data_portal orps_utilisation_reactive --last 24h, comment: "whole files; swap in any key"}
+      - {run: gridflow transform neso_data_portal orps_utilisation_reactive --last 24h, comment: "the capture's date to silver"}
+  family:
+    slug: obligatory-reactive-power-service-orps-utilisation
+    members:
+      - dataset: orps_utilisation_reactive
+        differs: "Lead, lag, total by month, April 2020 to December 2024; long file bronze only"
+        request:
+          - "GET https://api.neso.energy/api/3/action/package_show?id=obligatory-reactive-power-service-orps-utilisation"
+          - "GET https://api.neso.energy/dataset/7e142b03-8650-4f46-8420-7ce1e84e1e5b/resource/a61c6c26-62ec-41e1-ae25-ed95f4562274/download/reactive-utilisation-data-apr-2020-dec-2024.csv"
+          - "GET https://api.neso.energy/dataset/7e142b03-8650-4f46-8420-7ce1e84e1e5b/resource/528b03d2-4008-4b65-a732-a001cd835a3b/download/reactive-utilisation-data.csv"
+        held: "The long file alters some archive values, zeroes blanks; NESO does not say which to use."
+      - dataset: orps_utilisation_historic_reactive
+        differs: "Lead, lag and total by month, October 2013 to March 2020"
+        request:
+          - "GET https://api.neso.energy/api/3/action/package_show?id=obligatory-reactive-power-service-orps-utilisation"
+          - "GET https://api.neso.energy/dataset/7e142b03-8650-4f46-8420-7ce1e84e1e5b/resource/3ee65326-3729-421d-b667-b2164501e4a5/download/reactive-historical-data-apr-2013-to-mar-2020.csv"
+        held: "NESO does not say what a dash cell means; one unit appears twice, with different values."
+      - dataset: orps_utilisation_reactive_default
+        differs: "Monthly inputs to NESO's default payment rate, and the two rates in £/MVArh"
+        request:
+          - "GET https://api.neso.energy/api/3/action/package_show?id=obligatory-reactive-power-service-orps-utilisation"
+          - "GET https://api.neso.energy/dataset/7e142b03-8650-4f46-8420-7ce1e84e1e5b/resource/b00df5b1-4179-44e3-b556-28a836ad619f/download/reactive-default-payment-rate-oct-2026.csv"
+        held: "NESO gives the three power-price inputs only a pound sign, with no denominator."
+  related:
+    - {dataset: neso_data_portal/constraint-breakdown, note: "Daily voltage constraint costs, which NESO ties to reactive-power balance"}
 ---
 
 # Obligatory Reactive Power Service (ORPS)

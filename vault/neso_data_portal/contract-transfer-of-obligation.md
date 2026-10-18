@@ -7,6 +7,38 @@ skeleton: false
 updated: 2026-10-13
 layer_coverage: "bronze"
 eligibility: "eligible"
+page:
+  held: Identical rows repeat and no transfer id tells them apart, so there is no silver table.
+  title: Contract transfer of obligation
+  summary: >-
+    NESO's log of balancing-service contracts that providers asked to move from one unit to another:
+    product, MW, price and delivery dates.
+  facts:
+    vendor: "NESO Data Portal, package `contract-transfer-of-obligation`: one CSV file"
+    cadence: Ad hoc, as NESO lists it; updated only when a transfer request arrives
+    grain: "Each row: a contract's product, MW, price, delivery dates and receiving unit"
+  landscape: market
+  what_it_is: >-
+    A provider can ask NESO to move a Balancing Service contract from its contracted unit to one
+    without a contract. This file publishes those transfers: participant, product, executed MW,
+    clearing price in £/MW/h, delivery dates, the receiving unit and a status. NESO does not say
+    whether rows that repeat exactly are separate transfers, nor what clock the delivery dates use.
+  how_used:
+    - Which unit took over each transferred contract, with its MW and price
+    - Read beside the Enduring Auction Capability (EAC) results that NESO tags this package with
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then the file downloaded whole unless its
+      `last_modified` is unchanged. Ingest only: gridflow builds no silver table.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=contract-transfer-of-obligation"
+      - "GET https://api.neso.energy/dataset/cb295f83-bfb8-4aa0-9b92-0a6791342c7e/resource/dbd7f746-07c9-4804-8ab2-9bec2d7ef0ec/download/contract-transfers.csv"
+    commands:
+      - {run: gridflow ingest neso_data_portal contract_transfer_obligation --last 24h, comment: "whole file, bronze only"}
+  related:
+    - {dataset: neso_data_portal/eac-br-auction-results, note: "Balancing Reserve auction results, among the tags NESO gives this log"}
+    - {dataset: neso_data_portal/eac-auction-results, note: "EAC response and reserve auction results, also among its tags"}
+    - {dataset: neso_data_portal/balancing-reserve-auction-requirement-forecast, note: The Balancing Reserve requirement forecast}
 ---
 
 # Contract Transfer of Obligation

@@ -7,6 +7,40 @@ skeleton: false
 updated: 2026-10-13
 layer_coverage: "bronze"
 eligibility: "eligible"
+page:
+  held: Identical rows repeat and no action id tells them apart, so there is no silver table.
+  title: Disaggregated balancing services adjustment data
+  summary: >-
+    NESO's balancing actions outside the Balancing Mechanism, action by action: settlement period,
+    cost in £, volume in MWh and a trade flag.
+  facts:
+    vendor: "NESO Data Portal, package `disaggregated-bsad`: one CSV file per financial year"
+    cadence: NESO states no update frequency; the newest file is the current financial year
+    grain: "Each row: settlement date and period, cost, volume and trade flag"
+    history: NESO lists one file per April-to-March year, 2013-14 to 2026-27
+  landscape: market
+  what_it_is: >-
+    BSAD is how NESO submits balancing actions taken outside the Balancing Mechanism into
+    settlement. This package lists them one by one, flagged `T` for a system action or `F` for an
+    energy action. NESO's methodology numbers each action in its settlement submission, but the
+    portal files carry no such number. NESO does not define what the cost's sign means.
+  how_used:
+    - Cost and volume of individual balancing actions outside the Balancing Mechanism
+    - Setting NESO's per-action files beside Elexon's DISBSAD feed
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then each financial-year file whole: uploads to
+      2020-21, dumps from 2021-22 (2013-14 and 2026-27 shown). Ingest only: no silver table.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=disaggregated-bsad"
+      - "GET https://api.neso.energy/dataset/4878d09f-8938-4e8f-8f3e-538b3355861a/resource/a01c3587-0e29-4e8b-81e6-37a32776fd8a/download/bs_disbsd_01-04-2013_31-03-2014.csv"
+      - "GET https://api.neso.energy/datastore/dump/2be1a4d1-6b10-4c62-a01c-924942a3748f"
+    commands:
+      - {run: gridflow ingest neso_data_portal disaggregated_bsad --last 24h, comment: "all 14 files, bronze only"}
+  related:
+    - {dataset: neso_data_portal/aggregated-bsad, note: "NESO's settlement-period totals; this package is the per-action grain"}
+    - {dataset: neso_data_portal/balancing-services-adjustment-data-forward-contracts, note: "NESO's forward-contract adjustments, the third BSAD package"}
+    - {dataset: elexon/disbsad, note: "Elexon's per-action adjustments, each with an action number"}
 ---
 
 # Disaggregated Balancing Services Adjustment Data (BSAD)
