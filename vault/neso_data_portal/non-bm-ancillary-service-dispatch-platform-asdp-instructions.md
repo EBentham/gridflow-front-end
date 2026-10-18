@@ -7,6 +7,135 @@ skeleton: false
 updated: 2026-10-13
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: ASDP dispatch instructions
+  summary: >-
+    Dispatch and cease instructions NESO sent to Non-BM Fast Reserve, STOR and RDP units through
+    its dispatch platform, ASDP, in monthly files.
+  facts:
+    vendor: "NESO Data Portal: 70 datastore tables, one per month"
+    cadence: "NESO lists it as not active: the services moved to its Open Balancing Platform"
+    grain: "One row per instruction entry, numbered by NESO's `EntryID`"
+    history: "Monthly files from June 2020 to April 2026, with none for September 2020"
+  landscape: market
+  what_it_is: >-
+    NESO's Ancillary Service Dispatch Platform (ASDP) instructed reserve units outside the
+    Balancing Mechanism: Non-BM Fast Reserve, STOR and RDP curtailments. NESO publishes
+    instructions once providers confirm them. Most rows give start and cease times, MW, an
+    indicative price in £/MWh and, from November 2021, provider and asset. Times are text: ending
+    in `Z` in 2020, no zone marker from 2021.
+  how_used:
+    - How often NESO called Non-BM Fast Reserve and STOR, by day and hour
+    - Instructed MW and indicative price per asset and provider
+    - Lead time from each dispatch message to the instructed start
+  chart:
+    type: stacked-area
+    silver: neso_data_portal/asdp_instructions
+    time: instruction_start_date_time
+    time_text: {format: "%Y-%m-%dT%H:%M:%S"}
+    filter:
+      - {column: dispatch_date_time_stamp, op: ge, value: "2021-01-01"}
+    group: service_type
+    group_map: {"Non-BM Fast Reserve": fast, "Non-BM STOR": stor, RDP_NEGATIVE: rdp}
+    series_order: [fast, stor, rdp]
+    aggregation: count
+    time_bucket: 1d
+    window: {start: "2022-03-01", end: "2022-03-31"}
+    unit: count
+  chart_view:
+    title: Instructions per day by service, March 2022
+    caption: >-
+      Silver `neso_data_portal/asdp_instructions`, instructions per start date as written, March 2022:
+      picked as the month with most STOR instructions. That month, Fast Reserve has rows daily and
+      STOR comes in bursts. Rows without a start are not counted.
+    alt: >-
+      Stacked area chart from neso_data_portal/asdp_instructions of instructions per start date as
+      written, 1 to 31 March 2022: Non-BM Fast Reserve at the bottom, STOR on top. Fast Reserve runs
+      every day, 5 to 57 a day, highest on the 3rd. STOR appears on nine days, the 1st and between
+      the 8th and 17th, up to 108 on the 11th; the total is highest on the 8th, at 133.
+    x_label: start date as written, March 2022
+    key:
+      - {series: stor, label: Non-BM STOR, codes: Non-BM STOR, paint: hatch-cross, note: "Nine days this month, up to 108 on the 11th."}
+      - {series: fast, label: Non-BM Fast Reserve, codes: Non-BM Fast Reserve, paint: hatch-lines}
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then each month's datastore dump (three of 70
+      shown), kept only if its body changed. gridflow re-checks it at most weekly.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=non-bm-ancillary-service-dispatch-platform-asdp-instructions"
+      - "GET https://api.neso.energy/datastore/dump/6f037ebe-110d-4099-ab82-0ac3185e3f18"
+      - "GET https://api.neso.energy/datastore/dump/90ba1625-d99b-4ec6-8356-ad69af4e6b20"
+      - "GET https://api.neso.energy/datastore/dump/099bd868-d0af-4157-85c6-4508ddbd8a64"
+    commands:
+      - {run: gridflow ingest neso_data_portal asdp_instructions --last 24h, comment: "all 70 monthly dumps to bronze"}
+      - {run: gridflow transform neso_data_portal asdp_instructions --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: resource_id, op: eq, value: "ba09543b-79e0-46c7-a229-089d83df6304"}
+        - {column: entry_id, op: in, value: ["73427", "73429", "73430", "73433", "73436", "73437", "73441", "73447"]}
+      order_by: [entry_id]
+      columns: [entry_id, instruction_start_date_time, dispatch_date_time_stamp, mw, indicative_price,
+                asset_id, party_id, service_type, instruction_cease_date_time, cease_date_time_stamp,
+                tendered, resource_id]
+    key: [resource_id, entry_id]
+    caption: "Eight instructions, 29 March 2026; five start between 01:00 and 01:59, an hour UK clocks skipped."
+    fields:
+      entry_id: "NESO's sequential entry number, kept as text (its dictionary says integer)"
+      instruction_start_date_time: "Ramp-up start (RDP: dispatch sent); no zone marker, and not UK local time here"
+      dispatch_date_time_stamp: "When NESO sent the dispatch; its dictionary adds publish time to the portal"
+      mw: "MW dispatched, as NESO states it; NESO states no sign"
+      indicative_price: "Price as the instruction starts to ramp up, £/MWh (NESO); RDP: utilisation price"
+      asset_id: "The Non-BM unit instructed, as NESO names it; files to October 2021 lack it"
+      party_id: "The provider as NESO writes it, spaces kept; files to October 2021 lack it"
+      service_type: "`Non-BM Fast Reserve`, `Non-BM STOR` or `RDP_NEGATIVE` (an RDP curtailment)"
+      instruction_cease_date_time: "Cease ramp-down end (NESO; RDP: when the cease was sent), as written"
+      cease_date_time_stamp: "When NESO sent the cease; its dictionary adds publish time to the portal"
+      tendered: "`Tendered` or `Non-tendered`, case as NESO writes it; files to October 2021 lack it"
+      resource_id: "The monthly file the row came from; with `entry_id`, the key"
+      timestamp_utc: "gridflow's capture time, UTC; not the instruction time"
+      published_at: "Null: when NESO first published each instruction is not recorded"
+      bronze_capture_id: Path of the bronze capture the row was read from
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      `data.sql` reads the `_latest` view; `query()` would filter on `timestamp_utc`, the capture
+      time. Years and hours are cut from the text as written. STOR falls from 776 in 2022 to 26,
+      6, 1 and 1.
+    cells:
+      - |
+        data.sql("""
+            SELECT substr(instruction_start_date_time, 1, 4) AS year,
+                count_if(service_type = 'Non-BM Fast Reserve') AS fast_res,
+                count_if(service_type = 'Non-BM STOR') AS stor,
+                count_if(service_type = 'RDP_NEGATIVE') AS rdp,
+                round(avg(indicative_price), 2) AS mean_price_gbp_mwh
+            FROM silver_neso_data_portal_asdp_instructions_latest
+            WHERE instruction_start_date_time IS NOT NULL
+            GROUP BY ALL ORDER BY year""")
+      - |
+        hours = data.sql("""
+            SELECT substr(instruction_start_date_time, 12, 2)::INT AS hour,
+                count(*) AS instructions
+            FROM silver_neso_data_portal_asdp_instructions_latest
+            WHERE service_type = 'Non-BM Fast Reserve'
+              AND instruction_start_date_time LIKE '2025-%'
+            GROUP BY ALL ORDER BY hour""")
+        hours.head()
+      - |
+        hours.plot.bar(x="hour", y="instructions", legend=False,
+                       color="#155A6E", figsize=(8, 3.5),
+                       xlabel="hour of the start time as written, 2025",
+                       ylabel="Fast Reserve instructions");
+    needs: a capture of the 70 monthly files
+    plot_alt: >-
+      Bar chart of 2025's Non-BM Fast Reserve instructions by hour of the start time as written, 0 to
+      23. The fewest start in hour 2 (372) and the most in hour 6 (1,318); a second, broader high runs
+      from hour 15 to 18, at 943 to 1,024 each.
+  related:
+    - {dataset: neso_data_portal/non-bm-ancillary-service-dispatch-platform-asdp-window-prices, note: "Window prices providers sent through ASDP; `EntryID` points here"}
+    - {dataset: neso_data_portal/obp-non-bm-reserve-instructions, note: "Non-BM reserve instructions on OBP, where these moved; never join ids"}
+    - {dataset: neso_data_portal/short-term-operating-reserve-stor-day-ahead-auction-results, note: The day-ahead STOR auctions behind the STOR service}
 ---
 
 # Non-BM ancillary service dispatch platform (ASDP) instructions
@@ -238,7 +367,15 @@ counts are 71,304 for the dispatch stamp and 71,210 for the cease time and cease
 203; see Sentinels). The `Z` in the early rows does not authorise assigning UTC to the later naive cells.
 ASDP protocol guidance uses UTC for message timestamps ([STOR ASDP guidance](https://www.neso.energy/document/186511/download)),
 but no reviewed portal dictionary maps that specification onto every exported column and spelling in both epochs
-(`TODO: ASDP-EXPORT-CLOCK`). No two resources' start-label ranges overlap in the observed labels.
+(`TODO: ASDP-EXPORT-CLOCK`). One measured check narrows it for three files. On 29 March 2026, when UK clocks skip
+01:00 to 01:59, the March 2026 body has 17 starts and 17 dispatch stamps in that hour, and in `EntryID` order (73427
+to 73455) starts and stamps run on unbroken from 00:43 through 01:03, 01:08 and 01:33 to 02:03, so that body is not
+written in UK local time (UTC or fixed GMT fit). Of the other five spring changes in the naive files, only the cease
+columns have rows in the skipped hour: 28 March 2021 (entry 5574, cease 01:12:48, cease stamp 01:11:13) and 30 March
+2025 (entries 54370 to 54375, ceases 01:20:00 to 01:28:36), so those two bodies' cease columns are not UK local time
+either. 27 March 2022, 26 March 2023 and 31 March 2024 have no row in that hour in any column, so they test nothing
+(front-end page writer, 2026-10-18, local silver; corrected after review the same day). No two resources'
+start-label ranges overlap in the observed labels.
 
 **Units (vendor dictionary only; nothing converted).** From NESO's saved field info
 (@.planning/research/neso-snapshots/field-info/20261008T114228Z/asdp_instructions.json) as cited in K-AS-5-FACTS:
@@ -276,12 +413,15 @@ every body is valid UTF-8. **No token is mapped to null, no trim is applied and 
 
 **Identity and selection.** The entity key is (`resource_id`, `entry_id`). `EntryID` is nonblank and unique within
 every body and across all 74,137 rows (numerically 1 to 74,647, so 510 numbers in that span do not appear in the
-captured data; `TODO: verify` why, for example instructions never confirmed by the provider). A vendor guarantee
+captured data; 360 of them, 19 to 378, fall between the last August 2020 entry and the first October 2020 entry,
+where the series has no September 2020 resource; `TODO: verify` why, for example instructions never confirmed by
+the provider). A vendor guarantee
 that an `EntryID` is permanent is not stated, so `resource_id` stays in the key and `latest` is the whole capture of
 each resource: a later capture of a monthly file replaces that file's rows and no other month's. Row order inside a
 body is not by `EntryID` (the November 2021 body begins 12810, 12809).
 
-**Service vocabulary (rows).** `Non-BM Fast Reserve` 72,503 · `Non-BM STOR` 1,620 · `RDP_NEGATIVE` 14. There is
+**Service vocabulary (rows).** `Non-BM Fast Reserve` 72,503 · `Non-BM STOR` 1,620 · `RDP_NEGATIVE` 14. By start
+year (2020 to 2026, rows with a start), STOR is 122, 680, 776, 26, 6, 1 and 1. There is
 **no instruction-status column** in either header, so a cancelled or rejected instruction cannot be told apart from
 a delivered one.
 

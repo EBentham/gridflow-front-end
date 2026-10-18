@@ -1,0 +1,189 @@
+{
+ "dataset": "neso_data_portal/asdp_instructions",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "f366876e9ec24a162e36aee61d63118f54de49f0ec80ecaa199b1a4494ebfec2",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "data.sql(\"\"\"\n    SELECT substr(instruction_start_date_time, 1, 4) AS year,\n        count_if(service_type = 'Non-BM Fast Reserve') AS fast_res,\n        count_if(service_type = 'Non-BM STOR') AS stor,\n        count_if(service_type = 'RDP_NEGATIVE') AS rdp,\n        round(avg(indicative_price), 2) AS mean_price_gbp_mwh\n    FROM silver_neso_data_portal_asdp_instructions_latest\n    WHERE instruction_start_date_time IS NOT NULL\n    GROUP BY ALL ORDER BY year\"\"\")",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "year",
+      "fast_res",
+      "stor",
+      "rdp",
+      "mean_price_gbp_mwh"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6"
+     ],
+     "rows": [
+      [
+       "2020",
+       "2602",
+       "122",
+       "0",
+       "81.85"
+      ],
+      [
+       "2021",
+       "10798",
+       "680",
+       "0",
+       "158.13"
+      ],
+      [
+       "2022",
+       "9900",
+       "776",
+       "0",
+       "321.27"
+      ],
+      [
+       "2023",
+       "8927",
+       "26",
+       "1",
+       "161.89"
+      ],
+      [
+       "2024",
+       "15537",
+       "6",
+       "2",
+       "108.34"
+      ],
+      [
+       "2025",
+       "18330",
+       "1",
+       "11",
+       "116.05"
+      ],
+      [
+       "2026",
+       "6308",
+       "1",
+       "0",
+       "122.56"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "hours = data.sql(\"\"\"\n    SELECT substr(instruction_start_date_time, 12, 2)::INT AS hour,\n        count(*) AS instructions\n    FROM silver_neso_data_portal_asdp_instructions_latest\n    WHERE service_type = 'Non-BM Fast Reserve'\n      AND instruction_start_date_time LIKE '2025-%'\n    GROUP BY ALL ORDER BY hour\"\"\")\nhours.head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "hour",
+      "instructions"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "0",
+       "654"
+      ],
+      [
+       "1",
+       "402"
+      ],
+      [
+       "2",
+       "372"
+      ],
+      [
+       "3",
+       "425"
+      ],
+      [
+       "4",
+       "584"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "hours.plot.bar(x=\"hour\", y=\"instructions\", legend=False,\n               color=\"#155A6E\", figsize=(8, 3.5),\n               xlabel=\"hour of the start time as written, 2025\",\n               ylabel=\"Fast Reserve instructions\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "asdp_instructions-5.png",
+     "width": 707,
+     "height": 340
+    }
+   ]
+  }
+ ]
+}
