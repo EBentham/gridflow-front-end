@@ -7,6 +7,56 @@ skeleton: false
 updated: 2026-10-13
 layer_coverage: "bronze, silver"
 eligibility: "held"
+page:
+  held: true
+  title: Balancing Reserve mock auction results
+  summary: >-
+    NESO's test runs of Balancing Reserve auctions on its EAC platform: summaries, unit results and
+    orders, not real procurement.
+  facts:
+    vendor: "NESO Data Portal: four datastore tables, named Mock Balancing-Reserve 2023-2024"
+    cadence: "NESO lists daily; its notice says February 2024 only; gridflow re-checks at most weekly"
+    grain: "Summary: one row per mock auction, product (`PBR`, `NBR`) and half-hour window"
+  landscape: market
+  what_it_is: >-
+    Rehearsals of NESO's Balancing Reserve auctions on its Enduring Auction Capability (EAC)
+    platform: two products, `PBR` and `NBR` (read as positive and negative reserve), in half-hour
+    windows. Its four tables mirror the real package. They show auction mechanics, not real prices
+    or volumes. Mock auction numbers also appear in NESO's real EAC auction history: never join on
+    them.
+  how_used:
+    - Learning the Balancing Reserve tables and auction mechanics before the real results
+    - "How orders fare in the auction: acceptance ratio, rejection reason, executed MW"
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then each table's datastore dump, re-checked at
+      most weekly; an unchanged dump is not stored again. Swap in any table's key.
+    commands:
+      - {run: gridflow ingest neso_data_portal eac_br_mock_results_summary --last 24h, comment: "whole dump to bronze"}
+      - {run: gridflow transform neso_data_portal eac_br_mock_results_summary --last 24h, comment: "the capture's date to silver"}
+  family:
+    slug: eac-br-mock-auction-results
+    members:
+      - dataset: eac_br_mock_results_summary
+        differs: "Cleared MW and clearing price per mock auction, product and window"
+        request: "GET https://api.neso.energy/datastore/dump/a285483f-d830-4ae2-8b6d-98c05f6d21f3"
+        held: Test-run results, not real procurement; NESO does not say if times are UTC or UK local.
+      - dataset: eac_br_mock_results_by_unit
+        differs: "Winning units' MW and price per window, with participant and technology"
+        request: "GET https://api.neso.energy/datastore/dump/7f5a3d87-a3fb-4c5b-88f0-ecba2401834d"
+        held: Test-run results, not real procurement; NESO does not say if times are UTC or UK local.
+      - dataset: eac_br_mock_results_buy_orders
+        differs: "NESO's buy orders per window: quantity, price, status and executed MW"
+        request: "GET https://api.neso.energy/datastore/dump/e3ad918b-f10b-49c7-93ba-b7e81fe6feea"
+        held: Test-run results, not real procurement; NESO does not say if times are UTC or UK local.
+      - dataset: eac_br_mock_results_sell_orders
+        differs: "Every provider's sell order, with price limit, status and executed MW"
+        request: "GET https://api.neso.energy/datastore/dump/b73e34ca-28fc-4fb2-9275-d5f546d6f33a"
+        held: Test-run results, not real procurement; NESO does not say if times are UTC or UK local.
+  related:
+    - {dataset: neso_data_portal/eac-br-auction-results, note: The real auctions these runs rehearse; never join on auction number}
+    - {dataset: neso_data_portal/eac-mock-auction-results, note: "A second mock package, named 2025-2026, for response and the reserve services"}
+    - {dataset: neso_data_portal/eac-auction-results, note: "NESO's EAC auctions, which also buy Balancing Reserve"}
 ---
 
 # EAC-BR Mock Auction Results

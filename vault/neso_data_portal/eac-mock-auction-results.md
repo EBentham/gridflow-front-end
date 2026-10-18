@@ -7,6 +7,72 @@ skeleton: false
 updated: 2026-10-13
 layer_coverage: "bronze, silver"
 eligibility: "held"
+page:
+  held: true
+  title: EAC mock auction results
+  summary: >-
+    NESO's test runs of its EAC auction platform for response and reserve services: summaries, unit
+    results and orders, not real procurement.
+  facts:
+    vendor: "NESO Data Portal: four datastore tables and four daily CSV files"
+    cadence: Weekly, as NESO lists it
+    grain: "Summary: one row per mock auction, product and delivery window"
+  landscape: market
+  what_it_is: >-
+    Rehearsals of NESO's Enduring Auction Capability, the platform that buys response (Dynamic
+    Containment, Moderation, Regulation) and reserve services. Tables mirror the real package's:
+    summary, results by unit and orders, plus four daily files. They show auction
+    mechanics, not real prices or volumes. Mock numbers 1 to 13 also appear in NESO's real EAC
+    auction history: never join on them.
+  how_used:
+    - Learning the EAC tables and auction mechanics before reading the real results
+    - "How orders fare in the auction: acceptance ratio, rejection reason, executed MW"
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then each table's datastore dump, or each daily
+      file downloaded whole. Swap in any table's key; the daily tables are ingest only.
+    commands:
+      - {run: gridflow ingest neso_data_portal eac_mock_results_summary --last 24h, comment: "whole dump to bronze"}
+      - {run: gridflow transform neso_data_portal eac_mock_results_summary --last 24h, comment: "the capture's date to silver"}
+  family:
+    slug: eac-mock-auction-results
+    members:
+      - dataset: eac_mock_results_summary
+        differs: "Cleared MW and clearing price per mock auction, product and window"
+        request: "GET https://api.neso.energy/datastore/dump/454216d8-61f3-40b6-b787-4dff035ce3c3"
+        held: Test-run results, not real procurement; NESO does not say if times are UTC or UK local.
+      - dataset: eac_mock_results_by_unit
+        differs: "Winning units' MW and price per window, with participant and technology"
+        request: "GET https://api.neso.energy/datastore/dump/955cf89f-232e-4b9c-8414-6351080f49fa"
+        held: Test-run results, not real procurement; NESO does not say if times are UTC or UK local.
+      - dataset: eac_mock_results_buy_orders
+        differs: "NESO's buy orders per window: quantity, price, status and executed MW"
+        request: "GET https://api.neso.energy/datastore/dump/700a73ff-38e9-45ff-a674-085bcbfc9faf"
+        held: Test-run results, not real procurement; NESO does not say if times are UTC or UK local.
+      - dataset: eac_mock_results_sell_orders
+        differs: "Every provider's sell order, with price limit, status and executed MW"
+        request: "GET https://api.neso.energy/datastore/dump/3b18345a-1933-44d7-abd9-062a2e695ccd"
+        held: Test-run results, not real procurement; NESO does not say if times are UTC or UK local.
+      - dataset: eac_mock_results_daily_summary
+        differs: The daily counterpart of the summary; header only when fetched
+        request: "GET https://api.neso.energy/dataset/8a6f23d7-8489-49ac-9b0a-566fb53d32f8/resource/f67a53d7-d46d-4550-8947-0c60328b2347/download/neso-response-reserve-daily-results-summary.csv"
+        held: "NESO's daily file holds only a header row when fetched; gridflow keeps it in bronze only."
+      - dataset: eac_mock_results_daily_by_unit
+        differs: The daily counterpart of the results by unit; header only when fetched
+        request: "GET https://api.neso.energy/dataset/8a6f23d7-8489-49ac-9b0a-566fb53d32f8/resource/6a051ca2-715b-4966-9c16-58e52254f10b/download/neso-response-reserve-daily-results-by-unit.csv"
+        held: "NESO's daily file holds only a header row when fetched; gridflow keeps it in bronze only."
+      - dataset: eac_mock_results_daily_buy_orders
+        differs: The daily counterpart of the buy orders; header only when fetched
+        request: "GET https://api.neso.energy/dataset/8a6f23d7-8489-49ac-9b0a-566fb53d32f8/resource/f994f9bb-a2f3-48ff-a776-0b343806d978/download/neso-response-reserve-daily-buy-orders.csv"
+        held: "NESO's daily file holds only a header row when fetched; gridflow keeps it in bronze only."
+      - dataset: eac_mock_results_daily_sell_orders
+        differs: The daily counterpart of the sell orders; header only when fetched
+        request: "GET https://api.neso.energy/dataset/8a6f23d7-8489-49ac-9b0a-566fb53d32f8/resource/c4d0341d-806d-4e53-9ae8-2c54df740ba3/download/neso-response-reserve-daily-sell-orders.csv"
+        held: "NESO's daily file holds only a header row when fetched; gridflow keeps it in bronze only."
+  related:
+    - {dataset: neso_data_portal/eac-auction-results, note: The real auctions these runs rehearse; never join on auction number}
+    - {dataset: neso_data_portal/eac-br-mock-auction-results, note: "A second mock package, named 2023-2024, for Balancing Reserve alone"}
+    - {dataset: neso_data_portal/eac-br-auction-results, note: "Real Balancing Reserve results; this mock also rehearses that service"}
 ---
 
 # EAC mock auction results

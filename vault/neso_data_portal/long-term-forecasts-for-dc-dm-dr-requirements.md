@@ -7,6 +7,40 @@ skeleton: false
 updated: 2026-10-13
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: NESO states no unit or boundary rule for the bands, nor when each forecast was published.
+  title: DC, DM and DR long-term forecasts
+  summary: >-
+    NESO's twelve-month outlook for the Dynamic Containment, Moderation and Regulation requirements,
+    given as weights over requirement bands.
+  facts:
+    vendor: NESO Data Portal, one CSV file (DX Future Requirement)
+    cadence: Monthly, as NESO lists it
+    grain: One row per creation date, target month, service, EFA block and band
+  landscape: market
+  what_it_is: >-
+    NESO's view of how much of three frequency-response services, Dynamic Containment, Moderation and
+    Regulation (High and Low), it will need over the next twelve months. NESO lists nine requirement
+    bands, `0-200` to `1600-1800`, each given a `Possibilities` value from 0 to 1 per target month,
+    service and EFA block. NESO expects the day-ahead requirement to change as delivery nears.
+  how_used:
+    - NESO's weights over requirement bands, by month and EFA block, a year ahead
+    - A spread of possible requirements, not one number, for scenario models
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then the file downloaded whole unless its
+      `last_modified` is unchanged.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=long-term-forecasts-for-dc-dm-dr-requirements"
+      - "GET https://api.neso.energy/dataset/a1256c20-f657-4186-b288-e2c238a394c0/resource/5162c4d1-6d72-497b-a2ad-3a2449bc8952/download/dx_future_requirement.csv"
+    commands:
+      - {run: gridflow ingest neso_data_portal dc_dm_dr_long_term_fc --last 24h, comment: "whole file to bronze"}
+      - {run: gridflow transform neso_data_portal dc_dm_dr_long_term_fc --last 24h, comment: "the capture's date to silver"}
+  related:
+    - {dataset: neso_data_portal/dynamic-containment-4-day-forecast, note: "The Dynamic Containment requirement for the next four days, in MW"}
+    - {dataset: neso_data_portal/dynamic-moderation-requirements, note: Dynamic Moderation's requirement in MW for each upcoming day}
+    - {dataset: neso_data_portal/dynamic-regulation-requirements, note: Dynamic Regulation's requirement in MW for each upcoming day}
+    - {dataset: neso_data_portal/eac-auction-results, note: "EAC auctions that buy all three services, High and Low"}
 ---
 
 # Long-Term Forecasts for DC, DM and DR Requirements

@@ -7,6 +7,53 @@ skeleton: false
 updated: 2026-10-13
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: true
+  title: Dynamic Containment 4 day forecast
+  summary: >-
+    NESO's Dynamic Containment requirement forecast for the next four days, in MW per EFA block,
+    with an archive of earlier forecasts.
+  facts:
+    vendor: "NESO Data Portal, package `dynamic-containment-4-day-forecast`: two CSV files"
+    cadence: Daily, as NESO lists it; the current file covers the next four days
+    grain: One row per date and service code; one MW column per EFA block
+  landscape: market
+  what_it_is: >-
+    NESO's forecast of how much Dynamic Containment, a frequency-response service, it needs: MW for
+    each of a day's six EFA blocks, the first from 23:00 UK time the day before. NESO's dictionary
+    does not define the two service codes, `DC-H` and `DC-L`. The current file covers the next four
+    days; the history file keeps earlier forecasts by creation date.
+  how_used:
+    - A look-ahead on NESO's Dynamic Containment requirement, block by block
+    - Read beside the other ancillary-service requirement forecasts
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: `package_show` gives each file's address, which changes with each
+      upload; the file is downloaded whole unless its `last_modified` is unchanged. Swap in either
+      table's key.
+    commands:
+      - {run: gridflow ingest neso_data_portal dc_forecast_4d --last 24h, comment: "whole file to bronze"}
+      - {run: gridflow transform neso_data_portal dc_forecast_4d --last 24h, comment: "the capture's date to silver"}
+  family:
+    slug: dynamic-containment-4-day-forecast
+    members:
+      - dataset: dc_forecast_4d
+        differs: "The current file: the next four days, both service codes for each"
+        request:
+          - "GET https://api.neso.energy/api/3/action/package_show?id=dynamic-containment-4-day-forecast"
+          - "GET https://api.neso.energy/dataset/c8cd1e99-bc7e-454c-8ac1-ebd9264f4d0f/resource/1b85a3f3-80f0-49cf-9b0e-49648fa0cae6/download/465d3c6096e24ed49d796f6a7ffdaebd_dcrequirements_1b85a3f3-80f0-49cf-9b0e-49648fa0cae6_patch.csv"
+        held: NESO does not say whether the slash dates in `Date` are day first or month first.
+      - dataset: dc_forecast_4d_history
+        differs: "NESO's archive of earlier forecasts, each labelled with its creation and target date"
+        request:
+          - "GET https://api.neso.energy/api/3/action/package_show?id=dynamic-containment-4-day-forecast"
+          - "GET https://api.neso.energy/dataset/c8cd1e99-bc7e-454c-8ac1-ebd9264f4d0f/resource/d5c3b48a-a0a9-4d57-a02a-ac0af09a6298/download/da8aac209e4d4a71b4000538d9575241_dcrequirementshistorical1_d5c3b48a-a0a9-4d57-a02a-ac0af09a6298_.csv"
+        held: NESO does not say when each archived forecast was first published.
+  related:
+    - {dataset: neso_data_portal/dynamic-containment-data, note: Auction results for the service this file forecasts}
+    - {dataset: neso_data_portal/eac-auction-results, note: "EAC auctions that buy Dynamic Containment, as products `DCH` and `DCL`"}
+    - {dataset: neso_data_portal/long-term-forecasts-for-dc-dm-dr-requirements, note: "The longer-horizon sibling, as weights over requirement bands"}
+    - {dataset: neso_data_portal/dynamic-moderation-requirements, note: The requirement for a sibling response service}
 ---
 
 # Dynamic Containment 4 Day Forecast
