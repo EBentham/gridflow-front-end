@@ -1,0 +1,279 @@
+{
+ "dataset": "neso_data_portal/dynamic_containment_dc_dr_dm_results",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "caeb9ffb6063b66f8776f5dfb992419ebe52517737d73e3b934e9c75b4b8913d",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.neso_data_portal.query(\"dynamic_containment_dc_dr_dm_results\", \"2022-06-20\", \"2022-06-26\")\ndf = df.sort_values([\"efa_date\", \"efa\", \"service\", \"unit_name\"])\ndf[[\"efa_date\", \"efa\", \"service\", \"unit_name\", \"cleared_volume\", \"clearing_price\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "efa_date",
+      "efa",
+      "service",
+      "unit_name",
+      "cleared_volume",
+      "clearing_price"
+     ],
+     "index": [
+      "404",
+      "425",
+      "136",
+      "224",
+      "148"
+     ],
+     "rows": [
+      [
+       "2022-06-20",
+       "1",
+       "DCH",
+       "AFFR-2",
+       "9.0",
+       "7.95"
+      ],
+      [
+       "2022-06-20",
+       "1",
+       "DCH",
+       "AFFR-4",
+       "9.0",
+       "7.95"
+      ],
+      [
+       "2022-06-20",
+       "1",
+       "DCH",
+       "AG-AEDF02",
+       "37.0",
+       "7.95"
+      ],
+      [
+       "2022-06-20",
+       "1",
+       "DCH",
+       "AG-BFLX02",
+       "9.0",
+       "7.95"
+      ],
+      [
+       "2022-06-20",
+       "1",
+       "DCH",
+       "AG-GEDF01",
+       "19.0",
+       "7.95"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "blocks = (df.groupby([\"efa_date\", \"efa\", \"service\"], as_index=False)\n            .agg(units=(\"unit_name\", \"nunique\"), cleared_mw=(\"cleared_volume\", \"sum\"),\n                 prices=(\"clearing_price\", \"nunique\"), clearing_price=(\"clearing_price\", \"first\")))\nblocks[(blocks.efa_date == \"2022-06-25\") & blocks.service.isin([\"DCL\", \"DCH\"])]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "efa_date",
+      "efa",
+      "service",
+      "units",
+      "cleared_mw",
+      "prices",
+      "clearing_price"
+     ],
+     "index": [
+      "122",
+      "123",
+      "126",
+      "127",
+      "130",
+      "131",
+      "134",
+      "135",
+      "138",
+      "139",
+      "142",
+      "143"
+     ],
+     "rows": [
+      [
+       "2022-06-25",
+       "1",
+       "DCH",
+       "39",
+       "763.0",
+       "1",
+       "6.00"
+      ],
+      [
+       "2022-06-25",
+       "1",
+       "DCL",
+       "47",
+       "903.0",
+       "1",
+       "59.95"
+      ],
+      [
+       "2022-06-25",
+       "2",
+       "DCH",
+       "41",
+       "795.0",
+       "1",
+       "6.00"
+      ],
+      [
+       "2022-06-25",
+       "2",
+       "DCL",
+       "49",
+       "942.0",
+       "1",
+       "61.00"
+      ],
+      [
+       "2022-06-25",
+       "3",
+       "DCH",
+       "43",
+       "803.0",
+       "1",
+       "3.92"
+      ],
+      [
+       "2022-06-25",
+       "3",
+       "DCL",
+       "50",
+       "948.0",
+       "1",
+       "89.95"
+      ],
+      [
+       "2022-06-25",
+       "4",
+       "DCH",
+       "43",
+       "809.0",
+       "1",
+       "4.95"
+      ],
+      [
+       "2022-06-25",
+       "4",
+       "DCL",
+       "50",
+       "956.0",
+       "1",
+       "69.95"
+      ],
+      [
+       "2022-06-25",
+       "5",
+       "DCH",
+       "39",
+       "675.0",
+       "1",
+       "7.90"
+      ],
+      [
+       "2022-06-25",
+       "5",
+       "DCL",
+       "45",
+       "792.0",
+       "1",
+       "105.00"
+      ],
+      [
+       "2022-06-25",
+       "6",
+       "DCH",
+       "34",
+       "581.0",
+       "1",
+       "6.00"
+      ],
+      [
+       "2022-06-25",
+       "6",
+       "DCL",
+       "42",
+       "715.0",
+       "1",
+       "79.80"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "dc = blocks.pivot(index=[\"efa_date\", \"efa\"], columns=\"service\", values=\"clearing_price\")\ndc[[\"DCL\", \"DCH\"]].reset_index(drop=True).plot(drawstyle=\"steps-post\", color=[\"#155A6E\", \"#C77E3C\"], figsize=(8, 3.5),\n        xlabel=\"EFA blocks, 20 to 26 June 2022, six per EFA date\",\n        ylabel=\"clearing price, £/MW/h\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "dynamic_containment_dc_dr_dm_results-5.png",
+     "width": 699,
+     "height": 337
+    }
+   ]
+  }
+ ]
+}

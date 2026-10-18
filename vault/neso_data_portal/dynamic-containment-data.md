@@ -7,6 +7,143 @@ skeleton: false
 updated: 2026-10-13
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: Dynamic Containment, Regulation and Moderation results
+  summary: >-
+    NESO's retired results for its Dynamic Containment, Regulation and Moderation auctions: MW
+    and clearing price per unit and four-hour block.
+  facts:
+    vendor: "NESO Data Portal, package `dynamic-containment-data`: four datastore tables, one uploaded file"
+    cadence: Retired; NESO no longer updates it and points to its EAC auction results
+    grain: "Results: one row per unit, service, EFA date and four-hour EFA block"
+    history: Service days 2 October 2020 to 2 November 2023 in NESO's files
+  landscape: market
+  what_it_is: >-
+    Before EAC, NESO bought Dynamic Containment, Regulation and Moderation, each for low and high
+    frequency (`DCL` to `DMH`), by auction in six four-hour EFA blocks a day. The results give each
+    unit's cleared MW and its block's clearing price in £/MW/h. Block orders are the providers' sell
+    orders; the masterdata is the earlier daily DC tender.
+  how_used:
+    - Daily DC, DR and DM clearing prices, as revenue history for response providers.
+    - "Who held each service: MW per unit and company, block by block."
+    - "Bid stacks per block from the sell orders: executed or rejected."
+  chart:
+    type: line
+    silver: neso_data_portal/dynamic_containment_dc_dr_dm_results
+    time: efa_date
+    value: clearing_price
+    filter:
+      - {column: service, op: in, value: [DCL, DCH]}
+    dedup: {on: [service, efa_date, efa], order_by: capture_written_at}
+    group: service
+    group_map: {DCL: dcl, DCH: dch}
+    series_order: [dcl, dch]
+    aggregation: mean
+    window: {start: "2021-09-16", end: "2023-11-02"}
+    unit: "£/MW/h"
+  chart_view:
+    title: Daily mean DC clearing price, September 2021 to November 2023
+    caption: >-
+      Silver `dynamic_containment_dc_dr_dm_results`, £/MW/h: each EFA date's unweighted mean over
+      its cleared four-hour blocks, one price per block (all units in a charted block share it). DR
+      and DM, in NESO's results from April and May 2022, are not drawn.
+    alt: >-
+      Line chart from neso_data_portal/dynamic_containment_dc_dr_dm_results of the daily mean
+      Dynamic Containment clearing price over each EFA date's blocks, in £/MW/h, 16 September 2021
+      to 2 November 2023. DC low frequency holds 17.00 until 31 October 2021, peaks at 77.61 on 25
+      June 2022, then falls; in 2023 it is under 2 on 145 of 306 days, lowest 0.24 on 1 April. DC
+      high, from 4 November 2021, mostly runs 1 to 7, peaks at 17.44 on 15 June 2023 and is above
+      DC low on 200 days of 2023.
+    x_label: EFA date, as NESO labels each row
+    key:
+      - {series: dcl, label: DC low frequency, codes: DCL, paint: petrol}
+      - {series: dch, label: DC high frequency, codes: DCH, paint: clay, note: "First in NESO's results on 4 November 2021."}
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: `package_show`, then each datastore table's whole dump, re-checked at
+      most weekly, unchanged bodies not stored; the uploaded masterdata when its `last_modified` changes.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=dynamic-containment-data"
+    commands:
+      - {run: gridflow ingest neso_data_portal dynamic_containment_dc_dr_dm_results --last 24h, comment: "whole dump; window must end recently"}
+      - {run: gridflow transform neso_data_portal dynamic_containment_dc_dr_dm_results --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: efa_date, op: eq, value: "2022-06-25"}
+        - {column: efa, op: eq, value: 5}
+        - {column: unit_name, op: in, value: [AFFR-1, AFFR-2, AG-AEDF02, V__BEROV001]}
+        - {column: capture_written_at, op: lt, value: "2026-10-09T00:00:00Z"}
+      order_by: [unit_name, service]
+      columns: [unit_name, efa_date, efa, service, cleared_volume, clearing_price, company, delivery_start, delivery_end, technology_type, location]
+    key: [unit_name, efa_date, efa, service]
+    caption: "Four units in block 5 of 25 June 2022, each holding both DC low and high."
+    fields:
+      unit_name: The unit NESO contracted, as NESO names it
+      efa_date: "NESO's EFA date; its dictionary calls it the delivery end's date"
+      efa: "Four-hour EFA block of the date, 1 to 6 (NESO: six a day)"
+      service: "`DCL`, `DCH`, `DRL`, `DRH`, `DML`, `DMH`: each service's low or high frequency"
+      cleared_volume: MW the unit was accepted for in the block (NESO's unit)
+      clearing_price: "Clearing price for the service and block, £/MW/h (NESO's unit)"
+      company: The provider company that holds the unit
+      delivery_start: "Block start as NESO wrote it, kept as text; NESO states no clock"
+      delivery_end: Block end as NESO wrote it, kept as text
+      technology_type: "Technology as written; a literal `NA` is kept as text, not null"
+      location: "Location as written (postcode-like); a blank is an empty string or null"
+      cancelled: "NESO's cancellation column; empty in these rows"
+      timestamp_utc: "UK midnight starting the EFA date's calendar day, as UTC; not the block start"
+      published_at: "Null: when NESO first published each result is unknown"
+      bronze_capture_id: Path of the bronze capture the row was read from
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      `query()` reads the `_latest` view, filtering `efa_date` with both ends included. The next
+      cell sums units' MW per block and keeps its price, after `prices` shows one price per block.
+    cells:
+      - |
+        df = data.neso_data_portal.query("dynamic_containment_dc_dr_dm_results", "2022-06-20", "2022-06-26")
+        df = df.sort_values(["efa_date", "efa", "service", "unit_name"])
+        df[["efa_date", "efa", "service", "unit_name", "cleared_volume", "clearing_price"]].head()
+      - |
+        blocks = (df.groupby(["efa_date", "efa", "service"], as_index=False)
+                    .agg(units=("unit_name", "nunique"), cleared_mw=("cleared_volume", "sum"),
+                         prices=("clearing_price", "nunique"), clearing_price=("clearing_price", "first")))
+        blocks[(blocks.efa_date == "2022-06-25") & blocks.service.isin(["DCL", "DCH"])]
+      - |
+        dc = blocks.pivot(index=["efa_date", "efa"], columns="service", values="clearing_price")
+        dc[["DCL", "DCH"]].reset_index(drop=True).plot(drawstyle="steps-post", color=["#155A6E", "#C77E3C"], figsize=(8, 3.5),
+                xlabel="EFA blocks, 20 to 26 June 2022, six per EFA date",
+                ylabel="clearing price, £/MW/h");
+    needs: a capture of the results table
+    plot_alt: >-
+      Step plot of the DC low and DC high clearing price per EFA block, in £/MW/h, for the 42 blocks
+      of EFA dates 20 to 26 June 2022. DC low swings between 4.07 and 69.95 to 24 June, then stays
+      at 59.00 or more, peaking at 105.00 in block 5 of 25 June. DC high stays between 0.80 and 8.90.
+  related:
+    - {dataset: neso_data_portal/eac-auction-results, note: "Later DC, DR and DM auctions, on NESO's EAC platform"}
+    - {dataset: neso_data_portal/dynamic-containment-4-day-forecast, note: "NESO's DC requirement per EFA block: a different measure, never added"}
+    - {dataset: neso_data_portal/dynamic-regulation-requirements, note: "NESO's DR requirement per EFA block; never join it to results"}
+    - {dataset: neso_data_portal/dynamic-moderation-requirements, note: "NESO's DM requirement per EFA block; never join it to results"}
+  family:
+    slug: dynamic-containment-data
+    members:
+      - dataset: dynamic_containment_dc_dr_dm_results
+        differs: "Each unit's cleared MW (NESO: the volume accepted) and its block's clearing price, £/MW/h"
+        request: "GET https://api.neso.energy/datastore/dump/ddc4afde-d2bd-424d-891c-56ad49c13d1a"
+      - dataset: dynamic_containment_dc_dr_dm_block
+        differs: "Providers' sell orders per EFA block, executed or rejected; NESO writes MW as negatives"
+        request: "GET https://api.neso.energy/datastore/dump/6fd8e042-be27-4c67-ad59-5acdd2a7b0fd"
+      - dataset: dynamic_containment_masterdata
+        differs: "Earlier daily DC low-frequency tender, October 2020 to September 2021: bids, fees in £"
+        request: "GET https://api.neso.energy/dataset/aca07dcb-f807-409c-a4ec-da5dc052b8ba/resource/0b8dbc3c-e05e-44a4-b855-7dd1aa079c68/download/dynamic_containment_masterdata.csv"
+      - dataset: dynamic_containment_dc_dr_dm_results_sum
+        differs: "Cleared MW and clearing price per service, EFA date and block"
+        request: "GET https://api.neso.energy/datastore/dump/888e5029-f786-41d2-bc15-cbfd1d285e96"
+        held: "NESO's dictionary calls its clearing price per MW per hour but labels it £/MW."
+      - dataset: dynamic_containment_dc_dr_dm_linear
+        differs: "Bid curves per order period: up to 32 price and volume points each"
+        request: "GET https://api.neso.energy/datastore/dump/26aefbcc-fce0-403f-80e1-4a26af3fe84b"
+        held: "NESO's dictionary labels some curve prices £/MW and others MW, with no hour basis."
 ---
 
 # Dynamic Containment, Regulation and Moderation auction results
@@ -56,8 +193,10 @@ The other three families (block orders, results by unit, masterdata) are eligibl
 
 All five resources are disposition **SILVER** (a CKAN datastore dump or an uploaded CSV that gridflow
 parses). There are **no DOC, HOLD or SKIP resources** in this package, so there are no document download
-links. Every resource has exactly one capture (2026-10-08), so amendments and deletions between captures are
-unmeasured.
+links. Every resource has one complete capture (2026-10-08), so amendments and deletions between captures are
+unmeasured. The weekly re-check of 2026-10-16 stored a second results-by-unit capture that is a **truncated byte
+prefix** of the first (224,000 of 397,662 data rows, cut inside EFA date 2023-04-02; `cmp` finds no differing byte
+before the short file ends) and the `_latest` view selects it (checked 2026-10-18; defect logged for remediation).
 
 ### SILVER
 
@@ -412,8 +551,10 @@ Schema, epoch 1:
 | `available_at` | gridflow capture time (sidecar `written_at`), labelled so |
 
 One row per **accepted unit result**: a unit, a service and one EFA block on one EFA date. Resource
-`ddc4afde-d2bd-424d-891c-56ad49c13d1a` (datastore dump), one capture (2026-10-08, 45,481,922 bytes).
-**Silver: 397,662 rows**; one Parquet file under
+`ddc4afde-d2bd-424d-891c-56ad49c13d1a` (datastore dump), one complete capture (2026-10-08, 45,481,922 bytes) and
+one truncated capture (2026-10-16, 25,461,781 bytes; see Files by disposition).
+**Silver: 397,662 rows** from the 2026-10-08 capture, plus 224,000 rows from the truncated 2026-10-16 capture
+(see Files by disposition), two Parquet files under
 `C:/gridflow-data/silver/neso_data_portal/dynamic_containment_dc_dr_dm_results/year=2026/month=10/`,
 with the 12 vendor columns then the 8 gridflow columns (20 columns). **Status: eligible.**
 
@@ -427,7 +568,11 @@ with the 12 vendor columns then the 8 gridflow columns (20 columns). **Status: e
   start of the EFA block**: the block start is never composed from `efa_date` plus `efa` (RULINGS 572, 588).
   `delivery_start` and `delivery_end` are raw naive strings.
 - **Coverage.** EFA dates 2021-09-16 to 2023-11-02, six service codes (`DCL`, `DCH`, `DRL`, `DRH`, `DML`,
-  `DMH`), `efa` 1..6.
+  `DMH`), `efa` 1..6. The package's linear-orders dictionary defines them: DCL and DCH are Dynamic Containment
+  Low and High Frequency, DRL and DRH Dynamic Regulation, DML and DMH Dynamic Moderation (this resource's own
+  `Service` text still describes the FFR-era `DLH` and `LFS`).
+- **One price per block.** `clearing_price` takes a single value per (`service`, `efa_date`, `efa`) in all
+  19,211 such blocks of the 2026-10-08 capture (measured 2026-10-18); every accepted unit in a block shares it.
 - **Units (this resource's own dictionary).** `cleared_volume` **MW**; `clearing_price` **£/MW/h**
   (the dictionary: "cleared price per MW per hour"), stated explicitly by this resource's own dictionary.
 - **Sentinels and strings.** `technology_type` holds a literal `NA` on 19,601 rows; kept as the string `NA`
@@ -561,10 +706,13 @@ vendor columns then the 8 gridflow columns (26 columns). **Status: eligible.**
 - Vendor metadata (snapshot extras, verbatim):
   - Update Frequency: Not Active
 
-The vendor states the package is "Not Active" and no longer updated. gridflow has **one capture per
-resource** (2026-10-08), so whether the 2023 tables will ever change, and the amendment and deletion behaviour
+The vendor states the package is "Not Active" and no longer updated. gridflow has **one complete capture per
+resource** (2026-10-08; results also has the truncated 2026-10-16 capture), so whether the 2023 tables will ever change, and the amendment and deletion behaviour
 of the dumps, are unmeasured (`TODO: verify` by comparing later complete captures against the hash-pinned
-bodies). The registry refresh is `frozen`, so nothing re-fetches on a schedule. The masterdata upload's CKAN
+bodies). The registry refresh is `frozen`: a dump is re-checked at most every 7 days on gridflow's clock and a
+body identical to the newest capture is not stored again (`connectors/neso_data_portal/client.py`
+`_FROZEN_CADENCE`, `_frozen_not_due`). The 2026-10-16 re-check stored only the truncated results capture
+described under Files by disposition. The masterdata upload's CKAN
 `last_modified` (2026-05-29) is later than the end of the data it holds (see the clocks section).
 
 ## Licence and attribution
