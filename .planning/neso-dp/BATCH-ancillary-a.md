@@ -88,8 +88,8 @@ Several agents share the worktree: keep strictly to your own package's files.
 | 6 | ad98aeca3cfc9a4db | a136e989d13cd2bc9 | APPROVED (round 2 major seat-verified); committed |
 | 7 | ac5d1cc2d76dd8911 | a275028b640f86024 | APPROVED round 2; committed; 20j logged |
 | 8 | adf1a644470e37e3a | a04b7a2ca87b61618 | APPROVED, nits fixed; committed |
-| 9 | abbb4ef8abd514f95 | | writing |
-| 10 | a04615370afb38a68 | | writing |
+| 9 | abbb4ef8abd514f95 | a5e5a58c455dc54d2 | checking; lead resultsbyunit (d9a2f0f); 20l logged |
+| 10 | a04615370afb38a68 | aba46a9462e27bed3 | checking; 20m logged |
 
 ## Template follow-ups (seat items, not page findings)
 
@@ -99,3 +99,4 @@ Several agents share the worktree: keep strictly to your own package's files.
 - A series file built from local window times stamps them with `Z` (display is right; the file label is misleading).
 - The notebook tab label clips at 390 px (EAC auction results).
 - The notebook runner adds a stray column to grouped tables (seen in EAC results, DM, DR notebooks).
+- A page allows at most three commands (FFR post-tender needed four: two sibling ingests plus pipeline).

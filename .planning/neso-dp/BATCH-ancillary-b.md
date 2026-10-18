@@ -50,8 +50,9 @@ Known risks:
 
 | # | Writer | Checker | State |
 |---|---|---|---|
-| H | ac4d838fad146bef9 | | writing |
-| 1-10 | | | not started |
+| H | ac4d838fad146bef9 | a7e1cd9d58f2518e1 | APPROVED round 2, nits fixed; committed |
+| 1 | a7bdadeddd98e7449 | | writing |
+| 2-10 | | | not started |
 
 ## Template follow-ups (seat items, not page findings)
 
