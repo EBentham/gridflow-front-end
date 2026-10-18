@@ -138,6 +138,28 @@ def _needed_columns(spec: Mapping[str, Any]) -> list[str]:
     return list(dict.fromkeys(cols))
 
 
+def _time_from_text(column: str, text: Mapping[str, Any]) -> pl.Expr:
+    """A naive-UTC datetime parsed from a text time column (``time_text`` in the spec).
+
+    Some vendors publish times as text with no stated clock, and silver keeps them so. The spec
+    states the convention: the text is read as UTC. With ``day``, each value becomes the date of
+    the day it falls in, where a day begins ``starts`` hours from midnight in ``zone`` (a GB
+    reserve day runs 23:00 to 23:00 UK time, ``starts: -1``). The zone conversion stays inside
+    polars, which carries its own zone database; Windows Python has none. A day is written to the
+    series as its date at ``T00:00:00Z``: a date on the axis, not a UTC instant.
+    """
+    parsed = pl.col(column).str.to_datetime(text["format"], time_unit="us", strict=True)
+    day = text.get("day")
+    if not day:
+        return parsed
+    local = (
+        parsed.dt.replace_time_zone("UTC")
+        .dt.convert_time_zone(day["zone"])
+        .dt.replace_time_zone(None)
+    )
+    return (local - pl.duration(hours=day["starts"])).dt.truncate("1d")
+
+
 def _scan(silver_root: Path, spec: Mapping[str, Any]) -> tuple[pl.LazyFrame, int]:
     table_dir = silver_root / spec["silver"]
     if not table_dir.is_dir():
@@ -159,6 +181,9 @@ def _scan(silver_root: Path, spec: Mapping[str, Any]) -> tuple[pl.LazyFrame, int
         raise DistilError(f"{spec['silver']}: column(s) not in silver: {missing}")
     lf = lf.select(_needed_columns(spec))
     time_col = spec.get("time")
+    if time_col and "time_text" in spec:
+        lf = lf.with_columns(_time_from_text(time_col, spec["time_text"]).alias(time_col))
+        return lf, len(files)
     dtype = schema.get(time_col) if time_col else None
     if isinstance(dtype, pl.Datetime) and dtype.time_zone is not None:
         # Normalise to naive UTC inside polars: a tz-aware value crossing into
@@ -237,7 +262,13 @@ def distil_spec(spec: Mapping[str, Any], silver_root: Path) -> dict[str, Any]:
     is_time = spec["type"] in chart_spec.TIME_CHART_TYPES
     time_col = spec.get("time")
 
-    df = lf.collect()
+    try:
+        df = lf.collect()
+    except pl.exceptions.PolarsError as exc:
+        if "time_text" not in spec:
+            raise
+        # a format that does not match the text, or a zone polars does not know
+        raise DistilError(f"{spec['silver']}: time_text could not be applied ({exc})") from exc
     rows_matched = df.height
     if rows_matched == 0:
         raise DistilError(f"{spec['silver']}: the filters select no rows")

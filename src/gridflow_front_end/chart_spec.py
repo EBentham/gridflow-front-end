@@ -24,6 +24,12 @@ Spec shape (every key is listed in ``_ALLOWED_KEYS``)::
       "type": "line",                  # line | stacked-area | bar | none
       "silver": "elexon/fuelhh",       # <source>/<table> under the silver root
       "time": "timestamp_utc",         # time column (time charts only)
+      "time_text": {                   # optional: the time column is text, not a datetime
+        "format": "%Y-%m-%dT%H:%M:%S", #   strptime format; the parsed value is read as UTC
+        "day": {"zone": "Europe/London", "starts": -1}
+      },                               #   optional: each row goes to the day that begins
+                                       #   ``starts`` hours from midnight in ``zone`` (-1 is
+                                       #   23:00 the evening before); x is that day's date
       "value": "generation_mw",        # measure column (optional for count)
       "filter": [{"column": "fuel_type", "op": "not_null"}],
       "dedup": {"on": ["timestamp_utc"], "order_by": "published_at"},
@@ -72,6 +78,7 @@ _ALLOWED_KEYS = frozenset(
         "type",
         "silver",
         "time",
+        "time_text",
         "value",
         "filter",
         "dedup",
@@ -150,6 +157,26 @@ def _check_window(errors: list[str], window: object) -> None:
             errors.append("window: start is after end")
     else:
         errors.append('window: must have exactly "last", or exactly "start" and "end"')
+
+
+def _check_time_text(errors: list[str], value: object) -> None:
+    if not isinstance(value, Mapping) or not set(value) <= {"format", "day"}:
+        errors.append('time_text: must be {"format": ..., "day": {"zone": ..., "starts": ...}}')
+        return
+    fmt = value.get("format")
+    if not isinstance(fmt, str) or "%" not in fmt:
+        errors.append(f"time_text.format: must be a strptime format, got {fmt!r}")
+    if "day" not in value:
+        return
+    day = value["day"]
+    if not isinstance(day, Mapping) or set(day) != {"zone", "starts"}:
+        errors.append('time_text.day: must be {"zone": "<IANA zone>", "starts": <hours>}')
+        return
+    if not isinstance(day["zone"], str) or not day["zone"].strip():
+        errors.append("time_text.day.zone: must be an IANA zone name")
+    starts = day["starts"]
+    if not isinstance(starts, int) or isinstance(starts, bool) or not -12 <= starts <= 12:
+        errors.append("time_text.day.starts: must be an integer from -12 to 12")
 
 
 def validate_spec(spec: object) -> list[str]:
@@ -256,13 +283,18 @@ def validate_spec(spec: object) -> list[str]:
             _check_window(errors, spec["window"])
         if "time_bucket" in spec and spec["time_bucket"] not in TIME_BUCKETS:
             errors.append(f"time_bucket: must be one of {sorted(TIME_BUCKETS)}")
+        if "time_text" in spec:
+            _check_time_text(errors, spec["time_text"])
+            text = spec["time_text"]
+            if isinstance(text, Mapping) and "day" in text and spec.get("time_bucket") not in (None, "1d"):
+                errors.append("time_bucket: time_text.day already gives one point per day")
         for key in ("sort", "limit"):
             if key in spec:
                 errors.append(f"{key}: only a bar chart takes {key}")
     else:  # bar: a category axis, no time axis
         if "group" not in spec:
             errors.append("group: a bar chart needs a category column")
-        for key in ("time", "window", "time_bucket"):
+        for key in ("time", "time_text", "window", "time_bucket"):
             if key in spec:
                 errors.append(f"{key}: a bar chart has no time axis")
         if "sort" in spec and spec["sort"] not in BAR_SORTS:

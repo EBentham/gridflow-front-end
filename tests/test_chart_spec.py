@@ -78,6 +78,13 @@ def test_none_spec_needs_a_reason_and_nothing_else() -> None:
         (_with(LINE, group=None, group_map={"A": "a"}), "needs a group"),
         (_with(LINE, group_default="other"), "group_map"),
         (_with(LINE, series_order=["wind", "wind"]), "repeat"),
+        (_with(LINE, time_text={"format": "YYYY-MM-DD"}), "time_text.format"),
+        (_with(LINE, time_text={"format": "%Y", "day": {"zone": "UTC", "starts": 13}}), "starts"),
+        (_with(BAR, time_text={"format": "%Y"}), "no time axis"),
+        (
+            _with(LINE, time_bucket="1h", time_text={"format": "%Y", "day": {"zone": "UTC", "starts": 0}}),
+            "one point per day",
+        ),
         (_with(BAR, time="timestamp_utc"), "no time axis"),
         (_with(BAR, window={"last": "7d"}), "no time axis"),
         (_with(BAR, group=None), "category"),
