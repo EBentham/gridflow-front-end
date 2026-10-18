@@ -1,0 +1,220 @@
+{
+ "dataset": "neso_data_portal/aggregated_bsad",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "d58dd265ca7ef2133699246681a27f02a3d9ed6711e4a314fa030f6abbf6e7ab",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.neso_data_portal.query(\"aggregated_bsad\", \"2016-04-01\", \"2026-10-15\")\ndf = df.sort_values(\"timestamp_utc\")",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df.loc[df.bpa != 0, [\"settlement_date\", \"settlement_period\", \"bpa\", \"spa\", \"ebca\", \"ebva\"]].tail()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "settlement_date",
+      "settlement_period",
+      "bpa",
+      "spa",
+      "ebca",
+      "ebva"
+     ],
+     "index": [
+      "154164",
+      "154165",
+      "154166",
+      "154167",
+      "154168"
+     ],
+     "rows": [
+      [
+       "2026-01-15",
+       "35",
+       "10.65",
+       "0.0",
+       "0.0",
+       "0.0"
+      ],
+      [
+       "2026-01-15",
+       "36",
+       "10.65",
+       "0.0",
+       "0.0",
+       "0.0"
+      ],
+      [
+       "2026-01-15",
+       "37",
+       "10.65",
+       "0.0",
+       "0.0",
+       "0.0"
+      ],
+      [
+       "2026-01-15",
+       "38",
+       "10.65",
+       "0.0",
+       "0.0",
+       "0.0"
+      ],
+      [
+       "2026-01-15",
+       "39",
+       "9.15",
+       "0.0",
+       "0.0",
+       "0.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "s = df.settlement_date.astype(\"datetime64[ns]\")\nfy = (s.dt.year - (s.dt.month < 4)).rename(\"year_from_april\")\ndf.groupby(fy).bpa.agg(periods_set=lambda b: (b != 0).sum(), highest=\"max\").reset_index()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "year_from_april",
+      "periods_set",
+      "highest"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9"
+     ],
+     "rows": [
+      [
+       "2016",
+       "890",
+       "159.55"
+      ],
+      [
+       "2017",
+       "580",
+       "31.42"
+      ],
+      [
+       "2018",
+       "413",
+       "48.81"
+      ],
+      [
+       "2019",
+       "292",
+       "37.11"
+      ],
+      [
+       "2021",
+       "423",
+       "56.56"
+      ],
+      [
+       "2022",
+       "412",
+       "31.75"
+      ],
+      [
+       "2023",
+       "119",
+       "11.29"
+      ],
+      [
+       "2024",
+       "25",
+       "7.47"
+      ],
+      [
+       "2025",
+       "27",
+       "10.65"
+      ],
+      [
+       "2026",
+       "0",
+       "0.00"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "source": "(df.bpa != 0).groupby(df.settlement_period).sum().plot.bar(\n    ylabel=\"periods with bpa set\", color=\"#155A6E\", figsize=(8, 3.5));",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "aggregated_bsad-6.png",
+     "width": 700,
+     "height": 340
+    }
+   ]
+  }
+ ]
+}

@@ -9,7 +9,10 @@ from the manifest at `site/hifi/data/elexon.json`.
 Build inputs (single source of truth):
 - vault/<vendor>/<slug>.md       — authored content (frontmatter + sections);
                                    the front matter's `page:` block carries the
-                                   page fields and chart spec (see page_fields)
+                                   page fields and chart spec (see page_fields).
+                                   A package note (`package:` in its front
+                                   matter) documents several tables on one page
+                                   and is read under its lead table key
 - site/hifi/data/<vendor>.json   — structural manifest (id/title/freq/lag/rows)
 - site/hifi/data/series/<vendor>/<slug>.json — distilled chart series, written
                                    by `gridflow-distil` from local silver and
@@ -44,13 +47,14 @@ from __future__ import annotations
 
 import argparse
 import filecmp
+import itertools
 import json
 import math
 import re
 import shutil
 import sys
 import tempfile
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from html import escape as html_escape
 from pathlib import Path
 from typing import Any
@@ -148,6 +152,8 @@ class DatasetDoc:
     bronze_path: str = ""
     page: PageFields = field(default_factory=PageFields)
     page_errors: list[str] = field(default_factory=list)
+    package: str = ""  # a package note's `package:`; it documents every table of the package
+    dataset_keys: list[str] = field(default_factory=list)  # a package note's tables
 
     @property
     def new_template(self) -> bool:
@@ -307,7 +313,10 @@ def _all_manifest_slugs() -> dict[str, set[str]]:
             except FileNotFoundError:
                 cache[vendor_id] = set()
                 continue
-            cache[vendor_id] = set(manifest_datasets(manifest))
+            # a package note's stem names its page, so a link to the note resolves to it
+            cache[vendor_id] = set(manifest_datasets(manifest)) | set(
+                artefacts.package_leads(manifest)
+            )
         _MANIFEST_SLUGS_CACHE = cache
     return _MANIFEST_SLUGS_CACHE
 
@@ -817,7 +826,23 @@ def parse_vault_file(
         bronze_path=bronze_meta.get("path pattern", "").strip("`"),
         page=page,
         page_errors=page_errors,
+        package=fm.get("package", "").strip('"'),
+        # A single-table package note names its one table as `dataset_key` instead.
+        dataset_keys=_parse_key_list(fm["dataset_keys"])
+        if "dataset_keys" in fm
+        else [fm["dataset_key"].strip('"')]
+        if fm.get("package") and fm.get("dataset_key")
+        else [],
     )
+
+
+def _parse_key_list(raw: str) -> list[str]:
+    """A front-matter flow list of keys (``["a", "b"]``); anything else reads as no keys."""
+    try:
+        keys = json.loads(raw) if raw.startswith("[") else []
+    except json.JSONDecodeError:
+        return []
+    return [k for k in keys if isinstance(k, str)] if isinstance(keys, list) else []
 
 
 # ──────────────────────────────────────────────────────────────────────
@@ -831,6 +856,10 @@ def load_manifest(vendor_id: str = "elexon") -> dict:
     ``groups`` list the vendor's pages in hub order; a page is a dataset slug or a family slug.
     ``families`` name each family's members, the lead first; ``names`` give each single dataset
     the plain name its hub row and blank page carry. Datasets in ``dropped`` have no page.
+
+    A package page is read from one package note named like the page: a family whose entry
+    names that ``note`` (its members are the package's tables, with no notes of their own), or a
+    single-table page listed in ``package_tables`` (page slug → its one table key).
     """
     path = SITE_DIR / "data" / f"{vendor_id}.json"
     return json.loads(path.read_text(encoding="utf-8"))
@@ -841,14 +870,42 @@ def manifest_families(manifest: dict) -> dict[str, dict]:
     return {f["slug"]: f for f in manifest.get("families", [])}
 
 
+def manifest_package_tables(manifest: dict) -> dict[str, str]:
+    """Single-table package page slug → its table key."""
+    tables: dict[str, str] = manifest.get("package_tables", {})
+    return tables
+
+
 def manifest_datasets(manifest: dict) -> list[str]:
     """Every dataset slug in the vendor's page set, in hub order (family members in family order)."""
     fams = manifest_families(manifest)
+    tables = manifest_package_tables(manifest)
     out: list[str] = []
     for group in manifest["groups"]:
         for page in group["pages"]:
-            out.extend(fams[page]["members"] if page in fams else [page])
+            out.extend(fams[page]["members"] if page in fams else [tables.get(page, page)])
     return out
+
+
+def manifest_notes(manifest: dict) -> dict[str, str]:
+    """Dataset key → the vault note stem it is read from, for every key that has a note.
+
+    A family's members each have their own note, unless the entry names a package ``note``: then
+    that note is read under the lead's key and the other members have none.
+    """
+    fams = manifest_families(manifest)
+    tables = manifest_package_tables(manifest)
+    notes: dict[str, str] = {}
+    for group in manifest["groups"]:
+        for page in group["pages"]:
+            fam = fams.get(page)
+            if fam is None:
+                notes[tables.get(page, page)] = page
+            elif fam.get("note"):
+                notes[fam["members"][0]] = fam["note"]
+            else:
+                notes.update({m: m for m in fam["members"]})
+    return notes
 
 
 def manifest_total_count(manifest: dict) -> int:
@@ -856,20 +913,44 @@ def manifest_total_count(manifest: dict) -> int:
     return len(manifest_datasets(manifest))
 
 
-def manifest_errors(vendor_id: str, manifest: dict) -> list[str]:
-    """Structural checks on a vendor's page set."""
+def manifest_errors(vendor_id: str, manifest: dict, notes: set[str] | None = None) -> list[str]:
+    """Structural checks on a vendor's page set.
+
+    Args:
+        vendor_id: The vendor the manifest describes.
+        manifest: Its page set (``load_manifest``).
+        notes: The vendor's vault note stems; when given, every note the page set reads must be
+            among them.
+    """
     errors: list[str] = []
     fams = manifest_families(manifest)
+    tables = manifest_package_tables(manifest)
     pages = [p for g in manifest["groups"] for p in g["pages"]]
     if len(pages) != len(set(pages)):
         errors.append(f"{vendor_id}: a page is listed in two groups")
     for slug in fams:
         if slug not in pages:
             errors.append(f"{vendor_id}: family {slug!r} is in no group")
+    for slug, fam in fams.items():
+        note = fam.get("note")
+        if note is None:
+            continue
+        if note != slug:
+            errors.append(f"{vendor_id}: package family {slug!r} must be named after its note")
+        if len(fam["members"]) < 2:
+            errors.append(
+                f"{vendor_id}: package family {slug!r} has one table; list it in `package_tables`"
+            )
+    for page in tables:
+        if page not in pages:
+            errors.append(f"{vendor_id}: package page {page!r} is in no group")
+        if page in fams:
+            errors.append(f"{vendor_id}: {page!r} is both a family and a package page")
     datasets = manifest_datasets(manifest)
     if len(datasets) != len(set(datasets)):
-        errors.append(f"{vendor_id}: a dataset is in two families or listed twice")
-    clash = sorted(set(fams) & set(datasets))
+        twice = sorted({d for d in datasets if datasets.count(d) > 1})
+        errors.append(f"{vendor_id}: {twice} are in two families or listed twice")
+    clash = sorted((set(fams) | set(tables)) & set(datasets))
     if clash:
         errors.append(f"{vendor_id}: family slug(s) {clash} are also dataset slugs")
     for page in pages:
@@ -878,7 +959,25 @@ def manifest_errors(vendor_id: str, manifest: dict) -> list[str]:
     dropped = sorted(set(manifest.get("dropped", {})) & set(datasets))
     if dropped:
         errors.append(f"{vendor_id}: {dropped} are both dropped and on a page")
+    if notes is not None:
+        missing = sorted(set(manifest_notes(manifest).values()) - notes)
+        if missing:
+            errors.append(
+                f"{vendor_id}: the page set names notes the vault does not have: {missing}"
+            )
     return errors
+
+
+def note_path(vault_path: Path, vendor_id: str, key: str) -> Path:
+    """The vault note a dataset key's page is read from (a package note for its lead table key)."""
+    stem = manifest_notes(load_manifest(vendor_id)).get(key, key)
+    return vault_path / vendor_id / f"{stem}.md"
+
+
+def read_note(path: Path, key: str, vendor_id: str, vendor_label: str) -> DatasetDoc:
+    """Parse a note for the page of dataset ``key``; a package note is read under that key."""
+    doc = parse_vault_file(path, vendor_id=vendor_id, vendor_label=vendor_label)
+    return replace(doc, slug=key) if doc.package else doc
 
 
 # ──────────────────────────────────────────────────────────────────────
@@ -1400,7 +1499,9 @@ def page_view(
         "vendor_label": doc.vendor_label,
         "key": key,
         "blank": False,
-        "chips": [{"key": v["key"], "id": None} for v in variants] or [{"key": key, "id": None}],
+        # a single-table package page anchors its table key, where the table's pointer lands
+        "chips": [{"key": v["key"], "id": None} for v in variants]
+        or [{"key": key, "id": doc.slug if doc.package else None}],
         "title": p.title,
         "summary": p.summary,
         "summary_plain": (p.summary or "").replace("`", ""),
@@ -1441,23 +1542,25 @@ def render_redirect(env: Environment, key: str, href: str, family_title: str) ->
 
 
 def blank_view(
-    vendor_id: str, vendor_label: str, page: str, title: str, members: list[str]
+    vendor_id: str, vendor_label: str, page: str, title: str, members: list[str], table: str = ""
 ) -> dict[str, Any]:
     """A page in the page set whose note has no ``page:`` block yet: the hero's name and id only.
 
     A family's blank page carries one chip per member, each with the member's id, so the members'
-    old addresses (``<member>.html`` → ``<family>.html#<member>``) land on their own chip.
+    old addresses (``<member>.html`` → ``<family>.html#<member>``) land on their own chip. A
+    single-table package page (``table``) carries its table's chip, with the table key as its id.
     """
-    chips = (
-        [{"key": f"{vendor_id}/{m}", "id": m} for m in members]
-        if members
-        else [{"key": f"{vendor_id}/{page}", "id": None}]
-    )
+    if members:
+        chips = [{"key": f"{vendor_id}/{m}", "id": m} for m in members]
+    elif table:
+        chips = [{"key": f"{vendor_id}/{table}", "id": table}]
+    else:
+        chips = [{"key": f"{vendor_id}/{page}", "id": None}]
     return {
         "blank": True,
         "vendor_id": vendor_id,
         "vendor_label": vendor_label,
-        "key": f"{vendor_id}/{page}",
+        "key": f"{vendor_id}/{table or page}",
         "chips": chips,
         "title": title,
         "summary_plain": f"{title}, from {vendor_label}: {', '.join(c['key'] for c in chips)}.",
@@ -1492,6 +1595,7 @@ def _hub_rows(
     vendor_id: str, manifest: dict, docs: dict[str, DatasetDoc], pages: list[str]
 ) -> list[dict[str, Any]]:
     fams = manifest_families(manifest)
+    tables = manifest_package_tables(manifest)
     rows = []
     for page in pages:
         fam = fams.get(page)
@@ -1508,11 +1612,12 @@ def _hub_rows(
                 }
             )
         else:
-            doc = docs[page]
+            key = tables.get(page, page)
+            doc = docs[key]
             rows.append(
                 {
                     "href": f"{vendor_id}/{page}.html",
-                    "codes": [_breakable(page)],
+                    "codes": [_breakable(key)],
                     "title": manifest["names"][page],
                     "path": _breakable(doc.api_path) if doc.api_path.startswith("/") else "",
                 }
@@ -1520,8 +1625,193 @@ def _hub_rows(
     return rows
 
 
+# The catalogue plan (hub round 2, design v5): each data group is a plot whose area is its package
+# count, in bands that are CSS grids. The wide composition is drawn at the 1280 px content width with
+# the plots _PLAN_WIDE_H tall in all; the narrow one at a 390 px phone's 358 px, with _PLAN_NARROW_U
+# px² of ground per package. Columns become ``fr`` shares and rows fixed heights, so every plot keeps
+# its area at any width.
+_PLAN_WIDE_W = 1280.0
+_PLAN_WIDE_H = 1040.0
+_PLAN_NARROW_W = 358.0
+_PLAN_NARROW_U = 3600.0
+_Rect = tuple[float, float, float, float]
+
+
+def _plan_slugs(node: Any) -> list[str]:
+    """The group slugs a plan node covers, in order."""
+    if isinstance(node, str):
+        return [node]
+    ((_, children),) = node.items()
+    return [s for c in children for s in _plan_slugs(c)]
+
+
+def _plan_place(node: Any, rect: _Rect, sizes: dict[str, int], out: dict[str, _Rect]) -> None:
+    """Split ``rect`` among a node's children in proportion to their package counts."""
+    if isinstance(node, str):
+        out[node] = rect
+        return
+    ((kind, children),) = node.items()
+    x, y, w, h = rect
+    total = sum(sizes[s] for s in _plan_slugs(node))
+    at = 0.0
+    for child in children:
+        share = sum(sizes[s] for s in _plan_slugs(child)) / total
+        if kind == "row":
+            _plan_place(child, (x + at * w, y, share * w, h), sizes, out)
+        else:
+            _plan_place(child, (x, y + at * h, w, share * h), sizes, out)
+        at += share
+
+
+def _plan_grid(
+    band: Any, ref_w: float, unit: float, sizes: dict[str, int], tagged: set[str]
+) -> tuple[str, str, dict[str, str], list[str]]:
+    """Lay one band out as grid tracks.
+
+    Returns the column template, the row template, each plot's ``grid-area`` and the plots in
+    reading order. A band holding a ``tagged`` plot gains a last row, ``var(--tagrow)``, that the
+    tagged plots reach down into for the name set beneath them.
+    """
+    height = sum(sizes[s] for s in _plan_slugs(band)) * unit / ref_w
+    rects: dict[str, _Rect] = {}
+    _plan_place(band, (0.0, 0.0, ref_w, height), sizes, rects)
+    xs = sorted({round(v, 2) for x, _, w, _ in rects.values() for v in (x, x + w)})
+    ys = sorted({round(v, 2) for _, y, _, h in rects.values() for v in (y, y + h)})
+    cols = " ".join(f"{b - a:.2f}fr" for a, b in itertools.pairwise(xs))
+    rows = [f"calc({b - a:.2f}px * var(--k))" for a, b in itertools.pairwise(ys)]
+    tag_row = bool(tagged & set(rects))
+    if tag_row:
+        rows.append("var(--tagrow)")
+    areas: dict[str, str] = {}
+    for slug, (x, y, w, h) in rects.items():
+        r0, r1 = ys.index(round(y, 2)) + 1, ys.index(round(y + h, 2)) + 1
+        c0, c1 = xs.index(round(x, 2)) + 1, xs.index(round(x + w, 2)) + 1
+        if slug in tagged:
+            r1 += 1
+        areas[slug] = f"{r0} / {c0} / {r1} / {c1}"
+    order = sorted(rects, key=lambda s: (round(rects[s][1]), rects[s][0]))
+    return cols, " ".join(rows), areas, order
+
+
+def _package_title(title: str, group: str) -> str:
+    """A NESO package title as the plan lists it: no dashes, and no repeat of its group's name."""
+    for sep in (" – ", " — ", " - "):
+        if title.startswith(group + sep):
+            title = title[len(group) + len(sep) :]
+    for dash in (" – ", " — ", " - "):
+        title = title.replace(dash, ": ")
+    return title
+
+
+def catalogue_pages(manifest: dict) -> dict[str, str]:
+    """CKAN package slug → the page in the page set that documents it.
+
+    A page is matched to its package by name, or through the catalogue's ``page_packages``.
+    """
+    renames: dict[str, str] = manifest["catalogue"].get("page_packages", {})
+    pages = [p for g in manifest["groups"] for p in g["pages"]]
+    return {renames.get(p, p): p for p in pages}
+
+
+def catalogue_errors(vendor_id: str, manifest: dict) -> list[str]:
+    """Structural checks on a vendor's catalogue: unique slugs, every page found, a whole plan."""
+    cat = manifest.get("catalogue")
+    if cat is None:
+        return []
+    errors: list[str] = []
+    groups = [g["slug"] for g in cat["groups"]]
+    packages = [p["slug"] for g in cat["groups"] for p in g["packages"]]
+    if len(groups) != len(set(groups)):
+        errors.append(f"{vendor_id}: a data group is listed twice in the catalogue")
+    if len(packages) != len(set(packages)):
+        errors.append(f"{vendor_id}: a package is listed twice in the catalogue")
+    pages = [p for g in manifest["groups"] for p in g["pages"]]
+    stray = sorted(set(cat.get("page_packages", {})) - set(pages))
+    if stray:
+        errors.append(
+            f"{vendor_id}: catalogue.page_packages names pages not in the page set: {stray}"
+        )
+    found = catalogue_pages(manifest)
+    if len(found) != len(pages):
+        errors.append(f"{vendor_id}: two pages document the same catalogue package")
+    missing = sorted(page for slug, page in found.items() if slug not in set(packages))
+    if missing:
+        errors.append(f"{vendor_id}: pages with no package in the catalogue: {missing}")
+    plan = cat["plan"]
+    for kind in ("wide", "narrow"):
+        placed = [s for band in plan[kind] for s in _plan_slugs(band)]
+        if sorted(placed) != sorted(groups):
+            errors.append(f"{vendor_id}: the {kind} plan must place every data group once")
+    wide = [sorted(_plan_slugs(b)) for b in plan["wide"]]
+    if wide != [sorted(_plan_slugs(b)) for b in plan["narrow"]]:
+        errors.append(f"{vendor_id}: the wide and narrow plans must hold the same bands")
+    if not set(plan.get("tag_narrow", [])) <= set(groups):
+        errors.append(f"{vendor_id}: catalogue.plan.tag_narrow names unknown data groups")
+    return errors
+
+
+def catalogue_view(vendor_id: str, manifest: dict) -> dict[str, Any]:
+    """The catalogue as a plot plan: bands of plots, each followed by its groups' package lists.
+
+    A package is a link when a page in the page set documents it; every other package is listed
+    by name.
+    """
+    cat = manifest["catalogue"]
+    by_slug = {g["slug"]: g for g in cat["groups"]}
+    sizes = {s: len(g["packages"]) for s, g in by_slug.items()}
+    total = sum(sizes.values())
+    pages = catalogue_pages(manifest)
+    tagged = set(cat["plan"].get("tag_narrow", []))
+    wide_unit = _PLAN_WIDE_W * _PLAN_WIDE_H / total
+    bands = []
+    for wide, narrow in zip(cat["plan"]["wide"], cat["plan"]["narrow"], strict=True):
+        cols_w, rows_w, areas_w, order = _plan_grid(wide, _PLAN_WIDE_W, wide_unit, sizes, set())
+        cols_n, rows_n, areas_n, _ = _plan_grid(
+            narrow, _PLAN_NARROW_W, _PLAN_NARROW_U, sizes, tagged
+        )
+        groups = []
+        for slug in order:
+            g = by_slug[slug]
+            rows = [
+                {
+                    "title": _package_title(p["title"], g["name"]),
+                    "href": f"{vendor_id}/{pages[p['slug']]}.html" if p["slug"] in pages else "",
+                }
+                for p in g["packages"]
+            ]
+            n, here = len(rows), sum(1 for r in rows if r["href"])
+            count = f"{n} package{'' if n == 1 else 's'}"
+            groups.append(
+                {
+                    "slug": slug,
+                    "name": g["name"],
+                    "blurb": g["blurb"],
+                    "count": count,
+                    "count_here": f"{count}, {here} with a page here" if here else count,
+                    "area_w": areas_w[slug],
+                    "area_n": areas_n[slug],
+                    "tag": slug in tagged,
+                    "rows": rows,
+                }
+            )
+        bands.append(
+            {
+                "cols_w": cols_w,
+                "rows_w": rows_w,
+                "cols_n": cols_n,
+                "rows_n": rows_n,
+                "tagged": bool(tagged & set(order)),
+                "groups": groups,
+            }
+        )
+    return {"bands": bands, "n_groups": len(by_slug), "n_packages": total}
+
+
 def hub_view(vendor_id: str, manifest: dict, docs: dict[str, DatasetDoc]) -> dict[str, Any]:
-    """The vendor hub (direction A, "Sections"): hero and facts, the grouped datasets, silver, gold."""
+    """The vendor hub (direction A, "Sections"): hero and facts, the grouped datasets, silver, gold.
+
+    A vendor whose manifest carries a ``catalogue`` lists it as a plot plan in place of the groups.
+    """
     n = manifest_total_count(manifest)
     facts = [
         (
@@ -1534,7 +1824,12 @@ def hub_view(vendor_id: str, manifest: dict, docs: dict[str, DatasetDoc]) -> dic
         )
         for k, v in manifest["facts"]
     ]
-    facts.append(("Datasets", Markup(str(n))))
+    plan = catalogue_view(vendor_id, manifest) if "catalogue" in manifest else None
+    if plan:
+        facts.append(("Data groups", Markup(str(plan["n_groups"]))))
+        facts.append(("Packages", Markup(str(plan["n_packages"]))))
+    else:
+        facts.append(("Datasets", Markup(str(n))))
     groups = []
     for i, g in enumerate(manifest["groups"]):
         groups.append(
@@ -1548,7 +1843,20 @@ def hub_view(vendor_id: str, manifest: dict, docs: dict[str, DatasetDoc]) -> dic
     keys = manifest["source_keys"]
     views = " or ".join(f"<code>silver_{k}_{{dataset}}</code>" for k in keys)
     latest = manifest.get("latest_views", [])
-    if latest:
+    if plan:
+        # every table of a catalogue vendor is append-only with a _latest view (gridflow
+        # silver/neso_data_portal: APPEND_ONLY on each transformer; latest_views.py's two modes)
+        silver = {
+            "title": "In silver, every capture is kept",
+            "text": Markup(
+                f"Each table is one DuckDB view, {views}. Every table is append-only: a later "
+                "publication never overwrites an earlier one, and each capture is its own Parquet "
+                "file. Its <code>_latest</code> view returns either the newest row for each key or "
+                "every row of the newest complete capture, as the table needs."
+            ),
+            "views": [f"silver_{keys[0]}_{d}_latest" for d in latest],
+        }
+    elif latest:
         how_many = (
             f"All {_count_word(n)}" if len(latest) == n else _count_word(len(latest)).capitalize()
         )
@@ -1593,6 +1901,7 @@ def hub_view(vendor_id: str, manifest: dict, docs: dict[str, DatasetDoc]) -> dic
             else "The datasets"
         ),
         "groups_note": manifest.get("groups_note", ""),
+        "plan": plan,
         "silver": silver,
         "well": well,
     }
@@ -1628,6 +1937,9 @@ def _page_href(vendor_id: str, manifest: dict, slug: str) -> str:
     for fam in manifest_families(manifest).values():
         if slug in fam["members"]:
             return f"data-sources/{vendor_id}/{fam['slug']}.html#{slug}"
+    for page, table in manifest_package_tables(manifest).items():
+        if slug == table:
+            return f"data-sources/{vendor_id}/{page}.html#{slug}"
     return f"data-sources/{vendor_id}/{slug}.html"
 
 
@@ -1702,17 +2014,23 @@ def audit_vault_content(docs: list[DatasetDoc]) -> tuple[list[str], list[str]]:
                               a malformed `page:` block in the front matter
       WARN  (surfaced):       schema rows empty, sample empty, caveats empty,
                               pydantic class not declared
+
+    A package note has its own body (one section per table), so only its ``page:`` block is
+    checked.
     """
     warnings: list[str] = []
     errors: list[str] = []
     for d in docs:
-        if not d.overview_paragraphs:
-            errors.append(f"{d.slug}: vault file has no Overview content")
-        if not d.base_url and not d.api_path:
-            errors.append(f"{d.slug}: vault file declares no API endpoint")
+        if not d.package:
+            if not d.overview_paragraphs:
+                errors.append(f"{d.slug}: vault file has no Overview content")
+            if not d.base_url and not d.api_path:
+                errors.append(f"{d.slug}: vault file declares no API endpoint")
         errors.extend(f"{d.slug}: {e}" for e in d.page_errors)
         if d.new_template:
             errors.extend(f"{d.slug}: {e}" for e in anatomy_errors(d.page))
+            continue
+        if d.package:
             continue
         if not d.schema_rows:
             warnings.append(f"{d.slug}: silver schema rows empty (table will render placeholder)")
@@ -1785,6 +2103,37 @@ def _fail(vendor_id: str, kind: str, errors: list[str]) -> None:
     sys.exit(1)
 
 
+def package_errors(manifest: dict, docs: dict[str, DatasetDoc]) -> list[str]:
+    """A package page's note must be a package note whose tables are the page's, and vice versa.
+
+    Args:
+        manifest: The vendor's page set.
+        docs: Its notes, by the dataset key each is read under (``manifest_notes``).
+    """
+    declared = {
+        f["note"]: f["members"] for f in manifest_families(manifest).values() if f.get("note")
+    }
+    declared.update({page: [t] for page, t in manifest_package_tables(manifest).items()})
+    errors: list[str] = []
+    for key, stem in manifest_notes(manifest).items():
+        doc = docs[key]
+        tables = declared.get(stem)
+        if tables is None:
+            if doc.package:
+                errors.append(
+                    f"{key}: {stem}.md is a package note; name it in a family's `note` "
+                    "or in `package_tables`"
+                )
+        elif doc.package != stem:
+            errors.append(f"{key}: {stem}.md is not a package note (`package: {stem}`)")
+        elif set(doc.dataset_keys) != set(tables):
+            errors.append(
+                f"{key}: {stem}.md lists tables {sorted(doc.dataset_keys)}; "
+                f"the page set has {sorted(tables)}"
+            )
+    return errors
+
+
 def build_vendor(
     env: Environment,
     vendor_id: str,
@@ -1795,8 +2144,9 @@ def build_vendor(
     """Render one vendor's pages, family pointers and hub.
 
     Every page in the vendor's page set renders: on the dataset template when its note (a family's
-    lead note) has a ``page:`` block, else blank (the hero's name and id only). ``only``
-    (``<vendor>/<dataset>`` keys) renders just those pages: no hub, no pruning.
+    lead note, or the package note) has a ``page:`` block, else blank (the hero's name and id
+    only). ``only`` (``<vendor>/<dataset>`` keys; a package page by any of its table keys) renders
+    just those pages: no hub, no pruning.
 
     Returns ``(datasets_documented, pages_written, chart_pages)``.
     """
@@ -1809,27 +2159,27 @@ def build_vendor(
             f"  Set --vault-path or $GRIDFLOW_VAULT_PATH, or vendor vault content into "
             f"{DEFAULT_VAULT.relative_to(REPO_ROOT)}/."
         )
-    errors = manifest_errors(vendor_id, manifest)
+    vault_slugs = {p.stem for p in vendor_dir.glob("*.md")}
+    errors = manifest_errors(vendor_id, manifest, vault_slugs) + catalogue_errors(
+        vendor_id, manifest
+    )
     if errors:
         _fail(vendor_id, "page set", errors)
     out_dataset_dir = out_root / "data-sources" / vendor_id
     out_dataset_dir.mkdir(parents=True, exist_ok=True)
     fams = manifest_families(manifest)
+    tables = manifest_package_tables(manifest)
     datasets = manifest_datasets(manifest)
-    vault_slugs = {p.stem for p in vendor_dir.glob("*.md")}
-    missing_in_vault = sorted(set(datasets) - vault_slugs)
-    if missing_in_vault:
-        sys.exit(
-            f"[gridflow-build] ERROR: the page set names datasets without vault notes: {missing_in_vault}"
-        )
-    for slug in sorted(vault_slugs - set(datasets)):
+    notes = manifest_notes(manifest)
+    for slug in sorted(vault_slugs - set(notes.values())):
         print(f"  skip (not in the page set): {vendor_id}/{slug}")
     docs = {
-        slug: parse_vault_file(
-            vendor_dir / f"{slug}.md", vendor_id=vendor_id, vendor_label=vendor_label
-        )
-        for slug in datasets
+        key: read_note(vendor_dir / f"{stem}.md", key, vendor_id, vendor_label)
+        for key, stem in notes.items()
     }
+    errors = package_errors(manifest, docs)
+    if errors:
+        _fail(vendor_id, "page set", errors)
 
     # VAULT-03 audit
     warnings, errors = audit_vault_content(list(docs.values()))
@@ -1892,20 +2242,24 @@ def build_vendor(
     views: dict[str, dict[str, Any]] = {}
     for page in pages:
         fam = fams.get(page)
-        members = fam["members"] if fam else [page]
+        members = fam["members"] if fam else [tables.get(page, page)]
         if only and not any(f"{vendor_id}/{m}" in only for m in members):
             continue
         lead = docs[members[0]]
         if not lead.new_template:
             title = fam["title"] if fam else manifest["names"][page]
-            views[page] = blank_view(vendor_id, vendor_label, page, title, members if fam else [])
+            views[page] = blank_view(
+                vendor_id, vendor_label, page, title, members if fam else [], tables.get(page, "")
+            )
             continue
         arts, errs = check_artefacts(lead)
         arts.chart = charts.get(lead.slug)
         if lead.page.chart and lead.page.chart.get("type") != "none" and arts.chart is None:
             errs.append(f"{lead.slug}: page.chart has no committed series")
         if not errs:
-            view, errs = page_view(lead, arts, [docs[m] for m in members] if fam else [])
+            # a package's tables have no notes of their own to read a vendor code from
+            member_docs = [docs[m] for m in members] if fam and not lead.package else []
+            view, errs = page_view(lead, arts, member_docs)
             views[page] = view
         page_errors.extend(errs)
     page_errors = _scoped(page_errors, vendor_id, only)
@@ -1922,7 +2276,8 @@ def build_vendor(
         kind = "blank" if view.get("blank") else "dataset template"
         print(f"  wrote: data-sources/{vendor_id}/{out_name} ({kind})")
         fam = fams.get(page)
-        for member in fam["members"] if fam else []:
+        pointers = fam["members"] if fam else [tables[page]] if page in tables else []
+        for member in pointers:
             href = f"{page}.html#{member}"
             (out_dataset_dir / f"{member}.html").write_text(
                 render_redirect(env, f"{vendor_id}/{member}", href, view["title"]), encoding="utf-8"
@@ -1969,12 +2324,13 @@ def orphan_chart_files(vault_path: Path) -> list[str]:
 
 
 def new_template_pages(vault_path: Path) -> set[tuple[str, str]]:
-    """``(vendor, slug)`` of every note with a ``page:`` block."""
+    """``(vendor, dataset)`` of every note with a ``page:`` block (a package note's lead table)."""
     found: set[tuple[str, str]] = set()
     for vendor_id in REAL_VENDORS:
+        leads = artefacts.package_leads(load_manifest(vendor_id))
         for note in sorted((vault_path / vendor_id).glob("*.md")):
             if parse_page_fields(note.read_text(encoding="utf-8"))[0].present:
-                found.add((vendor_id, note.stem))
+                found.add((vendor_id, leads.get(note.stem, note.stem)))
     return found
 
 
@@ -1985,7 +2341,7 @@ def orphan_locations(vault_path: Path) -> list[str]:
         return []
     orphans: list[str] = []
     for path in sorted(root.glob("*/*.json")):
-        note = vault_path / path.parent.name / f"{path.stem}.md"
+        note = note_path(vault_path, path.parent.name, path.stem)
         fields = parse_page_fields(note.read_text(encoding="utf-8"))[0] if note.is_file() else None
         if fields is None or fields.locations is None:
             orphans.append(path.relative_to(REPO_ROOT).as_posix())

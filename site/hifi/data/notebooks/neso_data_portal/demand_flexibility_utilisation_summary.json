@@ -1,0 +1,155 @@
+{
+ "dataset": "neso_data_portal/demand_flexibility_utilisation_summary",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "a6a5e301f9f271dd6032496af9176aa419cdd367f7d813b4e3f3dbc4f67513a3",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "day = \"2026-09-11\"\ns = data.neso_data_portal.query(\"demand_flexibility_utilisation_summary\", day, day)\nr = data.neso_data_portal.query(\"demand_flexibility_utilisation_report\", day, day)",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "bids = r.pivot_table(index=\"window_from\", columns=\"status\", values=\"dfs_procured_mw\", aggfunc=\"sum\")\nboth = s.set_index(\"window_from\")[[\"service_requirement_mw\", \"dfs_procured_mw\"]].join(bids)\nboth.columns = [\"asked_mw\", \"summary_mw\", \"accepted_mw\", \"rejected_mw\"]\nboth",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "asked_mw",
+      "summary_mw",
+      "accepted_mw",
+      "rejected_mw",
+      "window_from",
+      "",
+      "",
+      "",
+      ""
+     ],
+     "index": [
+      "17:00",
+      "17:30",
+      "18:00",
+      "18:30",
+      "19:00",
+      "19:30",
+      "20:00",
+      "20:30"
+     ],
+     "rows": [
+      [
+       "500.0",
+       "0.5",
+       "0.5",
+       "55.7"
+      ],
+      [
+       "500.0",
+       "0.5",
+       "0.5",
+       "61.0"
+      ],
+      [
+       "500.0",
+       "2.4",
+       "2.4",
+       "73.6"
+      ],
+      [
+       "500.0",
+       "0.4",
+       "0.4",
+       "71.5"
+      ],
+      [
+       "500.0",
+       "127.5",
+       "127.5",
+       "61.9"
+      ],
+      [
+       "500.0",
+       "127.3",
+       "127.3",
+       "64.1"
+      ],
+      [
+       "500.0",
+       "1.6",
+       "1.6",
+       "58.4"
+      ],
+      [
+       "500.0",
+       "1.6",
+       "1.6",
+       "34.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "both[[\"accepted_mw\", \"rejected_mw\"]].plot.bar(\n    stacked=True, ylabel=\"MW bid\", rot=0, color=[\"#155A6E\", \"#C77E3C\"], figsize=(8, 3.5));",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "demand_flexibility_utilisation_summary-5.png",
+     "width": 699,
+     "height": 341
+    }
+   ]
+  }
+ ]
+}

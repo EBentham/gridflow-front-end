@@ -228,7 +228,10 @@ def main(argv: list[str] | None = None) -> int:
     wanted = set(args.dataset)
     failures = 0
     for note in sorted(vault.glob("*/*.md")):
-        key = f"{note.parent.name}/{note.stem}"
+        vendor = note.parent.name
+        # a package note's rows are filed under its lead table key
+        dataset = artefacts.note_key(SITE_DIR, vendor, note.stem)
+        key = f"{vendor}/{dataset}"
         if wanted and key not in wanted:
             continue
         fields, errors = parse_page_fields(note.read_text(encoding="utf-8"))
@@ -238,13 +241,11 @@ def main(argv: list[str] | None = None) -> int:
             print(f"  FAIL {key}: {errors}", file=sys.stderr)
             failures += 1
             continue
-        silver = artefacts.sample_silver(
-            note.parent.name, note.stem, fields.record.select, fields.chart
-        )
+        silver = artefacts.sample_silver(vendor, dataset, fields.record.select, fields.chart)
         try:
             payload = build_payload(
-                note.parent.name,
-                note.stem,
+                vendor,
+                dataset,
                 silver,
                 fields.record.select,
                 fields.record.mark,
@@ -259,7 +260,7 @@ def main(argv: list[str] | None = None) -> int:
             for row in payload["rows"]:
                 print("   ", row)
             continue
-        out = artefacts.sample_path(SITE_DIR, note.parent.name, note.stem)
+        out = artefacts.sample_path(SITE_DIR, vendor, dataset)
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(artefacts.dumps(payload), encoding="utf-8")
         print(f"  wrote {out.relative_to(SITE_DIR.parent.parent)}")

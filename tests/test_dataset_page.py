@@ -21,7 +21,7 @@ LOCAL_DATA = re.compile(
 
 def _doc(vendor: str, slug: str) -> build.DatasetDoc:
     cfg = build.REAL_VENDORS[vendor]
-    return build.parse_vault_file(DEFAULT_VAULT / vendor / f"{slug}.md", vendor, cfg["label"])
+    return build.read_note(build.note_path(DEFAULT_VAULT, vendor, slug), slug, vendor, cfg["label"])
 
 
 def _new_template_docs() -> list[build.DatasetDoc]:
@@ -35,7 +35,7 @@ def _render(doc: build.DatasetDoc) -> str:
     assert chart_errors == []
     arts.chart = chart
     members = []
-    if doc.page.family is not None:
+    if doc.page.family is not None and not doc.package:
         members = [_doc(doc.vendor_id, m.dataset) for m in doc.page.family.members]
     view, view_errors = build.page_view(doc, arts, members)
     assert view_errors == []
@@ -177,7 +177,7 @@ def test_landscape_scenery_is_never_cropped(kind: str) -> None:
 
 def test_no_page_block_describes_local_data() -> None:
     for doc in _new_template_docs():
-        text = (DEFAULT_VAULT / doc.vendor_id / f"{doc.slug}.md").read_text(encoding="utf-8")
+        text = build.note_path(DEFAULT_VAULT, doc.vendor_id, doc.slug).read_text(encoding="utf-8")
         block = text.split("\npage:", 1)[1].split("\n---", 1)[0]
         assert not LOCAL_DATA.search(block), doc.slug
         assert "—" not in block, f"{doc.slug}: em dash in the page block"
@@ -189,7 +189,7 @@ def test_every_new_template_page_renders() -> None:
     for doc in docs:
         assert (
             parse_page_fields(
-                (DEFAULT_VAULT / doc.vendor_id / f"{doc.slug}.md").read_text(encoding="utf-8")
+                build.note_path(DEFAULT_VAULT, doc.vendor_id, doc.slug).read_text(encoding="utf-8")
             )[1]
             == []
         )
@@ -226,19 +226,19 @@ def test_a_page_without_a_page_block_is_blank(tmp_path: Path) -> None:
     assert 'href="outages.html#outages_offshore_grid"' in pointer
 
 
-def test_the_page_set_is_149_datasets_on_73_pages() -> None:
+def test_the_page_set_is_159_datasets_on_77_pages() -> None:
     """Rulings 12 to 14: families are one page each; the headline count is computed."""
     manifests = [build.load_manifest(v) for v in build.REAL_VENDORS]
     for vendor_id, m in zip(build.REAL_VENDORS, manifests, strict=True):
         assert build.manifest_errors(vendor_id, m) == []
-    assert sum(build.manifest_total_count(m) for m in manifests) == 149
-    assert sum(len(g["pages"]) for m in manifests for g in m["groups"]) == 73
+    assert sum(build.manifest_total_count(m) for m in manifests) == 159
+    assert sum(len(g["pages"]) for m in manifests for g in m["groups"]) == 77
 
 
 def test_hubs_and_landing_link_every_page(tmp_path: Path) -> None:
     build.build(DEFAULT_VAULT, tmp_path)
     landing = (tmp_path / "data-sources.html").read_text(encoding="utf-8")
-    assert '<span class="hub-n">149 datasets</span>' in landing
+    assert '<span class="hub-n">159 datasets</span>' in landing
     for vendor_id in build.REAL_VENDORS:
         assert f'href="data-sources/{vendor_id}.html"' in landing
         hub = (tmp_path / "data-sources" / f"{vendor_id}.html").read_text(encoding="utf-8")
@@ -247,6 +247,31 @@ def test_hubs_and_landing_link_every_page(tmp_path: Path) -> None:
             for page in g["pages"]:
                 assert f'href="{vendor_id}/{page}.html"' in hub
                 assert (tmp_path / "data-sources" / vendor_id / f"{page}.html").is_file()
-        assert f"<dt>Datasets</dt><dd>{build.manifest_total_count(m)}</dd>" in hub
+        if "catalogue" in m:
+            assert "<dt>Datasets</dt>" not in hub
+        else:
+            assert f"<dt>Datasets</dt><dd>{build.manifest_total_count(m)}</dd>" in hub
         assert "—" not in hub and not LOCAL_DATA.search(hub)
     assert "—" not in landing and not LOCAL_DATA.search(landing)
+
+
+def test_the_demand_flexibility_service_is_one_package_page(tmp_path: Path) -> None:
+    """One package note documents the four DFS tables; each table key points at its section."""
+    build.build(
+        DEFAULT_VAULT,
+        tmp_path,
+        frozenset({"neso_data_portal/demand_flexibility_utilisation_summary"}),
+    )
+    out = tmp_path / "data-sources" / "neso_data_portal"
+    page = (out / "demand-flexibility.html").read_text(encoding="utf-8")
+    assert "Demand Flexibility Service" in page
+    for table in (
+        "demand_flexibility_utilisation_summary",
+        "demand_flexibility_utilisation_report",
+        "demand_flexibility_industry_notification",
+        "demand_flexibility_service_requirement",
+    ):
+        assert f'id="{table}"' in page
+        assert not (DEFAULT_VAULT / "neso_data_portal" / f"{table}.md").exists()
+        pointer = (out / f"{table}.html").read_text(encoding="utf-8")
+        assert f'href="demand-flexibility.html#{table}"' in pointer

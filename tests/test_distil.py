@@ -143,6 +143,62 @@ def test_daily_bucket_leaves_gaps_as_missing_days(tmp_path: Path) -> None:
     assert chart["provenance"]["null_values_dropped"] == 1
 
 
+def test_text_times_go_to_the_uk_day_that_starts_at_2300(tmp_path: Path) -> None:
+    # Text starts read as UTC: a 23:00-to-23:00 UK day opens at 23:00 UTC in winter and at
+    # 22:00 UTC in summer, so both edges of each day land on that day's date.
+    starts = [
+        "2025-01-20T23:00:00",  # first window of 21 January (GMT)
+        "2025-01-21T22:30:00",  # last window of 21 January
+        "2025-06-01T22:00:00",  # first window of 2 June (BST)
+        "2025-06-02T21:30:00",  # last window of 2 June
+        "2025-06-02T22:00:00",  # first window of 3 June
+    ]
+    df = pl.DataFrame({"delivery_start": starts, "clearing_price": [1.0, 3.0, 10.0, 20.0, 7.0]})
+    _write(tmp_path, "neso_data_portal/eac_br_results_summary", {"all": df})
+    spec = {
+        "type": "line",
+        "silver": "neso_data_portal/eac_br_results_summary",
+        "time": "delivery_start",
+        "time_text": {"format": "%Y-%m-%dT%H:%M:%S", "day": {"zone": "Europe/London", "starts": -1}},
+        "value": "clearing_price",
+        "aggregation": "mean",
+        "window": {"start": "2025-01-01", "end": "2025-12-31"},
+        "unit": "£/MW/h",
+    }
+    assert chart_spec.validate_spec(spec) == []
+    chart = distil_spec(spec, tmp_path)
+    assert chart["x"] == ["2025-01-21T00:00:00Z", "2025-06-02T00:00:00Z", "2025-06-03T00:00:00Z"]
+    assert chart["series"][0]["values"] == [2.0, 15.0, 7.0]
+
+
+def _text_spec(**changes: Any) -> dict[str, Any]:
+    return {
+        "type": "line",
+        "silver": "neso_data_portal/eac_br_results_summary",
+        "time": "delivery_start",
+        "time_text": {"format": "%Y-%m-%dT%H:%M:%S"},
+        "value": "clearing_price",
+        "aggregation": "mean",
+        "window": {"start": "2025-01-01", "end": "2025-12-31"},
+        "unit": "£/MW/h",
+        **changes,
+    }
+
+
+def test_text_times_without_a_day_keep_their_instant(tmp_path: Path) -> None:
+    df = pl.DataFrame({"delivery_start": ["2025-01-20T23:00:00", "2025-01-20T23:30:00"], "clearing_price": [1.0, 2.0]})
+    _write(tmp_path, "neso_data_portal/eac_br_results_summary", {"all": df})
+    chart = distil_spec(_text_spec(), tmp_path)
+    assert chart["x"] == ["2025-01-20T23:00:00Z", "2025-01-20T23:30:00Z"]
+
+
+def test_text_that_does_not_parse_is_a_distil_error(tmp_path: Path) -> None:
+    df = pl.DataFrame({"delivery_start": ["20/01/2025 23:00"], "clearing_price": [1.0]})
+    _write(tmp_path, "neso_data_portal/eac_br_results_summary", {"all": df})
+    with pytest.raises(DistilError, match="time_text"):
+        distil_spec(_text_spec(), tmp_path)
+
+
 def test_bar_chart_has_no_time_axis(tmp_path: Path) -> None:
     df = pl.DataFrame(
         {

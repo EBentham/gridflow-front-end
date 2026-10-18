@@ -178,7 +178,9 @@ def main(argv: list[str] | None = None) -> int:
     log = [f"run {dt.datetime.now(dt.UTC).isoformat(timespec='seconds')}"]
     failures = 0
     for note in sorted(Path(args.vault_path).glob("*/*.md")):
-        vendor, dataset = note.parent.name, note.stem
+        vendor = note.parent.name
+        # a package note's notebook is filed under its lead table key
+        dataset = artefacts.note_key(SITE_DIR, vendor, note.stem)
         if wanted and f"{vendor}/{dataset}" not in wanted:
             continue
         fields, errors = parse_page_fields(note.read_text(encoding="utf-8"))

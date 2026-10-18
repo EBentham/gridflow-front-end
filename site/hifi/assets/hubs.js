@@ -149,3 +149,100 @@
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(later);
   draw();
 })();
+
+/* The catalogue plot plan (templates/_partials/plan.html.j2): one plot open at a time. Without this
+   script every group's list shows under its band and every plot reads as expanded. With it, all close;
+   a plot opens its list in the track under its band, with a leader from the plot down to the list's
+   rule, and the package under the pointer or focus lights its square in the plot. Escape or Close
+   shuts the list and returns focus to its plot. ?open=<group-slug> opens one group on load. */
+(function () {
+  "use strict";
+  var plan = document.querySelector(".plan");
+  if (!plan) return;
+  var plots = Array.prototype.slice.call(plan.querySelectorAll(".plot"));
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var current = null;
+
+  function panelOf(plot) { return document.getElementById(plot.getAttribute("aria-controls")); }
+
+  function lead(plot) {
+    var panel = panelOf(plot);
+    if (!panel || panel.hidden) return;
+    var p = plot.getBoundingClientRect();
+    var s = panel.getBoundingClientRect();
+    panel.style.setProperty("--nx", (p.left + p.width / 2 - s.left).toFixed(1) + "px");
+  }
+
+  function light(plot, i) {
+    var marks = plot.querySelectorAll(".plot__marks i");
+    for (var k = 0; k < marks.length; k++) marks[k].classList.toggle("is-lit", k === i);
+  }
+
+  function close(plot) {
+    var panel = panelOf(plot);
+    plot.setAttribute("aria-expanded", "false");
+    if (panel) panel.hidden = true;
+    light(plot, -1);
+    if (current === plot) current = null;
+  }
+
+  function open(plot, scroll) {
+    if (current && current !== plot) close(current);
+    var panel = panelOf(plot);
+    plot.setAttribute("aria-expanded", "true");
+    if (panel) panel.hidden = false;
+    current = plot;
+    lead(plot);
+    if (scroll && panel) {
+      var r = panel.getBoundingClientRect();
+      var room = window.innerHeight;
+      if (r.top > room - 180) {
+        window.scrollBy({ top: r.top - room * 0.4, behavior: reduce ? "auto" : "smooth" });
+      }
+    }
+  }
+
+  plots.forEach(function (plot) {
+    var panel = panelOf(plot);
+    if (!panel) return;
+    plot.setAttribute("aria-expanded", "false");
+    panel.hidden = true;
+    plot.addEventListener("click", function () {
+      if (plot.getAttribute("aria-expanded") === "true") close(plot);
+      else open(plot, true);
+    });
+    var x = panel.querySelector(".sched__x");
+    if (x) {
+      x.hidden = false;
+      x.addEventListener("click", function () { close(plot); plot.focus(); });
+    }
+    panel.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") { close(plot); plot.focus(); }
+    });
+    Array.prototype.forEach.call(panel.querySelectorAll("li[data-i]"), function (li) {
+      var i = parseInt(li.getAttribute("data-i"), 10);
+      li.addEventListener("mouseenter", function () { light(plot, i); });
+      li.addEventListener("mouseleave", function () { light(plot, -1); });
+      li.addEventListener("focusin", function () { light(plot, i); });
+      li.addEventListener("focusout", function () { light(plot, -1); });
+    });
+  });
+  plan.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && current && e.target === current) close(current);
+  });
+  plan.classList.add("is-live");
+
+  var queued = false;
+  window.addEventListener("resize", function () {
+    if (queued || !current) return;
+    queued = true;
+    window.requestAnimationFrame(function () { queued = false; if (current) lead(current); });
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { if (current) lead(current); });
+
+  var want = (window.location.search.match(/[?&]open=([a-z0-9-]+)/) || [])[1];
+  if (want) {
+    var hit = plan.querySelector('.plot[data-g="' + want + '"]');
+    if (hit) open(hit, false);
+  }
+})();
