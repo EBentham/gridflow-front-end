@@ -52,7 +52,9 @@ Known risks:
 |---|---|---|---|
 | H | ac4d838fad146bef9 | a7e1cd9d58f2518e1 | APPROVED round 2, nits fixed; committed |
 | 1 | a7bdadeddd98e7449 | | writing |
-| 2-10 | | | not started |
+| 2 | ab90e4f799035d73c | | writing |
+| 3 | abd18a84e1f5fabb1 | | writing |
+| 4-10 | | | not started |
 
 ## Template follow-ups (seat items, not page findings)
 

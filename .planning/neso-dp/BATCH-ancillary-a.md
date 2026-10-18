@@ -74,6 +74,12 @@ the four NESO showcase pages (`demand-flexibility`, `eac-br-auction-results`, `a
 `constraint-breakdown`, notes in the worktree's `vault/neso_data_portal/`), plus `elexon/demand-forecasts` (a family).
 Several agents share the worktree: keep strictly to your own package's files.
 
+## Shipped state
+
+All 15 approved and committed. Gates green (pytest 204, build --check, htmlhint 0, lychee 0, detector [] x15).
+Site PR https://github.com/EBentham/gridflow-front-end/pull/61 (base feat/neso-dp-template-pass), vault PR
+https://github.com/EBentham/quant-vault/pull/64. Waiting for Bobbo's look. Merged into part 2's branches.
+
 ## Tracker
 
 | # | Writer | Checker | State |
@@ -88,8 +94,8 @@ Several agents share the worktree: keep strictly to your own package's files.
 | 6 | ad98aeca3cfc9a4db | a136e989d13cd2bc9 | APPROVED (round 2 major seat-verified); committed |
 | 7 | ac5d1cc2d76dd8911 | a275028b640f86024 | APPROVED round 2; committed; 20j logged |
 | 8 | adf1a644470e37e3a | a04b7a2ca87b61618 | APPROVED, nits fixed; committed |
-| 9 | abbb4ef8abd514f95 | a5e5a58c455dc54d2 | checking; lead resultsbyunit (d9a2f0f); 20l logged |
-| 10 | a04615370afb38a68 | aba46a9462e27bed3 | checking; 20m logged |
+| 9 | abbb4ef8abd514f95 | a5e5a58c455dc54d2 | APPROVED, nits fixed; committed a340491 |
+| 10 | a04615370afb38a68 | aba46a9462e27bed3 | APPROVED, nits fixed; committed |
 
 ## Template follow-ups (seat items, not page findings)
 
