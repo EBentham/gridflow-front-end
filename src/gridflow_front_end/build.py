@@ -1157,11 +1157,28 @@ def request_lines(request: str) -> Markup:
 
 
 def check_artefacts(doc: DatasetDoc) -> tuple[PageArtefacts, list[str]]:
-    """Load a new-template page's sample and notebook files and check their digests."""
+    """Load a new-template page's sample and notebook files and check their digests.
+
+    A held page shows no rows, so it has no artefacts, and a leftover one fails the build.
+    """
     key = f"{doc.vendor_id}/{doc.slug}"
     errors: list[str] = []
     fields = doc.page
     arts = PageArtefacts()
+    if fields.held:
+        leftovers = [
+            path.name
+            for path in (
+                artefacts.sample_path(SITE_DIR, doc.vendor_id, doc.slug),
+                artefacts.notebook_path(SITE_DIR, doc.vendor_id, doc.slug),
+                artefacts.locations_path(SITE_DIR, doc.vendor_id, doc.slug),
+                chart_spec.series_path(SITE_DIR, doc.vendor_id, doc.slug),
+            )
+            if path.is_file()
+        ]
+        if leftovers:
+            errors.append(f"{key}: a held page shows no rows; delete its {leftovers}")
+        return arts, errors
     silver = artefacts.sample_silver(doc.vendor_id, doc.slug, fields.record.select, fields.chart)
     try:
         sample = artefacts.load_json(artefacts.sample_path(SITE_DIR, doc.vendor_id, doc.slug))
@@ -1472,8 +1489,11 @@ def page_view(
         ("Vendor", Markup(_markdown_inline(p.facts.vendor, doc.vendor_id))),
         ("Cadence", Markup(_markdown_inline(p.facts.cadence, doc.vendor_id))),
         ("Grain", Markup(_markdown_inline(p.facts.grain, doc.vendor_id))),
-        ("Key", Markup(", ".join(f"<code>{html_escape(k)}</code>" for k in p.record.key))),
     ]
+    if not p.held:  # the key comes from record, which a held page has none of
+        facts.append(
+            ("Key", Markup(", ".join(f"<code>{html_escape(k)}</code>" for k in p.record.key)))
+        )
     if p.facts.history:
         facts.append(("History", Markup(_markdown_inline(p.facts.history, doc.vendor_id))))
 
@@ -1537,8 +1557,20 @@ def page_view(
                     "differs": mem.differs,
                     # each file's request as rows of the member's one well
                     "request": Markup("").join(request_lines(r) for r in mem.requests),
+                    # a held page lists the reasons in its silver section instead
+                    "held": "" if p.held else mem.held,
                 }
             )
+
+    held = []
+    if p.held:
+        if p.family is not None:
+            held = [
+                {"key": _breakable(f"{doc.vendor_id}/{m.dataset}"), "reason": m.held}
+                for m in p.family.members
+            ]
+        else:
+            held = [{"key": _breakable(key), "reason": p.held_reason}]
 
     view = {
         "vendor_id": doc.vendor_id,
@@ -1565,6 +1597,7 @@ def page_view(
             ],
         },
         "variants": variants,
+        "held": held,
         "record": record_v,
         "notebook": _notebook_view(doc, arts.notebook) if arts.notebook else {},
         "related": related,

@@ -183,3 +183,18 @@ def test_the_cut_points_work_below_768_px_only() -> None:
     css = (build.SITE_DIR / "assets" / "theme.css").read_text(encoding="utf-8")
     assert "@media (max-width: 767.98px) { .ds-well .nw-cut { white-space: inherit; } }" in css
     assert "@media (min-width: 768px) { .ds-well .nw-cut wbr { display: none; } }" in css
+
+
+def test_a_member_of_a_shown_family_may_say_why_its_rows_are_not_shown() -> None:
+    doc = _doc("neso_data_portal", "demand_flexibility_utilisation_summary")
+    fam = doc.page.family
+    reason = "The newest capture failed on a date format change."
+    held = dataclasses.replace(fam.members[-1], held=reason)
+    page = dataclasses.replace(fam, members=(*fam.members[:-1], held))
+    view, errors = _view(_with_page(doc, family=page))
+    assert errors == [] and view["held"] == []
+    assert [v["held"] for v in view["variants"]] == [""] * (len(fam.members) - 1) + [reason]
+    html = build.render_page(build.make_env(), view)
+    assert f'<p class="ds-variants__d">Rows not shown: {reason}</p>' in html
+    # the page still shows the lead's rows and notebook
+    assert 'class="pl"' in html and "Open the demo notebook" in html

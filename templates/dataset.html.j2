@@ -4,7 +4,9 @@
     and its guide), gold (the workbench call and the demo notebook), deep (related datasets).
     `v` is the view model built by build.page_view(); every word on the page comes from the vault note's
     `page:` block or from the fixed template copy below. A page whose note has no `page:` block yet is
-    blank (`v.blank`, from build.blank_view()): the hero's breadcrumb, name and id, nothing else. -#}
+    blank (`v.blank`, from build.blank_view()): the hero's breadcrumb, name and id, nothing else.
+    A held page (`v.held`, ruling 6) shows no rows: its silver stratum lists each table with the reason
+    its rows are not shown, and it has no chart, frame, column guide or notebook (no gold stratum). -#}
 <!doctype html>
 <html lang="en">
 <head>
@@ -17,7 +19,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&amp;family=Hanken+Grotesk:ital,wght@0,400..700;1,400..600&amp;family=Red+Hat+Mono:wght@400;500&amp;display=swap">
   <link rel="stylesheet" href="../../assets/theme.css">
   <link rel="stylesheet" href="../../assets/dataset.css">
-  {%- if not v.blank and v.record.fold_css %}
+  {%- if not v.blank and not v.held and v.record.fold_css %}
   {#- this frame's fold widths: below each, the columns that need it fold behind the ellipsis #}
   <style>
 {{ v.record.fold_css }}
@@ -137,7 +139,7 @@
             {%- for m in v.variants %}
             <li id="{{ m.slug }}">
               <p class="ds-variants__h"><code>{{ m.key | breakable }}</code>{% if m.code %} <span>{{ m.code }}</span>{% endif %}</p>
-              <p class="ds-variants__d">{{ m.differs | md_inline | safe }}</p>
+              <p class="ds-variants__d">{{ m.differs | md_inline | safe }}</p>{% if m.held %}<p class="ds-variants__d">Rows not shown: {{ m.held | md_inline | safe }}</p>{% endif %}
               <pre class="ds-well">{{ m.request | safe }}</pre>
             </li>
             {%- endfor %}
@@ -153,6 +155,24 @@
     </section>
 
     {#- 4. silver: the sample rows as a Polars frame (folded columns open behind `…`), then the column guide -#}
+    {%- if v.held %}
+    <section class="stratum stratum--silver" aria-labelledby="sv-h">
+      <p class="stratum__name" aria-hidden="true">silver, typed and validated</p>
+      <div class="wrap">
+        <h2 class="h-fig" id="sv-h">Schema and sample rows</h2>
+        <div class="guide" role="group" aria-label="The tables">
+          <div class="g-grp">
+            <p class="g-h" id="gh">Rows not shown</p>
+            <dl aria-labelledby="gh">
+              {%- for t in v.held %}
+              <div class="g-r"><dt>{{ t.key }}</dt><dd>{{ t.reason | md_inline | safe }}</dd></div>
+              {%- endfor %}
+            </dl>
+          </div>
+        </div>
+      </div>
+    </section>
+    {%- else %}
     {%- set r = v.record %}
     <section class="stratum stratum--silver" aria-labelledby="sv-h">
       <p class="stratum__name" aria-hidden="true">silver, typed and validated</p>
@@ -246,6 +266,7 @@
         </div>
       </div>
     </section>
+    {%- endif %}
 
     {#- 6. deep: related datasets only -#}
     <section class="stratum stratum--deep" aria-labelledby="rel-h">

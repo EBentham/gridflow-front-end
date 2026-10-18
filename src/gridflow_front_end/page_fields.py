@@ -74,7 +74,25 @@ one key (v5 decision D2). The fields follow the locked page anatomy
           - {dataset: indo, differs: ..., request: "GET https://..."}
           # a member with several files (a current and an archive file) lists each:
           - {dataset: requirement, differs: ..., request: ["GET https://...", "GET https://..."]}
+          # a member whose rows the page cannot show says why (16 words or fewer); the raw
+          # feed prints it under the member as "Rows not shown: <held>"
+          - {dataset: archive, differs: ..., request: "GET https://...", held: ...}
     ---
+
+A held page (ruling 6) documents a package none of whose rows can be published: the full
+anatomy minus rows. It keeps the hero and facts (no Key line, which comes from ``record``),
+what it is and how it is used, the raw feed with each table's files, and a silver section
+that lists each table with one plain line on why its rows are not shown; it has no chart,
+no sample frame, no column guide and no notebook, so ``chart``, ``chart_view``,
+``locations``, ``record`` and ``notebook`` are rejected. Mark it on the lead note::
+
+    page:
+      held: true                                 # a family page: every member gives `held`
+      family:
+        members:
+          - {dataset: dc_forecast_4d, differs: ..., request: ..., held: ...}
+    page:
+      held: The date column's day and month order is not settled.   # a one-table page: the reason
 
 Why front matter and not a fenced block in the body: every vault tool already
 ``yaml.safe_load``s the front matter (``gridflow_drift_check.py``,
@@ -117,6 +135,7 @@ RECORD = "record"
 NOTEBOOK = "notebook"
 RELATED = "related"
 FAMILY = "family"
+HELD = "held"
 LOCATIONS = "locations"
 
 FIELDS = (
@@ -134,6 +153,7 @@ FIELDS = (
     NOTEBOOK,
     RELATED,
     FAMILY,
+    HELD,
 )
 REQUIRED = (
     TITLE,
@@ -174,6 +194,7 @@ BUDGET = {
     "plot_alt": 60,
     "related_note": 12,
     "differs": 14,
+    "held": 16,
     "locations_title": 10,
     "locations_caption": 40,
 }
@@ -322,6 +343,7 @@ class FamilyMember:
     dataset: str
     differs: str
     requests: tuple[str, ...] = ()
+    held: str = ""
 
 
 @dataclass(frozen=True)
@@ -361,6 +383,8 @@ class PageFields:
     notebook: Notebook = field(default_factory=Notebook)
     related: tuple[Related, ...] = ()
     family: Family | None = None
+    held: bool = False
+    held_reason: str = ""
     declared: frozenset[str] = frozenset()
 
     @property
@@ -579,12 +603,13 @@ def _read(page: Mapping[str, Any]) -> tuple[PageFields, list[str]]:
         for i, mem in enumerate(r.seq(f"{p}.family.members", fm.get("members"))):
             where = f"{p}.family.members[{i}]"
             mm = r.mapping(where, mem)
-            r.unknown(where, mm, ("dataset", "differs", "request"))
+            r.unknown(where, mm, ("dataset", "differs", "request", "held"))
             members.append(
                 FamilyMember(
                     dataset=r.text(f"{where}.dataset", mm.get("dataset"), required=True),
                     differs=_prose(r.text(f"{where}.differs", mm.get("differs"), required=True)),
                     requests=_requests(r, f"{where}.request", mm.get("request")),
+                    held=_prose(r.text(f"{where}.held", mm.get("held"))),
                 )
             )
         family = Family(
@@ -604,6 +629,14 @@ def _read(page: Mapping[str, Any]) -> tuple[PageFields, list[str]]:
     summary = _prose(r.text(f"{p}.{SUMMARY}", page.get(SUMMARY)))
     what = _prose(r.text(f"{p}.{WHAT_IT_IS}", page.get(WHAT_IT_IS)))
     landscape = r.text(f"{p}.{LANDSCAPE}", page.get(LANDSCAPE))
+    held_value = page.get(HELD)
+    held, held_reason = False, ""
+    if held_value is True:
+        held = True
+    elif isinstance(held_value, str):
+        held, held_reason = True, _prose(r.text(f"{p}.{HELD}", held_value))
+    elif held_value not in (None, False):
+        r.errors.append(f"{p}.{HELD}: must be true (a family page) or the reason (a one-table page)")
 
     fields = PageFields(
         present=True,
@@ -621,6 +654,8 @@ def _read(page: Mapping[str, Any]) -> tuple[PageFields, list[str]]:
         notebook=notebook,
         related=tuple(related),
         family=family,
+        held=held,
+        held_reason=held_reason,
         declared=frozenset(str(k) for k in page),
     )
     return fields, r.errors
@@ -674,6 +709,37 @@ def _count(errors: list[str], path: str, n: int, bounds: tuple[int, int]) -> Non
         errors.append(f"{path}: {n} entries; needs {lo} to {hi}")
 
 
+# The sections a held page does not have: it shows no rows, so it has no chart, frame or notebook.
+HELD_DROPS = (CHART, CHART_VIEW, LOCATIONS, RECORD, NOTEBOOK)
+
+
+def _held_errors(fields: PageFields) -> list[str]:
+    """A held page carries no row sections, and says why each of its tables shows no rows."""
+    p = PAGE_KEY
+    e = [
+        f"{p}.{name}: a held page shows no rows, so it has no {name}; drop it"
+        for name in HELD_DROPS
+        if name in fields.declared
+    ]
+    if fields.family is None:
+        if not fields.held_reason:
+            e.append(f"{p}.{HELD}: a one-table held page gives the reason its rows are not shown")
+        else:
+            _budget(e, f"{p}.{HELD}", fields.held_reason, "held")
+        return e
+    if fields.held_reason:
+        e.append(
+            f"{p}.{HELD}: a held family page takes `held: true`; each member gives its own reason"
+        )
+    for i, mem in enumerate(fields.family.members):
+        if not mem.held:
+            e.append(
+                f"{p}.family.members[{i}].held: missing (a held page says why each table "
+                "shows no rows)"
+            )
+    return e
+
+
 def needs_problem(needs: str) -> str | None:
     """Why a ``notebook.needs`` value would not read inside "with <needs> ingested.", or None.
 
@@ -709,9 +775,12 @@ def anatomy_errors(fields: PageFields) -> list[str]:
     """
     e: list[str] = []
     p = PAGE_KEY
-    for name in REQUIRED:
+    required = [n for n in REQUIRED if not (fields.held and n in HELD_DROPS)]
+    for name in required:
         if name not in fields.declared:
             e.append(f"{p}.{name}: missing (required on the dataset page template)")
+    if fields.held:
+        e.extend(_held_errors(fields))
     if fields.title:
         _budget(e, f"{p}.title", fields.title, "title")
     if fields.summary:
@@ -861,6 +930,8 @@ def anatomy_errors(fields: PageFields) -> list[str]:
         _count(e, f"{p}.family.members", len(fam.members), FAMILY_MEMBERS)
         for i, mem in enumerate(fam.members):
             _budget(e, f"{p}.family.members[{i}].differs", mem.differs, "differs")
+            if mem.held:
+                _budget(e, f"{p}.family.members[{i}].held", mem.held, "held")
             where = f"{p}.family.members[{i}].request"
             if not mem.requests:
                 e.append(f"{where}: missing (the variant's raw URL)")
