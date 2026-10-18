@@ -1,0 +1,19 @@
+{
+  "dataset": "neso_data_portal/ffr_post_tender_reports_csv_ext",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "54c24b547389e1614fe3dfbeef5d314989bb3b3f409c47097dc274faacecf148",
+  "type": "bar",
+  "unit": "accepted tenders",
+  "caption": "",
+  "value_column": null,
+  "aggregation": "count",
+  "window": null,
+  "provenance": {"duplicates_dropped": 0, "files": 26, "rows_matched": 2716, "rows_read": 5457, "rows_used": 2716, "silver": "neso_data_portal/ffr_post_tender_reports_csv_ext"},
+  "spec": {"aggregation": "count", "dedup": {"on": ["resource_id", "tender_ref"], "order_by": "capture_written_at"}, "filter": [{"column": "status", "op": "in", "value": ["Accepted", "Accepted "]}], "group": "resource_id", "group_map": {"178b6c47-6b27-403e-9715-87f41b48a84b": "TR153 Sep 2022", "1882b277-6349-4513-9939-b39e1992620b": "TR142 Oct 2021", "2bfa2ab3-7f4e-44d7-a9ab-7342c4b9cd34": "TR164 Aug 2023", "36164e1d-c6d5-4a58-85b1-74c3a01b0a9b": "TR150 Jun 2022", "3d71f7d1-3dd7-40b1-b5f4-708da72a4f67": "TR161 May 2023", "41c9403d-9618-4eb9-be69-45b9923bcf3f": "TR159 Mar 2023", "59dfabd4-a395-4ddc-a261-2f546a8a3b52": "TR166 Oct 2023", "5e0afd6e-ab83-480a-938b-e0da0223fcbc": "TR141 Sep 2021", "61ee31ac-1f2d-4744-add3-bac7878c6010": "TR145 Jan 2022", "66e127dc-5e95-49b5-bc55-915269d09e1a": "TR146 Feb 2022", "7ed768cf-aa45-4577-bc7f-c1b64e534812": "TR152 Aug 2022", "904d2bf0-8396-43c4-8b8a-cafe105fc47c": "TR155 Nov 2022", "9347c45d-bffd-40ee-aa1e-593b41bde9a4": "TR139 Jul 2021", "990dd811-e65a-4361-87fc-9d07d6c0af45": "TR143 Nov 2021", "a32e86a6-6bd3-422c-996a-7245dcb9b6ee": "TR149 May 2022", "a99bc100-352b-433a-83fc-5514affbbc0e": "TR160 Apr 2023", "bd7cbfb7-a8cb-4b84-bd69-42abff36af0d": "TR157 Jan 2023", "bec39c50-563c-4ed6-8100-8b519dcbf1ef": "TR165 Sep 2023", "ceefff8c-7f61-41dd-b567-42774ca487bc": "TR144 Dec 2021", "e15891f5-fd65-437f-823f-2906f238d0af": "TR158 Feb 2023", "fbb1ce86-b2f7-405d-94ac-6cef6f14cceb": "TR163 Jul 2023", "fc994d78-f7d0-4a29-9ea7-31121931d04c": "TR148 Apr 2022", "fcc91d6f-e35a-4878-a77d-d2882d01c357": "TR151 Jul 2022", "fd57201c-24f6-4d42-8be2-177dd4b36229": "TR162 Jun 2023", "fd84c085-4ff8-45b4-b2ee-43ad2b052d9f": "TR156 Dec 2022", "fe695206-4729-46f2-a82e-b05ed8552da8": "TR140 Aug 2021"}, "silver": "neso_data_portal/ffr_post_tender_reports_csv_ext", "sort": "label", "type": "bar", "unit": "accepted tenders"},
+  "x_kind": "category",
+  "x": ["TR139 Jul 2021", "TR140 Aug 2021", "TR141 Sep 2021", "TR142 Oct 2021", "TR143 Nov 2021", "TR144 Dec 2021", "TR145 Jan 2022", "TR146 Feb 2022", "TR148 Apr 2022", "TR149 May 2022", "TR150 Jun 2022", "TR151 Jul 2022", "TR152 Aug 2022", "TR153 Sep 2022", "TR155 Nov 2022", "TR156 Dec 2022", "TR157 Jan 2023", "TR158 Feb 2023", "TR159 Mar 2023", "TR160 Apr 2023", "TR161 May 2023", "TR162 Jun 2023", "TR163 Jul 2023", "TR164 Aug 2023", "TR165 Sep 2023", "TR166 Oct 2023"],
+  "series": [
+    {"key": "count", "values": [70, 70, 70, 140, 155, 162, 132, 131, 157, 169, 164, 165, 171, 167, 161, 155, 125, 103, 36, 35, 47, 36, 37, 18, 23, 17]}
+  ]
+}

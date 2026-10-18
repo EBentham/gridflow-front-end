@@ -1,0 +1,172 @@
+{
+ "dataset": "neso_data_portal/ffr_post_tender_reports_csv_ext",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "be0f9871ced588b64d68fafc09657dd37038d283bd76cb1a1b2d33cfcae4810d",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.sql(\"\"\"\n    SELECT tender_ref, trim(status) AS status, rejection_codes, tendered_unit,\n           availability_fee, primary_response_0_5hz, published_at\n    FROM silver_neso_data_portal_ffr_post_tender_reports_csv_ext_latest\"\"\")\ndf[\"round\"] = \"TR\" + df.tender_ref.str[:3]\ndf[df.tender_ref.duplicated(keep=False)]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "tender_ref",
+      "status",
+      "rejection_codes",
+      "tendered_unit",
+      "availability_fee",
+      "primary_response_0_5hz",
+      "published_at",
+      "round"
+     ],
+     "index": [
+      "2329",
+      "3024",
+      "3783"
+     ],
+     "rows": [
+      [
+       "162.198",
+       "Rejected",
+       "1.2",
+       "AG-CBS06B",
+       "182.1",
+       "17.0",
+       "2023-06-15 11:51:25.343063+01:00",
+       "TR162"
+      ],
+      [
+       "162.198",
+       "Rejected",
+       "1.2",
+       "AG-CBS06B",
+       "182.1",
+       "17.0",
+       "2023-07-18 10:12:57.073538+01:00",
+       "TR162"
+      ],
+      [
+       "162.198",
+       "Rejected",
+       "1.2",
+       "AG-CBS06B",
+       "182.1",
+       "17.0",
+       "2023-08-11 15:16:07.574193+01:00",
+       "TR162"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "rounds = (df.drop_duplicates(\"tender_ref\")\n            .pivot_table(index=\"round\", columns=\"status\", values=\"tender_ref\", aggfunc=\"count\"))\nrounds.tail()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "status",
+      "Accepted",
+      "Rejected",
+      "round",
+      "",
+      ""
+     ],
+     "index": [
+      "TR162",
+      "TR163",
+      "TR164",
+      "TR165",
+      "TR166"
+     ],
+     "rows": [
+      [
+       "36",
+       "158"
+      ],
+      [
+       "37",
+       "151"
+      ],
+      [
+       "18",
+       "168"
+      ],
+      [
+       "23",
+       "156"
+      ],
+      [
+       "17",
+       "132"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "rounds.plot.bar(stacked=True, color=[\"#155A6E\", \"#C77E3C\"], figsize=(8, 3.5),\n                xlabel=\"tender round\", ylabel=\"tenders\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "ffr_post_tender_reports_csv_ext-5.png",
+     "width": 699,
+     "height": 369
+    }
+   ]
+  }
+ ]
+}

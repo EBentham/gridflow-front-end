@@ -1,0 +1,225 @@
+{
+ "dataset": "neso_data_portal/sffr_auction_results_main",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "01baad271dacab70e5b7e60ec2f0804a29a882ebf7d1a489dad6257f82881b18",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.neso_data_portal.query(\"sffr_auction_results_main\", \"2026-10-01\", \"2026-10-07\")\ndf = df.sort_values([\"date\", \"efa\", \"price\", \"rank\"])\ndf[[\"date\", \"efa\", \"unit\", \"status\", \"volume\", \"price\", \"clearing_price\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "date",
+      "efa",
+      "unit",
+      "status",
+      "volume",
+      "price",
+      "clearing_price"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2026-10-01",
+       "1",
+       "BRDN-01",
+       "Accepted",
+       "6.9",
+       "0.03",
+       "2.1"
+      ],
+      [
+       "2026-10-01",
+       "1",
+       "ENDSR-8",
+       "Accepted",
+       "20.0",
+       "0.03",
+       "2.1"
+      ],
+      [
+       "2026-10-01",
+       "1",
+       "ENDSR-9",
+       "Accepted",
+       "20.0",
+       "0.03",
+       "2.1"
+      ],
+      [
+       "2026-10-01",
+       "1",
+       "ENDSR-5",
+       "Accepted",
+       "11.7",
+       "0.06",
+       "2.1"
+      ],
+      [
+       "2026-10-01",
+       "1",
+       "ENDSR-6",
+       "Accepted",
+       "11.3",
+       "0.13",
+       "2.1"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "blocks = (df.groupby([\"date\", \"efa\"], as_index=False)\n            .agg(offers=(\"unit\", \"size\"), offered_mw=(\"volume\", \"sum\"),\n                 accepted_mw=(\"accepted_volume\", \"sum\"), prices=(\"clearing_price\", \"nunique\"),\n                 clearing_price=(\"clearing_price\", \"first\")))\nblocks[blocks.date == \"2026-10-07\"]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "date",
+      "efa",
+      "offers",
+      "offered_mw",
+      "accepted_mw",
+      "prices",
+      "clearing_price"
+     ],
+     "index": [
+      "36",
+      "37",
+      "38",
+      "39",
+      "40",
+      "41"
+     ],
+     "rows": [
+      [
+       "2026-10-07",
+       "1",
+       "36",
+       "284.8",
+       "233.4",
+       "1",
+       "2.37"
+      ],
+      [
+       "2026-10-07",
+       "2",
+       "36",
+       "283.9",
+       "181.9",
+       "1",
+       "2.17"
+      ],
+      [
+       "2026-10-07",
+       "3",
+       "35",
+       "272.8",
+       "152.8",
+       "1",
+       "6.29"
+      ],
+      [
+       "2026-10-07",
+       "4",
+       "36",
+       "277.3",
+       "248.3",
+       "1",
+       "2.37"
+      ],
+      [
+       "2026-10-07",
+       "5",
+       "35",
+       "285.9",
+       "235.1",
+       "1",
+       "7.34"
+      ],
+      [
+       "2026-10-07",
+       "6",
+       "36",
+       "291.0",
+       "208.1",
+       "1",
+       "9.27"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "blocks.clearing_price.plot(drawstyle=\"steps-post\", color=\"#155A6E\", figsize=(8, 3.5),\n        xlabel=\"EFA blocks, 1 to 7 October 2026, six per EFA date\",\n        ylabel=\"clearing price, £/MWh\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "sffr_auction_results_main-5.png",
+     "width": 682,
+     "height": 337
+    }
+   ]
+  }
+ ]
+}
