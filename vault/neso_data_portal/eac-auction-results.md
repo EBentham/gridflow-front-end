@@ -4,9 +4,179 @@ package: "eac-auction-results"
 dataset_keys: ["eac_results_buy_orders", "eac_results_buy_orders_fy", "eac_results_by_unit", "eac_results_by_unit_fy", "eac_results_daily_buy_orders", "eac_results_daily_by_unit", "eac_results_daily_sell_orders", "eac_results_daily_summary", "eac_results_sell_orders", "eac_results_summary", "eac_results_summary_fy"]
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-13
+updated: 2026-10-18
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: EAC response and reserve auction results
+  summary: >-
+    NESO's daily EAC auctions for frequency response and reserve: clearing price and MW per
+    product and window, winning units, and every order.
+  facts:
+    vendor: "NESO Data Portal, package `eac-auction-results`: eleven tables"
+    cadence: Daily auctions, and NESO updates the files daily (its package text)
+    grain: "Summary: one row per auction, product and delivery window"
+    history: "Response from `2023-11-02T23:00:00` (FY2023 archive); NESO puts earlier response in another package"
+  landscape: market
+  what_it_is: >-
+    NESO buys frequency response (Dynamic Containment, Moderation, Regulation) and reserve
+    (Balancing, Quick, Slow) in daily EAC auctions. Each table comes as a current file, archives
+    (financial years; months for sell orders) and a daily file of the latest auction (NESO). In
+    NESO's files current and archives cover separate periods; the daily file repeats current rows:
+    never add it.
+  how_used:
+    - Clearing price per product and window, as the target of a price model.
+    - "Sell-order bid stacks (MW against price limit) via `data.sql`; `query()` filters capture time"
+    - "Who holds the service: MW per auction unit, participant and technology, per window."
+  chart:
+    type: line
+    silver: neso_data_portal/eac_results_summary
+    time: delivery_end
+    value: clearing_price
+    filter:
+      - {column: auction_product, op: in, value: [DRL, DCL, DCH, DRH]}
+    dedup: {on: [auction_id, auction_product, delivery_start], order_by: capture_written_at}
+    group: auction_product
+    group_map: {DRL: drl, DCL: dcl, DCH: dch, DRH: drh}
+    series_order: [drl, dcl, dch, drh]
+    aggregation: mean
+    time_bucket: 1d
+    window: {start: "2026-04-01", end: "2026-10-17"}
+    unit: "£/MW/h"
+  chart_view:
+    title: Daily mean response clearing price, April to October 2026
+    caption: >-
+      Silver `neso_data_portal/eac_results_summary`, £/MW/h: each day's mean of its six four-hour
+      windows, Dynamic Containment and Regulation only (the notebook has all six products). A day
+      runs 23:00 to 23:00 UK time; NESO's times are UTC.
+    alt: >-
+      Line chart from neso_data_portal/eac_results_summary of the daily mean clearing price, in
+      £/MW/h, of four response products for delivery days 1 April to 17 October 2026. Regulation L
+      (DRL) has the highest median, about 17.1, from 6.06 on 5 April to 38.07 on 24 June.
+      Containment L (DCL) runs 1.08 to 12.52 (22 September) and Containment H (DCH) 0.05 to 7.20.
+      Regulation H (DRH) is below zero on 190 days, median -10.61, lowest -16.52 on 16 October.
+    x_label: delivery day, 23:00 to 23:00 UK time
+    key:
+      - {series: drl, label: Regulation L (DRL), codes: DRL, paint: clay}
+      - {series: dcl, label: Containment L (DCL), codes: DCL, paint: petrol}
+      - {series: dch, label: Containment H (DCH), codes: DCH, paint: horizon}
+      - {series: drh, label: Regulation H (DRH), codes: DRH, paint: olive, note: "Below zero on 190 of the 200 days drawn: NESO's clearing prices are signed."}
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then each file: datastore dumps for the current
+      tables, downloads for the rest. Unchanged archives are skipped. Run one line per table.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=eac-auction-results"
+    commands:
+      - {run: gridflow pipeline neso_data_portal eac_results_summary --last 24h, comment: "current summary to bronze, then silver"}
+      - {run: gridflow pipeline neso_data_portal eac_results_summary_fy --last 24h, comment: "FY archives, read by the notebook"}
+  record:
+    select:
+      filter:
+        - {column: auction_id, op: eq, value: "2906"}
+        - {column: delivery_start, op: eq, value: "2026-10-17T14:00:00"}
+        - {column: auction_product, op: in, value: [DCH, DCL, DMH, DML, DRH, DRL, NSR, PSR]}
+      dedup: {on: [auction_id, auction_product, delivery_start], order_by: capture_written_at}
+      order_by: [auction_product]
+      columns: [auction_product, delivery_start, delivery_end, cleared_volume, clearing_price, service_type, auction_id, linked_service_window_id]
+    key: [auction_id, auction_product, delivery_start]
+    caption: "Auction 2906, windows starting 15:00 UK time on 17 October 2026: response and Slow Reserve products."
+    fields:
+      auction_product: Product code as NESO writes it; its dictionary lists the codes without names
+      delivery_start: "Window start, UTC (NESO states its times are UTC)"
+      delivery_end: "Window end, UTC; mostly four hours for response, half an hour for reserve"
+      cleared_volume: MW accepted at the clearing price (NESO's unit); 0 means nothing cleared
+      clearing_price: "Clearing price, £/MW/h (NESO's unit); signed; 0 in the NSR row, nothing cleared"
+      service_type: "NESO's service name: `Response`, `Quick Reserve`, `Slow Reserve` or `Balancing Reserve`"
+      auction_id: "NESO's auction number, kept as text; shared by the products auctioned together"
+      linked_service_window_id: NESO's id linking windows of one service kept consistent over a period
+      timestamp_utc: "Equals `delivery_start`: the window start, UTC"
+      published_at: "Null: when NESO first published each result is unknown"
+      bronze_capture_id: Path of the bronze capture the row was read from
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      A delivery day spans two UTC dates and `query()` filters by UTC date, so the first query keeps
+      one auction (printed in UK time). `data.sql` then stacks the FY and current summaries.
+    cells:
+      - |
+        df = data.neso_data_portal.query("eac_results_summary", "2026-10-16", "2026-10-17")
+        day = df[(df.auction_id == "2906") & (df.service_type == "Response")]
+        day.pivot(index="delivery_start", columns="auction_product", values="clearing_price")
+      - |
+        hist = data.sql("""
+            SELECT auction_product, delivery_end, clearing_price
+            FROM silver_neso_data_portal_eac_results_summary_fy_latest WHERE service_type = 'Response'
+            UNION ALL
+            SELECT auction_product, delivery_end, clearing_price
+            FROM silver_neso_data_portal_eac_results_summary_latest WHERE service_type = 'Response'""")
+        month = hist.delivery_end.dt.tz_convert("UTC").dt.strftime("%Y-%m")
+        monthly = hist.groupby([month, "auction_product"]).clearing_price.mean().unstack()
+        monthly.round(2).iloc[[0, 12, 24, -1]]
+      - |
+        ax = monthly.plot(figsize=(8, 3.5), xlabel="delivery month",
+                          ylabel="mean clearing price, £/MW/h",
+                          color=["#3E8C97", "#155A6E", "#AFC64E", "#7C5530", "#66793B", "#C77E3C"])
+        ax.legend(ncol=6, loc="lower center", bbox_to_anchor=(0.5, 1.0), frameon=False);
+    needs: the current and FY summary tables
+    plot_alt: >-
+      Line plot of monthly mean clearing price, £/MW/h, six response products, November 2023 to 17
+      October 2026 (October partial). DRL is highest every month, 6.53 to 19.63; DML second, 2.51 to
+      10.79. DRH is below zero every month, -0.31 to -11.40. DCH, DCL and DMH stay between -1.43
+      and 5.37.
+  related:
+    - {dataset: neso_data_portal/dynamic-containment-data, note: "Response auctions before November 2023, which NESO points to"}
+    - {dataset: neso_data_portal/eac-br-auction-results, note: Earlier Balancing Reserve auctions on the same EAC platform}
+    - {dataset: neso_data_portal/dynamic-regulation-requirements, note: "NESO's MW requirement per EFA block for the same DR products"}
+    - {dataset: neso_data_portal/eac-mock-auction-results, note: "NESO's test auctions; never join them here on `auction_id`"}
+  family:
+    slug: eac-auction-results
+    members:
+      - dataset: eac_results_summary
+        differs: "Current table: cleared MW and price per auction, product and window, current financial year"
+        request: "GET https://api.neso.energy/datastore/dump/596f29ac-0387-4ba4-a6d3-95c243140707"
+      - dataset: eac_results_summary_fy
+        differs: "The summary for earlier financial years, one archive file each: FY2023 to FY2025"
+        request:
+          - "GET https://api.neso.energy/dataset/291e3c28-75f2-4a8f-b5f5-008bebaac368/resource/be5c6b0d-a335-4859-93f2-389585b4e9a1/download/neso-response-reserve-results-summary-fy2023-archive.csv"
+          - "GET https://api.neso.energy/dataset/291e3c28-75f2-4a8f-b5f5-008bebaac368/resource/ab130833-3ce4-4361-90fb-69fa3cf30f15/download/neso-response-reserve-results-summary-fy2024-archive.csv"
+          - "GET https://api.neso.energy/dataset/291e3c28-75f2-4a8f-b5f5-008bebaac368/resource/be55ee51-b79e-47da-b71e-a0f8865d9d66/download/neso-response-reserve-results-summary-fy2025-archive.csv"
+      - dataset: eac_results_daily_summary
+        differs: "The latest auction only, updated daily (NESO); never add it to the current table"
+        request: "GET https://api.neso.energy/dataset/291e3c28-75f2-4a8f-b5f5-008bebaac368/resource/3c51a666-1c33-450e-a6eb-c9b4a0c91584/download/neso-response-reserve-daily-results-summary.csv"
+      - dataset: eac_results_by_unit
+        differs: "Current table: each accepted unit's MW and clearing price per product and window"
+        request: "GET https://api.neso.energy/datastore/dump/a63ab354-7e68-44c2-ad96-c6f920c30e85"
+      - dataset: eac_results_by_unit_fy
+        differs: Unit results for earlier financial years, FY2023 to FY2025 archive files
+        request:
+          - "GET https://api.neso.energy/dataset/291e3c28-75f2-4a8f-b5f5-008bebaac368/resource/7505ec16-e1e7-432e-8abd-a554e03e4f02/download/neso-response-reserve-results-by-unit-fy2023-archive.csv"
+          - "GET https://api.neso.energy/dataset/291e3c28-75f2-4a8f-b5f5-008bebaac368/resource/2fc9dd7e-5274-40e3-abf4-6d31b30f21c6/download/neso-response-reserve-results-by-unit-fy2024-archive.csv"
+          - "GET https://api.neso.energy/dataset/291e3c28-75f2-4a8f-b5f5-008bebaac368/resource/c312358e-87da-480e-88cc-d45c1dce1b41/download/neso-response-reserve-results-by-unit-fy2025-archive.csv"
+      - dataset: eac_results_daily_by_unit
+        differs: "The latest auction's unit results only (NESO); never add them to the current table"
+        request: "GET https://api.neso.energy/dataset/291e3c28-75f2-4a8f-b5f5-008bebaac368/resource/07f0dd8b-4471-4e2e-9ed6-d21b0ce1f6f5/download/neso-response-reserve-daily-results-by-unit.csv"
+      - dataset: eac_results_buy_orders
+        differs: "Current table: NESO's buy orders, its price targets for quantities, with outcomes"
+        request: "GET https://api.neso.energy/datastore/dump/1cf68f59-8eb8-4f1d-bccf-11b5a47b24e5"
+      - dataset: eac_results_buy_orders_fy
+        differs: Buy orders for earlier financial years, FY2023 to FY2025 archive files
+        request:
+          - "GET https://api.neso.energy/dataset/291e3c28-75f2-4a8f-b5f5-008bebaac368/resource/7a2d64a5-3233-4ee2-92fd-240db03717f1/download/neso-response-reserve-buy-orders-fy2023-archive.csv"
+          - "GET https://api.neso.energy/dataset/291e3c28-75f2-4a8f-b5f5-008bebaac368/resource/c6f09570-58f9-4e04-81c3-2c99af2fded0/download/neso-response-reserve-buy-orders-fy2024-archive.csv"
+          - "GET https://api.neso.energy/dataset/291e3c28-75f2-4a8f-b5f5-008bebaac368/resource/270a5e1d-ea44-43a0-82b1-703fdaa354ac/download/neso-response-reserve-buy-orders-fy2025-archive.csv"
+      - dataset: eac_results_daily_buy_orders
+        differs: "The latest auction's buy orders only (NESO); never add them to the current table"
+        request: "GET https://api.neso.energy/dataset/291e3c28-75f2-4a8f-b5f5-008bebaac368/resource/e638cf3d-bed1-42ae-a984-8fe3c556febf/download/neso-response-reserve-daily-buy-orders.csv"
+      - dataset: eac_results_sell_orders
+        differs: "Every provider order: this month's dump plus monthly archives; times kept as text"
+        request:
+          - "GET https://api.neso.energy/datastore/dump/13b511df-d6ec-4143-afb1-0ecc6fd19810"
+          - "GET https://api.neso.energy/dataset/291e3c28-75f2-4a8f-b5f5-008bebaac368/resource/3780a81e-bee4-43e2-9ebe-ef85d2ba18de/download/neso-response-reserve-sell-orders-202311-archive.csv"
+          - "GET https://api.neso.energy/dataset/291e3c28-75f2-4a8f-b5f5-008bebaac368/resource/06f4396f-d222-477d-85ad-916ac0662630/download/neso-response-reserve-sell-orders-202609-archive.csv"
+      - dataset: eac_results_daily_sell_orders
+        differs: "The latest auction's sell orders only, times typed as UTC; never add to current"
+        request: "GET https://api.neso.energy/dataset/291e3c28-75f2-4a8f-b5f5-008bebaac368/resource/8ba48f26-d73e-4094-a90d-ba075eb739c1/download/neso-response-reserve-daily-sell-orders.csv"
 ---
 
 # Enduring Auction Capability (EAC) auction results
@@ -60,7 +230,8 @@ the latest-auction slice of its current counterpart (section Known issues). So *
 sums across the three scopes**, and a consumer must never add a daily family to its current counterpart:
 that double counts the latest auction.
 
-**Delivery span of each scope (silver, delivery starts).** Current by-unit, buy-order and summary dumps:
+**Delivery span of each scope (silver, delivery starts, at the 2026-10-08 capture; the 2026-10-16 capture extends the
+dumps to `2026-10-17T21:30:00` and holds 1,080 auction IDs on 1,080 days, see Cadence).** Current by-unit, buy-order and summary dumps:
 `2026-03-31T22:00:00` to `2026-10-08T21:30:00`. FY archives (FY2023, FY2024, FY2025 as the vendor labels
 them): `2023-11-02T23:00:00` to `2026-03-31T21:30:00`, with the three resources covering
 `2023-11-02`-`2024-03-31`, `2024-03-31`-`2025-03-31` and `2025-03-31`-`2026-03-31` by delivery start. The
@@ -87,7 +258,8 @@ daily families share their counterpart's header exactly).
   identifier of the unit result record; the values are `#||#`-joined strings such as
   `2661#||#2710#||#PSR#||#150423`. The components are not documented: store as served and do not split
   (`TODO: verify` the composition).
-- **Buy orders.** `auctionID`: unique auction identifier. `orderID`: the ID of the submitted bid, generated
+- **Buy orders.** `auctionID`: unique auction identifier (the summary dictionary adds "All products auctioned in the
+  same market", `eac_results_summary.json`). `orderID`: the ID of the submitted bid, generated
   by EAC. `quantity`: the total volume of the bid, MW. `price`: a price indicating the willingness to
   pay to procure the quantity, £/MW/h. `substitutabilityFamily` (optional) and `joinedFamily` (optional, a
   linked order marking which service windows are looped): linking identifiers.
@@ -205,9 +377,10 @@ replaced when it re-uploads, so a link records what was fetched and is not a per
 page: [eac-auction-results](https://www.neso.energy/data-portal/eac-auction-results). Bytes, rows and
 `last_modified` come from the capture sidecars under
 `C:/gridflow-data/bronze/neso_data_portal/<family>/2026/10/08/` and from the hash-pinned bodies
-(K-AS-3 FACTS section 2: captures L1 to L52). **Every resource has exactly one capture**, all written on
-**2026-10-08** between 10:28Z and 10:36Z, so successive-capture behaviour (amendment, deletion) is
-unmeasured.
+(K-AS-3 FACTS section 2: captures L1 to L52). At activation **every resource had exactly one capture**, all
+written on **2026-10-08** between 10:28Z and 10:36Z. The first daily refresh (2026-10-16, gridflow
+`.planning/phases/v0.22-close/refresh-20261016/ingest.log` lines 136 to 146) captured the four dumps and the four
+daily files again and skipped the 44 archives as unchanged; see Cadence for what the second capture showed.
 
 **CKAN `last_modified` of a datastore dump is stale and is not used as the vintage.** For the four
 dumps it reads 2026-04-15 (by unit, buy orders, summary) and 2026-10-01 (sell orders), while their rows
@@ -1002,10 +1175,14 @@ Schema, epoch 1:
   - Update frequency: Daily
 
 The vendor says the package is updated daily, and its note says the four daily files were added to populate from 5 May 2026
-and hold the latest auction only. gridflow has **one capture per resource** (all 2026-10-08), so the real rhythm, whether the
-current dumps are re-trimmed or extended each day, whether the monthly sell archives are closed when a month ends, and
-whether a refresh replaces or appends to a file are unmeasured. `TODO: verify` by comparing later complete captures with the
-hash-pinned bodies (K-AS-3 FACTS section 2). The catalogue snapshot of 2026-10-06 and the captures of 2026-10-08 are consistent
+and hold the latest auction only. **Second capture (2026-10-16, measured on silver).** Each of the four dumps kept
+every key of its 2026-10-08 capture with identical values (all compared columns, for example summary 61,884 of 61,884
+rows, sell-order dump 588,221 of 588,221) and appended the auctions since, to delivery `2026-10-17T21:30:00`: the dumps
+are extended, not re-trimmed. The sell-order dump still starts at `2026-09-30T22:00:00` (the October delivery days) and
+shares no key with the 35 monthly archives. Each daily file was replaced by the newest auction (`2906`, delivery
+`2026-10-16T22:00:00` to `2026-10-17T21:30:00`), with none of its earlier rows. Whether a month's sell rows move from the
+dump to a new monthly archive when the month ends is still unmeasured (`TODO: verify` at the next month end). The
+catalogue snapshot of 2026-10-06 and the captures of 2026-10-08 are consistent
 with a refresh at least every couple of days. The registry sets a 512 MiB download cap (`max_download_bytes` 536,870,912): the
 newest monthly sell archives are 407 to 438 MB (the largest, `202605`, is 438,169,445 bytes), so a larger month would fail
 capture (the sibling `eac_br_results_sell_orders` already hit this cap). That is a later unit, not a defect of this page.
@@ -1035,7 +1212,8 @@ dispositions; nothing here applies to it.
   does not authorise `key_latest`.
 - `TODO: verify` the **out-of-range acceptance ratio** (EAC-BUY-ACCEPTANCE-RANGE): one current buy-order row has `acceptance_ratio`
   1.049999949856768 against a documented 0 to 1.
-- `TODO: verify` the **amendment and deletion behaviour** of resources: one capture each.
+- `TODO: verify` the **amendment and deletion behaviour** of resources: two captures of the dumps and daily files so far,
+  with no earlier row changed or dropped from a dump (Cadence); the archives have one capture each.
 
 **Known issues and gotchas.**
 
@@ -1054,7 +1232,9 @@ dispositions; nothing here applies to it.
   `reasonRejected` entry says only "Reason Codes": `TODO: verify` the code meanings (the profiler sees integers, silver keeps strings).
 - **Windows are not all the same length.** Over the complete summary union response windows are 14,400 s (38,526 rows), 10,800 s (18 rows)
   and 18,000 s (12 rows), and every measured reserve window is 1,800 s (K-AS-3 FACTS section 3.5); window edges match the established
-  local EFA boundaries with 0 mismatches. `TODO: verify` that the 3-hour and 5-hour rows are the clock-change days. Reconstruct no
+  local EFA boundaries with 0 mismatches. The 3-hour and 5-hour rows are EFA block 1 of the clock-change days, for each of
+  the six response products: 3 hours on 2024-03-31, 2025-03-30 and 2026-03-29, 5 hours on 2024-10-27 and 2025-10-26
+  (checked on silver, 2026-10-18). Reconstruct no
   timestamp from `auctionID` or product.
 - **Sell-order times are strings with two layouts.** See the sell-order family: `T` for 35 resources, a space for `202607`.
 - **`unit_result_id` is opaque** and `auction_unit` may be a collection of assets: keep both as served.
