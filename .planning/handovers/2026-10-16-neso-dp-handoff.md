@@ -97,3 +97,13 @@ auction results 11). This is FE-0 plumbing in `build.py` (2,164 lines; `load_man
    (Sonnet · high).
 3. After the picks: lock in DESIGN.md + tokens, then FE-0 (hub restructure, 16 groups, plumbing), then the batches.
    Writers per page as in v5; held pages per ruling 6.
+
+## Update 2026-10-18 (rulings 57-60 in RULINGS.md)
+
+- Hub round 2: Bobbo picked **variant 5, the plot plan** (scratchpad `hub-r2/v5/`, comparison artifact
+  https://claude.ai/artifact/S9nZimWCgowY3igcBnC1Ag). Its hero copy and the silver/gold sections still need writing.
+- Build plumbing landed on branch `feat/neso-dp-package-pages` (one page per package note; manifest `families[].note`,
+  `package_tables`).
+- **Scope change (OWNER):** this round = the hub plus the four showcase pages only, written in parallel (tracker
+  `.planning/neso-dp/BATCH-dfs.md`). Other packages appear on the hub as plain names. After Bobbo's review, propose
+  the plan and resourcing for the remaining packages, run slowly overnight two or three at a time.
