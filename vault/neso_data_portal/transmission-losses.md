@@ -7,6 +7,132 @@ skeleton: false
 updated: 2026-10-09
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: Transmission losses
+  summary: >-
+    Energy lost on GB's three transmission networks, in TWh, by month and by financial year, as
+    NESO measures it after the event.
+  facts:
+    vendor: "NESO Data Portal, package Transmission Losses: two CSV files"
+    cadence: "Monthly file updated monthly, financial-year file annually, NESO says"
+    grain: "Each row: one month, or one financial year, of losses"
+    history: "Months from April 2013 and years from 2013-14, in NESO's files"
+  landscape: power
+  what_it_is: >-
+    Losses in TWh on the networks of National Grid Electricity Transmission (England and Wales),
+    Scottish Power Transmission and Scottish Hydro Electric Transmission, with a GB total. NESO
+    monitors them after the event: they turn on where generation runs, chiefly the north-south
+    balance. NESO's yearly GB total for 2022-23 is 0.22 TWh above its months summed; 2021-22's is
+    0.05 TWh below.
+  how_used:
+    - The long-run scale and trend of GB transmission losses
+    - How losses split between the English and Welsh network and the Scottish networks
+  chart:
+    type: stacked-area
+    silver: neso_data_portal/transmission_losses_main
+    time: month_vendor
+    time_text: {format: "%b-%y"}
+    values:
+      - {column: nget, series: nget}
+      - {column: spt, series: spt}
+      - {column: shetl, series: shetl}
+    dedup: {"on": [month_vendor], order_by: capture_written_at}
+    aggregation: last
+    window: {start: "2013-04-01", end: "2026-07-31"}
+    unit: TWh
+  chart_view:
+    title: Monthly transmission losses by network, April 2013 to July 2026
+    caption: >-
+      Silver `neso_data_portal/transmission_losses_main`, TWh per month, April 2013 to July 2026.
+      The stack's top is NESO's GB total within 0.001 TWh. August 2026 (0.14 TWh, in the rows
+      below) is left out; NESO does not say it is complete.
+    alt: >-
+      Stacked area chart from neso_data_portal/transmission_losses_main of monthly transmission
+      losses in TWh, April 2013 to July 2026: NGET at the bottom and most of every month, then SPT
+      and SHETL. Monthly totals run 0.33 to 0.73 TWh from 2013 to 2019, higher in winter than
+      summer. The highest is 0.97 TWh in January 2023; the lowest, 0.23 TWh in March 2022, stands
+      alone. The Scottish networks are 9% to 26% of a month.
+    x_label: NESO's month label; no day boundary stated
+    key:
+      - {series: shetl, label: SHETL, codes: SHETL, paint: hatch-dots, note: "Scottish Hydro Electric Transmission's network"}
+      - {series: spt, label: SPT, codes: SPT, paint: hatch-cross, note: "Scottish Power Transmission's network"}
+      - {series: nget, label: NGET, codes: NGET, paint: hatch-lines, note: "National Grid Electricity Transmission: England and Wales"}
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then each file, downloaded whole unless its
+      `last_modified` is unchanged.
+    commands:
+      - {run: gridflow ingest neso_data_portal transmission_losses_main --last 24h, comment: "changed file; swap in either key"}
+      - {run: gridflow transform neso_data_portal transmission_losses_main --last 24h, comment: "the capture's date to silver"}
+  family:
+    slug: transmission-losses
+    members:
+      - dataset: transmission_losses_main
+        differs: "One row per month, labelled like `Apr-13`, with its financial year"
+        request:
+          - "GET https://api.neso.energy/api/3/action/package_show?id=transmission-losses"
+          - "GET https://api.neso.energy/dataset/ec5a1356-f6dd-40a1-b714-dbdad3ed00af/resource/fddc307d-fc5a-458d-809f-2ad9a697b142/download/monthly-losses.csv"
+      - dataset: transmission_losses_financial_year
+        differs: "One row per financial year (`2013-14`); columns `sum_of_` plus the monthly names, TWh"
+        request:
+          - "GET https://api.neso.energy/api/3/action/package_show?id=transmission-losses"
+          - "GET https://api.neso.energy/dataset/ec5a1356-f6dd-40a1-b714-dbdad3ed00af/resource/c0cd9512-4f8a-468e-8823-7c8238dcb9b9/download/financial-year-losses.csv"
+  record:
+    select:
+      filter:
+        - {column: month_vendor, op: in, value: [Aug-19, Aug-20, Aug-21, Aug-22, Aug-23, Aug-24, Aug-25, Aug-26]}
+      dedup: {"on": [month_vendor], order_by: capture_written_at}
+      order_by: [month_vendor]
+      columns: [month_vendor, gb_totals, nget, spt, shetl, financial_year, published_at, timestamp_utc]
+    key: [month_vendor]
+    caption: "Every August from 2019 to 2026; August 2026 is far below the rest."
+    fields:
+      month_vendor: "NESO's month label, like `Aug-26`, kept as text; no day or clock stated"
+      gb_totals: "NESO's GB total, TWh; 2022-23's months sum 0.22 TWh below NESO's yearly figure"
+      nget: "England and Wales transmission losses, TWh (National Grid Electricity Transmission)"
+      spt: "Scottish Power Transmission system losses, TWh"
+      shetl: "Scottish Hydro Electric Transmission system losses, TWh"
+      financial_year: "NESO's financial year label; the file puts April to March under each"
+      published_at: "NESO's last-modified time for the file, read as UTC; one per capture"
+      timestamp_utc: "When gridflow captured the file, UTC; not the month the row describes"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      `query()` filters on `timestamp_utc`, the capture time here, so these cells use `data.sql()`
+      on the `_latest` views: the months in order, then NESO's yearly figures against its months
+      summed.
+    cells:
+      - |
+        months = data.sql("""
+            SELECT financial_year, month_vendor, nget, spt, shetl, gb_totals
+            FROM silver_neso_data_portal_transmission_losses_main_latest
+            ORDER BY strptime(month_vendor, '%b-%y')
+        """)
+        months.tail()
+      - |
+        gap = data.sql("""
+            SELECT y.financial_year, y.sum_of_gb_totals AS yearly_twh,
+                   round(sum(m.gb_totals), 4) AS months_summed_twh,
+                   round(y.sum_of_gb_totals - sum(m.gb_totals), 4) AS gap_twh
+            FROM silver_neso_data_portal_transmission_losses_financial_year_latest AS y
+            JOIN silver_neso_data_portal_transmission_losses_main_latest AS m USING (financial_year)
+            GROUP BY y.financial_year, y.sum_of_gb_totals
+            ORDER BY y.financial_year
+        """)
+        gap
+      - |
+        ax = gap.plot.bar(x="financial_year", y="gap_twh", legend=False, color="#155A6E",
+                          figsize=(8, 3.5), xlabel="financial year",
+                          ylabel="yearly minus months summed, TWh");
+    needs: NESO's two transmission losses files
+    plot_alt: >-
+      Bar chart of NESO's yearly GB transmission losses minus the same year's months summed, in
+      TWh, 2013-14 to 2025-26. Nine years are within 0.003 TWh of zero. 2022-23 stands at +0.2215,
+      2021-22 at -0.0485, 2024-25 at +0.0316 and 2025-26 at -0.0076.
+  related:
+    - {dataset: elexon/fuelhh, note: "Generation by fuel; NESO says where generation runs drives losses"}
+    - {dataset: neso_data_portal/historic-demand-data, note: "GB demand by half hour, for scale"}
 ---
 
 # Transmission Losses
@@ -179,8 +305,12 @@ Schema, epoch 1:
 **What a row is.** One row per calendar month: 161 rows and 161 distinct `Month` labels, from
 `Apr-13` to `Aug-26` (labels in the form `%b-%y`). They fall under 14 `Financial Year` labels,
 `2013-14` to `2026-27`. Each complete year has 12 months; `2026-27` has 5 so far (April to
-August 2026). The resource description says the file holds "monthly volumes of transmission
-losses" for the three transmission systems, updated monthly. There is no region-code column:
+August 2026). The newest month, `Aug-26`, has a GB total of 0.1412 TWh, below every earlier
+month (the next lowest is `Mar-22`, 0.234) and every earlier August (0.349 to 0.628), in a file
+last modified 2026-09-25 (silver, 2026-10-24). NESO does not say whether its newest month is
+complete. `TODO: verify` whether `Aug-26` is a part-month that a later upload fills in. The
+resource description says the file holds "monthly volumes of transmission losses" for the
+three transmission systems, updated monthly. There is no region-code column:
 the areas are the column headings. Do not read them as GSP or DNO codes (FACTS §6).
 
 **The two clocks for this family:**
@@ -201,7 +331,10 @@ the areas are the column headings. Do not read them as GSP or DNO codes (FACTS �
    (for example `Apr-13`). `%b-%y` parses the label, but it does not prove that the month
    starts at a first-day midnight in any particular zone. Casting it to a date would invent a
    day (FACTS §6 T01). `TODO: verify` the vendor's month boundary convention (start instant and
-   zone) before building a monthly time axis from the label.
+   zone) before building a monthly time axis from the label. The site page's chart is the one
+   exception: to draw its axis it places each month at the first day of its label (`time_text`
+   `%b-%y`), for the chart only, and its x label says NESO states no day boundary. Silver keeps
+   the label as text, and the boundary and zone stay unverified.
 
 **Units (vendor dictionary only).** `NGET`, `SPT`, `SHETL` and `GB totals` are all **TWh**, the
 `unit` of each field in the saved dictionary (gridflow
@@ -270,7 +403,8 @@ Both native tables are kept as published.
 - The dictionary types `Financial Year` as `year` and `Month` as `yearmonth`. The physical
   datastore type of both is `text`. The record keeps both as `string`, because no instant or
   zone is evidenced (FACTS §6–7 T01). A profiler proposal to cast `Month` to a date was not
-  adopted; it would have invented a day.
+  adopted; it would have invented a day. (The site chart's first-day placement is drawing only;
+  see the monthly family's event-time item.)
 - The dictionary types the loss fields `numeric`. The record casts them to nullable `float64`.
 - The dictionary describes `GB totals` as Great Britain losses. The published total does not
   always equal the sum of the owner columns (see "Published GB total" above).
@@ -318,5 +452,5 @@ The open `TODO: verify` items above are open questions, not holds:
 - the publication lag.
 
 None of them changes a published value. Each limits how the data may be joined or derived:
-do not put either table on a time axis from its label, and do not derive one table from the
-other.
+do not treat either label as an instant in any zone or join on it as one (the site chart's
+first-day placement draws an axis only), and do not derive one table from the other.
