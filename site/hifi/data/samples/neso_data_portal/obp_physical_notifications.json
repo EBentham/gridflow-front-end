@@ -1,0 +1,209 @@
+{
+ "dataset": "neso_data_portal/obp_physical_notifications",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "1b2010cb3fde276e2a0a7997dd5b2ad45f5c91743dff667cc908fc1fab955b91",
+ "silver": "neso_data_portal/obp_physical_notifications",
+ "columns": [
+  {
+   "name": "time_from",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "level_from",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "time_to",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "level_to",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "unit_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "data",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2026-09-21 09:00:00 UTC",
+   "0.0",
+   "2026-09-21 09:30:00 UTC",
+   "0.0",
+   "AFFR-1",
+   "PN",
+   "2026-09-21 09:00:00 UTC",
+   "2026-10-16 20:31:22.674649 UTC",
+   "bronze/neso_data_portal/obp_physical_notifications/2026/10/16/raw_20261016T204239Z_dfe1d229-e973-43c6-b5eb-c28ad59d7136_492a03ad.csv",
+   "2026-10-16 20:42:39.396547 UTC",
+   "2026-09-21 09:00:00 UTC",
+   "2026-10-16 20:31:22.674649 UTC",
+   "drain-34a678d0-09e5-482f-ae13-c2ac3f8381c1",
+   "1+e1"
+  ],
+  [
+   "2026-09-21 09:30:00 UTC",
+   "0.0",
+   "2026-09-21 09:31:00 UTC",
+   "-2.0",
+   "AFFR-1",
+   "PN",
+   "2026-09-21 09:30:00 UTC",
+   "2026-10-16 20:31:22.674649 UTC",
+   "bronze/neso_data_portal/obp_physical_notifications/2026/10/16/raw_20261016T204239Z_dfe1d229-e973-43c6-b5eb-c28ad59d7136_492a03ad.csv",
+   "2026-10-16 20:42:39.396547 UTC",
+   "2026-09-21 09:30:00 UTC",
+   "2026-10-16 20:31:22.674649 UTC",
+   "drain-34a678d0-09e5-482f-ae13-c2ac3f8381c1",
+   "1+e1"
+  ],
+  [
+   "2026-09-21 09:31:00 UTC",
+   "-2.0",
+   "2026-09-21 09:59:00 UTC",
+   "-2.0",
+   "AFFR-1",
+   "PN",
+   "2026-09-21 09:31:00 UTC",
+   "2026-10-16 20:31:22.674649 UTC",
+   "bronze/neso_data_portal/obp_physical_notifications/2026/10/16/raw_20261016T204239Z_dfe1d229-e973-43c6-b5eb-c28ad59d7136_492a03ad.csv",
+   "2026-10-16 20:42:39.396547 UTC",
+   "2026-09-21 09:31:00 UTC",
+   "2026-10-16 20:31:22.674649 UTC",
+   "drain-34a678d0-09e5-482f-ae13-c2ac3f8381c1",
+   "1+e1"
+  ],
+  [
+   "2026-09-21 09:59:00 UTC",
+   "-2.0",
+   "2026-09-21 10:00:00 UTC",
+   "0.0",
+   "AFFR-1",
+   "PN",
+   "2026-09-21 09:59:00 UTC",
+   "2026-10-16 20:31:22.674649 UTC",
+   "bronze/neso_data_portal/obp_physical_notifications/2026/10/16/raw_20261016T204239Z_dfe1d229-e973-43c6-b5eb-c28ad59d7136_492a03ad.csv",
+   "2026-10-16 20:42:39.396547 UTC",
+   "2026-09-21 09:59:00 UTC",
+   "2026-10-16 20:31:22.674649 UTC",
+   "drain-34a678d0-09e5-482f-ae13-c2ac3f8381c1",
+   "1+e1"
+  ],
+  [
+   "2026-09-21 10:00:00 UTC",
+   "0.0",
+   "2026-09-21 10:30:00 UTC",
+   "0.0",
+   "AFFR-1",
+   "PN",
+   "2026-09-21 10:00:00 UTC",
+   "2026-10-16 20:31:22.674649 UTC",
+   "bronze/neso_data_portal/obp_physical_notifications/2026/10/16/raw_20261016T204239Z_dfe1d229-e973-43c6-b5eb-c28ad59d7136_492a03ad.csv",
+   "2026-10-16 20:42:39.396547 UTC",
+   "2026-09-21 10:00:00 UTC",
+   "2026-10-16 20:31:22.674649 UTC",
+   "drain-34a678d0-09e5-482f-ae13-c2ac3f8381c1",
+   "1+e1"
+  ],
+  [
+   "2026-09-21 10:30:00 UTC",
+   "0.0",
+   "2026-09-21 11:00:00 UTC",
+   "0.0",
+   "AFFR-1",
+   "PN",
+   "2026-09-21 10:30:00 UTC",
+   "2026-10-16 20:31:22.674649 UTC",
+   "bronze/neso_data_portal/obp_physical_notifications/2026/10/16/raw_20261016T204239Z_dfe1d229-e973-43c6-b5eb-c28ad59d7136_492a03ad.csv",
+   "2026-10-16 20:42:39.396547 UTC",
+   "2026-09-21 10:30:00 UTC",
+   "2026-10-16 20:31:22.674649 UTC",
+   "drain-34a678d0-09e5-482f-ae13-c2ac3f8381c1",
+   "1+e1"
+  ],
+  [
+   "2026-09-21 11:00:00 UTC",
+   "0.0",
+   "2026-09-21 11:01:00 UTC",
+   "-2.0",
+   "AFFR-1",
+   "PN",
+   "2026-09-21 11:00:00 UTC",
+   "2026-10-16 20:31:22.674649 UTC",
+   "bronze/neso_data_portal/obp_physical_notifications/2026/10/16/raw_20261016T204239Z_dfe1d229-e973-43c6-b5eb-c28ad59d7136_492a03ad.csv",
+   "2026-10-16 20:42:39.396547 UTC",
+   "2026-09-21 11:00:00 UTC",
+   "2026-10-16 20:31:22.674649 UTC",
+   "drain-34a678d0-09e5-482f-ae13-c2ac3f8381c1",
+   "1+e1"
+  ],
+  [
+   "2026-09-21 11:01:00 UTC",
+   "-2.0",
+   "2026-09-21 11:30:00 UTC",
+   "-2.0",
+   "AFFR-1",
+   "PN",
+   "2026-09-21 11:01:00 UTC",
+   "2026-10-16 20:31:22.674649 UTC",
+   "bronze/neso_data_portal/obp_physical_notifications/2026/10/16/raw_20261016T204239Z_dfe1d229-e973-43c6-b5eb-c28ad59d7136_492a03ad.csv",
+   "2026-10-16 20:42:39.396547 UTC",
+   "2026-09-21 11:01:00 UTC",
+   "2026-10-16 20:31:22.674649 UTC",
+   "drain-34a678d0-09e5-482f-ae13-c2ac3f8381c1",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}
