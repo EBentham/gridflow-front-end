@@ -7,6 +7,39 @@ skeleton: false
 updated: 2026-10-15
 layer_coverage: "bronze"
 eligibility: "eligible"
+page:
+  held: One zipped shapefile, kept whole; gridflow reads no rows from it and builds no silver table.
+  title: ETYS transmission system boundaries
+  summary: >-
+    NESO's shapefile of the study boundaries in its Electricity Ten Year Statement (ETYS): names
+    and paths, which NESO lists for ETYS 2024.
+  facts:
+    vendor: "NESO Data Portal, package `etys-gb-transmission-system-boundaries`: one ZIP file"
+    cadence: Ad hoc, as NESO lists it; the file was last modified 2 June 2025
+    grain: "One shapefile layer of 34 features, holding boundary names and paths"
+  landscape: power
+  what_it_is: >-
+    ETYS, the Electricity Ten Year Statement, is a NESO publication. This package is one zipped
+    ESRI shapefile of "name and geographical path data" for the transmission system boundaries used
+    in ETYS 2024, NESO says. Its title says 2024; the file is named mar25, and NESO does not say why.
+    NESO publishes no column dictionary. Coordinates are Web Mercator.
+  how_used:
+    - Draw the ETYS study boundaries on a map, after reprojecting from Web Mercator
+    - Look up a boundary by its name, such as B6 or B7
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then the ZIP downloaded whole unless its
+      `last_modified` is unchanged. Ingest only: gridflow builds no silver table.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=etys-gb-transmission-system-boundaries"
+      - "GET https://api.neso.energy/dataset/997f4820-1ad4-499b-b1fe-4b8d3d7fbc72/resource/e914fcec-1dc9-4f1f-97e7-59c0d9521bea/download/etys-boundary-gis-data-mar25.zip"
+    commands:
+      - {run: gridflow ingest neso_data_portal etys_boundaries_files --last 24h, comment: "whole ZIP, bronze only"}
+  related:
+    - {dataset: neso_data_portal/thermal-constraint-costs, note: "Daily costs at boundaries NESO's forum deck calls B6 and B7"}
+    - {dataset: neso_data_portal/24-months-ahead-constraint-limits, note: "Weekly capability of main boundaries, under operational codes such as SCOTEX"}
+    - {dataset: neso_data_portal/day-ahead-constraint-flows-and-limits, note: "Day-ahead flows and limits across boundaries, under operational codes"}
+    - {dataset: neso_data_portal/gis-boundaries-for-gb-grid-supply-points, note: "Grid supply point regions, in British National Grid or WGS84 coordinates"}
 ---
 
 # ETYS GB Transmission System Boundaries
@@ -71,9 +104,9 @@ Measured from the bronze capture and recorded in `docs/neso_data_portal/gis-fact
 | Body SHA-256 | `0e6dbd110a5d87cd53982dc0a5fdf80badb3c86d5ab10c8c4702fcbbc02f6433` |
 | HTTP status of capture | 200, content type `application/zip` |
 
-- Feature count 34 is the number of shapefile records. TODO: verify what a feature represents (a boundary, a boundary segment, or a named boundary with multiple parts); the vendor says only that the file holds study boundaries, and gridflow has not established a feature-to-boundary equivalence.
+- Feature count 34 is the number of shapefile records. In the 2026-10-08 capture every record is a PolyLine (`.shp` shape type 3) with one part (39 to 518 vertices), and the 34 `Boundary_n` values are all distinct, so in this file one feature is one named boundary drawn as a single line (measured by the project from the bronze ZIP on 2026-10-23; gridflow's code does not read records). Whether these names match the codes in NESO's constraint tables (`SCOTEX`, `SSHARN`) is not stated by the vendor.
 - The bounding box is in Web Mercator coordinates, not latitude/longitude. gridflow does not reproject it.
-- TODO: verify the attribute (`.dbf`) column names and their meaning; gridflow has not read them and the vendor publishes no dictionary for this file.
+- The attribute table (`.dbf`, UTF-8 per the `.cpg`) has two text columns: `Boundary_n` (width 254; values such as `B6`, `B7a`, `EC5`, `NW2`, `SC1.5`) and `ID` (width 10; `BND001` to `BND034`). Measured by the project from the 2026-10-08 capture; gridflow has not read them and the vendor publishes no dictionary, so their meaning beyond "name" is not stated.
 
 ## Bronze
 
@@ -112,7 +145,7 @@ The label "2024" in the resource name is the ETYS publication year the file supp
 
 ## Known issues and gotchas
 
-- Treat the geometry as opaque. No claim is made that the 34 features correspond one-to-one to named ETYS boundaries or that the shapes are geographically correct.
+- Treat the shapes as opaque. The file holds one name per feature (measured, see Catalogue facts), but no claim is made that the lines are geographically correct or that they are the boundaries in NESO's constraint tables. The page's B6 and B7 forum-deck line comes from the thermal constraint costs note (@30-vendors/neso-data-portal/datasets/thermal-constraint-costs.md): NESO's Operational Transparency Forum slides of 24 June 2026 ([document 383631](https://www.neso.energy/document/383631/download), "Transparency | Network Congestion" table) present `B6 (SCOTEX)` and `B7 (SSHARN)` as aliases. That deck is not evidence that this file's `B6` and `B7` are the same boundaries.
 - The CRS is Web Mercator, unlike the British National Grid or WGS84 used by sibling GIS packages in this vendor (for example the GSP regions and the generation charging zones). Do not mix bounding boxes or coordinates across packages without reprojecting; gridflow does not.
 - The resource is titled "2024" but its download and members are named `Mar25`; the vintage clock is 2025-06-02.
 - The ZIP is the only copy. If NESO overwrites the upload at the same URL, a later capture gets a new `ckan_last_modified` and a new hash; earlier bronze is kept.
