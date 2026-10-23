@@ -4,9 +4,45 @@ package: "daily-demand-update"
 dataset_key: "daily_demand_update"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-09
+updated: 2026-10-23
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: "Forecast rows carry zero national and transmission demand, and NESO does not say what zero means."
+  title: Demand data update
+  summary: >-
+    NESO's daily file of half-hourly GB demand and interconnector flows, with embedded wind and
+    solar estimates and seven days of their forecasts.
+  facts:
+    vendor: "NESO Data Portal, package Demand Data Update (`daily-demand-update`): one CSV, one FAQ"
+    cadence: "Daily, NESO says, with settlement data about ten days late; recent outturn can change"
+    grain: "Each row: one settlement period, marked outturn (`A`) or forecast (`F`)"
+    history: "From the first day of the previous month to seven days ahead, NESO says"
+  landscape: power
+  what_it_is: >-
+    One rolling CSV in MW: national demand (ND), transmission system demand (TSD), England and
+    Wales demand, embedded wind and solar output and capacity, non-BM STOR, pumped storage pumping,
+    the Scottish transfer and each interconnector's flow. NESO's FAQ says each half hour starts at
+    the UK time given. NESO says it is like its historic demand data, but updated daily.
+  how_used:
+    - Recent half-hourly GB demand, before NESO's yearly historic files are filled
+    - Embedded wind and solar output, which NESO estimates because it cannot meter it
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then the CSV and the FAQ, each downloaded whole
+      unless its `last_modified` is unchanged. Each download replaces the whole window.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=daily-demand-update"
+      - "GET https://api.neso.energy/dataset/7a12172a-939c-404c-b581-a6128b74f588/resource/177f6fa4-ae49-4182-81ea-0c6b35f26ca6/download/demanddataupdate.csv"
+      - "GET https://api.neso.energy/dataset/7a12172a-939c-404c-b581-a6128b74f588/resource/974b8c00-9058-4883-bf34-268e53ed9d15/download/faq-neso.docx"
+    commands:
+      - {run: gridflow ingest neso_data_portal daily_demand_update --last 24h, comment: "the CSV to bronze"}
+      - {run: gridflow transform neso_data_portal daily_demand_update --last 24h, comment: "the capture's date to silver"}
+      - {run: gridflow ingest neso_data_portal daily_demand_update_files --last 24h, comment: "the FAQ, bronze only"}
+  related:
+    - {dataset: neso_data_portal/historic-demand-data, note: "NESO's yearly demand files; the 2026 file has this file's columns"}
+    - {dataset: elexon/indo, note: "Elexon's initial national demand outturn, which NESO calls ND's equivalent"}
+    - {dataset: neso_data_portal/embedded_wind_solar_forecast, note: "NESO's separate embedded wind and solar forecast, by settlement period"}
 ---
 
 # Demand Data Update
@@ -109,8 +145,8 @@ Schema, epoch 1:
 **The two clocks for this family:**
 
 1. **Vintage (`ckan_last_modified`).** `published_at` and `available_at` both equal the CKAN
-   `last_modified` of the captured resource. For the one capture to date that is
-   `2026-10-08T08:20:09.592329`, taken from the capture's sidecar. CKAN emits it without an
+   `last_modified` of the captured resource: `2026-10-08T08:20:09.592329` for the first capture
+   and `2026-10-16T08:20:10.800739` for the second, taken from each capture's sidecar. CKAN emits it without an
    offset, and gridflow reads it as UTC (gridflow
    `@docs/DECISION_LOG/ADR-030-neso-data-portal-ckan-source.md`, D-15). Every silver row of a
    capture shares this one vintage. It says when the file changed, not when any individual
@@ -175,12 +211,22 @@ revision identity (run type, version, issue time) exists to add (FACTS T03,
 `TODO: verify` explicit vendor revision identity). The entity key is therefore every column, a
 **capture uniqueness guard**, not an identity. `_latest` is `whole_capture`: the newest capture
 wins as a whole. No run type is invented to satisfy the key shape. Do not dedup across
-captures on the pair alone. `TODO: verify` whether a pair delivered as `F` in one capture
-returns as `A` in a later one. That needs a second capture to measure.
+captures on the pair alone. A pair delivered as `F` does return as `A`: of the 367 `F` rows of
+the 2026-10-08 capture, 366 are `A` rows in the 2026-10-16 capture, each with a non-zero ND;
+the 367th, 2026-10-15 SP48, is missing from the later body (see below).
 
-**Row composition.** The one capture has 1,793 `A` rows (settlement dates 2026-09-01 →
-2026-10-08) and 367 `F` rows (2026-10-08 → 2026-10-15). The forecast tail starts part-way
-through the capture date. `TODO: verify` whether the `F` rows' embedded wind and solar columns
+**Row composition.** The first capture (2026-10-08) has 1,793 `A` rows (settlement dates
+2026-09-01 → 2026-10-08 SP17) and 367 `F` rows (2026-10-08 SP18 → 2026-10-15). The forecast
+tail starts part-way through the capture date. Two of its `A` rows, 2026-10-08 SP16 and SP17,
+carry ND 0, TSD 500 (the stated station-load estimate alone), England and Wales demand 0 and
+every flow 0; the second capture gives both periods full values. The second capture
+(2026-10-16, `raw_20261016T200140Z_177f6fa4-ae49-4182-81ea-0c6b35f26ca6_784eaeba.csv`, 255,824
+bytes, same header) has 2,542 rows: 2,175 `A` (2026-09-01 → 2026-10-16 SP17) and 367 `F`
+(2026-10-16 SP18 → 2026-10-23). Its `A` rows include no zero ND. It lacks two periods,
+2026-10-15 SP48 and 2026-10-16 SP1, so those dates have 47 rows; NESO gives no reason. Between
+the captures, 24 `A` rows of 2026-10-07 and 2026-10-08 changed `EMBEDDED_SOLAR_GENERATION`
+(two of them were the zero rows above); the other 1,769 shared `A` rows are unchanged. Both
+captures are in silver (2,160 and 2,542 rows). `TODO: verify` whether the `F` rows' embedded wind and solar columns
 are the forecasts the package notes describe. The vendor names those columns but does not
 define the other columns on forecast rows.
 
@@ -223,13 +269,15 @@ its CKAN `last_modified` (2024-10-21T13:26:14.945315, read as UTC).
 - Vendor metadata (snapshot extras, verbatim):
   - Status: Live
 
-The resource description says: "This dataset is usually updated daily by 08:30 UTC." The one
-capture's CKAN `last_modified` (2026-10-08T08:20:09.592329) fits that. gridflow captures one
+The resource description says: "This dataset is usually updated daily by 08:30 UTC." The
+captures' CKAN `last_modified` values (2026-10-08T08:20:09.592329, 2026-10-16T08:20:10.800739)
+fit that. gridflow captures one
 snapshot per refresh run. The vendor's description implies a rolling window: outturn from the
-first day of the previous month, plus a 7-day forward tail. `TODO: verify` whether a daily update
-also revises earlier outturn rows inside the window. Only more captures, compared pair by pair,
-can show this. No scheduled gridflow refresh exists yet, so captures are on demand. One capture
-(2026-10-08) exists to date.
+first day of the previous month, plus a 7-day forward tail. A daily update can revise earlier
+outturn rows: between the two captures, embedded solar changed on 24 outturn rows of 2026-10-07
+and 2026-10-08 (see Row composition). `TODO: verify` how far back revisions
+reach. No scheduled gridflow refresh exists yet, so captures are on demand. Two captures
+(2026-10-08, 2026-10-16) exist to date.
 
 ## Licence and attribution
 
@@ -245,7 +293,10 @@ gridflow outputs derived from this package carry the attribution line above.
 
 The silver output exists on disk, but it is **held**: it is not eligible for publication or for
 point-in-time model use until unit E-SEM answers the question above (RULINGS 529). On every
-forecast-labelled (`F`) row in the capture, ND and TSD are zero. The vendor describes the
+forecast-labelled (`F`) row in both captures (367 each), ND and TSD are zero, as are England and
+Wales demand, STOR, pumping, the Scottish transfer and every flow; only the embedded wind and
+solar columns carry values. The first capture also shows the zero pattern on its last two `A`
+rows (see Row composition), so a zero ND is not confined to `F` rows. The vendor describes the
 forward section as embedded-generation forecasts. It does not say whether a zero ND/TSD there
 is a genuine forecast of zero demand or a placeholder for "no demand forecast". Converting the
 zeros to null, publishing them as demand forecasts, and excluding them would each invent a

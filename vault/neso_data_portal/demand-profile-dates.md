@@ -4,9 +4,44 @@ package: "demand-profile-dates"
 dataset_key: "demand_profile_dates"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-09
+updated: 2026-10-23
 layer_coverage: "bronze"
 eligibility: "eligible"
+page:
+  held: "NESO repeats some rows exactly and does not say why, so gridflow builds no table."
+  title: Demand profile dates
+  summary: >-
+    For each forecast day, the past day NESO picked to turn its cardinal-point demand forecast into
+    half hours.
+  facts:
+    vendor: "NESO Data Portal, package Demand Profile Dates (`demand-profile-dates`): one CSV file"
+    cadence: "Daily; NESO changed some past days' profile dates between 8 and 16 October 2026"
+    grain: "Each row: a forecast date and the profile date chosen for it"
+    history: "From the start of 2018 to 14 days ahead, NESO says"
+  landscape: power
+  what_it_is: >-
+    NESO forecasts national demand at cardinal points: peaks, troughs and fixed times. It makes
+    them half-hourly using a profile date, the past day it judges the
+    closest match for weather, embedded generation, time of year, recurring calendar activity and
+    special events. The file pairs each forecast date with its profile date, which NESO says can
+    change as the day nears.
+  how_used:
+    - Explain the half-hourly shape of a NESO demand forecast by its profile date
+    - Rebuild NESO's step from cardinal-point forecasts to half hours
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then the CSV downloaded whole unless its
+      `last_modified` is unchanged. Ingest only: gridflow builds no silver table.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=demand-profile-dates"
+      - "GET https://api.neso.energy/dataset/11a2a8d3-3d65-4545-af02-be85e54db078/resource/48862d1a-f285-4709-a48c-1c0e8e7b37c3/download/profile_dates.csv"
+    commands:
+      - {run: gridflow ingest neso_data_portal demand_profile_dates --last 24h, comment: "whole CSV, bronze only"}
+  related:
+    - {dataset: neso_data_portal/1-day-ahead-demand-forecast, note: "NESO's day-ahead cardinal-point forecast, which these dates turn into half hours"}
+    - {dataset: neso_data_portal/2-14-days-ahead-national-demand-forecast, note: "Cardinal points 2 to 14 days ahead, the reach of these dates"}
+    - {dataset: neso_data_portal/day-ahead-half-hourly-demand-forecast-performance, note: "How NESO's half-hourly day-ahead forecast scored against outturn"}
+    - {dataset: neso_data_portal/historic-demand-data, note: "Half-hourly demand outturn of the past days chosen here, once filled"}
 ---
 
 # Demand Profile Dates
@@ -125,9 +160,10 @@ Measured uniqueness in the activation capture (FACTS §3, C-B):
 | `(FORECAST_DATE, PROFILE_DATE)` | 3,224 | 3,216 | 8 |
 
 - Both candidates fail the same way, so every repeated target date is a **byte-identical
-  row**, not a conflicting analogue. Seven target dates repeat: six appear twice and one
-  appears three times. All of them fall in the most recent weeks of the file. FACTS §3 lists
-  the exact pairs. No column set separates the repeats, because the file has only these two
+  row**, not a conflicting analogue. In the activation capture seven target dates repeat: six
+  appear twice and one appears three times. All of them fall in the most recent weeks of the
+  file. FACTS §3 lists the exact pairs. The 2026-10-16 capture still repeats all seven and adds
+  an eighth, 2026-10-08 (twice): 3,234 rows, 3,225 distinct, again identical in full. No column set separates the repeats, because the file has only these two
   columns.
 - The vendor gives no uniqueness guarantee (FACTS g3, T02). The CKAN resource declares no
   `datastore_unique_keys` in the snapshot.
@@ -147,7 +183,7 @@ Measured uniqueness in the activation capture (FACTS §3, C-B):
 
 | Property | Value |
 |---|---|
-| Captures | 1 (the only local capture of this resource) |
+| Captures | 1 at activation; a second on 2026-10-16 (see Cadence) |
 | File | `C:/gridflow-data/bronze/neso_data_portal/demand_profile_dates/2026/10/08/raw_20261008T100618Z_48862d1a-f285-4709-a48c-1c0e8e7b37c3_7a8ab7c3.csv` |
 | Bytes · rows | 74,184 · 3,224 |
 | Written | 2026-10-08T10:06:18Z (sidecar SHA-256 verified, FACTS C-M) |
@@ -166,9 +202,17 @@ as the CSV download.
 
 The vendor updates the file daily and documents that profile dates can change as real time
 approaches. Each daily capture is therefore its own vintage, and an older capture can hold a
-different analogue for the same target date. Only one capture exists so far. TODO: verify
-whether a daily update rewrites the whole file or only its forward-looking rows. Settling
-this needs repeated captures.
+different analogue for the same target date.
+
+A second capture exists: `raw_20261016T200228Z_48862d1a-f285-4709-a48c-1c0e8e7b37c3_569dae35.csv`
+(74,414 bytes, 3,234 rows, same header, CKAN `last_modified` `2026-10-16T15:15:04.513916`), forecast
+dates 2018-01-01 to 2026-10-30, no date missing. Against the first: every target date up to
+2026-10-07 keeps its analogue; nine target dates from 2026-10-08 to 2026-10-18 changed analogue
+(for example 2026-10-08 from 2024-10-03 to 2025-09-30); nine new dates run 2026-10-22 to
+2026-10-30. Several of the changed dates (2026-10-08 to 2026-10-15) were already past when the
+second file was published, so the file changes after the day as well as "closer to real time".
+`TODO: verify` with NESO whether a past date's profile date is the one finally used. Neither
+capture gives one target date two different analogues.
 
 ## Licence and attribution
 

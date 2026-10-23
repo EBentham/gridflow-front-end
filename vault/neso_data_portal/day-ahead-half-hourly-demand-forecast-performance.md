@@ -4,9 +4,43 @@ package: "day-ahead-half-hourly-demand-forecast-performance"
 dataset_key: "da_demand_fc_performance"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-16
+updated: 2026-10-23
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: "NESO says times follow clock changes, but they carry `Z`; it never says start or end."
+  title: Day-ahead demand forecast performance
+  summary: >-
+    NESO's day-ahead forecast of national demand for each half hour, beside the outturn and the
+    forecast's error, from April 2021.
+  facts:
+    vendor: "NESO Data Portal, package Day Ahead Half Hourly Demand Forecast Performance: one CSV file"
+    cadence: "Monthly, NESO says; its modified stamp moved on 6, 8 and 16 October 2026"
+    grain: "Each row: one settlement period, its day-ahead forecast and its outturn"
+    history: "From April 2021, NESO says; earlier figures are in its Ofgem 1B submissions"
+  landscape: power
+  what_it_is: >-
+    NESO's day-ahead forecast of national demand for each half hour, as published via BMRS, beside
+    the outturn, the absolute error in MW and the absolute percentage error. A second outturn adds
+    back NESO's estimate of TRIAD avoidance, which NESO may revise. Each row also gives the time
+    NESO says its forecast was made.
+  how_used:
+    - How far NESO's day-ahead demand forecast missed, half hour by half hour
+    - A benchmark for a day-ahead national demand forecast of your own
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then the CSV downloaded whole unless its
+      `last_modified` is unchanged. Each download is the whole history.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=day-ahead-half-hourly-demand-forecast-performance"
+      - "GET https://api.neso.energy/dataset/5281b494-5566-42dd-bf1a-9ce38642fabf/resource/08e41551-80f8-4e28-a416-ea473a695db9/download/1b-incentive.csv"
+    commands:
+      - {run: gridflow ingest neso_data_portal da_demand_fc_performance --last 24h, comment: "the CSV to bronze"}
+      - {run: gridflow transform neso_data_portal da_demand_fc_performance --last 24h, comment: "the capture's date to silver"}
+  related:
+    - {dataset: elexon/ndf, note: "BMRS demand forecasts; NESO says it scores the day-ahead one published there"}
+    - {dataset: neso_data_portal/1-day-ahead-demand-forecast, note: "NESO's day-ahead demand forecast for the next day, at cardinal points"}
+    - {dataset: neso_data_portal/demand-profile-dates, note: "How NESO turns cardinal-point forecasts into half hours"}
 ---
 
 # Day Ahead Half Hourly Demand Forecast Performance
@@ -94,17 +128,17 @@ Schema, epoch 1:
 **The two clocks for this family:**
 
 1. **Vintage (`ckan_last_modified`).** `published_at` and `available_at` both equal the CKAN
-   `last_modified` of the captured resource: `2026-10-08T09:15:10.605360`, which CKAN emits
-   without an offset and gridflow reads as UTC (gridflow
-   `@docs/DECISION_LOG/ADR-030-neso-data-portal-ckan-source.md`). All 96,786 silver rows share
-   this one vintage. It says when the file last changed. It does **not** say when any single
+   `last_modified` of the captured resource: `2026-10-08T09:15:10.605360` for the first capture
+   and `2026-10-16T09:15:07.976027` for the second, which CKAN emits without an offset and
+   gridflow reads as UTC (gridflow `@docs/DECISION_LOG/ADR-030-neso-data-portal-ckan-source.md`).
+   All rows of one capture share its one vintage. It says when the file last changed. It does **not** say when any single
    forecast became available. Every `Publish_Datetime` in the capture falls before the vintage
    (checked at query time, see Cadence for how the vintage moves). The file is rewritten as a
    whole, so no row carries its own availability stamp.
 2. **Event time (temporal recipe `none`).** The record declares no temporal recipe, so
    `timestamp_utc` is the **capture time**, not the outturn time. In silver `timestamp_utc` and
-   `event_time` both equal `capture_written_at` (`2026-10-08T09:17:08.775840Z`) on every row (1
-   distinct value, checked at query time). The real outturn position is in the raw columns
+   `event_time` both equal `capture_written_at` on every row of a capture
+   (`2026-10-08T09:17:08.775840Z` for the first, one distinct value, checked at query time). The real outturn position is in the raw columns
    `outturn_date`, `settlement_period` and the string `outturn_datetime`. They are kept as the
    vendor wrote them because no tz-aware conversion is yet established (see Holds). Do not use
    `timestamp_utc` as a time axis for this family.
@@ -145,7 +179,7 @@ beyond `settlement_period` 1..50.
 - No other sentinel, `NA` token or blank convention is documented or seen as a null. `TODO: verify`
   that the vendor uses no placeholder value in the forecast or error columns.
 
-**Settlement-period structure (structural counts only).** The silver table has 2,017 outturn
+**Settlement-period structure (structural counts only).** The first capture has 2,017 outturn
 dates. Settlement period spans 1..50 in the data.
 
 | Rows per outturn date | Days | Reading |
@@ -181,25 +215,36 @@ timezone, the start/end convention, the labelling of the autumn day and the mean
 **Revision behaviour.** The vendor package notes say TRIAD avoidance estimates may be revised
 after publication. The dictionary does not say whether forecast or outturn values are revised.
 The file is a monthly rewrite of the whole series. With `latest: whole_capture` each new capture
-replaces the previous one as a whole, and earlier states remain only in bronze. `TODO: verify`
-whether earlier months are restated on each update. Only repeated captures compared row by row
-can show it. One capture exists so far.
+replaces the previous one as a whole, and earlier states remain only in bronze. Between the two
+captures nothing was restated: all 96,786 rows of the 2026-10-08 body appear unchanged in the
+2026-10-16 body (full-row multiset), which only adds 383 rows, 2026-10-08 SP21 to 2026-10-16
+SP19. `TODO: verify` whether NESO restates earlier months at a monthly update or when TRIAD
+estimates are revised.
 
 **Identity and selection.** The entity key is every vendor column, a capture-level duplicate
 guard with zero duplicates in the capture. The vendor does not document a row identity.
 `(outturn_date, settlement_period)` is unique except for the four repeated labels above, so it is
 not a safe key. `TODO: verify` the vendor's row identity once the label repeats are explained.
 
-**Activation (2026-10-08, master `29b563c`).** Transformed at cutoff 2026-10-08 (first and only
+**Activation (2026-10-08, master `29b563c`).** Transformed at cutoff 2026-10-08 (the first
 capture): `gridflow transform neso_data_portal da_demand_fc_performance --start 2026-10-08 --end
 2026-10-08` wrote **96,786 silver rows**. No prior silver existed, so nothing was overwritten.
 Reconcile at that cutoff exited 0 with 0 gaps (gridflow `@.planning/v0.22-RESULTS.md` §E and
 §BS; RULINGS 504). The row count equals the datastore `total` the field-info sweep read
-(96,786, 2026-10-08T12:08Z). As of the query on 2026-10-16T18:37Z silver still holds one parquet
-file, one capture and 96,786 rows. Silver columns beyond the vendor columns: `timestamp_utc`,
+(96,786, 2026-10-08T12:08Z). As of the query on 2026-10-16T18:37Z, before the second capture, silver
+held one parquet file, one capture and 96,786 rows. Silver columns beyond the vendor columns: `timestamp_utc`,
 `published_at`, `bronze_capture_id`, `capture_written_at`, `event_time`, `available_at`,
 `source_run_id`, `dataset_version` (all timestamps tz-aware UTC; `dataset_version` `1+e1` =
-record version 1, epoch 1).
+record version 1 plus generic-engine version 1, gridflow `@src/gridflow/silver/neso_data_portal/generic.py`).
+
+**Recapture (2026-10-16).** A second capture,
+`raw_20261016T192157Z_08e41551-80f8-4e28-a416-ea473a695db9_f0e93c7a.csv` (9,611,803 bytes,
+97,169 data rows, same header, CKAN `last_modified` `2026-10-16T09:15:07.976027`), is in silver
+as a second parquet file of 97,169 rows. It runs from 2021-04-01 to a partial 2026-10-16 (19
+periods) over 2,025 dates; it keeps every structural pattern above (no blank cell, `Z` on every
+time, every `publish_datetime` before its outturn, one `publish_datetime` per date, the same four
+repeated labels, no identical rows). Its last row, SP19, is labelled `2026-10-16T09:30:00Z`,
+again later than the file's `last_modified` if the `Z` is read as UTC.
 
 Silver path: `C:\gridflow-data\silver\neso_data_portal\da_demand_fc_performance\year=2026\month=10\`.
 
@@ -213,11 +258,12 @@ ruling 874). A follow-up research unit (RULINGS 596) found no evidence that lift
 - Registry refresh: monthly
 - Vendor metadata (snapshot extras, verbatim):
   - Update frequency: Monthly
-- Captured once per refresh run. Captures to date: one (2026-10-08).
+- Captured once per refresh run. Captures to date: two (2026-10-08, 2026-10-16).
 
 The CKAN `last_modified` of the resource was `2026-10-06T09:15:08` in the 2026-10-06 catalogue
-snapshot and `2026-10-08T09:15:10` at capture. The file therefore changed between those two
-dates, two days apart, which is more often than "Monthly" suggests. Both stamps are near 09:15 UTC. The final date in the
+snapshot, `2026-10-08T09:15:10` at the first capture and `2026-10-16T09:15:07` at the second.
+The file therefore changed between each of those dates, which is more often than "Monthly"
+suggests. Both stamps are near 09:15 UTC. The final date in the
 capture is a partial day, so the file also carries the current day. `TODO: verify` the real
 update cadence and the lag between an outturn half hour and its appearance in the file. Only
 repeated captures can show it.

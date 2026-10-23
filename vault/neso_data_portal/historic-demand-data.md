@@ -4,9 +4,46 @@ package: "historic-demand-data"
 dataset_key: "historic_demand"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-09
+updated: 2026-10-23
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: "All years stay out: the 2001 to 2008 files write `NA`, which NESO does not define."
+  title: Historic demand data
+  summary: >-
+    NESO's half-hourly GB demand outturn from 2001, one file a year, with embedded wind and solar,
+    and interconnector flows.
+  facts:
+    vendor: "NESO Data Portal, package Historic Demand Data: 26 yearly CSV files and an FAQ"
+    cadence: "Filled 21 days in arrears, NESO says; corrections can follow months later"
+    grain: "Each row: one settlement period of one year's file"
+    history: "Yearly files from 2001 to 2026, NESO lists"
+  landscape: power
+  what_it_is: >-
+    Half-hourly outturn in MW: national demand (ND), transmission system demand (TSD), England and
+    Wales demand, embedded wind and solar output and capacity, non-BM STOR, pumped storage pumping
+    and interconnector flows. NESO's FAQ says values are half-hour averages, each starting at the
+    UK time given. Columns differ between years. NESO says it is aware of data quality issues.
+  how_used:
+    - A long half-hourly history of GB demand, back to 2001
+    - Embedded wind and solar output over many years, as NESO estimates it
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then each yearly file and the FAQ, downloaded
+      whole unless its `last_modified` is unchanged. The first and current years are shown.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=historic-demand-data"
+      - "GET https://api.neso.energy/dataset/8f2fe0af-871c-488d-8bad-960426f24601/resource/e8608e9a-f56c-457f-b9e7-bfffcfd19731/download/demanddata_2001.csv"
+      - "GET https://api.neso.energy/dataset/8f2fe0af-871c-488d-8bad-960426f24601/resource/8a4a771c-3929-4e56-93ad-cdf13219dea5/download/demanddataupdate_2026.csv"
+      - "GET https://api.neso.energy/dataset/8f2fe0af-871c-488d-8bad-960426f24601/resource/243ca76a-eefe-419d-a4b5-397073deb100/download/faq-neso.docx"
+    commands:
+      - {run: gridflow ingest neso_data_portal historic_demand --last 24h, comment: "each changed yearly file to bronze"}
+      - {run: gridflow transform neso_data_portal historic_demand --last 24h, comment: "the capture's date to silver"}
+      - {run: gridflow ingest neso_data_portal historic_demand_files --last 24h, comment: "the FAQ, bronze only"}
+  related:
+    - {dataset: neso_data_portal/daily-demand-update, note: "The 2026 columns, updated daily, plus seven days of embedded forecasts"}
+    - {dataset: elexon/indo, note: "Elexon's initial national demand outturn, which NESO calls ND's equivalent"}
+    - {dataset: neso_data_portal/demand-profile-dates, note: "Past days NESO picks as profiles; their demand appears here once filled"}
 ---
 
 # Historic Demand Data
@@ -72,7 +109,7 @@ the meaning of a literal `NA` token in the 2001–2008 files is undefined (see H
 | Historic Demand Data 2025 | CSV | upload | `b2bde559-3455-4021-b179-dfe60c0337b0` |
 | Historic Demand Data 2026 | CSV | upload | `8a4a771c-3929-4e56-93ad-cdf13219dea5` |
 
-Download links and the one capture of each resource (2026-10-08, all CKAN upload resources;
+Download links and the first capture of each resource (2026-10-08, all CKAN upload resources;
 sizes and CKAN `last_modified` from each capture's sidecar under
 `C:/gridflow-data/bronze/neso_data_portal/historic_demand/2026/10/08/`). "Epoch" uses this
 page's numbering (the schema tables below). Data rows equal the silver rows per resource.
@@ -107,7 +144,8 @@ page's numbering (the schema tables below). Data rows equal the silver rows per 
 | 2026 | [demanddataupdate_2026.csv](https://api.neso.energy/dataset/8f2fe0af-871c-488d-8bad-960426f24601/resource/8a4a771c-3929-4e56-93ad-cdf13219dea5/download/demanddataupdate_2026.csv) | 4 | `%Y-%m-%d` | 1,331,452 | 12,478 | 2026-10-08T08:20:27.652049 |
 
 Total: 450,766 data rows. Each 2001–2025 body covers 1 January to 31 December of its filename
-year; the 2026 body runs from 2026-01-01 to 2026-09-17. Note the current-year filename is
+year; the 2026 body runs from 2026-01-01 to 2026-09-17 (to 2026-09-25 in its 2026-10-16
+recapture, see Cadence). Note the current-year filename is
 `demanddataupdate_2026.csv`, not `demanddata_2026.csv`. All 26 CSV resources are CKAN
 datastore-active in the 2026-10-06 catalogue snapshot; gridflow captures the uploaded files,
 not the datastore.
@@ -282,7 +320,7 @@ No surviving header name is renamed. Page epoch 4 is the same header as
      row's `available_at` can be years after its settlement date. That is conservative
      for point-in-time use: an as-of query never sees a value before its file version
      existed. The cost is that an as-of date before a resource's `last_modified` sees **no**
-     rows from that resource, because only one capture of each exists. For example, the
+     rows from that resource, because only one capture exists of 25 of the 26 files. For example, the
      2009–2018 files are invisible to any as-of before 2023-07-24.
    - ADR-039 FM-12 (accepted residual): when a body's `ckan_last_modified` predates its
      capture (every file here, e.g. 2009 modified 2023-07-24, captured 2026-10-08),
@@ -416,7 +454,7 @@ re-upload could still trip it. A downstream guard catches it: every row's settle
 should fall in its filename year.
 
 **Row composition.** All 12,478 rows of the 2026 body are labelled `A` (actual) (FACTS C10;
-silver 2026-10-09). The 2001–2025 bodies have no indicator column. The 2026 resource
+silver 2026-10-09), and so are all 12,862 rows of its 2026-10-16 recapture. The 2001–2025 bodies have no indicator column. The 2026 resource
 description carries a vendor note, verbatim: "NESO have moved the data source to its new
 forecast system. We are aware of an issue with missing Scottish transfer data". The 2026
 body's `SCOTTISH_TRANSFER` has no literal `NA` and no null cells. `TODO: verify` how the
@@ -476,10 +514,15 @@ no update time of day. Only the current-year file appears to change routinely. I
 2026-10-08T08:20:27.652049 at capture two days later. Past years change in batches: the four
 past-year upload cohorts in the resource table (2023-07-24, 2025-04-08, 2025-06-20,
 2026-06-09).
-`TODO: verify` the current-year file's update cadence and whether each update also revises
-earlier rows of the year. Only more captures, compared pair by pair, can show this. One
-capture of each resource exists to date (2026-10-08). Whatever the capture schedule, the
-per-resource `_latest` keeps each year's newest complete capture.
+The current-year file was captured again on 2026-10-16
+(`raw_20261016T203651Z_8a4a771c-3929-4e56-93ad-cdf13219dea5_4ded2dc3.csv`, 1,372,072 bytes,
+12,862 rows, same header, CKAN `last_modified` `2026-10-16T08:20:20.876393`). It runs to
+2026-09-25 SP48, 21 days before the capture, as the package notes say; every 2026-10-08 row is
+unchanged and 384 rows (2026-09-18 to 2026-09-25) are added. It is in silver as a 27th parquet
+file. The other 25 yearly files and the FAQ were not downloaded again. `TODO: verify` whether
+a later update revises earlier rows of the year (NESO says corrections can come months later).
+Whatever the capture schedule, the per-resource `_latest` keeps each year's newest complete
+capture.
 
 ## Licence and attribution
 
@@ -491,7 +534,7 @@ gridflow outputs derived from this package carry the attribution line above.
 
 ## Holds
 
-- `historic_demand`: held: TODO: literal NA in the epoch-2 bodies (2001-2008, 2023-2025) in TSD, the embedded wind/solar columns, SCOTTISH_TRANSFER and every interconnector flow but IFA: missing, not applicable or zero? NESO defines no meaning; those columns stay text across every epoch until it does. (unit E-SEM)
+- `historic_demand`: held: TODO: literal NA in the epoch-2 bodies of 2001-2008 in TSD, the embedded wind/solar columns, SCOTTISH_TRANSFER and every interconnector flow but IFA: missing, not applicable or zero? NESO defines no meaning; those columns stay text across every epoch until it does. (unit E-SEM)
 
 The silver output exists on disk, but it is **held**: it is not eligible for publication or for
 point-in-time model use until unit E-SEM answers the question above. The record carries the
@@ -503,9 +546,10 @@ missing-value rule. So the token is kept as delivered, and every affected column
 in every year, including the years with no `NA` (ADR-039 C-3; RESEARCH U5). This page
 therefore gives schema, row counts, clocks and missingness only, not data values or ranges.
 
-The generated hold line names the whole page-epoch-3 header group (2001–2008, 2023–2025).
-Measured on 2026-10-09, the token occurs only in the 2001–2008 files (see Sentinels above).
-The 2023–2025 files share the header but carry no `NA`.
+The registry's hold question names the 2001–2008 bodies (gridflow
+`src/gridflow/connectors/neso_data_portal/registry/historic-demand-data.json`). Measured on
+2026-10-09, the token occurs only in the 2001–2008 files (see Sentinels above). The 2023–2025
+files share the header but carry no `NA`.
 
 What settles it: a vendor definition of the literal `NA`, including whether its meaning
 differs by field or by historical year. Once it exists, switching the affected columns to
