@@ -85,3 +85,47 @@ None.
 - NESO, Transmission Losses: the financial-year file is not the sum of the monthly file. 2022-23 GB differs by +0.2215 TWh and 2021-22 by -0.0485 TWh; NESO gives no reason. Already recorded in the note (open item); repeated here for the remediation page.
 - NESO, Long Term 2-52 Weeks Ahead Demand Forecast: 2027 week 29 still appears twice (2027-07-21, 2027-07-22) in the only file (last modified 2026-09-29). Confirms the existing hold evidence.
 - No gridflow code defect found.
+
+## Transmission losses: full page (seat ruling, 2026-10-24)
+
+The seat ruled a full page. The `held:` lines are gone, and the lead is `transmission_losses_main`, then `transmission_losses_financial_year`. Built with `--only neso_data_portal/transmission_losses_main` with no errors ("charts: 1 template page"); detector `[]`; canonical note and mirror `cmp` clean; CRLF intact (0 LF-only lines). Rendered `<main>`: no em or en dashes, arrows or middle dots, none of the banned words; viewport meta present. Screenshots at 1440, 1024, 768 and 390 (390 through a 390 px iframe), plus a chart close-up at 1440 and a 390 strip, on port 9848, are in `...\scratchpad\dem-h2-writer\shots-full\`. I looked at 1440, 768, 390 and the close-up: nothing clipped or overlapping, and long URLs and keys wrap. Server PID 24294, stopped by that PID; 9848 free; 9670 untouched.
+
+New artefacts (uncommitted): `site/hifi/data/series/neso_data_portal/transmission_losses_main.json`, `samples/.../transmission_losses_main.json`, `notebooks/.../transmission_losses_main.json` and `transmission_losses_main-5.png`.
+
+**Chart.** A stacked area per month and network (NGET at the bottom, SPT, SHETL) from the lead table. The time axis comes from the `Apr-13` labels through `time_text: {format: "%b-%y"}`, which sets each month at its first day; all 161 labels parse. The window is 1 April 2013 to 31 July 2026: 3 series x 160 points, no duplicates dropped (`dedup` on `month_vendor` as a guard; one capture). August 2026 is left out. At 0.1412 TWh GB it is below every earlier month (the next lowest is March 2022, 0.234) and every earlier August (0.349 to 0.628), in a file last modified 25 September 2026. The caption says it is left out and that NESO does not say whether it is complete; the frame shows it. The x label says NESO states no day boundary. The stack top is the three networks summed, which differs from NESO's GB total by at most 0.001 TWh; that total is in the frame. The alt values come from the committed series: 2013-2019 months 0.33 to 0.73; maximum 0.969 in January 2023; minimum 0.234 in March 2022; Scottish share 8.8% to 25.8%; January average 0.66 against 0.42 in June. I chose this over a bar per financial year because the brief takes the chart from the lead's table, and a yearly bar from the monthly table would derive one table from the other.
+
+**Frame.** Every August from 2019 to 2026 (the text labels sort in date order this way), with `dedup` on `month_vendor` as a guard. August 2026 shows plainly against the others. Key `month_vendor` (unique, 161 of 161). The column guide covers every column the frame shows before the fold plus the four lineage columns.
+
+**Where the reader meets the yearly-against-monthly gap.** In `what_it_is` ("2022-23 is 0.22 TWh higher, 2021-22 0.05 TWh lower") and in the `gb_totals` column guide ("2022-23's months sum 0.22 TWh below NESO's yearly figure"). The facts block accepts only vendor, cadence, grain and history (`page_fields.py` line 487), so it cannot go there. The notebook prints the whole table.
+
+**Notebook.** `data.sql()` on the `_latest` views (lead: `query()` filters on capture time). Cell 1 lists the months in order (`ORDER BY strptime(month_vendor, '%b-%y')`, tail through `Aug-26`). Cell 2 sets NESO's yearly GB figure against the months summed per year: gaps of -0.0016, -0.0005, -0.0013, +0.0013, -0.0022, +0.0002, -0.0003, +0.0001, -0.0485, +0.2215, 0.0000, +0.0316 and -0.0076 TWh, 2013-14 to 2025-26, matching the note's table. Cell 3 is a bar plot of those gaps. The first run failed on `GROUP BY ALL` with the mixed aggregate; an explicit `GROUP BY` fixed it. Needs: "NESO's two transmission losses files".
+
+**Related.** `elexon/fuelhh` (NESO: losses are very sensitive to the geographic generation pattern) and `neso_data_portal/historic-demand-data` (a yardstick for scale). Both are true. I added no Elexon ITSDO link, because the losses-to-gap link on that page is unconfirmed.
+
+**Body correction.** The monthly section now records the `Aug-26` figure against earlier months and Augusts, with a `TODO: verify` on whether it is a part-month. The note's "neither is held" now agrees with the page.
+
+### Defects (full page)
+
+- NESO, Transmission Losses monthly file (last modified 2026-09-25): `Aug-26` GB 0.1412 TWh (NGET 0.1162, SPT 0.0153, SHETL 0.0096), below every earlier month and every earlier August. NESO does not say whether its newest month is complete. New; log for remediation. The ledger omission and the yearly gap are already logged by the seat and not repeated here.
+
+## Round 2: the two held pages (review `held-2-review.md`)
+
+Both pages rebuilt with `--only neso_data_portal/<key>` (no errors), detector `[]` on both, canonical notes and mirrors `cmp` clean (transmission losses rechecked too), CRLF intact. The rendered text is clean: no dashes or arrows, no banned words. The new hold lines are 16 words each. No screenshots this round (prose changes only, and the coordinator asked for build, `cmp` and detector).
+
+### `long-term-2-52-weeks-ahead-national-demand-forecast`
+
+1. **major, fixed.** `page.held` now reads "NESO never defines its ESI weeks, and 2027's week 29 appears twice, with two peak dates." (the checker's wording).
+2. **nit, fixed.** `how_used` no longer states a horizon in the page's own voice: "Weekly peak and minimum GB demand, which NESO labels 2 to 52 weeks ahead" and "Balancing supply and demand positions, the purpose NESO states for it".
+3. **nit, fixed (note body).** "ESI week and year labels" now adds the numbering: 2026 runs weeks 42 to 53 (week 53 peak 2026-12-30), 2027 runs weeks 1 (peak 2027-01-05) to 52, so week numbers 42 to 52 occur under both years and only 2027 week 29 repeats. "Key and coverage" adds that the two week 29 rows are identical in all four MW columns and differ by one day in `CDATE_peak`: this points at a repeated row but does not prove one. No MW values printed, as the note's held rule requires. Cadence's horizon item adds the measured span: peak dates 2026-10-15 to 2027-12-29, about 1 to 64 weeks after the capture and 2 to 65 weeks after `last_modified`. All reproduced from silver on 2026-10-24.
+4. **nit, fixed.** `related[0]` now reads "NESO's national demand forecast 2 to 14 days ahead". The two forecast pages are not yet built in this worktree; that is a seat item, as the checker says.
+5. **nit, fixed (note body).** The financial-year item in the `TODO: verify` list now says "(the data suggest April: see the measurement below)".
+
+### `school-holiday-percentages`
+
+1. **major, fixed.** `page.held` now reads "All rows stay out: NESO never states whether `Total` rows are out of 1 or 100." (the checker's wording, with `Total` in backticks as on the rest of the page).
+2. **nit, fixed.** `facts.grain` now reads "Each row: one local authority on one date, plus one `Total` row per date" (14 words).
+3. **nit, applied though optional.** `what_it_is` "its population multiplier" is now "a population multiplier", so it no longer implies one weight per authority (same word count).
+
+### Defects (round 2)
+
+The checker's two new NESO observations are now in the note body: identical MW values on the repeated 2027 week 29 rows, and a week 53 in 2026 with a span of about 64 weeks. They stand as data observations for remediation. No gridflow defect.
