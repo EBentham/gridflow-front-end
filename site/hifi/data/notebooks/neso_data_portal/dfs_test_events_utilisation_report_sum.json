@@ -1,0 +1,159 @@
+{
+ "dataset": "neso_data_portal/dfs_test_events_utilisation_report_sum",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "4817017444b163857e6ce2e415c87a22e6a1b80375b187ad38aca506ccec9184",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "s = data.neso_data_portal.query(\"dfs_test_events_utilisation_report_sum\", \"2022-11-15\", \"2023-03-28\")\nr = data.neso_data_portal.query(\"dfs_test_events_utilisation_report\", \"2022-11-15\", \"2023-03-28\")\nfor df in (s, r):\n    for c in (\"timestamp_utc\", \"published_at\"):\n        df[c] = df[c].dt.tz_convert(\"UTC\")\ns = s.sort_values([\"date\", \"window_from\"], ignore_index=True)\ns.iloc[[0, 1, -2, -1]][[\"date\", \"window_from\", \"window_to\", \"timestamp_utc\", \"published_at\"]]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "date",
+      "window_from",
+      "window_to",
+      "timestamp_utc",
+      "published_at"
+     ],
+     "index": [
+      "0",
+      "1",
+      "38",
+      "39"
+     ],
+     "rows": [
+      [
+       "2022-11-15",
+       "17:00",
+       "17:30",
+       "2022-11-15 00:00:00+00:00",
+       "2026-07-27 13:46:55.144778+00:00"
+      ],
+      [
+       "2022-11-15",
+       "17:30",
+       "18:00",
+       "2022-11-15 00:00:00+00:00",
+       "2026-07-27 13:46:55.144778+00:00"
+      ],
+      [
+       "2023-03-28",
+       "18:00",
+       "18:30",
+       "2023-03-27 23:00:00+00:00",
+       "2026-07-27 13:46:55.144778+00:00"
+      ],
+      [
+       "2023-03-28",
+       "18:30",
+       "19:00",
+       "2023-03-27 23:00:00+00:00",
+       "2026-07-27 13:46:55.144778+00:00"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "r.groupby(\"status\", as_index=False).agg(bids=(\"unit\", \"size\"), units=(\"unit\", \"nunique\"),\n                                         min_price=(\"price\", \"min\"), max_price=(\"price\", \"max\"))",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "status",
+      "bids",
+      "units",
+      "min_price",
+      "max_price"
+     ],
+     "index": [
+      "0",
+      "1"
+     ],
+     "rows": [
+      [
+       "Accepted",
+       "613",
+       "34",
+       "3000.0",
+       "3000.0"
+      ],
+      [
+       "Rejected",
+       "126",
+       "11",
+       "3000.0",
+       "6000.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "ax = s.plot.scatter(x=\"dfs_procured\", y=\"settled_volume\", color=\"#155A6E\", figsize=(5, 4),\n                    xlabel=\"accepted MW at D-1\", ylabel=\"settled MW\")\nax.axline((0, 0), slope=1, color=\"grey\", lw=0.8);",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "dfs_test_events_utilisation_report_sum-5.png",
+     "width": 466,
+     "height": 375
+    }
+   ]
+  }
+ ]
+}

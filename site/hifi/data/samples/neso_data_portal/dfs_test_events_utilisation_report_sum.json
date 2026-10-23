@@ -1,0 +1,261 @@
+{
+ "dataset": "neso_data_portal/dfs_test_events_utilisation_report_sum",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "17279ffffbd6586130d1aac4634de98ec957a236e135559f4f6d5efa75a19d7d",
+ "silver": "neso_data_portal/dfs_test_events_utilisation_report_sum",
+ "columns": [
+  {
+   "name": "date",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "window_from",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "dfs_required",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "dfs_procured",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "d0_dfs_procured",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "settled_volume",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "bids_accepted_total_cost",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "d0_bids_accepted_total_cost",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "settled_cost",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "window_to",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2022-11-15",
+   "17:00",
+   "200.0",
+   "74.31",
+   "47.09",
+   "125.36",
+   "111467.0",
+   "70634.0",
+   "188039.0",
+   "17:30",
+   "2022-11-15 00:00:00 UTC",
+   "2026-07-27 13:46:55.144778 UTC",
+   "bronze/neso_data_portal/dfs_test_events_utilisation_report_sum/2026/10/08/raw_20261008T100656Z_e4804faf-92be-43d0-a1ec-3e52a50f9666_0a6afc5f.csv",
+   "2026-10-08 10:06:56.291242 UTC",
+   "2022-11-15 00:00:00 UTC",
+   "2026-07-27 13:46:55.144778 UTC",
+   "86eac662-2c1a-40ff-a6fa-ad6f20e28a22",
+   "1+e1"
+  ],
+  [
+   "2022-11-15",
+   "17:30",
+   "200.0",
+   "77.49",
+   "48.55",
+   "141.42",
+   "116230.0",
+   "72835.0",
+   "212135.0",
+   "18:00",
+   "2022-11-15 00:00:00 UTC",
+   "2026-07-27 13:46:55.144778 UTC",
+   "bronze/neso_data_portal/dfs_test_events_utilisation_report_sum/2026/10/08/raw_20261008T100656Z_e4804faf-92be-43d0-a1ec-3e52a50f9666_0a6afc5f.csv",
+   "2026-10-08 10:06:56.291242 UTC",
+   "2022-11-15 00:00:00 UTC",
+   "2026-07-27 13:46:55.144778 UTC",
+   "86eac662-2c1a-40ff-a6fa-ad6f20e28a22",
+   "1+e1"
+  ],
+  [
+   "2023-01-19",
+   "09:00",
+   "150.0",
+   "208.42",
+   "208.42",
+   "167.4",
+   "312629.0",
+   "312629.0",
+   "251107.0",
+   "09:30",
+   "2023-01-19 00:00:00 UTC",
+   "2026-07-27 13:46:55.144778 UTC",
+   "bronze/neso_data_portal/dfs_test_events_utilisation_report_sum/2026/10/08/raw_20261008T100656Z_e4804faf-92be-43d0-a1ec-3e52a50f9666_0a6afc5f.csv",
+   "2026-10-08 10:06:56.291242 UTC",
+   "2023-01-19 00:00:00 UTC",
+   "2026-07-27 13:46:55.144778 UTC",
+   "86eac662-2c1a-40ff-a6fa-ad6f20e28a22",
+   "1+e1"
+  ],
+  [
+   "2023-01-19",
+   "09:30",
+   "150.0",
+   "206.66",
+   "206.66",
+   "174.97",
+   "309983.0",
+   "309983.0",
+   "262460.0",
+   "10:00",
+   "2023-01-19 00:00:00 UTC",
+   "2026-07-27 13:46:55.144778 UTC",
+   "bronze/neso_data_portal/dfs_test_events_utilisation_report_sum/2026/10/08/raw_20261008T100656Z_e4804faf-92be-43d0-a1ec-3e52a50f9666_0a6afc5f.csv",
+   "2026-10-08 10:06:56.291242 UTC",
+   "2023-01-19 00:00:00 UTC",
+   "2026-07-27 13:46:55.144778 UTC",
+   "86eac662-2c1a-40ff-a6fa-ad6f20e28a22",
+   "1+e1"
+  ],
+  [
+   "2023-03-21",
+   "18:00",
+   "50.0",
+   "8.03",
+   "7.1027",
+   "0.73",
+   "12041.0",
+   "10654.0",
+   "1098.0",
+   "18:30",
+   "2023-03-21 00:00:00 UTC",
+   "2026-07-27 13:46:55.144778 UTC",
+   "bronze/neso_data_portal/dfs_test_events_utilisation_report_sum/2026/10/08/raw_20261008T100656Z_e4804faf-92be-43d0-a1ec-3e52a50f9666_0a6afc5f.csv",
+   "2026-10-08 10:06:56.291242 UTC",
+   "2023-03-21 00:00:00 UTC",
+   "2026-07-27 13:46:55.144778 UTC",
+   "86eac662-2c1a-40ff-a6fa-ad6f20e28a22",
+   "1+e1"
+  ],
+  [
+   "2023-03-21",
+   "18:30",
+   "50.0",
+   "8.0",
+   "7.1",
+   "0.72",
+   "12000.0",
+   "10650.0",
+   "1075.0",
+   "19:00",
+   "2023-03-21 00:00:00 UTC",
+   "2026-07-27 13:46:55.144778 UTC",
+   "bronze/neso_data_portal/dfs_test_events_utilisation_report_sum/2026/10/08/raw_20261008T100656Z_e4804faf-92be-43d0-a1ec-3e52a50f9666_0a6afc5f.csv",
+   "2026-10-08 10:06:56.291242 UTC",
+   "2023-03-21 00:00:00 UTC",
+   "2026-07-27 13:46:55.144778 UTC",
+   "86eac662-2c1a-40ff-a6fa-ad6f20e28a22",
+   "1+e1"
+  ],
+  [
+   "2023-03-28",
+   "18:00",
+   "25.0",
+   "7.0",
+   "7.0",
+   "0.99",
+   "10500.0",
+   "10500.0",
+   "1479.0",
+   "18:30",
+   "2023-03-27 23:00:00 UTC",
+   "2026-07-27 13:46:55.144778 UTC",
+   "bronze/neso_data_portal/dfs_test_events_utilisation_report_sum/2026/10/08/raw_20261008T100656Z_e4804faf-92be-43d0-a1ec-3e52a50f9666_0a6afc5f.csv",
+   "2026-10-08 10:06:56.291242 UTC",
+   "2023-03-27 23:00:00 UTC",
+   "2026-07-27 13:46:55.144778 UTC",
+   "86eac662-2c1a-40ff-a6fa-ad6f20e28a22",
+   "1+e1"
+  ],
+  [
+   "2023-03-28",
+   "18:30",
+   "25.0",
+   "7.0",
+   "7.0",
+   "1.03",
+   "10500.0",
+   "10500.0",
+   "1542.0",
+   "19:00",
+   "2023-03-27 23:00:00 UTC",
+   "2026-07-27 13:46:55.144778 UTC",
+   "bronze/neso_data_portal/dfs_test_events_utilisation_report_sum/2026/10/08/raw_20261008T100656Z_e4804faf-92be-43d0-a1ec-3e52a50f9666_0a6afc5f.csv",
+   "2026-10-08 10:06:56.291242 UTC",
+   "2023-03-27 23:00:00 UTC",
+   "2026-07-27 13:46:55.144778 UTC",
+   "86eac662-2c1a-40ff-a6fa-ad6f20e28a22",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}
