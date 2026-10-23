@@ -65,11 +65,11 @@ time, `query()` filters on the capture time (remediation 20at): use `data.sql()`
 
 | # | Writer | Checker | State |
 |---|---|---|---|
-| 1 | a607859324f54582c | abfa72550bccbf2e7 | revising (REVISE: 1 major, 3 nits); 20bg logged |
-| 2 | | | not started |
-| 3 | | | not started |
+| 1 | a607859324f54582c | abfa72550bccbf2e7 | APPROVED (round 2 fixes seat-verified); committed; 20bg logged |
+| 2 | aaa530902e16c13ba | | writing |
+| 3 | a09b4921a2eb9b6ea | | writing |
 | 4 | | | not started |
 | 5 | aff832a32c1030ea2 | ab3dc8141aec8a48f | APPROVED (round 2 fixes seat-verified); committed; 20bf logged |
-| 6 | a9e81f314a34edccf | a6c15891c978684e7 | revising (REVISE: 2 majors, 4 nits); lead changed to the building-block table (seat, PROXY-SOURCED) |
+| 6 | a9e81f314a34edccf | a6c15891c978684e7 | APPROVED (round 2 fixes seat-verified); committed; lead changed to the building-block table (seat, PROXY-SOURCED) |
 | H1 | a403343c59ca240d0 | abed098ced7d8bb2c | checking; 20bh, 20bi logged |
 | H2 | a33842486afc7e15e | | writing |

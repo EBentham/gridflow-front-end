@@ -32,6 +32,28 @@ then `tresp_gsp_area_names`, then the five held pathway tables.
   structure changed only in the raw-feed member order. Round 1's screenshots at all four widths showed nothing
   clipped, so the member reorder should not affect layout.
 
+## Review fixes (checker's `tresp-demand-pathways-review.md`, REVISE, 2 majors and 4 nits)
+
+All six fixed. Build `--only neso_data_portal/tresp_building_block_definitions` clean (budgets enforced), detector `[]`,
+0 em dashes, mirror `cmp` clean (CRLF, 662 lines). Prose only, so the sample and notebook artefacts are unchanged and
+their digests still pass.
+
+1. **Major, `record.fields.fes_bb_id_number` and the body:** now "Pathway files' `building_block_id`; only the suffixed
+   ids match no Future Energy Scenarios (FES) id" (14 words). Before writing "only", I checked all 35 ids against
+   silver `fes_building_blocks_block_definitions`. All 31 unsuffixed ids match exactly (8 demand, 18 generation,
+   5 storage); the four suffixed demand ids match none. The body sentence in the `tresp_building_block_definitions`
+   section now says the same, dated 2026-10-24 and naming the table checked.
+2. **Major, shared held line (five members):** now "NESO states no period for annual GWh values, and four block ids
+   match no FES id." (16 words). `what_it_is` now ends "The page shows rows from the two lists of blocks and
+   areas, none from the pathway files." That says plainly that the whole pathway files are not shown. To stay within
+   60 words I dropped the "such as electric vehicles and heat pumps" example, which the summary already gives.
+3. **Nit, FES expanded once:** in the `fes_bb_id_number` column note ("Future Energy Scenarios (FES)").
+4. **Nit, `demand_generation_storage`:** "NESO's 35 blocks span demand, generation and storage".
+5. **Nit, `how_used[0]`:** "NESO says DNOs will use it for their ED3 plans, 2028 to 2033".
+6. **Nit, `facts.cadence`:** "Ad hoc (NESO); files last modified 30 January 2026, as at 6 October 2026".
+
+No new defect. GSP, DNO and ED3 are still not expanded on the page, because the checker's nit asked only for FES.
+
 ## Unchanged from round 1
 
 Evidence table, held line, body correction (dated "one capture" check), open items and Defects all stand as in

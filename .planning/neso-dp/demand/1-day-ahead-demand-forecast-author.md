@@ -143,3 +143,25 @@ instants. Values: 20,520 (04:30-07:30 trough) to 31,966 (18:30-20:00 peak). Neve
   midday forecast for 17 October. If the archive keeps only one issue per day, a backtest built from it sees the
   09:00 forecast, not the 12:00 revision. Needs more captures to confirm; no gridflow change.
 - No gridflow code defect found.
+
+## Round 2 (review REVISE: 1 major, 3 nits), 2026-10-24
+
+1. **Major, archive wording.** `page.what_it_is` no longer states the archive's contents as fact. Shared wording
+   for the three sibling pages: "NESO describes the archive as all day-ahead forecasts from 2018; recent target
+   dates have one issue each, though the current file is published twice daily." To fit the 60-word budget (it
+   was 75) I dropped "It is not a half-hourly profile" and shortened "peaks and troughs within set windows, and fixed
+   times" to "peaks, troughs and fixed times"; the chart's key note still defines peak and trough by window. Final
+   count 60 (build's own `words()`). Note intro: "the vendor's archive of every day-ahead forecast since 2018"
+   replaced with NESO's description, attributed, plus the observation scoped to the 2026-10-16 capture.
+   Correction to the review's figure: the run of single-issue target dates in the 2026-10-16 archive capture is
+   **43** (2026-09-05 to 2026-10-17; 2026-09-04 has two), not 23. The note says 43. The page carries no number.
+2. **Caption:** "in the file stamped 11:00 on 16 October, read as UTC; one bar per cardinal point".
+3. **`cardinalpoint` field:** "NESO's code for the point; NESO does not list what the codes mean" (image reference
+   dropped).
+4. **Note body, CP clock zone paragraph:** "the current file then held, by its stamp, the midday publication".
+
+Gates: canonical note re-mirrored, `cmp` clean, 508 of 508 lines CRLF; `gridflow-build --only
+neso_data_portal/demand_forecast_1d_day_ahead_national` wrote the page with no error; detector `[]`; 0 em dashes.
+The chart spec, select and notebook cells are unchanged, so no artefact was regenerated (digest check passed). No
+screenshots retaken: text-only changes, and `what_it_is` got shorter. The archive defect is already logged by the
+seat (20bg), not repeated here. Nothing added to git or committed.
