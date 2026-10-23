@@ -55,4 +55,4 @@ silver capture, so set `dedup:` when captures repeat rows; the workbench `query(
 |---|---|---|---|
 | 1 | a84288460a7068afd | a6599d96979f38d15 | APPROVED, nits fixed (seat-verified); committed; 20y-20ab logged |
 | H1 | ae43a22f0a09c23a0 | a8462fd681419a9cf | APPROVED x4, nits fixed (seat-verified); committed |
-| H2 | a320e8f970e6cee02 | | writing |
+| H2 | a320e8f970e6cee02 | aa034108ee40dae98 | APPROVED x3, nits fixed (seat-verified); committed; 20ae logged |

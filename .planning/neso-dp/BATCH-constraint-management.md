@@ -51,7 +51,7 @@ captures repeat rows (or as a guard where a recapture would); the workbench `que
 
 | # | Writer | Checker | State |
 |---|---|---|---|
-| 1 | a646042e31a645f9b | | writing |
-| 2 | | | not started |
-| H1 | | | not started |
+| 1 | a646042e31a645f9b | a6fec45407c5830a5 | checking; 20ac, 20ad logged |
+| 2 | a2f77fd26aa2848b7 | | writing |
+| H1 | a1a05ccae4d901cf4 | | writing |
 | H2 | | | not started |
