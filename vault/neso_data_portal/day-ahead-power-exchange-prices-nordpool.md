@@ -7,6 +7,107 @@ skeleton: false
 updated: 2026-10-09
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: GB day-ahead prices by hour
+  summary: >-
+    Nord Pool's GB day-ahead auction price for each delivery hour, in £/MWh, as NESO republishes
+    it in one Data Portal file.
+  facts:
+    vendor: "NESO Data Portal, package `day-ahead-power-exchange-prices-nordpool`: file N2EX GB Day-Ahead Price"
+    cadence: "Daily in NESO's catalogue"
+    grain: One row per delivery date and one-hour GMT period
+  landscape: market
+  what_it_is: >-
+    Nord Pool's GB day-ahead auction price for each delivery hour, in £/MWh, as NESO republishes
+    it: in NESO's words, "the Day-Ahead price data published by Nord Pool each day for GB". NESO
+    labels each hour by delivery date and a one-hour GMT period. gridflow keeps both labels as
+    sent and builds no delivery time from them.
+  how_used:
+    - An hourly GB day-ahead price history for price models and backtests.
+    - The GB side of a spread against ENTSO-E's European day-ahead prices.
+    - Compared with Elexon's half-hourly market index price, a different product.
+  chart:
+    type: line
+    silver: neso_data_portal/nordpool_da_prices
+    time: date
+    value: price
+    dedup: {"on": [date, delivery_period], order_by: capture_written_at}
+    aggregation: mean
+    window: {start: "2021-09-21", end: "2026-10-16"}
+    max_points: 2000
+    unit: £/MWh
+  chart_view:
+    title: Daily mean price, September 2021 to October 2026
+    caption: >-
+      Silver `neso_data_portal/nordpool_da_prices`, £/MWh: the plain mean of the 24 hourly prices
+      labelled with each date, 21 September 2021 to 16 October 2026, from the file captured
+      16 October 2026. Each date carries 24 one-hour labels, which NESO gives as GMT.
+    alt: >-
+      Line chart of the daily mean of NESO's hourly Nord Pool GB day-ahead prices in £/MWh from
+      neso_data_portal/nordpool_da_prices, 21 September 2021 to 16 October 2026. Every day above
+      300 falls between 15 October 2021 and 16 December 2022; the peak is 574.82 on 26 August 2022,
+      then 570.94 on 12 December 2022. Yearly medians after that are 90 in 2023, 73 in 2024, 82 in
+      2025 and 105 in 2026 to 16 October. The lowest day is 0.39, on 4 October 2025.
+    x_label: date as NESO labels it, GMT
+    y_min: -25
+    key:
+      - {series: price, label: Daily mean price, codes: price, paint: petrol, note: "Highest £574.82/MWh on 26 August 2022; lowest £0.39/MWh on 4 October 2025."}
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then the whole datastore dump of the file, kept
+      only if its body changed. Dates select nothing.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=day-ahead-power-exchange-prices-nordpool"
+      - "GET https://api.neso.energy/datastore/dump/4f27eea5-7038-4f73-9740-e3e4ad47c26a"
+    commands:
+      - {run: gridflow ingest neso_data_portal nordpool_da_prices --last 24h, comment: "whole file; window must end recently"}
+      - {run: gridflow transform neso_data_portal nordpool_da_prices --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: date, op: eq, value: "2025-10-26"}
+        - {column: delivery_period, op: in, value: ["00:00 - 01:00", "01:00 - 02:00", "02:00 - 03:00", "03:00 - 04:00", "04:00 - 05:00", "05:00 - 06:00", "06:00 - 07:00", "07:00 - 08:00"]}
+      dedup: {"on": [date, delivery_period], order_by: capture_written_at}
+      order_by: [delivery_period]
+      columns: [date, delivery_period, price, timestamp_utc, published_at]
+    key: [date, delivery_period]
+    caption: "26 October 2025, UK clocks back: one label per GMT hour; five prices below zero."
+    fields:
+      date: "Delivery date as NESO writes it; with `delivery_period`, the key"
+      delivery_period: "The delivery hour in GMT, as NESO writes it: `HH:MM - HH:MM`"
+      price: "Nord Pool's day-ahead auction price for the hour, £/MWh"
+      timestamp_utc: When gridflow captured the file, UTC; not the delivery hour
+      published_at: "Null: gridflow keeps no publication time for a NESO datastore file"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      `query()` filters `timestamp_utc`, here the capture time, so `data.sql` reads the `_latest`
+      view, the newest capture, in UTC; then hours per date and each GMT hour's yearly mean.
+    cells:
+      - |
+        df = data.sql("""
+            SELECT date, delivery_period, price,
+                   timestamp_utc AT TIME ZONE 'UTC' AS captured_utc
+            FROM silver_neso_data_portal_nordpool_da_prices_latest
+            ORDER BY date, delivery_period""")
+        df[df.date.astype(str) == "2025-10-26"].head(8)
+      - df.groupby("date").size().value_counts().rename("dates").rename_axis("hours labelled")
+      - |
+        yr = df[df.date.astype(str).between("2025-10-01", "2026-09-30")]
+        prof = yr.groupby("delivery_period").price.mean()
+        prof.index = prof.index.str[:5]
+        ax = prof.plot.bar(figsize=(8, 3.5), color="#155A6E", width=0.8,
+                           xlabel="hour starting, GMT", ylabel="£/MWh, mean over the year");
+    needs: a capture of NESO's Nord Pool price file
+    plot_alt: >-
+      Bar plot of the mean GB day-ahead price in £/MWh for each hour, by NESO's GMT label, 1
+      October 2025 to 30 September 2026. A morning rise peaks at 103 for 06:00, the midday low is
+      78 for 12:00 and 13:00, and the evening peak is 130 for 18:00, easing to 91 for 23:00.
+  related:
+    - {dataset: elexon/mid, note: "Elexon's half-hourly market index price: a different product, read side by side"}
+    - {dataset: elexon/system_prices, note: "GB imbalance prices, settled after delivery, against the day-ahead price"}
+    - {dataset: entsoe/day_ahead_prices, note: "ENTSO-E's European day-ahead prices, the far side of a GB spread"}
 ---
 
 # Day-Ahead Power Exchange prices (Nord Pool)
@@ -66,7 +167,11 @@ methodology document and no `_files` family. Package id `8e3cc601-1fab-4325-82ca
   it trimmed.
   Captured: `raw_20261008T111421Z_4f27eea5-7038-4f73-9740-e3e4ad47c26a_9cf3a923.csv`,
   1,568,234 bytes, 44,256 rows, one capture made on 2026-10-08, one header epoch. The datastore
-  response was a single page.
+  response was a single page. A second capture,
+  `raw_20261016T204205Z_4f27eea5-7038-4f73-9740-e3e4ad47c26a_13ef1d85.csv` (1,575,939 bytes,
+  44,472 rows, sidecar `written_at` 2026-10-16T20:42:05.239349Z), holds the first capture's
+  44,256 hours with identical prices plus 216 later ones, through `2026-10-17` `21:00 - 22:00`.
+  Its sidecar still records CKAN `last_modified` 2026-09-21T12:38:33.467657 (checked 2026-10-23).
 
 ## Families
 
@@ -98,13 +203,17 @@ Schema, epoch 1:
    (gridflow `@docs/DECISION_LOG/ADR-035-neso-datastore-dump-leg.md`). So `published_at` is
    **null** on every row and `available_at` = `capture_written_at`, the sidecar `written_at`:
    `2026-10-08T11:14:21.282381Z`. Checked on all 44,256 silver rows on 2026-10-09: one distinct
-   value, equal to `capture_written_at`. The sidecar does record a CKAN `last_modified`
-   (`2026-09-21T12:38:33.467657`, no offset), and gridflow does not use it as the vintage. It
-   precedes rows dated up to 2026-10-08, so it does not track the body's content. It is not a row
+   value, equal to `capture_written_at`. The 16 October capture carries
+   `2026-10-16T20:42:05.239349Z` on all its 44,472 rows (checked 2026-10-23). The sidecar does
+   record a CKAN `last_modified` (`2026-09-21T12:38:33.467657`, no offset), and gridflow does not
+   use it as the vintage. It precedes rows dated up to 2026-10-08 (2026-10-17 in the 16 October
+   capture), so it does not track the body's content. It is not a row
    availability instant, and neither is any auction schedule. The vintage says only when gridflow
    first held the values. It is not when NESO or Nord Pool published them.
 2. **Event time (`none`).** The temporal recipe is `none`, so `timestamp_utc` = `event_time` =
-   the **capture time**, `2026-10-08T11:14:21.282381Z`. Both columns equal it on every row. **It
+   the **capture time**: `2026-10-08T11:14:21.282381Z` in the 8 October capture and
+   `2026-10-16T20:42:05.239349Z` in the 16 October one. Both columns equal it on every row of each
+   capture (checked 2026-10-23). **It
    is not the delivery hour.** The delivery time is carried only by the raw `date` and
    `delivery_period`. See the sentence at the top of this page for how to build the delivery
    instant.
@@ -115,11 +224,14 @@ half-hour or quarter-hour labels occur. The left endpoint is the period start an
 endpoint its end, so `23:00 - 00:00` ends on the following civil date. The labels are GMT, which
 the vendor dictionary states, and the measurements agree with it (FACTS §3 IC2-2, C-CSV, C-FINAL):
 
-- Under the mapping `date` + left endpoint as UTC, all 44,255 steps between consecutive rows are
-  exactly 3,600 seconds. The earliest start is 2021-09-20T22:00:00Z and the latest is
-  2026-10-08T21:00:00Z.
-- The body has 1,845 distinct dates. 1,843 of them have 24 rows. The boundary dates are partial:
-  2021-09-20 has 2 rows (22:00 and 23:00) and 2026-10-08 has 22 rows (00:00 to 21:00).
+- In the 8 October capture, under the mapping `date` + left endpoint as UTC, all 44,255 steps
+  between consecutive rows are exactly 3,600 seconds. The earliest start is 2021-09-20T22:00:00Z
+  and the latest is 2026-10-08T21:00:00Z. In the 16 October capture all 44,471 steps are 3,600
+  seconds and the latest start is 2026-10-17T21:00:00Z (checked 2026-10-23).
+- The 8 October body has 1,845 distinct dates. 1,843 of them have 24 rows. The boundary dates are
+  partial: 2021-09-20 has 2 rows (22:00 and 23:00) and 2026-10-08 has 22 rows (00:00 to 21:00).
+  The 16 October body has 1,854 dates, 1,852 with 24 rows; 2021-09-20 has 2 rows and 2026-10-17
+  has 22 (00:00 to 21:00).
 - **DST check.** Each inspected transition date has 24 distinct intervals and no fold marker, in
   both spring and autumn: 2021-10-31, 2022-03-27, 2022-10-30, 2023-03-26, 2023-10-29, 2024-03-31,
   2024-10-27, 2025-03-30, 2025-10-26 and 2026-03-29. A UK-local day would have 23 or 25 hours on
@@ -129,14 +241,15 @@ the vendor dictionary states, and the measurements agree with it (FACTS §3 IC2-
 - Nord Pool's own contract-hour schedule uses EFA numbering. That numbering is not the NESO
   label and must not be substituted for it.
 
-Of the 44,256 rows, 44,246 have a delivery start before the capture time and **10 after** (the
+Of the 8 October capture's 44,256 rows, 44,246 have a delivery start before the capture time and **10 after** (the
 10 hours from 12:00 to 21:00 UTC on 2026-10-08, against a capture at 11:14 UTC). That is expected
 for a day-ahead series captured during the delivery day. Because not every target follows the
 vintage, the forward-target rule (RULINGS 529) does not apply to this family and was not needed:
 the family is eligible as a price history with capture-time availability.
 
 **Identity.** `(date, delivery_period)` is unique over the full body, with zero collisions and zero
-exact duplicate rows (also checked on silver: 44,256 distinct pairs). The frozen catalogue
+exact duplicate rows (also checked on silver: 44,256 distinct pairs in the 8 October capture and
+44,472 in the 16 October one). The frozen catalogue
 declares no primary or unique key for this package, so the key is a capture guard and `_latest` is
 `whole_capture`: the newest capture wins as a whole. `TODO: verify` the vendor's primary-key or
 revision guarantee, and whether a later publication can restate a past hour's price.
@@ -156,8 +269,9 @@ or -1 as a sentinel. **There is no sentinel in this series.** Negative prices, z
 `-1.000000` rows are real values, stay numeric and are never converted to null. `TODO: verify`
 with NESO that `-1.000000` is a genuine auction price on those two hours.
 
-**Value range (all rows, silver):** the price runs from -54.17 to 2,000.05 GBP/MWh. 1,845 dates
-and 24 labels give the coverage above.
+**Value range (both captures, silver):** the price runs from -54.17 to 2,000.05 GBP/MWh. 1,845
+dates in the 8 October capture (1,854 in the 16 October one) and 24 labels give the coverage above.
+The 591 negatives and 63 zeros are the same in both captures.
 
 **Cross-checks (FACTS §3, C-XCHECK).** These comparisons do not establish identical products:
 
@@ -191,11 +305,12 @@ timestamps are tz-aware UTC. `dataset_version` `1+e1` = record version 1, epoch 
   - Update frequency: Daily
 
 "Daily" is the vendor's statement. The recorded CKAN `last_modified` (2026-09-21) is earlier than
-the newest delivery date in the body (2026-10-08), so it is not a reliable indicator of when
+the newest delivery date in either body (2026-10-08, then 2026-10-17 in the 16 October capture,
+whose sidecar still records it), so it is not a reliable indicator of when
 rows were appended. `TODO: verify` how and when NESO appends each day's prices and whether past
 rows are ever rewritten. gridflow's refresh captures one state of the dump per run, so any rewrite
 between runs is lost. The dated silver captures are therefore a sample of the vendor's state, not
-a full revision history. Only one capture exists to date. No scheduled gridflow refresh exists
+a full revision history. Two captures exist (2026-10-08 and 2026-10-16; see Files). No scheduled gridflow refresh exists
 yet. Captures are on demand. `TODO: verify` immutable historical public availability timestamps
 if an as-of use before the capture is ever required. The series carries capture-time availability
 only (ADR-035; RULINGS 477).
