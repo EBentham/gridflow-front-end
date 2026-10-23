@@ -156,3 +156,18 @@ None new. At 768 the bar labels are small (about 9 px), as on the 1-day page; re
 - No gridflow code defect found.
 
 Nothing added to git or committed.
+
+## Round 2 (review REVISE: 1 major, 1 nit), 2026-10-24
+
+1. **Major, note body Cadence.** "none of which gridflow captured from the current file" was false for 2026-10-18 (the
+   2026-10-16 current capture is that target). Now, as the review words it: "it added every target date 2026-10-10 to
+   2026-10-18; gridflow had captured only 2026-10-18 of those from the current file."
+2. **Nit, `page.notebook.cells[0]`.** The loop converting three columns is replaced by one line converting only
+   `published_at`, the one time column the cell shows. `notebook.lead` now says "converts `published_at` to UTC" (35
+   words, budget 35). Notebook artefacts regenerated with `run_notebooks.py`: no error, the table shows the same 12 rows
+   in start-time order with `published_at` `2026-10-16 15:15:01.350931+00:00`; the plot cell is unchanged.
+
+Gates: canonical note re-mirrored, `cmp` clean, 504 of 504 lines CRLF; `gridflow-build --only
+neso_data_portal/demand_forecast_2d_day_ahead` wrote the page with no error; detector `[]`; 0 em dashes. Chart spec and
+sample select unchanged, so the series and sample were not regenerated. No screenshots retaken: the only page change is
+one sentence of the notebook lead and the first cell's code. Nothing added to git or committed.
