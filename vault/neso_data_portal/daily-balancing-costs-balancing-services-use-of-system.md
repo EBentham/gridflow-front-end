@@ -7,6 +7,45 @@ skeleton: false
 updated: 2026-10-10
 layer_coverage: "bronze"
 eligibility: "eligible"
+page:
+  held: Rows are not labelled with a settlement run, so there is no silver table.
+  title: Daily BSUoS cost data
+  summary: >-
+    NESO's balancing cost for each settlement period, in £, split into six categories, from energy
+    imbalance to other costs.
+  facts:
+    vendor: "NESO Data Portal: one CSV file per financial year, and a workbook"
+    cadence: "Weekly, as NESO lists it; the newest file is the current financial year"
+    grain: "Each row: settlement date and period, with six cost columns in £"
+    history: NESO lists one file per April-to-March year from 2017-18
+  landscape: market
+  what_it_is: >-
+    Balancing Services Use of System (BSUoS) charges recover the cost of day-to-day operation of the
+    transmission system. These files give that cost per settlement period, not per day, in six columns: energy
+    imbalance, frequency control, positive reserve, negative reserve, constraints and other, each in
+    £. NESO's dictionary describes `SETT_DATE` as a payment date, though its title says settlement
+    date.
+  how_used:
+    - What NESO spent on each balancing category, half hour by half hour
+    - An implied overall cost per MWh, with the volume package for the same periods
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: `package_show`, then each yearly file whole unless `last_modified` is
+      unchanged (first and newest shown). All stay in bronze; the workbook lists NESO's missing
+      settlement periods.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=daily-balancing-costs-balancing-services-use-of-system"
+      - "GET https://api.neso.energy/dataset/d13d78fc-60d9-4f4d-87b6-e25a20f669c0/resource/a84e4ccb-18e2-474e-a34a-47b835772f17/download/q1_cost_fy1718.csv"
+      - "GET https://api.neso.energy/dataset/d13d78fc-60d9-4f4d-87b6-e25a20f669c0/resource/1d040751-f77f-4641-9130-d49f8cbfe54f/download/q1_cost_fy2627.csv"
+      - "GET https://api.neso.energy/dataset/d13d78fc-60d9-4f4d-87b6-e25a20f669c0/resource/bfd081bc-9642-4ed6-9f37-60c5cbe26bef/download/missing_dates_periods.xlsx"
+    commands:
+      - {run: gridflow ingest neso_data_portal daily_balancing_costs --last 24h, comment: "every yearly file, bronze only"}
+      - {run: gridflow ingest neso_data_portal daily_balancing_costs_files --last 24h, comment: the missing-periods workbook}
+  related:
+    - {dataset: neso_data_portal/daily-balancing-volume-balancing-services-use-of-system, note: "The volumes, in MWh, for the same settlement periods"}
+    - {dataset: neso_data_portal/current-balancing-services-use-of-system-bsuos-data, note: "The BSUoS charges that recover these costs, per settlement run"}
+    - {dataset: neso_data_portal/constraint-breakdown, note: "NESO's daily constraint costs, split by reason"}
+    - {dataset: neso_data_portal/balancing-services-use-of-system-bsuos-daily-forecast, note: "NESO's half-hourly forecast of balancing cost, to March 2023"}
 ---
 
 # Daily Balancing Services Use of System (BSUoS) Cost Data
@@ -55,8 +94,12 @@ The registry routes all ten CSVs to the `daily_balancing_costs` family, but that
 exist** (nothing under `C:/gridflow-data/silver/neso_data_portal/` for this family; the
 eligibility report lists it as ingest-only). Each resource below is captured in bronze as
 `raw_<stamp>_<resource_id>_<hash>.csv` with a `.meta.json` sidecar under
-`C:/gridflow-data/bronze/neso_data_portal/daily_balancing_costs/2026/10/08/` (newest capture,
-2026-10-08). All are `url_type: upload`. Row counts are body rows excluding the header.
+`C:/gridflow-data/bronze/neso_data_portal/daily_balancing_costs/2026/10/08/` (all ten captured
+2026-10-08). The 2026-2027 resource was captured again on 2026-10-16 under `.../2026/10/16/`
+(`raw_20261016T200131Z_1d040751-f77f-4641-9130-d49f8cbfe54f_db15c574.csv`), its newest capture,
+which the table below shows; the 2026-10-08 capture of it held 733,417 bytes and 8,826 rows
+(vintage 2026-10-03T11:18:19.357113). All are `url_type: upload`. Row counts are body rows
+excluding the header.
 
 | Resource | Download | Bytes | Rows | Vintage `ckan_last_modified` | Header epoch |
 |---|---|---:|---:|---|---|
@@ -69,12 +112,14 @@ eligibility report lists it as ingest-only). Each resource below is captured in 
 | 2023-2024 | [q1_cost_fy2324.csv](https://api.neso.energy/dataset/d13d78fc-60d9-4f4d-87b6-e25a20f669c0/resource/5eb3f06d-26ed-4e04-81a0-ce8c02ecd11e/download/q1_cost_fy2324.csv) | 1,402,355 | 17,566 | 2024-04-07T13:21:09.292095 | new order, `%Y-%m-%d` |
 | 2024-2025 | [q1_cost_fy2425.csv](https://api.neso.energy/dataset/d13d78fc-60d9-4f4d-87b6-e25a20f669c0/resource/527a5f40-942b-416b-99df-81a51c30d041/download/q1_cost_fy2425.csv) | 1,429,537 | 17,512 | 2025-05-14T11:10:46.981006 | new order, `%Y-%m-%d` |
 | 2025-2026 | [q1_cost_fy2526.csv](https://api.neso.energy/dataset/d13d78fc-60d9-4f4d-87b6-e25a20f669c0/resource/46183ba7-48df-4318-9b4b-06828348d46e/download/q1_cost_fy2526.csv) | 1,470,668 | 17,516 | 2026-04-07T10:24:13.342330 | new order, `%Y-%m-%d` |
-| 2026-2027 | [q1_cost_fy2627.csv](https://api.neso.energy/dataset/d13d78fc-60d9-4f4d-87b6-e25a20f669c0/resource/1d040751-f77f-4641-9130-d49f8cbfe54f/download/q1_cost_fy2627.csv) | 733,417 | 8,826 | 2026-10-03T11:18:19.357113 | new order, `%Y-%m-%d` |
+| 2026-2027 | [q1_cost_fy2627.csv](https://api.neso.energy/dataset/d13d78fc-60d9-4f4d-87b6-e25a20f669c0/resource/1d040751-f77f-4641-9130-d49f8cbfe54f/download/q1_cost_fy2627.csv) | 774,080 | 9,306 | 2026-10-16T06:39:44.390449 | new order, `%Y-%m-%d` |
 
-The ten resources total 166,538 body rows. Annual resources are disjoint on
-`(settlement date, settlement period)` and contain no duplicate pairs (FACTS C03). The
-2026-2027 resource is the in-progress year; `TODO: verify` its last settlement date and the
-vendor's publication lag, neither of which the captured evidence records.
+Taking each resource's newest capture, the ten resources total 167,018 body rows. Annual
+resources are disjoint on `(settlement date, settlement period)` and contain no duplicate pairs
+(FACTS C03; re-checked on the 2026-10-16 capture of 2026-2027: 0 duplicate pairs). The
+2026-2027 resource is the in-progress year: its 2026-10-16 capture runs from 2026-04-01 to
+2026-10-11 (the 2026-10-08 capture ended 2026-10-01). `TODO: verify` the vendor's publication
+lag; two captures do not establish it.
 
 ### HOLD
 
@@ -162,7 +207,8 @@ Holds the missing-periods workbook above. It has no transformer and no child rec
 
 The weekly label is the vendor's, but each resource's `ckan_last_modified` moves only when
 NESO re-uploads that file. Seven of the ten annual CSVs last changed between September 2022 and April 2024,
-and only the 2026-2027 resource changed in October 2026 (table above). Treat the closed
+and only the 2026-2027 resource changed in October 2026, twice in the captured evidence
+(2026-10-03 and 2026-10-16; table and note above). Treat the closed
 financial years as effectively static unless the vendor republishes them (the 2018-2019 and
 2021-2022 files both show a CKAN `last_modified` of 2024-03-04).
 

@@ -7,6 +7,37 @@ skeleton: false
 updated: 2026-10-10
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: "NESO's units disagree, £/GVA or £ per GVAs, and it never says what a zero means."
+  title: System inertia bid and offer costs
+  summary: >-
+    NESO's indicative daily price of inertia bought through Balancing Mechanism offers, with the bids
+    those offers need, costed three ways.
+  facts:
+    vendor: "NESO Data Portal, package `gb-system-inertia-bid-and-offer-costs`: one CSV file"
+    cadence: Ad hoc, as NESO lists it
+    grain: "Each row: one day, with the Method A, B and C prices"
+  landscape: market
+  what_it_is: >-
+    Some accepted Balancing Mechanism offers are tagged for system inertia. This file gives that
+    inertia's average daily price, including the bid actions the offers require: at the average bid
+    price (A), or assuming displaced energy is replaced at the average wind bid price (B) or highest
+    bid price (C). NESO calls them indicative: they use all bid prices.
+  how_used:
+    - An indicative daily cost of buying inertia through the Balancing Mechanism
+    - How far that cost moves with the bid price assumed, Method A to C
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then the file downloaded whole unless its
+      `last_modified` is unchanged.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=gb-system-inertia-bid-and-offer-costs"
+      - "GET https://api.neso.energy/dataset/23d66321-9c65-4825-9d62-94b6b24a1207/resource/8da765a1-004f-46a5-8b3f-0e5b1787fcb1/download/inertia_costs_methods.csv"
+    commands:
+      - {run: gridflow ingest neso_data_portal inertia_bid_offer_costs --last 24h, comment: whole file to bronze}
+      - {run: gridflow transform neso_data_portal inertia_bid_offer_costs --last 24h, comment: "the capture's date to silver"}
+  related:
+    - {dataset: neso_data_portal/constraint-breakdown, note: "Daily spend on increasing system inertia, in £, among four constraint costs"}
 ---
 
 # Great Britain System Inertia Bid and Offer Costs

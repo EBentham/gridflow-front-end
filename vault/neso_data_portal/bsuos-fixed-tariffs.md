@@ -7,6 +7,39 @@ skeleton: false
 updated: 2026-10-10
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: NESO dates each publication but not when each row appeared, nor whether old rows change.
+  title: BSUoS fixed tariffs
+  summary: >-
+    NESO's fixed BSUoS tariffs: each tariff's stages and publication dates, the settlement dates
+    covered and the rate in £/MWh.
+  facts:
+    vendor: "NESO Data Portal, package `bsuos-fixed-tariffs`: one CSV file"
+    cadence: "Biannual, as NESO lists it (six monthly): updated when tariffs are published"
+    grain: "Each row: one tariff at one publication stage, with its published date"
+  landscape: market
+  what_it_is: >-
+    Balancing Services Use of System (BSUoS) charges recover the cost of day-to-day operation of the
+    transmission system. A fixed tariff is a rate in £/MWh set in advance for a stated range of
+    settlement dates. NESO's revenue team forecasts and sets them; each row is one stage of one
+    tariff, such as draft or final, with its publication date.
+  how_used:
+    - The BSUoS rate NESO announced for a range of settlement dates, stage by stage
+    - Read beside the settled BSUoS charges for the same settlement dates
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then the file downloaded whole unless its
+      `last_modified` is unchanged.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=bsuos-fixed-tariffs"
+      - "GET https://api.neso.energy/dataset/6c862622-48ff-4025-b998-d4d3db9e984d/resource/4dfa533f-bec6-491b-a3f1-7ce92449bc9a/download/bsuos-fixed-tariffs-data-portal-new-header.csv"
+    commands:
+      - {run: gridflow ingest neso_data_portal bsuos_fixed_tariffs --last 24h, comment: whole file to bronze}
+      - {run: gridflow transform neso_data_portal bsuos_fixed_tariffs --last 24h, comment: "the capture's date to silver"}
+  related:
+    - {dataset: neso_data_portal/current-balancing-services-use-of-system-bsuos-data, note: "The settled BSUoS charges, one file per settlement run"}
+    - {dataset: neso_data_portal/bsuos-monthly-forecast, note: "NESO's rolling monthly forecast of BSUoS costs, 24 months ahead"}
+    - {dataset: neso_data_portal/balancing-services-use-of-system-bsuos-daily-forecast, note: "NESO's half-hourly BSUoS charge forecast, stopped in April 2023"}
 ---
 
 # BSUoS Fixed Tariffs

@@ -7,6 +7,41 @@ skeleton: false
 updated: 2026-10-12
 layer_coverage: "bronze"
 eligibility: "eligible"
+page:
+  held: "Rows give no settlement run or issue time; the header's £ byte is not valid UTF-8."
+  title: Daily BSUoS forecast
+  summary: >-
+    NESO's half-hourly forecast of the Balancing Services Use of System (BSUoS) charge in £/MWh,
+    with the cost and volume behind it.
+  facts:
+    vendor: "NESO Data Portal: five CSV files, one per financial year"
+    cadence: "Not active, as NESO lists it: not updated from April 2023 onward"
+    grain: "Each row: settlement date and period, charge, cost and volume"
+    history: "NESO lists files for 2018-19 to 2022-23, with data from December 2018"
+  landscape: market
+  what_it_is: >-
+    The Balancing Services Use of System (BSUoS) charge recovers the cost of day-to-day operation of
+    the transmission system. NESO forecast it per half hour: forecast cost (£) over forecast volume
+    (MWh). Each file mixes historic and future values, with no column telling them apart. NESO warns
+    it may bear no relation to later tariffs; it ended with modification CMP361.
+  how_used:
+    - A benchmark for half-hourly BSUoS charge forecasts, up to March 2023
+    - Read beside NESO's settled charges, taking care that those come per settlement run
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then each financial-year file whole unless its
+      `last_modified` is unchanged (first and last shown). Ingest only: no silver table.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=balancing-services-use-of-system-bsuos-daily-forecast"
+      - "GET https://api.neso.energy/dataset/a8368560-87ac-4d31-85b7-625322430456/resource/ac191a63-a67a-4b3b-ac8c-fdfcea79d042/download/daily-bsuos-forecast-2018-19.csv"
+      - "GET https://api.neso.energy/dataset/a8368560-87ac-4d31-85b7-625322430456/resource/b98095a8-310a-4fee-8d51-e20531c49465/download/daily-bsuos-forecast-2022-23.csv"
+    commands:
+      - {run: gridflow ingest neso_data_portal bsuos_daily_forecast --last 24h, comment: "all five files, bronze only"}
+  related:
+    - {dataset: neso_data_portal/current-balancing-services-use-of-system-bsuos-data, note: "The settled half-hourly BSUoS charges, one file per settlement run"}
+    - {dataset: neso_data_portal/daily-balancing-costs-balancing-services-use-of-system, note: "NESO's balancing cost per settlement period, in six categories"}
+    - {dataset: neso_data_portal/daily-balancing-volume-balancing-services-use-of-system, note: "NESO's balancing volume per settlement period, in MWh"}
+    - {dataset: neso_data_portal/bsuos-monthly-forecast, note: "NESO's rolling monthly forecast of BSUoS costs, 24 months ahead"}
 ---
 
 # Daily Balancing Services Use of System (BSUoS) Forecast
