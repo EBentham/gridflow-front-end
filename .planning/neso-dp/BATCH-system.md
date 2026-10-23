@@ -56,8 +56,8 @@ captures repeat rows (or as a guard); the workbench `query()` returns session-zo
 
 | # | Writer | Checker | State |
 |---|---|---|---|
-| 1 | a749fd6f6e38f1073 | | writing |
-| 2 | | | not started |
+| 1 | a749fd6f6e38f1073 | a4b317c69d5ba7fda | APPROVED (round 2 fixes seat-verified); committed; 20am-20ao logged |
+| 2 | ac585660b723d140a | | writing |
 | 3 | | | not started |
 | 4 | | | not started |
 | 5 | | | not started |
