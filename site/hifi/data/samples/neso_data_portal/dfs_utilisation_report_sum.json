@@ -1,0 +1,248 @@
+{
+ "dataset": "neso_data_portal/dfs_utilisation_report_sum",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "3f9ab71bab05db34eedc72ba6c220b16f0759e1c0e422f0f61f127af3b97c686",
+ "silver": "neso_data_portal/dfs_utilisation_report_sum",
+ "columns": [
+  {
+   "name": "delivery_date",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "window_from",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "service_requirement_type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "dfs_required_mw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "dfs_procured_mw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "settled_volume_mw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "dfs_provider_bids_accepted_total_cost_gbp",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "settled_cost_gbp",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "window_to",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2023-11-29",
+   "17:00",
+   "Live",
+   "550.0",
+   "449.0",
+   "332.0",
+   "1.052833e6",
+   "776208.0",
+   "17:30",
+   "2023-11-29 00:00:00 UTC",
+   "2024-04-10 07:56:25.272181 UTC",
+   "bronze/neso_data_portal/dfs_utilisation_report_sum/2026/10/08/raw_20261008T100705Z_71a9cb04-8935-4e3a-bdd6-17f6fff0a7c6_01be5836.csv",
+   "2026-10-08 10:07:05.385628 UTC",
+   "2023-11-29 00:00:00 UTC",
+   "2024-04-10 07:56:25.272181 UTC",
+   "39561cc9-a28f-4f9a-b1a3-82bdf9a1ccb9",
+   "1+e1"
+  ],
+  [
+   "2023-11-29",
+   "17:30",
+   "Live",
+   "550.0",
+   "458.0",
+   "358.0",
+   "983665.0",
+   "774333.0",
+   "18:00",
+   "2023-11-29 00:00:00 UTC",
+   "2024-04-10 07:56:25.272181 UTC",
+   "bronze/neso_data_portal/dfs_utilisation_report_sum/2026/10/08/raw_20261008T100705Z_71a9cb04-8935-4e3a-bdd6-17f6fff0a7c6_01be5836.csv",
+   "2026-10-08 10:07:05.385628 UTC",
+   "2023-11-29 00:00:00 UTC",
+   "2024-04-10 07:56:25.272181 UTC",
+   "39561cc9-a28f-4f9a-b1a3-82bdf9a1ccb9",
+   "1+e1"
+  ],
+  [
+   "2023-11-29",
+   "18:00",
+   "Live",
+   "550.0",
+   "459.0",
+   "340.0",
+   "994664.0",
+   "748948.0",
+   "18:30",
+   "2023-11-29 00:00:00 UTC",
+   "2024-04-10 07:56:25.272181 UTC",
+   "bronze/neso_data_portal/dfs_utilisation_report_sum/2026/10/08/raw_20261008T100705Z_71a9cb04-8935-4e3a-bdd6-17f6fff0a7c6_01be5836.csv",
+   "2026-10-08 10:07:05.385628 UTC",
+   "2023-11-29 00:00:00 UTC",
+   "2024-04-10 07:56:25.272181 UTC",
+   "39561cc9-a28f-4f9a-b1a3-82bdf9a1ccb9",
+   "1+e1"
+  ],
+  [
+   "2023-12-15",
+   "17:00",
+   "Test",
+   "350.0",
+   "126.0",
+   "177.0",
+   "189000.0",
+   "266037.0",
+   "17:30",
+   "2023-12-15 00:00:00 UTC",
+   "2024-04-10 07:56:25.272181 UTC",
+   "bronze/neso_data_portal/dfs_utilisation_report_sum/2026/10/08/raw_20261008T100705Z_71a9cb04-8935-4e3a-bdd6-17f6fff0a7c6_01be5836.csv",
+   "2026-10-08 10:07:05.385628 UTC",
+   "2023-12-15 00:00:00 UTC",
+   "2024-04-10 07:56:25.272181 UTC",
+   "39561cc9-a28f-4f9a-b1a3-82bdf9a1ccb9",
+   "1+e1"
+  ],
+  [
+   "2023-12-15",
+   "17:30",
+   "Test",
+   "650.0",
+   "382.0",
+   "398.0",
+   "573000.0",
+   "597570.0",
+   "18:00",
+   "2023-12-15 00:00:00 UTC",
+   "2024-04-10 07:56:25.272181 UTC",
+   "bronze/neso_data_portal/dfs_utilisation_report_sum/2026/10/08/raw_20261008T100705Z_71a9cb04-8935-4e3a-bdd6-17f6fff0a7c6_01be5836.csv",
+   "2026-10-08 10:07:05.385628 UTC",
+   "2023-12-15 00:00:00 UTC",
+   "2024-04-10 07:56:25.272181 UTC",
+   "39561cc9-a28f-4f9a-b1a3-82bdf9a1ccb9",
+   "1+e1"
+  ],
+  [
+   "2023-12-15",
+   "18:00",
+   "Test",
+   "350.0",
+   "253.0",
+   "207.0",
+   "379500.0",
+   "309939.0",
+   "18:30",
+   "2023-12-15 00:00:00 UTC",
+   "2024-04-10 07:56:25.272181 UTC",
+   "bronze/neso_data_portal/dfs_utilisation_report_sum/2026/10/08/raw_20261008T100705Z_71a9cb04-8935-4e3a-bdd6-17f6fff0a7c6_01be5836.csv",
+   "2026-10-08 10:07:05.385628 UTC",
+   "2023-12-15 00:00:00 UTC",
+   "2024-04-10 07:56:25.272181 UTC",
+   "39561cc9-a28f-4f9a-b1a3-82bdf9a1ccb9",
+   "1+e1"
+  ],
+  [
+   "2024-03-21",
+   "17:30",
+   "Test",
+   "75.0",
+   "80.0",
+   "71.0",
+   "26372.0",
+   "24363.0",
+   "18:00",
+   "2024-03-21 00:00:00 UTC",
+   "2024-04-10 07:56:25.272181 UTC",
+   "bronze/neso_data_portal/dfs_utilisation_report_sum/2026/10/08/raw_20261008T100705Z_71a9cb04-8935-4e3a-bdd6-17f6fff0a7c6_01be5836.csv",
+   "2026-10-08 10:07:05.385628 UTC",
+   "2024-03-21 00:00:00 UTC",
+   "2024-04-10 07:56:25.272181 UTC",
+   "39561cc9-a28f-4f9a-b1a3-82bdf9a1ccb9",
+   "1+e1"
+  ],
+  [
+   "2024-03-21",
+   "18:30",
+   "Test",
+   "75.0",
+   "84.0",
+   "73.0",
+   "28889.0",
+   "25814.0",
+   "19:00",
+   "2024-03-21 00:00:00 UTC",
+   "2024-04-10 07:56:25.272181 UTC",
+   "bronze/neso_data_portal/dfs_utilisation_report_sum/2026/10/08/raw_20261008T100705Z_71a9cb04-8935-4e3a-bdd6-17f6fff0a7c6_01be5836.csv",
+   "2026-10-08 10:07:05.385628 UTC",
+   "2024-03-21 00:00:00 UTC",
+   "2024-04-10 07:56:25.272181 UTC",
+   "39561cc9-a28f-4f9a-b1a3-82bdf9a1ccb9",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}
