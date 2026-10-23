@@ -1,0 +1,235 @@
+{
+ "dataset": "neso_data_portal/national_forecast_7d_day_ahead_demand",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "bc7268eeee70519a615ed55ed2fd5e97bffd7d2747495ab558335b4e582244eb",
+ "silver": "neso_data_portal/national_forecast_7d_day_ahead_demand",
+ "columns": [
+  {
+   "name": "targetdate",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "cardinalpoint",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "cp_type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "cp_st_time",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "cp_end_time",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "forecastdemand",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "f_point",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "daysahead",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2026-10-23",
+   "1F",
+   "F",
+   "30",
+   "30",
+   "22507.0",
+   "",
+   "2026-10-16 15:15:01.261954 UTC",
+   "7",
+   "2026-10-22 23:00:00 UTC",
+   "bronze/neso_data_portal/national_forecast_7d_day_ahead_demand/2026/10/16/raw_20261016T204058Z_70d3d674-15a6-4e41-83b4-410440c0b0b9_ccd2871d.csv",
+   "2026-10-16 20:40:58.092338 UTC",
+   "2026-10-22 23:00:00 UTC",
+   "2026-10-16 15:15:01.261954 UTC",
+   "drain-2c55e0ef-6e8f-4851-a946-155130bfb553",
+   "1+e1"
+  ],
+  [
+   "2026-10-23",
+   "1S",
+   "T",
+   "100",
+   "130",
+   "21902.0",
+   "",
+   "2026-10-16 15:15:01.261954 UTC",
+   "7",
+   "2026-10-22 23:00:00 UTC",
+   "bronze/neso_data_portal/national_forecast_7d_day_ahead_demand/2026/10/16/raw_20261016T204058Z_70d3d674-15a6-4e41-83b4-410440c0b0b9_ccd2871d.csv",
+   "2026-10-16 20:40:58.092338 UTC",
+   "2026-10-22 23:00:00 UTC",
+   "2026-10-16 15:15:01.261954 UTC",
+   "drain-2c55e0ef-6e8f-4851-a946-155130bfb553",
+   "1+e1"
+  ],
+  [
+   "2026-10-23",
+   "1B",
+   "T",
+   "430",
+   "730",
+   "19192.0",
+   "Om",
+   "2026-10-16 15:15:01.261954 UTC",
+   "7",
+   "2026-10-22 23:00:00 UTC",
+   "bronze/neso_data_portal/national_forecast_7d_day_ahead_demand/2026/10/16/raw_20261016T204058Z_70d3d674-15a6-4e41-83b4-410440c0b0b9_ccd2871d.csv",
+   "2026-10-16 20:40:58.092338 UTC",
+   "2026-10-22 23:00:00 UTC",
+   "2026-10-16 15:15:01.261954 UTC",
+   "drain-2c55e0ef-6e8f-4851-a946-155130bfb553",
+   "1+e1"
+  ],
+  [
+   "2026-10-23",
+   "2A",
+   "P",
+   "830",
+   "1200",
+   "30121.0",
+   "DM",
+   "2026-10-16 15:15:01.261954 UTC",
+   "7",
+   "2026-10-22 23:00:00 UTC",
+   "bronze/neso_data_portal/national_forecast_7d_day_ahead_demand/2026/10/16/raw_20261016T204058Z_70d3d674-15a6-4e41-83b4-410440c0b0b9_ccd2871d.csv",
+   "2026-10-16 20:40:58.092338 UTC",
+   "2026-10-22 23:00:00 UTC",
+   "2026-10-16 15:15:01.261954 UTC",
+   "drain-2c55e0ef-6e8f-4851-a946-155130bfb553",
+   "1+e1"
+  ],
+  [
+   "2026-10-23",
+   "2B",
+   "P",
+   "1230",
+   "1300",
+   "26736.0",
+   "",
+   "2026-10-16 15:15:01.261954 UTC",
+   "7",
+   "2026-10-22 23:00:00 UTC",
+   "bronze/neso_data_portal/national_forecast_7d_day_ahead_demand/2026/10/16/raw_20261016T204058Z_70d3d674-15a6-4e41-83b4-410440c0b0b9_ccd2871d.csv",
+   "2026-10-16 20:40:58.092338 UTC",
+   "2026-10-22 23:00:00 UTC",
+   "2026-10-16 15:15:01.261954 UTC",
+   "drain-2c55e0ef-6e8f-4851-a946-155130bfb553",
+   "1+e1"
+  ],
+  [
+   "2026-10-23",
+   "3B",
+   "T",
+   "1330",
+   "1630",
+   "25825.0",
+   "Dm",
+   "2026-10-16 15:15:01.261954 UTC",
+   "7",
+   "2026-10-22 23:00:00 UTC",
+   "bronze/neso_data_portal/national_forecast_7d_day_ahead_demand/2026/10/16/raw_20261016T204058Z_70d3d674-15a6-4e41-83b4-410440c0b0b9_ccd2871d.csv",
+   "2026-10-16 20:40:58.092338 UTC",
+   "2026-10-22 23:00:00 UTC",
+   "2026-10-16 15:15:01.261954 UTC",
+   "drain-2c55e0ef-6e8f-4851-a946-155130bfb553",
+   "1+e1"
+  ],
+  [
+   "2026-10-23",
+   "3C",
+   "P",
+   "1700",
+   "1800",
+   "31090.0",
+   "",
+   "2026-10-16 15:15:01.261954 UTC",
+   "7",
+   "2026-10-22 23:00:00 UTC",
+   "bronze/neso_data_portal/national_forecast_7d_day_ahead_demand/2026/10/16/raw_20261016T204058Z_70d3d674-15a6-4e41-83b4-410440c0b0b9_ccd2871d.csv",
+   "2026-10-16 20:40:58.092338 UTC",
+   "2026-10-22 23:00:00 UTC",
+   "2026-10-16 15:15:01.261954 UTC",
+   "drain-2c55e0ef-6e8f-4851-a946-155130bfb553",
+   "1+e1"
+  ],
+  [
+   "2026-10-23",
+   "4B",
+   "P",
+   "1830",
+   "2000",
+   "32182.0",
+   "EM",
+   "2026-10-16 15:15:01.261954 UTC",
+   "7",
+   "2026-10-22 23:00:00 UTC",
+   "bronze/neso_data_portal/national_forecast_7d_day_ahead_demand/2026/10/16/raw_20261016T204058Z_70d3d674-15a6-4e41-83b4-410440c0b0b9_ccd2871d.csv",
+   "2026-10-16 20:40:58.092338 UTC",
+   "2026-10-22 23:00:00 UTC",
+   "2026-10-16 15:15:01.261954 UTC",
+   "drain-2c55e0ef-6e8f-4851-a946-155130bfb553",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}
