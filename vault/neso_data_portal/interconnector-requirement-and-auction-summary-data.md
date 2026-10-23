@@ -4,9 +4,44 @@ package: "interconnector-requirement-and-auction-summary-data"
 dataset_key: "ic_requirement_auction"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-12
+updated: 2026-10-23
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: "NESO updates a lot in place with its auction result; the file keeps no earlier state."
+  title: Interconnector requirement and auction summary
+  summary: >-
+    NESO's interconnector trading auctions: each lot it asked to buy or sell, and what cleared on
+    which link at what price.
+  facts:
+    vendor: "NESO Data Portal, package Interconnector Requirement and Auction Summary Data: one table, one PDF"
+    cadence: "Ad hoc, as NESO lists it; auctions run ad hoc across the day"
+    grain: "Each row: one lot, a requirement later updated with its auction result"
+  landscape: market
+  what_it_is: >-
+    NESO trades on IFA1, BritNed, NEMO, IFA2, ElecLink and Viking Link to adjust flows into or
+    out of Great Britain, for constraints or margin. Qualified counterparties, who need a GTMA with
+    NESO, bid in ad hoc auctions. Each lot is a requirement, not firm; when the auction ends NESO
+    adds the volume cleared on each interconnector and the prices.
+  how_used:
+    - How much NESO asked to buy or sell across interconnectors, and when
+    - "Clearing, best and average prices per lot, and volume cleared per interconnector"
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then the table's dump, kept if its body changed,
+      and the PDF, a market notice, unless `last_modified` is unchanged.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=interconnector-requirement-and-auction-summary-data"
+      - "GET https://api.neso.energy/datastore/dump/6a928369-bed3-445f-af8a-69cdb2cc5089"
+      - "GET https://api.neso.energy/dataset/fdcb1853-4279-4fc9-acb2-d603965eab12/resource/74b56acb-e1ea-4c40-9f8a-2f4226630b2a/download/neso-trade-restriction-market-notice-14may26.pdf"
+    commands:
+      - {run: gridflow ingest neso_data_portal ic_requirement_auction --last 24h, comment: "the table's dump to bronze"}
+      - {run: gridflow transform neso_data_portal ic_requirement_auction --last 24h, comment: "the capture's date to silver"}
+      - {run: gridflow ingest neso_data_portal ic_requirement_auction_files --last 24h, comment: "the market notice, bronze only"}
+  related:
+    - {dataset: neso_data_portal/historic-gtma-grid-trade-master-agreement-trades-data, note: "NESO's GTMA trades; every bidder here must hold a GTMA"}
+    - {dataset: elexon/soso, note: "Elexon's system operator to system operator interconnector trades"}
+    - {dataset: elexon/fuelhh, note: "Elexon's half-hourly output by fuel type, each interconnector listed"}
 ---
 
 # Interconnector Requirement and Auction Summary Data
@@ -57,15 +92,28 @@ gives schema, row counts, clocks and missingness only, with **no data values**.
 |---|---|---|---|
 | Interconnector trading restrictions for NESO | PDF | upload | `74b56acb-e1ea-4c40-9f8a-2f4226630b2a` |
 
-Both resources were captured on 2026-10-08 (one capture each). Sizes, hashes and `ckan_last_modified`
-come from the bronze sidecars under
-`C:/gridflow-data/bronze/neso_data_portal/ic_requirement_auction/2026/10/08/` and
+Both resources were captured on 2026-10-08. The dump was captured again on 2026-10-16 (its body
+had changed; the dump leg keeps a new capture only then, `client.py` `_dump_member`); bronze holds
+one capture of the PDF. Sizes, hashes and `ckan_last_modified` come from the bronze sidecars under
+`C:/gridflow-data/bronze/neso_data_portal/ic_requirement_auction/2026/10/{08,16}/` and
 `C:/gridflow-data/bronze/neso_data_portal/ic_requirement_auction_files/2026/10/08/`.
 
-| File | Disposition | Bytes | Data rows | CKAN `last_modified` | sha256 prefix |
-|---|---|---:|---:|---|---|
-| [Interconnector Requirements and Auction Summary (datastore dump)](https://api.neso.energy/datastore/dump/6a928369-bed3-445f-af8a-69cdb2cc5089) | SILVER | 5,255,998 | 28,328 | 2023-01-23T22:44:59.745674 (datastore; see Two clocks) | `e87ac116` |
-| [neso-trade-restriction-market-notice-14may26.pdf](https://api.neso.energy/dataset/fdcb1853-4279-4fc9-acb2-d603965eab12/resource/74b56acb-e1ea-4c40-9f8a-2f4226630b2a/download/neso-trade-restriction-market-notice-14may26.pdf) | DOC | 112,483 | n/a | 2026-05-14T13:08:23.653612 | `1dd05c67` |
+| File | Disposition | Capture | Bytes | Data rows | CKAN `last_modified` | sha256 prefix |
+|---|---|---|---:|---:|---|---|
+| [Interconnector Requirements and Auction Summary (datastore dump)](https://api.neso.energy/datastore/dump/6a928369-bed3-445f-af8a-69cdb2cc5089) | SILVER | 2026-10-08 | 5,255,998 | 28,328 | 2023-01-23T22:44:59.745674 (datastore; see Two clocks) | `e87ac116` |
+| same dump | SILVER | 2026-10-16 | 5,278,600 | 28,439 | 2023-01-23T22:44:59.745674 (unchanged) | `d1fc25d1` |
+| [neso-trade-restriction-market-notice-14may26.pdf](https://api.neso.energy/dataset/fdcb1853-4279-4fc9-acb2-d603965eab12/resource/74b56acb-e1ea-4c40-9f8a-2f4226630b2a/download/neso-trade-restriction-market-notice-14may26.pdf) | DOC | 2026-10-08 | 112,483 | n/a | 2026-05-14T13:08:23.653612 | `1dd05c67` |
+
+**What changed between the two dump captures (bronze, compared row by row on 2026-10-23; same
+header).** 111 lots were added (delivery starts `2026-10-08T19:00:00` to `2026-10-16T16:00:00`) and
+none removed. Exactly two existing rows changed: the two lots that started after the 2026-10-08
+capture, `2026_10_08-11_43-1` and `2026_10_08-11_43-2`. On 2026-10-08 their outcome columns were
+blank and `System Flag` read `null`; on 2026-10-16 the same rows carried `Clearing Price`,
+`Best Price`, `VWA Price`, `Cleared Volume`, `Total Bid Volume` and per-interconnector volumes,
+`System Flag` `F`, and `Published DateTime` moved from `2026-10-08T10:44:55` to
+`2026-10-08T11:20:10`. This is a measured case of NESO's statement that a lot "will be updated" once
+its auction concludes: the requirement row is overwritten in place, and the 2026-10-16 body keeps no
+copy of its earlier state. The CKAN `last_modified` did not move.
 
 Package page: [interconnector-requirement-and-auction-summary-data](https://www.neso.energy/data-portal/interconnector-requirement-and-auction-summary-data).
 Resource dictionary: [interconnector_requirements_and_auction_summary](https://www.neso.energy/data-portal/interconnector-requirement-and-auction-summary-data/interconnector_requirements_and_auction_summary).
@@ -171,33 +219,36 @@ these units or the zone: they exist only in NESO's external resource dictionary.
    `capture_fallback`, because the resource is a datastore dump and its `ckan_last_modified`
    (2023-01-23T22:44:59.745674 in the sidecar) is a frozen refresh stamp that says nothing about when
    today's body was available (ADR-035). `available_at` is therefore the **gridflow capture time**,
-   the sidecar `written_at` 2026-10-08T11:08:50.312375Z, identical on all 28,328 silver rows
-   (silver, 2026-10-12), and equal to `capture_written_at`. `published_at` is **null** on all rows:
+   the sidecar `written_at`: 2026-10-08T11:08:50.312375Z on all 28,328 rows of the first silver run
+   (silver, 2026-10-12) and 2026-10-16T20:37:18.225890Z on the 28,439 rows of the 2026-10-16 run,
+   equal to `capture_written_at`. `published_at` is **null** on all rows:
    gridflow does not backdate to the vendor's `Published DateTime`. An as-of query before the capture
    sees no rows.
 2. **Event time (temporal recipe `utc_instant(start_time)`).** `event_time` and `timestamp_utc` equal
    `start_time`, the lot's delivery start, on every row (silver, 2026-10-12). Endpoint inclusivity of
    the start and end is not stated by the vendor; do not assume end-exclusive behaviour.
 
-**Windows kept as published.** One lot has an end before its start and two lots have equal start and
-end. They are preserved, never repaired. No `run_type` applies: these are trading lots, not settlement
+**Windows kept as published.** In the 2026-10-08 capture, one lot has an end before its start and two
+lots have equal start and end. They are preserved, never repaired. No `run_type` applies: these are trading lots, not settlement
 accounting runs, and none is fabricated (RULINGS 707).
 
 **Identity and selection (ADR-039).**
 
-- The entity key is `auction_lot_id`. Silver has **28,328 rows and 28,328 distinct lot ids**
-  (2026-10-12), in **4,737 distinct auctions**, so an auction has one or more lots.
+- The entity key is `auction_lot_id`. The first silver run has **28,328 rows and 28,328 distinct lot
+  ids** (2026-10-12), in **4,737 distinct auctions**, so an auction has one or more lots. The
+  2026-10-16 capture has 28,439 rows, 28,439 distinct lot ids and 4,767 auctions (bronze).
 - The vendor publishes no uniqueness guarantee; `TODO: verify` a vendor-guaranteed unique key and how
   an auction revision shows in `Auction ID`.
 - `_latest` is `whole_capture`: the newest complete capture, not a per-key latest. Because the body
   already holds each lot in its latest state, older states of a lot are not recoverable from one
-  capture.
+  capture; only an earlier gridflow capture keeps them (the two lots above).
 
 **Sentinels and missing values (FACTS g5).**
 
 - Signed **`-1`** occurs in `Clearing Price`, `Best Price` and `VWA Price`. No vendor source defines
   it as a missing-value marker, so it stays a value; it is **not** in any null token list.
-- **Blank numeric cells** become null, never zero. Blank counts in the bronze body: `Clearing Price`,
+- **Blank numeric cells** become null, never zero. Blank counts in the 2026-10-08 bronze body (the
+  counts in this list are from that capture): `Clearing Price`,
   `Best Price` and `VWA Price` 232 each; `Cleared Volume` 1,740; `Total Bid Volume` 1,742. Whether a
   blank means a pending result, non-participation or missing history is `TODO: verify`. Blank counts
   for the other numeric columns were not measured here.
@@ -215,7 +266,9 @@ failures and no blank-row exclusions. The batch-wide reconcile `--all --cutoff 2
 with 0 gaps over 150 families (47 adjudicated, 0 stale; RULINGS 716). Gridflow
 `@.planning/v0.22-RESULTS.md` section TRD holds the receipt.
 
-Silver layout: one Parquet file under
+A second silver run, from the 2026-10-16 capture, has 28,439 rows.
+
+Silver layout: one Parquet file per capture (2026-10-08 and 2026-10-16) under
 `C:/gridflow-data/silver/neso_data_portal/ic_requirement_auction/year=2026/month=10/`. The
 `year=`/`month=` partition is the **capture** date, not the lot date. No gold view or builder reads
 this family.
@@ -237,10 +290,11 @@ used, is the upload's `ckan_last_modified` (2026-05-14T13:08:23.653612).
 
 The vendor says auctions run ad hoc across the day. The datastore resource's `ckan_last_modified` is
 2023-01-23, long before the capture, while the package metadata was modified on 2026-10-06
-(catalogue snapshot) and the resource metadata on 2026-10-08; the body itself holds lots up to and
-just after the capture. `TODO: verify` how often the body is refreshed and whether `ckan_last_modified`
-moves when it is. Only more captures, compared pair by pair, can show how lots change between
-refreshes. One capture exists to date (2026-10-08).
+(catalogue snapshot) and the resource metadata on 2026-10-08; the 2026-10-08 body held lots up to and
+just after that capture. Between the 2026-10-08 and 2026-10-16 captures the body changed (111 lots
+added, two overwritten with outcomes) while `ckan_last_modified` stayed at 2023-01-23, so that stamp
+does not move when the body is refreshed. `TODO: verify` how often the body is refreshed: two
+captures show that it changes, not how often.
 
 ## Licence and attribution
 
@@ -261,9 +315,11 @@ was specified (RULINGS 707) and merged under RULINGS 714. No resolving unit is n
 
 **Why the usual shortcut fails.** Where every row in a forecast-style file targets a period after
 the file's vintage, gridflow lets the vintage stand in for the issue time (RULINGS 529, forward-target
-exemption). Here 28,326 delivery starts are on or before the capture time and only 2 are after it, so
-the body is a mix of mutable forward requirements and completed historical outcomes, and the
-exemption does not apply. `Published DateTime` is the only candidate vendor clock, but its description
+exemption). In the 2026-10-08 capture, 28,326 delivery starts are on or before the capture time and
+only 2 are after it; in the 2026-10-16 capture none of the 28,439 is after it. So the body is a mix
+of mutable forward requirements and completed historical outcomes, and the exemption does not apply.
+The two forward lots of 2026-10-08 were overwritten with their outcomes by 2026-10-16 (see Files by
+disposition), which shows the overwrite the question describes. `Published DateTime` is the only candidate vendor clock, but its description
 ("last updated") does not prove the captured historical values were available at that timestamp.
 
 **What is not established.** When each lot first appeared, what it said then, and whether any earlier

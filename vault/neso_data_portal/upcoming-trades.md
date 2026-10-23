@@ -4,9 +4,43 @@ package: "upcoming-trades"
 dataset_key: "upcoming_trades"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-12
+updated: 2026-10-23
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: "NESO's cost note multiplies `Volume`, labelled MWh, by duration, and `Last_Updated` has no clock."
+  title: Upcoming trades
+  summary: >-
+    NESO's list of its upcoming trades, due to be delivered: one row per trade and settlement
+    period.
+  facts:
+    vendor: "NESO Data Portal, package Upcoming trades: one datastore table"
+    cadence: NESO says it refreshes the table every ten minutes
+    grain: "Each row: one trade in one settlement period of delivery"
+  landscape: market
+  what_it_is: >-
+    To meet its forecast balancing requirements at minimum cost, NESO trades energy-related
+    products. This table lists the GTMA trades still due for delivery, each spread over its
+    settlement periods, with volume, price, cost, a system flag and a reason. NESO says the details
+    are provisional, subject to correction after confirmation with the counterparty, and should not
+    be relied on.
+  how_used:
+    - Which trades NESO has lined up for settlement periods ahead, and why
+    - Price and cost of each trade per period, before delivery
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then the table's dump, kept if its body changed.
+      Each fetch replaces the whole list.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=upcoming-trades"
+      - "GET https://api.neso.energy/datastore/dump/0b7e84ec-eded-4458-b111-d29ba4508e85"
+    commands:
+      - {run: gridflow ingest neso_data_portal upcoming_trades --last 24h, comment: "the table's dump to bronze"}
+      - {run: gridflow transform neso_data_portal upcoming_trades --last 24h, comment: "the capture's date to silver"}
+  related:
+    - {dataset: neso_data_portal/historic-gtma-grid-trade-master-agreement-trades-data, note: "Past GTMA trades; this table lists those still to come"}
+    - {dataset: neso_data_portal/balancing-services-contract-enactment, note: "Contract enactments, which NESO's trading team weighs against trades"}
+    - {dataset: neso_data_portal/interconnector-requirement-and-auction-summary-data, note: "Interconnector auctions, another way NESO trades ahead of delivery"}
 ---
 
 # Upcoming trades
@@ -30,7 +64,8 @@ table: MWh labelled "Average Volume"; see Holds), not one table split in time.
 These are **trading events, not settlement accounting runs**. `SO_Flag` and `Reason` are not a `run_type`;
 no `run_type` is fabricated and none applies (RULINGS 707).
 
-**The silver output is HELD.** It exists on disk (28 rows from one capture) but may not be published or
+**The silver output is HELD.** It exists on disk (28 rows from the 2026-10-08 capture and 48 from the
+2026-10-16 capture) but may not be published or
 used for point-in-time work until the volume quantity and the `Last_Updated` clock are settled (see Holds).
 **No data values are given on this page.** Row counts and the schema are the only facts stated about the
 captured rows.
@@ -51,8 +86,9 @@ document downloads**. The resource is fetched from the datastore dump endpoint:
 - [Upcoming Trades (datastore dump)](https://api.neso.energy/datastore/dump/0b7e84ec-eded-4458-b111-d29ba4508e85)
   · CSV · resource id `0b7e84ec-eded-4458-b111-d29ba4508e85` · `url_type` datastore · CKAN
   `last_modified` 2026-10-06T12:30:13 in the 2026-10-06 catalogue snapshot
-  (`catalog_snapshot_20261006T195819Z`) and 2026-10-08T11:30:04 in the capture sidecar
-  (`request_params.ckan_last_modified`); what that stamp measures is unverified (see Clocks).
+  (`catalog_snapshot_20261006T195819Z`), 2026-10-08T11:30:04 in the 2026-10-08 capture sidecar and
+  2026-10-16T11:00:16 in the 2026-10-16 one (`request_params.ckan_last_modified`); what that stamp
+  measures is unverified (see Clocks).
 
 The CKAN resource declares no byte size or hash. The captured body is described under Bronze capture.
 
@@ -93,9 +129,12 @@ Schema, epoch 1:
 | `available_at` | gridflow capture time (sidecar `written_at`), labelled so |
 
 **What it is.** One row per trade per settlement period of delivery. One trade that spans several
-half-hours appears as several rows: in the capture, 14 trade ids each appear in more than one period,
-giving 28 rows, so `id` alone is not a key. Both `(id, sp)` and `(id, date, sp)` are unique in the
-capture; the registry key is `(id, date, sp)` so that the complete temporal pair is in the key. The key is
+half-hours appears as several rows: in the 2026-10-08 capture, 14 trade ids each appear in more than
+one period, giving 28 rows; in the 2026-10-16 capture, 3 trade ids each appear in 16 periods, giving
+48 rows across two settlement dates (periods 47 and 48 of 2026-10-16, then 1 to 14 of 2026-10-17).
+So `id` alone is not a key. Both `(id, sp)` and `(id, date, sp)` are unique in both captures; the
+registry key is `(id, date, sp)` so that the complete temporal pair is in the key, since a trade that
+spans a settlement date could repeat a period number. The key is
 never reduced to `(date, sp)`: several trades share a period. No vendor guarantee of permanent
 uniqueness of the identifier was found.
 
@@ -122,12 +161,13 @@ cost to two).
 **Units.** Only from the vendor dictionary above: `Volume` **MWh**, `Price` **£/MWh**, `Cost` **£**.
 Nothing is converted and no unit is inferred from a column name. The dictionary calls `Volume` an
 "average" and puts the duration in the cost formula, which reads like a power (MW) and does not match its
-MWh unit label. gridflow keeps the stated MWh and holds the output (see Holds). `SP` is a settlement-period
+MWh unit label. In both captures the rows give `Cost` = `Volume` × `Price` with no duration factor (see
+Holds). gridflow keeps the stated MWh and holds the output (see Holds). `SP` is a settlement-period
 ordinal, not a physical quantity; the vendor says a normal day has 48 half-hour periods, long days 50 and
 short days 46. Silver accepts `sp` from 1 to 50.
 
 **Sentinels and lexical rules.** The body is read with strict UTF-8, no trimming and no null-token map.
-Across the captured body there are no literal `N/A` or `NA` tokens, no padded cells, no thousands
+Across the 2026-10-08 body there are no literal `N/A` or `NA` tokens, no padded cells, no thousands
 separators, no currency or percentage symbols and no non-finite number tokens. A blank numeric cell
 becomes null, never zero. Signed values are values: `-1` is not a missing-value marker (the vendor defines
 none), and zeros are kept as zeros. `Last_Updated` and the other string columns are kept byte-equal to the body.
@@ -139,9 +179,10 @@ none), and zeros are kept as zeros. `Last_Updated` and the other string columns 
   (`url_type` datastore), not an upload, so there is no per-file CKAN `last_modified` to use as vintage
   (`ckan_last_modified` applies to upload resources; ADR-035). The resource's CKAN `last_modified` is
   2026-10-06T12:30:13 in the 2026-10-06 catalogue snapshot (`catalog_snapshot_20261006T195819Z`) and
-  2026-10-08T11:30:04 in the bronze capture sidecar (`request_params.ckan_last_modified`, ten minutes before
+  2026-10-08T11:30:04 in the 2026-10-08 capture sidecar (`request_params.ckan_last_modified`, ten minutes before
   the 11:40:27 fetch; the profile record `docs/neso_data_portal/profile/families/upcoming_trades.json` carries the
-  same value). `TODO: verify` what that stamp measures. `published_at` is null: the `Last_Updated` column is an update
+  same value), and 2026-10-16T11:00:16 in the 2026-10-16 sidecar, nearly ten hours before the 20:47:33 fetch
+  although NESO says the table refreshes every ten minutes. `TODO: verify` what that stamp measures. `published_at` is null: the `Last_Updated` column is an update
   column, never an issue time (`issue: none`).
 - **Event time.** `sp_pair(date, sp)`: `timestamp_utc` and `event_time` are the start of the settlement
   period, computed from the settlement `Date` as Europe/London midnight plus `(sp - 1)` half-hours, then
@@ -155,14 +196,17 @@ column is kept as a raw string and no instant is derived from it (`TODO: UPCOMIN
 **Whole-capture semantics.** `latest` is `whole_capture`: each capture is a replacement snapshot of the
 table, not an increment. The vendor text supports this: the table is for trades that have not started
 delivery and its details are provisional and correctable. A trade should therefore disappear from the
-table after delivery, which is supported by NESO trading material but **not measured** between captures
-here. `empty_allowed` is `yes`: a genuine, marked empty capture is valid and replaces the previous
+table after delivery, which is supported by NESO trading material. The two captures agree with it but
+do not measure it: none of the 14 trade ids of 2026-10-08 (all delivered that afternoon) is in the
+2026-10-16 capture, and none of its 3 ids was in the first; eight days apart, they cannot show when a
+trade left. `empty_allowed` is `yes`: a genuine, marked empty capture is valid and replaces the previous
 populated snapshot under whole-capture selection. See Holds for the two open items.
 
-**Forward-target property.** In the one capture, all 28 rows have a settlement-period start **after** the
-capture time, so the table behaves as a forward-looking snapshot there and passes the forward-target
-check (RULINGS 529) without treating the update column as issuance. That is a measurement of one capture
-and must not be generalised.
+**Forward-target property.** In both captures every row has a settlement-period start **after** the
+capture time: 28 of 28 on 2026-10-08, and 48 of 48 on 2026-10-16 (starts `2026-10-16T22:00:00Z` to
+`2026-10-17T05:30:00Z`, against `written_at` 20:47:33). The table behaves as a forward-looking snapshot
+there and passes the forward-target check (RULINGS 529) without treating the update column as
+issuance. That is a measurement of two captures and must not be generalised.
 
 **Held.** The silver output exists on disk and is held. The questions are in Holds. Because the held
 question concerns what `Volume` measures, do not read `volume` as MWh or MW, and do not recompute or
@@ -170,23 +214,25 @@ reinterpret `cost` from `volume`, `price` or a period length.
 
 ## Bronze capture
 
-One capture exists (2026-10-08), so there is no capture-pair history. The measured bronze body:
+Two captures exist, 2026-10-08 and 2026-10-16, with no trade id in common, so no amendment of a trade
+can be measured between them. The measured bronze bodies:
 
-| Item | Value |
-|---|---|
-| Bronze file | `C:/gridflow-data/bronze/neso_data_portal/upcoming_trades/2026/10/08/raw_20261008T114027Z_0b7e84ec-eded-4458-b111-d29ba4508e85_7441677b.csv` |
-| Format | CSV, strict UTF-8, header as the vendor column list above |
-| Size and rows | 2,276 bytes · 28 data rows |
-| SHA-256 | `7441677b3c34242b7df2aa6d49a21cd8c73a29a401c3f9434f2903924ce778a0` (matches the sidecar) |
-| Sidecar `fetched_at` | `2026-10-08T11:40:27.998064+00:00` |
-| Sidecar `written_at` | `2026-10-08T11:40:28.001597+00:00` |
-| Empty-capture marker | false (the capture is populated; no empty capture was ever observed) |
+| Item | 2026-10-08 | 2026-10-16 |
+|---|---|---|
+| Bronze file | `C:/gridflow-data/bronze/neso_data_portal/upcoming_trades/2026/10/08/raw_20261008T114027Z_0b7e84ec-eded-4458-b111-d29ba4508e85_7441677b.csv` | `C:/gridflow-data/bronze/neso_data_portal/upcoming_trades/2026/10/16/raw_20261016T204733Z_0b7e84ec-eded-4458-b111-d29ba4508e85_5b30ad46.csv` |
+| Format | CSV, strict UTF-8, header as the vendor column list above | same header |
+| Size and rows | 2,276 bytes · 28 data rows | 3,555 bytes · 48 data rows |
+| SHA-256 | `7441677b3c34242b7df2aa6d49a21cd8c73a29a401c3f9434f2903924ce778a0` (matches the sidecar) | `5b30ad469b7e033a10135c04ea2ec717a77c7d537335dd9b204a4ef84a221b70` (matches the sidecar) |
+| Sidecar `fetched_at` | `2026-10-08T11:40:27.998064+00:00` | `2026-10-16T20:47:33.408445+00:00` |
+| Sidecar `written_at` | `2026-10-08T11:40:28.001597+00:00` | `2026-10-16T20:47:33.413007+00:00` |
+| Empty-capture marker | false | false (no empty capture has been observed) |
 
 Mind the second boundary: the filename stamp reads `114027Z` but `written_at`, which is the vintage, is
 `11:40:28.001597`, one second later. Use the sidecar value, never the filename.
 
 Silver lives at `C:/gridflow-data/silver/neso_data_portal/upcoming_trades/year=2026/month=10/`
-(partitioned by capture month), one Parquet file for this capture with **28 rows**. System columns:
+(partitioned by capture month), one Parquet file per capture: **28 rows** (2026-10-08) and **48 rows**
+(2026-10-16). System columns:
 `timestamp_utc`, `published_at`, `available_at`, `event_time`, `bronze_capture_id`, `capture_written_at`,
 `source_run_id`, `dataset_version`.
 
@@ -202,8 +248,9 @@ Activation (RULINGS 715, 2026-10-12): the transform for `--start/--end 2026-10-0
 
 The vendor says the table is **refreshed every ten minutes** (CKAN package notes and resource
 description), whereas the registry refreshes it **daily**. A daily ingest therefore sees one snapshot a
-day: trades that are agreed and delivered between two captures are never observed. Only one bronze
-capture exists today, so neither the refresh behaviour nor the rate of change can be measured. `TODO:
+day: trades that are agreed and delivered between two captures are never observed. Bronze holds two
+captures eight days apart (2026-10-08 and 2026-10-16) with no trade in common, so neither the refresh
+behaviour nor the rate of change can be measured from them. `TODO:
 verify` whether a higher ingest frequency is wanted once the hold is settled. No rate limit or
 pagination for the datastore dump was found in the documentation read: `TODO: verify`.
 
@@ -231,7 +278,14 @@ with the registry (the package is `eligible` as a package; the hold is on the fa
 1. **What does `Volume` measure (`TODO: UPCOMING-VOLUME-FORMULA`)?** The dictionary labels it MWh and calls
    it "Average Volume", while the cost comment is `Cost = Price * Volume * Duration`. If `Volume` were energy
    in MWh, multiplying by a duration would be wrong; if it is an average power in MW, the MWh label is wrong.
-   Which is the published quantity, and what is the duration? The unit as published (MWh), the price unit
+   Which is the published quantity, and what is the duration? **The rows do not follow the cost comment:**
+   in every row of both captures (28 rows on 2026-10-08, 48 on 2026-10-16), `Cost` equals `Volume` ×
+   `Price` exactly, with no duration factor, although each row is one half-hour settlement period (for
+   example `ES00382991`, period 47 of 2026-10-16: 110 × 218 = 23,980; `ES00380892`, period 29 of
+   2026-10-08: -3.5 × 76.96 = -269.36); no row fits `Volume` × `Price` × 0.5 (bronze, checked 2026-10-23). So the rows behave as
+   if `Volume` were the energy of the period in MWh, which matches the unit label but not the
+   "Average Volume" title or the cost comment. NESO has not said which is intended, so the hold stands.
+   The unit as published (MWh), the price unit
    (£/MWh) and the cost unit (£) are preserved; no conversion, no derived `volume` in another unit and no
    recomputed `cost` is published. Note that the historic GTMA upload tables label volume as total MWh and the
    FY datastore table labels it as an average in MW, so the unit is not safe to carry across the GTMA
@@ -245,8 +299,9 @@ Open items that do not hold the output but limit what can be claimed:
 - `TODO: EMPTY-PUBLICATION`: no explicit NESO statement that the table is published as a header-only file
   when no trade is upcoming was found. `empty_allowed` stays `yes`; a genuine marked empty capture or
   vendor confirmation would settle it.
-- `TODO: MEASURED-IN-PLACE-AMENDMENTS`: NESO says details may be corrected, but with one capture it is not
-  possible to measure which rows change between captures, or whether an amended trade keeps its `ID`.
+- `TODO: MEASURED-IN-PLACE-AMENDMENTS`: NESO says details may be corrected, but the two captures
+  (2026-10-08 and 2026-10-16) share no trade id, so they cannot show which rows change, or whether an
+  amended trade keeps its `ID`. Captures close enough together to see the same trade twice are needed.
 - `TODO: verify` that a trade disappears from the table after its delivery period starts (supported by NESO
   trading material, not measured).
 

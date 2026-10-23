@@ -4,9 +4,63 @@ package: "historic-gtma-grid-trade-master-agreement-trades-data"
 dataset_keys: ["gtma_trades_data", "gtma_trades_data_pre", "gtma_trades_fy"]
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-12
+updated: 2026-10-23
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: true
+  title: Historic GTMA trades
+  summary: >-
+    NESO's Grid Trade Master Agreement (GTMA) trades since April 2015: when, how much, at what
+    price and cost.
+  facts:
+    vendor: "NESO Data Portal, package Historic GTMA Trades Data: seven files, six datastore tables"
+    cadence: "Monthly, NESO says; its current file refreshes each morning, 06:00 to 06:00"
+    grain: "Each row: one trade, with its delivery start and end in UTC"
+    history: "Trades since April 2015, NESO says; yearly tables to 2026-27"
+  landscape: market
+  what_it_is: >-
+    Each row is one GTMA trade: an identifier, a UTC delivery window, volume, price, cost and a
+    system flag. Files to June 2021 give a trade's total, which NESO's dictionary calls MWh; yearly
+    tables from 2021-22 give average MW and a reason. NESO warns trades can change after delivery,
+    as when a counterparty defaults; the data may not be updated.
+  how_used:
+    - How much NESO traded, when and at what price, year by year since 2015
+    - "System trades against energy trades, and the reasons given from 2021-22"
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then each file unless its `last_modified` is
+      unchanged, and each yearly table's dump, kept if its body changed.
+    commands:
+      - {run: gridflow ingest neso_data_portal gtma_trades_data --last 24h, comment: "yearly files; swap in any key"}
+      - {run: gridflow transform neso_data_portal gtma_trades_data --last 24h, comment: "the capture's date to silver"}
+  family:
+    slug: historic-gtma-grid-trade-master-agreement-trades-data
+    members:
+      - dataset: gtma_trades_data
+        differs: "Six yearly files, 2015-16 to 2020-21 (first and newest shown); total per trade, MWh"
+        request:
+          - "GET https://api.neso.energy/api/3/action/package_show?id=historic-gtma-grid-trade-master-agreement-trades-data"
+          - "GET https://api.neso.energy/dataset/8e511255-6cd7-41c0-868e-8d4d29bced0b/resource/bde33bcf-efc6-4e4a-bc7c-452b7424ea45/download/gtma_trades_2015-16.csv"
+          - "GET https://api.neso.energy/dataset/8e511255-6cd7-41c0-868e-8d4d29bced0b/resource/8e14ae8e-2091-4abc-a2e6-a4b82e5519ab/download/gtma_trades_2020-21.csv"
+        held: "NESO's package text says `Volume` is MW, its dictionary MWh; the 2020-21 file repeats ten trades."
+      - dataset: gtma_trades_data_pre
+        differs: "One file NESO names Pre June 2021; same columns and units as above"
+        request:
+          - "GET https://api.neso.energy/api/3/action/package_show?id=historic-gtma-grid-trade-master-agreement-trades-data"
+          - "GET https://api.neso.energy/dataset/8e511255-6cd7-41c0-868e-8d4d29bced0b/resource/8cf964b6-b94c-4d35-88f4-312834aa6e8c/download/gtma_trades_2021-22.csv"
+        held: "NESO's package text says `Volume` is MW; this file's dictionary says MWh, a trade's total."
+      - dataset: gtma_trades_fy
+        differs: "Yearly tables from 2021-22, first and newest shown; average MW, a reason and note"
+        request:
+          - "GET https://api.neso.energy/api/3/action/package_show?id=historic-gtma-grid-trade-master-agreement-trades-data"
+          - "GET https://api.neso.energy/datastore/dump/11a2f532-a7ce-46f8-9d82-88b3289daa82"
+          - "GET https://api.neso.energy/datastore/dump/e7a8abae-4e96-48b0-b9d7-54651da0cdb5"
+        held: "`Cost` is labelled £/h, but NESO describes it as a total: volume times price times duration."
+  related:
+    - {dataset: neso_data_portal/upcoming-trades, note: "GTMA trades still due for delivery, per settlement period"}
+    - {dataset: neso_data_portal/balancing-services-contract-enactment, note: "Contract enactments, which NESO's trading team weighs against trades"}
+    - {dataset: neso_data_portal/interconnector-requirement-and-auction-summary-data, note: "Interconnector auctions; every bidder must hold a GTMA with NESO"}
 ---
 
 # Historic GTMA (Grid Trade Master Agreement) Trades Data
@@ -51,8 +105,8 @@ All 13 resources are CSV. **There are no DOC resources** in this package: every 
 resource, and none is catalogue-only. Download links below are the vendor URLs from the 2026-10-06
 catalogue snapshot (gridflow `@.planning/research/neso-snapshots/20261006T195819Z/catalog-snapshot.json`).
 The 2026-10-06 snapshot gives these upload file names; `TODO: verify` their stability over time
-(only one snapshot and one capture per resource exist). The datastore dumps are keyed by resource
-id only.
+(only one catalogue snapshot exists, and each upload file has one capture, 2026-10-08). The datastore
+dumps are keyed by resource id only.
 
 ### SILVER
 
@@ -86,17 +140,34 @@ The first five rows and the pre-June row are the upload families. Their capture,
 
 The six FY resources are datastore dumps (ADR-035). Download: the vendor dump URL
 `https://api.neso.energy/datastore/dump/<resource id>`, for example
-[FY 21-22](https://api.neso.energy/datastore/dump/11a2f532-a7ce-46f8-9d82-88b3289daa82). Captured
-once each on 2026-10-08. Their rows and bytes (`gtma_trades_fy`):
+[FY 21-22](https://api.neso.energy/datastore/dump/11a2f532-a7ce-46f8-9d82-88b3289daa82). All six
+were captured on 2026-10-08; FY 25-26 and FY 26-27 were captured again on 2026-10-16 (bronze
+`gtma_trades_fy/2026/10/16/`, sidecar `written_at` 20:36:18 and 20:36:48 UTC; the dump leg keeps a
+new capture only when the body changed, `client.py` `_dump_member`). Bronze holds no later capture of
+the other four. Their rows and bytes (`gtma_trades_fy`):
 
-| Resource | Bytes | Data rows |
-|---|---:|---:|
-| FY 21-22 | 4,599,413 | 45,799 |
-| FY 22-23 | 6,443,328 | 65,409 |
-| FY 23-24 | 4,101,012 | 40,595 |
-| FY 24-25 | 3,257,781 | 33,092 |
-| FY 25-26 | 3,237,768 | 32,289 |
-| FY 26-27 | 2,035,167 | 20,551 |
+| Resource | Bytes (2026-10-08) | Data rows (2026-10-08) | Bytes (2026-10-16) | Data rows (2026-10-16) |
+|---|---:|---:|---:|---:|
+| FY 21-22 | 4,599,413 | 45,799 | — | — |
+| FY 22-23 | 6,443,328 | 65,409 | — | — |
+| FY 23-24 | 4,101,012 | 40,595 | — | — |
+| FY 24-25 | 3,257,781 | 33,092 | — | — |
+| FY 25-26 | 3,237,768 | 32,289 | 3,259,744 | 32,481 |
+| FY 26-27 | 2,035,167 | 20,551 | 2,225,763 | 22,530 |
+
+**What changed between the two captures (bronze, compared row by row on 2026-10-23; same header).**
+
+- **FY 25-26, a closed financial year (starts 2025-04-01 to 2026-03-30).** 192 trade ids were added
+  and none removed. All 192 start between `2026-01-05T05:00:00` and `2026-01-06T11:00:00`, and all
+  carry `Last_Updated` `2026-10-13T12:15:31`. Separately, 1,245 existing rows changed in `Reason`
+  and `Last_Updated` only: each had a blank `Reason` on 2026-10-08 and a filled one on 2026-10-16,
+  with `Last_Updated` on 2026-10-13. `Volume`, `Price` and `Cost` did not change on any shared id.
+  So NESO adds trades to, and edits rows of, a year's table months after the year closed.
+- **FY 26-27, the current year.** 2,062 trade ids were added (starts `2026-08-06T05:00:00` to
+  `2026-10-16T06:00:00`) and 83 removed (starts `2026-08-12T07:00:00` to `2026-08-17T07:00:00`).
+  712 shared rows changed in `Reason` and `Last_Updated` only.
+
+`ID` stays unique within each resource in both captures (32,481 and 22,530 distinct ids).
 
 The 2026-10-06 catalogue snapshot gave a CKAN `last_modified` for FY 21-22
 (2022-04-01T08:53:40.828093) and FY 22-23 (2023-01-23T06:03:04.523943) only, and `None` for the
@@ -123,8 +194,9 @@ provenance columns beside the vendor columns: `timestamp_utc`, `published_at`, `
 `resource_id` is carried by `gtma_trades_data` and `gtma_trades_fy` only (silver, checked
 2026-10-12). `gtma_trades_data_pre` is a single resource and has no `resource_id` column: its 15
 silver columns are `trade_id`, `start_time`, `end_time`, `volume`, `price`, `cost`, `so_flag` and the
-eight provenance columns above. Every captured file so far is the only capture of its resource (2026-10-08), so
-no revision between captures has been observed.
+eight provenance columns above. The upload files and FY 21-22 to FY 24-25 have one capture each
+(2026-10-08); FY 25-26 and FY 26-27 also have a 2026-10-16 capture, and both were revised between
+the two (see Files by disposition).
 
 ### `gtma_trades_data`
 
@@ -192,9 +264,12 @@ Key and shape (checked on silver, 2026-10-12):
 **Units (vendor dictionary only; from the resource dictionary of the FY 2020-21 upload as cited in
 FACTS §3.3).** `Volume` is the **total** volume of the trade in **MWh**. `Price` is **£/MWh**.
 `Cost` is **£**, positive when National Grid ESO pays (the dictionary comment). The package
-description says "the volume in MW", which disagrees with the resource dictionary's MWh. Treat the
-resource dictionary as authoritative and `TODO: verify` with NESO which is intended. No unit is
-converted.
+description says "the volume in MW", which disagrees with the resource dictionary's MWh. The rows
+support the dictionary: in all seven upload bodies (2026-10-08 captures, the held 2020-21 file
+included), `Cost` equals `Volume` × `Price` on every row with a parsable, positive delivery window,
+whatever its length (bronze, checked 2026-10-23), as a total energy in MWh would give and an average
+power in MW would not. Treat the resource dictionary as authoritative and `TODO: verify` with NESO
+which is intended. No unit is converted.
 
 ### `gtma_trades_data_pre`
 
@@ -277,8 +352,10 @@ Schema, epoch 1:
 1. **Vintage (`capture_fallback`, not `ckan_last_modified`).** The FY dumps are datastore dumps
    (ADR-035), not uploads, and the 2026-10-06 snapshot gave no CKAN `last_modified` for four of the
    six. So `published_at` is **null** in every silver row and `available_at` is the gridflow
-   capture time, the sidecar `written_at` of each dump, between
-   `2026-10-08T11:04:59.977534Z` and `2026-10-08T11:07:29.142743Z`. It says when gridflow saw the
+   capture time, the sidecar `written_at` of each dump: between
+   `2026-10-08T11:04:59.977534Z` and `2026-10-08T11:07:29.142743Z` for the first captures, and
+   `2026-10-16T20:36:18.793514Z` and `2026-10-16T20:36:48.203412Z` for the FY 25-26 and FY 26-27
+   recaptures. It says when gridflow saw the
    file, not when NESO published the trade. `Last_Updated` is kept as a typed UTC column. It is
    not a vintage: NESO does not say it is immutable issue time. `TODO: verify` historical public
    availability. Issue is `none`.
@@ -306,8 +383,9 @@ not pick one. Held question: **which is published, £/h or £?** (unit v0.22-K-T
 inconsistency holds for `Cost` in the modern enactment tables, see
 @balancing-services-contract-enactment.md). `SO_Flag`: `T` means the action is mainly for system
 security, `F` mainly for balancing. `Reason` is free text (voltage, thermal, ROCOF, margin and so
-on). `Reason` is blank in 3,427 of 237,735 captured rows. `Note` is blank in every captured row (bronze,
-237,735 of 237,735). Silver `reason` carries 3,427 nulls. Silver `note` carries 223,075 nulls plus
+on). In the 2026-10-08 captures, `Reason` is blank in 3,427 of 237,735 rows and `Note` is blank in
+every row (bronze, 237,735 of 237,735); NESO fills blank reasons later (1,245 FY 25-26 rows by
+2026-10-16, see Files by disposition). In the 2026-10-08 silver runs, `reason` carries 3,427 nulls. Silver `note` carries 223,075 nulls plus
 14,660 empty-string cells, all in FY 23-24 (`f659641a-…`); `TODO: verify` the null-token handling
 that leaves those cells as empty strings rather than null (counts only, no values, so the hold is
 respected). This is the vendor's
@@ -321,8 +399,9 @@ stack `gtma_trades_fy.volume` with `gtma_trades_data.volume` without a documente
 - Registry refresh: daily
 - Vendor metadata (snapshot extras, verbatim):
   - Status: Live
-- Captures to date: one per resource, all on 2026-10-08. No scheduled refresh has run yet, so no
-  revision between two captures of the same resource has been measured.
+- Captures: every resource on 2026-10-08; FY 25-26 and FY 26-27 again on 2026-10-16, both with
+  changed bodies (row-by-row comparison under Files by disposition). Bronze holds no later capture
+  of the upload files or of FY 21-22 to FY 24-25.
 
 The vendor package text: the dataset "will be updated on a monthly basis shortly after the start of
 the month, with the previous months data", and the live data file is "refreshed every morning to
@@ -334,13 +413,16 @@ a financial-year resource is not a strict midnight-to-midnight year (see the yea
 - `TODO: verify` which resource is the daily-refreshed "live data file". The FY 26-27 dump
   is the likely one, but the vendor does not name it. The 7 upload resource descriptions say "This data
   file will be updated on a monthly basis"; the 6 FY dump descriptions say only that the data set
-  displays the detail of Historic GTMA trades for the financial year. gridflow has only one capture of each resource, so no
-  refresh has been observed; `TODO: verify` which resources NESO actually still refreshes.
-- `TODO: verify` whether a refresh rewrites earlier rows of the same resource. The vendor warns
+  displays the detail of Historic GTMA trades for the financial year. Between 2026-10-08 and
+  2026-10-16, NESO changed FY 26-27 and also FY 25-26, a closed year; `TODO: verify` which other
+  resources NESO still refreshes (bronze holds one capture of each of the others).
+- **A refresh does rewrite earlier rows.** Between the 2026-10-08 and 2026-10-16 captures, NESO
+  added 192 January 2026 trades to FY 25-26, filled a blank `Reason` on 1,245 of its rows, and in
+  FY 26-27 removed 83 trades and changed 712 rows (see Files by disposition). The vendor also warns
   that **delivered trades can change after the fact**, for example a counterparty defaults and
   does not deliver, and that "the data may not be updated retrospectively". A trade in this data
-  is therefore a record of the agreed trade, not a guarantee of delivery. Only repeated captures
-  compared row by row can show how often rows change.
+  is therefore a record of the agreed trade, not a guarantee of delivery. `TODO: verify` how often
+  rows change: two captures of two resources show that they do, not how often.
 
 ## Licence and attribution
 
