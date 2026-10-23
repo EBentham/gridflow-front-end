@@ -70,3 +70,4 @@ message: write `<slug>-review-2.md` (then `-3`).
 - Scratch files go in your own subfolder of the scratchpad, named for your role and package (for example
   `<scratchpad>\dr-checker\`): agents share the scratchpad and generic names overwrite each other.
 - Do not end your turn until your report or review file is written and your final message is ready: a turn that ends mid-task ("Now the detector...") stalls the batch.
+- Agents keep ending their turn right after starting a server. Start it with a command that returns at once and prints the PID (for example PowerShell `(Start-Process python -ArgumentList '-m','http.server','<port>','--directory','<site/hifi>' -PassThru -WindowStyle Hidden).Id`), then carry straight on with the screenshots in the same turn.
