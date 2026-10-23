@@ -71,5 +71,5 @@ time, `query()` filters on the capture time (remediation 20at): use `data.sql()`
 | 4 | | | not started |
 | 5 | aff832a32c1030ea2 | ab3dc8141aec8a48f | APPROVED (round 2 fixes seat-verified); committed; 20bf logged |
 | 6 | a9e81f314a34edccf | a6c15891c978684e7 | APPROVED (round 2 fixes seat-verified); committed; lead changed to the building-block table (seat, PROXY-SOURCED) |
-| H1 | a403343c59ca240d0 | abed098ced7d8bb2c | checking; 20bh, 20bi logged |
+| H1 | a403343c59ca240d0 | abed098ced7d8bb2c | revising (3 APPROVE with nits, historic REVISE: 1 major); 20bh, 20bi logged |
 | H2 | a33842486afc7e15e | | writing |
