@@ -57,10 +57,10 @@ captures repeat rows (or as a guard); the workbench `query()` returns session-zo
 | # | Writer | Checker | State |
 |---|---|---|---|
 | 1 | a749fd6f6e38f1073 | a4b317c69d5ba7fda | APPROVED (round 2 fixes seat-verified); committed; 20am-20ao logged |
-| 2 | ac585660b723d140a | a3abd3888b5279e42 | checking; 20ap logged |
-| 3 | a241e64afe1c76794 | | writing |
-| 4 | a63dff72e875b5c9b | | writing |
-| 5 | | | not started |
-| 6 | | | not started |
-| 7 | | | not started |
-| H | | | not started |
+| 2 | ac585660b723d140a | a3abd3888b5279e42 | APPROVED, nits fixed (seat-verified); committed; 20ap logged |
+| 3 | a241e64afe1c76794 | aea3ffa34ed013ff7 | APPROVED (round 2 fixes seat-verified, quarter count reproduced); committed (full page despite held bid-and-offer sibling: ledger eligible, gaps stated; seat, PROXY-SOURCED); 20aq, 20ar logged |
+| 4 | a63dff72e875b5c9b | afa0890b88337ca91 | APPROVED (round 2 fixes seat-verified); committed; held (one shapefile, no silver table: seat accepts, PROXY-SOURCED) |
+| 5 | a53100ea68ce297c5 | a232c0e595357601a | checking; 20at logged |
+| 6 | a28ffdf91cd9e7bae | a542f7fbadd95327a | APPROVED, nits fixed (seat-verified); committed; held (one row: seat accepts, PROXY-SOURCED); 20as logged |
+| 7 | af7ffe5a7853e4a94 | | writing |
+| H | a02e1e6b7b10036a6 | | writing |

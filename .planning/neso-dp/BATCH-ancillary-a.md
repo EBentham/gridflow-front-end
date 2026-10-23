@@ -112,4 +112,5 @@ https://github.com/EBentham/quant-vault/pull/64. Waiting for Bobbo's look. Merge
 - Chart specs: the text-time parse runs before filters (rows with another format fail even when filtered out); no weekly or monthly bucket for long daily spans.
 - Chart and sample artefacts read every silver capture of a table; a table whose captures repeat rows needs a `dedup:` in its chart and frame (no default). Audited 2026-10-23: no approved page double-counts.
 - A family page cannot list request URLs for files outside its members (monthly BSUoS forecast archive and PDF).
+- A full page needs eight sample rows; a table with fewer rows can only ship held (voltage contracted units, one row). Boundary files (ETYS, GSP) have no line-map visual.
 - A 30-minute line chart gets a single x tick (whole-hour ticks only), seen on system frequency.
