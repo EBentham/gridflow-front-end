@@ -7,6 +7,44 @@ skeleton: false
 updated: 2026-10-10
 layer_coverage: "bronze"
 eligibility: "eligible"
+page:
+  held: Rows are not labelled with a settlement run, so there is no silver table.
+  title: Daily BSUoS volume data
+  summary: >-
+    NESO's balancing volume for each settlement period, in MWh, in eight columns, such as energy
+    imbalance, reserve and constraints.
+  facts:
+    vendor: "NESO Data Portal: one CSV file per financial year, and a workbook"
+    cadence: "Weekly, as NESO lists it; the newest file is the current financial year"
+    grain: "Each row: settlement date and period, with eight volume columns in MWh"
+    history: NESO lists one file per April-to-March year from 2017-18
+  landscape: market
+  what_it_is: >-
+    The Balancing Services Use of System (BSUoS) charge recovers the cost of day-to-day operation
+    of the transmission system. These files give the balancing volume per settlement period in
+    eight MWh columns: energy imbalance, frequency control offers and bids, positive reserve,
+    constraint offers and bids, negative reserve and other. NESO's dictionary describes
+    `SETT_DATE`, titled settlement date, as a payment date.
+  how_used:
+    - The energy behind each balancing category, half hour by half hour
+    - An implied overall cost per MWh, with the cost package for the same periods
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: `package_show`, then each yearly file whole unless `last_modified`
+      is unchanged (first and newest shown). Everything is bronze only; the workbook lists NESO's
+      missing settlement periods.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=daily-balancing-volume-balancing-services-use-of-system"
+      - "GET https://api.neso.energy/dataset/252b7bd1-7452-41bf-9b60-540cb1c0751a/resource/a9b63a05-da9a-4a49-bcf4-13326720ce80/download/q1_vol_fy1718.csv"
+      - "GET https://api.neso.energy/dataset/252b7bd1-7452-41bf-9b60-540cb1c0751a/resource/e781da74-6c35-4296-81dd-250cee869c19/download/q1_vol_fy2627.csv"
+      - "GET https://api.neso.energy/dataset/252b7bd1-7452-41bf-9b60-540cb1c0751a/resource/5cb7f9f2-0c76-4c5c-90f9-8720de1fc85f/download/missing_dates_periods.xlsx"
+    commands:
+      - {run: gridflow ingest neso_data_portal daily_balancing_volume --last 24h, comment: "every yearly file, bronze only"}
+      - {run: gridflow ingest neso_data_portal daily_balancing_volume_files --last 24h, comment: the missing-periods workbook}
+  related:
+    - {dataset: neso_data_portal/daily-balancing-costs-balancing-services-use-of-system, note: "The costs, in £, for the same settlement periods"}
+    - {dataset: neso_data_portal/current-balancing-services-use-of-system-bsuos-data, note: "The BSUoS charges that recover these balancing costs, per settlement run"}
+    - {dataset: neso_data_portal/constraint-breakdown, note: "NESO's daily constraint costs by reason, beside these constraint volumes"}
 ---
 
 # Daily Balancing Services Use of System (BSUoS) Volume Data
@@ -107,7 +145,8 @@ Every download URL below is the registry/snapshot resource URL (catalogue snapsh
 - Kind: tabular · archetype: SER · refresh: weekly · empty allowed: no
 - ingest-only: no silver yet
 
-Bronze schema, one exact header across all ten CSVs (header H-DV), 10 columns:
+Bronze schema at activation, one exact header across all ten CSVs (header H-DV; the 2026-10-16
+recapture of 2026-2027 drops the unit brackets, see "Bronze at activation"), 10 columns:
 `SETT_DATE`, `SETT_PERIOD`, `Energy Imbalance (MWh)`, `Frequency Control Offers (MWh)`,
 `Frequency Control Bids (MWh)`, `Positive Reserve (MWh)`, `Constraint Offers (MWh)`,
 `Constraint Bids (MWh)`, `Negative Reserve (MWh)`, `Other (MWh)`. Dates are `%Y-%m-%d` in every
@@ -150,7 +189,15 @@ page**: there is no record, so nothing exists in silver under any name.
 | 2026-2027 (to the capture date) | 605,496 | 8,826 | 2026-10-03T11:18:24 | 2026-10-08T10:04:53 |
 | **Total** | **11,263,274** | **166,538** | | |
 
-- One capture per resource, all `url_type: upload`, all under
+- **Recapture, 2026-10-16.** The 2026-2027 resource was captured again at 2026-10-16T20:01:36Z
+  (`daily_balancing_volume/2026/10/16/raw_20261016T200136Z_e781da74-6c35-4296-81dd-250cee869c19_edf40a60.csv`):
+  639,451 bytes, 9,306 rows to 2026-10-11, vendor `last_modified` 2026-10-16T06:39:49. Compared
+  with the 2026-10-08 capture it keeps every earlier date and period, adds 480 rows, and **changes
+  values in 124 rows** on four dates (2026-09-03, 09-04, 09-15 and 09-28), with no run label. Its
+  header also drops the brackets around the unit (`Energy Imbalance MWh`, not
+  `Energy Imbalance (MWh)`), so header H-DV no longer holds for this file. The other nine
+  resources and the workbook still have one capture each. The table above is the activation state.
+- At activation, one capture per resource, all `url_type: upload`, all under
   `C:/gridflow-data/bronze/neso_data_portal/daily_balancing_volume/2026/10/08/`. The files are
   named `raw_<stamp>_<resource_id>_<hash>.csv` and each has a `.meta.json` sidecar (SHA-256 of
   the body recorded). Full names are in K-BAL-1-FACTS, "Daily balancing volume" (DV1 to DV10).
@@ -291,10 +338,12 @@ its disposition is `HOLD`: there is no child record while the parent family has 
 - Vendor metadata (snapshot extras, verbatim):
   - Update Frequency: Weekly
 
-The vendor catalogue says weekly. The newest resource's `last_modified` is 2026-10-03, while
-the other nine resources' dates run from 2022-09-28 to 2026-04-07. Each capture is its own vintage. There is one capture per resource so far, so
-repeated captures are needed to learn whether a weekly update rewrites the whole current-year
-file or appends to it. TODO: verify with repeated captures.
+The vendor catalogue says weekly. At activation the newest resource's `last_modified` was
+2026-10-03, while the other nine resources' dates run from 2022-09-28 to 2026-04-07. Each capture
+is its own vintage. The 2026-10-16 recapture of the 2026-2027 file (`last_modified`
+2026-10-16T06:39:49) shows a weekly update **rewrites** the current-year file: it appends new
+periods and also restates earlier ones (124 rows on four September dates changed). TODO: verify
+with NESO which settlement run each restatement reflects.
 
 ## Licence and attribution
 

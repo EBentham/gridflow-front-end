@@ -4,9 +4,161 @@ package: "current-balancing-services-use-of-system-bsuos-data"
 dataset_keys: ["current_bsuos_cap_adjustments", "current_bsuos_historic_ii", "current_bsuos_historic_rf", "current_bsuos_historic_sf", "current_bsuos_ii", "current_bsuos_rf", "current_bsuos_sf"]
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-10
+updated: 2026-10-23
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: BSUoS charges by settlement run
+  summary: >-
+    NESO's Balancing Services Use of System charge per half-hour settlement period: tariff,
+    volume, recovery and actual cost, one file per settlement run.
+  facts:
+    vendor: "NESO Data Portal, package Current Balancing Services Use of System (BSUoS) Charges"
+    cadence: "Daily on weekdays, as NESO's catalogue lists it"
+    grain: "One row per settlement date, half-hour period and run; historic rows add the file"
+    history: "Reconciliation Final history from financial year 2016, the other runs from 2017 (NESO)"
+  landscape: market
+  what_it_is: >-
+    BSUoS (Balancing Services Use of System) is how NESO recovers its cost of balancing the
+    system from its customers, per half-hour settlement period. Each run, Interim Initial,
+    Settlement Final then Reconciliation Final, recalculates the same periods with later metered
+    volumes and costs: a revision, never an addition. From April 2023 a fixed tariff replaces the
+    variable price.
+  how_used:
+    - "BSUoS £/MWh by settlement period, as a cost line in supply and trading margins."
+    - "Settlement revisions: how volume and actual cost move from Interim Initial to Reconciliation Final."
+    - "Compare the actual cost and recovery columns row by row, as NESO publishes them."
+  chart:
+    type: line
+    silver: neso_data_portal/current_bsuos_historic_sf
+    time: settlement_day
+    values:
+      - {column: bsuos_price_mwh_hour, series: price}
+      - {column: bsuos_tariff_gbp_per_mwh, series: tariff}
+    dedup: {"on": [settlement_day, settlement_period], order_by: published_at}
+    aggregation: mean
+    window: {start: "2017-04-01", end: "2026-03-31"}
+    max_points: 3400
+    unit: "£/MWh"
+  chart_view:
+    title: BSUoS price, then fixed tariff, April 2017 to March 2026
+    caption: >-
+      Silver `current_bsuos_historic_sf`, the Settlement Final historic files, £/MWh: each
+      settlement day's unweighted mean half-hourly price to 31 March 2023, uncapped (the cap
+      workbooks hold capped prices), then the fixed tariff from 1 April 2023.
+    alt: >-
+      Line chart from neso_data_portal/current_bsuos_historic_sf in £/MWh, one point per
+      settlement day, 1 April 2017 to 31 March 2026. The daily mean half-hourly price has a median
+      of 2.04 in 2017-18 and 3.11 in 2019-20, then climbs: 35.80 on 24 November 2021, a high of
+      44.80 on 20 July 2022, and a 2022-23 median of 8.46. From 1 April 2023 the fixed tariff
+      steps each 1 April and 1 October: 13.41, 14.03, 7.63, 12.17, 10.74, then 15.69.
+    x_label: settlement day, as NESO labels each row
+    key:
+      - {series: price, label: Half-hourly price, codes: "BSUoS Price (£/MWh Hour)", paint: petrol, note: "Unweighted daily mean. NESO's header says £/MWh Hour; its Interim Initial dictionary gives £/MWh."}
+      - {series: tariff, label: Fixed tariff, codes: "BSUoS Tariff (£/MWh)", paint: clay, note: "Fixed per half-year: steps on 1 April and 1 October, from 7.63 up to 15.69."}
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then each file downloaded whole unless its
+      `last_modified` is unchanged. File names change between uploads; dates select nothing.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=current-balancing-services-use-of-system-bsuos-data"
+    commands:
+      - {run: gridflow pipeline neso_data_portal current_bsuos_historic_ii --last 24h, comment: "Interim Initial yearly files"}
+      - {run: gridflow pipeline neso_data_portal current_bsuos_historic_sf --last 24h, comment: "Settlement Final; also the chart"}
+      - {run: gridflow pipeline neso_data_portal current_bsuos_historic_rf --last 24h, comment: "Reconciliation Final yearly files"}
+  record:
+    select:
+      silver: neso_data_portal/current_bsuos_ii
+      filter:
+        - {column: settlement_date, op: eq, value: "2026-09-29"}
+        - {column: settlement_period, op: in, value: [33, 34, 35, 36, 37, 38, 39, 40]}
+      dedup: {"on": [settlement_date, settlement_period, run_type], order_by: published_at}
+      order_by: [settlement_period]
+      columns: [settlement_date, settlement_period, run_type, bsuos_tariff_gbp_per_mwh, volume_mwh, bsuos_total_recovery_gbp, actual_bsuos_cost_gbp, timestamp_utc, published_at]
+    key: [settlement_date, settlement_period, run_type]
+    caption: "Eight evening periods of 29 September 2026 in the Interim Initial file."
+    fields:
+      settlement_date: "NESO's settlement date, a GB day label written with midnight text"
+      settlement_period: "Half-hour period of the date, 1 to 48; 46 or 50 on clock-change days"
+      run_type: "`II`, Interim Initial: the run this file holds (NESO); part of the key"
+      bsuos_tariff_gbp_per_mwh: "NESO's fixed tariff, £/MWh, applied in every BSUoS customer's charge"
+      volume_mwh: "Volume, MWh; NESO calculates it as recovery divided by tariff"
+      bsuos_total_recovery_gbp: "£ recovered: tariff times volume in these rows; NESO's dictionary says whole day"
+      actual_bsuos_cost_gbp: "Actual BSUoS cost, £; NESO says whole day, but it changes every period here"
+      timestamp_utc: "Start of the settlement period, UTC, from date and period; gridflow's anchor"
+      published_at: "NESO's last-modified time for the whole file, read as UTC; one per capture"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote the capture to bronze, UTC
+  notebook:
+    lead: >-
+      `query()` reads each table's `_latest` view, filtering `settlement_day` with both ends
+      included; times come back in UK time, so the first cell converts them to UTC. Three runs of
+      one day: compare, never add.
+    cells:
+      - |
+        import pandas as pd
+        day = "2024-01-17"
+        runs = [data.neso_data_portal.query(f"current_bsuos_historic_{r}", day, day) for r in ["ii", "sf", "rf"]]
+        df = pd.concat(runs).sort_values("settlement_period", kind="stable", ignore_index=True)
+        df["start_utc"] = df.timestamp_utc.dt.tz_convert("UTC")
+        df[df.settlement_period.isin([1, 34])][["settlement_period", "start_utc", "run_type", "bsuos_tariff_gbp_per_mwh", "volume_mwh", "actual_bsuos_cost_gbp"]]
+      - |
+        cost = df.pivot(index="settlement_period", columns="run_type", values="actual_bsuos_cost_gbp")[["II", "SF", "RF"]].rename_axis(columns=None)
+        cost.assign(sf_minus_ii=cost.SF - cost.II, rf_minus_sf=cost.RF - cost.SF).loc[[1, 17, 34, 48]].round().astype(int)
+      - |
+        ax = cost.plot(figsize=(8, 3.5), color=["#66793B", "#155A6E", "#C77E3C"], style=["-", "-", "--"],
+                       xlabel="settlement period, 17 January 2024", ylabel="actual BSUoS cost per row, £")
+        ax.legend(["Interim Initial", "Settlement Final", "Reconciliation Final"]);
+    needs: the Interim Initial, Settlement Final and Reconciliation Final yearly files
+    plot_alt: >-
+      Line plot of the actual BSUoS cost on each settlement-period row of 17 January 2024, in £,
+      one line per run. Settlement Final sits £15,579 to £26,897 above Interim Initial in all 48 periods;
+      Reconciliation Final, dashed, stays within £678 of Settlement Final. All three are lowest in
+      period 15 and peak in period 33, Settlement Final at £161,334.
+  related:
+    - {dataset: neso_data_portal/bsuos-fixed-tariffs, note: "NESO's published schedule of the fixed tariffs these files apply"}
+    - {dataset: neso_data_portal/daily-balancing-costs-balancing-services-use-of-system, note: "NESO's balancing costs by category per settlement period, with no run"}
+    - {dataset: neso_data_portal/constraint-breakdown, note: "Daily constraint costs, one part of the balancing cost BSUoS recovers"}
+    - {dataset: neso_data_portal/bsuos-monthly-forecast, note: "NESO's monthly BSUoS forecasts, made before these settlement runs"}
+  family:
+    slug: current-balancing-services-use-of-system-bsuos-data
+    members:
+      - dataset: current_bsuos_ii
+        differs: "Interim Initial run: NESO's first calculation of each settlement period"
+        request: "GET https://api.neso.energy/dataset/d6a4bf54-c63f-4014-a716-49fd3878ca52/resource/0eda5e28-1dc6-48da-8663-c00e12f2a1e2/download/current_ii_bsuos_data.csv"
+      - dataset: current_bsuos_sf
+        differs: "Settlement Final run: a later recalculation of the same periods; never add it"
+        request: "GET https://api.neso.energy/dataset/d6a4bf54-c63f-4014-a716-49fd3878ca52/resource/f0060fd0-1fc9-4288-a0b3-4af9b592b0cf/download/current_sf_bsuos_data.csv"
+      - dataset: current_bsuos_rf
+        differs: "Reconciliation Final run: the last recalculation; read it instead of the earlier runs"
+        request: "GET https://api.neso.energy/dataset/d6a4bf54-c63f-4014-a716-49fd3878ca52/resource/26b0f410-27d4-448a-9437-45277818b838/download/current_rf_bsuos_data.csv"
+      - dataset: current_bsuos_historic_ii
+        differs: "Yearly files: no rows 18 April 2024 to 31 March 2025; April 2025 twice"
+        request:
+          - "GET https://api.neso.energy/dataset/d6a4bf54-c63f-4014-a716-49fd3878ca52/resource/3372646d-419f-4599-97a9-6bb4e7e32862/download/2017-2023-ii.csv"
+          - "GET https://api.neso.energy/dataset/d6a4bf54-c63f-4014-a716-49fd3878ca52/resource/d151c80a-f6a8-4b79-9387-1a68cd445af5/download/2023-2024-ii.csv"
+          - "GET https://api.neso.energy/dataset/d6a4bf54-c63f-4014-a716-49fd3878ca52/resource/ea47c8e4-caa3-49c7-a442-e9644d330f63/download/current_ii_bsuos_data.csv"
+          - "GET https://api.neso.energy/dataset/d6a4bf54-c63f-4014-a716-49fd3878ca52/resource/45e87b67-ed5d-49ea-a149-2b37f467e542/download/2025-2026-ii.csv"
+      - dataset: current_bsuos_historic_sf
+        differs: "Settlement Final yearly files: a variable price to March 2023, then the fixed tariff"
+        request:
+          - "GET https://api.neso.energy/dataset/d6a4bf54-c63f-4014-a716-49fd3878ca52/resource/241b40c3-1f20-4607-b329-0466d215871d/download/2017-2023-sf.csv"
+          - "GET https://api.neso.energy/dataset/d6a4bf54-c63f-4014-a716-49fd3878ca52/resource/a68fecf2-99a0-407a-90bb-2a6ebc39d9aa/download/2023-2024-sf.csv"
+          - "GET https://api.neso.energy/dataset/d6a4bf54-c63f-4014-a716-49fd3878ca52/resource/320cdc0d-457f-4849-a0fc-bf6bdd4e21e5/download/2024-2025-sf.csv"
+          - "GET https://api.neso.energy/dataset/d6a4bf54-c63f-4014-a716-49fd3878ca52/resource/927aac83-c218-476c-9c20-29cf20cee448/download/2025-2026-sf.csv"
+      - dataset: current_bsuos_historic_rf
+        differs: "Reconciliation Final yearly files; two periods 27 March 2022 never had are dropped"
+        request:
+          - "GET https://api.neso.energy/dataset/d6a4bf54-c63f-4014-a716-49fd3878ca52/resource/2e8b2ea6-cdb5-4936-8636-4ab5a3f7e350/download/2016-2023-rf.csv"
+          - "GET https://api.neso.energy/dataset/d6a4bf54-c63f-4014-a716-49fd3878ca52/resource/47642de9-0738-47df-b230-94a097b61ae7/download/2023-2024-rf.csv"
+          - "GET https://api.neso.energy/dataset/d6a4bf54-c63f-4014-a716-49fd3878ca52/resource/544ad552-65e6-47f9-b89c-0b9929dbb869/download/2024-2025-rf.csv"
+      - dataset: current_bsuos_cap_adjustments
+        differs: "Price caps CMP381 (£20/MWh) and CMP395 (£40/MWh); the adjustment's sign differs between them"
+        request:
+          - "GET https://api.neso.energy/dataset/d6a4bf54-c63f-4014-a716-49fd3878ca52/resource/88dcf101-1358-4d78-934f-527484d8789d/download/cmp381-current_ii_bsuos_110422.xlsx"
+          - "GET https://api.neso.energy/dataset/d6a4bf54-c63f-4014-a716-49fd3878ca52/resource/ead98e64-b345-450a-9c45-c6eae9cc1bbe/download/cmp381-current_sf_bsuos_270422.xlsx"
+          - "GET https://api.neso.energy/dataset/d6a4bf54-c63f-4014-a716-49fd3878ca52/resource/6ae55c11-7b79-4ea4-9775-1a0b3ccb5275/download/cmp395-current_ii_bsuos_130423.xlsx"
+          - "GET https://api.neso.energy/dataset/d6a4bf54-c63f-4014-a716-49fd3878ca52/resource/1feb6b1e-549a-4af2-869a-e90b0a7a9c76/download/cmp395-current_sf_bsuos_030523.xlsx"
 ---
 
 # Current Balancing Services Use of System (BSUoS) Charges
@@ -399,7 +551,7 @@ The historic resources are updated far less often than daily: their `last_modifi
 - **Run is part of identity.** A settlement date and period alone is not a key. The current II and SF files share 8,016 settlement-period keys; the tariff agrees across them but volume, total recovery and actual cost differ on every shared pair. Date-and-period-only storage would silently overwrite one run with another.
 - **Newest run is not guaranteed to win.** The engine's `_latest` selection removes `run_type` from the grain and ranks the settlement run, but availability ordering leads and run rank is secondary, so an older RF row does not automatically defeat a newer II row. Selecting "highest maturity run" needs an explicit consumer decision; separate family views do not themselves create a combined cross-run view (K-BAL-1-FACTS BAL-1a).
 - **Current files are not the current year.** `current_bsuos_rf` covers 2025-04-01 to 2025-08-17. A current/historic overlap of zero keys per run was measured in the captured bodies; do not assume perpetual disjointness, because a file rollover can change it.
-- **Historic II resource names and boundaries are unreliable.** `Historic II BSUoS Data 2023-2024` extends to 2024-04-17. `Historic II BSUoS Data 2024-2025` is named for a year but its body holds only 2025-04-01 to 2025-04-13 (624 rows) and its URL filename is `current_ii_bsuos_data.csv`, the same filename as the current II file. `Historic II BSUoS Data 2025-2026` (2025-04-01 to 2026-03-31) contains all 624 of those keys with identical raw row values.
+- **Historic II resource names and boundaries are unreliable.** `Historic II BSUoS Data 2023-2024` extends to 2024-04-17. `Historic II BSUoS Data 2024-2025` is named for a year but its body holds only 2025-04-01 to 2025-04-13 (624 rows) and its URL filename is `current_ii_bsuos_data.csv`, the same filename as the current II file. `Historic II BSUoS Data 2025-2026` (2025-04-01 to 2026-03-31) contains all 624 of those keys with identical raw row values. As a result the family has no Interim Initial rows for settlement days 2024-04-18 to 2025-03-31 (checked 2026-10-23: the 2023-2024 file ends 2024-04-17 and the 2025-2026 file starts 2025-04-01); Historic SF and RF cover that year.
 - **Historic II overlap is adjudicated and both are served.** The 2024-2025 and 2025-2026 resources share 624 keys with zero differing rows. Under the ADR-040 overlap ledger (RULINGS 653) both resources are retained and neither is dropped, silently renamed or treated as superseding the other. Because each resource is its own `whole_capture` partition, a query across the family counts those 624 keys twice unless it filters on `resource_id`. The family holds 141,071 distinct canonical keys among its 141,695 rows. TODO: verify with NESO whether the 2024-2025 upload is mislabelled and whether it will be corrected.
 - **Two invalid Historic RF rows are excluded by design.** In `2016-2023-rf.csv` the rows for 2022-03-27 periods 47 and 48 do not exist on that 46-period spring clock-change day. They are excluded as schema-invalid rows (122,690 body rows, 122,688 in silver); this is a row exclusion, not a duplicate-key, encoding or failed-capture adjudication.
 - **Missing period in Historic II.** The 2017-2023 resource lacks the pair 2021-01-14 period 48. It is not filled. TODO: verify the reason with NESO.
@@ -407,6 +559,9 @@ The historic resources are updated far less often than daily: their `last_modifi
 - **Date columns differ by family.** Historic families use `settlement_day`; current families use `settlement_date`; the workbook family uses `settlement_day` with a different format (`%Y-%m-%d %H:%M:%S`). The trailing space in the CSV format is deliberate.
 - **Entity-key uniqueness is measured, not vendor-guaranteed.** Every scoped body is unique on settlement date, period and run, but the vendor dictionaries state no primary-key constraint. TODO: verify (vendor key guarantee).
 - **Workbook scope.** The cap-adjustment data covers only the CMP381 and CMP395 scheme windows (2022-01-17 to 2022-03-31 and 2022-10-06 to 2023-03-31 per the scheme notes). It is not a general BSUoS source.
+- **Workbook adjustment sign differs by scheme (measured 2026-10-23).** In every adjusted row, `revised_half_hourly_charge` equals `capped_bsuos_price_mwh` times `total_chargeable_energy_volume_mwh`. `total_net_adjustment_to_invoices` is revised minus original charge in the CMP381 workbooks (negative, down to about -£3.2M) but original minus revised in the CMP395 workbooks (positive). The workbooks state no sign. Read the two schemes separately.
+- **Workbook `_latest` keeps one run.** `current_bsuos_cap_adjustments` holds both runs in one table, and its `_latest` view keeps one row per settlement period: the Settlement Final workbook rows, uploaded later (12,046 of 24,092 rows). `query()` therefore returns no Interim Initial workbook rows (checked 2026-10-23 for 2022-01-24).
+- **Current files changed their date text on 16 October 2026.** NESO's uploads of the current II, SF and RF files on that day (`webprice_output_<run>_...csv`) write `Settlement Date` as day-first `DD-MM-YYYY` with no time and no byte-order mark. The frozen format `%Y-%m-%dT%H:%M:%S ` rejects every row (strict parse checked read-only on the bronze captures), so silver holds only the 8 October captures until a record epoch accepts the new form.
 - **Related packages, not this one.** NESO publishes sibling balancing-cost datasets under separate packages and they are not in this page: @bsuos-fixed-tariffs.md (held), @daily-balancing-costs-balancing-services-use-of-system.md and @daily-balancing-volume-balancing-services-use-of-system.md (no silver, because their bodies carry no settlement-run column; RULINGS 538 precedent, 653), @gb-system-inertia-bid-and-offer-costs.md (held), and @constraint-breakdown.md.
 
 ## Holds
