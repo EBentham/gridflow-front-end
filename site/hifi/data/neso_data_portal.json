@@ -501,13 +501,13 @@
       "title": "tRESP demand pathways",
       "note": "tresp-demand-pathways",
       "members": [
+        "tresp_building_block_definitions",
+        "tresp_gsp_area_names",
         "tresp_demand_pathways_gsp",
         "tresp_demand_pathways_la_england",
         "tresp_demand_pathways_la_scotland",
         "tresp_demand_pathways_la_wales",
-        "tresp_demand_pathways_resp_region",
-        "tresp_building_block_definitions",
-        "tresp_gsp_area_names"
+        "tresp_demand_pathways_resp_region"
       ]
     },
     {
