@@ -1,0 +1,160 @@
+{
+ "dataset": "neso_data_portal/system_inertia",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "b482993391023255c4ffa7d02f165054bcc250c1c303c5c96478acb07d5df749",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.neso_data_portal.query(\"system_inertia\", \"2025-04-01\", \"2026-03-31\")\ndf[\"timestamp_utc\"] = df.timestamp_utc.dt.tz_convert(\"UTC\")\ndf = df.sort_values(\"timestamp_utc\", ignore_index=True)\nday = df[df.settlement_date.astype(str) == \"2025-10-26\"]\nday.loc[day.settlement_period.isin([1, 2, 49, 50]),\n        [\"settlement_date\", \"settlement_period\", \"timestamp_utc\", \"outturn_inertia\"]]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "settlement_date",
+      "settlement_period",
+      "timestamp_utc",
+      "outturn_inertia"
+     ],
+     "index": [
+      "9984",
+      "9985",
+      "10032",
+      "10033"
+     ],
+     "rows": [
+      [
+       "2025-10-26",
+       "1",
+       "2025-10-25 23:00:00+00:00",
+       "120"
+      ],
+      [
+       "2025-10-26",
+       "2",
+       "2025-10-25 23:30:00+00:00",
+       "120"
+      ],
+      [
+       "2025-10-26",
+       "49",
+       "2025-10-26 23:00:00+00:00",
+       "116"
+      ],
+      [
+       "2025-10-26",
+       "50",
+       "2025-10-26 23:30:00+00:00",
+       "116"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "df.groupby(\"settlement_date\").size().value_counts().rename(\"days\").rename_axis(\"periods in the day\")",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "periods in the day\n48    363\n50      1\n46      1\nName: days, dtype: int64"
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "daily = df.groupby(\"settlement_date\")[[\"outturn_inertia\", \"market_provided_inertia\"]].min()\ndaily.agg([\"min\", \"median\", \"max\"])",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "outturn_inertia",
+      "market_provided_inertia"
+     ],
+     "index": [
+      "min",
+      "median",
+      "max"
+     ],
+     "rows": [
+      [
+       "107.0",
+       "71.0"
+      ],
+      [
+       "125.0",
+       "101.0"
+      ],
+      [
+       "252.0",
+       "248.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "source": "ax = daily.plot(figsize=(8, 3.5), color=[\"#155A6E\", \"#C77E3C\"], lw=0.8,\n                xlabel=\"settlement day\", ylabel=\"GVA.s, daily lowest\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "system_inertia-6.png",
+     "width": 699,
+     "height": 353
+    }
+   ]
+  }
+ ]
+}
