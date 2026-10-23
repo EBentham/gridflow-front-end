@@ -53,5 +53,5 @@ captures repeat rows (or as a guard where a recapture would); the workbench `que
 |---|---|---|---|
 | 1 | a646042e31a645f9b | a6fec45407c5830a5 | APPROVED (round 2 fixes seat-verified against the checker's figures); committed; 20ac, 20ad logged |
 | 2 | a2f77fd26aa2848b7 | a03a552efae47d68d | checking |
-| H1 | a1a05ccae4d901cf4 | af1347d260e730752 | checking; 20ag-20ai logged |
-| H2 | a637cd6502ea4579b | | writing |
+| H1 | a1a05ccae4d901cf4 | af1347d260e730752 | APPROVED x4, nits fixed (seat-verified); committed; 20ag-20ai logged |
+| H2 | a637cd6502ea4579b | a057803d782556d73 | checking; 20aj, 20ak logged |
