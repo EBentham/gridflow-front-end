@@ -4,9 +4,46 @@ package: "super-stable-export-limit-contract-enactment"
 dataset_key: "ssel_contract_enactment"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-12
+updated: 2026-10-23
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: "All years are withheld together: from 2021-22, `Cost` is labelled £/h but described as a total."
+  title: Super SEL contract enactments
+  summary: >-
+    NESO's log of Super Stable Export Limit (Super SEL) contracts it enacted, each lowering a
+    generator's minimum generating level for a window.
+  facts:
+    vendor: "NESO Data Portal, package `super-stable-export-limit-contract-enactment`: six datastore tables"
+    cadence: NESO says it refreshes every ten minutes when changed; one table per financial year
+    grain: "Each row: one enactment, with its start and end in UTC"
+    history: "NESO dates the first table from July 2020; yearly tables 2020-21 to 2025-26"
+  landscape: market
+  what_it_is: >-
+    Super SEL lowers a synchronised generator's minimum generating level, cutting the total minimum
+    output of generators on the system. It need not change output: NESO enacts the contract by a
+    trading instruction, then dispatches the unit down through the Balancing Mechanism if required.
+    The 2020-21 table gives a MW reduction and a £/MW/hr price; later tables use NESO's enactment
+    columns.
+  how_used:
+    - How often and when NESO lowered generators' minimum levels
+    - "MW and price per enactment; the 2020-21 £/MW/hr is not a £/MWh price"
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then each yearly table's datastore dump, kept only
+      if its body changed. Shown: 2020-21, 2021-22 (the first in the later layout) and the newest.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=super-stable-export-limit-contract-enactment"
+      - "GET https://api.neso.energy/datastore/dump/835d50b9-2d7c-4318-bd04-c7f94b149041"
+      - "GET https://api.neso.energy/datastore/dump/bf9ca254-e9de-4aa2-841a-fb34566de38a"
+      - "GET https://api.neso.energy/datastore/dump/8e7168fa-8617-4d83-9696-d6bf1f09c9c5"
+    commands:
+      - {run: gridflow ingest neso_data_portal ssel_contract_enactment --last 24h, comment: "the six yearly dumps to bronze"}
+      - {run: gridflow transform neso_data_portal ssel_contract_enactment --last 24h, comment: "the capture's date to silver"}
+  related:
+    - {dataset: neso_data_portal/balancing-services-contract-enactment, note: "General contract enactments, in the same columns from 2021-22"}
+    - {dataset: neso_data_portal/index-linked-contract-volume, note: "Index-linked voltage contract enactments, in the same columns"}
+    - {dataset: neso_data_portal/constraint-breakdown, note: "NESO's daily constraint costs, to read beside these enactments by date"}
 ---
 
 # Super Stable Export Limit Contract Enactment
@@ -199,10 +236,10 @@ and that is why `available_at` is the capture time and not the delivery time.
 
 Silver columns beyond the vendor columns: `resource_id`, `timestamp_utc`, `published_at`,
 `bronze_capture_id`, `capture_written_at`, `event_time`, `available_at`, `source_run_id`,
-`dataset_version` (all timestamps tz-aware UTC; `dataset_version` `1+e1` is record version 1,
-epoch 1, and the modern resources carry the same value in the silver files read on 2026-10-12).
-`TODO: verify` whether epoch-2 rows should read `1+e2`. The measured silver value for every
-resource was `1+e1`.
+`dataset_version` (all timestamps tz-aware UTC). `dataset_version` `1+e1` is record version 1
+plus generic engine version 1, not an epoch number (gridflow `silver/neso_data_portal/generic.py:501`
+composes `f"{record.version}+e{ENGINE_VERSION}"`, with `ENGINE_VERSION = "1"` at line 107), so rows
+from both header epochs correctly carry `1+e1`, as measured on every resource on 2026-10-12.
 
 Silver files: `C:/gridflow-data/silver/neso_data_portal/ssel_contract_enactment/year=2026/month=10/`
 (one Parquet file per capture).

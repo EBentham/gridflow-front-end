@@ -4,9 +4,59 @@ package: "balancing-services-contract-enactment"
 dataset_keys: ["bs_contract_enactment_balancing", "bs_contract_enactment_balancing_service"]
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-12
+updated: 2026-10-23
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: true
+  title: Balancing services contract enactment
+  summary: >-
+    NESO's log of balancing service contracts its trading team enacted, days to hours before
+    delivery: when, how much and at what price.
+  facts:
+    vendor: "NESO Data Portal, package `balancing-services-contract-enactment`: six datastore tables, one ZIP"
+    cadence: NESO says its current file refreshes every ten minutes; one table per financial year
+    grain: "Each row: one contract enactment, with its delivery start and end"
+    history: "Yearly tables 2021-22 to 2026-27, none for 2024-25; older files in a ZIP"
+  landscape: market
+  what_it_is: >-
+    Days to hours ahead, NESO's trading team weighs trades against balancing service contracts and
+    enacts a contract when it is the most cost-effective action, for example to manage constraints
+    in Scotland or meet a reactive power need. NESO says an enactment usually involves no physical
+    exchange of energy. The yearly tables add `Cost`, a system-security flag and a reason.
+  how_used:
+    - Which units and counterparties NESO enacted contracts with, when, and for what reason
+    - "Average MW and £/MWh of each enactment, beside NESO's constraint costs"
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then each table's dump, kept if its body changed.
+      The archive ZIP, listed under the older table, is its own key, `bs_contract_enactment_files`.
+    commands:
+      - {run: gridflow ingest neso_data_portal bs_contract_enactment_balancing --last 24h, comment: "yearly dumps; swap in either key"}
+      - {run: gridflow transform neso_data_portal bs_contract_enactment_balancing --last 24h, comment: "the capture's date to silver"}
+      - {run: gridflow ingest neso_data_portal bs_contract_enactment_files --last 24h, comment: "the ZIP's own key, bronze only"}
+  family:
+    slug: balancing-services-contract-enactment
+    members:
+      - dataset: bs_contract_enactment_balancing
+        differs: "Five yearly tables from 2021-22, first and newest shown; times in UTC"
+        request:
+          - "GET https://api.neso.energy/api/3/action/package_show?id=balancing-services-contract-enactment"
+          - "GET https://api.neso.energy/datastore/dump/84837a48-8f5d-40d8-bc9f-53dd5e519447"
+          - "GET https://api.neso.energy/datastore/dump/183ecdfb-56e0-487d-8262-468ce1c78ed4"
+        held: "`Cost` is labelled £/h, but NESO describes it as a total: volume times price times duration."
+      - dataset: bs_contract_enactment_balancing_service
+        differs: "Older table; its name, Pre June 2021, is not an end date"
+        request:
+          - "GET https://api.neso.energy/api/3/action/package_show?id=balancing-services-contract-enactment"
+          - "GET https://api.neso.energy/datastore/dump/f75a1dcb-de6e-4c20-8407-e37d5e67cf79"
+          - "GET https://api.neso.energy/dataset/1a03230c-94c6-4816-bb93-e4450f31aa17/resource/46ec41f3-1307-4faa-90e0-4b05a7710681/download/archived-balancing-services-contract-enactment.zip"
+        held: Start times are dates only, and NESO gives no clock for the end and update times.
+  related:
+    - {dataset: neso_data_portal/index-linked-contract-volume, note: "Index-linked contract enactments for voltage, in the same columns"}
+    - {dataset: neso_data_portal/super-stable-export-limit-contract-enactment, note: "Super SEL enactments, in the same columns from 2021-22"}
+    - {dataset: neso_data_portal/historic-gtma-grid-trade-master-agreement-trades-data, note: "Trades by NESO's trading team, the other action it weighs"}
+    - {dataset: neso_data_portal/constraint-breakdown, note: "NESO's daily constraint costs, one reason it enacts these contracts"}
 ---
 
 # Balancing Services Contract Enactment

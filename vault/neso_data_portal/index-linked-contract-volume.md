@@ -4,9 +4,48 @@ package: "index-linked-contract-volume"
 dataset_key: "index_linked_contract_volume"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-12
+updated: 2026-10-23
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: "`Cost` is labelled £/h, but NESO describes it as a total: volume times price times duration."
+  title: Index Linked Contracted Energy Volume
+  summary: >-
+    NESO's log of the index-linked contracts it enacted, which it can use to meet voltage needs:
+    when, average MW, price and cost.
+  facts:
+    vendor: "NESO Data Portal, package Index Linked Contracted Energy Volume: four datastore tables, one ZIP"
+    cadence: NESO gives no update frequency; gridflow re-checks each table at most weekly
+    grain: "Each row: one contract enactment, with its delivery start and end"
+    history: "Yearly tables 2021-22 to 2024-25, as NESO names them; older files in a ZIP"
+  landscape: market
+  what_it_is: >-
+    NESO can meet a voltage need with an index-linked contract, normally enacted in the morning
+    before the power exchange auction. The generator is paid the agreed strike price, less any
+    positive generation spread, and compensated when the spread is negative; the spread comes
+    from outturn market indices. An archive ZIP holds older files of volumes by date and settlement
+    period.
+  how_used:
+    - When NESO enacted index-linked contracts, with which assets, and why
+    - "Average MW and £/MWh per enactment, beside NESO's voltage requirement and costs"
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then each yearly datastore dump (first and newest
+      shown), re-checked at most weekly, and the ZIP unless `last_modified` is unchanged.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=index-linked-contract-volume"
+      - "GET https://api.neso.energy/datastore/dump/8f694d01-68a5-41b9-9542-dd27c42fdbbf"
+      - "GET https://api.neso.energy/datastore/dump/9b72a2f5-db92-40ca-aa95-b9f1c56f7373"
+      - "GET https://api.neso.energy/dataset/ba632bb7-0bf8-4370-bfee-df3236aff285/resource/6e27b1d9-ae9a-4c13-8fe3-272d939ce984/download/archived-index-linked-contracted-energy-volume.zip"
+    commands:
+      - {run: gridflow ingest neso_data_portal index_linked_contract_volume --last 24h, comment: "the yearly dumps to bronze"}
+      - {run: gridflow transform neso_data_portal index_linked_contract_volume --last 24h, comment: "the capture's date to silver"}
+      - {run: gridflow ingest neso_data_portal index_linked_contract_volume_files --last 24h, comment: "the archive ZIP, bronze only"}
+  related:
+    - {dataset: neso_data_portal/voltage-requirement, note: "The voltage need NESO can meet with these contracts"}
+    - {dataset: neso_data_portal/outturn-voltage-costs, note: "NESO's monthly spend on voltage, by constraint group"}
+    - {dataset: neso_data_portal/day-ahead-power-exchange-prices-nordpool, note: "One GB day-ahead auction; NESO does not say which exchange it means"}
+    - {dataset: neso_data_portal/balancing-services-contract-enactment, note: "NESO's general contract enactments, in the same columns"}
 ---
 
 # Index Linked Contracted Energy Volume
