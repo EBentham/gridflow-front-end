@@ -490,7 +490,7 @@
     "system-inertia-cost": "System inertia cost",
     "system-operating-plan-sop": "System operating plan",
     "day-ahead-power-exchange-prices-nordpool": "Day-ahead power exchange prices (Nord Pool)",
-    "index-linked-contract-volume": "Index-linked contract volume",
+    "index-linked-contract-volume": "Index Linked Contracted Energy Volume",
     "super-stable-export-limit-contract-enactment": "Super SEL contract enactment",
     "interconnector-requirement-and-auction-summary-data": "Interconnector requirement and auction summary",
     "upcoming-trades": "Upcoming trades"
