@@ -7,6 +7,38 @@ skeleton: false
 updated: 2026-10-16
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: "NESO never defines its ESI weeks, and 2027's week 29 appears twice, with two peak dates."
+  title: Long-term national demand forecast
+  summary: >-
+    NESO's forecast of GB national demand 2 to 52 weeks ahead: each week's peak and minimums, in MW.
+  facts:
+    vendor: "NESO Data Portal, package Long Term (2-52 weeks ahead) National Demand Forecast: one CSV"
+    cadence: "Ad hoc, NESO says"
+    grain: "Each row: one forecast week, by NESO's week number and year labels"
+  landscape: power
+  what_it_is: >-
+    One row per week ahead, which NESO numbers as an ESI week under calendar and financial year
+    labels: the date of the week's peak and, in MW, the peak, minimum, minimum daytime and minimum
+    overnight demand. NESO counts national demand as GB's generation requirement, less station
+    load, pumped storage pumping and interconnector exports. No column gives an issue time.
+  how_used:
+    - Weekly peak and minimum GB demand, which NESO labels 2 to 52 weeks ahead
+    - "Balancing supply and demand positions, the purpose NESO states for it"
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then the CSV, downloaded whole unless its
+      `last_modified` is unchanged.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=long-term-2-52-weeks-ahead-national-demand-forecast"
+      - "GET https://api.neso.energy/dataset/edd6190a-66d4-480d-a125-88d32bd11c91/resource/903302b4-b577-4228-a347-b9917568b4e1/download/year_ahead_weekly.csv"
+    commands:
+      - {run: gridflow ingest neso_data_portal demand_forecast_2_52w --last 24h, comment: "a changed file to bronze"}
+      - {run: gridflow transform neso_data_portal demand_forecast_2_52w --last 24h, comment: "the capture's date to silver"}
+  related:
+    - {dataset: neso_data_portal/2-14-days-ahead-national-demand-forecast, note: "NESO's national demand forecast 2 to 14 days ahead"}
+    - {dataset: neso_data_portal/7-day-ahead-national-forecast, note: "A shorter-range NESO national demand forecast, for the next week"}
+    - {dataset: neso_data_portal/historic-demand-data, note: "National demand outturn by half hour, to set the forecasts against"}
 ---
 
 # Long Term (2-52 weeks ahead) National Demand Forecast
@@ -116,6 +148,8 @@ data values, samples or ranges. See Holds.
 unique: of 65 silver rows there are 64 distinct pairs, with one pair appearing twice. That pair
 is 2027 week 29, with `CDATE_peak` 2027-07-21 on one row and 2027-07-22 on the other (this is the
 hold question's own wording; gridflow `@docs/DECISION_LOG/ADR-036-neso-profiler-and-pilot-records.md`).
+The two rows are identical in all four MW columns and differ only by one day in `CDATE_peak`
+(silver, 2026-10-24). That points at a repeated row, but it does not prove one.
 `cdate_peak` alone has 65 distinct values and the full eight-column row has 65 distinct values,
 which is why the record takes every column as the entity key and `latest: whole_capture`. That
 key is a gridflow choice made so every row is preserved, not a vendor identity guarantee.
@@ -127,9 +161,17 @@ split week at a boundary, or an error.
 demand is forecast to occur" and `ESIWK` as "the ESI week the forecast is for". It defines
 neither the ESI week nor the financial year boundary. `TODO: verify` what "ESI" stands for in
 this column, the week start and end day, the numbering and how it rolls over at the year
-boundary against both year labels, which month the financial year starts in, and which label
+boundary against both year labels, which month the financial year starts in (the data suggest
+April: see the measurement below), and which label
 the row's `calendar_year` follows when a week straddles two years. Do not apply an ISO-week or
-a fixed-date conversion to `esiwk`.
+a fixed-date conversion to `esiwk`. Measured in the one capture (silver, 2026-10-24):
+`financial_year` equals `calendar_year` on every row except the 13 whose `CDATE_peak` falls from
+January to March 2027, which carry `financial_year` 2026. The label changes between peak dates
+2027-03-31 and 2027-04-05. That fits a financial year starting in April and labelled by its
+first calendar year, but NESO does not say so, and it is a measurement, not a definition.
+The numbering, measured the same way: `calendar_year` 2026 runs from ESI week 42 to week 53
+(week 53's peak date is 2026-12-30), and 2027 runs from week 1 (peak 2027-01-05) to week 52.
+So week numbers 42 to 52 occur under both years; only the pair 2027 and week 29 repeats.
 
 **`CDATE_peak`.** The dictionary defines it as "the date of the peak demand during that ESI week".
 It is a calendar date with no time of day and no zone, stored as a `date` with format
@@ -180,7 +222,9 @@ timestamps tz-aware UTC; `dataset_version` `1+e1` = record version 1, epoch 1).
   show this.
 - `TODO: verify` the vendor's update schedule. The resource description says only "ad hoc".
 - `TODO: verify` the forecast horizon the file actually covers against the documented 2-52 weeks
-  ahead. The row count (65) is more than 52, and the vendor does not explain it.
+  ahead. The row count (65) is more than 52, and the vendor does not explain it. Measured
+  (silver, 2026-10-24): peak dates run from 2026-10-15 to 2027-12-29, about 1 to 64 weeks after
+  the 2026-10-08 capture and about 2 to 65 weeks after the file's `last_modified` (2026-09-29).
 
 ## Licence and attribution
 

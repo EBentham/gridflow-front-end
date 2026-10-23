@@ -7,6 +7,42 @@ skeleton: false
 updated: 2026-10-09
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: "All rows stay out: NESO never states whether `Total` rows are out of 1 or 100."
+  title: School holiday percentages
+  summary: >-
+    NESO's daily calendar of public school holidays in GB, by local authority, with a
+    population-weighted national share.
+  facts:
+    vendor: "NESO Data Portal, package School Holiday Percentages: six yearly CSV files"
+    cadence: "Yearly, NESO says"
+    grain: "Each row: one local authority on one date, plus one `Total` row per date"
+    history: "School years 2021/22 to 2026/27, NESO lists"
+  landscape: power
+  what_it_is: >-
+    For each date, whether each local authority's public schools are on holiday (1 or 0), a
+    population multiplier, and a `Total` row NESO calls the population-weighted percentage on
+    holiday across GB. NESO takes the dates from local authority websites and leaves out private
+    schools and the City of London. It uses the data as an input to its demand models.
+  how_used:
+    - Which parts of GB are on school holiday on a given date
+    - A calendar input to demand models, as NESO uses it
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then each of six yearly files, downloaded whole
+      unless its `last_modified` is unchanged. Three are shown; 2024/25 writes dates day first.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=school-holiday-percentages"
+      - "GET https://api.neso.energy/dataset/c0e9769c-0a6b-460d-a6e6-c66515317a64/resource/48f922ef-b18f-4193-868c-e95c1f271b5c/download/school_holiday_2021_22.csv"
+      - "GET https://api.neso.energy/dataset/c0e9769c-0a6b-460d-a6e6-c66515317a64/resource/f2c25078-5721-4abd-b9e3-0fd6d839bb04/download/school_holiday_2024_25.csv"
+      - "GET https://api.neso.energy/dataset/c0e9769c-0a6b-460d-a6e6-c66515317a64/resource/5e4bb837-a43b-4709-91e6-ddf8ca9a660a/download/school_holiday_2026_27.csv"
+    commands:
+      - {run: gridflow ingest neso_data_portal school_holiday_percentages --last 24h, comment: "each changed yearly file to bronze"}
+      - {run: gridflow transform neso_data_portal school_holiday_percentages --last 24h, comment: "the capture's date to silver"}
+  related:
+    - {dataset: neso_data_portal/demand-profile-dates, note: "Past days NESO matches to forecast days, partly by calendar activities"}
+    - {dataset: neso_data_portal/historic-demand-data, note: "GB demand by half hour, to set against holiday dates"}
+    - {dataset: neso_data_portal/daily-demand-update, note: "This year's GB demand by half hour, updated daily"}
 ---
 
 # School Holiday Percentages
