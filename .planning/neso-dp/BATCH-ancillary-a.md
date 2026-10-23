@@ -108,3 +108,4 @@ https://github.com/EBentham/quant-vault/pull/64. Waiting for Bobbo's look. Merge
 - A page allows at most three commands (FFR post-tender needed four: two sibling ingests plus pipeline).
 - Bar-chart category labels longer than about 16 characters clip at 390 px (industry notifications).
 - Chart specs: the text-time parse runs before filters (rows with another format fail even when filtered out); no weekly or monthly bucket for long daily spans.
+- Chart and sample artefacts read every silver capture of a table; a table whose captures repeat rows needs a `dedup:` in its chart and frame (no default). Audited 2026-10-23: no approved page double-counts.

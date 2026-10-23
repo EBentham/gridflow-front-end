@@ -46,6 +46,17 @@ Known risks:
 `.planning/v5/p26/BATCH-rest.md` "Shared-worktree rules" and "Seat rulings carried over", and `BATCH-dfs.md`
 "Bobbo's rulings for NESO package pages", apply unchanged. Keep strictly to your own package's files.
 
+## Checked facts (start from these; do not re-claim the opposite)
+
+- **NESO does decode the reserve service codes** (checked 2026-10-23 by two checkers against the catalogue snapshot
+  `20261006T195819Z`): `quick-reserve-auction-requirement-forecast` reads "Negative Quick Reserve (NQR) and Positive
+  Quick Reserve (PQR)"; `slow-reserve-requirement-forecast` reads "Negative Slow Reserve (NSR) and Positive Slow Reserve
+  (PSR)"; the ASDP notes give "Regional Development Programme (RDP) MegaWatt (MW) Dispatch". A package whose own
+  dictionary leaves a code bare can cite these; never write that NESO decodes none of them.
+- **Chart and frame artefacts read every silver capture of a table.** If captures repeat rows, set `dedup:` on the
+  chart and frame (the OBP prices page is the example).
+- **The workbench `query()` returns times in the session zone (Europe/London here)**, not UTC: convert in the notebook.
+
 ## Tracker
 
 | # | Writer | Checker | State |
@@ -54,10 +65,11 @@ Known risks:
 | 1 | a7bdadeddd98e7449 | a9acc70ea35be78d3 | APPROVED (round 2 fixes seat-verified); committed fe d4016f1, vault 79941a2; 20n logged |
 | 2 | ab90e4f799035d73c | aa9f90d2aabec7096 | APPROVED (round 2 fixes seat-verified); committed; 20o logged |
 | 3 | abd18a84e1f5fabb1 | a7cca7dbb557ffe18 | APPROVED (round 2 fixes seat-verified); committed; 20p logged |
-| 4 | a1153f90d0765c153 | a90a0afe04c073de9 | checking (resumed 2026-10-23); 20q, 20r logged |
+| 4 | a1153f90d0765c153 | a90a0afe04c073de9 | APPROVED, nits fixed (seat-verified); committed; 20q, 20r logged |
 | 5 | a1aa64f9f77a3ac69 | | writing |
-| 6 | ad2a23efea2aeecaa | | writing |
-| 7-10 | | | not started |
+| 6 | ad2a23efea2aeecaa | ae6d34b6e498b163c | revising (REVISE: 1 major, 3 nits); 20s logged |
+| 7 | aa1a3c5e76550588d | | writing |
+| 8-10 | | | not started |
 
 ## Template follow-ups (seat items, not page findings)
 
