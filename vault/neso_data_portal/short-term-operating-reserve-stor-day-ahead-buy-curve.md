@@ -7,6 +7,140 @@ skeleton: false
 updated: 2026-10-14
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: STOR day-ahead buy curve
+  summary: >-
+    NESO's buy curve for the Short Term Operating Reserve (STOR) day-ahead auction: the maximum MW
+    and availability price for each day's assessment.
+  facts:
+    vendor: "NESO Data Portal: one uploaded CSV of NESO's daily STOR buy curves"
+    cadence: "Daily curves, the last for 31 March 2026; NESO marks the package Not Active"
+    grain: "One row per point: three points draw each service day's curve"
+    history: "Service days 1 April 2021 to 31 March 2026, bar 17 August 2022"
+  landscape: market
+  what_it_is: >-
+    NESO bought STOR in day-ahead auctions and published the buy curves used to assess them; its
+    file has no curve for 17 August 2022. Each curve is three points, MW against availability price,
+    drawing one step. NESO's hash file, shared before each auction, showed it had set the volume and
+    price cut-offs. NESO decommissioned STOR day-ahead after launching Slow Reserve.
+  how_used:
+    - "Each day's maximum availability price, £/MWh, beside its clearing price in £/MW/Hr"
+    - "NESO's maximum MW requirement per service day, and the dates it changed"
+    - "Joined to auction results on `buy_curve_id` to read each day's tenders against it"
+  chart:
+    type: line
+    silver: neso_data_portal/stor_da_buy_curve
+    time: effective_from_date
+    value: availability_price
+    aggregation: max
+    time_bucket: 1d
+    window: {start: "2025-04-01", end: "2026-03-31"}
+    unit: "£/MWh"
+  chart_view:
+    title: Maximum availability price, April 2025 to March 2026
+    caption: >-
+      Silver `stor_da_buy_curve`, `availability_price` in £/MWh (NESO's header): the price of each
+      service day's one-step curve, the highest of its three points, 1 April 2025 to 31 March 2026.
+      MW is 1,700 every day but 1 April 2025 (1,260).
+    alt: >-
+      Line chart from neso_data_portal/stor_da_buy_curve of the STOR buy curve's maximum availability
+      price per service day, £/MWh, 1 April 2025 to 31 March 2026, 365 days. From April to November it never
+      falls below 7.52 and peaks between 15.62 and 22.63 each month. December runs 6.91 to 13.81,
+      January peaks at 26.24 on the 20th, and March spans 6.82 on the 29th, the lowest, to 33.53 on
+      the 19th, the highest.
+    x_label: service day, starting 05:00 UK time
+    key:
+      - {series: availability_price, label: Maximum availability price, paint: petrol, note: "Highest 33.53 on 19 March 2026, lowest 6.82 on 29 March 2026; median 9.83."}
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: `package_show`, then the one CSV downloaded whole unless its
+      `last_modified` is unchanged. NESO's hash TXT is a separate key, `stor_da_buy_curve_files`,
+      with no silver.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=short-term-operating-reserve-stor-day-ahead-buy-curve"
+      - "GET https://api.neso.energy/dataset/0eb97ab8-61bd-4ac2-9619-10d80ae50e77/resource/8abc71ba-4484-4683-be68-5bc241b6ae7a/download/stor-da-auction-buy-curve-report.csv"
+    commands:
+      - {run: gridflow ingest neso_data_portal stor_da_buy_curve --last 24h, comment: "whole file; window must end recently"}
+      - {run: gridflow transform neso_data_portal stor_da_buy_curve --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: buy_curve_step_id, op: in, value: [BCS-5632, BCS-5633, BCS-5634, BCS-5635, BCS-5636, BCS-5637, BCS-5638, BCS-5639]}
+      order_by: [buy_curve_step_id]
+      columns: [buy_curve_id, effective_from_date, mw, availability_price, buy_curve_step_id,
+                effective_to_date, buy_curve_name, service_catalog, curve_to_be_applied_to]
+    key: [buy_curve_step_id]
+    caption: "28 March 2026 (23 hours) and 29 March whole; two of 30 March's three points."
+    fields:
+      buy_curve_step_id: "NESO's unique id for one point of a curve, `BCS-` and a number"
+      buy_curve_id: "NESO's id for the service day's curve, `BCN-` and a number"
+      effective_from_date: "Service day start, UTC with a `Z`: 05:00 UK time, so 04:00Z in summer"
+      mw: "MW at this point; NESO: the maximum MW for the maximum price"
+      availability_price: "Availability price at this point, £/MWh as NESO's column header writes it"
+      effective_to_date: "Service day end, likewise; 23 or 25 hours after the start at clock changes"
+      buy_curve_name: "`BCN-Short Term Operating Reserve-` and the curve id's number"
+      service_catalog: "The service the curve is for, `Short Term Operating Reserve` (NESO)"
+      curve_to_be_applied_to: "The service windows the curve applies to (NESO's dictionary)"
+      timestamp_utc: "Equals `effective_from_date`: the service day's start, UTC"
+      published_at: "NESO's last-modified time for the whole file, read as UTC; not the curve's"
+      bronze_capture_id: Path of the bronze capture the row was read from
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      `query()` reads the `_latest` view, filtering `timestamp_utc` (the service day's start) with both
+      dates included. Times come back in the session's zone; the query cell converts them to UTC.
+    cells:
+      - |
+        import pandas as pd
+        df = data.neso_data_portal.query("stor_da_buy_curve", "2021-04-01", "2026-03-31")
+        for col in df.select_dtypes("datetimetz"):
+            df[col] = df[col].dt.tz_convert("UTC")
+        uk = df.effective_from_date.dt.tz_convert("Europe/London")
+        df["day"] = pd.to_datetime(uk.dt.date)
+        pd.DataFrame({"uk_start": uk.dt.strftime("%H:%M"),
+            "hours": (df.effective_to_date - df.effective_from_date) / pd.Timedelta(hours=1),
+        }).value_counts().rename("rows").reset_index()
+      - |
+        def one_step(c):
+            q, p = c.mw.max(), c.availability_price.max()
+            return set(zip(c.mw, c.availability_price)) == {(q, 0), (q, p), (0, p)}
+        curves = df.groupby("day").agg(curve=("buy_curve_id", "first"),
+            curves=("buy_curve_id", "nunique"), points=("mw", "size"),
+            mw=("mw", "max"), price=("availability_price", "max"))
+        curves["one_step"] = df.groupby("day")[["mw", "availability_price"]].apply(one_step)
+        pd.Series({"service days in the file": len(curves),
+            "with one curve": (curves.curves == 1).sum(),
+            "with three points": (curves.points == 3).sum(),
+            "points (MW, 0), (MW, price), (0, price)": curves.one_step.sum()})
+      - |
+        res = data.neso_data_portal.query("stor_da_auction_results", "2021-04-01", "2026-03-31")
+        acc = res[res.status == "Accepted"].groupby("buy_curve_id").contracted_mw.sum()
+        j = curves.join(acc, on="curve")
+        j["contracted_above_mw"] = j.contracted_mw > j.mw
+        start = j.index.year - (j.index.month < 4)
+        j.groupby([f"{y}-{(y + 1) % 100:02d}" for y in start]).agg(days=("curve", "size"),
+            mw_low=("mw", "min"), mw_high=("mw", "max"), median_price=("price", "median"),
+            top_price=("price", "max"), days_accepted=("contracted_mw", "count"),
+            contracted_above_mw=("contracted_above_mw", "sum")).rename_axis("year").reset_index()
+      - |
+        import matplotlib.pyplot as plt
+        fig, ax = plt.subplots(figsize=(8, 3.5))
+        for day, colour in zip(["2021-04-01", "2025-04-01", "2025-10-16", "2026-03-19"],
+                               ["#155A6E", "#7A8B2E", "#B5562F", "#4F7FA8"]):
+            c = df[df.day == day].sort_values(["availability_price", "mw"], ascending=[True, False])
+            ax.plot(c.mw, c.availability_price, marker="o", color=colour, label=day)
+        ax.set(xlabel="MW", ylabel="availability price, £/MWh", xlim=(0, 1800), ylim=(0, None))
+        ax.legend(title="service day", fontsize=8, loc="upper left", bbox_to_anchor=(1.01, 1));
+    needs: captures of the buy-curve and auction-results files
+    plot_alt: >-
+      Step curves of four STOR service days, MW against availability price in £/MWh. Each is flat at
+      its price from 0 MW to its MW, then drops to zero: 1,311 MW at 6.78 on 1 April 2021, 1,260 at
+      13.08 on 1 April 2025, 1,700 at 21.50 on 16 October 2025 and 1,700 at 33.53 on 19 March 2026.
+  related:
+    - {dataset: neso_data_portal/short-term-operating-reserve-stor-day-ahead-auction-results, note: "The tenders each day's curve assessed, linked on `buy_curve_id`"}
+    - {dataset: neso_data_portal/stor-windows, note: "Committed windows for each STOR service day, where STOR must be provided"}
+    - {dataset: neso_data_portal/as_industry_notifications_stor_important, note: NESO's notices of STOR auction delays and failures}
+    - {dataset: neso_data_portal/eac-auction-results, note: "Slow Reserve auctions; NESO ended STOR day-ahead after launching them"}
 ---
 
 # Short Term Operating Reserve (STOR) day ahead buy curve
