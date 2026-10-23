@@ -7,6 +7,40 @@ skeleton: false
 updated: 2026-10-10
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: "One row in NESO's 9 October 2026 file; how a month's MVAr is totalled is unstated."
+  title: Voltage service utilisation by unit
+  summary: >-
+    NESO's monthly record of the reactive power each unit contracted to NESO's Voltage 2026 service
+    injected and absorbed on Control Room instructions.
+  facts:
+    vendor: "NESO Data Portal, package Monthly Utilisation data of Voltage Contracted units: one CSV file"
+    cadence: "Monthly, as NESO lists it; updates from 9 October 2026, NESO notes"
+    grain: "One row per BMU ID and month; NESO states no key"
+  landscape: market
+  what_it_is: >-
+    Units contracted in NESO's Voltage 2026 service inject or absorb reactive power when its
+    Control Room instructs them. Each row is one BMU ID's month: injection (lag), absorption (lead)
+    and the two combined. NESO labels all three MVAr, a unit of power, not energy, without
+    saying how a month is totalled; its dictionary examples are positive, its file's absorption negative.
+  how_used:
+    - "Which contracted units NESO calls on for voltage support, and how much, by month"
+    - "Read beside NESO's monthly voltage costs, which are by constraint group, not by unit"
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then the file downloaded whole unless its
+      `last_modified` is unchanged; dates select nothing.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=monthly-utilisation-data-of-voltage-contracted-units"
+      - "GET https://api.neso.energy/dataset/f8386ee1-4e9c-474d-afbf-6339852c898b/resource/e13539d0-eed0-4561-82a4-4517c14253c1/download/utilisation-report.csv"
+    commands:
+      - {run: gridflow ingest neso_data_portal voltage_units_utilisation --last 24h, comment: "whole file; window must end recently"}
+      - {run: gridflow transform neso_data_portal voltage_units_utilisation --last 24h, comment: "the capture's date to silver"}
+  related:
+    - {dataset: neso_data_portal/outturn-voltage-costs, note: "Monthly voltage costs in £m by constraint group, not by unit"}
+    - {dataset: neso_data_portal/obligatory-reactive-power-service-orps-utilisation, note: "Reactive power NESO asks of Grid Code generators, by unit and month"}
+    - {dataset: neso_data_portal/voltage-requirement, note: "Voltage machines NESO expects to need overnight, by voltage group"}
+    - {dataset: neso_data_portal/constraint-breakdown, note: "Daily voltage constraint costs, which NESO ties to reactive-power balance"}
 ---
 
 # Monthly Utilisation data of Voltage Contracted units
@@ -113,6 +147,10 @@ body has no blanks, `-1`, `N/A`, `NA`, zeros, thousands separators, currency sym
 signs in the value cells. **Negative quantities are real values and survive unchanged.** The one
 row carries a negative absorption and a negative combined total. The combined column equals
 injection plus absorption in that row (a measured check on one row, not a vendor guarantee).
+The dictionary's examples are all positive (injection `198`, absorption `4312`, total `4512`), so
+the captured file's negative absorption and signed total do not follow them. NESO does not explain
+the negative absorption, and its example total of `4512` is not the sum of its examples `198` and
+`4312` (field-info snapshot `20261008T114228Z`, `voltage_units_utilisation.json`).
 
 **Identifiers stored as-is.** The BMU ID of the captured row is the composite label
 `THURB-1,2 & 3`, quoted in the CSV because it contains commas and an ampersand. It is stored
