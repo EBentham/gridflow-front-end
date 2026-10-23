@@ -1,0 +1,196 @@
+{
+ "dataset": "neso_data_portal/outturn_voltage_costs_main",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "373b162255f53b031602faf94483539df544d712d1d5d34c73c253ab63bc1e0c",
+ "silver": "neso_data_portal/outturn_voltage_costs_main",
+ "columns": [
+  {
+   "name": "settlement_month",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "voltage_constraint_group",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "sync_costs_gbp_m",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "utilisation_costs_gbp_m",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "coordinates",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2025-05-01",
+   "Dumfries & Galloway",
+   "0.0",
+   "0.402147",
+   "(54.495568, -2.7246094)",
+   "2025-04-30 23:00:00 UTC",
+   "2025-06-23 11:40:39.592575 UTC",
+   "bronze/neso_data_portal/outturn_voltage_costs_main/2026/10/08/raw_20261008T111645Z_073f9ffa-05d5-47e5-8835-e1ac31b7656d_da93654c.csv",
+   "2026-10-08 11:16:45.428605 UTC",
+   "2025-04-30 23:00:00 UTC",
+   "2025-06-23 11:40:39.592575 UTC",
+   "1ac4ee28-07b5-4675-a024-528c5666abda",
+   "1+e1"
+  ],
+  [
+   "2025-05-01",
+   "E ENGLAND",
+   "2.954512",
+   "1.213178",
+   "(52.569673, 1.0546875)",
+   "2025-04-30 23:00:00 UTC",
+   "2025-06-23 11:40:39.592575 UTC",
+   "bronze/neso_data_portal/outturn_voltage_costs_main/2026/10/08/raw_20261008T111645Z_073f9ffa-05d5-47e5-8835-e1ac31b7656d_da93654c.csv",
+   "2026-10-08 11:16:45.428605 UTC",
+   "2025-04-30 23:00:00 UTC",
+   "2025-06-23 11:40:39.592575 UTC",
+   "1ac4ee28-07b5-4675-a024-528c5666abda",
+   "1+e1"
+  ],
+  [
+   "2025-05-01",
+   "EAST MIDLANDS",
+   "4.849",
+   "1.40552",
+   "(52.925463, -0.24169922)",
+   "2025-04-30 23:00:00 UTC",
+   "2025-06-23 11:40:39.592575 UTC",
+   "bronze/neso_data_portal/outturn_voltage_costs_main/2026/10/08/raw_20261008T111645Z_073f9ffa-05d5-47e5-8835-e1ac31b7656d_da93654c.csv",
+   "2026-10-08 11:16:45.428605 UTC",
+   "2025-04-30 23:00:00 UTC",
+   "2025-06-23 11:40:39.592575 UTC",
+   "1ac4ee28-07b5-4675-a024-528c5666abda",
+   "1+e1"
+  ],
+  [
+   "2025-05-01",
+   "S WALES",
+   "6.215254",
+   "0.836751",
+   "(51.828988, -3.8452148)",
+   "2025-04-30 23:00:00 UTC",
+   "2025-06-23 11:40:39.592575 UTC",
+   "bronze/neso_data_portal/outturn_voltage_costs_main/2026/10/08/raw_20261008T111645Z_073f9ffa-05d5-47e5-8835-e1ac31b7656d_da93654c.csv",
+   "2026-10-08 11:16:45.428605 UTC",
+   "2025-04-30 23:00:00 UTC",
+   "2025-06-23 11:40:39.592575 UTC",
+   "1ac4ee28-07b5-4675-a024-528c5666abda",
+   "1+e1"
+  ],
+  [
+   "2025-05-01",
+   "SE ENGLAND",
+   "7.04",
+   "2.385287",
+   "(50.972265, 0.3515625)",
+   "2025-04-30 23:00:00 UTC",
+   "2025-06-23 11:40:39.592575 UTC",
+   "bronze/neso_data_portal/outturn_voltage_costs_main/2026/10/08/raw_20261008T111645Z_073f9ffa-05d5-47e5-8835-e1ac31b7656d_da93654c.csv",
+   "2026-10-08 11:16:45.428605 UTC",
+   "2025-04-30 23:00:00 UTC",
+   "2025-06-23 11:40:39.592575 UTC",
+   "1ac4ee28-07b5-4675-a024-528c5666abda",
+   "1+e1"
+  ],
+  [
+   "2025-05-01",
+   "SOUTH YORKS",
+   "0.0",
+   "0.0",
+   "(53.618579, -1.1535645)",
+   "2025-04-30 23:00:00 UTC",
+   "2025-06-23 11:40:39.592575 UTC",
+   "bronze/neso_data_portal/outturn_voltage_costs_main/2026/10/08/raw_20261008T111645Z_073f9ffa-05d5-47e5-8835-e1ac31b7656d_da93654c.csv",
+   "2026-10-08 11:16:45.428605 UTC",
+   "2025-04-30 23:00:00 UTC",
+   "2025-06-23 11:40:39.592575 UTC",
+   "1ac4ee28-07b5-4675-a024-528c5666abda",
+   "1+e1"
+  ],
+  [
+   "2025-05-01",
+   "SW ENGLAND",
+   "4.392431",
+   "0.115886",
+   "(50.944584, -3.2519531)",
+   "2025-04-30 23:00:00 UTC",
+   "2025-06-23 11:40:39.592575 UTC",
+   "bronze/neso_data_portal/outturn_voltage_costs_main/2026/10/08/raw_20261008T111645Z_073f9ffa-05d5-47e5-8835-e1ac31b7656d_da93654c.csv",
+   "2026-10-08 11:16:45.428605 UTC",
+   "2025-04-30 23:00:00 UTC",
+   "2025-06-23 11:40:39.592575 UTC",
+   "1ac4ee28-07b5-4675-a024-528c5666abda",
+   "1+e1"
+  ],
+  [
+   "2025-05-01",
+   "W CORRIDOR",
+   "0.0",
+   "1.159006",
+   "(53.871963, -2.713623)",
+   "2025-04-30 23:00:00 UTC",
+   "2025-06-23 11:40:39.592575 UTC",
+   "bronze/neso_data_portal/outturn_voltage_costs_main/2026/10/08/raw_20261008T111645Z_073f9ffa-05d5-47e5-8835-e1ac31b7656d_da93654c.csv",
+   "2026-10-08 11:16:45.428605 UTC",
+   "2025-04-30 23:00:00 UTC",
+   "2025-06-23 11:40:39.592575 UTC",
+   "1ac4ee28-07b5-4675-a024-528c5666abda",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}
