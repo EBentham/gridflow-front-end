@@ -70,7 +70,7 @@ the lead table's columns; describe a second table's columns in its member line.
 |---|---|---|---|
 | 1 | ab701b35a12d38c04 | | writing |
 | 2 | | | not started |
-| 3 | | | not started |
+| 3 | ab264ea28a0b271b2 | | writing |
 | 4 | a433a0c274e3774e4 | | writing |
 | 5 | | | not started |
 | H1 | | | not started |
