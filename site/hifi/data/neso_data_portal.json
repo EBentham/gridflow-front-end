@@ -113,7 +113,17 @@
         "constraint-management-intertrip-service-information-cmis",
         "day-ahead-constraint-flows-and-limits",
         "operational-transparency-forum-network-congestion-data",
-        "voltage-requirement"
+        "voltage-requirement",
+        "etys-gb-transmission-system-boundaries",
+        "gis-boundaries-for-gb-dno-license-areas",
+        "gis-boundaries-for-gb-grid-supply-points",
+        "monthly-utilisation-data-of-voltage-contracted-units",
+        "stability-midterm-y-1-utilisation-report",
+        "stability-pathfinder-service-information",
+        "system-frequency-data",
+        "system-inertia",
+        "system-inertia-cost",
+        "system-operating-plan-sop"
       ]
     }
   ],
@@ -351,6 +361,28 @@
         "outturn_voltage_costs_main",
         "outturn_voltage_costs_historical"
       ]
+    },
+    {
+      "slug": "stability-pathfinder-service-information",
+      "title": "Stability pathfinder service information",
+      "note": "stability-pathfinder-service-information",
+      "members": [
+        "stability_pathfinder_availability_report",
+        "stability_pathfinder_utilisation_report"
+      ]
+    },
+    {
+      "slug": "system-frequency-data",
+      "title": "System frequency",
+      "note": "system-frequency-data",
+      "members": [
+        "system_frequency",
+        "system_frequency_dmy_csv",
+        "system_frequency_gmt_csv",
+        "system_frequency_gmt_zip",
+        "system_frequency_offset_csv",
+        "system_frequency_offset_zip"
+      ]
     }
   ],
   "names": {
@@ -386,7 +418,15 @@
     "constraint-management-intertrip-service-information-cmis": "Constraint management intertrip service",
     "day-ahead-constraint-flows-and-limits": "Day-ahead constraint flows and limits",
     "operational-transparency-forum-network-congestion-data": "OTF network congestion",
-    "voltage-requirement": "Voltage requirement"
+    "voltage-requirement": "Voltage requirement",
+    "etys-gb-transmission-system-boundaries": "ETYS transmission boundaries",
+    "gis-boundaries-for-gb-dno-license-areas": "DNO licence area boundaries",
+    "gis-boundaries-for-gb-grid-supply-points": "Grid supply point boundaries",
+    "monthly-utilisation-data-of-voltage-contracted-units": "Voltage contracted units utilisation",
+    "stability-midterm-y-1-utilisation-report": "Stability mid-term Y-1 utilisation",
+    "system-inertia": "System inertia",
+    "system-inertia-cost": "System inertia cost",
+    "system-operating-plan-sop": "System operating plan"
   },
   "dropped": {},
   "package_tables": {
@@ -419,7 +459,15 @@
     "constraint-management-intertrip-service-information-cmis": "cmis_intertrip",
     "day-ahead-constraint-flows-and-limits": "da_constraint_flows_limits",
     "operational-transparency-forum-network-congestion-data": "otf_network_congestion",
-    "voltage-requirement": "voltage_requirement"
+    "voltage-requirement": "voltage_requirement",
+    "etys-gb-transmission-system-boundaries": "etys_boundaries_files",
+    "gis-boundaries-for-gb-dno-license-areas": "gis_dno_license_areas_files",
+    "gis-boundaries-for-gb-grid-supply-points": "gis_grid_supply_points",
+    "monthly-utilisation-data-of-voltage-contracted-units": "voltage_units_utilisation",
+    "stability-midterm-y-1-utilisation-report": "stability_midterm_y1",
+    "system-inertia": "system_inertia",
+    "system-inertia-cost": "system_inertia_cost",
+    "system-operating-plan-sop": "system_operating_plan"
   },
   "catalogue": {
     "_about": "NESO's catalogue as the hub draws it: its data groups in portal order, each with NESO's description and its packages (NESO's titles and CKAN names). `page_packages` names the CKAN package of a page not named after it; a package is a link when a page in `groups` documents it. `plan` lays the groups out as plots: a slug is one plot, `row` sets its children side by side, `col` stacks them; `wide` from 1100 px, `narrow` below, and `tag_narrow` plots carry their name beneath them when narrow.",

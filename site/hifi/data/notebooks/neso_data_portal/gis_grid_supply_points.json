@@ -1,0 +1,156 @@
+{
+ "dataset": "neso_data_portal/gis_grid_supply_points",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "9097e9875d4834713832278590a49bcf4a8bbf7dc453ca811c4245067abf2a59",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.sql(\"\"\"\n    SELECT ggd_id, gnode_name, gsp_name, dc_name, region_id, region_name,\n           pes_id, pes_name, has_pv, gnode_lat, gnode_lon, gsp_lat, gsp_lon\n    FROM silver_neso_data_portal_gis_grid_supply_points_latest\n    ORDER BY ggd_id\n\"\"\")\ndf[[\"ggd_id\", \"gnode_name\", \"gsp_name\", \"dc_name\", \"region_name\", \"pes_name\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "ggd_id",
+      "gnode_name",
+      "gsp_name",
+      "dc_name",
+      "region_name",
+      "pes_name"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "1",
+       "COWL",
+       "COWL_1",
+       "NaN",
+       "Cowley",
+       "_H"
+      ],
+      [
+       "2",
+       "ECLA",
+       "ECLA_1",
+       "NaN",
+       "East Claydon",
+       "_B"
+      ],
+      [
+       "3",
+       "ENDEDW",
+       "ENDE_1",
+       "NaN",
+       "Enderby",
+       "_B"
+      ],
+      [
+       "4",
+       "GRENDW",
+       "GREN_1",
+       "NaN",
+       "Grendon",
+       "_B"
+      ],
+      [
+       "5",
+       "RATS",
+       "RATS_1",
+       "NaN",
+       "Ratcliffe",
+       "_B"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "df.assign(gsp=df.gsp_name.notna(), gnode=df.gnode_name.notna(),\n          direct_connect=df.dc_name.notna()).value_counts([\"gsp\", \"gnode\", \"direct_connect\"])",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "gsp    gnode  direct_connect\nTrue   True   False             356\nFalse  True   True               19\nTrue   False  False               4\nFalse  True   False               1\nName: count, dtype: int64"
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "df.dropna(subset=[\"gsp_name\"]).groupby(\"pes_name\").gsp_name.nunique().sort_values(ascending=False)",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "pes_name\n_N    80\n_P    63\n_M    21\n_H    21\n_A    20\n_F    20\n_G    19\n_C    18\n_E    16\n_B    14\n_D    13\n_J    12\n_K    11\n_L    10\nName: gsp_name, dtype: int64"
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "source": "gsp = df.dropna(subset=[\"gsp_lat\"]).drop_duplicates(\"gsp_name\")\nax = gsp.plot.scatter(x=\"gsp_lon\", y=\"gsp_lat\", c=\"pes_id\", cmap=\"tab20\", s=8,\n                      figsize=(4.5, 6), colorbar=False, xlabel=\"longitude\", ylabel=\"latitude\")\nax.set_aspect(1.6);",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "gis_grid_supply_points-6.png",
+     "width": 352,
+     "height": 529
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,275 @@
+{
+ "dataset": "neso_data_portal/stability_midterm_y1",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "0c1765fd1fe15485cea81b9cfe63fd13e5b7e0e7c83727e67496a5d66bd4d472",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.neso_data_portal.query(\"stability_midterm_y1\", \"2025-10-01\", \"2026-08-31\")\ntimes = [\"utilisation_start_datetime\", \"utilisation_end_datetime\", \"timestamp_utc\"]\ndf[times] = df[times].apply(lambda c: c.dt.tz_convert(\"UTC\"))\ndf = df.sort_values([\"utilisation_start_datetime\", \"bmu_id\"], ignore_index=True)\ndf[[\"bmu_id\", \"month_and_year\", \"utilisation_start_datetime\", \"utilisation_end_datetime\", \"hours_utilised\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "bmu_id",
+      "month_and_year",
+      "utilisation_start_datetime",
+      "utilisation_end_datetime",
+      "hours_utilised"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "CRUA-4",
+       "2025-10-01",
+       "2025-10-04 21:12:00+00:00",
+       "2025-10-04 22:23:00+00:00",
+       "01:11:00"
+      ],
+      [
+       "CRUA-4",
+       "2025-10-01",
+       "2025-10-25 02:03:00+00:00",
+       "2025-10-25 03:15:00+00:00",
+       "01:12:00"
+      ],
+      [
+       "CRUA-4",
+       "2025-11-01",
+       "2025-11-10 16:01:00+00:00",
+       "2025-11-10 16:17:00+00:00",
+       "00:16:00"
+      ],
+      [
+       "DEEPS-1",
+       "2026-04-01",
+       "2026-04-03 20:45:00+00:00",
+       "2026-04-08 23:46:00+00:00",
+       "123:01:12"
+      ],
+      [
+       "DEEPS-1",
+       "2026-04-01",
+       "2026-04-09 00:03:00+00:00",
+       "2026-04-09 18:03:00+00:00",
+       "18:00:00"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "hours = (df.utilisation_end_datetime - df.utilisation_start_datetime).dt.total_seconds() / 3600\nparts = df.hours_utilised.str.split(\":\", expand=True).astype(float).fillna(0)\nstated = parts[0] + parts[1] / 60 + parts[2] / 3600\noff = ((stated - hours) * 3600).round().astype(int)\ndf.assign(seconds_off=off).loc[off != 0, [\"bmu_id\", \"utilisation_start_datetime\", \"hours_utilised\", \"seconds_off\"]]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "bmu_id",
+      "utilisation_start_datetime",
+      "hours_utilised",
+      "seconds_off"
+     ],
+     "index": [
+      "3",
+      "5",
+      "6",
+      "7"
+     ],
+     "rows": [
+      [
+       "DEEPS-1",
+       "2026-04-03 20:45:00+00:00",
+       "123:01:12",
+       "12"
+      ],
+      [
+       "DEEPS-1",
+       "2026-04-09 21:06:00+00:00",
+       "09:19:12",
+       "12"
+      ],
+      [
+       "DEEPS-1",
+       "2026-04-12 22:20:00+00:00",
+       "265:28:48",
+       "-12"
+      ],
+      [
+       "DEEPS-1",
+       "2026-04-23 23:50:00+00:00",
+       "12:07:12",
+       "12"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "import pandas as pd\nmonths = pd.date_range(\"2025-10-01\", \"2026-08-01\", freq=\"MS\")\nmonthly = (df.assign(hours=hours, month=pd.to_datetime(df.month_and_year))\n             .pivot_table(index=\"month\", columns=\"bmu_id\", values=\"hours\", aggfunc=\"sum\")\n             .reindex(months))\nmonthly.index = monthly.index.strftime(\"%b %y\")\nmonthly.round(1)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "bmu_id",
+      "CRUA-2",
+      "CRUA-4",
+      "DEEPS-1",
+      "HIRWN-1"
+     ],
+     "index": [
+      "Oct 25",
+      "Nov 25",
+      "Dec 25",
+      "Jan 26",
+      "Feb 26",
+      "Mar 26",
+      "Apr 26",
+      "May 26",
+      "Jun 26",
+      "Jul 26",
+      "Aug 26"
+     ],
+     "rows": [
+      [
+       "NaN",
+       "2.4",
+       "NaN",
+       "NaN"
+      ],
+      [
+       "NaN",
+       "0.3",
+       "NaN",
+       "NaN"
+      ],
+      [
+       "NaN",
+       "NaN",
+       "NaN",
+       "NaN"
+      ],
+      [
+       "NaN",
+       "NaN",
+       "NaN",
+       "NaN"
+      ],
+      [
+       "NaN",
+       "NaN",
+       "NaN",
+       "NaN"
+      ],
+      [
+       "NaN",
+       "NaN",
+       "NaN",
+       "NaN"
+      ],
+      [
+       "NaN",
+       "NaN",
+       "514.5",
+       "NaN"
+      ],
+      [
+       "4.0",
+       "NaN",
+       "325.9",
+       "13.5"
+      ],
+      [
+       "25.2",
+       "NaN",
+       "487.9",
+       "446.0"
+      ],
+      [
+       "NaN",
+       "NaN",
+       "412.4",
+       "411.6"
+      ],
+      [
+       "NaN",
+       "NaN",
+       "392.2",
+       "467.1"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "source": "ax = monthly.plot.bar(figsize=(8, 3.5), width=0.8, rot=0,\n                      color=[\"#8A6D3B\", \"#C77E3C\", \"#155A6E\", \"#6B7F3A\"],\n                      xlabel=\"NESO month label\", ylabel=\"hours, cease minus start\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "stability_midterm_y1-6.png",
+     "width": 699,
+     "height": 337
+    }
+   ]
+  }
+ ]
+}
