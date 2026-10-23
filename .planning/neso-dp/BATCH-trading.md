@@ -54,6 +54,6 @@ time, `query()` filters on the capture time (remediation 20at): use `data.sql()`
 
 | # | Writer | Checker | State |
 |---|---|---|---|
-| 1 | afd2889b06d512586 | a96ad836058109e39 | checking; 20az, 20ba logged |
-| H1 | ab801ef4b9396fd64 | ad23a4f1b295468b5 | checking; 20bb, 20bc logged |
+| 1 | afd2889b06d512586 | a96ad836058109e39 | APPROVED (round 2 fixes seat-verified); committed; 20az, 20ba logged |
+| H1 | ab801ef4b9396fd64 | ad23a4f1b295468b5 | APPROVED x3 (round 2 fixes seat-verified); committed; 20bb, 20bc logged |
 | H2 | | | not started |
