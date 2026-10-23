@@ -4,9 +4,128 @@ package: "optional-downward-flexibility-management-odfm-market-information"
 dataset_keys: ["odfm_market_information_instructed", "odfm_market_information_load_factors", "odfm_market_information_results"]
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-13
+updated: 2026-10-23
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: ODFM market information
+  summary: >-
+    NESO's record of the Optional Downward Flexibility Management (ODFM) service, summers 2020 and
+    2021: a day's instructed MW, load factors, bid results.
+  facts:
+    vendor: "NESO Data Portal: five CSV files and eight PDF reports and papers"
+    cadence: None; NESO marks the package Not Active and says the service has ended
+    grain: "Instructed table: one national MW value per settlement period"
+    history: NESO ran the service across the summers of 2020 and 2021
+  landscape: market
+  what_it_is: >-
+    NESO, then the ESO, ran ODFM in the summers of 2020 and 2021, when COVID-19 restrictions
+    risked long low-demand periods, to reach downward flexibility outside the Balancing Mechanism
+    and the Platform for Ancillary Services. The table shown is the forecast MW NESO instructed for
+    5 July 2020, per half-hour, republished after the day to correct errors. No provider or price.
+  how_used:
+    - "The shape of one ODFM instruction: ramp, midday peak, zero from 20:00 BST"
+    - Reading that day's BMRS demand forecast, which NESO says already allowed for it
+    - With NESO's report for the day, which lists the technologies that provided it
+  chart:
+    type: line
+    silver: neso_data_portal/odfm_market_information_instructed
+    time: timestamp_utc
+    value: odfm_instructed_mw
+    aggregation: last
+    window: {start: "2020-07-04", end: "2020-07-05"}
+    unit: MW
+  chart_view:
+    title: ODFM instructed for 5 July 2020, MW per half-hour
+    caption: >-
+      Silver `odfm_market_information_instructed`, NESO's corrected file: forecast MW instructed for
+      each settlement period, from the one starting 23:00 BST on 4 July to 23:00 BST on 5 July 2020,
+      at its UTC start. One national value; NESO states no sign.
+    alt: >-
+      Line chart from neso_data_portal/odfm_market_information_instructed of the forecast ODFM MW
+      NESO instructed per half-hour, 22:00 UTC on 4 July to 22:00 UTC on 5 July 2020. Zero for the
+      first two periods, 66 MW at 23:00 UTC, rising to a peak of 2,194 MW at 11:30 UTC, then falling
+      to 150 MW at 18:30 UTC and zero from 19:00 UTC to the end.
+    x_label: Period start, UTC, 4 to 5 July 2020
+    y_min: -80
+    key:
+      - {series: odfm_instructed_mw, label: Instructed MW, codes: ODFM Instructed MW, paint: petrol, note: "Non-zero in the periods labelled 00:00 to 19:30; NESO's report gives delivery 00:00 to 20:00."}
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: `package_show`, then each CSV downloaded whole unless its
+      `last_modified` is unchanged. Dates select nothing. Swap in any member's key.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=optional-downward-flexibility-management-odfm-market-information"
+    commands:
+      - {run: gridflow ingest neso_data_portal odfm_market_information_instructed --last 24h, comment: "whole files; window must end recently"}
+      - {run: gridflow transform neso_data_portal odfm_market_information_instructed --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: timestamp_utc, op: ge, value: "2020-07-04T22:00:00Z"}
+        - {column: timestamp_utc, op: lt, value: "2020-07-05T02:00:00Z"}
+      order_by: [timestamp_utc]
+      columns: [settlement_date, settlement_period, time_label, odfm_instructed_mw, timestamp_utc,
+                published_at, resource_id]
+    key: [resource_id, settlement_date, settlement_period]
+    caption: "First eight rows: periods 47 and 48 of 4 July, 1 to 6 of 5 July."
+    fields:
+      resource_id: "CKAN id of NESO's corrected V2 file; the first upload is not loaded"
+      settlement_date: "Settlement day the period belongs to; NESO's `Date`, read day first"
+      settlement_period: "Half-hour of the settlement day; period 1 starts 00:00 UK time"
+      time_label: "NESO's `Time` text, no zone marker; here it matches each period's BST start"
+      odfm_instructed_mw: "Forecast MW instructed for the half-hour (NESO); zero or more here, no sign stated"
+      timestamp_utc: Start of the settlement period, UTC, computed from date and period
+      published_at: "The file's portal last-modified time, read as UTC: 8 July 2020"
+      bronze_capture_id: Path of the bronze capture the row was read from
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      `query()` reads `silver_neso_data_portal_odfm_market_information_instructed_latest`, filtering
+      `settlement_date` with both ends included, ordered by that date only. Times come back in the
+      session's zone; the first query cell sorts and converts to UTC.
+    cells:
+      - |
+        df = data.neso_data_portal.query(
+            "odfm_market_information_instructed", "2020-07-04", "2020-07-05")
+        df = df.sort_values("timestamp_utc")
+        df["timestamp_utc"] = df.timestamp_utc.dt.tz_convert("UTC")
+      - |
+        bst = df.timestamp_utc.dt.tz_convert("Europe/London").dt.strftime("%H:%M")
+        print((bst == df.time_label).sum(), "of", len(df), "Time labels equal the period's UK start")
+        df[["settlement_date", "settlement_period", "time_label", "timestamp_utc",
+            "odfm_instructed_mw"]].head()
+      - |
+        ax = df.plot(x="timestamp_utc", y="odfm_instructed_mw", drawstyle="steps-post",
+                     legend=False, figsize=(8, 3))
+        ax.set(xlabel="period start, UTC", ylabel="instructed MW");
+    needs: NESO's ODFM instructed-volume file
+    plot_alt: >-
+      Step plot of instructed MW against period start, UTC, from 22:00 on 4 July to 22:00 on 5 July
+      2020: zero, then 66 MW at 23:00, rising to 2,194 MW at 11:30, falling to 150 MW at 18:30 and
+      zero from 19:00.
+  related:
+    - {dataset: elexon/ndf, note: "BMRS demand forecast; NESO says it was already adjusted for this"}
+    - {dataset: elexon/indo, note: National demand outturn for the same settlement periods}
+    - {dataset: neso_data_portal/demand-flexibility, note: "NESO's later flexibility service, whose events include Downwards ones"}
+  family:
+    slug: optional-downward-flexibility-management-odfm-market-information
+    members:
+      - dataset: odfm_market_information_instructed
+        differs: "Instructed MW for 5 July 2020, from V2; NESO's first upload is not loaded"
+        request:
+          - "GET https://api.neso.energy/dataset/23ec7a9f-6220-4d1e-9099-e9195a2ed177/resource/5c507a16-d2f3-44df-b1bb-98acc0d74e1c/download/odfm-instructed-volume-for-05-07-2020-v2.csv"
+          - "GET https://api.neso.energy/dataset/23ec7a9f-6220-4d1e-9099-e9195a2ed177/resource/f0a52698-5f80-4fb7-ad64-ede99015195f/download/odfm-instructed-volume-for-05-07-2020.csv"
+      - dataset: odfm_market_information_load_factors
+        differs: Load factors by network region and fuel type, for days ODFM was instructed
+        request: "GET https://api.neso.energy/dataset/23ec7a9f-6220-4d1e-9099-e9195a2ed177/resource/e6146148-c862-49f6-9c7f-52dc2b3e7086/download/odfm-loadfactors-2020-2021.csv"
+        held: NESO leaves the unit blank and does not state the clock of its time labels.
+      - dataset: odfm_market_information_results
+        differs: "Each week's bids by unit: price (£/MW/hr), MW, times, accept or reject"
+        request:
+          - "GET https://api.neso.energy/dataset/23ec7a9f-6220-4d1e-9099-e9195a2ed177/resource/cfd349e9-7f36-480d-abb5-a740d8a6ea16/download/mir-odfm-20-21.csv"
+          - "GET https://api.neso.energy/dataset/23ec7a9f-6220-4d1e-9099-e9195a2ed177/resource/45e60798-da66-4734-bf9e-178efd49657c/download/mir-odfm-21.csv"
+        held: "Identical rows repeat and NESO's bid id repeats too, so there is no silver table."
 ---
 
 # Optional Downward Flexibility Management (ODFM) Market Information
@@ -159,8 +278,9 @@ not a reconstruction of this column.
   of the V2 capture, **2020-07-08T13:37:56.620172Z**, identical on all 49 rows. No issue column exists in the file
   and nothing guarantees the file was unchanged since that instant, so this is a conservative availability stamp.
   The gridflow capture happened later (2026-10-08T11:15:32Z) and is recorded in `capture_written_at`, but it is
-  not the vintage. `TODO: verify` the order of the two uploads: V1's CKAN stamp (2020-07-08T13:42:03) is later than
-  V2's (13:37:56) even though V1's description says the new version came later.
+  not the vintage. The upload order is settled by the CKAN `created` stamps: V1 2020-07-04T21:21:52, V2
+  2020-07-07T15:50:39 (catalogue snapshot 20261006T195819Z). V1's `last_modified` (2020-07-08T13:42:03) is
+  later than V2's (13:37:56) for a reason the catalogue does not state.
 - **Event time: `event_time` = `timestamp_utc` = start of the settlement period**, from the established `sp_pair`
   recipe on the Europe/London settlement clock, converted to tz-aware UTC at the silver boundary. 4-5 July 2020 is
   British Summer Time, so settlement period 1 of 5 July starts at 2020-07-04T23:00Z, and period 47 (Time label
