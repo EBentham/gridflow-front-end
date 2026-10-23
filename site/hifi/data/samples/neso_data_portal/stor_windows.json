@@ -1,0 +1,222 @@
+{
+ "dataset": "neso_data_portal/stor_windows",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "0472e1e125bf0ebcaeb48dfbd618d033ecf7cab3ee020dab6d0e5eb75446008f",
+ "silver": "neso_data_portal/stor_windows",
+ "columns": [
+  {
+   "name": "date",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "season",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "wd_nwd",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "window_1_start_time",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "window_1_end_time",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "window_2_start_time",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "window_2_end_time",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2025-03-28",
+   "18.6",
+   "WD",
+   "06:00",
+   "13:00",
+   "16:30",
+   "20:30",
+   "2025-03-28 00:00:00 UTC",
+   "2026-07-27 14:25:54.738965 UTC",
+   "bronze/neso_data_portal/stor_windows/2026/10/08/raw_20261008T112743Z_90d4a1a4-d311-4a22-9138-84cb7ead2599_6e5c1515.csv",
+   "2026-10-08 11:27:43.094353 UTC",
+   "2025-03-28 00:00:00 UTC",
+   "2026-07-27 14:25:54.738965 UTC",
+   "67fd2095-99bf-4bde-8877-54238de245d3",
+   "1+e1"
+  ],
+  [
+   "2025-03-29",
+   "18.6",
+   "WD",
+   "06:00",
+   "13:00",
+   "16:30",
+   "20:30",
+   "2025-03-29 00:00:00 UTC",
+   "2026-07-27 14:25:54.738965 UTC",
+   "bronze/neso_data_portal/stor_windows/2026/10/08/raw_20261008T112743Z_90d4a1a4-d311-4a22-9138-84cb7ead2599_6e5c1515.csv",
+   "2026-10-08 11:27:43.094353 UTC",
+   "2025-03-29 00:00:00 UTC",
+   "2026-07-27 14:25:54.738965 UTC",
+   "67fd2095-99bf-4bde-8877-54238de245d3",
+   "1+e1"
+  ],
+  [
+   "2025-03-30",
+   "18.6",
+   "NWD",
+   "10:30",
+   "13:00",
+   "16:30",
+   "20:00",
+   "2025-03-30 00:00:00 UTC",
+   "2026-07-27 14:25:54.738965 UTC",
+   "bronze/neso_data_portal/stor_windows/2026/10/08/raw_20261008T112743Z_90d4a1a4-d311-4a22-9138-84cb7ead2599_6e5c1515.csv",
+   "2026-10-08 11:27:43.094353 UTC",
+   "2025-03-30 00:00:00 UTC",
+   "2026-07-27 14:25:54.738965 UTC",
+   "67fd2095-99bf-4bde-8877-54238de245d3",
+   "1+e1"
+  ],
+  [
+   "2025-03-31",
+   "18.6",
+   "WD",
+   "06:00",
+   "13:00",
+   "16:30",
+   "20:30",
+   "2025-03-30 23:00:00 UTC",
+   "2026-07-27 14:25:54.738965 UTC",
+   "bronze/neso_data_portal/stor_windows/2026/10/08/raw_20261008T112743Z_90d4a1a4-d311-4a22-9138-84cb7ead2599_6e5c1515.csv",
+   "2026-10-08 11:27:43.094353 UTC",
+   "2025-03-30 23:00:00 UTC",
+   "2026-07-27 14:25:54.738965 UTC",
+   "67fd2095-99bf-4bde-8877-54238de245d3",
+   "1+e1"
+  ],
+  [
+   "2025-04-01",
+   "19.1",
+   "WD",
+   "06:00",
+   "13:00",
+   "19:00",
+   "22:00",
+   "2025-03-31 23:00:00 UTC",
+   "2026-07-27 14:25:54.738965 UTC",
+   "bronze/neso_data_portal/stor_windows/2026/10/08/raw_20261008T112743Z_90d4a1a4-d311-4a22-9138-84cb7ead2599_6e5c1515.csv",
+   "2026-10-08 11:27:43.094353 UTC",
+   "2025-03-31 23:00:00 UTC",
+   "2026-07-27 14:25:54.738965 UTC",
+   "67fd2095-99bf-4bde-8877-54238de245d3",
+   "1+e1"
+  ],
+  [
+   "2025-04-02",
+   "19.1",
+   "WD",
+   "06:00",
+   "13:00",
+   "19:00",
+   "22:00",
+   "2025-04-01 23:00:00 UTC",
+   "2026-07-27 14:25:54.738965 UTC",
+   "bronze/neso_data_portal/stor_windows/2026/10/08/raw_20261008T112743Z_90d4a1a4-d311-4a22-9138-84cb7ead2599_6e5c1515.csv",
+   "2026-10-08 11:27:43.094353 UTC",
+   "2025-04-01 23:00:00 UTC",
+   "2026-07-27 14:25:54.738965 UTC",
+   "67fd2095-99bf-4bde-8877-54238de245d3",
+   "1+e1"
+  ],
+  [
+   "2025-04-03",
+   "19.1",
+   "WD",
+   "06:00",
+   "13:00",
+   "19:00",
+   "22:00",
+   "2025-04-02 23:00:00 UTC",
+   "2026-07-27 14:25:54.738965 UTC",
+   "bronze/neso_data_portal/stor_windows/2026/10/08/raw_20261008T112743Z_90d4a1a4-d311-4a22-9138-84cb7ead2599_6e5c1515.csv",
+   "2026-10-08 11:27:43.094353 UTC",
+   "2025-04-02 23:00:00 UTC",
+   "2026-07-27 14:25:54.738965 UTC",
+   "67fd2095-99bf-4bde-8877-54238de245d3",
+   "1+e1"
+  ],
+  [
+   "2025-04-04",
+   "19.1",
+   "WD",
+   "06:00",
+   "13:00",
+   "19:00",
+   "22:00",
+   "2025-04-03 23:00:00 UTC",
+   "2026-07-27 14:25:54.738965 UTC",
+   "bronze/neso_data_portal/stor_windows/2026/10/08/raw_20261008T112743Z_90d4a1a4-d311-4a22-9138-84cb7ead2599_6e5c1515.csv",
+   "2026-10-08 11:27:43.094353 UTC",
+   "2025-04-03 23:00:00 UTC",
+   "2026-07-27 14:25:54.738965 UTC",
+   "67fd2095-99bf-4bde-8877-54238de245d3",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

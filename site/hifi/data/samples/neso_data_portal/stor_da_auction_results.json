@@ -1,0 +1,339 @@
+{
+ "dataset": "neso_data_portal/stor_da_auction_results",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "a6ba2ab86a4f5dbb6475d6160a5c5b63b9dc18e18e4929a8d446aea1987534ba",
+ "silver": "neso_data_portal/stor_da_auction_results",
+ "columns": [
+  {
+   "name": "unit_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "status",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "tendered_availability_price",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "market_clearing_price",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "tendered_mw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "minimum_acceptable_mw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "contracted_mw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "service_delivery_from",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "service_delivery_to",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "fuel_type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "bm_nbm",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "company_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "tender_submission_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "tender_round_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "buy_curve_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "service_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "KILLPG-1",
+   "Accepted",
+   "0.24",
+   "0.3",
+   "280.0",
+   "280.0",
+   "280.0",
+   "2023-11-23 05:00:00 UTC",
+   "2023-11-24 05:00:00 UTC",
+   "Gas Reciprocating Engines",
+   "BM",
+   "UNIPER UK LIMITED",
+   "TS-058503",
+   "TRN-2363",
+   "BCN-00000992",
+   "Short Term Operating Reserve",
+   "2023-11-23 05:00:00 UTC",
+   "2026-03-30 04:28:01.703705 UTC",
+   "bronze/neso_data_portal/stor_da_auction_results/2026/10/08/raw_20261008T112732Z_844a1a65-0a3c-4704-b327-d1685d0c397b_eb962f87.csv",
+   "2026-10-08 11:27:32.475060 UTC",
+   "2023-11-23 05:00:00 UTC",
+   "2026-03-30 04:28:01.703705 UTC",
+   "d7fe0c11-11b8-43fb-a365-8c4096e6b721",
+   "1+e1"
+  ],
+  [
+   "DIDC03G",
+   "Accepted",
+   "0.25",
+   "0.3",
+   "25.0",
+   "25.0",
+   "25.0",
+   "2023-11-23 05:00:00 UTC",
+   "2023-11-24 05:00:00 UTC",
+   "OCGT",
+   "BM",
+   "RWE GENERATION UK PLC",
+   "TS-058748",
+   "TRN-2363",
+   "BCN-00000992",
+   "Short Term Operating Reserve",
+   "2023-11-23 05:00:00 UTC",
+   "2026-03-30 04:28:01.703705 UTC",
+   "bronze/neso_data_portal/stor_da_auction_results/2026/10/08/raw_20261008T112732Z_844a1a65-0a3c-4704-b327-d1685d0c397b_eb962f87.csv",
+   "2026-10-08 11:27:32.475060 UTC",
+   "2023-11-23 05:00:00 UTC",
+   "2026-03-30 04:28:01.703705 UTC",
+   "d7fe0c11-11b8-43fb-a365-8c4096e6b721",
+   "1+e1"
+  ],
+  [
+   "SOLUU-1",
+   "Accepted",
+   "0.25",
+   "0.3",
+   "10.0",
+   "10.0",
+   "10.0",
+   "2023-11-23 05:00:00 UTC",
+   "2023-11-24 05:00:00 UTC",
+   "Gas Reciprocating Engines",
+   "BM",
+   "UK Power Reserve Ltd",
+   "TS-058308",
+   "TRN-2363",
+   "BCN-00000992",
+   "Short Term Operating Reserve",
+   "2023-11-23 05:00:00 UTC",
+   "2026-03-30 04:28:01.703705 UTC",
+   "bronze/neso_data_portal/stor_da_auction_results/2026/10/08/raw_20261008T112732Z_844a1a65-0a3c-4704-b327-d1685d0c397b_eb962f87.csv",
+   "2026-10-08 11:27:32.475060 UTC",
+   "2023-11-23 05:00:00 UTC",
+   "2026-03-30 04:28:01.703705 UTC",
+   "d7fe0c11-11b8-43fb-a365-8c4096e6b721",
+   "1+e1"
+  ],
+  [
+   "SEEL-1",
+   "Accepted",
+   "0.3",
+   "0.3",
+   "270.0",
+   "150.0",
+   "172.0",
+   "2023-11-23 05:00:00 UTC",
+   "2023-11-24 05:00:00 UTC",
+   "OCGT",
+   "BM",
+   "SPALDING ENERGY EXPANSION LIMITED",
+   "TS-058754",
+   "TRN-2363",
+   "BCN-00000992",
+   "Short Term Operating Reserve",
+   "2023-11-23 05:00:00 UTC",
+   "2026-03-30 04:28:01.703705 UTC",
+   "bronze/neso_data_portal/stor_da_auction_results/2026/10/08/raw_20261008T112732Z_844a1a65-0a3c-4704-b327-d1685d0c397b_eb962f87.csv",
+   "2026-10-08 11:27:32.475060 UTC",
+   "2023-11-23 05:00:00 UTC",
+   "2026-03-30 04:28:01.703705 UTC",
+   "d7fe0c11-11b8-43fb-a365-8c4096e6b721",
+   "1+e1"
+  ],
+  [
+   "DIDC04G",
+   "Rejected",
+   "0.3",
+   null,
+   "25.0",
+   "25.0",
+   null,
+   "2023-11-23 05:00:00 UTC",
+   "2023-11-24 05:00:00 UTC",
+   "OCGT",
+   "BM",
+   "RWE GENERATION UK PLC",
+   "TS-058749",
+   "TRN-2363",
+   "BCN-00000992",
+   "Short Term Operating Reserve",
+   "2023-11-23 05:00:00 UTC",
+   "2026-03-30 04:28:01.703705 UTC",
+   "bronze/neso_data_portal/stor_da_auction_results/2026/10/08/raw_20261008T112732Z_844a1a65-0a3c-4704-b327-d1685d0c397b_eb962f87.csv",
+   "2026-10-08 11:27:32.475060 UTC",
+   "2023-11-23 05:00:00 UTC",
+   "2026-03-30 04:28:01.703705 UTC",
+   "d7fe0c11-11b8-43fb-a365-8c4096e6b721",
+   "1+e1"
+  ],
+  [
+   "SEVIU-1",
+   "Rejected",
+   "0.3",
+   null,
+   "10.0",
+   "10.0",
+   null,
+   "2023-11-23 05:00:00 UTC",
+   "2023-11-24 05:00:00 UTC",
+   "Gas Reciprocating Engines",
+   "BM",
+   "UK Power Reserve Ltd",
+   "TS-058307",
+   "TRN-2363",
+   "BCN-00000992",
+   "Short Term Operating Reserve",
+   "2023-11-23 05:00:00 UTC",
+   "2026-03-30 04:28:01.703705 UTC",
+   "bronze/neso_data_portal/stor_da_auction_results/2026/10/08/raw_20261008T112732Z_844a1a65-0a3c-4704-b327-d1685d0c397b_eb962f87.csv",
+   "2026-10-08 11:27:32.475060 UTC",
+   "2023-11-23 05:00:00 UTC",
+   "2026-03-30 04:28:01.703705 UTC",
+   "d7fe0c11-11b8-43fb-a365-8c4096e6b721",
+   "1+e1"
+  ],
+  [
+   "BRIDU-1",
+   "Rejected",
+   "0.35",
+   null,
+   "10.0",
+   "10.0",
+   null,
+   "2023-11-23 05:00:00 UTC",
+   "2023-11-24 05:00:00 UTC",
+   "Gas Reciprocating Engines",
+   "BM",
+   "UK Power Reserve Ltd",
+   "TS-058306",
+   "TRN-2363",
+   "BCN-00000992",
+   "Short Term Operating Reserve",
+   "2023-11-23 05:00:00 UTC",
+   "2026-03-30 04:28:01.703705 UTC",
+   "bronze/neso_data_portal/stor_da_auction_results/2026/10/08/raw_20261008T112732Z_844a1a65-0a3c-4704-b327-d1685d0c397b_eb962f87.csv",
+   "2026-10-08 11:27:32.475060 UTC",
+   "2023-11-23 05:00:00 UTC",
+   "2026-03-30 04:28:01.703705 UTC",
+   "d7fe0c11-11b8-43fb-a365-8c4096e6b721",
+   "1+e1"
+  ],
+  [
+   "LBAR-1G",
+   "Rejected",
+   "0.35",
+   null,
+   "10.0",
+   "10.0",
+   null,
+   "2023-11-23 05:00:00 UTC",
+   "2023-11-24 05:00:00 UTC",
+   "OCGT",
+   "BM",
+   "RWE GENERATION UK PLC",
+   "TS-058750",
+   "TRN-2363",
+   "BCN-00000992",
+   "Short Term Operating Reserve",
+   "2023-11-23 05:00:00 UTC",
+   "2026-03-30 04:28:01.703705 UTC",
+   "bronze/neso_data_portal/stor_da_auction_results/2026/10/08/raw_20261008T112732Z_844a1a65-0a3c-4704-b327-d1685d0c397b_eb962f87.csv",
+   "2026-10-08 11:27:32.475060 UTC",
+   "2023-11-23 05:00:00 UTC",
+   "2026-03-30 04:28:01.703705 UTC",
+   "d7fe0c11-11b8-43fb-a365-8c4096e6b721",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

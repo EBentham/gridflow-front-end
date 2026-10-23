@@ -1,0 +1,248 @@
+{
+ "dataset": "neso_data_portal/bsad_forward_contracts",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "9a2e6545d8611c3446f0460b9c01168afdbc1cb19fc92a9f0d9436e90e4b0350",
+ "silver": "neso_data_portal/bsad_forward_contracts",
+ "columns": [
+  {
+   "name": "settlement_date",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "settlement_period",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "bca",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "bva",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "bsa",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "sca",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "sva",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "ssa",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "resource_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2025-11-20",
+   "31",
+   "1.1593e6",
+   "875.0",
+   "488.95",
+   "0.0",
+   "0.0",
+   "-0.001",
+   "9382cd2a-656d-4a0a-a82e-eb26cd8bf7f7",
+   "2025-11-20 15:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/bsad_forward_contracts/2026/10/08/raw_20261008T090607Z_9382cd2a-656d-4a0a-a82e-eb26cd8bf7f7_eae2f4b2.csv",
+   "2026-10-08 09:06:07.830598 UTC",
+   "2025-11-20 15:00:00 UTC",
+   "2026-10-08 09:06:07.830598 UTC",
+   "c785c80d-c906-496d-84fb-bbe431b3e0a7",
+   "1+e1"
+  ],
+  [
+   "2025-11-20",
+   "32",
+   "1.1593e6",
+   "875.0",
+   "499.66",
+   "0.0",
+   "0.0",
+   "-0.001",
+   "9382cd2a-656d-4a0a-a82e-eb26cd8bf7f7",
+   "2025-11-20 15:30:00 UTC",
+   null,
+   "bronze/neso_data_portal/bsad_forward_contracts/2026/10/08/raw_20261008T090607Z_9382cd2a-656d-4a0a-a82e-eb26cd8bf7f7_eae2f4b2.csv",
+   "2026-10-08 09:06:07.830598 UTC",
+   "2025-11-20 15:30:00 UTC",
+   "2026-10-08 09:06:07.830598 UTC",
+   "c785c80d-c906-496d-84fb-bbe431b3e0a7",
+   "1+e1"
+  ],
+  [
+   "2025-11-20",
+   "33",
+   "1.3831e6",
+   "1250.0",
+   "496.92",
+   "0.0",
+   "0.0",
+   "-0.001",
+   "9382cd2a-656d-4a0a-a82e-eb26cd8bf7f7",
+   "2025-11-20 16:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/bsad_forward_contracts/2026/10/08/raw_20261008T090607Z_9382cd2a-656d-4a0a-a82e-eb26cd8bf7f7_eae2f4b2.csv",
+   "2026-10-08 09:06:07.830598 UTC",
+   "2025-11-20 16:00:00 UTC",
+   "2026-10-08 09:06:07.830598 UTC",
+   "c785c80d-c906-496d-84fb-bbe431b3e0a7",
+   "1+e1"
+  ],
+  [
+   "2025-11-20",
+   "34",
+   "1.3831e6",
+   "1250.0",
+   "496.93",
+   "0.0",
+   "0.0",
+   "-0.001",
+   "9382cd2a-656d-4a0a-a82e-eb26cd8bf7f7",
+   "2025-11-20 16:30:00 UTC",
+   null,
+   "bronze/neso_data_portal/bsad_forward_contracts/2026/10/08/raw_20261008T090607Z_9382cd2a-656d-4a0a-a82e-eb26cd8bf7f7_eae2f4b2.csv",
+   "2026-10-08 09:06:07.830598 UTC",
+   "2025-11-20 16:30:00 UTC",
+   "2026-10-08 09:06:07.830598 UTC",
+   "c785c80d-c906-496d-84fb-bbe431b3e0a7",
+   "1+e1"
+  ],
+  [
+   "2025-11-20",
+   "35",
+   "327993.82",
+   "1675.0",
+   "498.06",
+   "0.0",
+   "0.0",
+   "-0.001",
+   "9382cd2a-656d-4a0a-a82e-eb26cd8bf7f7",
+   "2025-11-20 17:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/bsad_forward_contracts/2026/10/08/raw_20261008T090607Z_9382cd2a-656d-4a0a-a82e-eb26cd8bf7f7_eae2f4b2.csv",
+   "2026-10-08 09:06:07.830598 UTC",
+   "2025-11-20 17:00:00 UTC",
+   "2026-10-08 09:06:07.830598 UTC",
+   "c785c80d-c906-496d-84fb-bbe431b3e0a7",
+   "1+e1"
+  ],
+  [
+   "2025-11-20",
+   "36",
+   "327993.82",
+   "1675.0",
+   "477.86",
+   "0.0",
+   "0.0",
+   "-0.001",
+   "9382cd2a-656d-4a0a-a82e-eb26cd8bf7f7",
+   "2025-11-20 17:30:00 UTC",
+   null,
+   "bronze/neso_data_portal/bsad_forward_contracts/2026/10/08/raw_20261008T090607Z_9382cd2a-656d-4a0a-a82e-eb26cd8bf7f7_eae2f4b2.csv",
+   "2026-10-08 09:06:07.830598 UTC",
+   "2025-11-20 17:30:00 UTC",
+   "2026-10-08 09:06:07.830598 UTC",
+   "c785c80d-c906-496d-84fb-bbe431b3e0a7",
+   "1+e1"
+  ],
+  [
+   "2025-11-20",
+   "37",
+   "233153.96",
+   "1575.0",
+   "20.36",
+   "0.0",
+   "0.0",
+   "-0.001",
+   "9382cd2a-656d-4a0a-a82e-eb26cd8bf7f7",
+   "2025-11-20 18:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/bsad_forward_contracts/2026/10/08/raw_20261008T090607Z_9382cd2a-656d-4a0a-a82e-eb26cd8bf7f7_eae2f4b2.csv",
+   "2026-10-08 09:06:07.830598 UTC",
+   "2025-11-20 18:00:00 UTC",
+   "2026-10-08 09:06:07.830598 UTC",
+   "c785c80d-c906-496d-84fb-bbe431b3e0a7",
+   "1+e1"
+  ],
+  [
+   "2025-11-20",
+   "38",
+   "233153.96",
+   "1575.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "0.0",
+   "9382cd2a-656d-4a0a-a82e-eb26cd8bf7f7",
+   "2025-11-20 18:30:00 UTC",
+   null,
+   "bronze/neso_data_portal/bsad_forward_contracts/2026/10/08/raw_20261008T090607Z_9382cd2a-656d-4a0a-a82e-eb26cd8bf7f7_eae2f4b2.csv",
+   "2026-10-08 09:06:07.830598 UTC",
+   "2025-11-20 18:30:00 UTC",
+   "2026-10-08 09:06:07.830598 UTC",
+   "c785c80d-c906-496d-84fb-bbe431b3e0a7",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

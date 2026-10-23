@@ -1,0 +1,177 @@
+{
+ "dataset": "neso_data_portal/stor_da_auction_results",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "ca3151793ed8d190a0d8cf8bfdedbb894c7a38fef6de7601e22c47e388eb68a6",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "import pandas as pd\ndf = data.neso_data_portal.query(\"stor_da_auction_results\", \"2021-04-01\", \"2026-03-31\")\nfor col in [\"service_delivery_from\", \"service_delivery_to\", \"timestamp_utc\"]:\n    df[col] = df[col].dt.tz_convert(\"UTC\")\nuk = df.service_delivery_from.dt.tz_convert(\"Europe/London\")\ndf[\"day\"] = pd.to_datetime(uk.dt.date)\npd.DataFrame({\"uk_start\": uk.dt.strftime(\"%H:%M\"),\n    \"hours\": (df.service_delivery_to - df.service_delivery_from) / pd.Timedelta(hours=1),\n}).value_counts().rename(\"rows\").reset_index()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "uk_start",
+      "hours",
+      "rows"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2"
+     ],
+     "rows": [
+      [
+       "05:00",
+       "24.0",
+       "120803"
+      ],
+      [
+       "05:00",
+       "23.0",
+       "364"
+      ],
+      [
+       "05:00",
+       "25.0",
+       "313"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "acc = df[df.status == \"Accepted\"]\ndays = acc.groupby(\"day\").agg(clearing=(\"market_clearing_price\", \"max\"),\n    prices=(\"market_clearing_price\", \"nunique\"),\n    dearest_accepted=(\"tendered_availability_price\", \"max\"),\n    contracted_mw=(\"contracted_mw\", \"sum\"))\nspan = pd.date_range(\"2021-04-01\", \"2026-03-31\")\npd.Series({\"service days in the span\": len(span), \"with rows in the file\": df.day.nunique(),\n    \"with a tender accepted\": len(days), \"one clearing price\": (days.prices == 1).sum(),\n    \"clearing = dearest accepted\": (days.clearing == days.dearest_accepted).sum()})",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "service days in the span       1826\nwith rows in the file          1822\nwith a tender accepted         1817\none clearing price             1817\nclearing = dearest accepted    1817\ndtype: int64"
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "start = days.index.year - (days.index.month < 4)\nyear = [f\"{y}-{(y + 1) % 100:02d}\" for y in start]\ndays.groupby(year).agg(days=(\"clearing\", \"size\"),\n    median_price=(\"clearing\", \"median\"), top_price=(\"clearing\", \"max\"),\n    mean_contracted_mw=(\"contracted_mw\", \"mean\")).round(2).rename_axis(\"year\").reset_index()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "year",
+      "days",
+      "median_price",
+      "top_price",
+      "mean_contracted_mw"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2021-22",
+       "362",
+       "1.90",
+       "169.00",
+       "1258.27"
+      ],
+      [
+       "2022-23",
+       "362",
+       "5.00",
+       "175.00",
+       "1302.28"
+      ],
+      [
+       "2023-24",
+       "365",
+       "0.73",
+       "28.45",
+       "1263.85"
+      ],
+      [
+       "2024-25",
+       "363",
+       "0.45",
+       "98.90",
+       "1304.43"
+      ],
+      [
+       "2025-26",
+       "365",
+       "3.70",
+       "21.00",
+       "1672.61"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "source": "days = days.reindex(span)\nax = days.contracted_mw.plot(figsize=(8, 3.5), color=\"#155A6E\",\n    xlabel=\"service day, starting 05:00 UK time\", ylabel=\"MW contracted\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "stor_da_auction_results-6.png",
+     "width": 707,
+     "height": 337
+    }
+   ]
+  }
+ ]
+}
