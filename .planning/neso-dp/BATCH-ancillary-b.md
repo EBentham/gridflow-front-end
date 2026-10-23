@@ -73,7 +73,7 @@ Known risks:
 | 7 | aa1a3c5e76550588d | a67b67c815e99b01b | APPROVED, nits fixed (seat-verified); committed; 20u logged |
 | 8 | a0f4c6cf3e400cbf2 | ac7ecf986ba87acc7 | APPROVED round 2; committed; 20v logged |
 | 9 | a4f649837fdbcd49c | a4e728254609eea7d | APPROVED (round 2 fixes seat-verified); committed; 20w logged |
-| 10 | add0561d776493a43 | a0056ed34ff9da16f | checking; 20x logged |
+| 10 | add0561d776493a43 | a0056ed34ff9da16f | APPROVED (round 2 fixes seat-verified); committed; 20x logged |
 
 ## Template follow-ups (seat items, not page findings)
 

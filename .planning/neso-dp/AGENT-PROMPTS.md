@@ -69,3 +69,4 @@ message: write `<slug>-review-2.md` (then `-3`).
   English; units and time stamps from code or the vendor, never memory.
 - Scratch files go in your own subfolder of the scratchpad, named for your role and package (for example
   `<scratchpad>\dr-checker\`): agents share the scratchpad and generic names overwrite each other.
+- Do not end your turn until your report or review file is written and your final message is ready: a turn that ends mid-task ("Now the detector...") stalls the batch.
