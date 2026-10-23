@@ -76,4 +76,4 @@ time, `query()` filters on the capture time (remediation 20at): use `data.sql()`
 | 5 | aff832a32c1030ea2 | ab3dc8141aec8a48f | APPROVED (round 2 fixes seat-verified); committed; 20bf logged |
 | 6 | a9e81f314a34edccf | a6c15891c978684e7 | APPROVED (round 2 fixes seat-verified); committed; lead changed to the building-block table (seat, PROXY-SOURCED) |
 | H1 | a403343c59ca240d0 | abed098ced7d8bb2c | APPROVED x4 (round 2 fixes seat-verified); committed; 20bh, 20bi logged |
-| H2 | a33842486afc7e15e | a0072af64d2e16389 | long-term and school holidays checking; transmission losses ruled a full page (seat, PROXY-SOURCED: ruling 538, eligibility report and registry make both tables eligible; blank ledger cell is an omission, 20bj), writer reworking; 20bk logged |
+| H2 | a33842486afc7e15e | a0072af64d2e16389 | long-term and school holidays revising (REVISE x2: 1 major each); transmission losses ruled a full page (seat, PROXY-SOURCED: ruling 538, eligibility report and registry make both tables eligible; blank ledger cell is an omission, 20bj), writer reworking; 20bk logged |
