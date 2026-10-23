@@ -77,4 +77,4 @@ time, `query()` filters on the capture time (remediation 20at): use `data.sql()`
 | 6 | a9e81f314a34edccf | a6c15891c978684e7 | APPROVED (round 2 fixes seat-verified); committed; lead changed to the building-block table (seat, PROXY-SOURCED) |
 | H1 | a403343c59ca240d0 | abed098ced7d8bb2c | APPROVED x4 (round 2 fixes seat-verified); committed; 20bh, 20bi logged |
 | H2 | a33842486afc7e15e | a0072af64d2e16389 | long-term and school holidays APPROVED (round 2 fixes seat-verified), committed; transmission losses ruled a full page (seat, PROXY-SOURCED), see TL; 20bk, 20bn logged |
-| TL | a33842486afc7e15e | a36dd1131658ef563 | full page written; checking; 20bj logged |
+| TL | a33842486afc7e15e | a36dd1131658ef563 | revising (REVISE: 1 major in the note body, 5 nits); 20bj logged |
