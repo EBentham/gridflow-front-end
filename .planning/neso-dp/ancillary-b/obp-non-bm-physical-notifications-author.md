@@ -122,6 +122,12 @@ start level to its end level for `GSET-07` and `AFFR-1`, which shows the sub-hal
 
 None blocking.
 
+## Seat note on service codes (2026-10-23)
+
+Checked against the seat's note that NESO does decode `PQR`, `NQR`, `PSR`, `NSR` and `RDP`: this page, its note and
+this report never claim otherwise. The page names no service code; the note body and this report mention "the three
+`RDP` units" only to say they have no PN rows.
+
 ## Template problems (seat items)
 
 1. **`gridflow-distil` and `gridflow-sample` read every silver file, not the `_latest` view.** For a `whole_capture`
@@ -133,7 +139,8 @@ None blocking.
 
 ## Defects
 
-- **gridflow front-end tooling: chart and sample read all captures.** `src/gridflow_front_end/distil.py` `_scan` (line
+- **gridflow front-end tooling: chart and sample read all captures** (already in the batch file's "Checked facts";
+  listed here only for this page's evidence). `src/gridflow_front_end/distil.py` `_scan` (line
   164) and `sample.py` `_scan` (line 51) scan every Parquet file under the table, so a `whole_capture` NESO table with
   more than one capture is double counted unless the spec adds `dedup`. `obp_physical_notifications` has two
   overlapping captures (2026-10-08 and 2026-10-16); its spec dedups on `(unit_id, time_from)` by `published_at`.

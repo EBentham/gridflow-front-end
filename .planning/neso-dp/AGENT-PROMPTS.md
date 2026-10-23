@@ -61,7 +61,7 @@ message: write `<slug>-review-2.md` (then `-3`).
 ## Both
 
 - Wrap every Chrome call in `timeout 60 ...` with `--timeout=15000 --virtual-time-budget=5000`; a true 390 view needs
-  a 390 px iframe. Use your own port. Stop any server you start. Never stop the server on port 9670.
+  a 390 px iframe. Use your own port. **Hard rule:** start a server only in a way that records its PID, and stop only that PID. Never kill processes by image name or pattern (no `taskkill /IM`, `Stop-Process -Name`, `pkill python`, `killall`): that kills other agents' and sessions' builds, kernels and servers. Never stop the server on port 9670.
 - Never write `rm -rf` (a guard blocks it). No git writes in either repo. Never run `gridflow-drift-check`, ingest,
   transform or a live API. Keep strictly to your own package's files; several agents share the worktree. A DuckDB lock
   or busy kernel means another agent: wait a minute and retry.

@@ -43,6 +43,8 @@ Known risks:
 
 ## Rules
 
+**Processes (hard rule):** start a server only in a way that records its PID, and stop only that PID. Never kill processes by image name or pattern (no `taskkill /IM`, `Stop-Process -Name`, `pkill python`, `killall`).
+
 `.planning/v5/p26/BATCH-rest.md` "Shared-worktree rules" and "Seat rulings carried over", and `BATCH-dfs.md`
 "Bobbo's rulings for NESO package pages", apply unchanged. Keep strictly to your own package's files.
 
@@ -66,10 +68,12 @@ Known risks:
 | 2 | ab90e4f799035d73c | aa9f90d2aabec7096 | APPROVED (round 2 fixes seat-verified); committed; 20o logged |
 | 3 | abd18a84e1f5fabb1 | a7cca7dbb557ffe18 | APPROVED (round 2 fixes seat-verified); committed; 20p logged |
 | 4 | a1153f90d0765c153 | a90a0afe04c073de9 | APPROVED, nits fixed (seat-verified); committed; 20q, 20r logged |
-| 5 | a1aa64f9f77a3ac69 | | writing |
-| 6 | ad2a23efea2aeecaa | ae6d34b6e498b163c | revising (REVISE: 1 major, 3 nits); 20s logged |
-| 7 | aa1a3c5e76550588d | | writing |
-| 8-10 | | | not started |
+| 5 | a1aa64f9f77a3ac69 | a734d2629fc8d1a47 | revising (REVISE: 3 majors, 6 nits); 20t logged |
+| 6 | ad2a23efea2aeecaa | ae6d34b6e498b163c | APPROVED (round 2 fixes seat-verified); committed; 20s logged |
+| 7 | aa1a3c5e76550588d | a67b67c815e99b01b | APPROVED, nits fixed (seat-verified); committed; 20u logged |
+| 8 | a0f4c6cf3e400cbf2 | ac7ecf986ba87acc7 | checking; 20v logged |
+| 9 | a4f649837fdbcd49c | | writing |
+| 10 | | | not started |
 
 ## Template follow-ups (seat items, not page findings)
 

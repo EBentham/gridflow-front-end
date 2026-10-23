@@ -68,6 +68,8 @@ Known risks:
 
 ## Rules
 
+**Processes (hard rule):** start a server only in a way that records its PID, and stop only that PID. Never kill processes by image name or pattern (no `taskkill /IM`, `Stop-Process -Name`, `pkill python`, `killall`).
+
 Everything in `.planning/v5/p26/BATCH-rest.md` sections "Shared-worktree rules" and "Seat rulings carried over"
 applies unchanged, and `.planning/neso-dp/BATCH-dfs.md` "Bobbo's rulings for NESO package pages". Worked examples:
 the four NESO showcase pages (`demand-flexibility`, `eac-br-auction-results`, `aggregated-bsad`,
