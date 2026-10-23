@@ -105,7 +105,15 @@
         "daily-balancing-volume-balancing-services-use-of-system",
         "gb-system-inertia-bid-and-offer-costs",
         "bsuos-monthly-forecast",
-        "skip-rates"
+        "skip-rates",
+        "thermal-constraint-costs",
+        "outturn-voltage-costs",
+        "24-months-ahead-constraint-cost-forecast",
+        "24-months-ahead-constraint-limits",
+        "constraint-management-intertrip-service-information-cmis",
+        "day-ahead-constraint-flows-and-limits",
+        "operational-transparency-forum-network-congestion-data",
+        "voltage-requirement"
       ]
     }
   ],
@@ -325,6 +333,24 @@
         "skip_rates_stage6_psa",
         "skip_rates_summary"
       ]
+    },
+    {
+      "slug": "thermal-constraint-costs",
+      "title": "Thermal constraint costs",
+      "note": "thermal-constraint-costs",
+      "members": [
+        "thermal_constraint_costs",
+        "thermal_constraint_costs_xlsx"
+      ]
+    },
+    {
+      "slug": "outturn-voltage-costs",
+      "title": "Outturn voltage costs",
+      "note": "outturn-voltage-costs",
+      "members": [
+        "outturn_voltage_costs_main",
+        "outturn_voltage_costs_historical"
+      ]
     }
   ],
   "names": {
@@ -354,7 +380,13 @@
     "daily-balancing-costs-balancing-services-use-of-system": "Daily BSUoS costs",
     "balancing-services-use-of-system-bsuos-daily-forecast": "Daily BSUoS forecast",
     "daily-balancing-volume-balancing-services-use-of-system": "Daily BSUoS volume",
-    "gb-system-inertia-bid-and-offer-costs": "GB system inertia bid and offer costs"
+    "gb-system-inertia-bid-and-offer-costs": "GB system inertia bid and offer costs",
+    "24-months-ahead-constraint-cost-forecast": "24-month constraint cost forecast",
+    "24-months-ahead-constraint-limits": "24-month constraint limits",
+    "constraint-management-intertrip-service-information-cmis": "Constraint management intertrip service",
+    "day-ahead-constraint-flows-and-limits": "Day-ahead constraint flows and limits",
+    "operational-transparency-forum-network-congestion-data": "OTF network congestion",
+    "voltage-requirement": "Voltage requirement"
   },
   "dropped": {},
   "package_tables": {
@@ -381,7 +413,13 @@
     "daily-balancing-costs-balancing-services-use-of-system": "daily_balancing_costs",
     "balancing-services-use-of-system-bsuos-daily-forecast": "bsuos_daily_forecast",
     "daily-balancing-volume-balancing-services-use-of-system": "daily_balancing_volume",
-    "gb-system-inertia-bid-and-offer-costs": "inertia_bid_offer_costs"
+    "gb-system-inertia-bid-and-offer-costs": "inertia_bid_offer_costs",
+    "24-months-ahead-constraint-cost-forecast": "constraint_cost_fc_24m",
+    "24-months-ahead-constraint-limits": "constraint_limits_24m",
+    "constraint-management-intertrip-service-information-cmis": "cmis_intertrip",
+    "day-ahead-constraint-flows-and-limits": "da_constraint_flows_limits",
+    "operational-transparency-forum-network-congestion-data": "otf_network_congestion",
+    "voltage-requirement": "voltage_requirement"
   },
   "catalogue": {
     "_about": "NESO's catalogue as the hub draws it: its data groups in portal order, each with NESO's description and its packages (NESO's titles and CKAN names). `page_packages` names the CKAN package of a page not named after it; a package is a link when a page in `groups` documents it. `plan` lays the groups out as plots: a slug is one plot, `row` sets its children side by side, `col` stacks them; `wide` from 1100 px, `narrow` below, and `tag_narrow` plots carry their name beneath them when narrow.",
