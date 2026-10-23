@@ -1,0 +1,183 @@
+{
+ "dataset": "neso_data_portal/thermal_constraint_costs",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "543aa9a172e48b75923723feafdbb25afb71b4d7ee137c5c56011e87efda579e",
+ "silver": "neso_data_portal/thermal_constraint_costs",
+ "columns": [
+  {
+   "name": "settlement_date",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "constraint_group",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "daily_cost_gbp",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "resource_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2025-06-26",
+   "ESTEX",
+   "-114367",
+   "2025-06-25 23:00:00 UTC",
+   "2026-04-07 10:00:55.940094 UTC",
+   "407f3e9d-5c38-4a64-98f5-923dc4d64fb2",
+   "bronze/neso_data_portal/thermal_constraint_costs/2026/10/08/raw_20261008T113843Z_407f3e9d-5c38-4a64-98f5-923dc4d64fb2_6224bd08.csv",
+   "2026-10-08 11:38:43.328601 UTC",
+   "2025-06-25 23:00:00 UTC",
+   "2026-04-07 10:00:55.940094 UTC",
+   "4d68a0ca-8f90-4be8-9c77-b7543bc74380",
+   "1+e1"
+  ],
+  [
+   "2025-06-26",
+   "SEIMP",
+   "0",
+   "2025-06-25 23:00:00 UTC",
+   "2026-04-07 10:00:55.940094 UTC",
+   "407f3e9d-5c38-4a64-98f5-923dc4d64fb2",
+   "bronze/neso_data_portal/thermal_constraint_costs/2026/10/08/raw_20261008T113843Z_407f3e9d-5c38-4a64-98f5-923dc4d64fb2_6224bd08.csv",
+   "2026-10-08 11:38:43.328601 UTC",
+   "2025-06-25 23:00:00 UTC",
+   "2026-04-07 10:00:55.940094 UTC",
+   "4d68a0ca-8f90-4be8-9c77-b7543bc74380",
+   "1+e1"
+  ],
+  [
+   "2025-06-26",
+   "SSE-SP",
+   "68640",
+   "2025-06-25 23:00:00 UTC",
+   "2026-04-07 10:00:55.940094 UTC",
+   "407f3e9d-5c38-4a64-98f5-923dc4d64fb2",
+   "bronze/neso_data_portal/thermal_constraint_costs/2026/10/08/raw_20261008T113843Z_407f3e9d-5c38-4a64-98f5-923dc4d64fb2_6224bd08.csv",
+   "2026-10-08 11:38:43.328601 UTC",
+   "2025-06-25 23:00:00 UTC",
+   "2026-04-07 10:00:55.940094 UTC",
+   "4d68a0ca-8f90-4be8-9c77-b7543bc74380",
+   "1+e1"
+  ],
+  [
+   "2025-06-26",
+   "SSHARN",
+   "733631",
+   "2025-06-25 23:00:00 UTC",
+   "2026-04-07 10:00:55.940094 UTC",
+   "407f3e9d-5c38-4a64-98f5-923dc4d64fb2",
+   "bronze/neso_data_portal/thermal_constraint_costs/2026/10/08/raw_20261008T113843Z_407f3e9d-5c38-4a64-98f5-923dc4d64fb2_6224bd08.csv",
+   "2026-10-08 11:38:43.328601 UTC",
+   "2025-06-25 23:00:00 UTC",
+   "2026-04-07 10:00:55.940094 UTC",
+   "4d68a0ca-8f90-4be8-9c77-b7543bc74380",
+   "1+e1"
+  ],
+  [
+   "2025-06-29",
+   "ESTEX",
+   "284857",
+   "2025-06-28 23:00:00 UTC",
+   "2026-04-07 10:00:55.940094 UTC",
+   "407f3e9d-5c38-4a64-98f5-923dc4d64fb2",
+   "bronze/neso_data_portal/thermal_constraint_costs/2026/10/08/raw_20261008T113843Z_407f3e9d-5c38-4a64-98f5-923dc4d64fb2_6224bd08.csv",
+   "2026-10-08 11:38:43.328601 UTC",
+   "2025-06-28 23:00:00 UTC",
+   "2026-04-07 10:00:55.940094 UTC",
+   "4d68a0ca-8f90-4be8-9c77-b7543bc74380",
+   "1+e1"
+  ],
+  [
+   "2025-06-29",
+   "SEIMP",
+   "-57574",
+   "2025-06-28 23:00:00 UTC",
+   "2026-04-07 10:00:55.940094 UTC",
+   "407f3e9d-5c38-4a64-98f5-923dc4d64fb2",
+   "bronze/neso_data_portal/thermal_constraint_costs/2026/10/08/raw_20261008T113843Z_407f3e9d-5c38-4a64-98f5-923dc4d64fb2_6224bd08.csv",
+   "2026-10-08 11:38:43.328601 UTC",
+   "2025-06-28 23:00:00 UTC",
+   "2026-04-07 10:00:55.940094 UTC",
+   "4d68a0ca-8f90-4be8-9c77-b7543bc74380",
+   "1+e1"
+  ],
+  [
+   "2025-06-29",
+   "SSE-SP",
+   "1138836",
+   "2025-06-28 23:00:00 UTC",
+   "2026-04-07 10:00:55.940094 UTC",
+   "407f3e9d-5c38-4a64-98f5-923dc4d64fb2",
+   "bronze/neso_data_portal/thermal_constraint_costs/2026/10/08/raw_20261008T113843Z_407f3e9d-5c38-4a64-98f5-923dc4d64fb2_6224bd08.csv",
+   "2026-10-08 11:38:43.328601 UTC",
+   "2025-06-28 23:00:00 UTC",
+   "2026-04-07 10:00:55.940094 UTC",
+   "4d68a0ca-8f90-4be8-9c77-b7543bc74380",
+   "1+e1"
+  ],
+  [
+   "2025-06-29",
+   "SSHARN",
+   "287405",
+   "2025-06-28 23:00:00 UTC",
+   "2026-04-07 10:00:55.940094 UTC",
+   "407f3e9d-5c38-4a64-98f5-923dc4d64fb2",
+   "bronze/neso_data_portal/thermal_constraint_costs/2026/10/08/raw_20261008T113843Z_407f3e9d-5c38-4a64-98f5-923dc4d64fb2_6224bd08.csv",
+   "2026-10-08 11:38:43.328601 UTC",
+   "2025-06-28 23:00:00 UTC",
+   "2026-04-07 10:00:55.940094 UTC",
+   "4d68a0ca-8f90-4be8-9c77-b7543bc74380",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

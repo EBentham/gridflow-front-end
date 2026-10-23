@@ -4,9 +4,148 @@ package: "thermal-constraint-costs"
 dataset_keys: ["thermal_constraint_costs", "thermal_constraint_costs_xlsx"]
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-10
+updated: 2026-10-23
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: Thermal constraint costs by boundary
+  summary: >-
+    NESO's daily spend in pounds on thermal constraints for six named constraint groups, one file
+    per April-to-March year.
+  facts:
+    vendor: NESO Data Portal, package Thermal Constraint Costs
+    cadence: Daily values; NESO's catalogue lists the update frequency as weekly
+    grain: One row per settlement date, constraint group and yearly file
+    history: "Yearly files from 2019-20, as NESO's catalogue lists them"
+  landscape: market
+  what_it_is: >-
+    NESO defines a thermal constraint as energy flowing naturally between regions beyond the
+    capacity of the circuits connecting them. These files give the outturn cost per date for six
+    constraint groups NESO's diagrams locate. Summed by year, they are three quarters or more
+    of Constraint Breakdown's thermal cost in 2019-21, a fifth in 2025-26; NESO does not reconcile
+    them.
+  how_used:
+    - Which constraint group drives thermal constraint spend, day by day and year by year.
+    - Group costs against wind output or flows, as inputs to constraint cost models.
+    - "Set against Constraint Breakdown's daily thermal cost, date by date."
+  chart:
+    type: line
+    silver: neso_data_portal/thermal_constraint_costs
+    time: settlement_date
+    value: daily_cost_gbp
+    filter:
+      - {column: constraint_group, op: in, value: [SCOTEX, SSE-SP, SSHARN]}
+    group: constraint_group
+    series_order: [SCOTEX, SSE-SP, SSHARN]
+    dedup: {"on": [settlement_date, constraint_group], order_by: published_at}
+    aggregation: last
+    window: {start: "2025-04-01", end: "2026-03-31"}
+    unit: "£"
+  chart_view:
+    title: Daily cost at three boundaries, April 2025 to March 2026
+    caption: >-
+      Silver `neso_data_portal/thermal_constraint_costs`, `daily_cost_gbp` in £, one value per
+      settlement date for three of the six groups, 1 April 2025 to 31 March 2026. ESTEX, SEIMP
+      and SWALEX are left out. NESO's file has no 8 April 2025.
+    alt: >-
+      Line chart from neso_data_portal/thermal_constraint_costs of daily cost in pounds for three
+      constraint groups, each settlement date from 1 April 2025 to 31 March 2026, broken at 8 April
+      2025. All three sit at zero on many days and rise in spikes. SSHARN peaks at £11.6 million on
+      27 June 2025 and SCOTEX at £11.6 million on 31 August 2025. SSE-SP is above zero most often,
+      on 261 days, and reaches £8.8 million on 22 January 2026 in a run of high January and
+      February days.
+    x_label: NESO's settlement date; day boundary not stated
+    y_min: -500000
+    key:
+      - {series: SCOTEX, label: Boundary B6, codes: SCOTEX, paint: petrol, note: "B6 in NESO's Operational Transparency Forum deck of 24 June 2026. Highest £11.6 million, 31 August 2025."}
+      - {series: SSE-SP, label: SSE-SP group, codes: SSE-SP, paint: clay, note: "Drawn on NESO's Scotland network diagram. Above zero on 261 days; highest £8.8 million on 22 January 2026."}
+      - {series: SSHARN, label: Boundary B7, codes: SSHARN, paint: olive, note: "B7 in NESO's Operational Transparency Forum deck of 24 June 2026. Highest £11.6 million, 27 June 2025."}
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then each file downloaded whole unless its
+      `last_modified` is unchanged. Dates select nothing. The CSV table lists four of its six
+      file URLs.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=thermal-constraint-costs"
+    commands:
+      - {run: gridflow pipeline neso_data_portal thermal_constraint_costs --last 24h, comment: "the yearly CSV files"}
+      - {run: gridflow ingest neso_data_portal thermal_constraint_costs_files --last 24h, comment: "the workbooks, diagrams and map"}
+      - {run: gridflow transform neso_data_portal thermal_constraint_costs_xlsx --last 24h, comment: "the workbooks' Data sheets"}
+  record:
+    select:
+      filter:
+        - {column: settlement_date, op: in, value: ["2025-06-26", "2025-06-29"]}
+        - {column: constraint_group, op: in, value: [ESTEX, SEIMP, SSE-SP, SSHARN]}
+      dedup: {"on": [settlement_date, constraint_group], order_by: published_at}
+      order_by: [settlement_date, constraint_group]
+      columns: [settlement_date, constraint_group, daily_cost_gbp, timestamp_utc, published_at, resource_id]
+    key: [resource_id, settlement_date, constraint_group]
+    caption: "Four groups on 26 and 29 June 2025, from the 2025-26 file: two costs below zero."
+    fields:
+      settlement_date: "NESO's date the costs belong to; NESO does not state the day boundary"
+      constraint_group: "Boundary code exactly as NESO publishes it; one of six"
+      daily_cost_gbp: "Daily spend, £, rounded to whole pounds (NESO); negatives kept, unexplained by NESO"
+      timestamp_utc: "Start of settlement period 1 of the date, GB local midnight, in UTC"
+      published_at: "NESO's last-modified time for the whole yearly file, read as UTC; one per capture"
+      resource_id: "NESO's id for the April-to-March file; with date and group, the key"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote the capture to bronze, UTC
+  notebook:
+    lead: >-
+      `query()` reads each table's `_latest` view, filtering `settlement_date` with both ends
+      included. Times come back in UK time, so the first cell converts them to UTC. The workbooks
+      and CSV files cover different years.
+    cells:
+      - |
+        import pandas as pd
+        csv = data.neso_data_portal.query("thermal_constraint_costs", "2022-04-01", "2026-10-01")
+        xlsx = data.neso_data_portal.query("thermal_constraint_costs_xlsx", "2019-08-01", "2021-03-31")
+        df = pd.concat([xlsx, csv], ignore_index=True).sort_values(["settlement_date", "constraint_group"], ignore_index=True)
+        df["day_start_utc"] = df.timestamp_utc.dt.tz_convert("UTC")
+        df[df.settlement_date == "2025-06-29"][["settlement_date", "constraint_group", "daily_cost_gbp", "day_start_utc"]]
+      - |
+        april_year = (df.settlement_date.dt.year - (df.settlement_date.dt.month < 4)).rename("april_year")
+        by_year = (df.groupby([april_year, "constraint_group"]).daily_cost_gbp.sum().unstack() / 1e6).round(1)
+        by_year = by_year.reindex(range(2019, 2027)).rename_axis(index=None, columns=None)
+        by_year.index = [f"{y}-{(y + 1) % 100:02d}" for y in by_year.index]
+        by_year
+      - |
+        six = df.groupby("settlement_date").daily_cost_gbp.sum()
+        cb = data.neso_data_portal.query("constraint_breakdown", "2019-08-01", "2026-10-01").set_index("date").thermal_constraints_cost_gbp
+        both = pd.concat({"six_groups": six, "breakdown_thermal": cb}, axis=1, join="inner") / 1e6
+        yr = both.groupby(both.index.year - (both.index.month < 4)).sum()
+        yr.index = [f"{y}-{(y + 1) % 100:02d}" for y in yr.index]
+        yr.assign(share=yr.six_groups / yr.breakdown_thermal).round(2)
+      - |
+        ax = by_year[["SCOTEX", "SSE-SP", "SSHARN"]].plot.bar(figsize=(8, 3.5), rot=0, color=["#155A6E", "#C77E3C", "#66793B"],
+                xlabel="April-to-March year; 2019-20 from August, 2026-27 to 1 October, 2021-22 not read", ylabel="£ million")
+        ax.legend(fontsize=8);
+    needs: the yearly CSV files, both workbooks and Constraint Breakdown's yearly files
+    plot_alt: >-
+      Grouped bar chart of thermal constraint cost per April-to-March year in £ million for
+      SCOTEX, SSE-SP and SSHARN, 2019-20 to 2026-27, with no bars for 2021-22. SSE-SP is highest in
+      2022-23 at 389.6 and 2024-25 at 336.8; SSHARN peaks at 245.0 in 2020-21; SCOTEX stays
+      between 73.9 and 153.3.
+  related:
+    - {dataset: neso_data_portal/constraint-breakdown, note: "NESO's daily thermal constraint cost, one of four reasons"}
+    - {dataset: neso_data_portal/day-ahead-constraint-flows-and-limits, note: "Day-ahead boundary flows and limits; five of these six codes appear there"}
+    - {dataset: neso_data_portal/24-months-ahead-constraint-limits, note: "Weekly limits ahead for boundaries including ESTEX and SCOTEX"}
+    - {dataset: neso_data_portal/24-months-ahead-constraint-cost-forecast, note: "NESO's monthly constraint cost forecast, 24 months ahead, thermal and voltage"}
+  family:
+    slug: thermal-constraint-costs
+    members:
+      - dataset: thermal_constraint_costs
+        differs: "Yearly CSV files from 2022-23; 2021-22 is not read: its costs carry thousands separators"
+        request:
+          - "GET https://api.neso.energy/dataset/f0055054-c55c-4068-a01c-61da4334e58f/resource/476b8d39-5eda-425c-9756-73ddfd36dc4d/download/outturn-system-costs-2022-2023.csv"
+          - "GET https://api.neso.energy/dataset/f0055054-c55c-4068-a01c-61da4334e58f/resource/407f3e9d-5c38-4a64-98f5-923dc4d64fb2/download/outturn-system-costs-2025-2026.csv"
+          - "GET https://api.neso.energy/dataset/f0055054-c55c-4068-a01c-61da4334e58f/resource/c730b788-4328-43dc-9f84-27fd3adeda59/download/outturn-system-costs-2026-2027.csv"
+          - "GET https://api.neso.energy/dataset/f0055054-c55c-4068-a01c-61da4334e58f/resource/4357dd3b-5c7a-4caa-8d1a-8cf848521143/download/outturn-system-costs-2021-2022.csv"
+      - dataset: thermal_constraint_costs_xlsx
+        differs: "The Data sheet of the 2019-20 and 2020-21 workbooks; same three columns"
+        request:
+          - "GET https://api.neso.energy/dataset/f0055054-c55c-4068-a01c-61da4334e58f/resource/d195f1d8-7d9e-46f1-96a6-4251e75e9bd0/download/map-of-outturn-system-costs-19-20.xlsx"
+          - "GET https://api.neso.energy/dataset/f0055054-c55c-4068-a01c-61da4334e58f/resource/a4302916-85af-4a4d-8171-1bdf8f0697a7/download/map-of-outturn-system-costs-20-21.xlsx"
 ---
 
 # Thermal Constraint Costs
@@ -37,8 +176,9 @@ a cost per MWh.
    00:00 UTC in GMT), **not** the capture time. The vintage is the CKAN `last_modified` of each
    file, which differs per file and is `available_at`.
 4. **`available_at` is the file's vintage, so it can be later than a row's true first
-   publication.** NESO states a weekly update, and only one capture per file exists
-   (2026-10-08). The current-year file's earlier rows were presumably public before its
+   publication.** NESO states a weekly update, and silver holds one capture per file
+   (2026-10-08; the 2026-10-16 recapture of the 2026-27 file failed transform, see *The open
+   year*). The current-year file's earlier rows were presumably public before its
    2026-10-03 vintage, but nothing captured proves when (`TODO: verify` NESO's append
    behaviour). Pre-dating a row to its date would be wrong;
    using `available_at` is the safe, conservative reading.
@@ -107,8 +247,10 @@ contents are described only as auxiliary material by the earlier workbook resear
 `Dates` sheet's purpose is `TODO: verify`). The three PNGs are reference images with no tabular
 content. The single HOLD resource has bronze only.
 
-**Downloads and captures.** Every resource was captured once, on 2026-10-08, from
-`api.neso.energy`. Bronze is under
+**Downloads and captures.** Every resource was captured on 2026-10-08, from
+`api.neso.energy`, and the 2026-27 CSV again on 2026-10-16 (bronze
+`thermal_constraint_costs/2026/10/16/`, sidecar `ckan_last_modified` 2026-10-16T06:39:05.103084).
+The 2026-10-08 bodies are under
 `C:/gridflow-data/bronze/neso_data_portal/thermal_constraint_costs/2026/10/08/` (the six CSVs)
 and `.../thermal_constraint_costs_files/2026/10/08/` (the two workbooks and three PNGs), one
 body and one `.meta.json` sidecar per resource. Sizes are physical body sizes and row counts
@@ -203,8 +345,10 @@ established here (`TODO: verify`).
 *Constraint group codes (FACTS section 8).* Six codes, stored as published, each with the same
 row count in each family (1,644 per code in the CSV family, 609 in the workbook family). The
 codes are named transmission boundaries; vendor and map evidence give geographic meanings for
-them, and the OTF documentation presents `B6 (SCOTEX)`, `B7 (SSHARN)`, `LE1 (SEIMP)` and
-`B15 (ESTEX)` as aliases. Those are reference relationships, not storage rules. Exact-string
+them, and the OTF documentation (Operational Transparency Forum slides of 24 June 2026,
+[document 383631](https://www.neso.energy/document/383631/download), "Transparency | Network
+Congestion" table) presents `B6 (SCOTEX)`, `B7 (SSHARN)`, `LE1 (SEIMP)` and `B15 (ESTEX)` as
+aliases. Those are reference relationships, not storage rules. Exact-string
 overlap with other constraint-management tables (FACTS section 8, measured on raw strings):
 
 | Pair | Overlap with this package's six codes |
@@ -216,7 +360,12 @@ overlap with other constraint-management tables (FACTS section 8, measured on ra
 `SSE-SP` does not match the day-ahead table's `SSE_SP` and `SSE_SP2`; whether they are the same
 boundary is `TODO: verify` and they are never merged by gridflow. Whether the six groups are
 additive or overlap (so that a sum across groups could double-count a cost) is also
-`TODO: verify`.
+`TODO: verify`. NESO's network diagram descriptions list exactly these six as the constraints
+in the thermal data. Against `constraint_breakdown` `thermal_constraints_cost_gbp` on shared
+dates (measured 2026-10-23 on silver), the six groups' summed cost is 0.74 of it in 2019-20,
+0.83 in 2020-21, 0.54 in 2022-23, 0.49 in 2023-24, 0.33 in 2024-25 and 0.19 in 2025-26 (median
+day 0.07 in 2025-26; its 8 equal dates are all zero on both sides). A few dates have the six
+above the Breakdown figure. NESO's text does not reconcile the two (`TODO: verify`).
 
 ### `thermal_constraint_costs`
 
@@ -267,8 +416,13 @@ re-attributions or corrections).
 
 *The open year.* The 26-27 file ended at 2026-10-01 at its 2026-10-03 vintage, i.e. it lags
 the vintage by two days; later weekly refreshes will re-upload the same resource with a new
-`last_modified`, adding a new whole capture that supersedes this one for that resource
-(`TODO: verify` that NESO updates the same resource id rather than adding a new one). The
+`last_modified`, adding a new whole capture that supersedes this one for that resource.
+NESO did re-upload the same resource id: the 2026-10-16 capture (`last_modified`
+2026-10-16T06:39:05.103084) has 1,164 rows to 2026-10-11, restates 14 cells dated 2026-09-03
+to 2026-10-01 (for example SCOTEX on 2026-09-04, 11,295,859 then 9,085,448), and renames the
+cost header to `Daily Cost GBP`. The frozen record has one header epoch, so that capture
+failed transform with `HeaderEpochError` and silver still holds the 2026-10-08 capture
+(gridflow `@.planning/phases/v0.22-close/refresh-20261016/DRIFT.md`). The
 next financial-year resource (2027-28) does not exist yet and would need a new registry
 resource entry.
 
@@ -342,9 +496,10 @@ The weekly statement is the vendor's. The captured `last_modified` dates show th
 files last changed in the spring after their year end (April 2022, 2023, 2024, 2025 and 2026
 for the CSVs; June 2020 and April 2021 for the workbooks) and the open 2026-27 file last
 changed on 2026-10-03, which is consistent with a weekly update of the current year only.
-Gridflow captured every resource once, on 2026-10-08, from the portal sweep; the activation
-cutoff was 2026-10-08. A scheduled weekly re-ingest would add a new capture of the 2026-27 file
-and leave the others unchanged unless NESO re-uploads them.
+Gridflow captured every resource on 2026-10-08, from the portal sweep; the activation
+cutoff was 2026-10-08. The 2026-10-16 refresh added a new capture of the 2026-27 file only
+(its transform failed on the renamed header, see *The open year*) and left the others
+unchanged.
 
 ## Licence and attribution
 

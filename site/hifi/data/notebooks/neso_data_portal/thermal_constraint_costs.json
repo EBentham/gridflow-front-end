@@ -1,0 +1,286 @@
+{
+ "dataset": "neso_data_portal/thermal_constraint_costs",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "dcfce12d6f0fc2f19a653842fe71730616e9ce24d9ed4a8f92136af396c8121a",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "import pandas as pd\ncsv = data.neso_data_portal.query(\"thermal_constraint_costs\", \"2022-04-01\", \"2026-10-01\")\nxlsx = data.neso_data_portal.query(\"thermal_constraint_costs_xlsx\", \"2019-08-01\", \"2021-03-31\")\ndf = pd.concat([xlsx, csv], ignore_index=True).sort_values([\"settlement_date\", \"constraint_group\"], ignore_index=True)\ndf[\"day_start_utc\"] = df.timestamp_utc.dt.tz_convert(\"UTC\")\ndf[df.settlement_date == \"2025-06-29\"][[\"settlement_date\", \"constraint_group\", \"daily_cost_gbp\", \"day_start_utc\"]]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "settlement_date",
+      "constraint_group",
+      "daily_cost_gbp",
+      "day_start_utc"
+     ],
+     "index": [
+      "10758",
+      "10759",
+      "10760",
+      "10761",
+      "10762",
+      "10763"
+     ],
+     "rows": [
+      [
+       "2025-06-29",
+       "ESTEX",
+       "284857",
+       "2025-06-28 23:00:00+00:00"
+      ],
+      [
+       "2025-06-29",
+       "SCOTEX",
+       "42006",
+       "2025-06-28 23:00:00+00:00"
+      ],
+      [
+       "2025-06-29",
+       "SEIMP",
+       "-57574",
+       "2025-06-28 23:00:00+00:00"
+      ],
+      [
+       "2025-06-29",
+       "SSE-SP",
+       "1138836",
+       "2025-06-28 23:00:00+00:00"
+      ],
+      [
+       "2025-06-29",
+       "SSHARN",
+       "287405",
+       "2025-06-28 23:00:00+00:00"
+      ],
+      [
+       "2025-06-29",
+       "SWALEX",
+       "0",
+       "2025-06-28 23:00:00+00:00"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "april_year = (df.settlement_date.dt.year - (df.settlement_date.dt.month < 4)).rename(\"april_year\")\nby_year = (df.groupby([april_year, \"constraint_group\"]).daily_cost_gbp.sum().unstack() / 1e6).round(1)\nby_year = by_year.reindex(range(2019, 2027)).rename_axis(index=None, columns=None)\nby_year.index = [f\"{y}-{(y + 1) % 100:02d}\" for y in by_year.index]\nby_year",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "ESTEX",
+      "SCOTEX",
+      "SEIMP",
+      "SSE-SP",
+      "SSHARN",
+      "SWALEX"
+     ],
+     "index": [
+      "2019-20",
+      "2020-21",
+      "2021-22",
+      "2022-23",
+      "2023-24",
+      "2024-25",
+      "2025-26",
+      "2026-27"
+     ],
+     "rows": [
+      [
+       "3.5",
+       "109.4",
+       "5.0",
+       "85.7",
+       "60.5",
+       "0.0"
+      ],
+      [
+       "2.1",
+       "140.4",
+       "7.6",
+       "59.7",
+       "245.0",
+       "0.1"
+      ],
+      [
+       "NaN",
+       "NaN",
+       "NaN",
+       "NaN",
+       "NaN",
+       "NaN"
+      ],
+      [
+       "0.5",
+       "153.3",
+       "188.7",
+       "389.6",
+       "75.2",
+       "1.0"
+      ],
+      [
+       "4.2",
+       "73.9",
+       "6.4",
+       "222.1",
+       "199.8",
+       "0.0"
+      ],
+      [
+       "46.2",
+       "102.7",
+       "4.7",
+       "336.8",
+       "65.3",
+       "0.0"
+      ],
+      [
+       "4.3",
+       "148.8",
+       "17.3",
+       "155.2",
+       "49.6",
+       "0.0"
+      ],
+      [
+       "28.4",
+       "148.1",
+       "0.7",
+       "106.4",
+       "41.0",
+       "0.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "six = df.groupby(\"settlement_date\").daily_cost_gbp.sum()\ncb = data.neso_data_portal.query(\"constraint_breakdown\", \"2019-08-01\", \"2026-10-01\").set_index(\"date\").thermal_constraints_cost_gbp\nboth = pd.concat({\"six_groups\": six, \"breakdown_thermal\": cb}, axis=1, join=\"inner\") / 1e6\nyr = both.groupby(both.index.year - (both.index.month < 4)).sum()\nyr.index = [f\"{y}-{(y + 1) % 100:02d}\" for y in yr.index]\nyr.assign(share=yr.six_groups / yr.breakdown_thermal).round(2)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "six_groups",
+      "breakdown_thermal",
+      "share"
+     ],
+     "index": [
+      "2019-20",
+      "2020-21",
+      "2022-23",
+      "2023-24",
+      "2024-25",
+      "2025-26",
+      "2026-27"
+     ],
+     "rows": [
+      [
+       "264.12",
+       "355.55",
+       "0.74"
+      ],
+      [
+       "454.89",
+       "546.22",
+       "0.83"
+      ],
+      [
+       "808.24",
+       "1503.51",
+       "0.54"
+      ],
+      [
+       "506.27",
+       "1039.61",
+       "0.49"
+      ],
+      [
+       "555.76",
+       "1710.00",
+       "0.33"
+      ],
+      [
+       "375.06",
+       "1956.05",
+       "0.19"
+      ],
+      [
+       "324.55",
+       "1296.97",
+       "0.25"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "source": "ax = by_year[[\"SCOTEX\", \"SSE-SP\", \"SSHARN\"]].plot.bar(figsize=(8, 3.5), rot=0, color=[\"#155A6E\", \"#C77E3C\", \"#66793B\"],\n        xlabel=\"April-to-March year; 2019-20 from August, 2026-27 to 1 October, 2021-22 not read\", ylabel=\"£ million\")\nax.legend(fontsize=8);",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "thermal_constraint_costs-6.png",
+     "width": 699,
+     "height": 337
+    }
+   ]
+  }
+ ]
+}
