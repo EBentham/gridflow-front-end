@@ -4,9 +4,46 @@ package: "24-months-ahead-constraint-limits"
 dataset_key: "constraint_limits_24m"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-10
+updated: 2026-10-23
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: NESO does not map its week numbers to dates, nor say when each week was forecast.
+  title: 24-month constraint limits
+  summary: >-
+    NESO's forecast capability, in MW, of twelve main transmission boundaries, week by week for
+    the next 24 months.
+  facts:
+    vendor: "NESO Data Portal, package `24-months-ahead-constraint-limits`: one CSV file, two diagrams"
+    cadence: "Monthly, as NESO lists it; each upload replaces the file"
+    grain: "Each row: a year and week number, with twelve boundary columns in MW"
+  landscape: market
+  what_it_is: >-
+    A boundary splits the transmission network in two. Each column is what NESO's dictionary
+    calls the boundary capability, in MW, for one boundary code such as SCOTEX or ESTEX. Rows carry
+    only a year and a week number, which NESO numbers 1 to 52, and no dates. Two NESO diagrams
+    locate the boundaries.
+  how_used:
+    - The capability side of a boundary, set against forecast flows across it
+    - How a boundary's capability is expected to change, week by week
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: `package_show`, then each file whole unless its `last_modified` is
+      unchanged. The CSV's name carries the upload month; the two diagrams stay in bronze.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=24-months-ahead-constraint-limits"
+      - "GET https://api.neso.energy/dataset/d515b4a9-60a1-489c-a126-004efc04f121/resource/3c359e33-3dac-4bdd-87d1-efbf4cbc2f07/download/24-months-ahead-constraint-limit_oct26.csv"
+      - "GET https://api.neso.energy/dataset/d515b4a9-60a1-489c-a126-004efc04f121/resource/a9bafbd9-b393-4a5b-bc6f-09d6cdeea583/download/ew_network_constraint_diagram.pdf"
+      - "GET https://api.neso.energy/dataset/d515b4a9-60a1-489c-a126-004efc04f121/resource/bf4e1174-9aa7-4c0d-b444-5d22785053eb/download/scotland_network_constraint_diagram.pdf"
+    commands:
+      - {run: gridflow ingest neso_data_portal constraint_limits_24m --last 24h, comment: whole file to bronze}
+      - {run: gridflow transform neso_data_portal constraint_limits_24m --last 24h, comment: "the capture's date to silver"}
+      - {run: gridflow ingest neso_data_portal constraint_limits_24m_files --last 24h, comment: the two network diagrams}
+  related:
+    - {dataset: neso_data_portal/day-ahead-constraint-flows-and-limits, note: "Day-ahead limits and forecast flows; ten boundary codes match exactly"}
+    - {dataset: neso_data_portal/24-months-ahead-constraint-cost-forecast, note: "NESO's monthly constraint cost forecast over a similar two years"}
+    - {dataset: neso_data_portal/thermal-constraint-costs, note: "Outturn thermal constraint costs; SCOTEX and ESTEX appear in both"}
+    - {dataset: neso_data_portal/operational-transparency-forum-network-congestion-data, note: "Weekly forecast and actual boundary limits, under different codes"}
 ---
 
 # 24 Months Ahead Constraint Limits
@@ -48,6 +85,10 @@ inspection, not for point-in-time use. See Holds.
   Captured: `raw_20261008T091545Z_3c359e33-3dac-4bdd-87d1-efbf4cbc2f07_3eef5064.csv`,
   7,406 bytes, 105 data rows, one header epoch, CKAN `last_modified`
   `2026-09-10T09:48:47.500911`, `url_type: upload`.
+  Captured again on 2026-10-16 as
+  [24-months-ahead-constraint-limit_oct26.csv](https://api.neso.energy/dataset/d515b4a9-60a1-489c-a126-004efc04f121/resource/3c359e33-3dac-4bdd-87d1-efbf4cbc2f07/download/24-months-ahead-constraint-limit_oct26.csv):
+  `raw_20261016T192121Z_3c359e33-3dac-4bdd-87d1-efbf4cbc2f07_720763a1.csv`, 7,409 bytes, 105 data
+  rows, the same header, CKAN `last_modified` `2026-10-09T09:29:34.943764` (bronze sidecar).
 
 ### DOC
 
@@ -109,10 +150,11 @@ data values, samples or ranges. See Holds.
 **The two clocks for this family:**
 
 1. **Vintage (`ckan_last_modified`).** `published_at` and `available_at` both equal the CKAN
-   `last_modified` of the captured file. For the one capture to date that is
-   `2026-09-10T09:48:47.500911`, which CKAN emits without an offset. gridflow reads it as UTC
-   (gridflow `@docs/DECISION_LOG/ADR-030-neso-data-portal-ckan-source.md`). All 105 silver rows
-   share this one vintage (checked on the silver file, 2026-10-10). The file has **no issue
+   `last_modified` of the captured file. For the 2026-10-08 capture that is
+   `2026-09-10T09:48:47.500911`, and for the 2026-10-16 capture `2026-10-09T09:29:34.943764`;
+   CKAN emits both without an offset. gridflow reads them as UTC
+   (gridflow `@docs/DECISION_LOG/ADR-030-neso-data-portal-ckan-source.md`). The 105 silver rows of
+   each capture share its one vintage (checked on both silver files, 2026-10-23). The file has **no issue
    column** and the record's issue recipe is `none`: no row carries its own issue time. The
    vintage says when the file last changed. It does **not** say that every week in the file
    was forecast on that date.
@@ -124,8 +166,8 @@ data values, samples or ranges. See Holds.
    calendar is not established (see below). Do not read `timestamp_utc` on this family as a
    target time.
 
-**Key and coverage (FACTS §2).** The measured key `(year_vendor, week_no)` is unique in the
-capture: 105 rows, 105 distinct keys, zero duplicate excess. `TODO: verify` the vendor's
+**Key and coverage (FACTS §2).** The measured key `(year_vendor, week_no)` is unique in each
+capture: 105 rows, 105 distinct keys, zero duplicate excess (both captures). `TODO: verify` the vendor's
 identity guarantee. The label coverage spans calendar years 2026 to 2028, consistent with the
 24-month horizon the vendor names. The vendor describes `YEAR` as "Time series - Year" and `Week
 No` as "the week number (1-52) for which the limit is applicable" (field-info). Neither column
@@ -188,7 +230,8 @@ capture): **105 silver rows**, equal to the planned count. No prior silver exist
 was overwritten. The silver file is `year=2026/month=10/…parquet` under
 `C:/gridflow-data/silver/neso_data_portal/constraint_limits_24m/`. Reconcile
 `--all --cutoff 2026-10-08` exited 0 with 105 families, 0 gaps (gridflow
-`@.planning/v0.22-RESULTS.md` §CON; RULINGS 630, 632, 634, 635).
+`@.planning/v0.22-RESULTS.md` §CON; RULINGS 630, 632, 634, 635). The first daily refresh
+(2026-10-16) wrote a second silver file (105 rows) from the October upload (checked 2026-10-23).
 
 Silver columns beyond the vendor columns: `timestamp_utc`, `published_at`, `bronze_capture_id`,
 `capture_written_at`, `event_time`, `available_at`, `source_run_id`, `dataset_version` (all
@@ -213,11 +256,14 @@ output and no clocks beyond each file's CKAN `last_modified`. It has no record.
 The captured file's CKAN `last_modified` is 2026-09-10, about four weeks before the 2026-10-08
 capture, which is consistent with a monthly cadence. A later monthly upload replaces the previous
 one in the vendor's file, and gridflow's `whole_capture` selection treats the newest capture as
-the whole table. Captures to date: one (2026-10-08). No scheduled refresh has run yet.
+the whole table. Captures: two, on 2026-10-08 (`sept26`, vintage 2026-09-10) and 2026-10-16
+(`oct26`, vintage 2026-10-09).
 
-- `TODO: verify` whether a monthly upload revises the limits for weeks already covered by the
-  previous upload, or only extends the horizon. Only repeated captures compared row by row can
-  show this.
+- **A monthly upload revises, not only extends.** Compared row by row on bronze (2026-10-23): the
+  label window moved four weeks, from 2026 week 40 to 2028 week 40 in `sept26` to 2026 week 44
+  to 2028 week 44 in `oct26` (four weeks dropped, four added). Of the 101 weeks in both, 30 rows
+  changed in at least one boundary column (102 cells). No values are stated while the hold
+  stands. Whether every upload revises in this way is `TODO: verify` over more captures.
 - `TODO: verify` whether the vendor publishes the file at a fixed point in the month.
 
 ## Licence and attribution

@@ -4,9 +4,47 @@ package: "day-ahead-constraint-flows-and-limits"
 dataset_key: "da_constraint_flows_limits"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-10
+updated: 2026-10-23
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: Boundary and half-hour pairs repeat, and NESO does not explain 99999 limits or the flow's unit.
+  title: Day-ahead constraint flows and limits
+  summary: >-
+    NESO's day-ahead limit, in MW, and forecast flow for each main transmission boundary and half
+    hour, kept as a rolling archive.
+  facts:
+    vendor: "NESO Data Portal, package `day-ahead-constraint-flows-and-limits`: one CSV file, two diagrams"
+    cadence: "Daily (Weekdays), as NESO lists it; each upload is the whole archive"
+    grain: "Each row: a boundary code and half hour (GMT/BST), with limit and flow"
+    history: NESO keeps the past three years plus the current year; earlier on request
+  landscape: market
+  what_it_is: >-
+    NESO models each boundary's flow the day before, from its wind, generation and demand
+    forecasts, and gives the boundary's limit in MW beside it. The flows are not revised after
+    publication. From 22 April 2024 they no longer allow for constraint mitigation actions, so
+    earlier rows are not like for like. NESO's diagrams show each boundary's positive flow
+    direction.
+  how_used:
+    - How close NESO expected each boundary to run to its limit, a day ahead
+    - Congestion risk by boundary, as an input to constraint cost models
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: `package_show`, then each file whole unless its `last_modified` is
+      unchanged. Every upload repeats the whole archive. The diagrams are re-issued under new names.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=day-ahead-constraint-flows-and-limits"
+      - "GET https://api.neso.energy/dataset/cf3cbc92-2d5d-4c2b-bd29-e11a21070b26/resource/38a18ec1-9e40-465d-93fb-301e80fd1352/download/day-ahead-constraints-limits-and-flow-output-v1.5.csv"
+      - "GET https://api.neso.energy/dataset/cf3cbc92-2d5d-4c2b-bd29-e11a21070b26/resource/bb6d6ec6-16d9-4be5-b32c-1a70c09fd871/download/ew-network-diagram-da-limit-boundaries-oct2026.pdf"
+      - "GET https://api.neso.energy/dataset/cf3cbc92-2d5d-4c2b-bd29-e11a21070b26/resource/3eb74046-3ffa-40c3-a541-b3cb00a44b1f/download/scotland-network-diagram-da-limit-boundaries-oct2026.pdf"
+    commands:
+      - {run: gridflow ingest neso_data_portal da_constraint_flows_limits --last 24h, comment: "the whole archive, bronze only"}
+      - {run: gridflow ingest neso_data_portal da_constraint_flows_limits_files --last 24h, comment: the two network diagrams}
+  related:
+    - {dataset: neso_data_portal/24-months-ahead-constraint-limits, note: "NESO's weekly limits, 24 months ahead; ten boundary codes match exactly"}
+    - {dataset: neso_data_portal/thermal-constraint-costs, note: "Outturn thermal constraint costs; five boundary codes match exactly"}
+    - {dataset: neso_data_portal/operational-transparency-forum-network-congestion-data, note: "Weekly forecast and actual boundary limits, under different codes"}
+    - {dataset: neso_data_portal/constraint-breakdown, note: "NESO's daily constraint costs and volumes, split by reason"}
 ---
 
 # Day Ahead Constraint Flows and Limits
@@ -29,7 +67,9 @@ input for GB constraint-cost and redispatch modelling, not a measurement of what
 1. **The one data family is held (unit E-SEM) and its capture failed.** The single CSV capture
    (2026-10-08, 733,649 data rows) was adjudicated **failed** under ADR-040 (RULINGS 632): the
    archive repeats `(Constraint Group, target timestamp)` keys, so the duplicate-key guard raises
-   `DuplicateEntityKeyError` and nothing is written. **Silver holds 0 rows for this package**
+   `DuplicateEntityKeyError` and nothing is written. The second capture (2026-10-16, 740,443
+   data rows) fails the same way and is reported as a reconcile gap (gridflow
+   `@.planning/phases/v0.22-close/refresh-20261016/DRIFT.md`). **Silver holds 0 rows for this package**
    (RULINGS 635; no `da_constraint_flows_limits` directory exists under
    `C:/gridflow-data/silver/neso_data_portal/`). Bronze holds the immutable CSV and the two PDFs.
    This page gives schema, counts and clocks and **never data values, ranges or example rows**.
@@ -74,16 +114,26 @@ section 8 for the cross-table boundary codes).
 | Network Diagram England & Wales | PDF | upload | `bb6d6ec6-16d9-4be5-b32c-1a70c09fd871` |
 | Network Diagram Scotland | PDF | upload | `3eb74046-3ffa-40c3-a541-b3cb00a44b1f` |
 
-**Downloads and captures.** All three resources have `url_type: upload` and were captured once,
+**Downloads and captures.** All three resources have `url_type: upload` and were first captured
 on 2026-10-08, from `api.neso.energy` (sizes and CKAN `last_modified` from each sidecar under
 `C:/gridflow-data/bronze/neso_data_portal/<family>/2026/10/08/`; URLs from the catalogue
-snapshot `20261006T195819Z`). The package was created on 2019-11-05.
+snapshot `20261006T195819Z`), and all three again on 2026-10-16 (second table). The package was
+created on 2019-11-05.
 
 | Resource | Download | Bytes | Data rows | CKAN `last_modified` |
 |---|---|---:|---:|---|
 | Day Ahead Constraint Flows and Limits | [day-ahead-constraints-limits-and-flow-output-v1.5.csv](https://api.neso.energy/dataset/cf3cbc92-2d5d-4c2b-bd29-e11a21070b26/resource/38a18ec1-9e40-465d-93fb-301e80fd1352/download/day-ahead-constraints-limits-and-flow-output-v1.5.csv) | 28,054,626 | 733,649 | 2026-10-07T17:28:41.804546 |
 | Network Diagram England & Wales (DOC) | [ew-network-diagram-da-limit-boundaries2026.pdf](https://api.neso.energy/dataset/cf3cbc92-2d5d-4c2b-bd29-e11a21070b26/resource/bb6d6ec6-16d9-4be5-b32c-1a70c09fd871/download/ew-network-diagram-da-limit-boundaries2026.pdf) | 442,083 | n/a | 2026-07-10T11:05:51.346242 |
 | Network Diagram Scotland (DOC) | [scotland-network-diagram-da-limit-boundaries2026.pdf](https://api.neso.energy/dataset/cf3cbc92-2d5d-4c2b-bd29-e11a21070b26/resource/3eb74046-3ffa-40c3-a541-b3cb00a44b1f/download/scotland-network-diagram-da-limit-boundaries2026.pdf) | 335,479 | n/a | 2026-07-10T11:04:48.337491 |
+
+Captured again on 2026-10-16 (sidecars under `.../<family>/2026/10/16/`). Both diagrams were
+re-issued under new file names; the CSV keeps its name:
+
+| Resource | Download | Bytes | Data rows | CKAN `last_modified` |
+|---|---|---:|---:|---|
+| Day Ahead Constraint Flows and Limits | [day-ahead-constraints-limits-and-flow-output-v1.5.csv](https://api.neso.energy/dataset/cf3cbc92-2d5d-4c2b-bd29-e11a21070b26/resource/38a18ec1-9e40-465d-93fb-301e80fd1352/download/day-ahead-constraints-limits-and-flow-output-v1.5.csv) | 28,324,304 | 740,443 | 2026-10-16T15:42:40.975426 |
+| Network Diagram England & Wales (DOC) | [ew-network-diagram-da-limit-boundaries-oct2026.pdf](https://api.neso.energy/dataset/cf3cbc92-2d5d-4c2b-bd29-e11a21070b26/resource/bb6d6ec6-16d9-4be5-b32c-1a70c09fd871/download/ew-network-diagram-da-limit-boundaries-oct2026.pdf) | 525,665 | n/a | 2026-10-13T15:19:44.151022 |
+| Network Diagram Scotland (DOC) | [scotland-network-diagram-da-limit-boundaries-oct2026.pdf](https://api.neso.energy/dataset/cf3cbc92-2d5d-4c2b-bd29-e11a21070b26/resource/3eb74046-3ffa-40c3-a541-b3cb00a44b1f/download/scotland-network-diagram-da-limit-boundaries-oct2026.pdf) | 346,472 | n/a | 2026-10-16T11:26:01.320200 |
 
 - **The CSV is also a CKAN datastore table** (field info records `datastore_active`; the
   datastore total of 733,649 equals the CSV data-row count). gridflow captures the uploaded
@@ -102,8 +152,8 @@ snapshot `20261006T195819Z`). The package was created on 2019-11-05.
 
 ## Families
 
-*Identity and selection.* One resource, one capture, one header epoch (`dataset_version`
-`1+e1` would apply). The record sets `latest` to `whole_capture`; a later NESO re-upload would
+*Identity and selection.* One resource, two captures (2026-10-08 and 2026-10-16), one header
+epoch, the same header in both (`dataset_version` `1+e1` would apply). The record sets `latest` to `whole_capture`; a later NESO re-upload would
 add a new whole capture and `_latest` would take it whole, and a bronze capture is never
 edited. The entity key is the tuple in the family block below, which **is not unique on the
 captured body** (see "Why the capture failed"). The archive is never deduplicated, no ordinal
@@ -112,8 +162,8 @@ key is invented, and no value column is added to the key.
 *The two clocks.*
 
 1. **Vintage: `ckan_last_modified`.** `published_at` and `available_at` are the CKAN
-   `last_modified` of the captured file, both equal: **2026-10-07T17:28:41.804546** for the one
-   capture (ADR-030). It is not the capture time and not the target time. An as-of query is
+   `last_modified` of the captured file, both equal: **2026-10-07T17:28:41.804546** for the first
+   capture and 2026-10-16T15:42:40.975426 for the second (ADR-030). It is not the capture time and not the target time. An as-of query is
    `WHERE available_at <= :as_of` (RULINGS 597). This is the vintage of the whole file: a
    re-upload re-stamps every row, including rows for targets years in the past, so
    `available_at` says nothing about when a particular archived forecast was first issued.
@@ -202,7 +252,8 @@ Schema, epoch 1:
 **Silver: 0 rows. HELD (E-SEM): no values shown. Capture adjudicated failed (ADR-040).** The
 source header is `Constraint Group`, `Date_ Time GMT_BST` (note the space after the
 underscore), `Limit_MW`, `Flow_MW`; the vendor header contains no unit text. The record has
-one epoch and one capture; body is 733,649 data rows, 28,054,626 bytes, UTF-8. Both vendor
+one epoch; the first capture's body is 733,649 data rows, 28,054,626 bytes, UTF-8 (the second:
+740,443 rows, 28,324,304 bytes). Both vendor
 value columns are blank on some rows. Vintage if it had loaded: `published_at` = `available_at`
 = 2026-10-07T17:28:41.804546 UTC; `timestamp_utc` = 2026-10-08T09:16:59.217830 UTC.
 
@@ -213,9 +264,13 @@ value columns are blank on some rows. Vintage if it had loaded: `published_at` =
 - The key `(constraint_group, raw timestamp)` has **732,213 distinct values across 733,649
   rows, so 1,436 duplicate excess rows**. Of these, **1,392 are whole-row duplicates** (the
   extra rows repeat every source column) and the remaining excess comes from **44 key groups
-  whose Limit_MW or Flow_MW differ between the repeated rows**. Some collisions fall on the
-  repeated autumn hour; others fall on ordinary dates, so a fold rule alone does not explain
-  them. The whole-row duplicates persist when rows with blank limit and flow are excluded.
+  whose Limit_MW or Flow_MW differ between the repeated rows**. The two kinds have different
+  causes (checked on both captures, 2026-10-23). All 44 value-differing groups are the repeated
+  autumn hour: 01:00 and 01:30 on 2024-10-27 and 2025-10-26, 11 boundaries each, so a fold rule
+  would separate them. The 1,392 whole-row duplicates are two whole repeated days: 2025-08-12 at
+  11 boundaries (528 excess rows) and 2026-08-19 at 18 boundaries (864), which no fold rule
+  explains. The whole-row duplicates persist when rows with blank limit and flow are excluded.
+  On both captures 8,166 `Limit_MW` cells are `99999` and 3,365 `Flow_MW` cells are blank.
 - Adding the value columns to the key therefore does not make it unique, and no vendor-column
   key is lossless. gridflow does not deduplicate bronze and does not invent an ordinal key.
 - The engine's duplicate guard raises `DuplicateEntityKeyError` on the repeated keys, which is
@@ -228,7 +283,9 @@ value columns are blank on some rows. Vintage if it had loaded: `published_at` =
 (`issue: none`). Of 733,649 rows, **732,332 have a target calendar date strictly before the
 vintage date**, so the file is a retrospective forecast archive, not a forward-only one, and the
 CKAN vintage cannot be read as availability-at-issue for those rows. This is independent of the
-duplicate-key failure: even a clean load would stay held.
+duplicate-key failure: even a clean load would stay held. The 2026-10-16 capture is the same:
+738,687 of 740,443 targets fall before its vintage date, and its key repeats on the same 1,436
+excess rows (1,392 whole-row duplicates), so it fails the same guard (checked on bronze, 2026-10-23).
 
 ### `da_constraint_flows_limits_files`
 
@@ -236,10 +293,11 @@ duplicate-key failure: even a clean load would stay held.
 - files: catalogue only
 
 This is the catalogue family for the two PDF network diagrams (DOC). It has no silver output
-and no record. Bronze holds the two captures of 2026-10-08. The vendor's file names carry
-`2026`, which suggests the diagrams are re-issued as the boundary set changes
-(`TODO: verify` whether NESO versions them and whether the boundary list in the diagram text
-follows the data).
+and no record. Bronze holds two captures of each diagram, 2026-10-08 and 2026-10-16. NESO
+re-issued both in October 2026 under new names (`...-boundaries-oct2026.pdf`, vintages
+2026-10-13 and 2026-10-16), so the diagrams are versioned in the file name and the download URL
+changes with each issue (`TODO: verify` whether the boundary list in the diagram text follows
+the data).
 
 ## Cadence
 
@@ -248,12 +306,14 @@ follows the data).
   - Update Frequency: Daily (Weekdays)
 
 The registry refresh is daily and the vendor says weekdays. gridflow has captured the package
-once (2026-10-08, by the portal sweep). Because the file is a rolling window that is re-uploaded
-whole, a routine daily refresh would add a new whole capture each time, with a new vintage
-and the same duplicate-key hazard; the hold and the failed adjudication apply to each such
-capture until NESO answers the questions below. Whether the three-year window drops its oldest
-year at a year boundary in one step (so that rows disappear from the latest file) is
-`TODO: verify` against a second capture; with one capture it is not measurable.
+twice: 2026-10-08 (the portal sweep) and 2026-10-16 (the first daily refresh). The file is a
+rolling window re-uploaded whole, and each refresh adds a new whole capture with a new vintage
+and the same duplicate-key hazard; the hold and the failure apply to each such capture until
+NESO answers the questions below. Between the two captures the file only grew: every distinct
+row of the first is in the second, no key was dropped, and 6,794 new keys were added (targets
+now to 2026-10-17; the earliest is still 2023-01-01). Checked on bronze, 2026-10-23. Whether the
+three-year window drops its oldest year at a year boundary in one step (so that rows disappear
+from the latest file) is `TODO: verify`; no year boundary has passed between captures.
 
 ## Licence and attribution
 

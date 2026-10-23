@@ -4,10 +4,45 @@ package: "constraint-management-intertrip-service-information-cmis"
 dataset_key: "cmis_intertrip"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-10
+updated: 2026-10-23
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 eligibility_scope: "package-level only; family cmis_intertrip is held (E-SEM, RULINGS 632), see Holds"
+page:
+  held: Times carry +00:00 though NESO says local time, and the fee's unit is given two ways.
+  title: Constraint management intertrip service
+  summary: >-
+    Each time NESO armed a contracted unit to an intertrip scheme to manage a network constraint:
+    when, the fee and the cost.
+  facts:
+    vendor: "NESO Data Portal, package `constraint-management-intertrip-service-information-cmis`: one CSV per year"
+    cadence: "Monthly, as NESO lists it, shortly after each month's payments"
+    grain: "Each row: one arming of one BM unit, with its arming and disarming times"
+    history: "Yearly files from 2022-2023, as NESO names them"
+  landscape: market
+  what_it_is: >-
+    Units contracted under NESO's Constraint Management Intertrip Service (CMIS) are armed to manage
+    network constraints. Each row gives the unit, its arming and disarming times, the fee and an
+    indicative cost. NESO says times are GB local; each ends in +00:00. For the arming fee
+    since 2024-25, NESO's dictionary describes £/MWh but gives the unit as £ per settlement period.
+  how_used:
+    - When and for how long each contracted unit was armed, and at what cost
+    - Intertrip arming costs beside NESO's other constraint costs
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: `package_show`, then each yearly file unless `last_modified` is
+      unchanged (first and newest). Headers differ by year; the newest's October 2026 header is not
+      read into silver.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=constraint-management-intertrip-service-information-cmis"
+      - "GET https://api.neso.energy/dataset/7c20761d-3aab-4e9f-926e-6117fa8c4524/resource/60b4055c-d87e-4ebe-8d21-e023f506e461/download/cmp-management-intertrip-arming-2022-2023.csv"
+      - "GET https://api.neso.energy/dataset/7c20761d-3aab-4e9f-926e-6117fa8c4524/resource/60a1c0c6-4821-4e38-bc87-c6b4d510be6d/download/cmp-intertrip-arming-2026-2027.csv"
+    commands:
+      - {run: gridflow ingest neso_data_portal cmis_intertrip --last 24h, comment: every yearly file to bronze}
+  related:
+    - {dataset: neso_data_portal/thermal-constraint-costs, note: "NESO's daily thermal constraint costs at six named boundaries"}
+    - {dataset: neso_data_portal/constraint-breakdown, note: "NESO's daily constraint costs and volumes, split by reason"}
+    - {dataset: elexon/bmunits_reference, note: "The BM unit register, for the units armed here"}
 ---
 
 # Constraint Management Intertrip Service Information (CMIS)
@@ -60,6 +95,12 @@ revisions of one another. The captured download URLs (from the 2026-10-06 catalo
 | 2024-2025 | [cmp-intertrip-arming-2024-2025.csv](https://api.neso.energy/dataset/7c20761d-3aab-4e9f-926e-6117fa8c4524/resource/2f0777a3-719c-4ffe-96c2-61117a5ec468/download/cmp-intertrip-arming-2024-2025.csv) | `raw_20261008T091502Z_2f0777a3-719c-4ffe-96c2-61117a5ec468_c1016587.csv` | 18,916 | 247 (246 nonblank) | `2025-05-06T10:00:06.772385` | 2 (newer) |
 | 2025-2026 | [cmp-intertrip-arming-2025-2026.csv](https://api.neso.energy/dataset/7c20761d-3aab-4e9f-926e-6117fa8c4524/resource/c6f0c279-87c9-4123-a4d1-b2d6d98b43a7/download/cmp-intertrip-arming-2025-2026.csv) | `raw_20261008T091505Z_c6f0c279-87c9-4123-a4d1-b2d6d98b43a7_c156410d.csv` | 12,900 | 167 | `2026-04-28T16:25:43.722522` | 2 (newer) |
 | 2026-2027 | [cmp-intertrip-arming-2026-2027.csv](https://api.neso.energy/dataset/7c20761d-3aab-4e9f-926e-6117fa8c4524/resource/60a1c0c6-4821-4e38-bc87-c6b4d510be6d/download/cmp-intertrip-arming-2026-2027.csv) | `raw_20261008T091508Z_60a1c0c6-4821-4e38-bc87-c6b4d510be6d_bb03d88d.csv` | 6,478 | 83 | `2026-10-01T10:37:07.382134` | 2 (newer) |
+
+The table is the 2026-10-08 capture. The 2026-2027 file was captured again on 2026-10-16
+(`raw_20261016T192110Z_60a1c0c6-4821-4e38-bc87-c6b4d510be6d_bcea1448.csv`, 6,484 bytes, 83 data
+rows, CKAN `last_modified` `2026-10-14T11:02:57.307927`, same URL) under a **third header**; that
+capture is not in silver (see "A third header" below). The other four files have one capture
+each.
 
 The stable handle for each file is its resource id, not the URL. CKAN `last_modified` values are
 emitted without an offset and read as UTC (gridflow
@@ -126,10 +167,27 @@ of columns: every row has all seven vendor-derived columns, and the columns that
 lacks are null (checked on 2026-10-10: `current_arming_fee_gbp_per_mwh` and `b6_ec5` are null on
 all 551 older rows; `current_arming_fee_gbp_per_sp` is null on all 496 newer rows).
 **The two fee columns stay distinct.** They are not converted, merged or coalesced, because the
-unit of the newer column is in dispute (below). The vendor's current documentation announces a
-later header renaming. That is evidence of a possible third epoch, not a captured one
-(FACTS g5). `dataset_version` reads `1+e1` on every row: the `e1` is the engine version, not the
-header epoch.
+unit of the newer column is in dispute (below). `dataset_version` reads `1+e1` on every row: the
+`e1` is the engine version, not the header epoch.
+
+**A third header, captured 2026-10-16 and not loaded.** The 2026-2027 resource description
+announced that three column ids would change on 9 October 2026: `Cost for this utilisation (£)`
+to `Cost for this utilisation`, `B6/EC5` to `B6 or EC5 boundary`, and `Current Arming Fee (£ /
+MWH)` to `Current Arming Fee` (2026-10-06 catalogue snapshot). The 2026-10-16 capture carries
+`BMU ID,Arming Date Time,Disarming Date Time,Current Arming Fee,Cost for this utilisation,B6 or EC5 `
+(bronze header bytes): the last column is `B6 or EC5` with a trailing space, not the announced
+`B6 or EC5 boundary`, and neither fee column nor cost column carries a unit any more. The header
+matches neither declared epoch, so the transform raised `HeaderEpochError` and wrote nothing;
+the 2026-10-08 silver of that file stands (gridflow
+`@.planning/phases/v0.22-close/refresh-20261016/DRIFT.md`, `reconcile.log`). Compared with the
+2026-10-08 capture by position (2026-10-23): the same 83 `(BMU ID, Arming Date Time)` keys, every
+arming time still ends in `+00:00`, and 3 rows differ, all in the cost column: `WHILW-1`,
+`WHILW-2` and `BLLA-1`, all armed 2026-04-03T03:49, had a cost of 0 on 2026-10-08 and carry a
+nonzero cost on 2026-10-16. NESO filled in three zero costs in place, without a new key (the file
+held four zero-cost rows on 2026-10-08 and one on 2026-10-16). So a zero cost in the current-year
+file can be a figure not yet entered, not only a real zero. Remediation (a new declared epoch) is gridflow's
+next-milestone drift unit; with the fee column now unitless, the fee-unit question below is
+harder, not easier, to settle from the file.
 
 **Clock conflict (arming and disarming timestamps).** The vendor's package page says the
 timestamps are in **GB local time**. Every captured `Arming Date Time` and `Disarming Date Time`
@@ -178,7 +236,9 @@ likewise stored as-is, with no normalisation. `TODO: verify` which dictionary wo
 - **Zero is a real value.** `Cost for this utilisation` is zero on 0, 1, 8, 10 and 4 rows across the
   five files in resource order, with longest consecutive zero runs of 0, 1, 3, 2 and 3 rows
   (physical body order, not a reconstructed time series). All zeros are preserved. gridflow
-  makes no claim about what a zero means. Sentinel observation does not establish vendor
+  makes no claim about what a zero means. Three of the four 2026-2027 zeros were filled in with
+  nonzero costs by the 2026-10-14 upload (see "A third header"), so a zero in the current-year
+  file may be a cost not yet entered. Sentinel observation does not establish vendor
   sentinel meaning.
 - No column is null in silver other than the structural nulls of the absent-header columns above.
 
@@ -206,14 +266,17 @@ columns: `resource_id`, `timestamp_utc`, `published_at`, `bronze_capture_id`,
 - Registry refresh: monthly
 - Vendor metadata (snapshot extras, verbatim):
   - Update frequency: Monthly
-- Captures to date: one per resource (2026-10-08). No scheduled refresh has run yet.
+- Captures: one per resource on 2026-10-08, and a second of the 2026-2027 file on 2026-10-16
+  (the first daily refresh; the other four files were unchanged, so not fetched again).
 
 The vendor's package description says services are paid at least a month in arrears and the
 dataset is updated shortly after the payments for the month are made, so the feed lags the
-events it records. The 2026-2027 file is the live year: its vintage (`2026-10-01`) is the
-most recent of the five, and the earlier four have not changed since 2024 to April 2026.
-`TODO: verify` whether past-year files are ever restated after their first publication. Only
-repeated captures compared row by row can show this. `TODO: verify` whether a new financial-year file appears as a new resource
+events it records. The 2026-2027 file is the current year: its vintage (`2026-10-01` at the
+first capture, `2026-10-14` at the second) is the most recent of the five, and the earlier four
+have not changed since 2024 to April 2026. The current-year file is edited in place, not only
+appended: its 2026-10-14 upload filled in the cost on 3 of the 83 rows already published, where it
+had been 0, with no new rows (see "A third header" above). `TODO: verify` whether past-year files are ever restated after their
+first publication. Only repeated captures compared row by row can show this. `TODO: verify` whether a new financial-year file appears as a new resource
 and what gridflow must change to capture it.
 
 ## Licence and attribution
@@ -245,7 +308,7 @@ record version. It is not a re-label of existing silver.
 
 Related holds in the same batch (gridflow `@docs/neso_data_portal/eligibility.md`):
 `constraint_limits_24m`, `otf_network_congestion` and `voltage_requirement` are held under their
-own E-SEM questions. `da_constraint_flows_limits` is held and its one capture is adjudicated
+own E-SEM questions. `da_constraint_flows_limits` is held and its first capture is adjudicated
 **failed**: the transform raises `DuplicateEntityKeyError` (ADR-040), so it has **0 silver
 rows**. `thermal_constraint_costs` is eligible apart from its oldest CSV resource, which is held at
 resource level (comma-formatted costs), and its workbook child family
