@@ -1,0 +1,247 @@
+{
+ "dataset": "neso_data_portal/transmission_losses_main",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "cc5ba4209543bcf9a56e63c1e0287100130999ea10556bf33bb08d4ce3aca0dd",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "months = data.sql(\"\"\"\n    SELECT financial_year, month_vendor, nget, spt, shetl, gb_totals\n    FROM silver_neso_data_portal_transmission_losses_main_latest\n    ORDER BY strptime(month_vendor, '%b-%y')\n\"\"\")\nmonths.tail()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "financial_year",
+      "month_vendor",
+      "nget",
+      "spt",
+      "shetl",
+      "gb_totals"
+     ],
+     "index": [
+      "156",
+      "157",
+      "158",
+      "159",
+      "160"
+     ],
+     "rows": [
+      [
+       "2026-27",
+       "Apr-26",
+       "0.4065",
+       "0.0577",
+       "0.0345",
+       "0.4988"
+      ],
+      [
+       "2026-27",
+       "May-26",
+       "0.3518",
+       "0.0505",
+       "0.0339",
+       "0.4362"
+      ],
+      [
+       "2026-27",
+       "Jun-26",
+       "0.2972",
+       "0.0413",
+       "0.0235",
+       "0.3620"
+      ],
+      [
+       "2026-27",
+       "Jul-26",
+       "0.4329",
+       "0.0529",
+       "0.0362",
+       "0.5221"
+      ],
+      [
+       "2026-27",
+       "Aug-26",
+       "0.1162",
+       "0.0153",
+       "0.0096",
+       "0.1412"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "gap = data.sql(\"\"\"\n    SELECT y.financial_year, y.sum_of_gb_totals AS yearly_twh,\n           round(sum(m.gb_totals), 4) AS months_summed_twh,\n           round(y.sum_of_gb_totals - sum(m.gb_totals), 4) AS gap_twh\n    FROM silver_neso_data_portal_transmission_losses_financial_year_latest AS y\n    JOIN silver_neso_data_portal_transmission_losses_main_latest AS m USING (financial_year)\n    GROUP BY y.financial_year, y.sum_of_gb_totals\n    ORDER BY y.financial_year\n\"\"\")\ngap",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "financial_year",
+      "yearly_twh",
+      "months_summed_twh",
+      "gap_twh"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12"
+     ],
+     "rows": [
+      [
+       "2013-14",
+       "5.426425",
+       "5.4280",
+       "-0.0016"
+      ],
+      [
+       "2014-15",
+       "5.636473",
+       "5.6370",
+       "-0.0005"
+      ],
+      [
+       "2015-16",
+       "5.371663",
+       "5.3730",
+       "-0.0013"
+      ],
+      [
+       "2016-17",
+       "4.850311",
+       "4.8490",
+       "0.0013"
+      ],
+      [
+       "2017-18",
+       "5.232787",
+       "5.2350",
+       "-0.0022"
+      ],
+      [
+       "2018-19",
+       "5.651236",
+       "5.6510",
+       "0.0002"
+      ],
+      [
+       "2019-20",
+       "6.871700",
+       "6.8720",
+       "-0.0003"
+      ],
+      [
+       "2020-21",
+       "6.558124",
+       "6.5580",
+       "0.0001"
+      ],
+      [
+       "2021-22",
+       "6.505530",
+       "6.5540",
+       "-0.0485"
+      ],
+      [
+       "2022-23",
+       "8.175523",
+       "7.9540",
+       "0.2215"
+      ],
+      [
+       "2023-24",
+       "7.147000",
+       "7.1470",
+       "0.0000"
+      ],
+      [
+       "2024-25",
+       "7.540900",
+       "7.5093",
+       "0.0316"
+      ],
+      [
+       "2025-26",
+       "6.845600",
+       "6.8532",
+       "-0.0076"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "ax = gap.plot.bar(x=\"financial_year\", y=\"gap_twh\", legend=False, color=\"#155A6E\",\n                  figsize=(8, 3.5), xlabel=\"financial year\",\n                  ylabel=\"yearly minus months summed, TWh\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "transmission_losses_main-5.png",
+     "width": 712,
+     "height": 379
+    }
+   ]
+  }
+ ]
+}
