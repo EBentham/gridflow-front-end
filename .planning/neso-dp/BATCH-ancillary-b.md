@@ -68,7 +68,7 @@ Known risks:
 | 2 | ab90e4f799035d73c | aa9f90d2aabec7096 | APPROVED (round 2 fixes seat-verified); committed; 20o logged |
 | 3 | abd18a84e1f5fabb1 | a7cca7dbb557ffe18 | APPROVED (round 2 fixes seat-verified); committed; 20p logged |
 | 4 | a1153f90d0765c153 | a90a0afe04c073de9 | APPROVED, nits fixed (seat-verified); committed; 20q, 20r logged |
-| 5 | a1aa64f9f77a3ac69 | a734d2629fc8d1a47 | revising (REVISE: 3 majors, 6 nits); 20t logged |
+| 5 | a1aa64f9f77a3ac69 | a734d2629fc8d1a47 | APPROVED (round 2 fixes seat-verified); committed; 20t logged |
 | 6 | ad2a23efea2aeecaa | ae6d34b6e498b163c | APPROVED (round 2 fixes seat-verified); committed; 20s logged |
 | 7 | aa1a3c5e76550588d | a67b67c815e99b01b | APPROVED, nits fixed (seat-verified); committed; 20u logged |
 | 8 | a0f4c6cf3e400cbf2 | ac7ecf986ba87acc7 | APPROVED round 2; committed; 20v logged |
