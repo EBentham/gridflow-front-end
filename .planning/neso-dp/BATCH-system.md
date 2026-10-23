@@ -63,4 +63,4 @@ captures repeat rows (or as a guard); the workbench `query()` returns session-zo
 | 5 | a53100ea68ce297c5 | a232c0e595357601a | APPROVED (round 2 fixes seat-verified against silver); committed; 20at, 20aw logged |
 | 6 | a28ffdf91cd9e7bae | a542f7fbadd95327a | APPROVED, nits fixed (seat-verified); committed; held (one row: seat accepts, PROXY-SOURCED); 20as logged |
 | 7 | af7ffe5a7853e4a94 | a1fb8deb58ea211a4 | APPROVED (round 2 fixes seat-verified); committed; 20au, 20av logged |
-| H | a02e1e6b7b10036a6 | ab0cdc7993c9d4848 | revising (DNO, SOP APPROVE + nits; Pathfinder REVISE 1 major; DNO: keep requests, cut CRS wording, seat PROXY-SOURCED); 20ax, 20ay logged |
+| H | a02e1e6b7b10036a6 | ab0cdc7993c9d4848 | APPROVED x3 (round 2 fixes seat-verified); committed; DNO: keep requests, cut CRS wording, seat PROXY-SOURCED); 20ax, 20ay logged |
