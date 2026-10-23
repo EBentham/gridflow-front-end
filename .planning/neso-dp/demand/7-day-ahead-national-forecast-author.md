@@ -154,3 +154,16 @@ None new. At 768 the bar labels are small (about 9 px), as on the 1-day page.
 - No gridflow code defect found.
 
 Nothing added to git or committed.
+
+## Round 2 (review APPROVE with 3 nits), 2026-10-24
+
+1. `page.what_it_is`: the gap clause is dated: "as of 16 October 2026 it skips from June 2018 to April 2023" (60 words,
+   at budget).
+2. Note body, Holds: "schema, row count and clock recipes only, not its data values or ranges" now reads "schema, row
+   count, clock recipes and target-date coverage only, not its forecast values or time stamps".
+3. `page.family.members[1].differs`: "What NESO calls all seven-day-ahead forecasts from 2018, each with a forecast time
+   stamp" (14 words).
+
+Gates: mirror `cmp` clean, 545 of 545 lines CRLF; `gridflow-build --only neso_data_portal/national_forecast_7d_day_ahead_demand`
+wrote the page with no error; detector `[]`; 0 em dashes. Text-only changes: no artefact regenerated, no screenshots
+retaken. Nothing added to git or committed.
