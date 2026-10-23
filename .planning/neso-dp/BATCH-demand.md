@@ -29,6 +29,10 @@ branch and one PR stacked on Trading. Bobbo looks at the pages before merge.
 | H1 | Held: `day-ahead-half-hourly-demand-forecast-performance` (`da_demand_fc_performance`), `daily-demand-update` (`daily_demand_update`), `demand-profile-dates` (`demand_profile_dates`, bronze only: NESO repeats identical rows), `historic-demand-data` (`historic_demand`) | every table held | 9847 | 9857 |
 | H2 | Held: `long-term-2-52-weeks-ahead-national-demand-forecast` (`demand_forecast_2_52w`), `school-holiday-percentages` (`school_holiday_percentages`), `transmission-losses` (`transmission_losses_main`, `_financial_year`) | every table held | 9848 | 9858 |
 
+Seat ruling (PROXY-SOURCED, 2026-10-24): `transmission-losses` ships as a full page, not held. gridflow ruling 538, the
+eligibility report and the registry make both tables eligible; the front-end ledger left the cell blank (20bj). It gets
+its own checker. Raised for Bobbo at the group's PR.
+
 Known risks:
 - **The four forecast pages share a shape:** a current file of a dozen-odd rows (eligible) and a large historic file
   (held: NESO does not confirm the zone of the forecast time stamps). The current file is small: pick an honest chart or `type: none`; never chart
@@ -71,5 +75,5 @@ time, `query()` filters on the capture time (remediation 20at): use `data.sql()`
 | 4 | | | not started |
 | 5 | aff832a32c1030ea2 | ab3dc8141aec8a48f | APPROVED (round 2 fixes seat-verified); committed; 20bf logged |
 | 6 | a9e81f314a34edccf | a6c15891c978684e7 | APPROVED (round 2 fixes seat-verified); committed; lead changed to the building-block table (seat, PROXY-SOURCED) |
-| H1 | a403343c59ca240d0 | abed098ced7d8bb2c | revising (3 APPROVE with nits, historic REVISE: 1 major); 20bh, 20bi logged |
-| H2 | a33842486afc7e15e | | writing |
+| H1 | a403343c59ca240d0 | abed098ced7d8bb2c | APPROVED x4 (round 2 fixes seat-verified); committed; 20bh, 20bi logged |
+| H2 | a33842486afc7e15e | a0072af64d2e16389 | long-term and school holidays checking; transmission losses ruled a full page (seat, PROXY-SOURCED: ruling 538, eligibility report and registry make both tables eligible; blank ledger cell is an omission, 20bj), writer reworking; 20bk logged |

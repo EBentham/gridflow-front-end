@@ -96,3 +96,24 @@ None.
 - NESO, Day Ahead Demand Forecast Performance: described as monthly but modified on 6, 8 and 16 October 2026; the newest label again falls after `last_modified` if `Z` is read as UTC. Confirms the existing hold evidence.
 - Vault: the historic note's Holds bullet quoted a stale registry question (fixed in this edit).
 - No gridflow defect found.
+
+## Round 2 (2026-10-24): fixes from `held-1-review.md`
+
+All four rebuilt with `--only neso_data_portal/<key>` with no errors (the other agent's orphan-artefact stop the checker hit did not recur); canonical note and mirror `cmp` clean on all four; detector `[]` on all four; notes still pure CRLF; `anatomy_errors` empty on all four. The rendered text is free of the copy-rule words (the only grep hit for "our" is inside "half hour"). No git writes.
+
+| Finding | Change |
+|---|---|
+| 4.1 major, historic `page.held` | "All years stay out: the 2001 to 2008 files write `NA`, which NESO does not define." (16 words). The coordinator's longer wording ("The whole table stays out: ...") is 17 words, over budget, so I used the checker's. |
+| 1.1 performance `facts.cadence` | "Monthly, NESO says; its modified stamp moved on 6, 8 and 16 October 2026" |
+| 1.2 performance `what_it_is` | "Each row also gives the time NESO says its forecast was made." (attributed) |
+| 1.3 performance `related[2]` | "How NESO turns cardinal-point forecasts into half hours" (no claim about this file) |
+| 1.x performance note body (Activation) | "As of the query on 2026-10-16T18:37Z, before the second capture, silver held one parquet file ..." |
+| 2.1 daily `summary` | "...half-hourly GB demand and interconnector flows, with embedded wind and solar estimates and seven days of their forecasts." (22 words). The same idea is applied to historic `related[0]`: "The 2026 columns, updated daily, plus seven days of embedded forecasts". `what_it_is` was not touched (59 of 60 words). |
+| 2.2 daily `facts.cadence` | "Daily, NESO says, with settlement data about ten days late; recent outturn can change" (13 words). Partly skipped: "usually by 08:30 UTC" no longer fits the 14-word fact or the 60-word `what_it_is` (59 now), so the publish time is dropped from the page; it stays in the note body. The revision clause rests on the dated change between the 8 and 16 October files. |
+| 2.3 daily `related[0]` | "NESO's yearly demand files; the 2026 file has this file's columns" |
+| 3.1 profile dates `facts.cadence` | "Daily; NESO changed some past days' profile dates between 8 and 16 October 2026". NESO's own "can change as the day nears" moved into `what_it_is` (trimmed elsewhere to fit 60: "peaks, troughs and fixed times. It makes them half-hourly using a profile date"). |
+| 3.2 profile dates `related[3]` | "Half-hourly demand outturn of the past days chosen here, once filled" (12) |
+| 4.2 historic note body | "because only one capture exists of 25 of the 26 files" |
+| 4.3 historic `related[2]` | "Past days NESO picks as profiles; their demand appears here once filled" (12) |
+
+Skipped as instructed: 1.4 and 2.4 (optional held lines), 3.3 (template item, the seat has it), 4.4 (no action). No new defects; the seat logged the round-1 defects as 20bh and 20bi.
