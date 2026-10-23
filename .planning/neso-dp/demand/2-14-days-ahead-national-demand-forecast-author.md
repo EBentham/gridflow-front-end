@@ -168,3 +168,19 @@ charted). The chart and frame filter to the 16 Oct file and carry `dedup` as a g
   fixed 2100 point). Any gridflow consumer keying history on `cardinalpoint` alone (for example a future `key_latest`)
   would join unlike points across the change; key on the window or `f_point` too. No gridflow code does this today.
 - No gridflow code defect found.
+
+## Round 2 (review APPROVE with 4 nits), 2026-10-24
+
+1. **`what_it_is`, point set:** "at each day's cardinal points, a set that changed at the October clock change".
+2. **`what_it_is`, archive:** "NESO describes the archive as all forecasts since 2020; from 19 September to 16 October
+   2026 it kept one of each day's two updates." (dated; "recently" gone; "2 to 14 day" dropped from the archive clause to
+   fit). 58 words of 60.
+3. **Attribution:** key notes now end "per NESO's 1-day, 2-day and 7-day dictionaries" (16 words each, "the" dropped);
+   `f_point` field line: "`Om`/`DM`/`Dm`/`EM`: overnight low, daytime peak and low, evening peak (NESO's 1-, 2-, 7-day
+   dictionaries)" (14 words; "else empty" dropped to fit, the frame shows the empty strings as `""`).
+4. **Caption:** "... not 18:30-20:00, as NESO writes them." ("the" before "rows" dropped to fit), 40 words of 40.
+
+Gates: canonical note 598 of 598 lines CRLF, mirror `cp` + `cmp` clean; `gridflow-build --only
+neso_data_portal/national_demand_fc_2_14d_days_ahead` wrote the page with no error; detector `[]`; 0 em dashes. The chart
+spec, select and notebook cells are unchanged, so no artefact was regenerated (the build's digest check passed). No
+screenshots retaken: text-only changes of the same or shorter length. Nothing added to git or committed.

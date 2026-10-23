@@ -68,10 +68,10 @@ the lead table's columns; describe a second table's columns in its member line.
 
 | # | Writer | Checker | State |
 |---|---|---|---|
-| 1 | ab701b35a12d38c04 | | writing |
+| 1 | ab701b35a12d38c04 | a9de29bfc06aafd5d | checking; 20bq logged |
 | 2 | | | not started |
 | 3 | ab264ea28a0b271b2 | | writing |
-| 4 | a433a0c274e3774e4 | | writing |
+| 4 | a433a0c274e3774e4 | ad0238aea64f407ad | checking; 20bp logged (overlap is 1 to 5 April 2026, not Aug-Sep) |
 | 5 | | | not started |
 | H1 | | | not started |
 | H2 | | | not started |
