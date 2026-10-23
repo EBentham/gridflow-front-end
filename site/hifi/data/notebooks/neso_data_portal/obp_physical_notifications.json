@@ -1,0 +1,264 @@
+{
+ "dataset": "neso_data_portal/obp_physical_notifications",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "472255b36b975f371b4d8a662a6356ef0a1f98701ef7e9c84ef70c454e7ea49f",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.neso_data_portal.query(\n    \"obp_physical_notifications\", \"2026-09-21\", \"2026-09-21\")\nfor c in [\"time_from\", \"time_to\"]:\n    df[c] = df[c].dt.tz_convert(\"UTC\")\ndf = df.sort_values([\"unit_id\", \"time_from\"])",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "units = df.groupby(\"unit_id\").agg(windows=(\"time_from\", \"count\"),\n    lowest_mw=(\"level_from\", \"min\"), highest_mw=(\"level_from\", \"max\"))\nunits[(units.lowest_mw < 0) & (units.highest_mw > 0)].reset_index()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "unit_id",
+      "windows",
+      "lowest_mw",
+      "highest_mw"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12"
+     ],
+     "rows": [
+      [
+       "AFFR-1",
+       "68",
+       "-4.0000",
+       "2.0000"
+      ],
+      [
+       "BIRB-01",
+       "77",
+       "-29.0000",
+       "24.0000"
+      ],
+      [
+       "EDFE-01",
+       "72",
+       "-1.0000",
+       "1.0000"
+      ],
+      [
+       "EDFE-19",
+       "64",
+       "-1.0000",
+       "3.0000"
+      ],
+      [
+       "FRHM-01",
+       "87",
+       "-3.0000",
+       "4.0000"
+      ],
+      [
+       "GSET-01",
+       "48",
+       "-0.9005",
+       "0.5002"
+      ],
+      [
+       "GSET-02",
+       "48",
+       "-3.0000",
+       "3.0000"
+      ],
+      [
+       "GSET-03",
+       "48",
+       "-2.0011",
+       "7.7411"
+      ],
+      [
+       "GSET-04",
+       "48",
+       "-6.0000",
+       "6.0000"
+      ],
+      [
+       "GSET-05",
+       "48",
+       "-6.0000",
+       "6.0000"
+      ],
+      [
+       "GSET-06",
+       "48",
+       "-1.1173",
+       "0.4022"
+      ],
+      [
+       "GSET-07",
+       "48",
+       "-17.0323",
+       "15.9734"
+      ],
+      [
+       "GSET-08",
+       "48",
+       "-8.0000",
+       "8.0000"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "m = data.neso_data_portal.query(\n    \"obp_physical_notifications\", \"2026-03-29\", \"2026-03-29\")\nm[\"time_from\"] = m.time_from.dt.tz_convert(\"UTC\")\nm.loc[m.time_from.dt.hour == 1, [\"unit_id\", \"time_from\", \"level_from\"]]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "unit_id",
+      "time_from",
+      "level_from"
+     ],
+     "index": [
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19"
+     ],
+     "rows": [
+      [
+       "ENGQR-01",
+       "2026-03-29 01:00:00+00:00",
+       "0.0"
+      ],
+      [
+       "ENGQR-02",
+       "2026-03-29 01:00:00+00:00",
+       "0.0"
+      ],
+      [
+       "ENGQR-03",
+       "2026-03-29 01:00:00+00:00",
+       "0.0"
+      ],
+      [
+       "ENGQR-05",
+       "2026-03-29 01:00:00+00:00",
+       "0.0"
+      ],
+      [
+       "ANSC-101",
+       "2026-03-29 01:00:00+00:00",
+       "0.0"
+      ],
+      [
+       "ENGQR-02",
+       "2026-03-29 01:30:00+00:00",
+       "0.0"
+      ],
+      [
+       "ENGQR-03",
+       "2026-03-29 01:30:00+00:00",
+       "0.0"
+      ],
+      [
+       "ENGQR-01",
+       "2026-03-29 01:30:00+00:00",
+       "0.0"
+      ],
+      [
+       "ENGQR-05",
+       "2026-03-29 01:30:00+00:00",
+       "0.0"
+      ],
+      [
+       "ANSC-101",
+       "2026-03-29 01:30:00+00:00",
+       "0.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "source": "import matplotlib.dates as mdates\nimport matplotlib.pyplot as plt\nfig, ax = plt.subplots(figsize=(8, 3.5))\nfor unit in [\"GSET-07\", \"AFFR-1\"]:\n    g = df[df.unit_id == unit]\n    x = [t for a, b in zip(g.time_from, g.time_to) for t in (a, b)]\n    y = [v for a, b in zip(g.level_from, g.level_to) for v in (a, b)]\n    ax.plot(x, y, label=unit)\nax.xaxis.set_major_formatter(mdates.DateFormatter(\"%H:%M\"))\nax.set(xlabel=\"window start and end, UTC, 21 September 2026\", ylabel=\"PN, MW\")\nax.legend();",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "obp_physical_notifications-6.png",
+     "width": 699,
+     "height": 337
+    }
+   ]
+  }
+ ]
+}
