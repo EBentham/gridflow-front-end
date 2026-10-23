@@ -1,0 +1,358 @@
+---
+source: "neso_data_portal"
+package: "stability-pathfinder-service-information"
+dataset_keys: ["stability_pathfinder_availability_report", "stability_pathfinder_utilisation_report"]
+vendor: "NESO Open Data Portal"
+skeleton: false
+updated: 2026-10-10
+layer_coverage: "bronze, silver"
+eligibility: "eligible"
+eligibility_scope: "package-level only; both families are held (E-SEM, RULINGS 642), see Holds"
+---
+
+# Stability Pathfinder service information
+
+NESO's **indicative availability and utilisation record for the Stability Pathfinder contracts**
+(vendor wording, captured package notes). The vendor says the information is given at
+settlement-period resolution for all contracted units. The package ships two report types, each
+as one CSV per financial year (2023-2024 to 2026-2027):
+
+- **Availability report**: per unit and settlement period, an availability flag and a free-text
+  remark that records changes (captured field-info).
+- **Utilisation report**: per unit and settlement period, an instruction code, the instruction
+  issue time, the actual service start or cease time and an `Inertia` figure.
+
+The Stability Pathfinder contracts procure system-stability services (the package carries an
+inertia column). The mechanism and what the `Inertia` figure represents in contract terms are not
+described in the captured notes or field-info: `TODO: verify` against the Stability Pathfinder
+contract documents. The vendor says that for long-term stability services no utilisation payment
+is made, so the dataset is updated roughly a week after delivery, and that Grid Forming Batteries
+are **not** included, because the NESO control room is not required to instruct that technology
+for stability purposes. The package is a delivered-state record, not a forecast. It carries no
+publication or instruction-availability column. Read it alongside the system inertia package
+(@system-inertia.md) and the mid-term utilisation report (@stability-midterm-y-1-utilisation-report.md).
+
+**Both silver families are held (unit E-SEM) and neither is eligible for publication or
+point-in-time use.** The front-matter `eligibility: eligible` is the registry's package-level
+status only. This page gives schema, row counts and structural counts. It publishes no data
+values, ranges or samples from either held family. Six of the eight captures fail the transform
+(ADR-040, `DuplicateEntityKeyError`), so the availability family has **0 silver rows**.
+
+- Publisher group: System
+- Registry group: system · archetype: SER
+
+## Files by disposition
+
+### SILVER
+
+| Resource | Format | Capture | Id |
+|---|---|---|---|
+| Stability Pathfinder Availability Report 2023-2024 | CSV | upload | `a4fd8208-3e36-4f9c-bdc7-435c3734a2da` |
+| Stability Pathfinder Availability Report 2024-2025 | CSV | upload | `bacc45e5-11ac-4bac-88ef-6872f499db97` |
+| Stability Pathfinder Availability Report 2025-2026 | CSV | upload | `1264f36f-27ce-4ed9-aab1-393c7612d6bc` |
+| Stability Pathfinder Availability Report 2026-2027 | CSV | upload | `690a9e42-20e2-4b0e-b74f-f3e37cac4bac` |
+| Stability Pathfinder Utilisation Report 2023-2024 | CSV | upload | `52af0f68-e1c3-45dd-ae7f-54f68e32e0c6` |
+| Stability Pathfinder Utilisation Report 2024-2025 | CSV | upload | `f43f5d61-b51f-45f9-a7e7-66f2959d38b5` |
+| Stability Pathfinder Utilisation Report 2025-2026 | CSV | upload | `fc08cdba-1a86-460b-85c4-3d8c0d3d4e42` |
+| Stability Pathfinder Utilisation Report 2026-2027 | CSV | upload | `75996c0a-70fb-4ddb-a345-bb1e8d39de35` |
+
+All eight resources carry the disposition SILVER, and they map to two families (four resources
+each). The package has **no DOC resources, no HOLD resources and no skipped resources**. The
+family-level holds below are not resource-level dispositions. Each resource is one annual
+(financial-year) file. They are separate files, not revisions of one another. No
+`(UNIT, period start)` pair repeats across resources of a family (measured, FACTS section 4 g3 and
+section 5 g3). The captured download URLs (from the 2026-10-06 catalogue snapshot) and
+captures (2026-10-08, `C:/gridflow-data/bronze/neso_data_portal/<family>/2026/10/08/`):
+
+**Utilisation report** (`stability_pathfinder_utilisation_report`)
+
+| Resource | Download | Bytes | Data rows | CKAN `last_modified` | Silver rows |
+|---|---|---:|---:|---|---:|
+| 2023-2024 | [stability-pathfinder-utilisation-report-2023.csv](https://api.neso.energy/dataset/ae59b12b-4cfe-40a0-844f-1d139c63d893/resource/52af0f68-e1c3-45dd-ae7f-54f68e32e0c6/download/stability-pathfinder-utilisation-report-2023.csv) | 7,487,598 | 110,891 | `2024-04-05T15:45:09.278460` | 110,891 |
+| 2024-2025 | [stability-pathfinder-utilisation-report-2024.csv](https://api.neso.energy/dataset/ae59b12b-4cfe-40a0-844f-1d139c63d893/resource/f43f5d61-b51f-45f9-a7e7-66f2959d38b5/download/stability-pathfinder-utilisation-report-2024.csv) | 13,996,566 | 198,157 | `2025-04-11T14:21:51.833357` | 0 (failed) |
+| 2025-2026 | [stability-pathfinder-utilisation-report-2025.csv](https://api.neso.energy/dataset/ae59b12b-4cfe-40a0-844f-1d139c63d893/resource/fc08cdba-1a86-460b-85c4-3d8c0d3d4e42/download/stability-pathfinder-utilisation-report-2025.csv) | 18,086,315 | 258,388 | `2026-04-10T15:11:46.723351` | 0 (failed) |
+| 2026-2027 | [stability-pathfinder-utilisation-report-2026.csv](https://api.neso.energy/dataset/ae59b12b-4cfe-40a0-844f-1d139c63d893/resource/75996c0a-70fb-4ddb-a345-bb1e8d39de35/download/stability-pathfinder-utilisation-report-2026.csv) | 8,708,369 | 123,987 | `2026-10-02T14:49:24.733259` | 123,987 |
+
+Total 691,423 bronze rows, 234,878 silver rows.
+
+**Availability report** (`stability_pathfinder_availability_report`)
+
+| Resource | Download | Bytes | Data rows | CKAN `last_modified` | Silver rows |
+|---|---|---:|---:|---|---:|
+| 2023-2024 | [stability-pathfinder-availability-report-2023.csv](https://api.neso.energy/dataset/ae59b12b-4cfe-40a0-844f-1d139c63d893/resource/a4fd8208-3e36-4f9c-bdc7-435c3734a2da/download/stability-pathfinder-availability-report-2023.csv) | 8,026,553 | 110,887 | `2024-04-05T15:44:41.388092` | 0 (failed) |
+| 2024-2025 | [stability-pathfinder-availability-report-2024.csv](https://api.neso.energy/dataset/ae59b12b-4cfe-40a0-844f-1d139c63d893/resource/bacc45e5-11ac-4bac-88ef-6872f499db97/download/stability-pathfinder-availability-report-2024.csv) | 14,429,386 | 199,201 | `2025-04-11T14:19:34.799957` | 0 (failed) |
+| 2025-2026 | [stability-pathfinder-availability-report-2025.csv](https://api.neso.energy/dataset/ae59b12b-4cfe-40a0-844f-1d139c63d893/resource/1264f36f-27ce-4ed9-aab1-393c7612d6bc/download/stability-pathfinder-availability-report-2025.csv) | 21,533,621 | 297,478 | `2026-04-10T15:12:15.650724` | 0 (failed) |
+| 2026-2027 | [stability-pathfinder-availability-report-2026.csv](https://api.neso.energy/dataset/ae59b12b-4cfe-40a0-844f-1d139c63d893/resource/690a9e42-20e2-4b0e-b74f-f3e37cac4bac/download/stability-pathfinder-availability-report-2026.csv) | 9,582,437 | 132,011 | `2026-10-02T14:49:34.759439` | 0 (failed) |
+
+Total 739,577 bronze rows, 0 silver rows.
+
+The stable handle for each file is its resource id, not the URL. CKAN `last_modified` values are
+emitted without an offset and read as UTC (gridflow
+`@docs/DECISION_LOG/ADR-030-neso-data-portal-ckan-source.md`). Within a family, all resources share
+one header (a single epoch). The resource filenames end in the calendar year in which the
+financial year starts (2023 for 2023-2024).
+
+## Families
+
+### `stability_pathfinder_availability_report`
+
+- Kind: tabular · archetype: SER · refresh: weekly · empty allowed: no
+
+Schema, epoch 1:
+
+| Vendor column | Silver column | Dtype | Format | Nullable | Zone | Vendor unit |
+|---|---|---|---|---|---|---|
+| UNIT | `unit` | string | — | no | — | — |
+| Settlement Period Start Date Time | `settlement_period_start_date_time` | string | — | no | — | — |
+| Settlement Period End Date Time | `settlement_period_end_date_time` | string | — | no | — | — |
+| Availability Flag | `availability_flag` | string | — | no | — | — |
+| REMARK | `remark` | string | — | yes | — | — |
+
+- Entity key: `resource_id`, `unit`, `settlement_period_start_date_time`, `settlement_period_end_date_time`, `availability_flag`, `remark`
+- Latest: `whole_capture` per `resource_id`
+- Temporal recipe: none: `timestamp_utc` is the capture time
+
+| Clock | Meaning |
+|---|---|
+| `published_at` | CKAN `last_modified` of the captured file (ADR-030) |
+| `available_at` | = `published_at` |
+
+**The two clocks for this family:**
+
+1. **Vintage (`ckan_last_modified`).** `published_at` = `available_at` = the CKAN `last_modified`
+   of the captured resource. Each of the four files has its own vintage (table above). The files
+   carry **no issue or publication column**: nothing says when an individual row first became
+   public. The older files' vintages (2024 and 2025) are therefore a late upper bound on
+   availability for their rows. No source establishes that report contents are immutable once
+   issued. Silver for this family is empty, so no per-row check against silver was possible.
+2. **Event time (`none`).** The record's temporal recipe is `none`. A `timestamp_utc` would
+   therefore be the **capture time** (`capture_written_at`, 2026-10-08), not a settlement-period
+   instant. It carries no information about the period a row describes. The settlement-period
+   boundaries stay in the two raw string columns. Do not filter or order by `timestamp_utc`
+   expecting event order. Because the family has no silver rows, this is a statement of the record,
+   not of a checked silver column.
+
+**Raw-string time columns, and the clock conflict.** The vendor package notes say time values are
+"all given in local time" (the zone name is missing from the captured description text, so
+the exact zone wording is `TODO: verify`). Every nonblank boundary timestamp in the bodies
+nevertheless ends in a literal `+00:00` offset, and displayed end minus start is 1,800 seconds
+throughout. Two readings are possible: GB local wall times with a mechanically attached zero
+offset, or true UTC instants. If the displayed wall times were Europe/London, a large number of
+start literals on British Summer Time dates would carry the wrong offset, and the 2023-2024 to
+2025-2026 files contain wall times that do not exist in London (the spring-forward gap). The
+2026-2027 file shows no such gap values in its range, but every one of its start literals sits
+in British Summer Time and so conflicts with a London reading. gridflow does **not** pick a reading. It
+stores both boundary columns as **raw strings**, does not strip or relabel the offset, and builds
+no UTC event time. Stripping the offset and declaring London instants is ruled out by the
+nonexistent wall times. `TODO: verify` with NESO which reading is correct, including the treatment of clock-change
+periods and repeated or nonexistent local times.
+
+**Units.** None. The family has no measured-value column. `unit` is a unit identifier (BMU ID
+where applicable, per the field-info). `availability_flag` and `remark` are categorical and
+free text. No MW, MVA, MVA.s or currency unit applies. `remark` can embed timestamps inside its
+free text, but it is vendor free text and not a typed time column. Identifiers are stored as-is.
+
+**Sentinels and missing values (FACTS g5).** The record declares no null token.
+
+- `remark` is blank on 110,792 / 198,942 / 297,094 / 131,760 rows in resource order (2023-2024 to
+  2026-2027). Blank remark is a nullable, preserved value. It is not a sentinel.
+- Observed flag literals in bronze: `Available`, `Unavailable`, and one occurrence of a misspelt
+  `Unvailable`. Stored as supplied; no normalisation to a documented flag without an explicit rule.
+- No `-1`, `N/A` or `NA` literal was found.
+
+**Identity, duplicates and why the family fails.** The vendor documents no row identity or grain,
+and no contract identifier column exists. Identical complete rows repeat inside every capture
+(duplicate excess, meaning occurrences after the first, counted on all vendor columns):
+
+| Resource | Duplicate excess, all vendor columns | Duplicate excess, `(UNIT, period start)` |
+|---|---:|---:|
+| 2023-2024 | 306 | 312 |
+| 2024-2025 | 1,003 | 1,061 |
+| 2025-2026 | 46,921 | 49,786 |
+| 2026-2027 | 7,679 | 9,379 |
+
+No subset of the supplied columns distinguishes identical complete rows, so no supplied-column key
+can keep them as distinct entities. gridflow therefore does not deduplicate and adds no occurrence
+index. The transform raises `DuplicateEntityKeyError` on every capture, so all four captures are
+adjudicated **failed** under ADR-040
+(`@docs/DECISION_LOG/ADR-040-neso-reconcile-adjudication.md`; RULINGS 642) and the family has
+**0 silver rows**. Verified independently with `polars.unique()` on 2026-10-10 (RESULTS and
+VERIFICATION). `TODO: verify` what vendor row identity or grain makes the report unique, or
+whether NESO will publish corrected uploads without the unintended identical records.
+
+### `stability_pathfinder_utilisation_report`
+
+- Kind: tabular · archetype: SER · refresh: weekly · empty allowed: no
+
+Schema, epoch 1:
+
+| Vendor column | Silver column | Dtype | Format | Nullable | Zone | Vendor unit |
+|---|---|---|---|---|---|---|
+| UNIT | `unit` | string | — | no | — | — |
+| Settlement Period Start Date Time | `settlement_period_start_date_time` | string | — | no | — | — |
+| Settlement Period End Date Time | `settlement_period_end_date_time` | string | — | no | — | — |
+| Instruction Code | `instruction_code` | string | — | no | — | — |
+| Instruction Issue Time | `instruction_issue_time` | string | — | yes | — | — |
+| Actual Service Start or Cease Time | `actual_service_start_or_cease_time` | string | — | yes | — | — |
+| Inertia | `inertia` | int64 | — | yes | — | — |
+
+- Entity key: `resource_id`, `unit`, `settlement_period_start_date_time`, `settlement_period_end_date_time`, `instruction_code`, `instruction_issue_time`, `actual_service_start_or_cease_time`, `inertia`
+- Latest: `whole_capture` per `resource_id`
+- Temporal recipe: none: `timestamp_utc` is the capture time
+
+| Clock | Meaning |
+|---|---|
+| `published_at` | CKAN `last_modified` of the captured file (ADR-030) |
+| `available_at` | = `published_at` |
+
+**The two clocks for this family:**
+
+1. **Vintage (`ckan_last_modified`).** `published_at` = `available_at` = the CKAN `last_modified`
+   of the captured resource. Checked on every silver row on 2026-10-10: the two clocks are equal,
+   each resource's rows share one value, and it equals the vintage in the table above
+   (`2024-04-05T15:45:09` for 2023-2024, `2026-10-02T14:49:24` for 2026-2027). The files carry
+   **no report-publication column**. `Instruction Issue Time` is not one: it is the time a
+   start or cease instruction was issued, it is blank on 690,163 of the 691,423 bronze rows, and
+   rows without a new instruction still report service state. The vendor describes publication
+   after delivery. Nothing establishes that report contents are immutable or were public at
+   instruction time, so the upload vintage is the only availability evidence.
+2. **Event time (`none`).** The record's temporal recipe is `none`. So `timestamp_utc` =
+   `event_time` = the **capture time** (`capture_written_at`, 2026-10-08), not a
+   settlement-period instant. Checked equal on every silver row on 2026-10-10 (234,878 rows).
+   There is no independent date and settlement-period pair, and the time columns cannot be
+   faithfully read as instants while the clock conflict stands, so no instant is built. The
+   period and instruction times stay in the raw string columns. Do not filter or order by
+   `timestamp_utc` expecting event order.
+
+**Raw-string time columns, and the clock conflict.** The same conflict as the availability family
+applies to all four time columns (`settlement_period_start_date_time`,
+`settlement_period_end_date_time`, `instruction_issue_time`,
+`actual_service_start_or_cease_time`). The vendor says time values are in local time. Every
+nonblank time cell parses as an offset datetime carrying a literal `+00:00`, and displayed end
+minus start is 1,800 seconds throughout. If the displayed wall times were Europe/London, a large
+number of start literals on British Summer Time dates would carry the wrong offset, and the
+2023-2024 to 2025-2026 files contain wall times that do not exist in London (the spring-forward
+gap). The 2026-2027 file shows none in its range, but every one of its start literals
+sits in British Summer Time and so conflicts with a London reading. gridflow stores the columns as **raw strings**,
+does not strip or relabel the offset, and builds no UTC event time (the same ruling as the CMIS
+package). `TODO: verify` with NESO whether the values are actual UTC instants or GB local wall
+times with a mechanically attached `+00:00`, including clock-change periods and repeated or
+nonexistent local times.
+
+**Units (vendor dictionary only, as cited in FACTS).**
+
+- `Inertia` → `inertia`: **unit and scale not stated.** The upload's field-info gives the column
+  no unit. NESO's stability procurement documents use MVA.s for inertia, but nothing inspected
+  connects that scale to this column. The unit is **not** assigned from the column name or from
+  magnitudes. `TODO: verify` (unit E-SEM). Do not combine this column with `system_inertia`
+  (GVAs) or the mid-term report (MVA.s) until the unit is settled.
+- `unit` is a unit identifier (BMU ID where applicable). There is no separate contract
+  identifier column. Identifiers are stored as-is, including look-alike codes that differ by one
+  character, with no normalisation.
+- `instruction_code`, the time columns and the identifiers carry no physical unit. No MW, MVA or
+  currency column exists in this family.
+
+**`instruction_code` meaning.** The vendor dictionary describes the code's `No` value as no
+instruction issued in the period. It does not mean no service was being delivered: `No` rows
+carry an inertia figure. The full code vocabulary is not described in the captured notes
+(`TODO: verify`). Codes are stored as supplied.
+
+**Sentinels and missing values (FACTS g5).** The record declares no null token.
+
+| Resource | Blank `Inertia` | Blank issue time = blank actual start or cease time |
+|---|---:|---:|
+| 2023-2024 | 92,408 | 110,807 |
+| 2024-2025 | 69 | 197,543 |
+| 2025-2026 | 574 | 257,884 |
+| 2026-2027 | 0 | 123,929 |
+
+- Blank cells are preserved as null. A blank `Inertia` is not turned into zero and its row is not
+  excluded. What a blank means (especially in the 2023-2024 file, where it is widespread) is
+  undefined by the vendor. `TODO: verify` with NESO.
+- Zero `Inertia` values occur in the bodies. They are vendor-supplied values and are preserved
+  as-is. The vendor does not define what a zero means. No value statistics are published for
+  this held family.
+- No literal `-1`, `N/A` or `NA` was found. No thousands separators, currency symbols or percent
+  signs occur in numeric cells, and every nonblank `Inertia` passes the int64 cast.
+
+**Identity, duplicates and selection.** The vendor documents no row identity. Multiple
+instructions can fall inside one settlement period, so `(UNIT, period start)` is not unique:
+duplicate excess on that pair is 11, 13, 5,352 and 3 across the four files in resource order.
+The conservative entity key is `resource_id` plus every vendor column. Duplicate excess on that
+full key is 0, 1, 3,964 and 0:
+
+| Resource | Duplicate excess, all vendor columns | Transform result |
+|---|---:|---|
+| 2023-2024 | 0 | 110,891 silver rows |
+| 2024-2025 | 1 | `DuplicateEntityKeyError`, adjudicated **failed** |
+| 2025-2026 | 3,964 | `DuplicateEntityKeyError`, adjudicated **failed** |
+| 2026-2027 | 0 | 123,987 silver rows |
+
+No subset of the supplied columns distinguishes the identical rows, so gridflow does not
+deduplicate and adds no occurrence index (ADR-040; RULINGS 642). `_latest` is `whole_capture`
+partitioned by `resource_id`: the newest capture of each resource replaces its previous capture as
+a whole, and the other three resources are untouched. `TODO: verify` the vendor row identity.
+
+**Activation (2026-10-10, master `4d06b9f`, PR #105).** Transformed at window 2026-10-08 to
+2026-10-10 (four captures, no prior silver): **234,878 silver rows** = 110,891 + 123,987, equal
+to the planned count. The 2024-2025 and 2025-2026 captures failed as designed. Reconcile
+`--all --cutoff 2026-10-10` exited 0 with 113 families, 0 gaps, 21 adjudicated and 0 stale
+(gridflow `@.planning/v0.22-RESULTS.md` section SYS-1; RULINGS 646, 647). Silver is stored as one
+Parquet file per successfully transformed capture under
+`silver/neso_data_portal/stability_pathfinder_utilisation_report/year=2026/month=10/`. Silver
+columns beyond the vendor columns: `resource_id`, `timestamp_utc`, `published_at`,
+`bronze_capture_id`, `capture_written_at`, `event_time`, `available_at`, `source_run_id`,
+`dataset_version` (timestamps tz-aware UTC; `dataset_version` reads `1+e1`, where `e1` is the
+engine version, not the header epoch). The silver exists but is not eligible for publication or
+point-in-time use. The availability family has no silver directory at all.
+
+## Cadence
+
+- Registry refresh: weekly
+- Vendor metadata (snapshot extras, verbatim):
+  - Update frequency: Weekly
+- Captures to date: one per resource (2026-10-08). No scheduled refresh has run yet.
+
+The vendor says the dataset is updated approximately a week after delivery. The 2026-2027 files are
+the live year: both carry the most recent vintages (`2026-10-02`), and the earlier years have not
+changed since April 2024 to April 2026. `TODO: verify` whether past-year files are ever restated.
+Only repeated captures compared row by row can show this. `TODO: verify` whether a new
+financial-year file appears as a new resource and what gridflow must change to capture it.
+
+## Licence and attribution
+
+- Licence: NESO Open Data Licence
+- Attribution: Supported by National Energy SO Open Data
+
+Licence text: [NESO Open Data Licence](https://www.neso.energy/data-portal/ngeso-open-licence).
+gridflow outputs derived from this package carry the attribution line above.
+
+## Holds
+
+- `stability_pathfinder_availability_report`: held: TODO: the timestamp clock (as §3), and what vendor row identity / grain makes the report unique given identical repeated rows? (unit E-SEM)
+- `stability_pathfinder_utilisation_report`: held: TODO: are the Pathfinder timestamps actual UTC instants or GB local wall times with a mechanically attached +00:00 offset (incl. clock-change periods), what unit/scale is `Inertia`, what does a blank `Inertia` mean, and what vendor row identity distinguishes identical rows? (unit E-SEM)
+
+Both families are held by RULINGS 642 (seat ruling, PROXY-SOURCED). The section reference "§3"
+in the availability question points into the SYS-1 spec (`K-SYS-1-SPEC.md`):
+in the spec, §3 is the utilisation-report section, whose timestamp-clock question the availability
+report shares. It is reproduced verbatim from the registry. The utilisation silver output (234,878 rows) exists
+on disk but is not eligible for publication or point-in-time use. Unit E-SEM must answer these
+before the holds can lift:
+
+1. Whether the boundary and instruction timestamps are GB local wall time with a mechanically
+   attached `+00:00`, or true UTC instants. Until then no event instant is built and the temporal
+   recipe stays `none`. Resolving this would change the event-time recipe and so needs a new
+   record version. It is not a re-label of existing silver.
+2. What unit and scale the utilisation `Inertia` column carries, and what a blank `Inertia` means.
+   Until then the column is not combined with any other inertia quantity.
+3. What vendor row identity or grain makes each report unique given the identical repeated rows.
+   The repeats are why six captures are adjudicated **failed** (utilisation 2024-2025 and
+   2025-2026; availability all four, the whole of that family). Resolving this needs a vendor row
+   or contract identifier with a grain definition, or corrected uploads that remove the unintended
+   identical records.
+
+Related holds in the same batch (gridflow `@docs/neso_data_portal/eligibility.md`): the
+`system_inertia_cost` resource `6295f4ed-b43d-4a80-8ca9-c27c9fa16517` is held at resource level
+(an ambiguous slash date under a filename shared with ISO-dated resources, unit SYS-1). The
+other SYS-1 families, `voltage_units_utilisation`, `stability_midterm_y1`, `system_inertia` and
+both `outturn_voltage_costs` families, are eligible.
