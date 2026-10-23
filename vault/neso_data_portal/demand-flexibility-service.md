@@ -7,6 +7,139 @@ skeleton: false
 updated: 2026-10-14
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: Demand Flexibility Service 2023/24
+  summary: >-
+    NESO's Demand Flexibility Service, winter 2023/24: per half-hour window, the volume asked,
+    bids accepted and their cost, and what was delivered.
+  facts:
+    vendor: "NESO Data Portal, package `demand-flexibility-service`: four tables, one CSV file each"
+    cadence: "Not Active in NESO's catalogue; NESO no longer updates the files"
+    grain: "Summary: one row per half-hour delivery window; the report adds DFS unit"
+    history: "Winter 2023/24: delivery dates 16 November 2023 to 21 March 2024"
+  landscape: market
+  what_it_is: >-
+    NESO's Demand Flexibility Service for winter 2023/24. For each half-hour window NESO published
+    a requirement, providers bid volume and price per DFS unit, and NESO accepted bids; the
+    summary totals each window and later adds settled delivery. `Live` and `Test` events share
+    each file, and both were settled. There is no event id: rows join on date and window.
+  how_used:
+    - DFS accepted and settled cost per event day, as a winter balancing-cost feature.
+    - "Bid stacks from the report: Accepted and Rejected volume against price, per window."
+    - Delivered against accepted MW per window; settlement came later, so not known at auction.
+  chart:
+    type: line
+    silver: neso_data_portal/dfs_utilisation_report_sum
+    time: delivery_date
+    values:
+      - {column: dfs_provider_bids_accepted_total_cost_gbp, series: accepted}
+      - {column: settled_cost_gbp, series: settled}
+    dedup: {"on": [delivery_date, window_from], order_by: published_at}
+    aggregation: sum
+    window: {start: "2023-11-16", end: "2024-03-21"}
+    unit: "£"
+  chart_view:
+    title: Accepted and settled DFS cost per day, winter 2023/24
+    caption: >-
+      Silver `dfs_utilisation_report_sum`, £: each delivery date's indicative accepted cost and
+      settled cost, summed over its windows, 16 November 2023 to 21 March 2024. Days with no event
+      are absent. 29 November and 1 December are `Live`; the rest `Test`.
+    alt: >-
+      Dot chart of NESO's Demand Flexibility Service cost per day in pounds from
+      neso_data_portal/dfs_utilisation_report_sum, 16 delivery dates from 16 November 2023 to 21
+      March 2024, accepted cost and settled cost. The two Live days lead: accepted £3,031,162 and
+      £3,573,586, settled £2,299,489 and £2,464,136. Test days to 17 January sit between about
+      £0.59 million and £1.56 million. Both series fall from 2 February and stay under £90,000 from 29
+      February; the lowest is 1 March, £15,911 accepted and £15,276 settled.
+    x_label: delivery date; days with no event absent
+    key:
+      - {series: accepted, label: Accepted cost, paint: petrol, note: "Indicative cost of accepted bids, NESO's figure; highest £3,573,586 on 1 December (`Live`)."}
+      - {series: settled, label: Settled cost, paint: clay, note: "Cost of the delivered volume once settled; above accepted cost on 7 of the 16 days."}
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then each table's one file downloaded whole
+      unless its `last_modified` is unchanged. Dates select nothing; NESO no longer updates the files.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=demand-flexibility-service"
+    commands:
+      - {run: gridflow pipeline neso_data_portal dfs_utilisation_report_sum --last 24h, comment: "summary file to bronze, then silver"}
+      - {run: gridflow pipeline neso_data_portal dfs_utilisation_report --last 24h, comment: "report file, read by the notebook"}
+  record:
+    select:
+      filter:
+        - {column: delivery_date, op: in, value: ["2023-11-29", "2023-12-15", "2024-03-21"]}
+      dedup: {"on": [delivery_date, window_from], order_by: published_at}
+      order_by: [delivery_date, window_from]
+      columns: [delivery_date, window_from, service_requirement_type, dfs_required_mw, dfs_procured_mw,
+                settled_volume_mw, dfs_provider_bids_accepted_total_cost_gbp, settled_cost_gbp, window_to,
+                timestamp_utc, published_at]
+    key: [delivery_date, window_from]
+    caption: "`Live` windows of 29 November 2023; `Test` windows of 15 December 2023 and 21 March 2024."
+    fields:
+      delivery_date: Delivery date of the window, as NESO labels it
+      window_from: "Window start, NESO's `HH:MM` label, GMT in its dictionary; kept as text"
+      service_requirement_type: "`Live` or `Test`, NESO's event type; the summary settles both"
+      dfs_required_mw: Requirement NESO published for the window, MW
+      dfs_procured_mw: "Total accepted MW: the report's Accepted bids summed, so never add both"
+      settled_volume_mw: Delivered volume, MW, once settled (NESO); above accepted MW in some windows
+      dfs_provider_bids_accepted_total_cost_gbp: "Indicative cost of the accepted bids, £, as NESO publishes it"
+      settled_cost_gbp: Cost of the delivered volume, £, once settled (NESO)
+      window_to: "Window end, NESO's `HH:MM` label, GMT in its dictionary; kept as text"
+      timestamp_utc: "Set by gridflow: 00:00 UK time on the delivery date, in UTC"
+      published_at: "NESO's last-modified time for the whole file, read as UTC"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      `query()` reads each table's `_latest` view, filtering `delivery_date` with both ends
+      included; lineage columns dropped. Times come back in UK time, so the first cell converts
+      them to UTC. Window labels stay text.
+    cells:
+      - |
+        s = data.neso_data_portal.query("dfs_utilisation_report_sum", "2023-11-16", "2024-03-21")
+        r = data.neso_data_portal.query("dfs_utilisation_report", "2023-11-16", "2024-03-21")
+        for df in (s, r):
+            df["timestamp_utc"] = df.timestamp_utc.dt.tz_convert("UTC")
+        s = s.sort_values(["delivery_date", "window_from"], ignore_index=True)
+        s[["delivery_date", "window_from", "window_to", "timestamp_utc", "service_requirement_type"]].head(4)
+      - |
+        key = ["delivery_date", "window_from"]
+        accepted = (r[r.status == "Accepted"].groupby(key, as_index=False).dfs_volume_mw.sum()
+                    .rename(columns={"dfs_volume_mw": "accepted_bids_mw"}))
+        w = s[key + ["service_requirement_type", "dfs_required_mw", "dfs_procured_mw",
+                     "settled_volume_mw"]].merge(accepted, on=key)
+        w.head(8)
+      - |
+        colour = w.service_requirement_type.map({"Live": "#C77E3C", "Test": "#155A6E"}).tolist()
+        ax = w.plot.scatter(x="dfs_procured_mw", y="settled_volume_mw", c=colour, figsize=(5, 4),
+                            xlabel="accepted MW", ylabel="settled MW")
+        ax.axline((0, 0), slope=1, color="grey", lw=0.8);
+    needs: the summary and report tables for winter 2023/24
+    plot_alt: >-
+      Scatter plot of settled against accepted MW per window, with a grey line where the two are
+      equal. The six Live windows (clay) sit at 449 to 487 MW accepted and 299 to 358 MW settled,
+      all below the line. Test windows (petrol) run from 56 to 523 MW accepted; 12 sit above the line.
+  related:
+    - {dataset: neso_data_portal/demand-flexibility, note: "The successor page NESO points to for later results"}
+    - {dataset: neso_data_portal/demand-flexibility-service-live-events, note: "Winter 2022/23 `Live` events, a separate series; never add"}
+    - {dataset: neso_data_portal/demand-flexibility-service-test-events, note: "Winter 2022/23 `Test` events, a separate series; never add"}
+    - {dataset: elexon/system_prices, note: Imbalance prices for the same half-hours as each window}
+  family:
+    slug: demand-flexibility-service
+    members:
+      - dataset: dfs_utilisation_report_sum
+        differs: "Window totals: MW asked and accepted, accepted cost, then settled volume and cost"
+        request: "GET https://api.neso.energy/dataset/e5277fca-2a2b-4836-933b-f24a676b9ed8/resource/71a9cb04-8935-4e3a-bdd6-17f6fff0a7c6/download/dfs-utilisation-report-summary.csv"
+      - dataset: dfs_utilisation_report
+        differs: "Bids per DFS unit, Accepted or Rejected, with tendered MW split by region"
+        request: "GET https://api.neso.energy/dataset/e5277fca-2a2b-4836-933b-f24a676b9ed8/resource/ed7019b0-32b7-425c-a2fb-5ba9e32733fb/download/dfs-utilisation-report.csv"
+      - dataset: dfs_industry_notification
+        differs: "Notices that a requirement may be, or has been, published for a date"
+        request: "GET https://api.neso.energy/dataset/e5277fca-2a2b-4836-933b-f24a676b9ed8/resource/94b4d470-a54e-41d7-ae6e-be158db9b9d4/download/dfs-industry-notification.csv"
+      - dataset: dfs_service_requirements
+        differs: "Requirement per window: MW, guaranteed acceptance price and eligible providers"
+        request: "GET https://api.neso.energy/dataset/e5277fca-2a2b-4836-933b-f24a676b9ed8/resource/7914dd99-fe1c-41ba-9989-5784531c58bb/download/dfs-service-requirements.csv"
+        held: The requirement file has no publication time; the notices give one only per date.
 ---
 
 # Demand Flexibility Service 2023/24
