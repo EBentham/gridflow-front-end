@@ -4,9 +4,120 @@ package: "tresp-demand-pathways"
 dataset_keys: ["tresp_building_block_definitions", "tresp_demand_pathways_gsp", "tresp_demand_pathways_la_england", "tresp_demand_pathways_la_scotland", "tresp_demand_pathways_la_wales", "tresp_demand_pathways_resp_region", "tresp_gsp_area_names"]
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-10
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: tRESP demand pathways
+  summary: >-
+    NESO's projected electric vehicles, heat pumps and air conditioning by area to 2050, for
+    distribution network planning, with two reference lists.
+  facts:
+    vendor: "NESO Data Portal: five pathway CSVs, a reference workbook and two GIS files"
+    cadence: "Ad hoc (NESO); files last modified 30 January 2026, as at 6 October 2026"
+    grain: "One row per building block, as shown; pathway rows per block, area, pathway, year"
+    history: "NESO created the package, version 1.0, on 28 January 2026"
+  landscape: power
+  what_it_is: >-
+    The transitional Regional Energy Strategic Plan (tRESP) is, NESO says, "the first output from
+    NESO's Regional Energy Strategic Plan (RESP) team". Its pathways project 12 demand building
+    blocks by GSP area, region and local authority: one pathway to 2035, then three to 2050. The
+    page shows rows from the two lists of blocks and areas, none from the pathway files.
+  how_used:
+    - "NESO says DNOs will use it for their ED3 plans, 2028 to 2033"
+    - "Decode each pathway row's `building_block_id`: technology, detail and unit"
+    - "Label tRESP GSP area codes with NESO's names for display"
+  chart:
+    type: none
+    reason: The five pathway tables are held, and the two reference lists hold no measure to chart.
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: `package_show`, then each file whole unless its `last_modified` is
+      unchanged. One workbook feeds both lists; the two GIS files stay in bronze.
+    commands:
+      - {run: gridflow ingest neso_data_portal tresp_demand_pathways_files --last 24h, comment: "the workbook and GIS files"}
+      - {run: gridflow transform neso_data_portal tresp_building_block_definitions --last 24h, comment: "the capture's date to silver"}
+      - {run: gridflow transform neso_data_portal tresp_gsp_area_names --last 24h, comment: "the same workbook's names sheet"}
+  record:
+    select:
+      silver: neso_data_portal/tresp_building_block_definitions
+      filter:
+        - {column: demand_generation_storage, op: eq, value: Demand}
+        - {column: technology, op: in, value: [Heat Pumps, District Heating, Airconditioning Units]}
+      dedup: {"on": [fes_bb_id_number], order_by: capture_written_at}
+      order_by: [technology, fes_bb_id_number]
+      columns: [fes_bb_id_number, technology, units, technology_detail, demand_generation_storage,
+                child_id, child_crc32, resource_id, published_at, timestamp_utc]
+    key: [fes_bb_id_number, resource_id]
+    caption: "The eight heat pump, district heating and air conditioning blocks, in every demand unit."
+    fields:
+      fes_bb_id_number: "Pathway files' `building_block_id`; only the suffixed ids match no Future Energy Scenarios (FES) id"
+      technology: "The technology the block counts or measures, in NESO's words"
+      units: "Unit, in NESO's words; the pathway files write `Number`, `GWh` or `m2`"
+      technology_detail: "The kind of that technology; null where NESO gives no detail"
+      demand_generation_storage: "Demand, Generation or Storage: NESO's 35 blocks span demand, generation and storage"
+      child_id: "The workbook sheet the row was read from"
+      child_crc32: "CRC-32 checksum of that sheet inside the workbook file"
+      resource_id: "CKAN id of the workbook; with the block id, the code's entity key"
+      published_at: "NESO's last-modified time for the workbook, read as UTC"
+      timestamp_utc: "When gridflow captured the workbook, UTC; the table has no event time"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      `query()` filters on `timestamp_utc`, which here is the capture time, so these cells use
+      `data.sql()` on the two lists' `_latest` views, naming the vendor columns to leave lineage out.
+    cells:
+      - |
+        blocks = data.sql("""
+            SELECT demand_generation_storage, technology, fes_bb_id_number, technology_detail, units
+            FROM silver_neso_data_portal_tresp_building_block_definitions_latest
+            ORDER BY demand_generation_storage, fes_bb_id_number
+        """)
+        blocks[blocks.demand_generation_storage == "Demand"]
+      - blocks.value_counts(["demand_generation_storage", "units"])
+      - |
+        names = data.sql("""
+            SELECT tresp_gsp_area, tresp_gsp_area_name
+            FROM silver_neso_data_portal_tresp_gsp_area_names_latest
+            ORDER BY tresp_gsp_area_name
+        """)
+        names.head()
+    needs: NESO's tRESP building-block and GSP-name workbook
+  related:
+    - {dataset: neso_data_portal/gis-boundaries-for-gb-grid-supply-points, note: "NESO's GSP boundaries and lookup; tRESP draws its own GSP areas"}
+    - {dataset: neso_data_portal/gis-boundaries-for-gb-dno-license-areas, note: "Boundaries of the DNO licence areas the GSP pathway file names"}
+  family:
+    slug: tresp-demand-pathways
+    members:
+      - dataset: tresp_building_block_definitions
+        differs: "NESO's 35 building blocks, demand, generation and storage, with technology and unit"
+        request:
+          - "GET https://api.neso.energy/api/3/action/package_show?id=tresp-demand-pathways"
+          - "GET https://api.neso.energy/dataset/e5e8eb8e-9fbd-4355-b4ad-9bbf00569d15/resource/11c36b60-eee5-45e9-b0da-6240e6e60d1c/download/lists-of-tresp-pathways-building-blocks-and-of-tresp-gsp-areas-with-names.xlsx"
+      - dataset: tresp_gsp_area_names
+        differs: "Each tRESP GSP area code with its name, such as `tRESP Abham 132kV NGED`"
+        request: "GET https://api.neso.energy/dataset/e5e8eb8e-9fbd-4355-b4ad-9bbf00569d15/resource/11c36b60-eee5-45e9-b0da-6240e6e60d1c/download/lists-of-tresp-pathways-building-blocks-and-of-tresp-gsp-areas-with-names.xlsx"
+      - dataset: tresp_demand_pathways_gsp
+        differs: "Per tRESP GSP feeding area (GSP group in Scotland), with its DNO licence area"
+        request: "GET https://api.neso.energy/dataset/e5e8eb8e-9fbd-4355-b4ad-9bbf00569d15/resource/d616d330-4829-4f8a-b74b-00a57b41bc20/download/tresp_pathways_demand_published.csv"
+        held: NESO states no period for annual GWh values, and four block ids match no FES id.
+      - dataset: tresp_demand_pathways_la_england
+        differs: "Indicative, per English local authority (ONS codes at 31 December 2024)"
+        request: "GET https://api.neso.energy/dataset/e5e8eb8e-9fbd-4355-b4ad-9bbf00569d15/resource/c3a261a4-94e9-4d75-b0de-d3805b0b5ae8/download/la_england_pathways_demand_published.csv"
+        held: NESO states no period for annual GWh values, and four block ids match no FES id.
+      - dataset: tresp_demand_pathways_la_scotland
+        differs: "Indicative, per Scottish local authority (ONS codes at 31 December 2024)"
+        request: "GET https://api.neso.energy/dataset/e5e8eb8e-9fbd-4355-b4ad-9bbf00569d15/resource/67d699eb-c5e9-42cd-a57a-74fcc52bcea9/download/la_scotland_pathways_demand_published.csv"
+        held: NESO states no period for annual GWh values, and four block ids match no FES id.
+      - dataset: tresp_demand_pathways_la_wales
+        differs: "Indicative, per Welsh local authority (ONS codes at 31 December 2024)"
+        request: "GET https://api.neso.energy/dataset/e5e8eb8e-9fbd-4355-b4ad-9bbf00569d15/resource/ccb3dfc8-ab4a-4f32-b944-8eced2e87bff/download/la_wales_pathways_demand_published.csv"
+        held: NESO states no period for annual GWh values, and four block ids match no FES id.
+      - dataset: tresp_demand_pathways_resp_region
+        differs: "Per RESP nation and region, the coarsest geography"
+        request: "GET https://api.neso.energy/dataset/e5e8eb8e-9fbd-4355-b4ad-9bbf00569d15/resource/cb1f1b31-1fde-40ab-86c9-34a3e1bdb665/download/tresp_pathways_demand_by_resp_region_published.csv"
+        held: NESO states no period for annual GWh values, and four block ids match no FES id.
 ---
 
 # Transitional Regional Energy Strategic Plan (tRESP) - Demand Pathways
@@ -42,7 +153,9 @@ models, not a measurement.
 2. **No temporal recipe.** `timestamp_utc` is gridflow's capture time, not a projection
    date. The projection date is the `Year` label (volume at 31 March of that year).
 3. **One capture, one vintage.** The only capture is 2026-10-08 of files the vendor last
-   modified on 2026-01-30. `available_at` is that CKAN `last_modified`.
+   modified on 2026-01-30. `available_at` is that CKAN `last_modified`. Checked 2026-10-24:
+   the 2026-10-16 portal recapture took no tRESP file, so bronze and silver still hold the
+   2026-10-08 capture alone (one `bronze_capture_id` per family).
 4. **Local-authority rows are indicative.** NESO defines the pathways at the larger tRESP
    GSP-area level; the local-authority files are its approximate attribution, which the
    vendor says is not to be used as a planning target (resource description).
@@ -257,8 +370,9 @@ blocks"), all keys distinct, none blank; `technology_detail` is null on 7 rows (
 blocks with no sub-detail) and nowhere else. This is the vendor's dictionary for
 `building_block_id` in this package and in @./tresp-generation-pathways.md; its Demand rows
 are the table above. The join to a pathway family is `building_block_id` =
-`fes_bb_id_number` (the column is named for FES but the ids are tRESP's, so the four
-suffixed ids appear here and in no FES table). The 35 rows are the whole table, not a time
+`fes_bb_id_number` (the column is named for FES; every id except the four suffixed
+demand ids matches a FES definition id exactly, and those four appear here and in no FES
+table; checked 2026-10-24 against silver `fes_building_blocks_block_definitions`). The 35 rows are the whole table, not a time
 series: a re-upload replaces it whole. Both clocks as above: `published_at` = `available_at`
 = 2026-01-30T08:15:29.726307 UTC (the workbook's `last_modified`); `timestamp_utc` =
 2026-10-08T11:39:46.157281 UTC. Silver: **35 rows**, 16 columns.
