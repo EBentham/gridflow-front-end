@@ -7,6 +7,140 @@ skeleton: false
 updated: 2026-10-13
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: STOR day-ahead auction results
+  summary: >-
+    The tenders in NESO's daily Short Term Operating Reserve (STOR) auction: MW and price offered,
+    accepted or rejected, and the clearing price.
+  facts:
+    vendor: "NESO Data Portal: one uploaded CSV of the daily STOR auction results"
+    cadence: "Daily; last auction 30 March 2026, for delivery 31 March; package Not Active (NESO)"
+    grain: "One row per tender: a unit's MW and price for one service day"
+    history: "Service days 1 April 2021 to 31 March 2026; NESO's file lacks four"
+  landscape: market
+  what_it_is: >-
+    Each row is one tender in NESO's daily day-ahead STOR auction: a unit's MW for a service day's
+    availability windows, its availability price and the outcome. Accepted rows add contracted MW and
+    clearing price; rejected rows leave both null. NESO's file has no rows for four service days and
+    none accepted on five; NESO's notices report two failed auctions.
+  how_used:
+    - "Daily clearing price, £/MW/h, as STOR availability revenue history, 2021 to 2026"
+    - "Each day's merit order: tendered price against outcome, by unit, fuel and company"
+    - "Contracted MW per day, set against the buy curve its `buy_curve_id` names"
+  chart:
+    type: line
+    silver: neso_data_portal/stor_da_auction_results
+    time: service_delivery_from
+    value: market_clearing_price
+    filter:
+      - {column: status, op: eq, value: Accepted}
+    aggregation: max
+    time_bucket: 1d
+    window: {start: "2025-04-01", end: "2026-03-31"}
+    unit: "£/MW/h"
+  chart_view:
+    title: Clearing price per service day, April 2025 to March 2026
+    caption: >-
+      Silver `stor_da_auction_results`, `market_clearing_price` in £/MW/h (NESO writes £/MW/Hr): each
+      service day's clearing price, the same on every accepted tender that day in NESO's file, 1 April
+      2025 to 31 March 2026, the auction's final year.
+    alt: >-
+      Line chart from neso_data_portal/stor_da_auction_results of the STOR day-ahead clearing price
+      per service day, £/MW/h, 1 April 2025 to 31 March 2026, 365 days. It stays under 5 from April
+      to June, lowest 0.22 on 1 April, climbs through the summer to 20.48 on 30 September and 21.00
+      on 16 October, the highest, runs 1.44 to 20.00 from November to February, and falls to 0.72 to
+      6.50 in March.
+    x_label: service day, starting 05:00 UK time
+    key:
+      - {series: market_clearing_price, label: Clearing price, paint: petrol, note: "Highest 21.00 on 16 October 2025, lowest 0.22 on 1 April 2025; median 3.70."}
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: `package_show`, then the one CSV downloaded whole unless its
+      `last_modified` is unchanged. Its last upload is dated 30 March 2026.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=short-term-operating-reserve-stor-day-ahead-auction-results"
+      - "GET https://api.neso.energy/dataset/fb4a9900-9438-47ae-9788-06f490353a89/resource/844a1a65-0a3c-4704-b327-d1685d0c397b/download/stor-da-auction-results.csv"
+    commands:
+      - {run: gridflow ingest neso_data_portal stor_da_auction_results --last 24h, comment: "whole file; window must end recently"}
+      - {run: gridflow transform neso_data_portal stor_da_auction_results --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: service_delivery_from, op: eq, value: "2023-11-23T05:00:00Z"}
+        - {column: unit_id, op: in, value: [KILLPG-1, SOLUU-1, DIDC03G, SEEL-1, SEVIU-1, DIDC04G, BRIDU-1, LBAR-1G]}
+      order_by: [tendered_availability_price, status, unit_id]
+      columns: [unit_id, status, tendered_availability_price, market_clearing_price, tendered_mw,
+                minimum_acceptable_mw, contracted_mw, service_delivery_from, service_delivery_to, fuel_type,
+                bm_nbm, company_name, tender_submission_id, tender_round_id, buy_curve_id]
+    key: [tender_submission_id]
+    caption: "Service day 23 November 2023 around its 0.30 clearing price; `SEEL-1` was partly accepted."
+    fields:
+      tender_submission_id: "NESO's unique id for the tender, `TS-` and a number"
+      unit_id: "The unit tendered, NESO's id as written; null where NESO leaves it blank"
+      status: "`Accepted` or `Rejected`: NESO's outcome for the tender"
+      tendered_availability_price: "Availability price the provider tendered, £/MW/h (NESO's unit)"
+      market_clearing_price: "Availability price NESO offered an accepted tender, £/MW/h; null if rejected"
+      tendered_mw: "MW offered for the service day's availability windows (NESO)"
+      minimum_acceptable_mw: "Minimum acceptable MW, by NESO's column name; its dictionary entry is blank"
+      contracted_mw: "MW NESO accepted for the windows; null if rejected"
+      service_delivery_from: "Service day start, UTC with NESO's `Z`: 05:00 UK time, so 04:00Z in summer"
+      service_delivery_to: "Service day end, 05:00 UK time; 23 or 25 hours long at clock changes"
+      fuel_type: "The unit's fuel type as NESO writes it"
+      bm_nbm: "`BM` for a Balancing Mechanism unit, `NBM` for a non-BM unit (NESO)"
+      company_name: "The STOR provider, which NESO says holds a framework agreement"
+      tender_round_id: "NESO's id for the tender round, `TRN-` and a number"
+      buy_curve_id: "NESO's id for a buy curve, as in its STOR buy-curve package"
+      service_name: "Always `Short Term Operating Reserve`, NESO's dictionary says"
+      timestamp_utc: "Equals `service_delivery_from`: the service day's start, UTC"
+      published_at: "NESO's last-modified time for the whole file, read as UTC; not the auction time"
+      bronze_capture_id: Path of the bronze capture the row was read from
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      `query()` reads the `_latest` view, filtering `timestamp_utc` (the service day's start) with both
+      dates included. Times come back in the session's zone; the query cell converts them to UTC.
+    cells:
+      - |
+        import pandas as pd
+        df = data.neso_data_portal.query("stor_da_auction_results", "2021-04-01", "2026-03-31")
+        for col in ["service_delivery_from", "service_delivery_to", "timestamp_utc"]:
+            df[col] = df[col].dt.tz_convert("UTC")
+        uk = df.service_delivery_from.dt.tz_convert("Europe/London")
+        df["day"] = pd.to_datetime(uk.dt.date)
+        pd.DataFrame({"uk_start": uk.dt.strftime("%H:%M"),
+            "hours": (df.service_delivery_to - df.service_delivery_from) / pd.Timedelta(hours=1),
+        }).value_counts().rename("rows").reset_index()
+      - |
+        acc = df[df.status == "Accepted"]
+        days = acc.groupby("day").agg(clearing=("market_clearing_price", "max"),
+            prices=("market_clearing_price", "nunique"),
+            dearest_accepted=("tendered_availability_price", "max"),
+            contracted_mw=("contracted_mw", "sum"))
+        span = pd.date_range("2021-04-01", "2026-03-31")
+        pd.Series({"service days in the span": len(span), "with rows in the file": df.day.nunique(),
+            "with a tender accepted": len(days), "one clearing price": (days.prices == 1).sum(),
+            "clearing = dearest accepted": (days.clearing == days.dearest_accepted).sum()})
+      - |
+        start = days.index.year - (days.index.month < 4)
+        year = [f"{y}-{(y + 1) % 100:02d}" for y in start]
+        days.groupby(year).agg(days=("clearing", "size"),
+            median_price=("clearing", "median"), top_price=("clearing", "max"),
+            mean_contracted_mw=("contracted_mw", "mean")).round(2).rename_axis("year").reset_index()
+      - |
+        days = days.reindex(span)
+        ax = days.contracted_mw.plot(figsize=(8, 3.5), color="#155A6E",
+            xlabel="service day, starting 05:00 UK time", ylabel="MW contracted");
+    needs: a capture of the results file
+    plot_alt: >-
+      Line plot of MW contracted per STOR service day, 1 April 2021 to 31 March 2026. Median 1,312 MW
+      until 1 April 2025, then 1,696 from 2 April, when NESO's notice raised its requirement to 1,700
+      MW. Lowest 50 MW on 20 December 2021; the line breaks where nothing was accepted or NESO's file
+      has no rows.
+  related:
+    - {dataset: neso_data_portal/short-term-operating-reserve-stor-day-ahead-buy-curve, note: "NESO's buy curve for each day's assessment, named by `buy_curve_id`"}
+    - {dataset: neso_data_portal/stor-windows, note: "Committed windows for each STOR service day, where STOR must be provided"}
+    - {dataset: neso_data_portal/as_industry_notifications_stor_important, note: "Mostly STOR auction delays and failures; two explain gaps in these results"}
+    - {dataset: neso_data_portal/eac-auction-results, note: "Slow Reserve auctions; NESO ended STOR day-ahead after launching them"}
 ---
 
 # Short Term Operating Reserve (STOR) Day Ahead Auction Results
@@ -169,8 +303,12 @@ whether the end instant belongs to the service day.
   - Update Frequency: Not Active
 
 The vendor marks the package "Not Active" and the last service day in the body is 2026-03-31, so the
-record is treated as frozen. The package `metadata_modified` is `2026-10-05T11:42:08.113997`;
-`TODO: verify` whether NESO intends to resume publication (the package text describes a daily auction).
+record is treated as frozen. The package `metadata_modified` is `2026-10-05T11:42:08.113997`.
+Publication does not resume: the sibling buy-curve package's `notes` say STOR DA "has been officially
+decommissioned following the launch of the new Slow Reserve service in EAC" and that "the final STOR DA
+tender was run on 30th March" (catalogue snapshot `20261006T195819Z`, package
+`short-term-operating-reserve-stor-day-ahead-buy-curve`); this package's one resource is described as
+"STOR DA Auction Results for 30/03/2026".
 
 ## Licence and attribution
 
@@ -193,7 +331,8 @@ packages (the ASDP window prices and the ODFM load factors) carry holds; none ap
 
 - `TODO: verify` the **original publication instant** of each daily result (see the vintage clock above).
 - `TODO: verify` **interval closure** of the service day.
-- `TODO: verify` whether publication **resumes** (vendor status "Not Active").
+- Publication **does not resume**: NESO decommissioned STOR DA after launching Slow Reserve in EAC, final
+  tender 30 March 2026 (see Cadence).
 - `TODO: verify` the **unit of `Minimum Acceptable MW`** from a dictionary entry; the dictionary unit
   field is blank and MW rests on the vendor header only.
 
@@ -212,8 +351,8 @@ packages (the ASDP window prices and the ODFM load factors) carry holds; none ap
   unit_id)`.
 - **Identifiers are strings stored as served**: `unit_id`, `tender_round_id`, `buy_curve_id` and the
   submission id are never normalised or cast. The dictionary examples contain trailing tab characters;
-  the body values were compared as served (`TODO: verify` that no served identifier carries trailing
-  whitespace).
+  the body values were compared as served, and no served cell carries a tab or a padding space (the
+  2026-10-08 capture's raw bytes: no tab, no space beside a comma).
 - **Dictionary layout differs from the body** for the delivery timestamps (see above); parse the body
   layout.
 - **Size.** The body is 21 MB and the transform is the largest of the batch (peak working set
