@@ -133,7 +133,20 @@
         "super-stable-export-limit-contract-enactment",
         "historic-gtma-grid-trade-master-agreement-trades-data",
         "interconnector-requirement-and-auction-summary-data",
-        "upcoming-trades"
+        "upcoming-trades",
+        "1-day-ahead-demand-forecast",
+        "2-day-ahead-demand-forecast",
+        "7-day-ahead-national-forecast",
+        "2-14-days-ahead-national-demand-forecast",
+        "national-demand-balancing-mechanism-units",
+        "tresp-demand-pathways",
+        "day-ahead-half-hourly-demand-forecast-performance",
+        "daily-demand-update",
+        "demand-profile-dates",
+        "historic-demand-data",
+        "long-term-2-52-weeks-ahead-national-demand-forecast",
+        "school-holiday-percentages",
+        "transmission-losses"
       ]
     }
   ],
@@ -445,6 +458,66 @@
         "gtma_trades_data_pre",
         "gtma_trades_fy"
       ]
+    },
+    {
+      "slug": "1-day-ahead-demand-forecast",
+      "title": "1 day ahead demand forecast",
+      "note": "1-day-ahead-demand-forecast",
+      "members": [
+        "demand_forecast_1d_day_ahead_national",
+        "demand_forecast_1d_historic_day_ahead"
+      ]
+    },
+    {
+      "slug": "2-day-ahead-demand-forecast",
+      "title": "2 day ahead demand forecast",
+      "note": "2-day-ahead-demand-forecast",
+      "members": [
+        "demand_forecast_2d_day_ahead",
+        "demand_forecast_2d_historic_day_ahead"
+      ]
+    },
+    {
+      "slug": "7-day-ahead-national-forecast",
+      "title": "7 day ahead national forecast",
+      "note": "7-day-ahead-national-forecast",
+      "members": [
+        "national_forecast_7d_day_ahead_demand",
+        "national_forecast_7d_historic_day_ahead"
+      ]
+    },
+    {
+      "slug": "2-14-days-ahead-national-demand-forecast",
+      "title": "2-14 days ahead national demand forecast",
+      "note": "2-14-days-ahead-national-demand-forecast",
+      "members": [
+        "national_demand_fc_2_14d_days_ahead",
+        "national_demand_fc_2_14d_days_ahead_half",
+        "national_demand_fc_2_14d_historic_day"
+      ]
+    },
+    {
+      "slug": "tresp-demand-pathways",
+      "title": "tRESP demand pathways",
+      "note": "tresp-demand-pathways",
+      "members": [
+        "tresp_demand_pathways_gsp",
+        "tresp_demand_pathways_la_england",
+        "tresp_demand_pathways_la_scotland",
+        "tresp_demand_pathways_la_wales",
+        "tresp_demand_pathways_resp_region",
+        "tresp_building_block_definitions",
+        "tresp_gsp_area_names"
+      ]
+    },
+    {
+      "slug": "transmission-losses",
+      "title": "Transmission losses",
+      "note": "transmission-losses",
+      "members": [
+        "transmission_losses_main",
+        "transmission_losses_financial_year"
+      ]
     }
   ],
   "names": {
@@ -493,7 +566,14 @@
     "index-linked-contract-volume": "Index Linked Contracted Energy Volume",
     "super-stable-export-limit-contract-enactment": "Super SEL contract enactment",
     "interconnector-requirement-and-auction-summary-data": "Interconnector requirement and auction summary",
-    "upcoming-trades": "Upcoming trades"
+    "upcoming-trades": "Upcoming trades",
+    "national-demand-balancing-mechanism-units": "National demand BM units",
+    "day-ahead-half-hourly-demand-forecast-performance": "Day-ahead half-hourly demand forecast performance",
+    "daily-demand-update": "Daily demand update",
+    "demand-profile-dates": "Demand profile dates",
+    "historic-demand-data": "Historic demand data",
+    "long-term-2-52-weeks-ahead-national-demand-forecast": "Long-term 2-52 weeks ahead national demand forecast",
+    "school-holiday-percentages": "School holiday percentages"
   },
   "dropped": {},
   "package_tables": {
@@ -539,7 +619,14 @@
     "index-linked-contract-volume": "index_linked_contract_volume",
     "super-stable-export-limit-contract-enactment": "ssel_contract_enactment",
     "interconnector-requirement-and-auction-summary-data": "ic_requirement_auction",
-    "upcoming-trades": "upcoming_trades"
+    "upcoming-trades": "upcoming_trades",
+    "national-demand-balancing-mechanism-units": "national_demand_bmus",
+    "day-ahead-half-hourly-demand-forecast-performance": "da_demand_fc_performance",
+    "daily-demand-update": "daily_demand_update",
+    "demand-profile-dates": "demand_profile_dates",
+    "historic-demand-data": "historic_demand",
+    "long-term-2-52-weeks-ahead-national-demand-forecast": "demand_forecast_2_52w",
+    "school-holiday-percentages": "school_holiday_percentages"
   },
   "catalogue": {
     "_about": "NESO's catalogue as the hub draws it: its data groups in portal order, each with NESO's description and its packages (NESO's titles and CKAN names). `page_packages` names the CKAN package of a page not named after it; a package is a link when a page in `groups` documents it. `plan` lays the groups out as plots: a slug is one plot, `row` sets its children side by side, `col` stacks them; `wide` from 1100 px, `narrow` below, and `tag_narrow` plots carry their name beneath them when narrow.",
