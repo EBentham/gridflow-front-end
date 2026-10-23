@@ -7,6 +7,87 @@ skeleton: false
 updated: 2026-10-12
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: true
+  title: Monthly BSUoS forecast
+  summary: >-
+    NESO's monthly forecast of balancing costs for each of the next 24 months, in £m, with older
+    outturn summaries and COVID scenarios.
+  facts:
+    vendor: "NESO Data Portal: 142 CSV files, a zipped workbook archive and a PDF"
+    cadence: "Monthly, as NESO lists it; each month's forecast is a new file"
+    grain: "Forecast: one file per edition, one row per target month, costs in £m"
+    history: NESO lists files from March 2020
+  landscape: market
+  what_it_is: >-
+    The Balancing Services Use of System (BSUoS) charge recovers the cost of day-to-day system
+    operation. Each month NESO forecasts those costs for the next 24 months, by category, such as
+    energy imbalance, reserve and constraints, with an estimated BSUoS volume. Older files add
+    outturn summaries and COVID demand scenarios. NESO says the forecast may bear no relation to
+    later tariffs.
+  how_used:
+    - How NESO's expected balancing cost for a month moved from edition to edition
+    - Expected costs beside the settled BSUoS charges and fixed tariffs
+  raw_feed:
+    note: >-
+      NESO's `package_show`, then each file whole unless `last_modified` is unchanged (a few
+      shown). Only forecast summary files with a valid UTF-8 header reach silver; everything else
+      is bronze only.
+    commands:
+      - {run: gridflow ingest neso_data_portal bsuos_monthly_forecast_fc_summary --last 24h, comment: "whole files; swap in any key"}
+      - {run: gridflow transform neso_data_portal bsuos_monthly_forecast_fc_summary --last 24h, comment: "forecast summary only; rows not shown"}
+      - {run: gridflow ingest neso_data_portal bsuos_monthly_forecast_files --last 24h, comment: the archive and PDF}
+  family:
+    slug: bsuos-monthly-forecast
+    members:
+      - dataset: bsuos_monthly_forecast_actual_sum
+        differs: "Outturn for the previous 12 months; monthly files, March 2020 to December 2021"
+        request:
+          - "GET https://api.neso.energy/api/3/action/package_show?id=bsuos-monthly-forecast"
+          - "GET https://api.neso.energy/dataset/c0376ed7-3205-4fe2-9496-28496f1f287a/resource/fdd43811-b1ff-490e-8ad2-98d67822931e/download/monthly-bsuos-actual-summary-mar_20.csv"
+          - "GET https://api.neso.energy/dataset/c0376ed7-3205-4fe2-9496-28496f1f287a/resource/1f8b0d9a-a98b-4cf4-9496-16a5c9db551f/download/monthly-bsuos-actual-summary-14122021.csv"
+        held: "The header's £ is not valid UTF-8, so gridflow keeps these files in bronze only."
+      - dataset: bsuos_monthly_forecast_fc_summary
+        differs: "The 24-month forecast, one file per monthly edition, from March 2020"
+        request:
+          - "GET https://api.neso.energy/dataset/c0376ed7-3205-4fe2-9496-28496f1f287a/resource/ef004890-679a-4d28-ac00-427ff6e7260d/download/monthly-bsuos-forecast-summary-mar_20.csv"
+          - "GET https://api.neso.energy/dataset/c0376ed7-3205-4fe2-9496-28496f1f287a/resource/b458c4e5-ab80-43e5-907e-6c7069350390/download/bsuos-forecast-october-2026.csv"
+        held: NESO does not say when each monthly edition was issued, only when its file last changed.
+      - dataset: bsuos_monthly_forecast_fc_summary_pct
+        differs: "The forecast under COVID demand cuts of 5, 10 and 15 percent"
+        request:
+          - "GET https://api.neso.energy/dataset/c0376ed7-3205-4fe2-9496-28496f1f287a/resource/9b840832-2438-472e-906e-45edbb311e1b/download/monthly-bsuos-forecast-summary-june-5-percent.csv"
+          - "GET https://api.neso.energy/dataset/c0376ed7-3205-4fe2-9496-28496f1f287a/resource/f6a319e9-5423-4edb-bbae-48e61088b36a/download/monthly-bsuos-forecast-summary-september-15-percent.csv"
+        held: "The header's £ is not valid UTF-8, so gridflow keeps these files in bronze only."
+      - dataset: bsuos_monthly_forecast_impact_on_due
+        differs: A COVID low-demand forecast without the new commercial services
+        request: "GET https://api.neso.energy/dataset/c0376ed7-3205-4fe2-9496-28496f1f287a/resource/8fad0617-c238-4bbf-b6f3-418862dcbf17/download/monthly-bsuos-summary-no-new-services.csv"
+        held: "The header's £ is not valid UTF-8, so gridflow keeps this file in bronze only."
+      - dataset: bsuos_monthly_forecast_including_new
+        differs: "The May 2020 COVID forecast, with the new services' savings"
+        request: "GET https://api.neso.energy/dataset/c0376ed7-3205-4fe2-9496-28496f1f287a/resource/5ed292d9-f4cc-4034-b0f4-cdf3477cbaa4/download/monthly-bsuos-summary-expected-costs.csv"
+        held: "The header's £ is not valid UTF-8, so gridflow keeps this file in bronze only."
+      - dataset: bsuos_monthly_forecast_sum_winter
+        differs: The September 2022 edition with a winter contingency cost column
+        request: "GET https://api.neso.energy/dataset/c0376ed7-3205-4fe2-9496-28496f1f287a/resource/839c1a80-ce74-4cd4-b634-197a54974b29/download/bsuos-forecast-september-2022-with-winter-contingency-cost.csv"
+        held: "One header £ is not valid UTF-8, so gridflow keeps this file in bronze only."
+      - dataset: bsuos_monthly_forecast_summary
+        differs: "Past 12 months' outturn with the next 24 months' forecast, 2020 to 2021"
+        request:
+          - "GET https://api.neso.energy/dataset/c0376ed7-3205-4fe2-9496-28496f1f287a/resource/6b20199f-8f95-4409-b26e-d89cbf5255da/download/monthly-bsuos-summary-mar_20.csv"
+          - "GET https://api.neso.energy/dataset/c0376ed7-3205-4fe2-9496-28496f1f287a/resource/b9fbb769-bb54-4f00-95f1-888421fcbdbe/download/monthly-bsuos-summary-14122021.csv"
+        held: "The header's £ is not valid UTF-8, so gridflow keeps these files in bronze only."
+      - dataset: bsuos_monthly_forecast_summary_pct
+        differs: "That combined summary under the 5, 10 and 15 percent COVID cuts"
+        request:
+          - "GET https://api.neso.energy/dataset/c0376ed7-3205-4fe2-9496-28496f1f287a/resource/253e5f12-a555-4792-a613-2bafa657e4fc/download/monthly-bsuos-summary-june-5-percent.csv"
+          - "GET https://api.neso.energy/dataset/c0376ed7-3205-4fe2-9496-28496f1f287a/resource/87b7525c-a434-4162-9e5c-658e12b01f61/download/monthly-bsuos-summary-september-15-percent.csv"
+        held: "The header's £ is not valid UTF-8, so gridflow keeps these files in bronze only."
+  related:
+    - {dataset: neso_data_portal/current-balancing-services-use-of-system-bsuos-data, note: "Settled BSUoS charges per run, to set against these forecasts"}
+    - {dataset: neso_data_portal/bsuos-fixed-tariffs, note: "The fixed tariffs NESO sets, which this forecast may not match"}
+    - {dataset: neso_data_portal/daily-balancing-costs-balancing-services-use-of-system, note: "Outturn balancing cost per settlement period, in six categories"}
+    - {dataset: neso_data_portal/balancing-services-use-of-system-bsuos-daily-forecast, note: "NESO's half-hourly BSUoS charge forecast, to March 2023"}
 ---
 
 # Monthly Balancing Services Use of System (BSUoS) Forecast Data
