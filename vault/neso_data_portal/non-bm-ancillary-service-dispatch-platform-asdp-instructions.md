@@ -14,7 +14,7 @@ page:
     its dispatch platform, ASDP, in monthly files.
   facts:
     vendor: "NESO Data Portal: 70 datastore tables, one per month"
-    cadence: "NESO lists it as not active: the services moved to its Open Balancing Platform"
+    cadence: "Not active (NESO's label); NESO is moving non-BM services to its Open Balancing Platform"
     grain: "One row per instruction entry, numbered by NESO's `EntryID`"
     history: "Monthly files from June 2020 to April 2026, with none for September 2020"
   landscape: market
@@ -134,7 +134,7 @@ page:
       from hour 15 to 18, at 943 to 1,024 each.
   related:
     - {dataset: neso_data_portal/non-bm-ancillary-service-dispatch-platform-asdp-window-prices, note: "Window prices providers sent through ASDP; `EntryID` points here"}
-    - {dataset: neso_data_portal/obp-non-bm-reserve-instructions, note: "Non-BM reserve instructions on OBP, where these moved; never join ids"}
+    - {dataset: neso_data_portal/obp-non-bm-reserve-instructions, note: "OBP, the platform NESO is moving non-BM services to; never join ids"}
     - {dataset: neso_data_portal/short-term-operating-reserve-stor-day-ahead-auction-results, note: The day-ahead STOR auctions behind the STOR service}
 ---
 
@@ -152,7 +152,7 @@ price, and the times NESO sent the dispatch and the cease messages. The later bo
 (`party_id`), the asset (`asset_id`) and a `tendered` flag. Use it to see what NESO asked non-BM units to do, how
 often, in what size and at what indicative price. It is an **event log, not a forecast**.
 
-**ASDP has been superseded by OBP, and the two overlap in time.** The vendor states that the non-BM services "that
+**NESO is moving non-BM services from ASDP to OBP, and the two overlap in time.** The vendor states that the non-BM services "that
 used to be published on this page have now migrated to the OBP system" and links the successor datasets
 (@./obp-non-bm-reserve-instructions.md, @./obp-non-bm-physical-notifications.md,
 @./obp-reserve-availability-utilisation-price.md). The registry refresh is `frozen` and the vendor's own
@@ -517,9 +517,11 @@ column through this page's unit.
 - **No status column.** The vendor says only confirmed instructions are published; whether a cease row can follow
   a dispatch that never ran is not stated.
 - **Migration to OBP.** Reporting periods overlap from 2025-10-10, with different grain and identifier systems; see
-  the overview. The OBP instructions page's vendor text says some non-BM instructions are still published on ASDP,
-  while this package's text says the services here have migrated; the two vendor statements are not reconciled
-  (`TODO: verify`).
+  the overview. The OBP instructions page's vendor text says OBP will incrementally master more non-BM services, with
+  less published on ASDP, while this package's text says the services here have migrated; the two vendor statements
+  are not reconciled (`TODO: verify`). The services differ: ASDP silver holds only `Non-BM STOR`,
+  `Non-BM Fast Reserve` and `RDP_NEGATIVE` rows, while OBP's rows, from 2025-10-10, are Positive Quick Reserve,
+  Positive Slow Reserve and MW Dispatch (@./obp-non-bm-reserve-instructions.md).
 - **Resource wording.** The resource names say "Dispatch Cease Instructions" and the older descriptions say
   "published on NG website" (National Grid-era wording, retained by the vendor); the series has no September 2020
   resource.
