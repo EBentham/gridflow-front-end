@@ -70,11 +70,11 @@ time, `query()` filters on the capture time (remediation 20at): use `data.sql()`
 | # | Writer | Checker | State |
 |---|---|---|---|
 | 1 | a607859324f54582c | abfa72550bccbf2e7 | APPROVED (round 2 fixes seat-verified); committed; 20bg logged |
-| 2 | aaa530902e16c13ba | a2d394bfedfab4ef7 | checking; 20bl logged |
+| 2 | aaa530902e16c13ba | a2d394bfedfab4ef7 | revising (REVISE: 1 major in the note body, 1 nit); 20bl logged |
 | 3 | a09b4921a2eb9b6ea | af9d5a276f14c2362 | checking; 20bm logged |
 | 4 | ae6194f3fcaac0338 | | writing |
 | 5 | aff832a32c1030ea2 | ab3dc8141aec8a48f | APPROVED (round 2 fixes seat-verified); committed; 20bf logged |
 | 6 | a9e81f314a34edccf | a6c15891c978684e7 | APPROVED (round 2 fixes seat-verified); committed; lead changed to the building-block table (seat, PROXY-SOURCED) |
 | H1 | a403343c59ca240d0 | abed098ced7d8bb2c | APPROVED x4 (round 2 fixes seat-verified); committed; 20bh, 20bi logged |
 | H2 | a33842486afc7e15e | a0072af64d2e16389 | long-term and school holidays APPROVED (round 2 fixes seat-verified), committed; transmission losses ruled a full page (seat, PROXY-SOURCED), see TL; 20bk, 20bn logged |
-| TL | a33842486afc7e15e | checker running (port 9859) | full page written; checking; 20bj logged |
+| TL | a33842486afc7e15e | a36dd1131658ef563 | full page written; checking; 20bj logged |
