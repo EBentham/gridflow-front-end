@@ -7,6 +7,136 @@ skeleton: false
 updated: 2026-10-13
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: STOR committed windows
+  summary: >-
+    NESO's calendar of committed Short Term Operating Reserve (STOR) windows: for each delivery date,
+    its season, day type and two windows.
+  facts:
+    vendor: "NESO Data Portal: one uploaded CSV of STOR committed windows"
+    cadence: "Ad hoc (NESO); the file was last modified 27 July 2026"
+    grain: "One row per delivery date: season, day type and two windows"
+    history: "Seasons 15 to 19, applicable 1 April 2021 to 1 April 2026 (NESO)"
+  landscape: market
+  what_it_is: >-
+    Each row is one delivery date: NESO's season label, a working-day flag and two committed windows,
+    `HH:MM` text with no zone stated. NESO says STOR must be provided in them on each service day. In
+    this file each season has six blocks of dates, each with fixed windows per day type across all
+    five.
+  how_used:
+    - "The hours STOR had to be provided on a delivery date, NESO's committed windows"
+    - "Reading the day-ahead auction results beside the windows set for each service day"
+    - "Committed hours by season and day type: 10 to 13.5 on working days"
+  chart:
+    type: bar
+    silver: neso_data_portal/stor_windows
+    filter:
+      - {column: date, op: ge, value: "2025-04-01"}
+      - {column: date, op: le, value: "2026-03-31"}
+    group: season
+    aggregation: count
+    dedup: {on: [date], order_by: published_at}
+    sort: label
+    unit: days
+  chart_view:
+    title: Delivery dates per season label in Season 19
+    caption: >-
+      Silver `stor_windows`, Season 19, the latest of five in the file, 1 April 2025 to 31 March 2026:
+      each bar counts the delivery dates with that `season` label. Key notes give each label's windows,
+      zone unstated.
+    alt: >-
+      Horizontal bar chart from neso_data_portal/stor_windows counting delivery dates per season label
+      in Season 19, 1 April 2025 to 31 March 2026: 19.1 has 27 dates, 19.2 has 112, 19.3 has 35, 19.4
+      has 28, 19.5 has 91 and 19.6 has 72. The longest parts are 19.2, late April to mid August, and
+      19.5, late October to mid January.
+    key:
+      - {series: "19.1", label: Season 19.1, paint: petrol, note: "1 to 27 April 2025. Working days 06:00-13:00, 19:00-22:00; non-working 10:00-14:00, 17:30-22:00."}
+      - {series: "19.2", label: Season 19.2, paint: petrol, note: "28 April to 17 August. Working days 06:30-14:00, 16:00-22:00; non-working 10:30-13:30, 17:30-22:00."}
+      - {series: "19.3", label: Season 19.3, paint: petrol, note: "18 August to 21 September. Working days 06:30-13:00, 16:00-22:00; non-working 10:30-12:30, 17:30-22:00."}
+      - {series: "19.4", label: Season 19.4, paint: petrol, note: "22 September to 19 October. Working days 06:00-13:00, 17:00-22:00; non-working 10:30-13:00, 17:30-22:00."}
+      - {series: "19.5", label: Season 19.5, paint: petrol, note: "20 October to 18 January 2026. Working days 06:00-13:00, 16:00-20:30; non-working 10:30-13:30, 16:00-19:30."}
+      - {series: "19.6", label: Season 19.6, paint: petrol, note: "19 January to 31 March 2026. Working days 06:00-13:00, 16:30-20:30; non-working 10:30-13:00, 16:30-20:00."}
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: `package_show`, then the one CSV downloaded whole unless its
+      `last_modified` is unchanged. Its last upload is dated 27 July 2026.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=stor-windows"
+      - "GET https://api.neso.energy/dataset/d7371697-0a03-43a9-a3f3-572d06b25e59/resource/90d4a1a4-d311-4a22-9138-84cb7ead2599/download/stor_committed_windows.csv"
+    commands:
+      - {run: gridflow ingest neso_data_portal stor_windows --last 24h, comment: "whole file; window must end recently"}
+      - {run: gridflow transform neso_data_portal stor_windows --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: date, op: ge, value: "2025-03-28"}
+        - {column: date, op: le, value: "2025-04-04"}
+      dedup: {on: [date], order_by: published_at}
+      order_by: [date]
+      columns: [date, season, wd_nwd, window_1_start_time, window_1_end_time, window_2_start_time,
+                window_2_end_time, timestamp_utc, published_at]
+    key: [date]
+    caption: "28 March to 4 April 2025: clocks change 30 March; season 19.1 starts 1 April."
+    fields:
+      date: "Delivery date, written day first in NESO's file"
+      season: "NESO's season label, `15.1` to `19.6`; in this file six date blocks per season"
+      wd_nwd: "NESO's working-day flag, undefined by NESO; here Saturdays are mostly `WD`, Sundays `NWD`"
+      window_1_start_time: "Start of committed window 1, `HH:MM` text; NESO states no zone"
+      window_1_end_time: "End of committed window 1; no window crosses midnight in this file"
+      window_2_start_time: "Start of committed window 2, the later of the two"
+      window_2_end_time: "End of committed window 2, `HH:MM` text"
+      timestamp_utc: "UK midnight of `date` as UTC, 23:00 the evening before in summer"
+      published_at: "NESO's last-modified time for the whole file, read as UTC"
+      bronze_capture_id: Path of the bronze capture the row was read from
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      `query()` reads the `_latest` view, filtering `date` (the delivery date) with both dates
+      included. Times come back in the session's zone; the query cell converts them to UTC.
+    cells:
+      - |
+        import pandas as pd
+        df = data.neso_data_portal.query("stor_windows", "2021-04-01", "2026-03-31")
+        for col in ["timestamp_utc", "published_at", "capture_written_at"]:
+            df[col] = df[col].dt.tz_convert("UTC")
+        df["date"] = pd.to_datetime(df["date"])
+        df["uk_time"] = df.timestamp_utc.dt.tz_convert("Europe/London").dt.strftime("%H:%M")
+        df[df.date.between("2025-03-29", "2025-04-01")][["date", "season", "wd_nwd", "timestamp_utc", "uk_time"]]
+      - |
+        def hours(start, end):
+            return (pd.to_timedelta(end + ":00") - pd.to_timedelta(start + ":00")) / pd.Timedelta(hours=1)
+        df["window_1"] = df.window_1_start_time + "-" + df.window_1_end_time
+        df["window_2"] = df.window_2_start_time + "-" + df.window_2_end_time
+        df["hours"] = (hours(df.window_1_start_time, df.window_1_end_time)
+            + hours(df.window_2_start_time, df.window_2_end_time))
+        df["part"] = df.season.str.split(".").str[1]
+        df.groupby(["part", "wd_nwd", "window_1", "window_2", "hours"]).agg(
+            seasons=("season", "nunique"), dates=("date", "size")).reset_index()
+      - |
+        import matplotlib.pyplot as plt
+        def clock(s):
+            return pd.to_timedelta(s + ":00") / pd.Timedelta(hours=1)
+        s19 = (df[df.season.str.startswith("19.")].drop_duplicates(["season", "wd_nwd"])
+            .sort_values(["season", "wd_nwd"], ascending=False))
+        fig, ax = plt.subplots(figsize=(8, 4))
+        for i, r in enumerate(s19.itertuples()):
+            bars = [(clock(r.window_1_start_time), clock(r.window_1_end_time) - clock(r.window_1_start_time)),
+                (clock(r.window_2_start_time), clock(r.window_2_end_time) - clock(r.window_2_start_time))]
+            ax.broken_barh(bars, (i - 0.35, 0.7), color="#155A6E" if r.wd_nwd == "WD" else "#8FB3BC")
+        ax.set_yticks(range(len(s19)), [f"{s} {w}" for s, w in zip(s19.season, s19.wd_nwd)])
+        ax.set_xticks(range(6, 23, 2), [f"{h:02d}:00" for h in range(6, 23, 2)])
+        ax.set_xlabel("window labels as NESO writes them; no zone stated");
+    needs: a capture of the windows file
+    plot_alt: >-
+      Bars of both committed windows for each season label of Season 19, working days dark, non-working days
+      light, on NESO's labels from 06:00 to 22:00. Working days run from 06:00 or 06:30 to 13:00 or
+      14:00, then from a start between 16:00 and 19:00 to 20:30 or 22:00. Non-working days start at
+      10:00 or 10:30 and total fewer hours.
+  related:
+    - {dataset: neso_data_portal/short-term-operating-reserve-stor-day-ahead-auction-results, note: "Daily tenders of MW for each service day's availability windows"}
+    - {dataset: neso_data_portal/short-term-operating-reserve-stor-day-ahead-buy-curve, note: "The buy curve NESO used in each day's STOR assessment"}
+    - {dataset: neso_data_portal/as_industry_notifications_stor_important, note: "NESO's STOR notices: auction delays, failures and requirement changes"}
+    - {dataset: neso_data_portal/eac-auction-results, note: "Slow Reserve auctions; NESO ended STOR day-ahead after launching them"}
 ---
 
 # Short Term Operating Reserve (STOR) Windows
@@ -18,8 +148,12 @@ that maps each delivery date to a season identifier, a working-day or non-workin
 the start and end times for "delivery window 1" and "delivery window 2". STOR is one of NESO's reserve
 ancillary services. This table carries the schedule of windows, not procured volumes, prices, utilisation or
 outturn: nothing in it is a measured quantity. Background on the half-hour grid behind the date anchor:
-@../../../20-domain/concepts/settlement-period.md. `TODO: verify` how a committed window relates to the STOR
-availability and utilisation payments and to the sibling STOR auction results; this page makes no such claim.
+@../../../20-domain/concepts/settlement-period.md. NESO's package notes (catalogue snapshot
+`20261006T195819Z`) say the seasons "define the committed windows for each STOR Service Day where STOR is
+required to be provided in accordance with the STOR Day Ahead Service Terms", and the sibling STOR auction
+results dictionary gives `Tendered MW` and `Contracted MW` "for the availability windows". `TODO: verify` how
+a committed window relates to the STOR availability and utilisation payments; gridflow joins neither table to
+the other.
 
 Each row is one **delivery date**. The window number is carried by the wide column names (`Window 1 ...`,
 `Window 2 ...`); it is not a row field. In the one capture there are **1,826 rows, one per calendar day from
@@ -221,7 +355,11 @@ The `stor_windows` output is not held. Open items that do not hold the output bu
 - **`season` is a string, not a number.** The vendor types `Season` as a number (example `18.1`); gridflow
   keeps the label (`15.1` to `19.6`). Do not parse, round or compare it as a decimal.
 - **`WD_NWD` is the vendor's flag.** Do not recompute working-day status from the weekday; bank holidays and
-  other non-working days are whatever NESO flagged. Values observed: `WD`, `NWD`.
+  other non-working days are whatever NESO flagged. Values observed: `WD`, `NWD`. NESO's dictionary says only
+  "Working Day/ Non Working Day" and does not define the flag. In the capture, Saturdays are `WD` (259 of 261;
+  25 December 2021 and 1 January 2022 are `NWD`), all 261 Sundays are `NWD`, and the 42 weekday `NWD` dates are
+  English bank holidays. One English bank holiday is flagged `WD`: Monday 19 September 2022 (the Queen's state
+  funeral, season `16.3`).
 - **Dictionary examples are not data.** The dictionary gives one example per window column: `18:00` (Window 1
   Start), `19:00` (Window 1 End), `20:00` (Window 2 Start) and `21:00` (Window 2 End). Each example does not
   occur in its own column of the captured body (0 rows each). The same strings do occur in other columns:
