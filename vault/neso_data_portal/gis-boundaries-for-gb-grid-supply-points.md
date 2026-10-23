@@ -8,6 +8,147 @@ updated: 2026-10-15
 last_verified: 2026-10-15
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: Grid supply point boundaries and lookup
+  summary: >-
+    NESO's approximate boundaries around each grid supply point, in GIS files, plus a lookup tying
+    GSPs to Gnodes and GSP groups.
+  facts:
+    vendor: "NESO Data Portal, package `gis-boundaries-for-gb-grid-supply-points`: one lookup CSV, eight boundary files, a changelog"
+    cadence: "Ad hoc, as NESO's catalogue states; the lookup was last modified 5 May 2020"
+    grain: "One row per lookup entry linking a Gnode, GSP or Direct Connect"
+    history: "Six boundary versions, `20181031` to `20260209`, as NESO's resource names label them"
+  landscape: units
+  what_it_is: >-
+    Grid supply points (GSPs), NESO says, "are points of connection between the Transmission System
+    and a Distribution System". NESO publishes an approximate area around each as GIS files,
+    in six versions. gridflow tables only the lookup paired with version `20181031`: entries linking
+    Gnodes, NESO's network-modelling nodes, to GSPs or directly connected demand, with region and GSP
+    group.
+  how_used:
+    - "Regional work: NESO's regional FES and Sheffield's PV_Live aggregate embedded generation by GSP."
+    - "Join a GSP to its 2018 boundary by `region_id`; four GeoJSON `RegionID`s repeat."
+    - "Roll GSPs up to GSP groups (`pes_name`), the code Elexon settlement data uses."
+  chart:
+    type: bar
+    silver: neso_data_portal/gis_grid_supply_points
+    filter:
+      - {column: gsp_id, op: not_null}
+    dedup: {"on": [gsp_id], order_by: ggd_id}
+    group: pes_name
+    group_map:
+      _A: Eastern
+      _B: East Midlands
+      _C: London
+      _D: "Merseyside, N Wales"
+      _E: Midlands
+      _F: Northern
+      _G: North Western
+      _H: Southern
+      _J: South Eastern
+      _K: South Wales
+      _L: South Western
+      _M: Yorkshire
+      _N: South Scotland
+      _P: North Scotland
+    aggregation: count
+    sort: value_desc
+    unit: grid supply points
+  chart_view:
+    title: Grid supply points per GSP group, lookup 20181031
+    caption: >-
+      Silver `gis_grid_supply_points`, NESO's lookup paired with GSP Regions `20181031`, file last
+      modified 5 May 2020: distinct `gsp_id` values per `pes_name`. A GSP on several rows counts once;
+      Direct Connect and Gnode-only rows have no GSP and are left out.
+    alt: >-
+      Horizontal bar chart counting distinct grid supply points per GSP group in NESO's lookup
+      paired with GSP Regions 20181031. South Scotland has 80 and North Scotland 63. The other twelve
+      have 10 to 21: Southern and Yorkshire 21, Eastern and Northern 20, North Western 19, London 18,
+      Midlands 16, East Midlands 14, Merseyside and North Wales 13, South Eastern 12, South Wales 11,
+      South Western 10.
+    key:
+      - {series: count, label: Grid supply points, codes: "_A to _P", paint: petrol, note: "Names from NESO's FES building block licence-area lookup; Merseyside, N Wales is Merseyside and North Wales."}
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: `package_show`, then the lookup CSV downloaded whole unless its
+      `last_modified` is unchanged. The boundary files and changelog go to bronze, untabled.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=gis-boundaries-for-gb-grid-supply-points"
+      - "GET https://api.neso.energy/dataset/2810092e-d4b2-472f-b955-d8bea01f9ec0/resource/bbe2cc72-a6c6-46e6-8f4e-48b879467368/download/gsp_gnode_directconnect_region_lookup.csv"
+      - "GET https://api.neso.energy/dataset/2810092e-d4b2-472f-b955-d8bea01f9ec0/resource/5dfab3dd-f192-40ab-b97f-b365a594293c/download/gsp_regions_20260209.zip"
+    commands:
+      - {run: gridflow ingest neso_data_portal gis_grid_supply_points --last 24h, comment: "whole file; window must end recently"}
+      - {run: gridflow transform neso_data_portal gis_grid_supply_points --last 24h, comment: "the capture's date to silver"}
+      - {run: gridflow ingest neso_data_portal gis_grid_supply_points_files --last 24h, comment: "boundary files, bronze only"}
+  record:
+    select:
+      filter:
+        - {column: ggd_id, op: in, value: [1, 290, 301, 302, 303, 357, 358, 377]}
+      dedup: {"on": [ggd_id], order_by: capture_written_at}
+      order_by: [ggd_id]
+      columns: [ggd_id, gnode_name, gsp_name, dc_name, region_name, pes_name, has_pv, region_id, pes_id,
+                gsp_id, gnode_id, dc_id, ng_id, gnode_lat, gnode_lon, gsp_lat, gsp_lon, dc_lat, dc_lon,
+                published_at, timestamp_utc]
+    key: [ggd_id]
+    caption: "Eight entries: one GSP on three Gnodes, one Gnode on two GSPs, a Direct Connect."
+    fields:
+      ggd_id: "NESO's id for one lookup entry; arbitrary and not stable between versions"
+      gnode_name: "Gnode: a node NESO uses to model and monitor the transmission network"
+      gsp_name: "Grid supply point name, following Elexon's settlement naming (NESO)"
+      dc_name: "Direct Connect: demand connected directly to transmission (NESO); null on GSP rows"
+      region_name: "Name of the boundary region, usually from the GSP name (NESO)"
+      pes_name: "GSP group code, as Elexon settlement data uses it; null without a GSP"
+      has_pv: "1 where NESO judged embedded solar PV possible when regions were drawn"
+      region_id: "Boundary id; NESO equates it with `RegionID` in the 2018 GIS files"
+      pes_id: "GSP group id, 10 to 23: the Distributor ID in an MPAN (NESO)"
+      gsp_id: "NESO's GSP id; arbitrary and not stable between versions"
+      gnode_id: "NESO's Gnode id; arbitrary and not stable between versions"
+      dc_id: "NESO's Direct Connect id; arbitrary and not stable between versions"
+      ng_id: "NESO's id used in region derivations; arbitrary, not stable between versions"
+      gnode_lat: "Gnode latitude, decimal degrees, WGS 1984; may differ from the GSP's"
+      gnode_lon: "Gnode longitude, decimal degrees, WGS 1984; `CASK`'s positive value falls at sea"
+      gsp_lat: "GSP latitude, decimal degrees, WGS 1984; may differ from the Gnode's"
+      gsp_lon: "GSP longitude, decimal degrees, WGS 1984"
+      dc_lat: "Direct Connect latitude, decimal degrees, WGS 1984"
+      dc_lon: "Direct Connect longitude, decimal degrees; three positive values fall at sea, kept as published"
+      published_at: "NESO's last-modified time for the lookup file, read as UTC"
+      timestamp_utc: "When gridflow captured the file, UTC; the table has no event time"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      `query()` filters on `timestamp_utc`, which here is the capture time, so these cells use
+      `data.sql()` on `silver_neso_data_portal_gis_grid_supply_points_latest`, naming the vendor
+      columns to leave lineage out.
+    cells:
+      - |
+        df = data.sql("""
+            SELECT ggd_id, gnode_name, gsp_name, dc_name, region_id, region_name,
+                   pes_id, pes_name, has_pv, gnode_lat, gnode_lon, gsp_lat, gsp_lon
+            FROM silver_neso_data_portal_gis_grid_supply_points_latest
+            ORDER BY ggd_id
+        """)
+        df[["ggd_id", "gnode_name", "gsp_name", "dc_name", "region_name", "pes_name"]].head()
+      - |
+        df.assign(gsp=df.gsp_name.notna(), gnode=df.gnode_name.notna(),
+                  direct_connect=df.dc_name.notna()).value_counts(["gsp", "gnode", "direct_connect"])
+      - df.dropna(subset=["gsp_name"]).groupby("pes_name").gsp_name.nunique().sort_values(ascending=False)
+      - |
+        gsp = df.dropna(subset=["gsp_lat"]).drop_duplicates("gsp_name")
+        ax = gsp.plot.scatter(x="gsp_lon", y="gsp_lat", c="pes_id", cmap="tab20", s=8,
+                              figsize=(4.5, 6), colorbar=False, xlabel="longitude", ylabel="latitude")
+        ax.set_aspect(1.6);
+    needs: NESO's GSP lookup file
+    plot_alt: >-
+      Scatter of the 338 grid supply points at NESO's latitude and longitude, coloured by GSP group.
+      The points trace Great Britain from about 50.4 to 58.6 degrees north and 6.6 west to 1.3 east.
+      The two Scottish groups spread across the north; the English and Welsh groups sit closer
+      together, densest around London.
+  related:
+    - {dataset: elexon/bmunits_reference, note: "BM units carry the same GSP group codes, as `gsp_group_id`"}
+    - {dataset: neso_data_portal/gis-boundaries-for-gb-dno-license-areas, note: "Boundaries of the licence areas that `pes_id` numbers"}
+    - {dataset: neso/regional_intensity, note: "Carbon intensity per DNO licence area, the level GSP groups form"}
+    - {dataset: neso_data_portal/etys-gb-transmission-system-boundaries, note: "NESO's ETYS study boundaries across the transmission network, not around GSPs"}
 ---
 
 # GIS Boundaries for GB Grid Supply Points
@@ -31,9 +172,10 @@ gridflow treats them differently.
 
 The 2018 pairing is a version label, not a date: `20181031` names the GSP Regions version the
 lookup accompanies (the vendor associates the lookup with that version and its resource
-description relates it to the GIS files). The files were published on 2020-05-05. The **current**
-GSP Regions version is `20260209` (GeoPackage and GeoJSON, no shapefile). "Current" means the
-newest version the vendor lists, not a claim about geographic accuracy.
+description relates it to the GIS files). The files were last modified (CKAN `last_modified`) on
+2020-05-05. The **current** GSP Regions version is `20260209` (GeoPackage and GeoJSON, no
+shapefile). "Current" means the newest version the vendor lists, not a claim about geographic
+accuracy.
 
 Attribution: **Supported by National Energy SO Open Data**. Licence: NESO Open Data Licence.
 
@@ -343,6 +485,16 @@ Version labels in the resource names: `20181031` (lookup and 2018 GIS files), `2
 #### Attribution and use
 
 Supported by National Energy SO Open Data.
+
+## Known issues and gotchas
+
+- **Positive longitudes on three Direct Connect rows.** In the lookup, `ggd_id` 290 (Gnode `CASK`,
+  Direct Connect `T_CASKD-1`) has `gnode_lon` and `dc_lon` 2.7297 at latitude 53.3421, and
+  `ggd_id` 373 and 374 (`T_THNJD-1`, `T_THNJD-2`) have `dc_lon` 2.1464 at latitude 51.4341, while
+  their Gnode `MELK` sits at -2.150383. Both points fall in the sea east of England; every other
+  longitude in the file is at most 1.3459. NESO's field dictionary gives `2.7297` as its `dc_lon`
+  example. Kept as published, not corrected (silver, read 2026-10-23). TODO: verify with NESO
+  whether the sign is missing.
 
 ## Cadence
 

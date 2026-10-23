@@ -4,9 +4,44 @@ package: "system-operating-plan-sop"
 dataset_key: "system_operating_plan"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-09
+updated: 2026-10-23
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: "NESO returns each plan's latest version and does not say when those figures were made public."
+  title: System operating plan
+  summary: >-
+    NESO's control-room plan for each key demand peak or trough: expected demand, reserve, margins,
+    and availability and output by technology, in MW.
+  facts:
+    vendor: "NESO Data Portal, package `system-operating-plan-sop`: one datastore table and two PDFs"
+    cadence: Daily, as NESO lists it; NESO aims to publish before each cardinal point
+    grain: "One row per cardinal point's plan, at its latest version"
+  landscape: power
+  what_it_is: >-
+    Before each key demand peak or trough, a cardinal point such as `1A` or `4B`, NESO's control
+    room writes a plan: expected demand, reserve, margins, and expected availability and output by
+    technology and interconnector, in MW. Operators may change it as the point nears. Each row is a
+    plan's latest version. NESO's package notes carry quality and publishing-difficulty notices.
+  how_used:
+    - The reserve and margins NESO's plan expected at each peak and trough
+    - Expected availability and output by technology and interconnector, cardinal point by cardinal point
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show` per command, then the table's whole datastore dump,
+      kept only if its body changed, or each PDF unless its `last_modified` is unchanged.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=system-operating-plan-sop"
+      - "GET https://api.neso.energy/datastore/dump/e51f2721-00ab-4182-9cae-3c973e854aa8"
+      - "GET https://api.neso.energy/dataset/99442aab-b184-44f5-8495-fc0b82869d46/resource/8be74d9e-9f41-4ab7-8606-2c06d60cb63d/download/an-introduction-to-system-operator-plans.pdf"
+      - "GET https://api.neso.energy/dataset/99442aab-b184-44f5-8495-fc0b82869d46/resource/596fbeb4-77be-48a4-89b7-f442e73e54c0/download/glossary-of-terms-used-in-a-system-operating-plan.pdf"
+    commands:
+      - {run: gridflow ingest neso_data_portal system_operating_plan --last 24h, comment: whole dump to bronze}
+      - {run: gridflow transform neso_data_portal system_operating_plan --last 24h, comment: "the capture's date to silver"}
+      - {run: gridflow ingest neso_data_portal system_operating_plan_files --last 24h, comment: the introduction and glossary PDFs}
+  related:
+    - {dataset: neso_data_portal/historic_generation_mix, note: "Half-hourly GB generation by source, in MW"}
+    - {dataset: neso_data_portal/embedded_wind_solar_forecast, note: "NESO's forecast of embedded wind and solar output, per settlement period"}
 ---
 
 # System Operating Plan (SOP)
@@ -29,8 +64,9 @@ so it is **not** a regular hourly or settlement-period series.
 
 **The output is held (unit E-SEM).** The dump returns each plan's **latest version**, and NESO
 does not state that a returned version's values were fixed and public at the plan's creation
-time. Every target also precedes the capture, so the forward-target rule (RULINGS 529) cannot
-release it. The output exists in silver, but it is not eligible for publication or
+time. Every target in the first capture (2026-10-08) also precedes that capture, so the
+forward-target rule (RULINGS 529) cannot release it; the second capture (2026-10-16) holds one
+target after its capture instant (see the clocks below), and the hold still covers the whole table. The output exists in silver, but it is not eligible for publication or
 point-in-time model use until E-SEM is answered (RULINGS 569, 571, 579, 580). **This page gives
 schema, clocks and row counts only, and no data values.**
 
@@ -67,7 +103,10 @@ and one SILVER resource.
   4,326,360 bytes, 10,322 rows, 93 columns, `datastore` (dump, one page). CKAN `last_modified`
   `2023-01-24T00:30:04.725185`; resource created `2020-09-30`; resource `metadata_modified`
   `2026-10-06T19:30:14.075416`. The capture sidecar records the package-side
-  `ckan_metadata_modified` as `2026-10-08T05:50:10.663089`.
+  `ckan_metadata_modified` as `2026-10-08T05:50:10.663089`. Captured again:
+  `raw_20261016T204701Z_e51f2721-00ab-4182-9cae-3c973e854aa8_6ffe6c53.csv`, 4,342,464 bytes,
+  10,358 rows, the same 93 columns; CKAN `last_modified` unchanged (`2023-01-24T00:30:04.725185`),
+  sidecar `ckan_metadata_modified` `2026-10-16T19:50:11.269071`.
 - **An Introduction to System Operator Plans** -> `system_operating_plan_files` (DOC).
   Download: [an-introduction-to-system-operator-plans.pdf](https://api.neso.energy/dataset/99442aab-b184-44f5-8495-fc0b82869d46/resource/8be74d9e-9f41-4ab7-8606-2c06d60cb63d/download/an-introduction-to-system-operator-plans.pdf).
   Captured: `raw_20261008T113823Z_8be74d9e-9f41-4ab7-8606-2c06d60cb63d_a0e64a68.pdf`,
@@ -203,7 +242,8 @@ Schema, epoch 1:
 
 **Shape of the silver output (counts only).** One bronze capture (`2026-10-08`, 93 vendor
 columns) became one silver Parquet of **10,322 rows and 102 columns** (activation cutoff
-`2026-10-08`, RULINGS 580; no earlier silver). Silver path pattern:
+`2026-10-08`, RULINGS 580; no earlier silver). The 2026-10-16 capture became a second silver
+Parquet of **10,358 rows and 102 columns**. Silver path pattern:
 `silver/neso_data_portal/system_operating_plan/year=YYYY/month=MM/…parquet`. The 102 columns are
 the 93 vendor columns above plus nine gridflow columns: `issue_time`, `timestamp_utc`,
 `published_at`, `bronze_capture_id`, `capture_written_at`, `event_time`, `available_at`,
@@ -215,7 +255,8 @@ on every row.
 
 1. **Vintage (`ckan_last_modified`, not used as availability).** The registry vintage is
    `capture_fallback`: `published_at` is null and `available_at` is the **capture time**
-   (sidecar `written_at`), here `2026-10-08T11:38:18.294948Z`, on every row. The capture's CKAN
+   (sidecar `written_at`), here `2026-10-08T11:38:18.294948Z` on every row of the first file and
+   `2026-10-16T20:47:01.196819Z` on every row of the second. The capture's CKAN
    `last_modified` is `2023-01-24T00:30:04.725185`. gridflow records it in the sidecar but
    **does not use it as `available_at`**: the body holds plans created long after that
    instant, so that field is stale for this resource and says nothing about when a given plan
@@ -229,18 +270,28 @@ on every row.
    target, not an evidenced interval start or end. It is not the creation time. The format is
    `%Y-%m-%dT%H:%M:%S`, read as UTC.
 
-Time columns (all four parse strictly with no nulls and no invalid cells in the captured body):
+Time columns (all four parse strictly with no nulls and no invalid cells in the first capture,
+2026-10-08; the second capture is described below the table):
 
-| Column | Role | Coverage in the captured body |
+| Column | Role | Coverage in the first capture (2026-10-08) |
 |---|---|---|
 | `sop_datetime` | UTC target instant (event time) | 2020-09-30 to 2026-10-08 |
 | `report_date` | Date label; vendor-typed date, serialised at midnight | 2020-02-10 to 2026-10-08 |
 | `sop_report_creation_time_gmt` | UTC creation instant (issue label) | 2020-09-30 to 2026-10-08 |
 | `sop_d_and_c_time_gmt` | UTC time of the demand-and-constraint process run; not a publication instant | 2020-09-30 to 2026-10-08 |
 
-Every target in the captured body follows its recorded creation time, but every target precedes
-the capture. So all rows are past targets at capture, and the ordering of target after creation
+Every target in the first capture follows its recorded creation time, but every target precedes
+that capture. So all rows are past targets at capture, and the ordering of target after creation
 does **not** show that the returned version's values were public at creation.
+
+**Second capture (2026-10-16), measured by the project from bronze on 2026-10-23.** The four time
+columns again parse with no nulls and end at 2026-10-17 (`sop_datetime`, `report_date`) and
+2026-10-16 (`sop_report_creation_time_gmt`, `sop_d_and_c_time_gmt`). Every target again follows its
+creation time; `sop_datetime` alone is unique and there are no exact duplicate rows. One target
+(the last, on 2026-10-17) falls after the capture instant; every other target precedes it. All 10,322 targets of the first capture are in the second with all 93 cells
+identical, and the second adds 36 targets. Every compared plan's target had passed before the
+first capture, so this shows no change to a past plan over eight days and says nothing about
+revisions before a target.
 
 **Row meaning and vocabulary.** One row is the latest version of the SOP for one cardinal point.
 `latest_version` is a unitless version counter (integer, starting at one). `latest_status` and
@@ -296,18 +347,21 @@ durations. Counts per column are not published here because the family is held.
   `report_date` with NESO (the dictionary describes a creation date).
 - The package page shows two vendor notices: one about the **quality** of the published SOP
   data, and one about **technical difficulties in publishing** it, with updates to resume when
-  the issue is fixed. Recent rows and package metadata show content up to the capture date, but
+  the issue is fixed. Recent rows and package metadata show content up to each capture's date
+  (and, in the second capture, one target past it), but
   they do not prove uninterrupted daily publication or that the notices are resolved.
 - The resource's CKAN `last_modified` (`2023-01-24`) is far older than the newest rows in the
   body. Do not use it to judge freshness.
 
 **Hold question (unit E-SEM).** The dump returns each plan's latest version. NESO does not state
 that a returned version's values were fixed and public at the plan's creation time, and every
-target precedes the capture, so the forward-target rule (RULINGS 529) cannot apply. The hold is
+target in the first capture (2026-10-08) precedes that capture, so the forward-target rule (RULINGS 529) cannot apply. The hold is
 released only when NESO supplies evidence that each returned version's values were fixed and
 publicly available at its recorded issue instant, or successive immutable captures document the
 actual revision behaviour. `TODO: verify` the operational publication status and the revision
-retention guarantee with NESO.
+retention guarantee with NESO. The 2026-10-16 capture's one forward target (see the second
+capture above) is a single row; whether the forward-target rule could release it alone is not
+ruled, and the hold covers the whole table.
 
 ### `system_operating_plan_files`
 
@@ -329,8 +383,8 @@ overview ahead of each cardinal point, which matches the "Daily" frequency. The 
 shows the two notices above. `TODO: verify` the actual publication schedule and whether
 updates are paused. gridflow's daily refresh captures one state per run, and each capture
 replaces the family as a whole. The dated silver captures are therefore a sample of the vendor's
-state, not a revision history of any one plan. Captures are on demand. The one local capture is
-dated `2026-10-08`.
+state, not a revision history of any one plan. Captures are on demand: `2026-10-08` and
+`2026-10-16`.
 
 ## Licence and attribution
 

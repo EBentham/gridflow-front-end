@@ -7,6 +7,92 @@ skeleton: false
 updated: 2026-10-12
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: true
+  title: Skip rates
+  summary: >-
+    NESO's measure of better-priced Balancing Mechanism volume it passed over, stage by stage, by
+    unit and by technology.
+  facts:
+    vendor: "NESO Data Portal: 77 CSV files; three tables come as monthly files"
+    cadence: "Daily, as NESO lists it; some files are uploaded monthly"
+    grain: "Summary: one row per half hour and stage of exclusion"
+    history: NESO lists monthly files from December 2024
+  landscape: market
+  what_it_is: >-
+    A skip is Balancing Mechanism volume that was available and priced better than what NESO
+    accepted, but was not taken. NESO computes skip rates with a method developed with LCP Delta,
+    then removes units it could not realistically have used, stage by stage. Tables give the
+    summary, five-minute unit detail, exclusion reasons, technology rates and skips behind thermal
+    constraints.
+  how_used:
+    - How often NESO dispatched out of price order, by half hour and stage
+    - Which units and technologies were skipped, and why units were excluded
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: `package_show`, then each file whole unless `last_modified` is
+      unchanged (a few shown). The two Demand Side Flexibility tables are bronze only.
+    commands:
+      - {run: gridflow ingest neso_data_portal skip_rates_behind_constraints_bmu --last 24h, comment: "whole files; swap in any key"}
+      - {run: gridflow transform neso_data_portal skip_rates_behind_constraints_bmu --last 24h, comment: "the capture's date to silver"}
+  family:
+    slug: skip-rates
+    members:
+      - dataset: skip_rates_behind_constraints_bmu
+        differs: "Monthly skips behind thermal constraints, per BM unit, bid or offer"
+        request:
+          - "GET https://api.neso.energy/api/3/action/package_show?id=skip-rates"
+          - "GET https://api.neso.energy/dataset/c7f21d91-4e93-4162-9caa-ad9165db9c5e/resource/26f3a3de-e5fd-43e5-9d8a-d89a9c786812/download/skips_behind_constraints_in_merit_bmu_level.csv"
+        held: NESO's dictionary and methodology slides disagree on what the skip rate is a percentage of.
+      - dataset: skip_rates_behind_constraints_cons
+        differs: "The same monthly measure, per constraint"
+        request: "GET https://api.neso.energy/dataset/c7f21d91-4e93-4162-9caa-ad9165db9c5e/resource/a88adc4c-d3a6-440d-946b-4e5a3e7ea1c5/download/skips_behind_constraints_in_merit_constraint_level.csv"
+        held: NESO's dictionary and methodology slides disagree on what the skip rate is a percentage of.
+      - dataset: skip_rates_exclusion_reasons
+        differs: "Units excluded from the merit stack, with stage and reason; monthly files"
+        request:
+          - "GET https://api.neso.energy/dataset/c7f21d91-4e93-4162-9caa-ad9165db9c5e/resource/c20e81a0-1c82-4e03-913e-9e73d6daca6b/download/4_exclusions_12_2024.csv"
+          - "GET https://api.neso.energy/dataset/c7f21d91-4e93-4162-9caa-ad9165db9c5e/resource/f8110eb8-f4ad-4288-87d5-37ab434b55b5/download/4_exclusions_10_2026.csv"
+        held: NESO does not say whether each five-minute time marks the start or end of its slice.
+      - dataset: skip_rates_in_merit_all_bm
+        differs: "Measured against all Balancing Mechanism actions: volumes per unit, five-minute, monthly files"
+        request:
+          - "GET https://api.neso.energy/dataset/c7f21d91-4e93-4162-9caa-ad9165db9c5e/resource/ec422c87-a316-47bf-95a2-4e0cd07114dc/download/2_in_merit_data_bm_skips_12_2024.csv"
+          - "GET https://api.neso.energy/dataset/c7f21d91-4e93-4162-9caa-ad9165db9c5e/resource/fb15911f-ddda-4b87-8334-471430c0e70f/download/2_in_merit_data_bm_skips_10_2026.csv"
+        held: NESO does not say if times mark slice start or end; some monthly files are partial.
+      - dataset: skip_rates_in_merit_psa
+        differs: "Post System Action (PSA) basis: a more targeted measure, same columns, monthly files"
+        request:
+          - "GET https://api.neso.energy/dataset/c7f21d91-4e93-4162-9caa-ad9165db9c5e/resource/f8ec048d-7cd8-4eef-9323-f34311dd913c/download/3_in_merit_data_post_system_actions_skips_12_2024.csv"
+          - "GET https://api.neso.energy/dataset/c7f21d91-4e93-4162-9caa-ad9165db9c5e/resource/b9806162-b605-4502-ac44-a419d2b010e5/download/3_in_merit_data_post_system_actions_skips_10_2026.csv"
+        held: NESO does not say if times mark slice start or end; some monthly files are partial.
+      - dataset: skip_rates_in_merit_psa_dsf_unit
+        differs: The PSA detail with Demand Side Flexibility units as their own technology
+        request: "GET https://api.neso.energy/dataset/c7f21d91-4e93-4162-9caa-ad9165db9c5e/resource/d02ef4f9-b2cf-4d0c-b851-521ba6976d44/download/6_dsf_in_merit_data_psa_skips.csv"
+        held: Identical rows repeat and no column tells them apart, so there is no silver table.
+      - dataset: skip_rates_stage5_dsf_technology
+        differs: "Stage 5 skip rate for Demand Side Flexibility, per half hour and unit"
+        request: "GET https://api.neso.energy/dataset/c7f21d91-4e93-4162-9caa-ad9165db9c5e/resource/8de48b80-48d7-4648-b812-9f91c992f559/download/7_dsf_speicfic_skip_rate.csv"
+        held: Identical rows repeat and no column tells them apart, so there is no silver table.
+      - dataset: skip_rates_stage5_psa_technology
+        differs: "Stage 5 skip rate by technology, per half hour, bid or offer"
+        request: "GET https://api.neso.energy/dataset/c7f21d91-4e93-4162-9caa-ad9165db9c5e/resource/007c5786-bd34-4a09-8bdf-be5d63eda16a/download/5_fuel_type_skip_rate.csv"
+        held: NESO has reissued past rows; the files never say when each row was first published.
+      - dataset: skip_rates_stage6_acceptance
+        differs: "Accepted volumes and prices per unit at stage 6, five-minute"
+        request: "GET https://api.neso.energy/dataset/c7f21d91-4e93-4162-9caa-ad9165db9c5e/resource/235e5cf1-745a-46e3-9e64-f7c8532abdc1/download/9_s6_acceptances.csv"
+        held: NESO does not say whether each five-minute time marks the start or end of its slice.
+      - dataset: skip_rates_stage6_psa
+        differs: "Units in merit at stage 6, PSA basis, five-minute; uploaded monthly"
+        request: "GET https://api.neso.energy/dataset/c7f21d91-4e93-4162-9caa-ad9165db9c5e/resource/32072115-34bd-4838-92ab-96803e1b692d/download/8_in_merit_s6_data_post_system_actions_skips.csv"
+        held: NESO does not say whether each five-minute time marks the start or end of its slice.
+      - dataset: skip_rates_summary
+        differs: "Skip rate and skipped volume per half hour and stage, under both measures"
+        request: "GET https://api.neso.energy/dataset/c7f21d91-4e93-4162-9caa-ad9165db9c5e/resource/e4129210-ea22-4a36-aa2f-ff7bd6147675/download/1_skip_rates_summary.csv"
+        held: NESO has reissued past rows; the files never say when each row was first published.
+  related:
+    - {dataset: elexon/boal, note: "Elexon's accepted bids and offers: the actions taken instead of skipped volume"}
+    - {dataset: neso_data_portal/constraint-breakdown, note: "NESO's daily constraint costs; two tables here count skips behind constraints"}
 ---
 
 # Skip Rates
@@ -43,8 +129,8 @@ research, @.planning/phases/v0.22-K-BAL-2/K-BAL-2-FACTS.md section 5, in the gri
   (NESO definition). `-1` is an identifier, not a null sentinel.
 
 **Where each family stands (2026-10-12).** The package has **77 resources, all CSV uploads**, in
-**eleven tabular families**. gridflow captured every resource once, on 2026-10-08, as immutable bronze
-bytes. Nine families have a record and a silver table (175,057,350 rows in all); two have no record. Only
+**eleven tabular families**. gridflow captured every resource on 2026-10-08, as immutable bronze
+bytes, and seven again on 2026-10-16 (see Cadence). Nine families have a record and a silver table (175,057,350 rows in all); two have no record. Only
 two silver families are eligible. **Seven are held**, so this page gives their schema, row counts, clocks
 and coverage only, **with no data values**.
 
@@ -82,8 +168,8 @@ records: @src/gridflow/connectors/neso_data_portal/registry/skip-rates.json; eli
 - **Vendor reissues replace history.** The vendor says it reissued all published datasets on 2025-05-15
   (marginal-unit and accepted-above-feasible-volume handling) and on 2025-11-18 (a long-notice exclusion
   bug). The early months therefore carry a 2025-11-18 `last_modified`, not their first-publication time,
-  and gridflow holds a single capture of each file. Nothing yet shows whether NESO revises files silently
-  after upload (`TODO: verify` with repeated captures).
+  and gridflow holds at most two captures of each file (see Cadence). The one pair compared so far shows
+  no silent revision, but a week is short (`TODO: verify` with repeated captures).
 - **Silver is partitioned by capture month, not by event time.** Every silver file is under
   `year=2026/month=10` (the 2026-10-08 capture), including rows whose event time is December 2024.
 - **Coverage defects in the monthly files are vendor behaviour,** not gridflow loss: see the September 2026
@@ -534,7 +620,8 @@ technology filter must list all three. Skipped-volume zeros: 15,134 rows; the lo
 in the rate and volume columns is 5. Zeros are real values. 172 half-hours inside the range have no row at
 all (scattered through the range); `TODO: verify` the cause. A half-hour with no row is not a zero.
 
-**Eligible.** Silver is eligible: 132,139 rows, one capture, `dataset_version` `1+e1`.
+**Eligible.** Silver is eligible: 132,139 rows from the 2026-10-08 capture, `dataset_version` `1+e1`; the
+2026-10-16 capture adds a second silver file (see Cadence).
 
 Silver sample (two rows, same half-hour):
 
@@ -697,7 +784,8 @@ the four bid columns. Separately, **all 48 half-hours of
 2026-08-01 have no rows** between the first and last period, although the file continues after it;
 `TODO: verify` the cause with the vendor. A missing day must not be read as zero.
 
-**Eligible.** Silver is eligible: 190,368 rows, one capture, `dataset_version` `1+e1`. Silver column names
+**Eligible.** Silver is eligible: 190,368 rows from the 2026-10-08 capture, `dataset_version` `1+e1`; the
+2026-10-16 capture adds a second silver file (see Cadence). Silver column names
 are the lower-cased vendor names.
 
 Silver sample (two rows, same half-hour; system columns trimmed to `timestamp_utc`, `published_at`):
@@ -751,9 +839,16 @@ uneven, family by family:
 - **The DSF families** carry `last_modified` 2026-10-07 in the capture (2026-10-06 in the snapshot), so
   they also update frequently.
 
-Every resource was captured once on 2026-10-08, so the capture history is a single point. The reissue
-history in Gotchas shows the vendor does replace files; only repeated captures compared pair by pair can
-show whether an uploaded file is revised in place.
+Every resource was captured on 2026-10-08. Seven were captured again on 2026-10-16 (bronze
+`2026/10/16/`, each also transformed to one more silver file): the October 2026 files of exclusion reasons
+(850,060 rows), All BM (3,922,118) and PSA (3,169,439), each to 2026-10-15T23:55:00; the PSA DSF unit file
+(435,526 rows, still 7,830 excess repeated rows); the stage-5 DSF technology file (7,223 rows, still 192
+excess); the stage-5 PSA technology file (133,598 rows); and the summary (192,672 rows, to
+2026-10-15T23:30:00Z). Compared pair by pair, the summary and the stage-5 PSA technology file only
+append: every earlier key is kept with identical values (2,304 and 1,459 new rows). The other resources,
+including the September 2026 and March 2026 files under Holds, have one capture. The reissue history in
+Gotchas shows the vendor does replace files, so only further pairs can show whether an uploaded file is
+revised in place. The row counts in the table at the top are the 2026-10-12 activation.
 
 ## Licence and attribution
 

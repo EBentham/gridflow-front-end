@@ -4,9 +4,42 @@ package: "gis-boundaries-for-gb-dno-license-areas"
 dataset_keys: ["gis_dno_license_areas_files"]
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-16
+updated: 2026-10-23
 layer_coverage: "bronze"
 eligibility: "held"
+page:
+  held: "Western Power Distribution supplied the boundaries; NESO does not say it is authorised to license them."
+  title: DNO licence area boundaries
+  summary: >-
+    NESO's approximate map boundaries of the 14 Distribution Network Operator licence areas of Great
+    Britain, as GIS files and print maps.
+  facts:
+    vendor: "NESO Data Portal, package `gis-boundaries-for-gb-dno-license-areas`: six files"
+    cadence: Ad hoc, as NESO lists it; the files were last modified in May 2024
+    grain: "Approximate boundaries of the 14 DNO licence areas, in two editions"
+  landscape: power
+  what_it_is: >-
+    Each of Britain's 14 Distribution Network Operators (DNOs) serves one licence area, sometimes
+    called a GSP group. NESO offers the boundaries as Shapefile and GeoJSON in two editions,
+    `20200506` (with a PDF map) and `20240503` (with a PNG map). Western Power Distribution first
+    shared them, with a warning that they are probably a little outdated.
+  how_used:
+    - Map regional data reported by DNO licence area, such as Elexon settlement data
+    - "Group embedded generation into regions, as the University of Sheffield's regional solar estimates do"
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then each of six files whole unless its
+      `last_modified` is unchanged. Ingest only, no silver table; the 2024 edition's three are listed.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=gis-boundaries-for-gb-dno-license-areas"
+      - "GET https://api.neso.energy/dataset/0e377f16-95e9-4c15-a1fc-49e06a39cfa0/resource/668df251-b8a5-4ac3-8427-20b93b2f5f67/download/gb-dno-license-areas-20240503-as-esri-shape-file.zip"
+      - "GET https://api.neso.energy/dataset/0e377f16-95e9-4c15-a1fc-49e06a39cfa0/resource/1c6a7dc0-1b6c-443a-bc67-5f7125649434/download/gb-dno-license-areas-20240503-as-geojson.geojson"
+      - "GET https://api.neso.energy/dataset/0e377f16-95e9-4c15-a1fc-49e06a39cfa0/resource/26d1b3b3-2ea7-4681-bbd0-8fc7f574c6db/download/gb-dno-license-areas-20240503.png"
+    commands:
+      - {run: gridflow ingest neso_data_portal gis_dno_license_areas_files --last 24h, comment: "whole files, bronze only"}
+  related:
+    - {dataset: neso_data_portal/gis-boundaries-for-gb-grid-supply-points, note: "Grid supply point regions, with a lookup to GSP groups"}
+    - {dataset: neso_data_portal/etys-gb-transmission-system-boundaries, note: "NESO's study boundaries across the transmission system, as a shapefile"}
 ---
 
 # GIS Boundaries for GB DNO Licence Areas
@@ -54,7 +87,7 @@ Six resources, all uploads, all in one family. None is individually held at reso
 | GB DNO Licence Areas 20240503 with ESRI Shape File | ZIP | upload | `668df251-b8a5-4ac3-8427-20b93b2f5f67` |
 | GB DNO Licence Areas 20240503 with GeoJson | GEOJSON | upload | `1c6a7dc0-1b6c-443a-bc67-5f7125649434` |
 
-The DOC and GIS dispositions are the registry's. gridflow does not link any of the six files individually; to obtain them, use the vendor page above. `TODO: verify` what the edition stamps `20200506` and `20240503` in the resource names denote (effective date, publication date or file date); no vendor statement was found.
+The DOC and GIS dispositions are the registry's. gridflow republishes none of the six files; to obtain them, use the vendor page above. The site page prints NESO's own download requests for the three `20240503` files as plain text (as every package's raw feed does); they point at NESO, not at a copy, and carry no file content (seat ruling, PROXY-SOURCED, 2026-10-23, consistent with ruling 477). The site page names no coordinate reference system. `TODO: verify` what the edition stamps `20200506` and `20240503` in the resource names denote (effective date, publication date or file date); no vendor statement was found.
 
 ### What bronze holds
 

@@ -7,12 +7,140 @@ skeleton: false
 updated: 2026-10-10
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: Voltage costs by constraint group
+  summary: >-
+    NESO's monthly outturn cost of maintaining network voltage, in £m: sync and utilisation costs
+    for each of 19 voltage constraint groups.
+  facts:
+    vendor: "NESO Data Portal, package Voltage System Costs (`outturn-voltage-costs`)"
+    cadence: "Monthly, as NESO's catalogue lists it; its October 2026 note says updates are paused"
+    grain: One row per settlement month and voltage constraint group
+    history: "Financial-year files from April 2014, as NESO's catalogue lists them"
+  landscape: market
+  what_it_is: >-
+    NESO's post-month report of the outturn cost of maintaining voltage levels on the network, per
+    voltage constraint group (NESO's voltage requirement areas). Sync costs are balancing mechanism
+    and trade costs of running units; NESO notes utilisation costs here are only Obligatory Reactive
+    Power Service payments, allocated per group. Each file covers one financial year, so none share a month.
+  how_used:
+    - "Monthly voltage cost per region, as one line of balancing-cost history."
+    - "Which groups drive voltage spend, and whether through sync or utilisation cost."
+    - "Place each group on a map from NESO's coordinates column."
+  chart:
+    type: stacked-area
+    silver: neso_data_portal/outturn_voltage_costs_historical
+    time: settlement_month
+    values:
+      - {column: utilisation_costs_gbp_m, series: utilisation}
+      - {column: sync_costs_gbp_m, series: sync}
+    dedup: {"on": [settlement_month, voltage_constraint_group], order_by: capture_written_at}
+    aggregation: sum
+    window: {start: "2014-04-01", end: "2025-03-31"}
+    unit: "£m"
+  chart_view:
+    title: Sync and utilisation costs, April 2014 to March 2025
+    caption: >-
+      Silver `outturn_voltage_costs_historical`, £m: each settlement month's sync and utilisation
+      costs summed over NESO's 19 voltage constraint groups and stacked, April 2014 to March 2025.
+      The newest file's months are not drawn.
+    alt: >-
+      Stacked area chart from neso_data_portal/outturn_voltage_costs_historical, in £m per
+      settlement month summed over 19 groups, April 2014 to March 2025: utilisation costs below,
+      sync costs on top. To March 2021 the total runs from 5.55 in February 2015 to 24.71 in April
+      2020, when sync reaches 18.30. Utilisation then climbs to 41.98 in October 2022, when the
+      total peaks at 64.60, and falls back to 9.74 to 14.92 in 2024-25. Sync exceeds utilisation
+      in 10 months of 2023-24 and peaks at 40.73 in April 2024.
+    x_label: settlement month, as NESO labels each row
+    key:
+      - {series: sync, label: Sync costs, codes: "Sync Costs (£m)", paint: clay, note: "NESO: balancing mechanism and trade costs of running units. Highest 40.73, April 2024."}
+      - {series: utilisation, label: Utilisation costs, codes: "Utilisation Costs (£m)", paint: petrol, note: "Obligatory Reactive Power Service payments only (NESO). From 3.91 in February 2020 to 41.98 in October 2022."}
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then each file downloaded whole unless its
+      `last_modified` is unchanged. Each financial year is its own file; dates select nothing.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=outturn-voltage-costs"
+    commands:
+      - {run: gridflow pipeline neso_data_portal outturn_voltage_costs_main --last 24h, comment: "the 2025-26 file"}
+      - {run: gridflow pipeline neso_data_portal outturn_voltage_costs_historical --last 24h, comment: "eleven yearly files; also the chart"}
+  record:
+    select:
+      silver: neso_data_portal/outturn_voltage_costs_main
+      filter:
+        - {column: settlement_month, op: eq, value: "2025-05-01"}
+        - {column: voltage_constraint_group, op: in, value: ["Dumfries & Galloway", E ENGLAND, EAST MIDLANDS, S WALES, SE ENGLAND, SOUTH YORKS, SW ENGLAND, W CORRIDOR]}
+      dedup: {"on": [settlement_month, voltage_constraint_group], order_by: capture_written_at}
+      order_by: [voltage_constraint_group]
+      columns: [settlement_month, voltage_constraint_group, sync_costs_gbp_m, utilisation_costs_gbp_m, coordinates, timestamp_utc, published_at]
+    key: [settlement_month, voltage_constraint_group]
+    caption: "Eight of the 19 groups in May 2025, from NESO's 2025-26 file; zeros as written."
+    fields:
+      settlement_month: "NESO's month label, written as its first day; it stands for the whole month"
+      voltage_constraint_group: "NESO's voltage requirement area, kept exactly as written, mixed case included"
+      sync_costs_gbp_m: "Sync costs, £m (NESO's unit): balancing mechanism and trade costs of running units"
+      utilisation_costs_gbp_m: "Utilisation costs, £m: per NESO, only Obligatory Reactive Power Service payments, allocated per group"
+      coordinates: "NESO's map point for the group, kept as text; NESO states no coordinate system"
+      timestamp_utc: "Start of the month's first settlement period, UTC; gridflow's anchor, not a measurement"
+      published_at: "NESO's last-modified time for the whole file, read as UTC; one per capture"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote the capture to bronze, UTC
+  notebook:
+    lead: >-
+      `query()` reads each file's `_latest` view, filtering `settlement_month`, both ends included.
+      Take the month from `settlement_month`; `start_utc` is its first settlement period's start,
+      converted from UK time. Files are financial years: stack, never add.
+    cells:
+      - |
+        import pandas as pd
+        hist = data.neso_data_portal.query("outturn_voltage_costs_historical", "2024-04-01", "2025-03-31")
+        newest = data.neso_data_portal.query("outturn_voltage_costs_main", "2025-04-01", "2025-05-31")
+        df = pd.concat([hist, newest], ignore_index=True)
+        df["settlement_month"] = pd.to_datetime(df.settlement_month)
+        df["start_utc"] = df.timestamp_utc.dt.tz_convert("UTC")
+        months = pd.to_datetime(["2024-10-01", "2024-11-01", "2025-03-01", "2025-04-01", "2025-05-01"])
+        df[(df.voltage_constraint_group == "SE ENGLAND") & df.settlement_month.isin(months)][["settlement_month", "start_utc", "sync_costs_gbp_m", "utilisation_costs_gbp_m"]]
+      - |
+        year = df[df.settlement_month < "2025-04-01"]
+        by_group = year.groupby("voltage_constraint_group")[["sync_costs_gbp_m", "utilisation_costs_gbp_m"]].sum()
+        by_group.assign(total=by_group.sum(axis=1)).sort_values("total", ascending=False).head(6).round(2).reset_index()
+      - |
+        monthly = df.groupby("settlement_month")[["utilisation_costs_gbp_m", "sync_costs_gbp_m"]].sum()
+        monthly.index = monthly.index.strftime("%b %Y")
+        ax = monthly.plot.bar(stacked=True, figsize=(8, 3.5), color=["#155A6E", "#C77E3C"],
+                              xlabel="settlement month; the last two are from the 2025-26 file",
+                              ylabel="£m, summed over the 19 groups")
+        ax.legend(["Utilisation costs", "Sync costs"]);
+    needs: the historical yearly files and the 2025-26 file
+    plot_alt: >-
+      Stacked bar plot of each settlement month's utilisation and sync costs, in £m summed over the
+      19 groups, April 2024 to May 2025; the last two months come from the 2025-26 file. The total
+      falls from 51.28 in April 2024 to 12.76 in February 2025, then rises to 39.94 in May 2025.
+      Utilisation stays between 9.74 and 15.27.
+  related:
+    - {dataset: neso_data_portal/constraint-breakdown, note: "NESO's daily voltage constraint cost: one figure a day, not by group"}
+    - {dataset: neso_data_portal/thermal-constraint-costs, note: "Daily thermal constraint costs by group: the other constraint NESO reports"}
+    - {dataset: neso_data_portal/obligatory-reactive-power-service-orps-utilisation, note: "The reactive power service whose payments NESO says utilisation costs are"}
+    - {dataset: neso_data_portal/voltage-requirement, note: "Planned overnight voltage units per group; no documented key joins the two"}
+  family:
+    slug: outturn-voltage-costs
+    members:
+      - dataset: outturn_voltage_costs_main
+        differs: "NESO's newest file, 2025-26: April and May 2025 only; updates paused (October 2026)"
+        request: "GET https://api.neso.energy/dataset/8df6dd77-315f-465e-a8d9-ce0492853050/resource/073f9ffa-05d5-47e5-8835-e1ac31b7656d/download/voltagecsv-2025_26.csv"
+      - dataset: outturn_voltage_costs_historical
+        differs: "Eleven financial-year files, 2014-15 to 2024-25; the four newest are listed"
+        request:
+          - "GET https://api.neso.energy/dataset/8df6dd77-315f-465e-a8d9-ce0492853050/resource/bb3b4ea5-39f4-4fe4-b0e2-5b341908b186/download/voltagecsv-2021_22.csv"
+          - "GET https://api.neso.energy/dataset/8df6dd77-315f-465e-a8d9-ce0492853050/resource/81a7db68-0a24-4ce9-a374-f0ffced588b0/download/voltagecsv-2022_23.csv"
+          - "GET https://api.neso.energy/dataset/8df6dd77-315f-465e-a8d9-ce0492853050/resource/6165d7d4-54cf-4e47-91e4-b487e8225e5a/download/voltagecsv-2023_24.csv"
+          - "GET https://api.neso.energy/dataset/8df6dd77-315f-465e-a8d9-ce0492853050/resource/3eced73f-b7e6-4974-8d3c-3ebd48eba74c/download/voltagecsv-2024_25.csv"
 ---
 
 # Voltage System Costs
 
-NESO's monthly record of the **outturn cost of keeping voltage on the transmission network within
-limits** (vendor wording, captured package notes: the "post monthly report provides outturn system
+NESO's monthly record of the **outturn cost of maintaining voltage levels on the network**
+(vendor wording, captured package notes: the "post monthly report provides outturn system
 costs for maintaining voltage levels on the network"). Holding voltage needs the right balance of
 reactive power injection and absorption in real time (vendor notes). Each row is one calendar
 month for one **voltage constraint group** (a voltage requirement area; the vendor ships a network
@@ -242,6 +370,10 @@ exact string. `TODO: verify` how these labels map to the zones and members in
   zeros are preserved as numeric zero (`TODO: verify` VOLTAGE-COST-ZERO: no inspected source
   assigns a special meaning to zero, for example a group with no cost against a group not
   reported). gridflow makes no claim about what a zero means.
+- **Two historical sync costs are below zero** (silver, checked 2026-10-23): `-3.81e-06`
+  (NE SCOTLAND, 2015-11-01, 2015-16 file) and `-0.00613381` (HUMBER, 2021-02-01, 2020-21 file).
+  No utilisation cost and no main-file value is below zero. The vendor dictionary states no sign
+  convention for either cost column, so gridflow keeps the values as written.
 
 **Identity and selection.** The month and group pair is measured unique inside every file and
 across all eleven historical files, with zero duplicate excess, so none of the captures needed

@@ -4,10 +4,59 @@ package: "stability-pathfinder-service-information"
 dataset_keys: ["stability_pathfinder_availability_report", "stability_pathfinder_utilisation_report"]
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-10
+updated: 2026-10-23
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 eligibility_scope: "package-level only; both families are held (E-SEM, RULINGS 642), see Holds"
+page:
+  held: true
+  title: Stability Pathfinder availability and utilisation
+  summary: >-
+    NESO's indicative record, by settlement period, of Stability Pathfinder units' availability and
+    any instructions its control room gave them.
+  facts:
+    vendor: "NESO Data Portal, package `stability-pathfinder-service-information`: eight CSV files"
+    cadence: Weekly, as NESO lists it; about a week after delivery, NESO says
+    grain: "Rows by unit and settlement period; one file per report and financial year"
+  landscape: market
+  what_it_is: >-
+    Units on NESO's Stability Pathfinder contracts provide a stability service. Two reports, yearly
+    files from 2023-2024, give, for every unit and settlement period, its declared availability and
+    its instruction code, mostly none, with any start or cease times and an `Inertia` figure of no
+    stated unit. NESO says times are local, but each ends `+00:00`. Grid Forming Batteries are excluded.
+  how_used:
+    - Which contracted units were available, or instructed, for stability in each settlement period
+    - "Compare with NESO's Stability Y-1 utilisation report"
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then each financial-year file whole unless its
+      `last_modified` is unchanged. Swap in either table's key.
+    commands:
+      - {run: gridflow ingest neso_data_portal stability_pathfinder_availability_report --last 24h, comment: "whole files; swap in either key"}
+      - {run: gridflow transform neso_data_portal stability_pathfinder_utilisation_report --last 24h, comment: "to silver; availability builds none"}
+  family:
+    slug: stability-pathfinder-service-information
+    members:
+      - dataset: stability_pathfinder_availability_report
+        differs: "Each unit's declared availability by settlement period, with remarks on changes"
+        request:
+          - "GET https://api.neso.energy/dataset/ae59b12b-4cfe-40a0-844f-1d139c63d893/resource/a4fd8208-3e36-4f9c-bdc7-435c3734a2da/download/stability-pathfinder-availability-report-2023.csv"
+          - "GET https://api.neso.energy/dataset/ae59b12b-4cfe-40a0-844f-1d139c63d893/resource/bacc45e5-11ac-4bac-88ef-6872f499db97/download/stability-pathfinder-availability-report-2024.csv"
+          - "GET https://api.neso.energy/dataset/ae59b12b-4cfe-40a0-844f-1d139c63d893/resource/1264f36f-27ce-4ed9-aab1-393c7612d6bc/download/stability-pathfinder-availability-report-2025.csv"
+          - "GET https://api.neso.energy/dataset/ae59b12b-4cfe-40a0-844f-1d139c63d893/resource/690a9e42-20e2-4b0e-b74f-f3e37cac4bac/download/stability-pathfinder-availability-report-2026.csv"
+        held: "Times end `+00:00` though NESO says local time; identical rows repeat, and nothing tells them apart."
+      - dataset: stability_pathfinder_utilisation_report
+        differs: "Every unit and settlement period: instruction code, mostly `No`, start or cease times, `Inertia`"
+        request:
+          - "GET https://api.neso.energy/dataset/ae59b12b-4cfe-40a0-844f-1d139c63d893/resource/52af0f68-e1c3-45dd-ae7f-54f68e32e0c6/download/stability-pathfinder-utilisation-report-2023.csv"
+          - "GET https://api.neso.energy/dataset/ae59b12b-4cfe-40a0-844f-1d139c63d893/resource/f43f5d61-b51f-45f9-a7e7-66f2959d38b5/download/stability-pathfinder-utilisation-report-2024.csv"
+          - "GET https://api.neso.energy/dataset/ae59b12b-4cfe-40a0-844f-1d139c63d893/resource/fc08cdba-1a86-460b-85c4-3d8c0d3d4e42/download/stability-pathfinder-utilisation-report-2025.csv"
+          - "GET https://api.neso.energy/dataset/ae59b12b-4cfe-40a0-844f-1d139c63d893/resource/75996c0a-70fb-4ddb-a345-bb1e8d39de35/download/stability-pathfinder-utilisation-report-2026.csv"
+        held: "Times end `+00:00` though NESO says local time; `Inertia` has no stated unit; some rows repeat."
+  related:
+    - {dataset: neso_data_portal/system-inertia, note: "NESO's GB inertia estimate, in GVA.s; it leaves Pathfinder units out"}
+    - {dataset: neso_data_portal/stability-midterm-y-1-utilisation-report, note: "Instructions under NESO's Stability Y-1 contracts, with contracted inertia"}
+    - {dataset: neso_data_portal/system-inertia-cost, note: "Price of inertia bought through Balancing Mechanism offers, not by contract"}
 ---
 
 # Stability Pathfinder service information
@@ -35,7 +84,7 @@ publication or instruction-availability column. Read it alongside the system ine
 **Both silver families are held (unit E-SEM) and neither is eligible for publication or
 point-in-time use.** The front-matter `eligibility: eligible` is the registry's package-level
 status only. This page gives schema, row counts and structural counts. It publishes no data
-values, ranges or samples from either held family. Six of the eight captures fail the transform
+values, ranges or samples from either held family. Six of the first eight captures (2026-10-08) fail the transform
 (ADR-040, `DuplicateEntityKeyError`), so the availability family has **0 silver rows**.
 
 - Publisher group: System
@@ -85,6 +134,20 @@ Total 691,423 bronze rows, 234,878 silver rows.
 | 2026-2027 | [stability-pathfinder-availability-report-2026.csv](https://api.neso.energy/dataset/ae59b12b-4cfe-40a0-844f-1d139c63d893/resource/690a9e42-20e2-4b0e-b74f-f3e37cac4bac/download/stability-pathfinder-availability-report-2026.csv) | 9,582,437 | 132,011 | `2026-10-02T14:49:34.759439` | 0 (failed) |
 
 Total 739,577 bronze rows, 0 silver rows.
+
+**Recapture of the 2026-2027 files (2026-10-16).** Both 2026-2027 files were captured again on
+2026-10-16, each with a new CKAN `last_modified` on 2026-10-09 and the same header:
+`raw_20261016T204636Z_690a9e42-…_dca03343.csv` (availability, 9,967,333 bytes, 137,322 data rows,
+`last_modified` `2026-10-09T11:59:40.725801`) and `raw_20261016T204639Z_75996c0a-…_17e4ffc7.csv`
+(utilisation, 9,062,177 bytes, 129,027 data rows, `last_modified` `2026-10-09T11:59:11.232115`).
+The six past-year files kept their `last_modified` and were not downloaded again. Measured by the
+project from bronze on 2026-10-23: each new file holds exactly as many rows as the 2026-10-08
+capture up to its last period start (`2026-09-27T23:30:00+00:00`), every distinct row of the older
+capture appears unchanged, and one more week of periods follows (starts to
+`2026-10-04T23:30:00+00:00`). Every period start still ends `+00:00` and falls in British Summer
+Time. Duplicate excess in the new availability file is 7,943 on all vendor columns and 9,650 on
+`(UNIT, period start)`; in the new utilisation file, 0 and 3. The utilisation capture transformed
+to a third silver file of 129,027 rows; the availability family still has no silver directory.
 
 The stable handle for each file is its resource id, not the URL. CKAN `last_modified` values are
 emitted without an offset and read as UTC (gridflow
@@ -311,12 +374,15 @@ point-in-time use. The availability family has no silver directory at all.
 - Registry refresh: weekly
 - Vendor metadata (snapshot extras, verbatim):
   - Update frequency: Weekly
-- Captures to date: one per resource (2026-10-08). No scheduled refresh has run yet.
+- Captures to date: one per resource on 2026-10-08, and the two 2026-2027 files again on
+  2026-10-16 (see Files by disposition).
 
 The vendor says the dataset is updated approximately a week after delivery. The 2026-2027 files are
-the live year: both carry the most recent vintages (`2026-10-02`), and the earlier years have not
-changed since April 2024 to April 2026. `TODO: verify` whether past-year files are ever restated.
-Only repeated captures compared row by row can show this. `TODO: verify` whether a new
+the current year: both carry the most recent vintages (`2026-10-02` at the first capture,
+`2026-10-09` at the second), and the earlier years have not changed since April 2024 to April 2026.
+Between the two captures the 2026-2027 files only gained a week of rows, with no earlier row
+changed. `TODO: verify` whether past-year files are ever restated. Only repeated captures compared
+row by row can show this. `TODO: verify` whether a new
 financial-year file appears as a new resource and what gridflow must change to capture it.
 
 ## Licence and attribution
@@ -335,8 +401,8 @@ gridflow outputs derived from this package carry the attribution line above.
 Both families are held by RULINGS 642 (seat ruling, PROXY-SOURCED). The section reference "§3"
 in the availability question points into the SYS-1 spec (`K-SYS-1-SPEC.md`):
 in the spec, §3 is the utilisation-report section, whose timestamp-clock question the availability
-report shares. It is reproduced verbatim from the registry. The utilisation silver output (234,878 rows) exists
-on disk but is not eligible for publication or point-in-time use. Unit E-SEM must answer these
+report shares. It is reproduced verbatim from the registry. The utilisation silver output (234,878 rows
+at activation, plus a third file of 129,027 rows from the 2026-10-16 capture) exists on disk but is not eligible for publication or point-in-time use. Unit E-SEM must answer these
 before the holds can lift:
 
 1. Whether the boundary and instruction timestamps are GB local wall time with a mechanically

@@ -1,0 +1,22 @@
+{
+  "dataset": "neso_data_portal/stability_midterm_y1",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "eda178e4b13f2f31bfe3e771aa2ddaf0a9a47ae3b812a12165d5d0163acbd390",
+  "type": "stacked-area",
+  "unit": "instructions",
+  "caption": "",
+  "value_column": null,
+  "aggregation": "count",
+  "window": {"end": "2026-08-31", "rule": "fixed", "start": "2025-10-01"},
+  "provenance": {"duplicates_dropped": 0, "files": 1, "rows_matched": 61, "rows_read": 61, "rows_used": 61, "silver": "neso_data_portal/stability_midterm_y1", "silver_first": "2025-10-01", "silver_last": "2026-08-01"},
+  "spec": {"aggregation": "count", "dedup": {"on": ["bmu_id", "utilisation_start_datetime", "utilisation_end_datetime"], "order_by": "capture_written_at"}, "filter": [{"column": "published_at", "op": "eq", "value": "2026-09-28T16:54:21.377483"}], "group": "bmu_id", "group_map": {"CRUA-2": "crua2", "CRUA-4": "crua4", "DEEPS-1": "deeps", "HIRWN-1": "hirwn"}, "series_order": ["deeps", "hirwn", "crua2", "crua4"], "silver": "neso_data_portal/stability_midterm_y1", "time": "month_and_year", "type": "stacked-area", "unit": "instructions", "window": {"end": "2026-08-31", "start": "2025-10-01"}},
+  "x_kind": "time",
+  "x": ["2025-10-01", "2025-11-01", "2026-04-01", "2026-05-01", "2026-06-01", "2026-07-01", "2026-08-01"],
+  "series": [
+    {"key": "deeps", "values": [null, null, 6, 8, 5, 6, 8]},
+    {"key": "hirwn", "values": [null, null, null, 2, 5, 10, 6]},
+    {"key": "crua2", "values": [null, null, null, 1, 1, null, null]},
+    {"key": "crua4", "values": [2, 1, null, null, null, null, null]}
+  ]
+}
