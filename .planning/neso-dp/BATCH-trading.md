@@ -26,7 +26,8 @@ branch and one PR stacked on Demand Flexibility Service. Bobbo looks at the page
 
 Seat ruling (PROXY-SOURCED, 2026-10-23): `historic-gtma-grid-trade-master-agreement-trades-data` ships held, as the
 approved plan and the live hub classify it, although the ledger notes `gtma_trades_data` GU1 to GU5 and
-`gtma_trades_data_pre` as eligible. Same pattern and ruling as `skip-rates`; raised for Bobbo at the group's PR.
+`gtma_trades_data_pre` as eligible. Same pattern and ruling as `skip-rates`; raised for Bobbo at the group's PR. The hub's
+held reason ("the cost columns' units are not stated") is untrue for those two tables (cost in £): raise at the PR.
 
 Known risks:
 - **Nord Pool day-ahead prices:** the ledger lists the table eligible with a caveat: "temporal none: delivery instant
@@ -56,4 +57,4 @@ time, `query()` filters on the capture time (remediation 20at): use `data.sql()`
 |---|---|---|---|
 | 1 | afd2889b06d512586 | a96ad836058109e39 | APPROVED (round 2 fixes seat-verified); committed; 20az, 20ba logged |
 | H1 | ab801ef4b9396fd64 | ad23a4f1b295468b5 | APPROVED x3 (round 2 fixes seat-verified); committed; 20bb, 20bc logged |
-| H2 | | | not started |
+| H2 | a856d00258e732795 | aec59d2a8bdba85f1 | APPROVED x3 (round 2 fixes seat-verified); committed; 20bd, 20be logged |
