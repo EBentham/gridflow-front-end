@@ -1,0 +1,19 @@
+{
+  "dataset": "neso_data_portal/dfs_live_events_utilisation_report_sum",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "c865bfd8a18e49e4faa81555a4ce5d1e330a79cb2208557ab5c34e5d48dae832",
+  "type": "bar",
+  "unit": "MW",
+  "caption": "",
+  "value_column": "dfs_volume",
+  "aggregation": "sum",
+  "window": null,
+  "provenance": {"duplicates_dropped": 0, "files": 1, "null_values_dropped": 0, "rows_matched": 33, "rows_read": 170, "rows_used": 33, "silver": "neso_data_portal/dfs_live_events_utilisation_report"},
+  "spec": {"aggregation": "sum", "dedup": {"on": ["date", "window_from", "unit"], "order_by": "published_at"}, "filter": [{"column": "date", "op": "eq", "value": "2023-01-23"}, {"column": "window_from", "op": "eq", "value": "17:30"}, {"column": "status", "op": "eq", "value": "Accepted"}], "group": "dfs_provider", "group_map": {"BritishGasTradingLimited": "British Gas", "CUBUKLtd": "CUB UK", "ConradEnergyTradingLimited": "Conrad", "DraxEnergySolutionsLimited": "Drax", "EDFEnergyCustomersLimited": "EDF", "EONNextEnergyLimited": "EON Next", "EngiePowerLimited": "Engie", "EquiwattLimited": "Equiwatt", "EvDOTEnergyLtd": "EvDOT", "FlexitricityLimited": "Flexitricity", "GridbeyondLimited": "Gridbeyond", "GridimpLimited": "Gridimp", "OVOElectricityLtd": "OVO", "OaktreePowerLimited": "Oaktree", "OctopusEnergyLimited": "Octopus", "OrangePowerLTD": "Orange Power", "PerseTechnologyLimited": "Perse", "SoloEnergyLimited": "Solo", "VpowerU8lectricLTD": "VpowerU8lectric", "ZenobeEnergyLimited": "Zenobe"}, "silver": "neso_data_portal/dfs_live_events_utilisation_report", "sort": "value_desc", "type": "bar", "unit": "MW", "value": "dfs_volume"},
+  "x_kind": "category",
+  "x": ["Octopus", "Gridbeyond", "Drax", "EON Next", "British Gas", "Engie", "Oaktree", "EDF", "OVO", "Solo", "CUB UK", "Orange Power", "Perse", "Conrad", "Gridimp", "VpowerU8lectric", "Equiwatt", "EvDOT", "Zenobe"],
+  "series": [
+    {"key": "dfs_volume", "values": [191.029, 25.538, 23.0, 18.0, 12.0, 11.0, 10.0, 8.0, 8.0, 8.0, 6.0, 4.686, 3.316, 2.3, 2.0, 1.02, 1.0, 1.0, 1.0]}
+  ]
+}

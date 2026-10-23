@@ -7,6 +7,187 @@ skeleton: false
 updated: 2026-10-14
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: Demand Flexibility Service 2022/23 live events
+  summary: >-
+    NESO's Demand Flexibility Service in winter 2022/23, live events only: what NESO asked for, the
+    bids it accepted, their cost and delivery.
+  facts:
+    vendor: "NESO Data Portal, package `demand-flexibility-service-live-events`: four tables from four CSV files"
+    cadence: "Not Active in NESO's metadata; files last changed January 2023 to July 2026"
+    grain: "Summary: one row per event window; the report adds DFS unit"
+    history: "Live events on 23 and 24 January 2023: five half-hour windows"
+  landscape: market
+  what_it_is: >-
+    NESO published a MW requirement per half-hour window; providers bid volume and price per DFS
+    unit at D-1, the day before, and NESO accepted or rejected each bid. Providers updated forecasts
+    at 10:00 GMT on the day (D0); settled delivery came later. Windows are GMT labels, also UK clock
+    time in January. Test events are a separate package.
+  how_used:
+    - "Requirement, accepted MW, D0 forecast and settled MW per window, from the summary."
+    - "Who supplied each window: accepted MW per provider and unit, with regional splits."
+    - Join requirement, report and summary on date and window; there is no event id.
+  chart:
+    type: bar
+    silver: neso_data_portal/dfs_live_events_utilisation_report
+    filter:
+      - {column: date, op: eq, value: "2023-01-23"}
+      - {column: window_from, op: eq, value: "17:30"}
+      - {column: status, op: eq, value: Accepted}
+    dedup: {on: [date, window_from, unit], order_by: published_at}
+    group: dfs_provider
+    group_map:
+      OctopusEnergyLimited: Octopus
+      GridbeyondLimited: Gridbeyond
+      DraxEnergySolutionsLimited: Drax
+      EONNextEnergyLimited: EON Next
+      BritishGasTradingLimited: British Gas
+      EngiePowerLimited: Engie
+      OaktreePowerLimited: Oaktree
+      EDFEnergyCustomersLimited: EDF
+      OVOElectricityLtd: OVO
+      SoloEnergyLimited: Solo
+      CUBUKLtd: CUB UK
+      OrangePowerLTD: Orange Power
+      PerseTechnologyLimited: Perse
+      ConradEnergyTradingLimited: Conrad
+      GridimpLimited: Gridimp
+      VpowerU8lectricLTD: VpowerU8lectric
+      EquiwattLimited: Equiwatt
+      EvDOTEnergyLtd: EvDOT
+      ZenobeEnergyLimited: Zenobe
+      FlexitricityLimited: Flexitricity
+    value: dfs_volume
+    aggregation: sum
+    sort: value_desc
+    unit: MW
+  chart_view:
+    title: Accepted MW by provider, 23 January 2023, 17:30 to 18:00
+    caption: >-
+      Silver `dfs_live_events_utilisation_report`, MW: D-1 volume of Accepted bids, 17:30 to 18:00
+      GMT on 23 January 2023, summed per provider (short names; the rows give NESO's). Together
+      336.89 MW to two decimals, the summary's `dfs_procured`. One of five windows.
+    alt: >-
+      Horizontal bar chart from neso_data_portal/dfs_live_events_utilisation_report: the D-1 volume
+      of Accepted bids per provider, in MW, for the 17:30 to 18:00 GMT window of 23 January 2023, 19
+      providers. Octopus has 191.03 MW; then Gridbeyond 25.54, Drax 23.0, EON Next 18.0 and British
+      Gas 12.0.
+      The other 14 providers have 11.0 MW or less each, six of them 2.3 MW or less and three 1.0.
+    key:
+      - {series: dfs_volume, label: Accepted D-1 volume, paint: petrol}
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then each table's CSV downloaded whole, unless its
+      `last_modified` is unchanged. Dates select nothing. Swap in any table's key.
+    commands:
+      - {run: gridflow ingest neso_data_portal dfs_live_events_utilisation_report_sum --last 24h, comment: "whole files; window must end recently"}
+      - {run: gridflow transform neso_data_portal dfs_live_events_utilisation_report_sum --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      silver: neso_data_portal/dfs_live_events_utilisation_report
+      filter:
+        - {column: date, op: eq, value: "2023-01-23"}
+        - {column: window_from, op: eq, value: "17:30"}
+        - {column: unit, op: in, value: [DRAX-03, DRAX-04, EDF-01, OAKTRE02, OCTOP-02, OCTOP-03, OCTOP-05, ORANGP-01]}
+      dedup: {on: [date, window_from, unit], order_by: published_at}
+      order_by: [unit]
+      columns: [unit, dfs_provider, status, dfs_volume, total, d0_total, price, date, window_from, window_to]
+    key: [date, window_from, unit]
+    caption: "Report table: eight bids, 17:30 to 18:00 GMT on 23 January 2023, one Rejected."
+    fields:
+      unit: Registered DFS unit, NESO's id
+      dfs_provider: Registered DFS provider, as NESO spells it
+      status: "`Accepted` or `Rejected`, NESO's status of the bid"
+      dfs_volume: "Volume submitted at D-1, MW (NESO): the bid's quantity"
+      total: "Total volume submitted for grid supply points (GSPs) at D-1, MW (NESO)"
+      d0_total: "Total forecast to deliver, MW, at 10:00 GMT on the event day (NESO)"
+      price: "Price of the volume submitted, £/MWh (NESO)"
+      date: "Date of the DFS event, NESO's `dd/mm/yyyy` label read as a date"
+      window_from: "Window start, NESO's `HH:MM` label in GMT; kept as text"
+      window_to: "Window end, NESO's `HH:MM` label in GMT; kept as text"
+      north_scotland: D-1 volume NESO lists for North Scotland, MW
+      south_and_central_scotland: D-1 volume NESO lists for South and Central Scotland, MW
+      north_east_england: D-1 volume NESO lists for North East England, MW
+      north_west_england: D-1 volume NESO lists for North West England, MW
+      yorkshire: D-1 volume NESO lists for Yorkshire, MW
+      east_midlands: D-1 volume NESO lists for the East Midlands, MW
+      west_midlands: D-1 volume NESO lists for the West Midlands, MW
+      london: D-1 volume NESO lists for London, MW
+      east_england: D-1 volume NESO lists for East England, MW
+      south_east_england: D-1 volume NESO lists for South East England, MW
+      south_west_england: D-1 volume NESO lists for South West England, MW
+      southern_england: D-1 volume NESO lists for Southern England, MW
+      north_wales_merseyside_cheshire: "D-1 volume NESO lists for North Wales, Merseyside and Cheshire, MW"
+      south_wales: D-1 volume NESO lists for South Wales, MW
+      other: D-1 volume NESO lists for other GSPs, MW
+      d0_north_scotland: Event-day forecast NESO lists for North Scotland, MW
+      d0_south_and_central_scotland: Event-day forecast NESO lists for South and Central Scotland, MW
+      d0_north_east_england: Event-day forecast NESO lists for North East England, MW
+      d0_north_west_england: Event-day forecast NESO lists for North West England, MW
+      d0_yorkshire: Event-day forecast NESO lists for Yorkshire, MW
+      d0_east_midlands: Event-day forecast NESO lists for the East Midlands, MW
+      d0_west_midlands: Event-day forecast NESO lists for the West Midlands, MW
+      d0_london: Event-day forecast NESO lists for London, MW
+      d0_east_england: Event-day forecast NESO lists for East England, MW
+      d0_south_east_england: Event-day forecast NESO lists for South East England, MW
+      d0_south_west_england: Event-day forecast NESO lists for South West England, MW
+      d0_southern_england: Event-day forecast NESO lists for Southern England, MW
+      d0_north_wales_merseyside_and_cheshire: "Event-day forecast, North Wales, Merseyside and Cheshire, MW; named with `and`, unlike D-1"
+      d0_south_wales: Event-day forecast NESO lists for South Wales, MW
+      d0_other: Event-day forecast NESO lists for other GSPs, MW
+      timestamp_utc: "UK midnight starting `date`, as UTC; not the window start"
+      published_at: "When NESO last changed the file (CKAN `last_modified`), read as UTC"
+      bronze_capture_id: Path of the bronze capture the row was read from
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      `query()` reads each table's `_latest` view, filtering `date` with both ends included and
+      dropping lineage columns; times come back in the session's zone (Europe/London), so the first
+      query cell converts `published_at` to UTC.
+    cells:
+      - |
+        s = data.neso_data_portal.query("dfs_live_events_utilisation_report_sum", "2023-01-23", "2023-01-24")
+        s["published_at"] = s["published_at"].dt.tz_convert("UTC")
+        s = s.sort_values(["date", "window_from"]).reset_index(drop=True)
+        s[["date", "window_from", "dfs_required", "dfs_procured", "d0_dfs_procured", "settled_volume", "settled_cost", "published_at"]]
+      - |
+        r = data.neso_data_portal.query("dfs_live_events_utilisation_report", "2023-01-23", "2023-01-23")
+        w = r[(r.window_from == "17:30") & (r.status == "Accepted")]
+        w.groupby("dfs_provider")[["dfs_volume", "d0_total"]].sum().sort_values("dfs_volume", ascending=False).head()
+      - |
+        mw = s.set_index(s["date"].astype(str) + "\n" + s["window_from"])
+        mw = mw[["dfs_required", "dfs_procured", "d0_dfs_procured", "settled_volume"]].set_axis(
+            ["requirement", "D-1 procured", "D0 procured", "settled"], axis=1)
+        ax = mw.plot.bar(
+            rot=0, ylabel="MW", xlabel="window start, GMT", ylim=(0, 450), figsize=(8, 3.5),
+            color=["#66793B", "#155A6E", "#3E8C97", "#C77E3C"])
+        ax.legend(ncol=4, loc="upper left", fontsize=8);
+    needs: a capture of the summary and report files
+    plot_alt: >-
+      Grouped bars, MW, for the five windows of 23 and 24 January 2023: requirement, D-1 procured,
+      D0 procured and settled volume. On 23 January D-1 procured is 323.81 and 336.89 MW, D0 224.66
+      and 232.98, settled 271.73 and 294.61. On 24 January D0 is within 3.1 MW of D-1; settled,
+      233.12 to 286.93 MW, is below D-1 in every window.
+  related:
+    - {dataset: neso_data_portal/demand-flexibility, note: "The service from winter 2024/25 onwards, in NESO's current package"}
+    - {dataset: neso_data_portal/demand-flexibility-service, note: "The next winter, 2023/24, with Test and Live rows in one table"}
+    - {dataset: neso_data_portal/demand-flexibility-service-test-events, note: "Test events of the same 2022/23 winter, published separately: never add them"}
+    - {dataset: elexon/system_prices, note: Imbalance prices for the same half-hours as each window}
+  family:
+    slug: demand-flexibility-service-live-events
+    members:
+      - dataset: dfs_live_events_utilisation_report_sum
+        differs: "One row per window: requirement, accepted MW and cost at D-1 and D0, settlement"
+        request: "GET https://api.neso.energy/dataset/328b830b-4a8e-4dce-a14b-be91ed926b95/resource/011f1a15-f63f-4a95-b1eb-453e5ffcd176/download/utilisation-report-summary-live2501231600-fs.csv"
+      - dataset: dfs_live_events_utilisation_report
+        differs: "One row per bid: DFS unit, price, status, D-1 and D0 MW by region"
+        request: "GET https://api.neso.energy/dataset/328b830b-4a8e-4dce-a14b-be91ed926b95/resource/4e87244e-2479-4e6e-84c2-698dffaca41f/download/dfs-participant-utilisation-report-live2501231600.csv"
+      - dataset: dfs_live_events_service_update_industry
+        differs: "NESO's notices to industry, by posting date; no key to the other tables"
+        request: "GET https://api.neso.energy/dataset/328b830b-4a8e-4dce-a14b-be91ed926b95/resource/a59a9d56-af4b-4044-b0c8-6379ce1213f8/download/service-update-industry-notifications-live070320231430.csv"
+      - dataset: dfs_live_events_service_requirement
+        differs: "MW NESO asked for per window; the file was last changed before any window"
+        request: "GET https://api.neso.energy/dataset/328b830b-4a8e-4dce-a14b-be91ed926b95/resource/663f3f82-fec8-4c9a-a837-df5db8690a6f/download/dfs-service-requirement-live230120231430.csv"
 ---
 
 # Demand Flexibility Service 2022/23: Live Events
@@ -56,8 +237,9 @@ Nothing in this package is held (Holds).
   GMT, stored byte-for-byte as `string`. The engine has no recipe that composes a date with a clock label (RULINGS 572 /
   588), so **no window start or end instant is computed**, and there is no settlement-period column.
 - **D0 is the event-day forecast, not an issue time.** The `d0_` columns are the providers' updated delivery forecast
-  on the event day; the report is updated around 10:00 GMT on that day (the vendor's report update schedule, not a
-  stated submission time for the provider forecasts: `TODO: verify` the D0 submission time). The base columns are the volume submitted at D-1. Neither is a publication
+  on the event day; the report is updated around 10:00 GMT on that day, and the vendor dictionary times the D0 forecast
+  at 10:00 GMT on the event day ("Forecasted volume to be delivered for GSP on day of event 10:00GMT"; the summary's
+  D0 fields: "based on provider submissions on the day of the event at 10:00 GMT", field info `20261008T114228Z`). The base columns are the volume submitted at D-1. Neither is a publication
   timestamp.
 - **Summaries are published values and do not reconcile to the bids at D0 or at settlement.** The D-1 columns
   reconcile to the Accepted report rows; the D0 and settled columns cannot be rebuilt from the captured report (Known
@@ -271,8 +453,8 @@ two spellings of the Wales/Merseyside/Cheshire region (`North Wales_Merseyside_C
 
 **D-1 and D0.** `dfs_volume` and the 14 regional columns plus `other` and `total` are the volume **submitted at D-1**.
 The 16 `d0_` columns are the providers' **updated delivery forecast on the event day**; the report is updated around
-10:00 GMT on that day (the vendor's update schedule; the time at which providers submit the D0 forecast is
-`TODO: verify`). D0 is a forecast
+10:00 GMT on that day (the vendor's update schedule; the vendor dictionary times the D0 forecast at 10:00 GMT on the
+event day, field info `20261008T114228Z`). D0 is a forecast
 stage, not an issue time: there is no issue column, and a D0 value is not a re-publication timestamp. A unit that
 supplied no D0 forecast has blank `d0_` cells (below); in this capture the blanks fall on exactly the 5 Rejected rows
 and touch no Accepted bid; the vendor's summary text says the D-1 values are used in that
