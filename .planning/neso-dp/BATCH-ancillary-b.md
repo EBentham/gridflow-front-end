@@ -51,10 +51,13 @@ Known risks:
 | # | Writer | Checker | State |
 |---|---|---|---|
 | H | ac4d838fad146bef9 | a7e1cd9d58f2518e1 | APPROVED round 2, nits fixed; committed |
-| 1 | a7bdadeddd98e7449 | | writing |
-| 2 | ab90e4f799035d73c | | writing |
-| 3 | abd18a84e1f5fabb1 | | writing |
-| 4-10 | | | not started |
+| 1 | a7bdadeddd98e7449 | a9acc70ea35be78d3 | APPROVED (round 2 fixes seat-verified); committed fe d4016f1, vault 79941a2; 20n logged |
+| 2 | ab90e4f799035d73c | aa9f90d2aabec7096 | APPROVED (round 2 fixes seat-verified); committed; 20o logged |
+| 3 | abd18a84e1f5fabb1 | a7cca7dbb557ffe18 | APPROVED (round 2 fixes seat-verified); committed; 20p logged |
+| 4 | a1153f90d0765c153 | a90a0afe04c073de9 | checking (resumed 2026-10-23); 20q, 20r logged |
+| 5 | a1aa64f9f77a3ac69 | | writing |
+| 6 | ad2a23efea2aeecaa | | writing |
+| 7-10 | | | not started |
 
 ## Template follow-ups (seat items, not page findings)
 

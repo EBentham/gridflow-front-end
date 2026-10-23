@@ -106,3 +106,5 @@ https://github.com/EBentham/quant-vault/pull/64. Waiting for Bobbo's look. Merge
 - The notebook tab label clips at 390 px (EAC auction results).
 - The notebook runner adds a stray column to grouped tables (seen in EAC results, DM, DR notebooks).
 - A page allows at most three commands (FFR post-tender needed four: two sibling ingests plus pipeline).
+- Bar-chart category labels longer than about 16 characters clip at 390 px (industry notifications).
+- Chart specs: the text-time parse runs before filters (rows with another format fail even when filtered out); no weekly or monthly bucket for long daily spans.
