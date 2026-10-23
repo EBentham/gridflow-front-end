@@ -7,6 +7,117 @@ skeleton: false
 updated: 2026-10-10
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: Daily average price of inertia
+  summary: >-
+    NESO's indicative average daily price, in £ per GVA.s, of Balancing Mechanism offers tagged
+    for system inertia, one file per financial year.
+  facts:
+    vendor: "NESO Data Portal, package `system-inertia-cost`: one CSV file per financial year"
+    cadence: "Ad hoc in NESO's catalogue; its file notes say appended daily"
+    grain: One row per settlement day, from one financial-year file
+    history: "Financial-year files from 2017-18, as NESO's catalogue lists them"
+  landscape: market
+  what_it_is: >-
+    NESO divides the day's cost of Balancing Mechanism offers tagged for inertia by the day's
+    inertia shortfall summed over settlement periods: a rate, not a total. NESO's unit text
+    varies: £ per GVAs in its notes and field unit, £ per GVA in its description, £/GVA.s in its
+    worked method, used here. NESO does not say what a zero means.
+  how_used:
+    - A daily indicative price of inertia bought through Balancing Mechanism offers.
+    - "Set beside NESO's settlement-period inertia, joined on the day; never multiplied into a cost."
+    - Counting the days each financial year that carry a price above zero.
+  chart:
+    type: line
+    silver: neso_data_portal/system_inertia_cost
+    time: settlement_date
+    value: cost_gbp_per_gvas
+    dedup: {"on": [settlement_date], order_by: published_at}
+    aggregation: last
+    window: {start: "2025-04-01", end: "2025-06-30"}
+    max_points: 400
+    unit: £/GVA.s
+  chart_view:
+    title: Daily inertia price, April to June 2025
+    caption: >-
+      Silver `neso_data_portal/system_inertia_cost`, `cost_gbp_per_gvas` in £ per GVA.s, one value
+      per settlement day, 1 April to 30 June 2025, from NESO's 2025-26 file last modified 10 April
+      2026. The zeros are NESO's own values. Most other quarters have more zero days.
+    alt: >-
+      Line chart of NESO's daily inertia price in pounds per GVA.s from
+      neso_data_portal/system_inertia_cost, one value per settlement day, 1 April to 30 June 2025.
+      The line is above zero on 61 of the 91 days and drops to zero on the other 30, in runs of one
+      to six days. Priced days run from 1,427 on 12 April to 9,366 on 17 June, median 2,969. From
+      21 May to 17 June every day is priced; 15 May reaches 7,714.
+    x_label: settlement day, April to June 2025
+    y_min: -400
+    key:
+      - {series: cost_gbp_per_gvas, label: Daily price, codes: cost_gbp_per_gvas, paint: petrol, note: "Highest £9,366 per GVA.s on 17 June; zero on 30 of 91 days."}
+  raw_feed:
+    note: >-
+      A `package_show`, then each file downloaded whole unless its `last_modified` is unchanged;
+      dates select nothing. The 2026-27 file stays in bronze: its one date, `01/04/2026`, breaks its
+      filename's date format.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=system-inertia-cost"
+      - "GET https://api.neso.energy/dataset/59f20804-9c9e-4f70-a809-c4c48a4f4c6e/resource/28dc603e-3472-45cd-8e7b-998efc674084/download/inertia_costs17.csv"
+      - "GET https://api.neso.energy/dataset/59f20804-9c9e-4f70-a809-c4c48a4f4c6e/resource/a6a52241-1774-48d8-935f-2bef0d843e18/download/inertia_costs.csv"
+      - "GET https://api.neso.energy/dataset/59f20804-9c9e-4f70-a809-c4c48a4f4c6e/resource/6295f4ed-b43d-4a80-8ca9-c27c9fa16517/download/inertia_costs.csv"
+    commands:
+      - {run: gridflow ingest neso_data_portal system_inertia_cost --last 24h, comment: "whole files; window must end recently"}
+      - {run: gridflow transform neso_data_portal system_inertia_cost --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: settlement_date, op: ge, value: "2025-03-27"}
+        - {column: settlement_date, op: le, value: "2025-04-03"}
+      dedup: {"on": [settlement_date], order_by: published_at}
+      order_by: [settlement_date]
+      columns: [settlement_date, cost_gbp_per_gvas, timestamp_utc, resource_id, published_at]
+    key: [resource_id, settlement_date]
+    caption: "27 March to 3 April 2025: clocks forward on 30 March, 2025-26 file from 1 April."
+    fields:
+      settlement_date: "The UK calendar day NESO prices; with `resource_id`, the key"
+      cost_gbp_per_gvas: "Average daily price, £ per GVA.s; NESO's `Cost` to 2020-21, then `Cost_per_GVAs`"
+      timestamp_utc: "Set by gridflow: 00:00 UK time on the settlement day, in UTC"
+      resource_id: CKAN id of the financial-year file the row came from
+      published_at: "NESO's last-modified time for the whole yearly file, read as UTC"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      `query()` reads `silver_neso_data_portal_system_inertia_cost_latest`, filtering
+      `settlement_date` with both ends included; lineage columns dropped. Times come back in UK
+      time, so the query cell converts `timestamp_utc` to UTC; the next summarises each year.
+    cells:
+      - |
+        df = data.neso_data_portal.query("system_inertia_cost", "2017-04-01", "2026-03-31")
+        df["timestamp_utc"] = df.timestamp_utc.dt.tz_convert("UTC")
+        df = df.sort_values("settlement_date", ignore_index=True)
+        df.loc[df.settlement_date.between("2025-03-29", "2025-04-01"),
+               ["settlement_date", "timestamp_utc", "cost_gbp_per_gvas", "resource_id"]]
+      - |
+        import pandas as pd
+        p = df.set_index("settlement_date").cost_gbp_per_gvas
+        fy = pd.Series([f"{y}-{(y + 1) % 100:02d}" for y in p.index.year - (p.index.month < 4)],
+                       index=p.index)
+        pd.DataFrame({"days": p.groupby(fy).size(), "above zero": (p > 0).groupby(fy).sum(),
+                      "median above zero": p.where(p > 0).groupby(fy).median(),
+                      "max": p.groupby(fy).max()})
+      - |
+        ax = p[p > 0].plot(style=".", ms=3, color="#155A6E", logy=True, figsize=(8, 3.5),
+                           xlabel="settlement day", ylabel="£ per GVA.s, days above zero");
+    needs: NESO's yearly inertia price files
+    plot_alt: >-
+      Dot plot on a log scale of NESO's daily inertia price in £ per GVA.s, days above zero only,
+      April 2017 to March 2026. Dots sit mostly between about 1,000 and 3,000 until 2021, between
+      about 5,000 and 10,000 from late 2021 into early 2023, then mostly about 2,000 to
+      5,000. One day in
+      July 2025 stands alone at 58,570.
+  related:
+    - {dataset: neso_data_portal/system-inertia, note: "NESO's inertia per settlement period; join on the day, never multiply"}
+    - {dataset: neso_data_portal/gb-system-inertia-bid-and-offer-costs, note: "NESO's daily inertia price with the needed bids added, three ways"}
+    - {dataset: neso_data_portal/constraint-breakdown, note: "NESO's daily spend in £ on increasing system inertia"}
 ---
 
 # System Inertia Cost
@@ -101,7 +212,7 @@ Schema, epoch 2:
 
 ## Units, sentinels and identifiers
 
-- **Unit.** Both header epochs are the same vendor quantity and land in one silver column, `cost_gbp_per_gvas` (int64, nullable). Epoch 1 (`Cost`, resources 2017-2020) and epoch 2 (`Cost_per_GVAs`, resources 2021-2026) are documented by NESO as the daily average cost of a unit of inertia in pounds per GVAs; the epoch-2 field dictionary carries the explicit unit "£ per GVAs" and the legacy dictionary's description omits the "s" in one phrase while its unit and the dataset methodology include it (K-SYS-1-FACTS §7 T01, ruling 642). No conversion is applied. The vendor example value shows whole numbers, consistent with int64.
+- **Unit.** Both header epochs are the same vendor quantity and land in one silver column, `cost_gbp_per_gvas` (int64, nullable). Epoch 1 (`Cost`, resources 2017-2020) and epoch 2 (`Cost_per_GVAs`, resources 2021-2026) are documented by NESO as the daily average cost of a unit of inertia in pounds per GVAs; the epoch-2 field dictionary carries the explicit unit "£ per GVAs", but its own description reads "(£ per GVA)" (field-info snapshot 20261008T114228Z, captured from the 2026 resource), while the package notes give "£ per GVAs" and then "£/GVA.s" in the method and worked examples (K-SYS-1-FACTS §7 T01, ruling 642). No conversion is applied. The vendor example value shows whole numbers, consistent with int64.
 - **Zeros.** Zero is a supplied numeric value and stays numeric; it is never nulled or dropped. Zero counts per resource (settlement days with a zero price, longest consecutive file-order run): 2017: 358 (116); 2018: 288 (29); 2019: 279 (30); 2020: 219 (18); 2021: 237 (28); 2022: 231 (30); 2023: 202 (17); 2024: 170 (28); 2025: 192 (19). TODO: verify what a zero means - no inspected source says whether it is no tagged inertia action, a computed zero rate, or another reporting condition (INERTIA-COST-ZERO).
 - **Other sentinels.** No blank cells, `-1`, `N/A`, `NA`, thousands separators, currency symbols or percent signs occur in the value cells of any captured resource; every value passes the int64 cast (FACTS g5). Because the dtype is nullable, a future blank would land as null rather than zero.
 - **Identifiers.** The only identifier is the CKAN `resource_id`, stored as-is, which separates financial-year files in the entity key. There are no group labels or BMU/EIC codes in this family.
@@ -120,6 +231,7 @@ The vendor publishes one resource per financial year, and the CKAN catalog snaps
 - **The 2026 resource is held** because its single date literal is a slash date (`01/04/2026`) under the same filename as the ISO resources, and its day/month order is not independently established. Re-disposition conditions are in the HOLD table. TODO: verify with NESO whether the 2026 upload is DMY and whether the file will be corrected.
 - **Conditional overlap if the held resource were later admitted.** If the 2026 literal is read as day/month, it repeats the final settlement date already present in the 2025 resource. This is a conditional observation, not a settled fact; precedence between the two would then need an ADR-039/040 ruling, and none is invented here.
 - **Missing days are preserved, not filled.** The 2021 resource lacks 2021-11-24, 2021-11-25, 2021-11-26 and 2021-12-08 (361 rows); the 2022 resource lacks 2022-05-16, 2022-05-17 and 2022-08-18 (362 rows). The reason is not documented. TODO: verify with NESO.
+- **One isolated extreme value.** 2025-07-25 carries 58,570 £/GVA.s in the 2025 resource, four times the next highest value in any resource (14,650 on 2022-03-09), between zero-priced days (silver, 2026-10-08 capture). NESO's method divides by the day's inertia shortfall, so a small denominator could produce it, but nothing inspected says so. Silver keeps it as supplied. TODO: verify with NESO (INERTIA-COST-OUTLIER).
 - **Entity-key uniqueness is measured, not vendor-guaranteed.** The settlement date is unique within every captured resource (duplicate excess 0), but the dictionary states no primary-key guarantee. TODO: verify (vendor key guarantee).
 - **Resource label is not a calendar year.** See the coverage table; join on `settlement_date`, never on the label.
 - **Settlement-day grain.** The daily row is an anchor at settlement period 1 for the GB (UK) day; no per-period or DST (46/50-period) structure exists in this dataset.
