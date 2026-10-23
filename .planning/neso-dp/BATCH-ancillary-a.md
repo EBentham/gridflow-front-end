@@ -113,6 +113,7 @@ https://github.com/EBentham/quant-vault/pull/64. Waiting for Bobbo's look. Merge
 - Chart and sample artefacts read every silver capture of a table; a table whose captures repeat rows needs a `dedup:` in its chart and frame (no default). Audited 2026-10-23: no approved page double-counts.
 - A family page cannot list request URLs for files outside its members (monthly BSUoS forecast archive and PDF). Family pages do not print `raw_feed.requests` at all (DFS 2023/24 `package_show`).
 - A bronze-only package (no silver table) still renders the "silver, typed and validated" band and "The silver tables" heading (Demand Profile Dates); the hold line carries it, but the band should say there is no table.
+- The column guide accepts only the lead table's columns (`build.py` line 1296); a second eligible member (transmission losses yearly table) has no guide of its own.
 - A full page needs eight sample rows; a table with fewer rows can only ship held (voltage contracted units, one row). Boundary files (ETYS, GSP) have no line-map visual.
 - Chart specs have no derived duration (end minus start), so utilisation hours cannot be charted from interval tables (stability midterm; likely Pathfinder utilisation).
 - A 30-minute line chart gets a single x tick (whole-hour ticks only), seen on system frequency.
