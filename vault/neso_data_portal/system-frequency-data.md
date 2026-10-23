@@ -7,6 +7,151 @@ skeleton: false
 updated: 2026-10-16
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: GB system frequency by the second
+  summary: >-
+    NESO's measured GB system frequency in hertz, one reading per second, in one file per
+    calendar month from January 2014.
+  facts:
+    vendor: NESO Data Portal, package System Frequency
+    cadence: One reading per second; NESO's catalogue lists the update frequency as monthly
+    grain: One row per second, from one monthly file
+    history: "Monthly files from January 2014, as NESO's catalogue lists them"
+  landscape: power
+  what_it_is: >-
+    NESO publishes GB system frequency as measured each second; its role, it says, is to keep it
+    at 50 Hz within a statutory 0.5 Hz either side. The files use three time formats: day first
+    with no zone in 2014, UK clock time with its offset from 2015 to 2019, and GMT, as NESO
+    states, from January 2020.
+  how_used:
+    - "Frequency events second by second: how deep, how fast, how long below 49.5 Hz."
+    - "Checking Elexon's 15-second frequency against NESO's one-second record."
+    - Read with NESO's inertia and frequency response data in post-event studies.
+  chart:
+    type: line
+    silver: neso_data_portal/system_frequency_gmt_csv
+    time: dtm
+    value: f
+    filter:
+      - {column: dtm, op: ge, value: "2023-12-22T13:00:00Z"}
+      - {column: dtm, op: lt, value: "2023-12-22T13:30:00Z"}
+    dedup: {"on": [dtm], order_by: published_at}
+    aggregation: last
+    window: {start: "2023-12-22", end: "2023-12-22"}
+    max_points: 1800
+    unit: Hz
+  chart_view:
+    title: Frequency each second, 22 December 2023, 13:00 to 13:30 UTC
+    caption: >-
+      Silver `neso_data_portal/system_frequency_gmt_csv`, `f` in Hz, every second from 13:00:00 to
+      13:29:59 UTC on 22 December 2023, unaggregated, from NESO's file last modified 17 April 2026.
+      NESO gives a statutory limit of 0.5 Hz either side of 50 Hz.
+    alt: >-
+      Line chart of system frequency in Hz from neso_data_portal/system_frequency_gmt_csv, every
+      second from 13:00 to 13:30 UTC on 22 December 2023. The line wanders between 49.878 and
+      50.042 Hz until 13:09:51, then falls in two steps to its lowest, 49.275 Hz at 13:10:11. It
+      stays below 49.5 Hz for 60 seconds, to 13:11:02, climbs back to 50 Hz at 13:21:09 and peaks
+      at 50.134 Hz at 13:26:07.
+    x_label: 13:00 to 13:30 UTC, 22 December 2023
+    key:
+      - {series: f, label: Frequency, codes: f, paint: petrol, note: "Lowest 49.275 Hz at 13:10:11 UTC; below 49.5 Hz from 13:10:03 to 13:11:02."}
+  raw_feed:
+    note: >-
+      `system_frequency` holds the files, no table. One `package_show`, then each file downloaded whole
+      unless its `last_modified` is unchanged; dates select nothing. The other four tables transform
+      like the second line.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=system-frequency-data"
+    commands:
+      - {run: gridflow ingest neso_data_portal system_frequency --last 24h, comment: "about 9.4 GB, bronze only"}
+      - {run: gridflow transform neso_data_portal system_frequency_gmt_csv --last 24h, comment: "the date's `_gmt_csv` captures to silver"}
+  record:
+    select:
+      filter:
+        - {column: dtm, op: in, value: ["2023-03-26T00:59:58Z", "2023-03-26T00:59:59Z", "2023-03-26T01:00:00Z", "2023-03-26T01:00:01Z", "2023-03-26T01:59:58Z", "2023-03-26T01:59:59Z", "2023-03-26T02:00:00Z", "2023-03-26T02:00:01Z"]}
+      dedup: {"on": [dtm], order_by: published_at}
+      order_by: [dtm]
+      columns: [dtm, f, resource_id, published_at, timestamp_utc]
+    key: [resource_id, dtm]
+    caption: "Silver `system_frequency_gmt_csv`, 26 March 2023: the hour UK clocks skip is present; labels are GMT."
+    fields:
+      dtm: "NESO's label for the second, read as UTC; NESO states GMT from January 2020"
+      f: "System frequency in Hz, as measured at that second (NESO)"
+      resource_id: "NESO's id for the monthly file; with `dtm`, the key"
+      published_at: "NESO's last-modified time for the whole monthly file, read as UTC"
+      timestamp_utc: "Equal to `dtm`: the measured second, not a capture or publish time"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote the capture to bronze, UTC
+  notebook:
+    lead: >-
+      `query()` reads each table's `_latest` view, filtering `timestamp_utc` by UTC day, both ends
+      included. Times come back in UK time; cell 3 converts `dtm` to UTC, cell 5 counts a
+      clock-change day per table.
+    cells:
+      - |
+        import pandas as pd
+        df = data.neso_data_portal.query("system_frequency_gmt_csv", "2023-12-22", "2023-12-22")
+        df["dtm"] = df.dtm.dt.tz_convert("UTC")
+        df = df.sort_values("dtm", ignore_index=True)
+        low = df.f.idxmin()
+        df.loc[low - 3 : low + 3, ["dtm", "f", "resource_id"]]
+      - |
+        below = df[df.f < 49.5]
+        pd.Series({"rows": len(df), "seconds below 49.5 Hz": len(below),
+                   "first": below.dtm.min(), "last": below.dtm.max()})
+      - |
+        days = {"system_frequency_offset_csv": "2018-03-25", "system_frequency_offset_zip": "2019-10-27",
+                "system_frequency_gmt_zip": "2021-03-28", "system_frequency_gmt_csv": "2025-10-26"}
+        pd.Series({f"{t} {d}": len(data.neso_data_portal.query(t, d, d)) for t, d in days.items()},
+                  name="rows on a clock-change day")
+      - |
+        t0 = pd.Timestamp("2023-12-22 13:00", tz="UTC")
+        win = df[(df.dtm >= t0) & (df.dtm < t0 + pd.Timedelta(minutes=30))]
+        ax = win.plot(x="dtm", y="f", figsize=(8, 3), legend=False, color="#155A6E", lw=0.8,
+                      xlabel="22 December 2023, UTC", ylabel="Hz")
+        ax.axhline(49.5, color="#C77E3C", lw=0.8, ls="--");
+    needs: the monthly files and the four typed tables
+    plot_alt: >-
+      Line chart of frequency in Hz each second from 13:00 to 13:30 UTC on 22 December 2023, with a
+      dashed line at 49.5 Hz. The line drifts just under 50 Hz, drops sharply at 13:10 to about
+      49.28 Hz, stays under the dashed line for about a minute, then climbs slowly back above 50 Hz
+      after 13:20.
+  related:
+    - {dataset: elexon/freq, note: "Elexon's GB frequency, one sample every 15 seconds"}
+    - {dataset: neso_data_portal/system-inertia, note: "NESO's GB system inertia, read with frequency in event studies"}
+    - {dataset: neso_data_portal/dynamic-containment-data, note: "NESO's frequency response auctions before EAC"}
+  family:
+    slug: system-frequency-data
+    members:
+      - dataset: system_frequency
+        differs: "Bronze only, no table: every monthly file lands here for the five tables below"
+        request: "GET https://api.neso.energy/api/3/action/package_show?id=system-frequency-data"
+      - dataset: system_frequency_dmy_csv
+        differs: "2014: day-first times such as `31/01/2014 23:59:59`, with no zone"
+        request:
+          - "GET https://api.neso.energy/dataset/cb1cc925-ecd8-4406-b021-3a3f368196e1/resource/0cd6ff2e-62ca-4fbf-8417-18b3539530e6/download/f-2014-1.csv"
+          - "GET https://api.neso.energy/dataset/cb1cc925-ecd8-4406-b021-3a3f368196e1/resource/c46f588c-0067-46fb-9b82-1e0cb71c920e/download/f-2014-12.csv"
+        held: "NESO's descriptions give no 2014 zone, and October repeats an hour, so it is not loaded."
+      - dataset: system_frequency_gmt_csv
+        differs: "April 2022 on, plain CSV, GMT as UTC; August 2026 midnights are bare dates"
+        request:
+          - "GET https://api.neso.energy/dataset/cb1cc925-ecd8-4406-b021-3a3f368196e1/resource/b3bbd2e7-50b1-49cb-8326-bc8f09003cde/download/fnew-2022-4.csv"
+          - "GET https://api.neso.energy/dataset/cb1cc925-ecd8-4406-b021-3a3f368196e1/resource/758fa76d-b645-4532-a532-ab49335ee4c3/download/fnew-2026-8.csv"
+      - dataset: system_frequency_gmt_zip
+        differs: "January 2020 to March 2022: the same GMT times, one CSV inside each ZIP"
+        request:
+          - "GET https://api.neso.energy/dataset/cb1cc925-ecd8-4406-b021-3a3f368196e1/resource/e1eb079f-abab-47c8-b59d-d558b3399796/download/fnew-2020-1.zip"
+          - "GET https://api.neso.energy/dataset/cb1cc925-ecd8-4406-b021-3a3f368196e1/resource/182081de-9773-4b5b-9c87-17adbd1576e6/download/fnew-2022-3.zip"
+      - dataset: system_frequency_offset_csv
+        differs: "2015 to 2018: UK clock times with offsets (`+0000`, `+0100`), converted to UTC"
+        request:
+          - "GET https://api.neso.energy/dataset/cb1cc925-ecd8-4406-b021-3a3f368196e1/resource/67b59ac0-b297-4f90-936e-30039d2cf2df/download/f-2015-1.csv"
+          - "GET https://api.neso.energy/dataset/cb1cc925-ecd8-4406-b021-3a3f368196e1/resource/67f7a127-e352-4c09-b403-d44f2740e510/download/f-2018-12.csv"
+      - dataset: system_frequency_offset_zip
+        differs: "2019: the same offset times, one CSV inside each ZIP"
+        request:
+          - "GET https://api.neso.energy/dataset/cb1cc925-ecd8-4406-b021-3a3f368196e1/resource/2a653f90-7948-4203-a49e-8763733debb2/download/f-2019-1.zip"
+          - "GET https://api.neso.energy/dataset/cb1cc925-ecd8-4406-b021-3a3f368196e1/resource/f0933bdd-1b0e-4dd3-aa7f-5498df1ba5b9/download/f-2019-12.zip"
 ---
 
 # System Frequency
