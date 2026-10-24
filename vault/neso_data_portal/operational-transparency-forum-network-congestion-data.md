@@ -4,11 +4,10 @@ package: "operational-transparency-forum-network-congestion-data"
 dataset_key: "otf_network_congestion"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-23
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: NESO does not explain its dates, how actuals are derived, or when forecasts were issued.
   title: OTF network congestion
   summary: >-
     NESO's weekly limits, in MW, on eleven major transmission boundaries: an actual and a forecast
@@ -26,6 +25,38 @@ page:
   how_used:
     - Forecast boundary limits compared with the actual limit for the same week
     - How a boundary's limit is expected to move, week by week, over six months
+  chart:
+    type: line
+    silver: neso_data_portal/otf_network_congestion
+    time: date
+    filter:
+      - {column: published_at, op: eq, value: "2026-10-14T09:21:36.782362"}
+    values:
+      - {column: b15_forecast, series: b15}
+      - {column: sc_forecast, series: sc}
+      - {column: b6_forecast, series: b6}
+      - {column: min_of_b4_b5_forecast, series: b4b5}
+    aggregation: last
+    window: {start: "2026-10-24", end: "2027-04-18"}
+    unit: MW
+  chart_view:
+    title: Forecast limits on four boundaries, October 2026 to April 2027
+    caption: >-
+      Silver `otf_network_congestion`, MW: four boundaries' Forecast columns in NESO's upload of 14
+      October 2026, for its dates with no Actual, 24 October 2026 to 18 April 2027. Points sit at
+      `Date` as written; NESO does not say what it marks.
+    alt: >-
+      Line chart from neso_data_portal/otf_network_congestion of four boundaries' forecast limits,
+      in MW, in NESO's upload of 14 October 2026, for its 26 dates with no Actual, 24 October 2026
+      to 18 April 2027, each at Date as written. B15 runs between 5,050 and 7,200, highest on 19
+      December. SC is lowest at 4,050 on 24 October and reaches 7,300 from 4 April. B6 runs between
+      3,900 and 6,400 and B4 and B5 between 1,000 and 3,400, both highest on 26 December.
+    x_label: "Date, as NESO writes it"
+    key:
+      - {series: b15, label: B15 forecast, codes: B15 - Forecast, paint: clay}
+      - {series: sc, label: SC forecast, codes: SC - Forecast, paint: olive}
+      - {series: b6, label: B6 forecast, codes: B6 - Forecast, paint: petrol}
+      - {series: b4b5, label: B4 and B5 forecast, codes: Min of B4 B5 - Forecast, paint: horizon, note: "NESO describes it as the minimum of the forecast B4 and B5 boundary limits."}
   raw_feed:
     note: >-
       From NESO's CKAN portal: `package_show`, then the file whole unless its `last_modified` is
@@ -36,6 +67,74 @@ page:
     commands:
       - {run: gridflow ingest neso_data_portal otf_network_congestion --last 24h, comment: whole file to bronze}
       - {run: gridflow transform neso_data_portal otf_network_congestion --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: published_at, op: eq, value: "2026-10-14T09:21:36.782362"}
+        - {column: date, op: ge, value: "2026-09-26"}
+        - {column: date, op: le, value: "2026-11-14"}
+      order_by: [date]
+      columns: [date, b6_actual, b6_forecast, b15_actual, b15_forecast, sc_actual, sc_forecast,
+                min_of_b4_b5_actual, min_of_b4_b5_forecast, published_at]
+    key: [date]
+    caption: "NESO's upload of 14 October 2026, four dates either side of its latest actual."
+    fields:
+      date: "NESO's `Date`, left undescribed in its dictionary; one row per date"
+      b6_actual: "`B6 - Actual`, MW; NESO does not say how actuals are derived"
+      b6_forecast: "`B6 - Forecast`, MW; NESO gives no issue time"
+      b15_actual: "`B15 - Actual`, MW; blank after the latest actual"
+      b15_forecast: "`B15 - Forecast`, MW"
+      sc_actual: "`SC - Actual`, MW"
+      sc_forecast: "`SC - Forecast`, MW"
+      min_of_b4_b5_actual: "`Min of B4 B5 - Actual`, MW"
+      min_of_b4_b5_forecast: "`Min of B4 B5 - Forecast`, MW"
+      published_at: "NESO's last-modified time for the file, read as UTC; one per upload"
+      b6a_actual: "`B6a - Actual`, MW"
+      b7_actual: "`B7 - Actual`, MW"
+      gmsnow_actual: "`GMSNOW - Actual`, MW"
+      le1_actual: "`LE1 - Actual`, MW"
+      b9_actual: "`B9 - Actual`, MW"
+      dreshex_actual: "`DRESHEX - Actual`, MW"
+      ec5_actual: "`EC5 - Actual`, MW"
+      b6a_forecast: "`B6a - Forecast`, MW"
+      b7_forecast: "`B7 - Forecast`, MW"
+      gmsnow_forecast: "`GMSNOW - Forecast`, MW"
+      le1_forecast: "`LE1 - Forecast`, MW"
+      b9_forecast: "`B9 - Forecast`, MW"
+      dreshex_forecast: "`DRESHEX - Forecast`, MW"
+      ec5_forecast: "`EC5 - Forecast`, MW"
+      timestamp_utc: "UK midnight opening `Date`, in UTC; gridflow's anchor, not NESO's"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote the capture to bronze, UTC
+  caveat: NESO does not say what Date marks, how actuals are derived, or when forecasts were made.
+  notebook:
+    lead: >-
+      `query()` reads the `_latest` view, the newest upload, filtering `date`, both ends included.
+      Past forecasts carry no issue time, so the plot draws actuals only, each at `date` as
+      written.
+    cells:
+      - |
+        df = data.neso_data_portal.query("otf_network_congestion", "2026-04-01", "2027-04-30")
+        df[["date", "b6_actual", "b6_forecast", "b15_actual", "b15_forecast"]].iloc[24:30]
+      - |
+        both = data.sql("""
+            SELECT date, published_at, b6_forecast
+            FROM silver_neso_data_portal_otf_network_congestion ORDER BY date, published_at""")
+        w = both.pivot(index="date", columns="published_at", values="b6_forecast")
+        w.columns = ["7 October upload", "14 October upload"]
+        w[w.iloc[:, 0] != w.iloc[:, 1]].dropna().rename_axis(columns=None).reset_index()
+      - |
+        past = df.dropna(subset=["b6_actual"]).set_index("date")
+        ax = past[["b15_actual", "sc_actual", "b6_actual", "min_of_b4_b5_actual"]].plot(
+            figsize=(8, 3.5), color=["#C77E3C", "#66793B", "#155A6E", "#3E8C97"], ylim=(0, 9500),
+            xlabel="Date, as NESO writes it", ylabel="actual limit, MW")
+        ax.legend(["B15", "SC", "B6", "Min of B4 B5"], ncol=4, loc="upper center");
+    needs: the 7 and 14 October 2026 uploads
+    plot_alt: >-
+      Line plot of four boundaries' actual limits in MW from NESO's upload of 14 October 2026, its
+      27 dates with actuals, 18 April to 17 October 2026. B15 runs 4,650 to 7,500, at 7,500 from 26
+      September. SC runs 3,100 to 7,300. B6 runs 2,350, on 13 June, to 5,200. Min of B4 B5 stays
+      1,300 to 2,000.
   related:
     - {dataset: neso_data_portal/24-months-ahead-constraint-limits, note: "NESO's weekly boundary capability for 24 months, with different boundary codes"}
     - {dataset: neso_data_portal/day-ahead-constraint-flows-and-limits, note: "Half-hourly day-ahead boundary limits and flows, with different boundary codes"}
@@ -63,9 +162,10 @@ orientation only: @thermal-constraint-costs.md and @24-months-ahead-constraint-l
 **This family is held (unit E-SEM).** The table mixes populated Actual columns with blank ones
 and carries no issue or publication column. The semantics of `Date` are not established, and the
 body fails the forward-target rule of RULINGS 529: in each of the two captures, 26 of its 53
-target dates are on or before the vintage date. Silver exists, but nothing here is eligible for publication or point-in-time model
-use. This page therefore gives schema, clocks, counts and structure only, and **no data values**.
-See Holds.
+target dates are on or before the vintage date. Silver exists, but nothing here is eligible for point-in-time model
+use. This note gives schema, clocks, counts and structure only. Under ruling 66 (2026-10-24) the
+site page shows the rows, a chart of the forecasts dated after one upload, and a notebook, with one
+line naming the open questions. See Holds.
 
 OTF's own explanation (NESO document 383631, [OTF boundary and forecast
 explanation](https://www.neso.energy/document/383631/download)) describes a nearer-term forecast
@@ -291,9 +391,10 @@ gridflow outputs derived from this package carry the attribution line above.
 
 - `otf_network_congestion`: held: TODO: is Date a week start, week end or reporting label (38 Saturdays, 15 Sundays, one 8-day step), how are actuals calculated, and when was each forecast issued? 26 targets are on or before the vintage, so the forward-target test fails. (unit E-SEM)
 
-The held output exists in silver, but it is not eligible for publication or point-in-time model
-use until unit E-SEM answers its question (RULINGS 529, 632). This page publishes its schema,
-clocks and row count only.
+The held output exists in silver, but it is not eligible for point-in-time model use until unit
+E-SEM answers its question (RULINGS 529, 632). This note gives its schema, clocks and row count
+only; under ruling 66 (2026-10-24) the site page shows the rows, a notebook and a chart of one
+upload's forecasts for dates with no Actual, with one line naming the open questions.
 
 - **What fails the forward-target test.** 26 of the 53 targets are on or before the vintage
   date. With no issue column, nothing shows when each value was available. The Forecast values
@@ -305,7 +406,10 @@ clocks and row count only.
   each Forecast value), plus evidence that a published row is immutable or that revisions are
   versioned. A narrower fix would be to keep only rows whose target is after the vintage, which
   would leave the 27 later dates. That filter would be a design decision for unit E-SEM, not a
-  current behaviour, and it would not answer the `Date` semantics question.
+  current gridflow behaviour, and it would not answer the `Date` semantics question. (The site
+  chart draws only forecasts for dates with no Actual in the same upload, which is a display
+  choice, not that fix: the first date after the 14 October 2026 vintage already carries an
+  Actual.)
 - **Not a downstream gap:** there is no gold view. No gridflow_models consumer is recorded for
   this family (`TODO: verify`).
 
