@@ -968,7 +968,8 @@ def manifest_errors(vendor_id: str, manifest: dict, notes: set[str] | None = Non
     if len(datasets) != len(set(datasets)):
         twice = sorted({d for d in datasets if datasets.count(d) > 1})
         errors.append(f"{vendor_id}: {twice} are in two families or listed twice")
-    clash = sorted((set(fams) | set(tables)) & set(datasets))
+    named_apart = {page for page, key in tables.items() if key != page}
+    clash = sorted((set(fams) | named_apart) & set(datasets))
     if clash:
         errors.append(f"{vendor_id}: family slug(s) {clash} are also dataset slugs")
     for page in pages:
@@ -2362,6 +2363,8 @@ def build_vendor(
         fam = fams.get(page)
         pointers = fam["members"] if fam else [tables[page]] if page in tables else []
         for member in pointers:
+            if member == page:  # a package named after its one table: the page is the pointer
+                continue
             href = f"{page}.html#{member}"
             (out_dataset_dir / f"{member}.html").write_text(
                 render_redirect(env, f"{vendor_id}/{member}", href, view["title"]), encoding="utf-8"
