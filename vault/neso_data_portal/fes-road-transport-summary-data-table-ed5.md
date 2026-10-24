@@ -4,9 +4,46 @@ package: "fes-road-transport-summary-data-table-ed5"
 dataset_key: "fes_ed5_road_transport"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-14
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: "NESO states no period for the year labels, or what blanks mean."
+  title: FES road transport summary
+  summary: >-
+    NESO's Future Energy Scenarios (FES) table of GB road transport: energy demand, vehicle numbers
+    and capacity, one file per edition.
+  facts:
+    vendor: "NESO Data Portal: four CSVs, one per edition, 2023 to 2026"
+    cadence: "Ad hoc (NESO); editions 2023 to 2026, as at 6 October 2026"
+    grain: "One value per data item, scenario or pathway, fuel and year label, per edition"
+    history: "NESO created the package on 7 July 2023"
+  landscape: power
+  what_it_is: >-
+    Each row is a road transport data item, in `TWh`, `GW` or a vehicle count such as `# Cars`,
+    for one scenario or pathway and one fuel, with a column per year. NESO's ED6 notes describe
+    the items and time peak items at the winter system peak, 5pm to 6pm. NESO calls the 2026 file
+    a Ten-Year Outlook output.
+  how_used:
+    - "Electric vehicle numbers and charging demand under each FES scenario or pathway"
+    - "Road transport energy demand by fuel, edition by edition"
+    - "Each item read with the same edition's ED6 notes"
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then four CSVs, each downloaded whole unless its
+      `last_modified` is unchanged. Shown: 2023, 2025 and 2026; edition comes from the file name.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=fes-road-transport-summary-data-table-ed5"
+      - "GET https://api.neso.energy/dataset/28303fe9-62d4-46c5-ad15-a1d0e59f98cb/resource/076c5c72-ecea-47c9-81b6-e93fe824d5d4/download/fes2023_ed5_v002.csv"
+      - "GET https://api.neso.energy/dataset/28303fe9-62d4-46c5-ad15-a1d0e59f98cb/resource/ce76da34-6eb0-43a1-8e93-3cc833d6d1b4/download/fes2025_ed5_v006.csv"
+      - "GET https://api.neso.energy/dataset/28303fe9-62d4-46c5-ad15-a1d0e59f98cb/resource/1b59c48f-f51a-4e32-a9e7-baca0b78a042/download/10yo2026_ed5_v001.csv"
+    commands:
+      - {run: gridflow ingest neso_data_portal fes_ed5_road_transport --last 24h, comment: "changed files only; whole CSVs"}
+      - {run: gridflow transform neso_data_portal fes_ed5_road_transport --last 24h, comment: "the capture's date to silver"}
+  related:
+    - {dataset: neso_data_portal/fes-road-transport-notes-data-table-ed6, note: "NESO's notes on these items; read both from one edition"}
+    - {dataset: neso_data_portal/fes-electricity-demand-summary-data-table-ed1, note: "NESO's FES GB electricity demand table, from the same editions"}
+    - {dataset: neso_data_portal/fes-flexibility-data-table-data-table-flx1, note: "FES flexibility table; earlier ED6 notes say vehicle-to-grid feeds flexibility modelling"}
 ---
 
 # FES: Pathways to Net Zero – Road Transport Summary Data table (ED5)
@@ -24,7 +61,9 @@ electric-vehicle charging demand and road-transport fuel demand in GB energy-sys
 
 The package has four resources, one per edition: 2023, 2024, 2025 and 2026. The 2026 resource has
 the filename prefix `10yo2026`. The batch spec treats the 2026 tables as the **Ten Year Outlook**
-rather than a full FES edition (gridflow `@.planning/phases/v0.22-K-SCN-2/K-SCN-2a-SPEC.md`).
+rather than a full FES edition (gridflow `@.planning/phases/v0.22-K-SCN-2/K-SCN-2a-SPEC.md`), and
+NESO's 2026 resource description says the same: "One of the Ten-Year Outlok outputs" (sic;
+catalogue snapshot `20261006T195819Z`).
 `TODO: verify` how NESO scopes the 2026 outlook against the 2023–2025 FES editions before
 comparing the editions column for column.
 

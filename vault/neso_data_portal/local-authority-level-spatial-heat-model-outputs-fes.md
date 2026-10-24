@@ -4,9 +4,59 @@ package: "local-authority-level-spatial-heat-model-outputs-fes"
 dataset_keys: ["fes_la_heat_model_domestic", "fes_la_heat_model_residential"]
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-15
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: true
+  title: Local authority heat model outputs
+  summary: >-
+    NESO's spatial heat model results for its Future Energy Scenarios (FES): buildings on each
+    heating technology, per GB local authority.
+  facts:
+    vendor: "NESO Data Portal: 20 CSVs, one per edition and modelled year"
+    cadence: "Ad hoc (NESO); FES 2022, 2024 and 2025 editions, as at 6 October 2026"
+    grain: "One row per local authority, year, scenario or pathway, and sector"
+    history: "NESO created the package on 9 March 2022"
+  landscape: power
+  what_it_is: >-
+    Two separate tables, never stacked or joined. FES 2022 domestic files give buildings on each
+    heating technology and their proportions. FES 2024 and 2025 residential files give dwellings or
+    buildings only, and some technology columns change name between the editions. Each file is one
+    modelled year, five-yearly to 2050. NESO's dictionary calls the 2022 oil boiler stock a
+    proportion.
+  how_used:
+    - "Heat pump and gas boiler numbers by local authority, under each scenario or pathway"
+    - "Map the heating technology mix across GB local authorities, edition by edition"
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show` per table, then its files, each downloaded whole
+      unless its `last_modified` is unchanged. Shown: each edition's first and last year.
+    commands:
+      - {run: gridflow ingest neso_data_portal fes_la_heat_model_domestic --last 24h, comment: "whole CSVs; swap in either key"}
+      - {run: gridflow transform neso_data_portal fes_la_heat_model_domestic --last 24h, comment: "the capture's date to silver"}
+  family:
+    slug: local-authority-level-spatial-heat-model-outputs-fes
+    members:
+      - dataset: fes_la_heat_model_domestic
+        differs: "FES 2022 domestic: buildings per heating technology and their proportion, 2020 to 2050"
+        request:
+          - "GET https://api.neso.energy/api/3/action/package_show?id=local-authority-level-spatial-heat-model-outputs-fes"
+          - "GET https://api.neso.energy/dataset/bfa95333-542e-4625-b5d0-17ced50a89ed/resource/c3dd66ab-cb07-4e4d-bbab-d79074ea1713/download/fes22_la_level_outputs_2020_domestic_all_scenarios.csv"
+          - "GET https://api.neso.energy/dataset/bfa95333-542e-4625-b5d0-17ced50a89ed/resource/3a9451a1-9e79-4fda-a570-79544b30f44e/download/fes22_la_level_outputs_2050_domestic_all_scenarios.csv"
+        held: "NESO states no count date for each year's stock, oil boiler's basis, or hydrogen blanks."
+      - dataset: fes_la_heat_model_residential
+        differs: "FES 2024 and 2025 residential: dwellings or buildings per heating technology, five-yearly"
+        request:
+          - "GET https://api.neso.energy/dataset/bfa95333-542e-4625-b5d0-17ced50a89ed/resource/31d45b63-e70d-4cf1-a912-918bf3de58d5/download/fes24_la_level_outputs_2020_residential_all_scenarios.csv"
+          - "GET https://api.neso.energy/dataset/bfa95333-542e-4625-b5d0-17ced50a89ed/resource/010d5cb3-2907-4ccd-949f-a3ec726b5109/download/fes24_la_level_outputs_2050_residential_all_scenarios.csv"
+          - "GET https://api.neso.energy/dataset/bfa95333-542e-4625-b5d0-17ced50a89ed/resource/e2215328-bd74-47c2-a22f-3878bb0fbbd5/download/fes25_la_level_outputs_2025_residential_all_scenarios.csv"
+          - "GET https://api.neso.energy/dataset/bfa95333-542e-4625-b5d0-17ced50a89ed/resource/593f1c8c-b278-4405-9164-21dfacd70a6d/download/fes25_la_level_outputs_2050_residential_all_scenarios.csv"
+        held: "NESO states no count date for each year's stock."
+  related:
+    - {dataset: neso_data_portal/building-heat-model, note: "NESO's tool modelling one home's half-hourly heat demand"}
+    - {dataset: neso_data_portal/fes-natural-gas-residential-and-non-domestic-i-c-heat-demand-summary-data-table-ed3, note: "NESO's FES heat demand by technology, for GB as a whole"}
+    - {dataset: neso_data_portal/regional-breakdown-of-fes-data-electricity, note: "Another regional FES breakdown: electricity by Grid Supply Point"}
 ---
 
 # Local Authority Level Spatial Heat Model Outputs (FES)
