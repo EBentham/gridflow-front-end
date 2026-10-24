@@ -57,5 +57,5 @@ captures repeat rows (or as a guard). On a table with no event time, `query()` f
 | # | Writer | Checker | State |
 |---|---|---|---|
 | 1 | a1111bee79407f06f | a31a821522a5f04b0 | checking; 20bx logged; ships with the 16 Oct file gap stated (seat, PROXY-SOURCED, metered-wind precedent) |
-| 2 | aef85fb4eda55cf26 | | writing |
+| 2 | aef85fb4eda55cf26 | aa419d8314d16ce62 | checking; 20by logged |
 | 3 | a9bfd403eeb22aae1 | aa193752879207a90 | checking; 20bw logged; related links: seat kept the writer's four (TEC, embedded, IFA, BritNed) |
