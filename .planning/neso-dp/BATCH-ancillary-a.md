@@ -114,6 +114,7 @@ https://github.com/EBentham/quant-vault/pull/64. Waiting for Bobbo's look. Merge
 - A family page cannot list request URLs for files outside its members (monthly BSUoS forecast archive and PDF). Family pages do not print `raw_feed.requests` at all (DFS 2023/24 `package_show`).
 - Bar labels round to two significant figures (Capacity Market clearing prices: £27.50 shows as 28, £22.50 as 22). Small values round to one decimal (resource adequacy LOLE).
 - The sample frame cannot wrap long text, so a definitions or notes column is always folded (FES ED4).
+- A held page whose tables have no silver still shows a "silver tables" heading (levelised cost of green hydrogen; ETYS, DNO and GIS pages likewise).
 - A bronze-only package (no silver table) still renders the "silver, typed and validated" band and "The silver tables" heading (Demand Profile Dates); the hold line carries it, but the band should say there is no table.
 - The column guide accepts only the lead table's columns (`build.py` line 1296); a second eligible member (transmission losses yearly table) has no guide of its own.
 - A full page needs eight sample rows; a table with fewer rows can only ship held (voltage contracted units, one row). Boundary files (ETYS, GSP) have no line-map visual.
