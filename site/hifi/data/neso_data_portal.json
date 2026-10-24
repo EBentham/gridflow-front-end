@@ -170,7 +170,11 @@
         "aahedc-tariffs",
         "gis-boundaries-for-gb-generation-charging-zones",
         "transmission-network-use-of-system-tnuos-tariffs",
-        "capacity-market-register"
+        "capacity-market-register",
+        "carbon-intensity-of-balancing-actions",
+        "country-carbon-intensity-forecast",
+        "national-carbon-intensity-forecast",
+        "regional-carbon-intensity-forecast"
       ]
     }
   ],
@@ -729,7 +733,11 @@
     "interconnector-register": "Interconnector register",
     "transmission-entry-capacity-tec-register": "Transmission Entry Capacity (TEC) register",
     "aahedc-tariffs": "Assistance for Areas of High Electricity Distribution Costs (AAHEDC) Tariffs",
-    "gis-boundaries-for-gb-generation-charging-zones": "GIS Boundaries for GB Generation Charging Zones"
+    "gis-boundaries-for-gb-generation-charging-zones": "GIS Boundaries for GB Generation Charging Zones",
+    "carbon-intensity-of-balancing-actions": "Carbon Intensity of Balancing Actions",
+    "country-carbon-intensity-forecast": "Country Carbon Intensity Forecast",
+    "national-carbon-intensity-forecast": "National Carbon Intensity Forecast",
+    "regional-carbon-intensity-forecast": "Regional Carbon Intensity Forecast"
   },
   "dropped": {},
   "package_tables": {
@@ -795,7 +803,11 @@
     "interconnector-register": "interconnector_register",
     "transmission-entry-capacity-tec-register": "tec_register",
     "aahedc-tariffs": "aahedc_tariffs",
-    "gis-boundaries-for-gb-generation-charging-zones": "gis_gen_charging_zones_files"
+    "gis-boundaries-for-gb-generation-charging-zones": "gis_gen_charging_zones_files",
+    "carbon-intensity-of-balancing-actions": "ci_balancing_actions",
+    "country-carbon-intensity-forecast": "country_ci_forecast",
+    "national-carbon-intensity-forecast": "national_ci_forecast",
+    "regional-carbon-intensity-forecast": "regional_ci_forecast"
   },
   "catalogue": {
     "_about": "NESO's catalogue as the hub draws it: its data groups in portal order, each with NESO's description and its packages (NESO's titles and CKAN names). `page_packages` names the CKAN package of a page not named after it; a package is a link when a page in `groups` documents it. `plan` lays the groups out as plots: a slug is one plot, `row` sets its children side by side, `col` stacks them; `wide` from 1100 px, `narrow` below, and `tag_narrow` plots carry their name beneath them when narrow.",
