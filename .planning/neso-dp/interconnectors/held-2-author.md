@@ -187,3 +187,5 @@ Wording matched to batch 1's round-2 edits on ElecLink and IFA, as they stood in
 Defects: none new beyond round 1. Added a NESO point: all three packages say values are published only where NESO
 restricts, yet most current-table rows (and many archive rows) carry `No Restriction`, and the NemoLink weekly and
 NSL archives carry blank reasons.
+
+## Round 3: "held" became "kept" in the raw-feed sentence on all three pages, and the Viking note's "Use" line now gives each hour's limit with NESO's stated reason instead of "hours when the GB system operator capped"; builds clean, detector `[]`, mirrors `cmp` clean.

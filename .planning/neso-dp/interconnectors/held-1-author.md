@@ -136,3 +136,11 @@ The note bodies still say "GB–France" and "GB–Netherlands" in their opening 
 **Defects added this round:**
 - NESO, all four packages: NESO's notes say values are published only where a restriction was applied. Its files list unrestricted hours instead: reason `No Restriction` on most current-table rows (flow to GB) and on 3,120 ElecLink archive rows, blank reasons in the IFA and IFA2 archives and BritNed, and 24 rows a day in every archive. Confirmed (the checker's finding).
 - NESO, all four packages: no NESO text states the far-end country of these links. The vault notes and FACTS files assume it without a source.
+
+## Round 3 (2026-10-24)
+
+All prescribed fixes are applied. IFA and IFA2 now read "but its October 2026 archive lists whole days, and many current rows say No Restriction". I scoped the clause to the archive because the current tables do not list every hour. "Whole days" fits the 60-word budget and also covers the one 25-hour day at the clock change.
+
+"Yet" is now "but" on all four pages, and "It calls them" is now "NESO calls them". BritNed now reads "its files list every hour of nearly every day they cover; many reasons are blank". That states only what the files show; it does not say a blank reason means unrestricted. BritNed `facts.history` now ends ", from NESO's list". In the `brit-ned.md` note body, "19,129 non-blank rows" is now "19,129 rows".
+
+`cmp` is clean on all four, the four builds (`--only` each lead) have no errors, and the detector returns `[]` on all four. The rendered text has no "yet", no country names and none of the banned words.

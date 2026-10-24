@@ -54,5 +54,7 @@ note-body statements (for example "only one capture") yourself when the data pro
 
 | # | Writer | Checker | State |
 |---|---|---|---|
-| H1 | a62fc78e8e26ffa05 | a21506c7e680b4a33 | round 2: ElecLink, BritNed APPROVED; IFA, IFA2 one prescribed fix (round 3); 20bv logged |
-| H2 | acef9b7cce5ed5f19 | a64b820b2fb288aa4 | APPROVED x3 (round 2); two last nits |
+| H1 | a62fc78e8e26ffa05 | a21506c7e680b4a33 | APPROVED x4 (round 3 prescribed fix seat-verified); committed; 20bv logged |
+| H2 | acef9b7cce5ed5f19 | a64b820b2fb288aa4 | APPROVED x3, nits fixed (seat-verified); committed |
+
+Group closed 2026-10-24: gates green (pytest 206, build check 172 pages, htmlhint 0, lychee 0, detector clean); site PR EBentham/gridflow-front-end#70, vault PR EBentham/quant-vault#73, both waiting for Bobbo. The worktree venv needed polars 1.44.2 installed (uv pip) for tests/test_sample_columns.py.
