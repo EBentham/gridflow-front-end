@@ -93,3 +93,39 @@ phrase in the notebook lead, with a one-line fix.
 
 - None new for gridflow. The writer's two entries stand (frame cannot show long text; NESO's 2026 item 5 names two
   forecasts). Add: the writer's "definition up to about 490 characters" should read 538 (2025 item 10).
+
+---
+
+## Round 2
+
+**Verdict: APPROVE.** No findings above nit; all five round 1 findings are fixed. Rebuilt with
+`--only neso_data_portal/fes_ed4_gas_demand_defs`: no errors (only the global 37-line gotcha warning). Detector `[]`.
+`cmp` of the canonical note and the mirror: identical. 0 em dashes in the built page. Notebook JSON written by
+`scripts/run_notebooks.py`, 6 cells, no error outputs. Checked from the built page text and the notebook JSON; layout
+is unchanged (words and one notebook cell), so no server and no new screenshots.
+
+1. **Major (notebook lead, "longest texts"): fixed.** The last cell now picks `defs.definition.str.len().nlargest(3)`.
+   Silver lengths: 2025 item 10 = 538, 2026 item 5 = 494, 2026 item 3 = 443, then 232 (no tie at the cut). The
+   notebook output prints exactly those three, in that order, whole (item 10 with its embedded newline). The lead now
+   says "the three longest definitions whole, NESO's typos included", which is true.
+2. **Nit (item 11 formulas in the notebook): fixed.** New cell output shows `= 1+2+3+4+5+6+8` (2025) and
+   `= 1+2+4+5+6+8` (2026), equal to silver.
+3. **Nit (caption reason): fixed, and sourced.** Caption: "2025 and 2026: the 2026 total omits item 3, whose
+   networked CNG is in item 2." NESO's 2026 item 3 text: "The networked element of gas demand for transport is
+   included within the commercial demand"; NESO's 2026 item 2 text: "Commercial demand here includes networked CNG used
+   for transport." The caption claims only the networked part, not that item 3 is counted in item 2, so the
+   non-networked LNG point is respected.
+4. **Nit (FES 2026 / FES25): fixed.** `what_it_is` ends "The 2026 item 5 text (file of 16 September 2026) names the
+   earlier forecast "FES 2026", then "FES25"." Both names are verbatim from silver (`In the FES 2026 10 Year Forecast`
+   ... `hence the FES25 10 Year Forecast`), uncorrected, and the date is the resource's `last_modified`
+   (2026-09-16T14:59:52). Reading both as the earlier forecast follows NESO's "hence"; the note body still says which
+   edition is meant is unverified, which is consistent.
+5. **Nit (ED3 naming, ED6 relation): fixed.**
+   - Summary now says the items are for "FES ED3 summary tables, titled Natural Gas Demand Summary from 2025", which
+     matches the catalogue (2023 and 2024 titled "Natural Gas and Residential Heat Demand Summary", 2025 and 2026
+     "Natural Gas Demand Summary").
+   - `what_it_is` adds that the 2025 and 2026 ED4 file descriptions say natural gas only; the snapshot agrees.
+   - ED6 related note, "Does for road transport table ED5 what this page does for ED3", matches ED6's own note ("a
+     codebook for ED5") and its reciprocal link to this page.
+
+Body edit unchanged and still true. Frame sample unchanged. No new issues.
