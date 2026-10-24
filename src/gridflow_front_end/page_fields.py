@@ -108,6 +108,19 @@ the lead note::
     page:
       held: The date column's day and month order is not settled.   # a one-table page: the reason
 
+A held page whose raw files may be shown (not a licence carve-out) can show the header and
+first eight lines of one bronze file, as fetched, in its bronze stratum, with the caveat that
+keeps the table unpublished (``raw_sample.py``; ``gridflow-sample`` writes the committed file)::
+
+    page:
+      held: Rows repeat and there is no settlement-run column.
+      raw_feed:
+        sample:
+          table: daily_balancing_costs           # optional: default the page's table (the lead)
+          file: q1_cost_fy2627.csv               # optional: the vendor's file name; default the
+                                                 # newest capture
+          caveat: Rows repeat with no run column, so revisions cannot be told apart.
+
 Why front matter and not a fenced block in the body: every vault tool already
 ``yaml.safe_load``s the front matter (``gridflow_drift_check.py``,
 ``derive_machine_catalog.py``) and nested keys have precedent
@@ -315,12 +328,27 @@ class Command:
 
 
 @dataclass(frozen=True)
+class RawSample:
+    """The first rows of one raw file, as fetched: a held page's only rows (``raw_feed.sample``).
+
+    ``table`` is the bronze table the file is read from (default: the page's own table key);
+    ``file`` picks one of its files by NESO's file name (default: the newest capture);
+    ``caveat`` is the one plain line on the open question that keeps the table unpublished.
+    """
+
+    table: str = ""
+    file: str = ""
+    caveat: str = ""
+
+
+@dataclass(frozen=True)
 class RawFeed:
     """The bronze stratum: the vendor's raw URL and the gridflow calls."""
 
     note: str = ""
     requests: tuple[str, ...] = ()
     commands: tuple[Command, ...] = ()
+    sample: RawSample | None = None
 
 
 @dataclass(frozen=True)
@@ -551,7 +579,7 @@ def _read(page: Mapping[str, Any]) -> tuple[PageFields, list[str]]:
         )
 
     raw_m = r.mapping(f"{p}.{RAW_FEED}", page.get(RAW_FEED))
-    r.unknown(f"{p}.{RAW_FEED}", raw_m, ("note", "requests", "commands"))
+    r.unknown(f"{p}.{RAW_FEED}", raw_m, ("note", "requests", "commands", "sample"))
     commands: list[Command] = []
     for i, cmd in enumerate(r.seq(f"{p}.raw_feed.commands", raw_m.get("commands"))):
         where = f"{p}.raw_feed.commands[{i}]"
@@ -563,6 +591,15 @@ def _read(page: Mapping[str, Any]) -> tuple[PageFields, list[str]]:
                 comment=r.text(f"{where}.comment", cm.get("comment")),
             )
         )
+    sample: RawSample | None = None
+    if raw_m.get("sample") is not None:
+        sm = r.mapping(f"{p}.raw_feed.sample", raw_m.get("sample"))
+        r.unknown(f"{p}.raw_feed.sample", sm, ("table", "file", "caveat"))
+        sample = RawSample(
+            table=r.text(f"{p}.raw_feed.sample.table", sm.get("table")),
+            file=r.text(f"{p}.raw_feed.sample.file", sm.get("file")),
+            caveat=_prose(r.text(f"{p}.raw_feed.sample.caveat", sm.get("caveat"), required=True)),
+        )
     raw_feed = RawFeed(
         note=_prose(r.text(f"{p}.raw_feed.note", raw_m.get("note"))),
         requests=tuple(
@@ -570,6 +607,7 @@ def _read(page: Mapping[str, Any]) -> tuple[PageFields, list[str]]:
             for i, v in enumerate(r.seq(f"{p}.raw_feed.requests", raw_m.get("requests")))
         ),
         commands=tuple(commands),
+        sample=sample,
     )
 
     rec_m = r.mapping(f"{p}.{RECORD}", page.get(RECORD))
@@ -762,18 +800,22 @@ def _held_errors(fields: PageFields) -> list[str]:
     return e
 
 
+_TABLE_RE = re.compile(r"^[a-z0-9_]+$")
+
+
 def _caveat_errors(fields: PageFields) -> list[str]:
     """Where a caveat may stand: beside rows the page shows, never on a page that shows none.
 
     A one-table page with rows takes ``caveat``; a family page gives each member with rows its
-    own; a held page has no silver rows, so it takes none.
+    own; a held page has no silver rows, so only its raw sample (``raw_feed.sample``) takes one.
     """
     p = PAGE_KEY
     e: list[str] = []
     if fields.caveat:
         if fields.held:
             e.append(
-                f"{p}.{CAVEAT}: a held page shows no silver rows and its `held` says why"
+                f"{p}.{CAVEAT}: a held page shows no silver rows and its `held` says why; "
+                "a raw file's rows take raw_feed.sample.caveat"
             )
         elif fields.family is not None:
             e.append(f"{p}.{CAVEAT}: a family page gives each member its own caveat")
@@ -792,6 +834,24 @@ def _caveat_errors(fields: PageFields) -> list[str]:
                     "are not shown (held), not both"
                 )
             _budget(e, where, mem.caveat, "caveat")
+    sample = fields.raw_feed.sample
+    if sample is not None:
+        where = f"{p}.raw_feed.sample"
+        if not fields.held:
+            e.append(
+                f"{where}: only a held page shows a raw file's rows; a page with silver rows "
+                "shows its frame"
+            )
+        if sample.caveat:
+            _budget(e, f"{where}.caveat", sample.caveat, "caveat")
+        if sample.table and not _TABLE_RE.match(sample.table):
+            e.append(f"{where}.table: {sample.table!r} is not a table key")
+        if fields.family is not None:
+            datasets = [m.dataset for m in fields.family.members]
+            if sample.table and sample.table not in datasets:
+                e.append(f"{where}.table: {sample.table!r} is not one of the family's members")
+        if sample.file and any(c in sample.file for c in "/\\"):
+            e.append(f"{where}.file: the file's name only, as the vendor names it (no path)")
     return e
 
 

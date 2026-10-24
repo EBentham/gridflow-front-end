@@ -6,7 +6,8 @@
     `page:` block or from the fixed template copy below. A page whose note has no `page:` block yet is
     blank (`v.blank`, from build.blank_view()): the hero's breadcrumb, name and id, nothing else.
     A held page (`v.held`, ruling 6) has no silver rows: its silver stratum lists each table with the
-    reason its rows are not shown, and it has no chart, frame, column guide or notebook (no gold stratum).
+    reason its rows are not shown, and it has no chart, frame, column guide or notebook (no gold stratum);
+    it may show the first rows of one raw file in its bronze stratum (`v.raw.sample`), with a caveat.
     A page whose rows carry an open question (ruling 66) prints its caveat (`v.caveat`) just above the
     frame; a family member's caveat (`m.caveat`) sits under the member in the raw feed. -#}
 <!doctype html>
@@ -152,6 +153,13 @@
           {%- endfor %}
           {%- endif %}
           <pre class="ds-well" aria-label="The gridflow commands">{% for c in v.raw.commands %}{% if c.comment %}<span class="ln ds-cm"># {{ c.comment }}</span>{% endif %}<span class="ln">{{ c.run }}</span>{% endfor %}</pre>
+          {%- if v.raw.sample %}
+          {#- a held page's only rows: one raw file's first lines, as the vendor sent them -#}
+          <figure class="ds-raw-sample" aria-labelledby="raw-sample-h">
+            <figcaption><p class="ds-variants__h" id="raw-sample-h">{{ v.raw.sample.head }}</p><p class="ds-variants__d">{{ v.raw.sample.caveat | md_inline | safe }}</p></figcaption>
+            <pre class="ds-well" aria-label="{{ v.raw.sample.aria }}">{{ v.raw.sample.lines | safe }}</pre>
+          </figure>
+          {%- endif %}
         </div>
       </div>
     </section>
