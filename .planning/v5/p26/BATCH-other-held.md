@@ -81,3 +81,4 @@ ENTSO-E paragraphs). Verify every one against local silver before writing it.
 | `capacity-by-indicator` | ac0bdc96719e22118 | | writing |
 | `cmp` | ad9551166d4bfee02 | | writing |
 | `netbsad` | a00f12902b3632a4d | | writing |
+| `nonbm` | ac0848f63e8af4f35 | | writing |
