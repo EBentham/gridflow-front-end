@@ -1,0 +1,261 @@
+{
+ "dataset": "entsoe/balancing_energy_bids",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "d14451602dd9c1dafd8384c2bf4d2555a93b87740b67607af307d1b08885d78f",
+ "silver": "entsoe/balancing_energy_bids",
+ "columns": [
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "area_code",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "bid_mrid",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "direction",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "standard_market_product",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "quantity_mw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "energy_price",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "currency_unit",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "original_market_product",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "business_type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "resolution",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "data_provider",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "ingested_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2026-08-01 12:00:00 UTC",
+   "10YBE----------2",
+   "34",
+   "A01",
+   "A05",
+   "73.0",
+   "141.0",
+   "EUR",
+   "",
+   "B74",
+   "PT15M",
+   "2026-10-24 14:22:22 UTC",
+   "entsoe",
+   "2026-10-24 15:21:46.551406 UTC",
+   "2026-08-01 12:00:00 UTC",
+   "2026-10-24 14:22:22 UTC",
+   "6a59515a-09b0-4739-946e-a571cab71dfc",
+   "2.0.0"
+  ],
+  [
+   "2026-08-01 12:00:00 UTC",
+   "10YBE----------2",
+   "34",
+   "A01",
+   "A07",
+   "3.0",
+   "240.87",
+   "EUR",
+   "",
+   "B74",
+   "PT15M",
+   "2026-10-24 14:18:12 UTC",
+   "entsoe",
+   "2026-10-24 15:21:46.551406 UTC",
+   "2026-08-01 12:00:00 UTC",
+   "2026-10-24 14:18:12 UTC",
+   "6a59515a-09b0-4739-946e-a571cab71dfc",
+   "2.0.0"
+  ],
+  [
+   "2026-08-01 12:00:00 UTC",
+   "10YBE----------2",
+   "35",
+   "A01",
+   "A05",
+   "74.0",
+   "141.0",
+   "EUR",
+   "",
+   "B74",
+   "PT15M",
+   "2026-10-24 14:22:22 UTC",
+   "entsoe",
+   "2026-10-24 15:21:46.551406 UTC",
+   "2026-08-01 12:00:00 UTC",
+   "2026-10-24 14:22:22 UTC",
+   "6a59515a-09b0-4739-946e-a571cab71dfc",
+   "2.0.0"
+  ],
+  [
+   "2026-08-01 12:00:00 UTC",
+   "10YBE----------2",
+   "35",
+   "A01",
+   "A07",
+   "69.0",
+   "240.87",
+   "EUR",
+   "",
+   "B74",
+   "PT15M",
+   "2026-10-24 14:18:12 UTC",
+   "entsoe",
+   "2026-10-24 15:21:46.551406 UTC",
+   "2026-08-01 12:00:00 UTC",
+   "2026-10-24 14:18:12 UTC",
+   "6a59515a-09b0-4739-946e-a571cab71dfc",
+   "2.0.0"
+  ],
+  [
+   "2026-08-01 12:00:00 UTC",
+   "10YBE----------2",
+   "75",
+   "A01",
+   "A05",
+   "1.0",
+   "200.0",
+   "EUR",
+   "",
+   "B74",
+   "PT15M",
+   "2026-10-24 14:25:57 UTC",
+   "entsoe",
+   "2026-10-24 15:21:46.551406 UTC",
+   "2026-08-01 12:00:00 UTC",
+   "2026-10-24 14:25:57 UTC",
+   "6a59515a-09b0-4739-946e-a571cab71dfc",
+   "2.0.0"
+  ],
+  [
+   "2026-08-01 12:00:00 UTC",
+   "10YBE----------2",
+   "75",
+   "A01",
+   "A07",
+   "2.0",
+   "1040.0",
+   "EUR",
+   "",
+   "B74",
+   "PT15M",
+   "2026-10-24 14:18:12 UTC",
+   "entsoe",
+   "2026-10-24 15:21:46.551406 UTC",
+   "2026-08-01 12:00:00 UTC",
+   "2026-10-24 14:18:12 UTC",
+   "6a59515a-09b0-4739-946e-a571cab71dfc",
+   "2.0.0"
+  ],
+  [
+   "2026-08-01 12:00:00 UTC",
+   "10YBE----------2",
+   "76",
+   "A01",
+   "A05",
+   "1.0",
+   "200.0",
+   "EUR",
+   "",
+   "B74",
+   "PT15M",
+   "2026-10-24 14:25:57 UTC",
+   "entsoe",
+   "2026-10-24 15:21:46.551406 UTC",
+   "2026-08-01 12:00:00 UTC",
+   "2026-10-24 14:25:57 UTC",
+   "6a59515a-09b0-4739-946e-a571cab71dfc",
+   "2.0.0"
+  ],
+  [
+   "2026-08-01 12:00:00 UTC",
+   "10YBE----------2",
+   "76",
+   "A01",
+   "A07",
+   "2.0",
+   "1040.0",
+   "EUR",
+   "",
+   "B74",
+   "PT15M",
+   "2026-10-24 14:18:12 UTC",
+   "entsoe",
+   "2026-10-24 15:21:46.551406 UTC",
+   "2026-08-01 12:00:00 UTC",
+   "2026-10-24 14:18:12 UTC",
+   "6a59515a-09b0-4739-946e-a571cab71dfc",
+   "2.0.0"
+  ]
+ ],
+ "mark": null
+}
