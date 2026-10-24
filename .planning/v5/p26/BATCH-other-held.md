@@ -73,7 +73,7 @@ ENTSO-E paragraphs). Verify every one against local silver before writing it.
 
 | Page | Writer | Checker | State |
 |---|---|---|---|
-| `current_balancing_state` | a4cb0fff7df521d95 | | writing |
+| `current_balancing_state` | a4cb0fff7df521d95 | a30c0bcff807fc21d | REVISE round 1 (French quarter-hour values implied as minute data; undated area coverage); writer revising |
 | `unavailability` (GIE) | aca4443f38f5d0077 | | writing |
-| `procured_balancing_capacity` | a304ded779c679e9e | | writing |
+| `procured_balancing_capacity` | a304ded779c679e9e | a2ff306455c8c2d69 | written; in review (price-unit caveat kept; 2-5 Aug need re-ingest; silver drops allocation decision time) |
 | `balancing-energy-bids` | a77c0dcd4743a2675 | | writing |
