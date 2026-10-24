@@ -696,9 +696,9 @@
       "title": "FES: Pathways to Net Zero Building Block Data",
       "note": "future-energy-scenario-fes-building-block-data",
       "members": [
-        "fes_building_blocks_main",
         "fes_building_blocks_block_definitions",
-        "fes_building_blocks_block_licence_area"
+        "fes_building_blocks_block_licence_area",
+        "fes_building_blocks_main"
       ]
     },
     {
