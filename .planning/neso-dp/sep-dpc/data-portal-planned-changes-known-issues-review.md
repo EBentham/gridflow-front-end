@@ -125,3 +125,28 @@ Checker, 2026-10-24. Worktrees `C:\gridflow-wt\fe-neso-dpc` and `C:\gridflow-wt\
   - Multi-line cells (item 240's 20 datasets) print on one line in the frame.
   - Template items, not findings: the unfolded frame is very wide, and the notebook file tab "portal_known_issues.ipynb"
     is ellipsised at 390 (227 px text in a 207 px tab).
+
+## Round 2
+
+Checker, 2026-10-24. Rebuilt with `--only neso_data_portal/portal_known_issues`: success. Mirror `cmp` equal. Detector `[]`.
+Built page: 0 em or en dashes, 0 middle dots, 51 "→" (all still NESO's text in the frame). Series, sample and notebook
+untouched (digest checks pass). Checked the built page text and the note; no layout change, so no server was started.
+
+Verdict: **APPROVE** (no finding above nit).
+
+1. **Fixed** (was major). `what_it_is` now reads "items 239 and 240 are Planned in gridflow's capture of NESO's 8 October
+   2026 file, Deployed in NESO's 16 October file". The chart caption says NESO "publishes only its current file, so
+   gridflow's captures of other files may count differently" (supported by the note body, line 299). `how_used[2]` is
+   "Compare gridflow's captures item by item". The page no longer implies the reader can fetch the 8 October file.
+2. **Fixed.** Guide for `description`: "NESO's text of the change or issue; the frame cuts it at 1,000 characters". Matches
+   the sample (rows 242, 243, 244 and 256 are 1,003 characters ending "...").
+3. **Fixed.** Guide for `notes`: "NESO's note: item 241's moves it to 19 October; its description says 15 October". It parses
+   now and matches silver. "item 241's" is still terse (nit, not worth another round).
+4. **Fixed.** "item 189's start time is 9 January 2026" (silver `change_datetime_from` 2026-01-09 11:00Z).
+5. **Fixed.** Related notes give NESO's status: 239 and 243 "both Deployed, renamed"; 241, 255 and 256 "(Planned) announces".
+   Statuses match silver. All 12 words or fewer.
+6. **Fixed, one residual nit.** Line 231 now covers both captures; the Key paragraph and the `po` schema row say "2026-10-08
+   capture". Residual: the Event-time bullet (line 236) still gives only the 2026-10-08 `written_at` as "the gridflow capture
+   time". It is an example, not wrong, and it is not on the page. Optional.
+
+No new findings. Nothing in the changed wording introduces a claim silver contradicts.
