@@ -124,3 +124,7 @@ None. The held mode rendered as on the other GIS pages.
 2. "state British National Grid coordinates in metres": confirm against the three `.prj` files, not NESO's text.
 3. "draft and final SSEP": attributed only to NESO's file descriptions.
 4. The note-body `.shp.xml` and third-party additions: measured, and kept off the page.
+
+## Round 2 (2026-10-24, seat ruling on the review nits)
+
+The feature counts are dropped from the `what_it_is` files sentence ("The files, last modified February and March 2026, state British National Grid coordinates in metres."), which leaves only NESO's dated zone counts (60 words down to 53). `how_used` now reads "Draw NESO's land and marine publication zone files on a map" and "Group land data with the economic zones file NESO describes for SSEP modelling". Nothing else changed, and `grain` keeps its feature counts. Checks: CRLF 240/240, `cmp` clean, `parse_page_fields` and `anatomy_errors` `[]`, build wrote with no errors, detector `[]`, no em or en dashes. No new screenshots: the changes only shorten prose.

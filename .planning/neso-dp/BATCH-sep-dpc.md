@@ -49,4 +49,4 @@ or commit (the seat commits). Do not end your turn until your report or review i
 | # | Writer | Checker | State |
 |---|---|---|---|
 | 1 | a38fce4dccab3dbc6 | ae9fe78524bd08512 | APPROVED (round 2 fixes seat-verified); committed; 20ci logged |
-| H | a0b72c16a49a0f95f | a53b1c14d6caaf419 | checking; 20ck logged (kept off the page) |
+| H | a0b72c16a49a0f95f | a53b1c14d6caaf419 | APPROVED with nits; file feature counts dropped beside NESO's zone counts (seat); committed; 20ck logged (kept off the page) |
