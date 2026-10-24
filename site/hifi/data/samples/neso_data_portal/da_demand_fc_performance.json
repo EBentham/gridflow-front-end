@@ -1,0 +1,274 @@
+{
+ "dataset": "neso_data_portal/da_demand_fc_performance",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "6b8399e219a5d12afb2ee07d69e9eade4199bb7d93634608738578c51813a345",
+ "silver": "neso_data_portal/da_demand_fc_performance",
+ "columns": [
+  {
+   "name": "outturn_date",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "settlement_period",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "outturn_datetime",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "demand_forecast",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "demand_outturn",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "absolute_error",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "ape",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "publish_datetime",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "triad_avoidance_estimate",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "triad_avoidance_corrected_demand_outturn",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "month_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2021-10-31",
+   "1",
+   "2021-10-31T00:30:00Z",
+   "22120",
+   "21919",
+   "201",
+   "0.9",
+   "2021-10-30T09:45:00Z",
+   "0",
+   "21919",
+   "Oct",
+   "2026-10-16 09:15:07.976027 UTC",
+   "2026-10-16 19:21:57.651931 UTC",
+   "bronze/neso_data_portal/da_demand_fc_performance/2026/10/16/raw_20261016T192157Z_08e41551-80f8-4e28-a416-ea473a695db9_f0e93c7a.csv",
+   "2026-10-16 19:21:57.651931 UTC",
+   "2026-10-16 19:21:57.651931 UTC",
+   "2026-10-16 09:15:07.976027 UTC",
+   "drain-3125c4c7-3458-4300-ba10-8dcb54c8761b",
+   "1+e1"
+  ],
+  [
+   "2021-10-31",
+   "4",
+   "2021-10-31T01:00:00Z",
+   "20950",
+   "21087",
+   "137",
+   "0.6",
+   "2021-10-30T09:45:00Z",
+   "0",
+   "21087",
+   "Oct",
+   "2026-10-16 09:15:07.976027 UTC",
+   "2026-10-16 19:21:57.651931 UTC",
+   "bronze/neso_data_portal/da_demand_fc_performance/2026/10/16/raw_20261016T192157Z_08e41551-80f8-4e28-a416-ea473a695db9_f0e93c7a.csv",
+   "2026-10-16 19:21:57.651931 UTC",
+   "2026-10-16 19:21:57.651931 UTC",
+   "2026-10-16 09:15:07.976027 UTC",
+   "drain-3125c4c7-3458-4300-ba10-8dcb54c8761b",
+   "1+e1"
+  ],
+  [
+   "2021-10-31",
+   "4",
+   "2021-10-31T01:00:00Z",
+   "21200",
+   "21087",
+   "113",
+   "0.5",
+   "2021-10-30T09:45:00Z",
+   "0",
+   "21087",
+   "Oct",
+   "2026-10-16 09:15:07.976027 UTC",
+   "2026-10-16 19:21:57.651931 UTC",
+   "bronze/neso_data_portal/da_demand_fc_performance/2026/10/16/raw_20261016T192157Z_08e41551-80f8-4e28-a416-ea473a695db9_f0e93c7a.csv",
+   "2026-10-16 19:21:57.651931 UTC",
+   "2026-10-16 19:21:57.651931 UTC",
+   "2026-10-16 09:15:07.976027 UTC",
+   "drain-3125c4c7-3458-4300-ba10-8dcb54c8761b",
+   "1+e1"
+  ],
+  [
+   "2021-10-31",
+   "5",
+   "2021-10-31T01:30:00Z",
+   "20650",
+   "20743",
+   "93",
+   "0.4",
+   "2021-10-30T09:45:00Z",
+   "0",
+   "20743",
+   "Oct",
+   "2026-10-16 09:15:07.976027 UTC",
+   "2026-10-16 19:21:57.651931 UTC",
+   "bronze/neso_data_portal/da_demand_fc_performance/2026/10/16/raw_20261016T192157Z_08e41551-80f8-4e28-a416-ea473a695db9_f0e93c7a.csv",
+   "2026-10-16 19:21:57.651931 UTC",
+   "2026-10-16 19:21:57.651931 UTC",
+   "2026-10-16 09:15:07.976027 UTC",
+   "drain-3125c4c7-3458-4300-ba10-8dcb54c8761b",
+   "1+e1"
+  ],
+  [
+   "2021-10-31",
+   "5",
+   "2021-10-31T01:30:00Z",
+   "20710",
+   "20743",
+   "33",
+   "0.2",
+   "2021-10-30T09:45:00Z",
+   "0",
+   "20743",
+   "Oct",
+   "2026-10-16 09:15:07.976027 UTC",
+   "2026-10-16 19:21:57.651931 UTC",
+   "bronze/neso_data_portal/da_demand_fc_performance/2026/10/16/raw_20261016T192157Z_08e41551-80f8-4e28-a416-ea473a695db9_f0e93c7a.csv",
+   "2026-10-16 19:21:57.651931 UTC",
+   "2026-10-16 19:21:57.651931 UTC",
+   "2026-10-16 09:15:07.976027 UTC",
+   "drain-3125c4c7-3458-4300-ba10-8dcb54c8761b",
+   "1+e1"
+  ],
+  [
+   "2021-10-31",
+   "6",
+   "2021-10-31T02:00:00Z",
+   "19944",
+   "20028",
+   "84",
+   "0.4",
+   "2021-10-30T09:45:00Z",
+   "0",
+   "20028",
+   "Oct",
+   "2026-10-16 09:15:07.976027 UTC",
+   "2026-10-16 19:21:57.651931 UTC",
+   "bronze/neso_data_portal/da_demand_fc_performance/2026/10/16/raw_20261016T192157Z_08e41551-80f8-4e28-a416-ea473a695db9_f0e93c7a.csv",
+   "2026-10-16 19:21:57.651931 UTC",
+   "2026-10-16 19:21:57.651931 UTC",
+   "2026-10-16 09:15:07.976027 UTC",
+   "drain-3125c4c7-3458-4300-ba10-8dcb54c8761b",
+   "1+e1"
+  ],
+  [
+   "2021-10-31",
+   "7",
+   "2021-10-31T02:30:00Z",
+   "19390",
+   "19508",
+   "118",
+   "0.6",
+   "2021-10-30T09:45:00Z",
+   "0",
+   "19508",
+   "Oct",
+   "2026-10-16 09:15:07.976027 UTC",
+   "2026-10-16 19:21:57.651931 UTC",
+   "bronze/neso_data_portal/da_demand_fc_performance/2026/10/16/raw_20261016T192157Z_08e41551-80f8-4e28-a416-ea473a695db9_f0e93c7a.csv",
+   "2026-10-16 19:21:57.651931 UTC",
+   "2026-10-16 19:21:57.651931 UTC",
+   "2026-10-16 09:15:07.976027 UTC",
+   "drain-3125c4c7-3458-4300-ba10-8dcb54c8761b",
+   "1+e1"
+  ],
+  [
+   "2021-10-31",
+   "8",
+   "2021-10-31T03:00:00Z",
+   "18947",
+   "19119",
+   "172",
+   "0.9",
+   "2021-10-30T09:45:00Z",
+   "0",
+   "19119",
+   "Oct",
+   "2026-10-16 09:15:07.976027 UTC",
+   "2026-10-16 19:21:57.651931 UTC",
+   "bronze/neso_data_portal/da_demand_fc_performance/2026/10/16/raw_20261016T192157Z_08e41551-80f8-4e28-a416-ea473a695db9_f0e93c7a.csv",
+   "2026-10-16 19:21:57.651931 UTC",
+   "2026-10-16 19:21:57.651931 UTC",
+   "2026-10-16 09:15:07.976027 UTC",
+   "drain-3125c4c7-3458-4300-ba10-8dcb54c8761b",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

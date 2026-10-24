@@ -1,0 +1,19 @@
+{
+  "dataset": "neso_data_portal/stability_pathfinder_utilisation_report",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "a751dc2deafa2e1a18a6ca957a76f9657510374d3afce5439588f63791ef3f36",
+  "type": "bar",
+  "unit": "instructions",
+  "caption": "",
+  "value_column": null,
+  "aggregation": "count",
+  "window": null,
+  "provenance": {"duplicates_dropped": 58, "files": 3, "rows_matched": 116, "rows_read": 363905, "rows_used": 58, "silver": "neso_data_portal/stability_pathfinder_utilisation_report"},
+  "spec": {"aggregation": "count", "dedup": {"on": ["resource_id", "unit", "settlement_period_start_date_time", "settlement_period_end_date_time", "instruction_code", "instruction_issue_time", "actual_service_start_or_cease_time", "inertia"], "order_by": "capture_written_at"}, "filter": [{"column": "resource_id", "op": "eq", "value": "75996c0a-70fb-4ddb-a345-bb1e8d39de35"}, {"column": "instruction_code", "op": "ne", "value": "No"}], "group": "unit", "silver": "neso_data_portal/stability_pathfinder_utilisation_report", "sort": "value_desc", "type": "bar", "unit": "instructions"},
+  "x_kind": "category",
+  "x": ["KILLSC-2", "PMBSC-61", "KTHRS-1", "LRDSC-1", "LRDSC-2", "NLSSC-1", "BEASC-1", "GRTSC-1", "KTHRS-2", "THRSC-1", "RTHSC-1"],
+  "series": [
+    {"key": "count", "values": [15, 15, 6, 4, 4, 4, 3, 2, 2, 2, 1]}
+  ]
+}

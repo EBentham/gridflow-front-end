@@ -1,0 +1,219 @@
+{
+ "dataset": "neso_data_portal/eleclink",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "e9a393a33a388bf18edc42dc8ce663f0e196c258099352dda6b615a411b48ffd",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.sql(\"\"\"\n    SELECT operational_period_start_gmt, auction_type, data_upload_time_gmt,\n           flow_to_gb_mw, flow_from_gb_mw, reason_for_restriction_from_gb\n    FROM silver_neso_data_portal_eleclink_latest\n    WHERE operational_period_start_gmt >= TIMESTAMPTZ '2026-10-09 00:00:00+00'\n      AND operational_period_start_gmt < TIMESTAMPTZ '2026-10-16 00:00:00+00'\n    ORDER BY operational_period_start_gmt, auction_type\"\"\")\nfor c in [\"operational_period_start_gmt\", \"data_upload_time_gmt\"]:\n    df[c] = df[c].dt.tz_convert(\"UTC\")\ndf.head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "operational_period_start_gmt",
+      "auction_type",
+      "data_upload_time_gmt",
+      "flow_to_gb_mw",
+      "flow_from_gb_mw",
+      "reason_for_restriction_from_gb"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2026-10-09 00:00:00+00:00",
+       "Day Ahead",
+       "2026-10-08 14:30:05+00:00",
+       "1014.0",
+       "1014.0",
+       "No Restriction"
+      ],
+      [
+       "2026-10-09 00:00:00+00:00",
+       "Intraday 1",
+       "2026-10-08 17:45:05+00:00",
+       "1014.0",
+       "260.0",
+       "Network Constraints"
+      ],
+      [
+       "2026-10-09 01:00:00+00:00",
+       "Day Ahead",
+       "2026-10-08 14:30:05+00:00",
+       "1014.0",
+       "1014.0",
+       "No Restriction"
+      ],
+      [
+       "2026-10-09 01:00:00+00:00",
+       "Intraday 1",
+       "2026-10-08 17:45:05+00:00",
+       "1014.0",
+       "150.0",
+       "Network Constraints"
+      ],
+      [
+       "2026-10-09 02:00:00+00:00",
+       "Day Ahead",
+       "2026-10-08 14:30:05+00:00",
+       "1014.0",
+       "1014.0",
+       "No Restriction"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "data.sql(\"\"\"\n    SELECT version, auction_type, count(*) AS rows, count(DISTINCT operational_date) AS dates\n    FROM silver_neso_data_portal_eleclink_latest\n    WHERE operational_date IS NOT NULL\n    GROUP BY version, auction_type ORDER BY version, auction_type\"\"\")",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "version",
+      "auction_type",
+      "rows",
+      "dates"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8"
+     ],
+     "rows": [
+      [
+       "001",
+       "DayAhead",
+       "3312",
+       "138"
+      ],
+      [
+       "001",
+       "Intraday1",
+       "1824",
+       "76"
+      ],
+      [
+       "001",
+       "Intraday2",
+       "1728",
+       "72"
+      ],
+      [
+       "002",
+       "Intraday1",
+       "936",
+       "39"
+      ],
+      [
+       "002",
+       "Intraday2",
+       "456",
+       "19"
+      ],
+      [
+       "003",
+       "Intraday1",
+       "48",
+       "2"
+      ],
+      [
+       "003",
+       "Intraday2",
+       "96",
+       "4"
+      ],
+      [
+       "004",
+       "Intraday1",
+       "24",
+       "1"
+      ],
+      [
+       "004",
+       "Intraday2",
+       "48",
+       "2"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "wide = df.pivot(index=\"operational_period_start_gmt\", columns=\"auction_type\",\n                values=\"flow_from_gb_mw\").asfreq(\"h\")\nax = wide.plot(drawstyle=\"steps-post\", figsize=(8, 3.5), xlabel=\"hour start, UTC\",\n               ylabel=\"export limit, MW\")\nax.legend(loc=\"lower left\", bbox_to_anchor=(0, 1), ncols=4);",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "eleclink-5.png",
+     "width": 707,
+     "height": 403
+    }
+   ]
+  }
+ ]
+}

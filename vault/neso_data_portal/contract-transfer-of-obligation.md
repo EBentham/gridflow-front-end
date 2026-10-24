@@ -8,7 +8,7 @@ updated: 2026-10-13
 layer_coverage: "bronze"
 eligibility: "eligible"
 page:
-  held: Identical rows repeat and no transfer id tells them apart, so there is no silver table.
+  held: Identical rows repeat with no transfer id, and NESO does not define the delivery period.
   title: Contract transfer of obligation
   summary: >-
     NESO's log of balancing-service contracts that providers asked to move from one unit to another:
@@ -35,6 +35,9 @@ page:
       - "GET https://api.neso.energy/dataset/cb295f83-bfb8-4aa0-9b92-0a6791342c7e/resource/dbd7f746-07c9-4804-8ab2-9bec2d7ef0ec/download/contract-transfers.csv"
     commands:
       - {run: gridflow ingest neso_data_portal contract_transfer_obligation --last 24h, comment: "whole file, bronze only"}
+    sample:
+      file: contract-transfers.csv
+      caveat: Identical rows repeat, as here, and no transfer id says whether they are separate transfers.
   related:
     - {dataset: neso_data_portal/eac-br-auction-results, note: "Balancing Reserve auction results, among the tags NESO gives this log"}
     - {dataset: neso_data_portal/eac-auction-results, note: "EAC response and reserve auction results, also among its tags"}

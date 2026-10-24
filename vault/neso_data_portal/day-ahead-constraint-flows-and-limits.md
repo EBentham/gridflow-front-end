@@ -4,11 +4,11 @@ package: "day-ahead-constraint-flows-and-limits"
 dataset_key: "da_constraint_flows_limits"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-23
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: Boundary and half-hour pairs repeat, and NESO does not explain 99999 limits or the flow's unit.
+  held: Boundary and half-hour pairs repeat; NESO leaves 99999 limits, the flow's unit and clock changes unexplained.
   title: Day-ahead constraint flows and limits
   summary: >-
     NESO's day-ahead limit, in MW, and forecast flow for each main transmission boundary and half
@@ -40,6 +40,10 @@ page:
     commands:
       - {run: gridflow ingest neso_data_portal da_constraint_flows_limits --last 24h, comment: "the whole archive, bronze only"}
       - {run: gridflow ingest neso_data_portal da_constraint_flows_limits_files --last 24h, comment: the two network diagrams}
+    sample:
+      table: da_constraint_flows_limits
+      file: day-ahead-constraints-limits-and-flow-output-v1.5.csv
+      caveat: Times carry no offset; NESO does not say whether each starts or ends its half hour.
   related:
     - {dataset: neso_data_portal/24-months-ahead-constraint-limits, note: "NESO's weekly limits, 24 months ahead; ten boundary codes match exactly"}
     - {dataset: neso_data_portal/thermal-constraint-costs, note: "Outturn thermal constraint costs; five boundary codes match exactly"}
@@ -72,7 +76,9 @@ input for GB constraint-cost and redispatch modelling, not a measurement of what
    `@.planning/phases/v0.22-close/refresh-20261016/DRIFT.md`). **Silver holds 0 rows for this package**
    (RULINGS 635; no `da_constraint_flows_limits` directory exists under
    `C:/gridflow-data/silver/neso_data_portal/`). Bronze holds the immutable CSV and the two PDFs.
-   This page gives schema, counts and clocks and **never data values, ranges or example rows**.
+   This note gives schema, counts and clocks and no data values or ranges. Under ruling 66
+   (2026-10-24) the site page shows the header and first eight lines of the CSV as fetched, and
+   no table.
 2. **It is a rolling historical archive, not just the next day.** The vendor says the file is
    limited to the past three years plus the current year (for 2026, records from 2023 through
    2026 inclusive) and earlier data is available on request. The captured body is consistent
@@ -249,7 +255,9 @@ Schema, epoch 1:
 | `published_at` | CKAN `last_modified` of the captured file (ADR-030) |
 | `available_at` | = `published_at` |
 
-**Silver: 0 rows. HELD (E-SEM): no values shown. Capture adjudicated failed (ADR-040).** The
+**Silver: 0 rows. HELD (E-SEM). Capture adjudicated failed (ADR-040).** Under ruling 66
+(2026-10-24) the site page shows the header and first eight lines of the 16 October 2026 capture
+of the CSV, as fetched, and no table. The
 source header is `Constraint Group`, `Date_ Time GMT_BST` (note the space after the
 underscore), `Limit_MW`, `Flow_MW`; the vendor header contains no unit text. The record has
 one epoch; the first capture's body is 733,649 data rows, 28,054,626 bytes, UTF-8 (the second:
