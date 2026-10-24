@@ -1,0 +1,19 @@
+{
+  "dataset": "neso_data_portal/cmis_intertrip",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "35b64bd6a43024c7815594f5ed57756724728540638e7a72af02991076136c7a",
+  "type": "bar",
+  "unit": "£",
+  "caption": "",
+  "value_column": "utilisation_cost_gbp",
+  "aggregation": "sum",
+  "window": null,
+  "provenance": {"duplicates_dropped": 0, "files": 5, "null_values_dropped": 0, "rows_matched": 1047, "rows_read": 1047, "rows_used": 1047, "silver": "neso_data_portal/cmis_intertrip"},
+  "spec": {"aggregation": "sum", "dedup": {"on": ["resource_id", "bmu_id", "arming_date_time"], "order_by": "capture_written_at"}, "group": "resource_id", "group_map": {"2f0777a3-719c-4ffe-96c2-61117a5ec468": "fy2024", "38c6a5cd-388d-4275-b404-361c6eb102b3": "fy2023", "60a1c0c6-4821-4e38-bc87-c6b4d510be6d": "fy2026", "60b4055c-d87e-4ebe-8d21-e023f506e461": "fy2022", "c6f0c279-87c9-4123-a4d1-b2d6d98b43a7": "fy2025"}, "silver": "neso_data_portal/cmis_intertrip", "sort": "label", "type": "bar", "unit": "£", "value": "utilisation_cost_gbp"},
+  "x_kind": "category",
+  "x": ["fy2022", "fy2023", "fy2024", "fy2025", "fy2026"],
+  "series": [
+    {"key": "utilisation_cost_gbp", "values": [10056770.25, 1018471.36, 1489756.06, 1955062.62, 723278.15]}
+  ]
+}

@@ -1,0 +1,228 @@
+{
+ "dataset": "neso_data_portal/cmis_intertrip",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "a250fa38f9dc88873b563cc7c0a5a9a7edd3bc1edace2557ab1a5ddba6f9fa1e",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.sql(\"\"\"\n    SELECT resource_id, bmu_id, arming_date_time, disarming_date_time,\n           current_arming_fee_gbp_per_sp AS fee_per_sp,\n           current_arming_fee_gbp_per_mwh AS fee_per_mwh, utilisation_cost_gbp, b6_ec5\n    FROM silver_neso_data_portal_cmis_intertrip_latest\"\"\")\nfiles = df.groupby(\"resource_id\").agg(first=(\"arming_date_time\", \"min\"), last=(\"arming_date_time\", \"max\"),\n                                      armings=(\"bmu_id\", \"size\"), units=(\"bmu_id\", \"nunique\"),\n                                      cost_gbp=(\"utilisation_cost_gbp\", \"sum\"))\nfiles.sort_values(\"first\").round(0).reset_index(drop=True)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "first",
+      "last",
+      "armings",
+      "units",
+      "cost_gbp"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2022-04-03T17:11:00+00:00",
+       "2023-03-29T14:00:00+00:00",
+       "441",
+       "6",
+       "10056770.0"
+      ],
+      [
+       "2023-05-04T15:16:00+00:00",
+       "2024-03-22T22:28:00+00:00",
+       "110",
+       "15",
+       "1018471.0"
+      ],
+      [
+       "2024-04-17T07:00:00+00:00",
+       "2025-03-30T00:00:00+00:00",
+       "246",
+       "23",
+       "1489756.0"
+      ],
+      [
+       "2025-04-03T09:24:00+00:00",
+       "2026-03-17T01:04:00+00:00",
+       "167",
+       "13",
+       "1955063.0"
+      ],
+      [
+       "2026-04-03T03:49:00+00:00",
+       "2026-08-07T15:47:00+00:00",
+       "83",
+       "12",
+       "723278.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "filled = df.groupby(\"resource_id\")[[\"fee_per_sp\", \"fee_per_mwh\", \"b6_ec5\"]].count()\nfilled.loc[files.sort_values(\"first\").index].reset_index()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "resource_id",
+      "fee_per_sp",
+      "fee_per_mwh",
+      "b6_ec5"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "60b4055c-d87e-4ebe-8d21-e023f506e461",
+       "441",
+       "0",
+       "0"
+      ],
+      [
+       "38c6a5cd-388d-4275-b404-361c6eb102b3",
+       "110",
+       "0",
+       "0"
+      ],
+      [
+       "2f0777a3-719c-4ffe-96c2-61117a5ec468",
+       "0",
+       "246",
+       "246"
+      ],
+      [
+       "c6f0c279-87c9-4123-a4d1-b2d6d98b43a7",
+       "0",
+       "167",
+       "167"
+      ],
+      [
+       "60a1c0c6-4821-4e38-bc87-c6b4d510be6d",
+       "0",
+       "83",
+       "83"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "top = df.groupby(\"bmu_id\").utilisation_cost_gbp.agg([\"count\", \"sum\"]).sort_values(\"sum\", ascending=False)\ntop.head(6).round(0).reset_index()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "bmu_id",
+      "count",
+      "sum"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5"
+     ],
+     "rows": [
+      [
+       "WHILW-1",
+       "148",
+       "8891644.0"
+      ],
+      [
+       "BLLA-1",
+       "111",
+       "2703881.0"
+      ],
+      [
+       "WHILW-2",
+       "41",
+       "706827.0"
+      ],
+      [
+       "GRIFW-2",
+       "119",
+       "582520.0"
+      ],
+      [
+       "GRIFW-1",
+       "119",
+       "570397.0"
+      ],
+      [
+       "CRYRW-2",
+       "146",
+       "445301.0"
+      ]
+     ]
+    }
+   ]
+  }
+ ]
+}
