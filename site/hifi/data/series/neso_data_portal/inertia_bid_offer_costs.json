@@ -1,0 +1,21 @@
+{
+  "dataset": "neso_data_portal/inertia_bid_offer_costs",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "e736118db9cac2aa93ab99ed48b4faf96539ecad58d2466117876b8b99ffa8fc",
+  "type": "line",
+  "unit": "£/GVA or £ per GVAs",
+  "caption": "",
+  "value_column": null,
+  "aggregation": "last",
+  "window": {"end": "2022-02-28", "rule": "fixed", "start": "2022-02-01"},
+  "provenance": {"duplicates_dropped": 0, "files": 1, "null_values_dropped": 0, "rows_matched": 317, "rows_read": 1096, "rows_unpivoted": 24, "rows_used": 72, "silver": "neso_data_portal/inertia_bid_offer_costs", "silver_first": "2019-04-15", "silver_last": "2022-03-20"},
+  "spec": {"aggregation": "last", "dedup": {"on": ["date"], "order_by": "published_at"}, "filter": [{"column": "method_a_average_bid_price", "op": "ne", "value": 0}, {"column": "method_b_average_wind_price", "op": "ne", "value": 0}, {"column": "method_c_highest_bid_price", "op": "ne", "value": 0}], "silver": "neso_data_portal/inertia_bid_offer_costs", "time": "date", "type": "line", "unit": "£/GVA or £ per GVAs", "values": [{"column": "method_c_highest_bid_price", "series": "c"}, {"column": "method_b_average_wind_price", "series": "b"}, {"column": "method_a_average_bid_price", "series": "a"}], "window": {"end": "2022-02-28", "start": "2022-02-01"}},
+  "x_kind": "time",
+  "x": ["2022-02-01", "2022-02-03", "2022-02-04", "2022-02-05", "2022-02-06", "2022-02-07", "2022-02-08", "2022-02-09", "2022-02-11", "2022-02-12", "2022-02-13", "2022-02-14", "2022-02-15", "2022-02-16", "2022-02-17", "2022-02-18", "2022-02-19", "2022-02-20", "2022-02-21", "2022-02-22", "2022-02-23", "2022-02-24", "2022-02-25", "2022-02-27"],
+  "series": [
+    {"key": "c", "values": [16697.0, 17621.0, 15077.0, 16259.0, 15952.0, 16471.0, 16635.0, 15658.0, 16037.0, 14763.0, 16555.0, 13171.0, 13561.0, 13524.0, 18620.0, 16959.0, 18047.0, 20741.0, 20040.0, 21108.0, 27077.0, 26088.0, 26041.0, 27107.0]},
+    {"key": "b", "values": [10264.0, 10834.0, 9315.0, 9958.0, 10282.0, 9980.0, 10295.0, 9462.0, 9590.0, 8982.0, 10076.0, 7867.0, 8088.0, 8182.0, 11896.0, 10295.0, 11261.0, 13363.0, 12836.0, 12619.0, 16250.0, 16220.0, 17063.0, 17359.0]},
+    {"key": "a", "values": [3380.0, 1711.0, 1808.0, 1821.0, 3560.0, 1543.0, 4102.0, 3710.0, 3026.0, 2900.0, 2520.0, 2760.0, 2148.0, 3491.0, 5199.0, 2561.0, 4222.0, 1691.0, 1829.0, 2983.0, 3814.0, 2296.0, 5234.0, 3825.0]}
+  ]
+}

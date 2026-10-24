@@ -1,0 +1,165 @@
+{
+ "dataset": "neso_data_portal/inertia_bid_offer_costs",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "90c1f41b57c86e064c1fcf64df5e622e9d454561db561582b6761e9600949d91",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.neso_data_portal.query(\"inertia_bid_offer_costs\", \"2019-04-01\", \"2022-03-31\")\nm = [\"method_a_average_bid_price\", \"method_b_average_wind_price\", \"method_c_highest_bid_price\"]\ndf[[\"date\", *m]].tail()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "date",
+      "method_a_average_bid_price",
+      "method_b_average_wind_price",
+      "method_c_highest_bid_price"
+     ],
+     "index": [
+      "1091",
+      "1092",
+      "1093",
+      "1094",
+      "1095"
+     ],
+     "rows": [
+      [
+       "2022-03-27",
+       "0.0",
+       "0.0",
+       "0.0"
+      ],
+      [
+       "2022-03-28",
+       "0.0",
+       "0.0",
+       "0.0"
+      ],
+      [
+       "2022-03-29",
+       "0.0",
+       "0.0",
+       "0.0"
+      ],
+      [
+       "2022-03-30",
+       "0.0",
+       "0.0",
+       "0.0"
+      ],
+      [
+       "2022-03-31",
+       "0.0",
+       "0.0",
+       "0.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "april_year = (df.date.dt.year - (df.date.dt.month < 4)).rename(\"april_year\")\nzero = df[m].eq(0).rename(columns=lambda c: c[:8] + \"_zero\")\nzero.groupby(april_year).sum().assign(days=df.groupby(april_year).size()).rename_axis(None)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "method_a_zero",
+      "method_b_zero",
+      "method_c_zero",
+      "days"
+     ],
+     "index": [
+      "2019",
+      "2020",
+      "2021"
+     ],
+     "rows": [
+      [
+       "293",
+       "292",
+       "292",
+       "366"
+      ],
+      [
+       "239",
+       "237",
+       "237",
+       "365"
+      ],
+      [
+       "247",
+       "244",
+       "244",
+       "365"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "no_zero = df[m].ne(0).all(axis=1).groupby(df.date.dt.strftime(\"%Y-%m\")).sum()\nax = no_zero.plot.bar(color=\"#155A6E\", figsize=(8, 3.5), xlabel=\"month\", ylabel=\"days with no zero\")\nax.set_xticks(range(0, len(no_zero), 6), no_zero.index[::6], rotation=0);",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "inertia_bid_offer_costs-5.png",
+     "width": 690,
+     "height": 340
+    }
+   ]
+  }
+ ]
+}
