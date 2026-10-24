@@ -4,9 +4,123 @@ package: "monthly-operational-metered-wind-output"
 dataset_key: "metered_wind_output_monthly"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-09
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: Metered wind output by region
+  summary: >-
+    NESO's operationally metered wind output per half-hour settlement period, in MW, for Scotland,
+    for England and Wales, and their total.
+  facts:
+    vendor: "NESO Data Portal, package `monthly-operational-metered-wind-output`: nine yearly CSV files"
+    cadence: Half-hourly values; NESO's catalogue lists the update frequency as monthly
+    grain: "One row per settlement period and yearly file: two regions and their total"
+    history: April-to-March files from 2018-19, as NESO's catalogue lists them
+  landscape: power
+  what_it_is: >-
+    NESO's operationally metered wind output per settlement period, in MW: Scotland, England
+    and Wales, and their total. The 2025-26 and 2026-27 files cover 1 April to the first
+    half-hour of 5 April 2026 and differ; NESO does not say which wins. This page stops at the 3
+    October file: gridflow does not read the header NESO renamed on 16 October.
+  how_used:
+    - Score wind forecasts against metered output, per settlement period and region
+    - Compare Scottish with England and Wales wind output, half-hour by half-hour
+    - "Not settlement-grade: NESO expects it to differ from its settlement-metered forecasting metrics"
+  chart:
+    type: stacked-area
+    silver: neso_data_portal/metered_wind_output_monthly
+    time: sett_date
+    values:
+      - {column: england_wales_wind_output, series: england_wales}
+      - {column: scottish_wind_output, series: scotland}
+    dedup: {"on": [sett_date, sett_period], order_by: published_at}
+    aggregation: mean
+    window: {start: "2025-04-01", end: "2026-09-30"}
+    unit: MW
+  chart_view:
+    title: Daily mean metered wind, April 2025 to September 2026
+    caption: >-
+      Silver `metered_wind_output_monthly`, MW, 1 April 2025 to 30 September 2026: each settlement
+      date's mean half-hourly value (averages or spot readings: NESO does not say), stacked; the top
+      edge is NESO's total. Shared April 2026 periods use the 2026-27 file.
+    alt: >-
+      Stacked area chart from neso_data_portal/metered_wind_output_monthly of daily mean metered
+      wind output in MW, 1 April 2025 to 30 September 2026: England and Wales at the bottom,
+      Scotland above, the top edge their total. The total runs from 881 on 16 August 2026 to
+      16,868 on 25 March 2026; days above 12,000 fall mostly between September 2025 and March
+      2026. England and Wales is the larger band on 443 of the 548 days.
+    x_label: settlement date (GB clock day)
+    key:
+      - {series: scotland, label: Scotland, codes: Scottish Wind Output, paint: hatch-lines,
+         note: "Unpainted: the palette has one colour for wind. NESO does not define either region's boundary."}
+      - {series: england_wales, label: England and Wales, codes: England/Wales Wind Output, paint: horizon}
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then each of nine yearly files downloaded whole
+      unless its `last_modified` is unchanged. Dates select nothing; silver keeps every capture.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=monthly-operational-metered-wind-output"
+      - "GET https://api.neso.energy/dataset/7f7fa642-6eff-4b8f-9e8b-7ede1ba50e20/resource/c9bc94c4-6d8c-49ff-afff-67c0030bec05/download/monthly-operational-metered-wind-output-2026-2027.csv"
+      - "GET https://api.neso.energy/dataset/7f7fa642-6eff-4b8f-9e8b-7ede1ba50e20/resource/7622b040-977a-45a6-924e-f158df6c29f0/download/monthly-operational-metered-wind-output-2025-2026.csv"
+    commands:
+      - {run: gridflow ingest neso_data_portal metered_wind_output_monthly --last 24h, comment: "whole files; window must end recently"}
+      - {run: gridflow transform neso_data_portal metered_wind_output_monthly --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: sett_date, op: eq, value: "2026-04-01"}
+        - {column: sett_period, op: le, value: 4}
+      dedup: {"on": [resource_id, sett_date, sett_period], order_by: published_at}
+      order_by: [sett_period, resource_id]
+      columns: [sett_period, resource_id, total, scottish_wind_output, england_wales_wind_output, sett_date,
+                published_at, timestamp_utc]
+    key: [resource_id, sett_date, sett_period]
+    caption: "1 April 2026, periods 1 to 4, in both files: values differ; NESO names no precedence."
+    fields:
+      resource_id: "NESO's id for the April-to-March file; with date and period, the entity key"
+      sett_date: "Settlement date, a GB clock day; NESO sends `YYYY-MM-DD`"
+      sett_period: Half-hour of the day, 1 to 48; 46 or 50 on clock-change days
+      scottish_wind_output: "Scottish wind output, MW, operationally metered (NESO); average or spot not stated"
+      england_wales_wind_output: "England and Wales wind output, MW, operationally metered; average or spot not stated"
+      total: "NESO's total of the two regions, MW; average or spot not stated"
+      published_at: "NESO's last-modified time for the whole file, read as UTC; one per capture"
+      timestamp_utc: "Period start, UTC: GB midnight, plus 30 minutes for each period after the first"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      `query()` reads the `_latest` view, the newest capture of each yearly file, filtered on
+      `sett_date` with both ends included; lineage columns dropped. Times arrive in the session zone,
+      so cell one converts them to UTC.
+    cells:
+      - |
+        df = data.neso_data_portal.query("metered_wind_output_monthly", "2026-04-01", "2026-04-05")
+        for col in ["timestamp_utc", "published_at"]:
+            df[col] = df[col].dt.tz_convert("UTC")
+        files = {"7622b040-977a-45a6-924e-f158df6c29f0": "2025-26",
+                 "c9bc94c4-6d8c-49ff-afff-67c0030bec05": "2026-27"}
+        df["file"] = df.resource_id.map(files)
+        g = df.groupby("file")
+        g.agg(rows=("total", "size"), first=("timestamp_utc", "min"),
+              last=("timestamp_utc", "max"), modified=("published_at", "first")).reset_index()
+      - |
+        both = df.pivot_table(index="timestamp_utc", columns="file", values="total").dropna()
+        gap = both["2026-27"] - both["2025-26"]
+        gap.describe().round(1)
+      - |
+        ax = gap.plot(figsize=(8, 3.5), color="#155A6E", xlabel="settlement period start, UTC",
+                      ylabel="2026-27 minus 2025-26 file, MW");
+    needs: the 2025-26 and 2026-27 yearly files
+    plot_alt: >-
+      Line plot of the 2026-27 file's total minus the 2025-26 file's, in MW, for the 193 settlement
+      periods both hold, from 23:00 UTC on 31 March to 23:00 UTC on 4 April 2026. It never falls
+      below zero: near zero early on 2 April, median 31.5, highest 70.9 at 01:00 UTC on 3 April.
+  related:
+    - {dataset: neso_data_portal/14-days-ahead-operational-metered-wind-forecasts, note: "NESO's forecasts for operationally metered wind farms, up to 14 days ahead"}
+    - {dataset: neso_data_portal/daily_wind_availability, note: "Wind availability NESO expects per BM unit, beside metered output"}
+    - {dataset: neso_data_portal/wind-bmu-boa-volumes, note: "Balancing acceptances taken on wind BM units"}
+    - {dataset: elexon/fuelhh, note: "Elexon's GB wind generation per settlement period, to compare against"}
 ---
 
 # Monthly operational metered wind output
@@ -94,6 +208,13 @@ How the row counts add up:
 - M08 has 17,520 + **193** rows, because it runs past 31 March to 2026-04-05 P1. That overrun is
   the overlap described below.
 - M09's 8,785 rows equal the CKAN datastore `total` read on 2026-10-08.
+- Recapture (2026-10-16): `2026/10/16/raw_20261016T204037Z_c9bc94c4-…_64345ea9.csv`, the 2026-2027
+  file at CKAN `last_modified` 2026-10-16T06:38:45.339694, 387,247 bytes, 9,409 rows, 2026-04-01 →
+  2026-10-14 (P1 only). Its header renames `England/Wales Wind Output` to `England Wales Wind
+  Output`, so the transform failed it (`HeaderEpochError`, failure record under
+  `state/neso_data_portal/completion_failures/metered_wind_output_monthly/`) and silver keeps the
+  2026-10-08 capture. Its 8,785 keys shared with that capture carry identical values (checked
+  2026-10-24 on both bronze bodies).
 
 The filenames follow `monthly-operational-metered-wind-output-<YYYY>-<YYYY>.csv`. Resolve the
 URL from the CKAN resource rather than hard-coding it.
@@ -204,7 +325,8 @@ cross-border or offshore sites are assigned.
   instant.
 - DuckDB relations: `silver_neso_data_portal_metered_wind_output_monthly` (all captures) and
   `silver_neso_data_portal_metered_wind_output_monthly_latest`. Each resource has exactly one
-  capture today, so `_latest` serves all 149,234 rows.
+  silver capture (the 2026-10-16 recapture of the 2026-2027 file failed its header check; see the
+  capture list), so `_latest` serves all 149,234 rows.
 
 **The M08/M09 overlap (adjudicated, data unchanged).** The 2025-2026 file (M08) runs past its
 financial year. M08 and the 2026-2027 file (M09) both publish **2026-04-01 P1 → 2026-04-05 P1**,
@@ -305,11 +427,13 @@ What the CKAN timestamps show (observed, with no inference drawn):
 - The 2025-2026 file was last modified on 2026-04-07, after the year ended, and that upload
   carries the April overrun.
 - The current 2026-2027 file was last modified on 2026-10-03, and its data runs to 2026-10-01 P1.
+  It was modified again on 2026-10-16 (06:38:45), running to 2026-10-14 P1. That upload still
+  starts at 2026-04-01 and repeats the earlier rows unchanged, with a renamed England/Wales column.
 
 `TODO: verify`:
 
 - the vendor's upload day each month;
-- whether each upload replaces the whole year-to-date file;
+- whether each upload replaces the whole year-to-date file (the 2026-10-16 upload did);
 - whether closed-year archives are ever revised after the year ends.
 
 gridflow keeps every dated capture in silver. A revision would therefore show up as a new
@@ -318,11 +442,19 @@ vintage of the same `resource_id`, and `_latest` would then serve the newer capt
 **Operational consequence (ADR-040 R-1).** The adjudication names exact captures. When the
 2026-2027 resource is next captured, its new capture overlaps M08 on the same 193 keys, and that
 gap is not covered. The old entry also goes stale, so reconcile turns red until the ledger is
-edited in a PR. This behaviour is intended (GEN-2H invariant H3), not a regression.
+edited in a PR. This behaviour is intended (GEN-2H invariant H3), not a regression. The first
+recapture (2026-10-16) did not reach this point: it failed the header check before silver, so the
+family needs a second header epoch first (gridflow BACKLOG §19).
 
 gridflow config declares `schedule: "daily"` for this family (`metered_wind_output_monthly` in
 `config/sources.yaml`, with `max_query_days: 1`), as it does for most NESO Data Portal datasets.
-TODO: verify whether any scheduler actually runs that daily capture.
+The first daily refresh ran on 2026-10-16 and made the recapture above (gridflow BACKLOG §19,
+RULINGS 888).
+
+**Fresh install.** Until gridflow fixes 20bp (a second header epoch for the renamed England/Wales
+column), a new ingest takes NESO's 2026-10-16 file, which the transform rejects, so the site page's
+notebook (1 to 5 April 2026 from the 2025-2026 and 2026-2027 files) returns no 2026-2027 rows on a
+fresh install.
 
 ## Licence and attribution
 
