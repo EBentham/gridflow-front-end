@@ -1,0 +1,220 @@
+{
+ "dataset": "neso_data_portal/bsuos_fixed_tariffs",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "798cb0793219ec7d3db038c6c78466c72db2ef8cf0725880cce17578db4ff987",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.neso_data_portal.query(\"bsuos_fixed_tariffs\", \"2023-04-01\", \"2027-10-01\")\ndf = df.sort_values([\"published_date\", \"fixed_tariff_start_date\"], ignore_index=True)\ndf[[\"publication\", \"fixed_tariff_title\", \"published_date\", \"fixed_tariff_start_date\", \"fixed_tariff_gbp_per_mwh\"]].tail()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "publication",
+      "fixed_tariff_title",
+      "published_date",
+      "fixed_tariff_start_date",
+      "fixed_tariff_gbp_per_mwh"
+     ],
+     "index": [
+      "12",
+      "13",
+      "14",
+      "15",
+      "16"
+     ],
+     "rows": [
+      [
+       "Draft",
+       "Fixed Tariff 8",
+       "2025-10-02",
+       "2026-10-01",
+       "11.93"
+      ],
+      [
+       "Final",
+       "Fixed Tariff 7",
+       "2025-12-29",
+       "2026-04-01",
+       "13.74"
+      ],
+      [
+       "Final",
+       "Fixed Tariff 8",
+       "2025-12-29",
+       "2026-10-01",
+       "12.49"
+      ],
+      [
+       "Draft",
+       "Fixed Tariff 9",
+       "2026-09-21",
+       "2027-04-01",
+       "21.67"
+      ],
+      [
+       "Draft",
+       "Fixed Tariff 10",
+       "2026-09-21",
+       "2027-10-01",
+       "18.42"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "rates = df.pivot(index=\"fixed_tariff_title\", columns=\"publication\", values=\"fixed_tariff_gbp_per_mwh\")\nrates = rates.loc[df.fixed_tariff_title.unique(), [\"Initial Forecast\", \"Draft\", \"Final\"]].rename_axis(index=None, columns=None)\nrates[\"final_minus_draft\"] = rates.Final - rates.Draft\nrates",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "Initial Forecast",
+      "Draft",
+      "Final",
+      "final_minus_draft"
+     ],
+     "index": [
+      "Fixed Tariff 1",
+      "Fixed Tariff 2",
+      "Fixed Tariff 3",
+      "Fixed Tariff 4",
+      "Fixed Tariff 5",
+      "Fixed Tariff 6",
+      "Fixed Tariff 7",
+      "Fixed Tariff 8",
+      "Fixed Tariff 9",
+      "Fixed Tariff 10"
+     ],
+     "rows": [
+      [
+       "NaN",
+       "NaN",
+       "13.41",
+       "NaN"
+      ],
+      [
+       "NaN",
+       "NaN",
+       "14.03",
+       "NaN"
+      ],
+      [
+       "NaN",
+       "NaN",
+       "7.63",
+       "NaN"
+      ],
+      [
+       "NaN",
+       "7.60",
+       "12.17",
+       "4.57"
+      ],
+      [
+       "NaN",
+       "12.48",
+       "10.74",
+       "-1.74"
+      ],
+      [
+       "NaN",
+       "11.99",
+       "15.69",
+       "3.70"
+      ],
+      [
+       "14.55",
+       "14.21",
+       "13.74",
+       "-0.47"
+      ],
+      [
+       "11.03",
+       "11.93",
+       "12.49",
+       "0.56"
+      ],
+      [
+       "NaN",
+       "21.67",
+       "NaN",
+       "NaN"
+      ],
+      [
+       "NaN",
+       "18.42",
+       "NaN",
+       "NaN"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "rates.final_minus_draft.dropna().plot.bar(color=\"#155A6E\", rot=0, figsize=(8, 3.5),\n                                          xlabel=\"tariff\", ylabel=\"final minus draft, £/MWh\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "bsuos_fixed_tariffs-5.png",
+     "width": 691,
+     "height": 337
+    }
+   ]
+  }
+ ]
+}

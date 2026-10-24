@@ -1,0 +1,189 @@
+{
+ "dataset": "neso_data_portal/skip_rates_summary",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "6e443d6282e6c095595ef3099d9d82d34508e4d5c35062e8da8366bc6123bd1e",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.neso_data_portal.query(\"skip_rates_summary\", \"2026-07-01\", \"2026-07-31\")\ndf[\"start_utc\"] = df.timestamp_utc.dt.tz_convert(\"UTC\")\ndf = df.sort_values([\"start_utc\", \"stage\"], ignore_index=True)\ndf[[\"start_utc\", \"stage\", \"bm_skip_rate_offers_percent\", \"bm_total_volume_skipped_offers_mwh\", \"bm_total_volume_skipped_bids_mwh\"]].head(6)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "start_utc",
+      "stage",
+      "bm_skip_rate_offers_percent",
+      "bm_total_volume_skipped_offers_mwh",
+      "bm_total_volume_skipped_bids_mwh"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5"
+     ],
+     "rows": [
+      [
+       "2026-07-01 00:00:00+00:00",
+       "0",
+       "0.0",
+       "0.0",
+       "19.60"
+      ],
+      [
+       "2026-07-01 00:00:00+00:00",
+       "1",
+       "0.0",
+       "0.0",
+       "19.60"
+      ],
+      [
+       "2026-07-01 00:00:00+00:00",
+       "2",
+       "0.0",
+       "0.0",
+       "19.58"
+      ],
+      [
+       "2026-07-01 00:00:00+00:00",
+       "3",
+       "0.0",
+       "0.0",
+       "19.58"
+      ],
+      [
+       "2026-07-01 00:00:00+00:00",
+       "4",
+       "0.0",
+       "0.0",
+       "19.58"
+      ],
+      [
+       "2026-07-01 00:00:00+00:00",
+       "5",
+       "0.0",
+       "0.0",
+       "19.58"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "vol = [\"bm_total_volume_skipped_offers_mwh\", \"bm_total_volume_skipped_bids_mwh\"]\ndf.groupby(\"stage\")[vol].sum().round().astype(int)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "bm_total_volume_skipped_offers_mwh",
+      "bm_total_volume_skipped_bids_mwh",
+      "stage",
+      "",
+      ""
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5"
+     ],
+     "rows": [
+      [
+       "1063795",
+       "898982"
+      ],
+      [
+       "1016471",
+       "898983"
+      ],
+      [
+       "923641",
+       "181430"
+      ],
+      [
+       "307481",
+       "165026"
+      ],
+      [
+       "301334",
+       "163653"
+      ],
+      [
+       "85234",
+       "155669"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "day = df[df.stage.isin([0, 5])].assign(day=lambda x: x.start_utc.dt.day)\ndaily = day.pivot_table(index=\"day\", columns=\"stage\", values=\"bm_total_volume_skipped_offers_mwh\", aggfunc=\"sum\")\nax = daily.plot(figsize=(8, 3.5), color=[\"#C77E3C\", \"#155A6E\"], xticks=range(1, 32, 5),\n                xlabel=\"UTC day of July 2026\", ylabel=\"skipped offer volume, MWh\")\nax.legend([\"stage 0\", \"stage 5\"]);",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "skip_rates_summary-5.png",
+     "width": 716,
+     "height": 337
+    }
+   ]
+  }
+ ]
+}

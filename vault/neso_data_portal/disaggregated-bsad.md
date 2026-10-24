@@ -8,7 +8,7 @@ updated: 2026-10-13
 layer_coverage: "bronze"
 eligibility: "eligible"
 page:
-  held: Identical rows repeat and no action id tells them apart, so there is no silver table.
+  held: Every file repeats identical rows, and no action id tells real actions from repeats.
   title: Disaggregated balancing services adjustment data
   summary: >-
     NESO's balancing actions outside the Balancing Mechanism, action by action: settlement period,
@@ -30,13 +30,17 @@ page:
   raw_feed:
     note: >-
       From NESO's CKAN portal: one `package_show`, then each financial-year file whole: uploads to
-      2020-21, dumps from 2021-22 (2013-14 and 2026-27 shown). Ingest only: no silver table.
+      2020-21, dumps from 2021-22 (2013-14, 2018-19 and 2026-27 shown). Ingest only: no silver table.
     requests:
       - "GET https://api.neso.energy/api/3/action/package_show?id=disaggregated-bsad"
       - "GET https://api.neso.energy/dataset/4878d09f-8938-4e8f-8f3e-538b3355861a/resource/a01c3587-0e29-4e8b-81e6-37a32776fd8a/download/bs_disbsd_01-04-2013_31-03-2014.csv"
+      - "GET https://api.neso.energy/dataset/4878d09f-8938-4e8f-8f3e-538b3355861a/resource/c64c285c-764b-4e95-9e04-a9379f8f84be/download/bs_disbsd_01-04-2018_31-03-2019.csv"
       - "GET https://api.neso.energy/datastore/dump/2be1a4d1-6b10-4c62-a01c-924942a3748f"
     commands:
       - {run: gridflow ingest neso_data_portal disaggregated_bsad --last 24h, comment: "all 14 files, bronze only"}
+    sample:
+      file: bs_disbsd_01-04-2018_31-03-2019.csv
+      caveat: Identical rows repeat, as here, and no action id says whether they are separate actions.
   related:
     - {dataset: neso_data_portal/aggregated-bsad, note: "NESO's settlement-period totals; this package is the per-action grain"}
     - {dataset: neso_data_portal/balancing-services-adjustment-data-forward-contracts, note: "NESO's forward-contract adjustments, the third BSAD package"}
@@ -122,9 +126,10 @@ fetched from the file URL; dumps are fetched from the datastore dump endpoint.
 | 2025-26 | dump | [datastore dump](https://api.neso.energy/datastore/dump/f99c6391-507b-4eaa-beb8-a26fdfa809de) | 4,020,186 · 149,372 |
 | 2026-27 | dump | [datastore dump](https://api.neso.energy/datastore/dump/2be1a4d1-6b10-4c62-a01c-924942a3748f) | 1,900,104 · 71,517 |
 
-All 14 resources were captured once, on 2026-10-08 (stamps 10:07Z to 10:10Z). Total bronze rows
-**1,703,982**. Each sidecar SHA-256 matches the body (FACTS section 2). Only one capture per
-resource exists, so how NESO amends a published year between captures is unmeasured.
+All 14 resources were captured on 2026-10-08 (stamps 10:07Z to 10:10Z). Total bronze rows
+**1,703,982**. Each sidecar SHA-256 matches the body (FACTS section 2). The 2026-27 dump was
+captured again on 2026-10-16 (77,444 rows, up from 71,517); every other resource has one capture,
+so how NESO amends a published year between captures is unmeasured.
 
 - Vendor dataset page: <https://www.neso.energy/data-portal/disaggregated-bsad>.
 - Vendor dictionary (2026-27 resource): <https://www.neso.energy/data-portal/disaggregated-bsad/disaggregated_bsad_2026-27>.
@@ -300,7 +305,7 @@ The reader is faithful: the profiler found no parse errors and no duplicate head
 
 The vendor update frequency is not stated in the snapshot. TODO: verify with NESO how often the
 current-year (2026-27) resource is rewritten, and whether an update replaces the whole file or
-appends rows. Only one capture per resource exists, so gridflow cannot tell. The registry
+appends rows. The 2026-27 resource has only two captures (8 and 16 October), too few to tell. The registry
 refresh is daily.
 
 ## Licence and attribution

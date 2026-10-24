@@ -8,11 +8,10 @@ updated: 2026-10-13
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: NESO states no unit or boundary rule for the bands, nor when each forecast was published.
   title: DC, DM and DR long-term forecasts
   summary: >-
-    NESO's twelve-month outlook for the Dynamic Containment, Moderation and Regulation requirements,
-    given as weights over requirement bands.
+    NESO's 13-month outlook, from its creation month, for the Dynamic Containment, Moderation and
+    Regulation requirements, as weights over requirement bands.
   facts:
     vendor: NESO Data Portal, one CSV file (DX Future Requirement)
     cadence: Monthly, as NESO lists it
@@ -26,6 +25,41 @@ page:
   how_used:
     - NESO's weights over requirement bands, by month and EFA block, a year ahead
     - A spread of possible requirements, not one number, for scenario models
+  chart:
+    type: stacked-area
+    silver: neso_data_portal/dc_dm_dr_long_term_fc
+    time: forecast_target_month
+    value: possibilities
+    filter:
+      - {column: service_type, op: eq, value: DC-H}
+      - {column: interval, op: in, value: ["800-1000", "1000-1200", "1200-1400", "1400-1600", "1600-1800"]}
+    dedup: {on: [forecast_created, forecast_target_month, service_type, efa, interval], order_by: capture_written_at}
+    group: interval
+    group_map: {"800-1000": b800, "1000-1200": b1000, "1200-1400": b1200, "1400-1600": b1400, "1600-1800": b1600}
+    series_order: [b800, b1000, b1200, b1400, b1600]
+    aggregation: mean
+    window: {start: "2026-04-01", end: "2027-04-01"}
+    unit: Possibilities
+  chart_view:
+    title: DC-H requirement band weights, April 2026 to April 2027
+    caption: >-
+      Silver `neso_data_portal/dc_dm_dr_long_term_fc`, NESO's file created 1 April 2026: DC-H's
+      `Possibilities` per band, the mean over the six EFA blocks. Bands are as NESO writes them; their
+      unit is not stated. The four lower bands hold 0.
+    alt: >-
+      Stacked area chart from neso_data_portal/dc_dm_dr_long_term_fc of DC-H's Possibilities per
+      requirement band, the mean over six EFA blocks, for target months April 2026 to April 2027 in
+      NESO's file created 1 April 2026. Band 1000-1200 (petrol) carries the most every month, from
+      0.39 in February 2027 to 0.76 in October 2026. Band 1200-1400 runs 0.13 to 0.38, 1400-1600 0.02
+      to 0.24, and 1600-1800 reaches 0.20 in February 2027. Band 800-1000 is about 0.11 at most. The
+      stack totals 1 each month.
+    x_label: target month
+    key:
+      - {series: b1600, label: Band 1600-1800, paint: clay}
+      - {series: b1400, label: Band 1400-1600, paint: olive}
+      - {series: b1200, label: Band 1200-1400, paint: horizon}
+      - {series: b1000, label: Band 1000-1200, paint: petrol}
+      - {series: b800, label: Band 800-1000, paint: hatch-dots}
   raw_feed:
     note: >-
       From NESO's CKAN portal: one `package_show`, then the file downloaded whole unless its
@@ -36,6 +70,59 @@ page:
     commands:
       - {run: gridflow ingest neso_data_portal dc_dm_dr_long_term_fc --last 24h, comment: "whole file to bronze"}
       - {run: gridflow transform neso_data_portal dc_dm_dr_long_term_fc --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: service_type, op: eq, value: DC-H}
+        - {column: forecast_target_month, op: eq, value: "2026-07-01"}
+        - {column: efa, op: in, value: [1, 5]}
+        - {column: interval, op: in, value: ["1000-1200", "1200-1400", "1400-1600", "1600-1800"]}
+      dedup: {on: [forecast_created, forecast_target_month, service_type, efa, interval], order_by: capture_written_at}
+      order_by: [efa, interval]
+      columns: [forecast_target_month, service_type, efa, interval, possibilities, forecast_created]
+    key: [forecast_created, forecast_target_month, service_type, efa, interval]
+    caption: "DC-H in July 2026, EFA blocks 1 and 5, the four highest bands."
+    fields:
+      forecast_target_month: The month forecast, as its first day
+      service_type: "Service code, High or Low; NESO writes `DR_L` with an underscore"
+      efa: "EFA block, 1 to 6; block 1 opens 23:00 UK time the day before"
+      interval: "Requirement band as NESO writes it; its unit and edge rule are not stated"
+      possibilities: "NESO's weight for the band, from 0 to 1 (its dictionary)"
+      forecast_created: "The date NESO labels the forecast created; not when it was published"
+      timestamp_utc: "UK midnight opening the target month, as UTC"
+      published_at: "When NESO last changed the file (CKAN, read as UTC); not per row"
+      bronze_capture_id: Path of the bronze capture the row was read from
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      Reads with `data.sql` from the `_latest` view, the newest capture of NESO's one file. The plot
+      splits one month's DC-H weights by EFA block, where the chart averages them.
+    cells:
+      - |
+        fc = data.sql("""
+            SELECT forecast_created, forecast_target_month, service_type, efa, interval, possibilities
+            FROM silver_neso_data_portal_dc_dm_dr_long_term_fc_latest""")
+        fc.groupby("service_type").agg(
+            months=("forecast_target_month", "nunique"), created=("forecast_created", "max")
+        ).reset_index()
+      - |
+        top = fc[fc.efa == 5].sort_values("possibilities", kind="stable").groupby(
+            ["service_type", "forecast_target_month"]).tail(1)
+        likeliest = top.pivot(index="forecast_target_month", columns="service_type", values="interval")
+        likeliest.rename_axis(index=None, columns=None).head(6)
+      - |
+        jul = fc[(fc.service_type == "DC-H") & (fc.forecast_target_month == "2026-07-01")]
+        bands = ["800-1000", "1000-1200", "1200-1400", "1400-1600", "1600-1800"]
+        ax = jul.pivot(index="efa", columns="interval", values="possibilities")[bands].plot.bar(
+            stacked=True, figsize=(8, 3.5), rot=0, xlabel="EFA block", ylabel="Possibilities",
+            color=["#9AA39A", "#155A6E", "#3E8C97", "#66793B", "#C77E3C"])
+        ax.legend(ncol=5, loc="lower center", bbox_to_anchor=(0.5, 1.0), frameon=False);
+    needs: a capture of the long-term forecast file
+    plot_alt: >-
+      Stacked bar plot of DC-H's Possibilities per band for each EFA block of July 2026. Block 2 puts
+      0.84 on 1000-1200 and block 6 puts 0.90 there; block 5 puts 0.52 on 1400-1600 and 0.23 on
+      1600-1800; block 1 spreads over four bands, most on 1400-1600 (0.45). Each bar totals 1.
+  caveat: NESO states no unit or boundary rule for the bands, nor when each forecast was published.
   related:
     - {dataset: neso_data_portal/dynamic-containment-4-day-forecast, note: "The Dynamic Containment requirement for the next four days, in MW"}
     - {dataset: neso_data_portal/dynamic-moderation-requirements, note: Dynamic Moderation's requirement in MW for each upcoming day}
@@ -61,9 +148,9 @@ Forecasting Area (EFA) block number, a requirement **band** (`Interval`, nine ba
 `1600-1800`), and a `Possibilities` weight that the vendor says runs from 0 to 1. It is not a MW
 requirement series and not a single-number forecast; the requirement is spread across bands. For
 modelling it would be a market-sizing input for the frequency-response services, but the band unit
-and the availability of the forecast are both unresolved, so the output is **held** (see Holds) and
-this page gives schema, row counts, clocks and missingness only, with **no data values**: no sample
-rows and no value statistics. The shorter-horizon siblings are the DC four-day forecast and the DM
+and the availability of the forecast are both unresolved, so the output is **held** in gridflow (see
+Holds). The site page shows its rows, with a caveat naming both questions (front-end ruling 66). The
+shorter-horizon siblings are the DC four-day forecast and the DM
 and DR requirement tables: @./dynamic-containment-4-day-forecast.md,
 @./dynamic-moderation-requirements.md and @./dynamic-regulation-requirements.md.
 
@@ -269,8 +356,8 @@ gridflow outputs derived from this package carry the attribution line above.
 
 - `dc_dm_dr_long_term_fc`: held: TODO: DX-LT-INTERVAL — what unit and which inclusive endpoint do the `Interval` bands (`0-200` … `1600-1800`) use, and when was the creation-dated forecast available? 324 rows target the creation month. (unit v0.22-K-AS-1)
 
-The silver output exists on disk but is **held**. It may not be published or used for models until
-the question above is answered. The hold sits in the record (RULINGS 720). It has two parts, both
+The silver output exists on disk but is **held**. It may not be used for models until the question
+above is answered; the site page shows its rows with a caveat (front-end ruling 66). The hold sits in the record (RULINGS 720). It has two parts, both
 vendor-semantics questions that a NESO answer settles and that inspection of values cannot:
 
 1. **Band unit and boundary.** The dictionary lists the nine bands with unit `NA` and does not say
