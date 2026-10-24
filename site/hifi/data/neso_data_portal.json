@@ -706,8 +706,8 @@
       "title": "FES: Pathways to Net Zero – Natural Gas, Residential and non-domestic (I&C) Heat Demand Summary Data table (ED3)",
       "note": "fes-natural-gas-residential-and-non-domestic-i-c-heat-demand-summary-data-table-ed3",
       "members": [
-        "fes_ed3_heat_demand_natural_gas",
         "fes_ed3_heat_demand_natural_gas_sum_ed",
+        "fes_ed3_heat_demand_natural_gas",
         "fes_ed3_heat_demand_sum_ed"
       ]
     },
@@ -726,8 +726,8 @@
       "title": "Local Authority Level Spatial Heat Model Outputs (FES)",
       "note": "local-authority-level-spatial-heat-model-outputs-fes",
       "members": [
-        "fes_la_heat_model_domestic",
-        "fes_la_heat_model_residential"
+        "fes_la_heat_model_residential",
+        "fes_la_heat_model_domestic"
       ]
     },
     {
