@@ -4,9 +4,76 @@ package: "transmission-network-use-of-system-tnuos-tariffs"
 dataset_keys: ["tnuos_tariffs_embedded_export", "tnuos_tariffs_half_hourly_hh_demand", "tnuos_tariffs_local_offshore_generator", "tnuos_tariffs_local_substation_tariff", "tnuos_tariffs_non_half_hourly_nhh_demand", "tnuos_tariffs_onshore_generator", "tnuos_tariffs_onshore_local_circuit", "tnuos_tariffs_transmission_demand"]
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-12
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: true
+  title: TNUoS tariffs
+  summary: >-
+    NESO's Transmission Network Use of System (TNUoS) tariffs for generation and demand, by zone,
+    site or band, stage and financial year.
+  facts:
+    vendor: "NESO Data Portal, package `transmission-network-use-of-system-tnuos-tariffs`: eight CSV files"
+    cadence: Quarterly, as NESO lists it; updated when tariffs are published
+    grain: "Row key: financial year, stage, publication date, and zone, site, band or substation type"
+  landscape: market
+  what_it_is: >-
+    TNUoS tariffs price use of the GB transmission network by generation and demand. NESO's
+    revenue team forecasts and sets them. Eight files cover half-hourly and non-half-hourly demand,
+    embedded export, demand residual bands, onshore and offshore generators, local substations and
+    onshore local circuits. Each row is one stage, forecast, draft or final, of a financial year's
+    tariffs, with its publication date.
+  how_used:
+    - Compare zonal generation and demand tariffs across Great Britain, year by year
+    - Follow NESO's forecasts for one charging year from release to final tariff
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show` per table, then its file downloaded whole unless
+      its `last_modified` is unchanged. Swap in any table's key.
+    commands:
+      - {run: gridflow ingest neso_data_portal tnuos_tariffs_half_hourly_hh_demand --last 24h, comment: "whole file; swap in any key"}
+      - {run: gridflow transform neso_data_portal tnuos_tariffs_half_hourly_hh_demand --last 24h, comment: "the capture's date to silver"}
+  family:
+    slug: transmission-network-use-of-system-tnuos-tariffs
+    members:
+      - dataset: tnuos_tariffs_half_hourly_hh_demand
+        differs: "Half-hourly demand by zone 1 to 14: peak, year-round and floored tariffs, £/kW"
+        request: "GET https://api.neso.energy/dataset/eaef4708-1100-4ad9-98d5-d892f3c9a56c/resource/6abe8416-149c-4c78-b65b-059eea19957a/download/tnuos_demand_hh.csv"
+        held: NESO dates each publication but not when each row appeared, nor whether old rows change.
+      - dataset: tnuos_tariffs_non_half_hourly_nhh_demand
+        differs: "Non-half-hourly demand by zone 1 to 14: zonal and floored tariffs, in p/kWh"
+        request: "GET https://api.neso.energy/dataset/eaef4708-1100-4ad9-98d5-d892f3c9a56c/resource/4e8dd130-5283-4f22-8c05-84e4d3280eb3/download/tnuos_demand_nhh.csv"
+        held: NESO dates each publication but not when each row appeared, nor whether old rows change.
+      - dataset: tnuos_tariffs_embedded_export
+        differs: "Embedded export by demand zone: locational, avoided GSP infrastructure and floored tariffs, £/kW"
+        request: "GET https://api.neso.energy/dataset/eaef4708-1100-4ad9-98d5-d892f3c9a56c/resource/af4501a0-6b96-4088-926c-7c7b0c499b08/download/tnuos_embeddedexport.csv"
+        held: NESO dates each publication but not when each row appeared, nor whether old rows change.
+      - dataset: tnuos_tariffs_transmission_demand
+        differs: "Transmission Demand Residual tariffs by band, £ per site per day except unmetered supplies"
+        request: "GET https://api.neso.energy/dataset/eaef4708-1100-4ad9-98d5-d892f3c9a56c/resource/dcca94fd-343e-4d4e-8c5d-66009dec4ad3/download/tnuos_tdr-tariffs.csv"
+        held: "NESO dates each publication but not when each row appeared; the unmetered band's units conflict."
+      - dataset: tnuos_tariffs_onshore_generator
+        differs: "Onshore generation by zone 1 to 27: peak, year-round, residual and small-generator discount, £/kW"
+        request: "GET https://api.neso.energy/dataset/eaef4708-1100-4ad9-98d5-d892f3c9a56c/resource/ffc0adb8-5426-474e-94a3-a5f3f01a0cdb/download/tnuos_generation_onshore.csv"
+        held: NESO dates each publication but not when each row appeared, nor whether old rows change.
+      - dataset: tnuos_tariffs_local_offshore_generator
+        differs: "Each offshore generator's local substation, circuit and embedded transmission tariffs, £/kW"
+        request: "GET https://api.neso.energy/dataset/eaef4708-1100-4ad9-98d5-d892f3c9a56c/resource/98569a29-940d-4bb7-8dc4-01e46187039a/download/tnuos_generation_offshore.csv"
+        held: NESO dates each publication but not when each row appeared, nor whether old rows change.
+      - dataset: tnuos_tariffs_local_substation_tariff
+        differs: "Generators' local substation tariff by voltage, substation capacity and redundancy, £/kW"
+        request: "GET https://api.neso.energy/dataset/eaef4708-1100-4ad9-98d5-d892f3c9a56c/resource/e697e9be-c068-482d-ae35-01f60bcb6700/download/local-substation-tnuos-tariff.csv"
+        held: NESO dates each publication but not when each row appeared, nor whether old rows change.
+      - dataset: tnuos_tariffs_onshore_local_circuit
+        differs: "Onshore local circuit tariff by named substation, £/kW"
+        request: "GET https://api.neso.energy/dataset/eaef4708-1100-4ad9-98d5-d892f3c9a56c/resource/01f36b32-4ad3-47fa-a645-7f7a47f1b0ae/download/tnuos_onshore_local_circuit.csv"
+        held: "NESO dates each publication but not when each row appeared; some substation names end in whitespace."
+  related:
+    - {dataset: neso_data_portal/gis-boundaries-for-gb-generation-charging-zones, note: "Approximate boundaries of the TNUoS generation zones, as GIS files"}
+    - {dataset: neso_data_portal/gis-boundaries-for-gb-dno-license-areas, note: "Licence areas NESO points to for TNUoS demand zone maps"}
+    - {dataset: neso_data_portal/aahedc-tariffs, note: "Another network charge, forecast and set by the same NESO team"}
+    - {dataset: neso_data_portal/bsuos-fixed-tariffs, note: "Fixed BSUoS rates, also published by stage with a publication date"}
 ---
 
 # Transmission Network Use of System (TNUoS) Tariffs

@@ -4,9 +4,47 @@ package: "national-carbon-intensity-forecast"
 dataset_key: "national_ci_forecast"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-09
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: "No row says when NESO first published it, and NESO changes values for past half hours."
+  title: National carbon intensity forecast
+  summary: >-
+    NESO's forecast and estimated actual carbon intensity of GB electricity per half hour, in
+    gCO2/kWh, with a band.
+  facts:
+    vendor: "NESO Data Portal, package National Carbon Intensity Forecast: a CSV and methodology PDF"
+    cadence: "Hourly, NESO says"
+    grain: "Each row: one UTC half hour, with forecast, estimated actual and band"
+    history: "NESO's October 2026 files start on 1 January 2018"
+  landscape: power
+  what_it_is: >-
+    NESO defines carbon intensity as CO2 emitted per kWh of electricity consumed. Per half hour: a
+    forecast, an actual estimated from metered generation and a band like `very low`. NESO's May
+    2024 methodology opens with its Carbon Intensity API, forecasting 48 hours ahead. NESO's 16
+    October 2026 file changed actuals its 8 October file gave for past half hours.
+  how_used:
+    - "GB carbon intensity per half hour, forecast beside NESO's own estimate"
+    - "Comparing NESO's forecast with its estimated actual for the same half hour"
+    - "Timing flexible demand to the lower-intensity half hours"
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: `package_show`, then the CSV and methodology PDF, downloaded whole
+      unless `last_modified` is unchanged. Its October 2026 CSVs end in about four weeks of empty rows.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=national-carbon-intensity-forecast"
+      - "GET https://api.neso.energy/dataset/f406810a-1a36-48d2-b542-1dfb1348096e/resource/0e5fde43-2de7-4fb4-833d-c7bca3b658b0/download/gb_carbon_intensity.csv"
+      - "GET https://api.neso.energy/dataset/f406810a-1a36-48d2-b542-1dfb1348096e/resource/36638178-e993-4d34-afdc-4ada83993585/download/neso-ci-national-methodology_v2.pdf"
+    commands:
+      - {run: gridflow ingest neso_data_portal national_ci_forecast --last 24h, comment: "the CSV to bronze"}
+      - {run: gridflow transform neso_data_portal national_ci_forecast --last 24h, comment: "the capture's date to silver"}
+      - {run: gridflow ingest neso_data_portal national_ci_forecast_files --last 24h, comment: "the methodology PDF, bronze only"}
+  related:
+    - {dataset: neso/carbon_intensity, note: "The Carbon Intensity API's national routes, which this package's methodology describes"}
+    - {dataset: neso_data_portal/regional-carbon-intensity-forecast, note: "NESO's forecast for 14 GB regions, in the same unit"}
+    - {dataset: neso_data_portal/country-carbon-intensity-forecast, note: "NESO's forecast for England, Scotland and Wales, in the same unit"}
+    - {dataset: neso_data_portal/historic_generation_mix, note: "NESO's half-hourly generation mix, which carries its own carbon intensity"}
 ---
 
 # National Carbon Intensity Forecast
@@ -16,9 +54,10 @@ the Open Data Portal. Each row carries a UTC half-hour label, a **forecast** int
 vendor dictionary says it is predicted with machine-learning models), an **actual** intensity
 (the dictionary says it is estimated from metered generation), and a categorical **index** of
 the relative level of intensity. Intensity measures the CO2 emitted per kWh of electricity
-consumed. It is the bulk file of the same series that the Carbon Intensity API's national
-routes serve, which gridflow already ingests under the `neso` source
-(@../../neso/datasets/carbon_intensity.md). Like the API, which sends no issue time either, the
+consumed. NESO's text does not say it is the series the Carbon Intensity API's national routes
+serve (gridflow ingests those under the `neso` source, @../../neso/datasets/carbon_intensity.md);
+its methodology PDF only opens with that API. gridflow's own probe of 2026-10-09
+(LIVE-PROBE) found forecast and actual equal on all 675 periods the two overlapped. Like the API, which sends no issue time either, the
 CSV has **no issue column**: each target half-hour holds exactly one forecast/actual pair, with
 no record of which forecast run produced it. The silver output is held because that issue clock
 is missing (FACTS CI-1, g2; see Holds).
@@ -37,7 +76,9 @@ is missing (FACTS CI-1, g2; see Holds).
 - Download: [gb_carbon_intensity.csv](https://api.neso.energy/dataset/f406810a-1a36-48d2-b542-1dfb1348096e/resource/0e5fde43-2de7-4fb4-833d-c7bca3b658b0/download/gb_carbon_intensity.csv)
   (CKAN datastore active; datastore unique key `datetime`).
 - Captured: `raw_20261008T111249Z_0e5fde43-2de7-4fb4-833d-c7bca3b658b0_8beca58c.csv`,
-  5,874,687 bytes, 155,159 data rows, one header epoch.
+  5,874,687 bytes, 155,159 data rows, one header epoch; and
+  `raw_20261016T204040Z_0e5fde43-2de7-4fb4-833d-c7bca3b658b0_5ac01f8b.csv`, 5,889,754 bytes,
+  155,561 data rows, same header (CKAN `last_modified` 2026-10-16T20:10:47.063996).
 
 ### DOC
 
@@ -78,15 +119,16 @@ Schema, epoch 1:
 **The two clocks for this family:**
 
 1. **Vintage (`ckan_last_modified`).** `published_at` and `available_at` both equal the CKAN
-   `last_modified` of the captured resource. For the one capture to date that is
-   `2026-10-08T11:11:23.285254`, which CKAN emits without an offset. gridflow reads it as UTC
+   `last_modified` of the captured resource. For the 2026-10-08 capture that is
+   `2026-10-08T11:11:23.285254`, and for the 2026-10-16 capture `2026-10-16T20:10:47.063996`,
+   which CKAN emits without an offset. gridflow reads it as UTC
    (gridflow `@docs/DECISION_LOG/ADR-030-neso-data-portal-ckan-source.md`, D-15). Every
    silver row of a capture shares this one vintage. It says when the file changed, not when
    any individual forecast was issued.
 2. **Event time (`utc_instant` on `datetime`).** `event_time` = `timestamp_utc` = `datetime`.
    All three are equal on every silver row (checked 2026-10-09). `datetime` is the **UTC start**
-   of the half-hour it labels. The vendor dictionary documents the column as UTC. The seat's live
-   probe joined the captured CSV to the Carbon Intensity API silver, whose `from` is the
+   of the half-hour it labels. The vendor dictionary documents the column as UTC. The seat's
+   probe of 2026-10-09 (local silver, no network) joined the captured CSV to the Carbon Intensity API silver, whose `from` is the
    period start: forecast and actual matched on all 675 overlapping periods when joined on
    period start, and on fewer than 1 in 10 when joined on period end
    (gridflow `@.planning/phases/v0.22-K-CI/LIVE-PROBE.md`). Event time is therefore **not** the
@@ -107,15 +149,19 @@ thresholds. The dictionary does not enumerate them.
 record's null-token map is empty.
 
 - Empty `forecast`, `actual` and `index` cells are kept as **null**. The full-body census of the
-  newest capture counted 2,901 blank `forecast`, 3,732 blank `actual` and 2,901 blank `index`
-  cells. `TODO: verify` why particular observations are absent. Only the vendor can settle it.
+  2026-10-08 capture counted 2,901 blank `forecast`, 3,732 blank `actual` and 2,901 blank `index`
+  cells; the 2026-10-16 capture has the same three counts. In each capture 1,339 of the
+  all-blank rows are the file's tail: the 2026-10-08 file runs to 2026-11-07T11:00:00 with its
+  last forecast at 2026-10-10T13:30:00, the 2026-10-16 file to 2026-11-15T20:00:00 with its last
+  forecast at 2026-10-18T22:30:00 (about four weeks of empty future half-hours).
+  `TODO: verify` why particular observations are absent. Only the vendor can settle it.
 - Numeric **zeros** in `actual` are preserved as values, not converted to null.
   `TODO: verify` whether a zero actual is a real estimate or an error marker.
 - A small number of `forecast` values the vendor has not explained are preserved **unclipped**,
   and no upper bound is imposed. `TODO: verify` with a vendor correction or explanation.
 
-**Identity and selection.** `datetime` was unique across the whole newest body (155,159
-distinct, no duplicates or missing keys). It is kept as the entity key only as a **capture
+**Identity and selection.** `datetime` was unique across each whole body (155,159 distinct on
+2026-10-08, 155,561 on 2026-10-16, no duplicates or missing keys). It is kept as the entity key only as a **capture
 uniqueness guard**. No vendor text guarantees that a `datetime` identifies one stable record
 across revisions, so `_latest` is `whole_capture` (the newest capture wins as a whole) rather
 than per-key selection.
@@ -124,7 +170,8 @@ than per-key selection.
 2026-10-08 (one capture). Silver has **155,159 rows**, equal to the planned count, with
 `timestamp_utc` unique. Reconcile at cutoff 2026-10-08 found 0 gaps for this family. No prior
 silver existed, so nothing was overwritten (gridflow `@.planning/v0.22-RESULTS.md` §CI;
-RULINGS 523–525).
+RULINGS 523–525). A second Parquet file (155,561 rows) now holds the 2026-10-16 capture, and
+`_latest` takes it whole.
 
 Silver columns beyond the four vendor columns: `timestamp_utc`, `published_at`,
 `bronze_capture_id`, `capture_written_at`, `event_time`, `available_at`, `source_run_id`,
@@ -145,7 +192,13 @@ recipe, the registry record and this page are current.
 
 This family captures the methodology PDF (see DOC above). Its extracted text says estimated
 data becomes available at the end of a settlement period and that forecasts are provided ahead
-of real time. That is publication-timing evidence only. It does not on its own fix whether
+of real time. That is publication-timing evidence only. Read 2026-10-24 (`pdftotext`): it gives
+"Issue: May 2024" and opens "NESO's Carbon Intensity API provides an indicative trend of carbon
+intensity for the electrical grid of Great Britain up to 48 hours ahead of real-time", the tie
+the page's related link to the `neso` national routes rests on. Its next sentence says the
+report "details the methodology behind the regional carbon intensity estimates", although this
+is the national package's file; the regional package's PDF opens the same way. No body was
+captured on 2026-10-16. It does not on its own fix whether
 the CSV's `datetime` labels the start or the end of the period. The live probe settled that
 (see above).
 
@@ -159,7 +212,21 @@ the CSV's `datetime` labels the start or the end of the period. The live probe s
 The vendor updates the file hourly. gridflow captures one snapshot per refresh run, so hourly
 states between runs are not retained. `TODO: verify` whether each hourly update rewrites past
 targets, appends new ones, or rolls the window. Only more captures of the same resource,
-compared target by target, can show this. No scheduled gridflow refresh exists yet, so
+compared target by target, can show this.
+
+**Second capture (2026-10-16), compared with the first** (Polars on both bronze bodies, values
+compared as numbers, read 2026-10-24). The later file keeps all 155,159 earlier targets, drops
+none and appends 402 (2026-11-07T11:30:00 to 2026-11-15T20:00:00, all blank). On shared
+targets, 402 blank rows were filled, and values changed as follows:
+- `actual` changed on 30 targets from 2026-10-07T10:30:00 to 2026-10-08T10:00:00, all past
+  when the first file was modified (2026-10-08T11:11:23); for example 124 to 123 at
+  2026-10-07T10:30:00. NESO revises its estimated actuals after the period.
+- `forecast` changed on 100 targets from 2026-10-08T11:30:00 to 2026-10-10T13:30:00, all
+  ahead of the first file; no forecast changed for a target already past at the first
+  capture. The file keeps one forecast per target and overwrites it, so a past target's value
+  is the last one written, with no record of when.
+- `index` changed on 8 targets on 2026-10-08 (`moderate` to `low`).
+No scheduled gridflow refresh exists yet, so
 captures are on demand (gridflow `@.planning/v0.22-RESULTS.md` §CI).
 
 Observed (no inference drawn): the CKAN datastore reported a `total` of 155,163 records in a
