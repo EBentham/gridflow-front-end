@@ -137,3 +137,33 @@ that PID, confirmed down. No git writes.
 - **NESO NRAPM dictionary examples use day-first dates.** Field-info `Date` examples read `25/03/2020` and `29/03/2020`
   while every file sends `YYYY-MM-DD` (the registry's `%Y-%m-%d` parses all 324 rows). Harmless for gridflow; note for the
   NESO question packet.
+
+## Round 2 (2026-10-24, answering the checker's review)
+
+Build `--only neso_data_portal/nrapm_forecast_national_daily_days`: no errors. Detector `[]`. Note 569 lines, all CRLF;
+mirror `cp` + `cmp` identical. Notebook rerun with `scripts/run_notebooks.py` (JSON and PNG regenerated). Hero
+checked at 1440 and 390 after the title change (server 9803, PID 34205, stopped by that PID, confirmed down). No git
+writes.
+
+1. **major, `family.members[0].differs`:** "The whole system: ..." -> "National file: MW away from a system-level NRAPM,
+   days 2 to 14" (NESO's "National" resource name and "system level" field text; no claim that it covers Scotland, so no
+   clash with the Scotland line "link to national unstated").
+2. **nit, title and summary:** title "Negative reserve active power margin forecast" (6 words, matches the hub apart from
+   the bracketed acronym); summary spells out "negative reserve active power margin risk" and says "nationally and in
+   Scotland" in place of "the system, and Scotland".
+3. **nit, `what_it_is`:** now follows NESO's notes: "a system negative reserve active power margin (NRAPM) warning may be
+   issued when too little flexibility is available ..."; last sentence trimmed to fit 60 words.
+4. **nit, demand link:** `related[0]` -> "Demand forecast for the same days, by cardinal point"; `how_used[1]` -> "Read beside
+   NESO's two-week national demand forecast for the same target dates". Neither names `1B`/`3B` windows now.
+5. **nit, notebook plot:** `ax.set_ylim(bottom=0)`; legend labels "national 1B overnight", "national 3B daily",
+   "scotland 1B overnight", "scotland 3B daily", moved above the plot (it covered the national 3B line on 22 and 23
+   October). `plot_alt` says "axis from zero". Values and `plot_alt` numbers unchanged.
+6. **nit, note body:** rewrapped the "Sign" paragraph and the "Identity and selection" dangling "No"; the national and
+   Scotland eligibility paragraphs now say the quoted anchor is the first capture's and add the 16 October capture
+   (earliest anchor 2026-10-17T23:00Z against vintage 2026-10-16T08:00Z; silver checked). Line count corrected here:
+   569 CRLF lines after round 2.
+7. **nit, process (390 px):** my own 390 px iframe screenshots (round 1, full page; round 2, hero) rendered past the chart
+   and showed no clipping. Dark mode still not checked.
+
+Seat items noted from the review, not changed: `daily-opmr` has no `page:` block yet, and `system-operating-plan-sop`
+is a held page; both links resolve in the build.
