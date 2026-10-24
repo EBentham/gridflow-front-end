@@ -7,6 +7,204 @@ skeleton: false
 updated: 2026-10-09
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: Capacity Market Register
+  summary: >-
+    NESO's register of GB Capacity Market auctions: clearing prices, target and awarded capacity,
+    cost per delivery year, units and their components.
+  facts:
+    vendor: "NESO Data Portal, package `capacity-market-register`: eight CSV files"
+    cadence: "Weekly, NESO's stated update frequency; gridflow skips unchanged files"
+    grain: "Lead table: one row per Capacity Market auction"
+  landscape: market
+  what_it_is: >-
+    The EMR Delivery Body keeps a register for every Capacity Market auction (NESO). The eight
+    files give each auction's terms and clearing price, MW awarded and forecast cost per delivery
+    year, de-rating factors, each unit's application (CMU) and its components, and weekly change
+    logs. The CMU files hold contact details; this page never shows them.
+  how_used:
+    - Clearing price and awarded MW per auction, as capacity revenue in a plant model
+    - "Our sum of NESO's per-auction MW awarded per delivery year; NESO gives no total"
+    - "Unit obligations by fuel or technology via `data.sql`; `query()` filters capture time"
+  chart:
+    type: bar
+    silver: neso_data_portal/capacity_market_auction_static
+    filter:
+      - {column: clearing_price_gbp_per_kw_per_year, op: not_null}
+    dedup: {on: [auction_name], order_by: published_at}
+    group: auction_name
+    group_map:
+      "2016-17 (TR) Transitional Capacity Auction": "2016-17 TR"
+      "2017-18 (T-1) One Year Ahead Capacity Auction": "2017-18 T-1"
+      "2017-18 (TR) Transitional Capacity Auction": "2017-18 TR"
+      "2018-19 (T-1) One Year Ahead Capacity Auction": "2018-19 T-1"
+      "2018-19 (T-4) Four Year Ahead Capacity Auction": "2018-19 T-4"
+      "2019-20 (T-1) One Year Ahead Capacity Auction": "2019-20 T-1"
+      "2019-20 (T-4) Four Year Ahead Capacity Auction": "2019-20 T-4"
+      "2020-21 (T-1) One Year Ahead Capacity Auction": "2020-21 T-1"
+      "2020-21 (T-4) Four Year Ahead Capacity Auction": "2020-21 T-4"
+      "2021-22 (T-1) One Year Ahead Capacity Auction": "2021-22 T-1"
+      "2021-22 (T-4) Four Year Ahead Capacity Auction": "2021-22 T-4"
+      "2022-23 (T-1) One Year Ahead Capacity Auction": "2022-23 T-1"
+      "2022-23 (T-3) Three Year Ahead Capacity Auction": "2022-23 T-3"
+      "2023-24 (T-1) One Year Ahead Capacity Auction": "2023-24 T-1"
+      "2023-24 (T-4) Four Year Ahead Capacity Auction": "2023-24 T-4"
+      "2024-25 (T-1) One Year Ahead Capacity Auction": "2024-25 T-1"
+      "2024-25 (T-4) Four Year Ahead Capacity Auction": "2024-25 T-4"
+      "2025-26 (T-1) One Year Ahead Capacity Auction": "2025-26 T-1"
+      "2025-26 (T-4) Four Year Ahead Capacity Auction": "2025-26 T-4"
+      "2026-27 (T-1) One Year Ahead Capacity Auction": "2026-27 T-1"
+      "2026-27 (T-4) Four Year Ahead Capacity Auction": "2026-27 T-4"
+      "2027-28 (T-4) Four Year Ahead Capacity Auction": "2027-28 T-4"
+      "2028-29 (T-4) Four Year Ahead Capacity Auction": "2028-29 T-4"
+      "2029-30 (T-4) Four Year Ahead Capacity Auction": "2029-30 T-4"
+    value: clearing_price_gbp_per_kw_per_year
+    aggregation: last
+    sort: label
+    unit: "£ per kW per year"
+  chart_view:
+    title: Clearing price by auction, delivery years 2016-17 to 2029-30
+    caption: >-
+      Silver `capacity_market_auction_static`, NESO's file of 9 September 2026: each auction's
+      clearing price, £ per kW per year (NESO's column heading), labelled by first delivery year and
+      auction type. No price, so not drawn: 2022-23 T-4, 2027-28 T-1, 2030-31 T-4.
+    alt: >-
+      Horizontal bar chart from neso_data_portal/capacity_market_auction_static, NESO's file of 9
+      September 2026: clearing price in £ per kW per year for 24 Capacity Market auctions, in
+      delivery-year order from 2016-17 TR to 2029-30 T-4. The highest is 75 (2022-23 T-1), then 65
+      (2027-28 T-4) and 63 (2026-27 T-4); the lowest are 0.77 (2019-20 T-1) and 1 (2020-21 T-1).
+      Four-year-ahead prices run from 8.4 (2021-22) to 65; the 2029-30 T-4 cleared at 27.1.
+    key:
+      - {series: clearing_price_gbp_per_kw_per_year, label: Clearing price, paint: petrol, note: "TR is NESO's Transitional auction; T-1, T-3 and T-4 run one, three and four years ahead."}
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then each file's download; a file whose
+      `last_modified` has not changed is skipped. The four weekly files carry an upload date in
+      their names.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=capacity-market-register"
+      - "GET https://api.neso.energy/dataset/0b3ab475-5622-4465-8825-9d35d03bb28b/resource/784fa703-1460-42cd-a8bb-fba4dcabac8d/download/capacity-market-auction-static-data.csv"
+    commands:
+      - {run: gridflow pipeline neso_data_portal capacity_market_auction_static --last 24h, comment: "auction terms, bronze then silver"}
+      - {run: gridflow pipeline neso_data_portal capacity_market_auction_cost --last 24h, comment: "cost per delivery year (notebook)"}
+      - {run: gridflow pipeline neso_data_portal capacity_market_unit_cmu --last 24h, comment: "the CMU register (notebook)"}
+  record:
+    select:
+      filter:
+        - {column: auction_name, op: in, value: ["2025-26 (T-4) Four Year Ahead Capacity Auction",
+                                                  "2026-27 (T-1) One Year Ahead Capacity Auction",
+                                                  "2026-27 (T-4) Four Year Ahead Capacity Auction",
+                                                  "2027-28 (T-1) One Year Ahead Capacity Auction",
+                                                  "2027-28 (T-4) Four Year Ahead Capacity Auction",
+                                                  "2028-29 (T-4) Four Year Ahead Capacity Auction",
+                                                  "2029-30 (T-4) Four Year Ahead Capacity Auction",
+                                                  "2030-31 (T-4) Four Year Ahead Capacity Auction"]}
+      dedup: {on: [auction_name], order_by: published_at}
+      order_by: [auction_name]
+      columns: [auction_name, clearing_price_gbp_per_kw_per_year, total_volume_of_agreements_awarded,
+                auction_target_capacity_mw, base_period_for_the_agreement, termination_fee_1_rate,
+                termination_fee_2_rate, termination_fee_3_rate, termination_fee_4_rate,
+                termination_fee_5_rate, termination_fee_6_rate, termination_fee_7_rate,
+                termination_fee_8_rate, termination_fee_9_rate, annual_penalty_cap,
+                monthly_penalty_cap, published_at]
+    key: [auction_name, published_at]
+    caption: "Eight auctions for delivery from 2025-26 to 2030-31, NESO's 9 September 2026 file."
+    fields:
+      auction_name: "NESO's name: first delivery year, auction type in brackets, then the title"
+      published_at: "CKAN's last-modified time of the file the row came from, read as UTC"
+      clearing_price_gbp_per_kw_per_year: "Clearing price, £ per kW per year (NESO's heading); null where NESO gives none"
+      total_volume_of_agreements_awarded: "Capacity Agreements awarded, MW, rounded to three decimal places (NESO)"
+      auction_target_capacity_mw: "The auction's target capacity, MW, as in the Electricity Capacity Report (NESO)"
+      base_period_for_the_agreement: "Base period for calculating capacity payments (NESO); null here on T-1 and 2030-31 T-4"
+      termination_fee_1_rate: "Termination fee 1 rate as NESO writes it, text such as `£5000 /MW`"
+      termination_fee_2_rate: "Termination fee 2 rate, £ per MW, kept as NESO's text"
+      termination_fee_3_rate: "Termination fee 3 rate, £ per MW, kept as NESO's text"
+      termination_fee_4_rate: "Termination fee 4 rate, £ per MW, kept as NESO's text"
+      termination_fee_5_rate: "Termination fee 5 rate, £ per MW, kept as NESO's text"
+      termination_fee_6_rate: "Fee 6 rate as text; in these rows only 2027-28 T-1 and 2030-31 T-4"
+      termination_fee_7_rate: "Termination fee 7 rate, £ per MW, kept as NESO's text"
+      termination_fee_8_rate: "Termination fee 8 rate, £ per MW, kept as NESO's text"
+      termination_fee_9_rate: "Termination fee 9 rate, £ per MW, kept as NESO's text"
+      annual_penalty_cap: "Annual penalty cap, a percentage kept as NESO's text (`100%` here)"
+      monthly_penalty_cap: "Monthly penalty cap, a percentage as text; NESO's dictionary gives no description"
+      timestamp_utc: "When gridflow wrote the capture, UTC; not an auction or delivery date"
+      bronze_capture_id: Path of the bronze capture the row was read from
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      The auction file has no auction date and `query()` filters on capture time, so each cell reads
+      a `_latest` view with `data.sql`. The CMU cell selects fuel and obligation only, never names or
+      contacts.
+    cells:
+      - |
+        auctions = data.sql("""
+            SELECT auction_name, clearing_price_gbp_per_kw_per_year AS price,
+                   auction_target_capacity_mw AS target_mw,
+                   total_volume_of_agreements_awarded AS awarded_mw,
+                   base_period_for_the_agreement AS base_period
+            FROM silver_neso_data_portal_capacity_market_auction_static_latest
+            ORDER BY auction_name""")
+        auctions[auctions.auction_name.str.contains("(T-4)", regex=False)]
+      - |
+        units = data.sql("""
+            SELECT primary_fuel_type, COUNT(*) AS units,
+                   SUM(auction_acquired_capacity_obligation) AS obligation_mw
+            FROM silver_neso_data_portal_capacity_market_unit_cmu_latest
+            WHERE auction_name = '2029-30 (T-4) Four Year Ahead Capacity Auction'
+              AND capacity_agreement_awarded = 'Yes'
+            GROUP BY primary_fuel_type ORDER BY obligation_mw DESC""")
+        units.loc[len(units)] = ["total", units.units.sum(), units.obligation_mw.sum()]
+        units.round(3)
+      - |
+        cost = data.sql("""
+            SELECT auction_name, delivery_year, capacity_awarded
+            FROM silver_neso_data_portal_capacity_market_auction_cost_latest""")
+        cost["auction"] = cost.auction_name.str.extract(r"\((T-\d|TR)\)")[0]
+        mw = cost.pivot_table(index="delivery_year", columns="auction",
+                              values="capacity_awarded", aggfunc="sum")
+        ax = mw[["T-4", "T-3", "T-1", "TR"]].plot.bar(
+            stacked=True, width=0.85, figsize=(8, 3.5),
+            color=["#155A6E", "#3E8C97", "#AFC64E", "#C77E3C"],
+            xlabel="delivery year", ylabel="MW awarded, summed over auctions")
+        ax.legend(ncol=4, loc="lower center", bbox_to_anchor=(0.5, 1.0), frameon=False);
+    needs: a capture of the auction, auction cost and CMU tables
+    plot_alt: >-
+      Stacked bar plot of our sum, per delivery year, of NESO's MW awarded by every auction, split by
+      auction type; NESO gives no per-year total. 2016/2017 sums to 803 MW (TR only). Each delivery
+      year from 2017/2018 to 2029/2030 sums to between 54,746 and 62,325 MW. Later years fall from
+      23,754 MW in 2030/2031 to 1,167 MW in 2043/2044.
+  related:
+    - {dataset: neso_data_portal/transmission-entry-capacity-tec-register, note: "TEC contracts behind the CMU table's TEC deferral columns"}
+    - {dataset: neso_data_portal/interconnector-register, note: "Contracted interconnectors; the CMU table lists interconnector units by link"}
+    - {dataset: neso_data_portal/embedded-register, note: "Embedded projects in Scotland; CMU rows mark each unit Transmission or Distribution"}
+    - {dataset: elexon/lolpdrm, note: "Elexon's de-rated margin per settlement period, a short-run adequacy measure"}
+  family:
+    slug: capacity-market-register
+    members:
+      - dataset: capacity_market_auction_static
+        differs: "One row per auction: clearing price, target and awarded MW, fee rates"
+        request: "GET https://api.neso.energy/dataset/0b3ab475-5622-4465-8825-9d35d03bb28b/resource/784fa703-1460-42cd-a8bb-fba4dcabac8d/download/capacity-market-auction-static-data.csv"
+      - dataset: capacity_market_auction_cost
+        differs: "One row per auction and delivery year: MW awarded and forecast cost, £"
+        request: "GET https://api.neso.energy/dataset/0b3ab475-5622-4465-8825-9d35d03bb28b/resource/b1b58919-eaa4-40ea-80df-3d3e526f8223/download/capacity-market-auction-capacity-and-cost.csv"
+      - dataset: capacity_market_unit_cmu
+        differs: "One row per unit application per auction; holds contact columns, never shown here"
+        request: "GET https://api.neso.energy/dataset/0b3ab475-5622-4465-8825-9d35d03bb28b/resource/25a5fa2e-873d-41c5-8aaf-fbc2b06d79e6/download/cmu_20261014.csv"
+      - dataset: capacity_market_unit_cmu_history
+        differs: "One changed CMU attribute per row, previous and latest; contact changes included"
+        request: "GET https://api.neso.energy/dataset/0b3ab475-5622-4465-8825-9d35d03bb28b/resource/cd034839-73e7-4c37-b4e5-6ebea25627d8/download/cmu_changes_20261014.csv"
+      - dataset: capacity_market_components
+        differs: "One row per auction, application and component; small ones aggregated from 22 July 2026"
+        request: "GET https://api.neso.energy/dataset/0b3ab475-5622-4465-8825-9d35d03bb28b/resource/790f5fa0-f8eb-4d82-b98d-0d34d3e404e8/download/component_20261014.csv"
+      - dataset: capacity_market_component_history
+        differs: "Component changes after the 22 July 2026 aggregation, logged from 29 July"
+        request: "GET https://api.neso.energy/dataset/0b3ab475-5622-4465-8825-9d35d03bb28b/resource/62bca39c-d4f0-4cd6-b2ff-8ef42dca7f23/download/component_changes_20261014.csv"
+      - dataset: capacity_market_component_history_pre
+        differs: "Component changes before aggregation, frozen after 22 July 2026; never union the two"
+        request: "GET https://api.neso.energy/dataset/0b3ab475-5622-4465-8825-9d35d03bb28b/resource/015453e0-c73c-416a-901d-623f914c8e70/download/component_changes_20260715.csv"
+      - dataset: capacity_market_de_rating_factors
+        differs: One de-rating factor per auction and generating technology class
+        request: "GET https://api.neso.energy/dataset/0b3ab475-5622-4465-8825-9d35d03bb28b/resource/d94ff98d-39ba-40d6-9672-7433de0631ac/download/capacity-market-de-rating-factors.csv"
 ---
 
 # Capacity Market Register
@@ -99,8 +297,13 @@ gridflow downloads the uploaded files; it does not read the Datastore.
 ## Families
 
 **Common to all eight families.**
-- **One capture so far.** Each family has one bronze body (captured 2026-10-08) with one
-  header epoch. Whether the schema stays stable over time is not established.
+- **Captures.** Each family has one header epoch. The three auction-level families and the
+  pre-aggregation history have one bronze body (captured 2026-10-08). The four weekly
+  families have a second (captured 2026-10-16, CKAN `last_modified` 2026-10-14) with the
+  same header: CMU 18,200 rows, CMU History 72,282, Components 29,849, Component History
+  7,488. Every row of the first CMU History and Component History capture recurs in the
+  second, so a read across captures must deduplicate or use the `_latest` view. Whether
+  the schema stays stable over time is not established.
 - **Vintage clock: `ckan_last_modified`.** `published_at` and `available_at` both equal
   the CKAN `last_modified` of the resource at capture. CKAN gives this value without an
   offset; gridflow reads it as UTC (ADR-030 D-15, corroborated rather than
@@ -110,11 +313,11 @@ gridflow downloads the uploaded files; it does not read the Datastore.
   forecast archive.
 - **Event time, recipe `none`.** `timestamp_utc` (and `event_time`, copied from it) is the
   **capture time**: the bronze write instant, the same on every row. It is not an
-  auction, delivery or agreement date (`src/gridflow/silver/neso_data_portal/casting.py:437`,
+  auction, delivery or agreement date (`src/gridflow/silver/neso_data_portal/casting.py:605`,
   `src/gridflow/silver/base.py:2232`).
 - **Event time, recipe `date_sp1(change_date)`** (the three change logs).
   `timestamp_utc` is the start of settlement period 1 of `change_date` on the London
-  clock, so London local midnight in UTC (`casting.py:453`). Observed in silver:
+  clock, so London local midnight in UTC (`casting.py:620`). Observed in silver:
   `T00:00Z` for a GMT date and `T23:00Z` the day before for a BST date. It anchors the
   civil date the change was first reported. It is **not** a release instant; the
   intraday timing is not documented.
@@ -223,7 +426,8 @@ Schema, epoch 1:
 
 **Column meanings.** One row per auction, with the auction's fixed terms. `Base Period for
 the Agreement` is the period used to calculate capacity payments; the dictionary example
-is an interval string. The termination-fee and penalty-cap columns are the auction's
+is an interval string, but the captured values read `Winter 2012/2013` to
+`Winter 2024/2025`. The termination-fee and penalty-cap columns are the auction's
 rates. `Monthly Penalty Cap` is a percentage, not a time column.
 
 **Units (vendor field dictionary, `field-info/20261008T114228Z/capacity_market_auction_static.json`; K-CI-FACTS §2.7 g4).**
@@ -307,7 +511,8 @@ strings. `Delivery Year` is a year label. The ID columns are identifiers.
    `change_date`, in UTC (see "Common to all eight families"). `change_date` spans
    2026-07-29 to 2026-10-07 with 11 distinct dates; in silver `timestamp_utc` runs
    2026-07-28T23:00Z to 2026-10-06T23:00Z because these dates are in BST. It is the
-   reporting date, not a release instant.
+   reporting date, not a release instant. (First capture; the 2026-10-16 capture runs to
+   2026-10-14 with 12 distinct dates.)
 
 **Identity.** Every column is the guard (0 full-row duplicates). 7,460 rows cover 212
 distinct CMU IDs and 593 distinct Component IDs. The shorter composite `(Auction Name,
@@ -321,7 +526,8 @@ blanks are the absent side of a change, as the dictionary's descriptions of Prev
 Latest and change types support. Numeric-looking strings and zeros are kept as written.
 
 **Silver output.** **7,460 rows** from `raw_20261008T091423Z_62bca39c-…_a619ea93.csv`
-(1,215,696 bytes).
+(1,215,696 bytes); **7,488 rows** from `raw_20261016T192048Z_62bca39c-…_56ddfdff.csv`
+(1,220,265 bytes).
 
 ### `capacity_market_component_history_pre`
 
@@ -367,7 +573,7 @@ the full bodies of both files:
 | Shared distinct CMU IDs | 105 |
 | Shared `change_date` values | 0 |
 | `change_date` span, pre | 2025-12-10 .. 2026-07-15 (27 distinct) |
-| `change_date` span, post | 2026-07-29 .. 2026-10-07 (11 distinct) |
+| `change_date` span, post | 2026-07-29 .. 2026-10-07 (11 distinct; first capture; to 2026-10-14, 12 distinct, in the second) |
 
 The same header and some shared IDs do not mean the same entity grain. After the boundary
 a Component ID can be an aggregate, not the original component. Keep the two families
@@ -495,7 +701,8 @@ The last is the guard. Two of its keys have the literal Component ID `N/A`.
   means "not available".
 
 **Silver output.** **29,849 rows** from `raw_20261008T091435Z_790f5fa0-…_2d9e9dba.csv`
-(8,329,415 bytes).
+(8,329,415 bytes); **29,849 rows** from `raw_20261016T192053Z_790f5fa0-…_e67bdb73.csv`
+(8,329,645 bytes).
 
 ### `capacity_market_de_rating_factors`
 
@@ -725,7 +932,8 @@ suspension. Zeros are kept as values; blanks stay null and are never filled with
   zero quantity.
 
 **Silver output.** **18,200 rows**, 78 vendor columns plus 8 engine columns, from
-`raw_20261008T091442Z_25a5fa2e-…_9d91a949.csv` (8,762,136 bytes).
+`raw_20261008T091442Z_25a5fa2e-…_9d91a949.csv` (8,762,136 bytes); **18,200 rows** from
+`raw_20261016T192058Z_25a5fa2e-…_3ecf866a.csv` (8,762,629 bytes).
 
 ### `capacity_market_unit_cmu_history`
 
@@ -761,6 +969,16 @@ updated value (dictionary lines 94 and 106). `Change Type` marks the kind of cha
 (values include `First Release`, `New` and `Removed`), and `Change Date` is the date the
 change was first reported on the CMR (line 130).
 
+**Contact values.** The CMU's contact columns are logged here too: rows whose `Attribute` is
+`Secondary Trading Contact - Email`, `Secondary Trading Contact_Email`, `Secondary Trading
+Contact - Telephone` or `Secondary Trading Contact_Telephone` carry email addresses and
+telephone numbers in `Previous` and `Latest`. Never print those rows. The same goes for
+`Name of Applicant`, `Agent Name`, `Registered Holder`, `Parent Company` and `Legal Name of
+any Person with a Security Interest` (a name can be a sole trader's), and, in the component
+logs and Components, for `Location and Post Code` and `OS Grid Reference`. Several attributes
+appear under two spellings (for example `Connection / DSR Capacity` and `Connection or DSR
+Capacity`), so filter on every spelling.
+
 **Units.** `Previous` and `Latest` are mixed-type text whose meaning and unit depend on
 `Attribute`; they stay strings, including numeric- and date-looking values. `Delivery
 Year` is a year label.
@@ -788,7 +1006,8 @@ global null rule is applied.
   whose `Latest` is not blank.
 
 **Silver output.** **72,166 rows** from `raw_20261008T091446Z_cd034839-…_2ac01092.csv`
-(10,930,659 bytes).
+(10,930,659 bytes); **72,282 rows** from `raw_20261016T192102Z_cd034839-…_de714a50.csv`
+(10,951,069 bytes), `change_date` to 2026-10-14 (49 distinct).
 
 ## Cadence
 
@@ -799,7 +1018,8 @@ global null rule is applied.
 What the captures show so far:
 - **Weekly files** (CMU, CMU History, Component History, Components): CKAN `last_modified`
   was 2026-09-30 in the catalogue snapshot and 2026-10-07 at capture, with the filename
-  date moving from `20260930` to `20261007`. This fits a weekly re-upload.
+  date moving from `20260930` to `20261007`. The 2026-10-16 capture fetched `*_20261014.csv`
+  with `last_modified` 2026-10-14. This fits a weekly re-upload.
 - **Auction-level files** (Auction Capacity and Cost, Auction Static Data, De-Rating
   Factors): CKAN `last_modified` was 2026-09-09 both in the snapshot and at capture. They
   change less often than weekly.
@@ -807,7 +1027,7 @@ What the captures show so far:
     auction or prequalification round).
 - **Component History - Pre Aggregation:** last modified 2026-07-15 and frozen by the
   vendor's notice.
-- TODO: verify the vendor's upload day and time of day. One capture cannot establish it.
+- TODO: verify the vendor's upload day and time of day. Two weekly captures cannot establish it.
 - No scheduled gridflow refresh exists yet (OWNER 457–460), so new captures need a manual
   sweep.
 
