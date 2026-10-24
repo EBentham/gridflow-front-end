@@ -13,6 +13,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 SITE_DIR = REPO_ROOT / "site" / "hifi"
 DEFAULT_VAULT = REPO_ROOT / "vault"
 DEFAULT_SILVER = Path("C:/gridflow-data/silver")
+DEFAULT_BRONZE = Path("C:/gridflow-data/bronze")
 
 
 def resolve_vault_path(cli_arg: str | None) -> Path:
@@ -33,3 +34,13 @@ def resolve_silver_path(cli_arg: str | None) -> Path:
     if env_path:
         return Path(env_path).expanduser().resolve()
     return DEFAULT_SILVER
+
+
+def resolve_bronze_path(cli_arg: str | None) -> Path:
+    """Bronze root: CLI flag, then ``$GRIDFLOW_BRONZE_PATH``, then ``C:/gridflow-data/bronze``."""
+    if cli_arg:
+        return Path(cli_arg).expanduser().resolve()
+    env_path = os.environ.get("GRIDFLOW_BRONZE_PATH")
+    if env_path:
+        return Path(env_path).expanduser().resolve()
+    return DEFAULT_BRONZE
