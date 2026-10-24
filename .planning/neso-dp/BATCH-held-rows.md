@@ -126,7 +126,7 @@ repeat rows; on a table with no event time use `data.sql()`; the column guide ac
 | I2 | a85a78f0c3de4f450 | a1fdee2150037abad | APPROVED x3; committed with I1 |
 | N1 | a0ac37967725c0a93 | a24fb2d76dca812ba | APPROVED x2 (round 2); committed (site 4ae7dc4); pushed; parent told; 20ct logged |
 | CI1 | ace01fca13556e033 | a50d6c3658e06feeb | DONE: approved after one revision (national alt, country caption); pushed 42b7cb7 / vault 172559a; 20cu-20cw logged |
-| F1 | a34676c0e232141b9 | a34861f355f97978d | all five APPROVE with nits; writer fixing nits |
+| F1 | a34676c0e232141b9 | a34861f355f97978d | all five APPROVE; nits fixed |
 | F2 | a52e0573a78ee0c3e | aa0ab3c0490d93fb0 | written; in review (seat reordered ED3 lead to `_sum_ed` and LA heat lead to residential, artefacts renamed) |
 | R1 | a2169fe0f64b6cf11 | a0829310d3f9bfefb | written; in review (2014 frequency table now a caveat, not held; BSUoS sample from the 16 Oct upload) |
 
