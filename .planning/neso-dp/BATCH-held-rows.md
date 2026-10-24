@@ -111,11 +111,11 @@ repeat rows; on a table with no event time use `data.sql()`; the column guide ac
 
 | Batch | Writer | Checker | State |
 |---|---|---|---|
-| A1 | a012e047532732e92 | a4ec36bb8e74245fd | written; in review (DC chart avoids the ambiguous Date; 16 Oct capture dates can only be day-first; EAC mock dedup on delivery_end) |
+| A1 | a012e047532732e92 | a4ec36bb8e74245fd | round 1: EAC mock, EAC BR mock, long-term DC/DM/DR APPROVED with nits; DC 4-day REVISE (history file mixes month-first targets, six rows misdated in silver); round 2 with writer |
 | A2 | a9f952220257ebd0a | af25be4d62dca5b4a | APPROVED x4 (round 2); committed (vault, then mirror and artefacts f95709e); 20cm logged |
 | B1 | a12aa2a2d21abdba4 | aac52199c23c016ff | APPROVED x5; committed (vault 96396ba, site be9a3f6); 20cl logged |
-| B2 | a948627e0bfe2b68d | | writing |
-| C1 | ad75c58a68842e8b6 | | writing |
+| B2 | a948627e0bfe2b68d | aaf248079da8934b8 | written; in review (both leads have no frame, pages draw through record.select.silver; skip-rates PSA volume equals All BM on every row) |
+| C1 | ad75c58a68842e8b6 | aa4a892ba7c0e0bd4 | written; in review (cost forecast metadata £m is valid, file names no unit since 9 Sept; CMIS transform command fails on the 14 Oct file: seat rules drop it if so) |
 | S1 | a7ab77ada40837869 | | writing |
 | T1 | abf6b4cf3ba85c1a5 | | writing |
 
