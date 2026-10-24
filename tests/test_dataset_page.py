@@ -4,11 +4,12 @@ from __future__ import annotations
 
 import dataclasses
 import re
+import shutil
 from pathlib import Path
 
 import pytest
 
-from gridflow_front_end import artefacts, build, chart_svg
+from gridflow_front_end import artefacts, build, chart_spec, chart_svg
 from gridflow_front_end.page_fields import ChartView, KeyEntry, parse_page_fields
 from gridflow_front_end.paths import DEFAULT_VAULT
 
@@ -196,10 +197,24 @@ def test_every_new_template_page_renders() -> None:
         _render(doc)
 
 
-def test_a_page_without_a_page_block_is_blank(tmp_path: Path) -> None:
+def test_a_page_without_a_page_block_is_blank(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     """Ruling 30: the hero's breadcrumb, name and id, nothing else, and no planning words."""
+    # Every published note now has a page block, so strip two from a copy of the vault; their
+    # committed artefacts would then fail the orphan and series checks, not what this tests.
+    monkeypatch.setattr(build, "orphan_artefacts", lambda pages: [])
+    monkeypatch.setattr(chart_spec, "check_series", lambda series, spec, key: [])
+    vault = tmp_path / "vault"
+    shutil.copytree(DEFAULT_VAULT, vault)
+    for slug in ("current_balancing_state", "outages_generation"):
+        note = vault / "entsoe" / f"{slug}.md"
+        text = note.read_text(encoding="utf-8")
+        note.write_text(
+            re.sub(r"^page:.*?(?=^---)", "", text, count=1, flags=re.S | re.M), encoding="utf-8"
+        )
     build.build(
-        DEFAULT_VAULT,
+        vault,
         tmp_path,
         frozenset({"entsoe/current_balancing_state", "entsoe/outages_generation"}),
     )
