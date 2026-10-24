@@ -121,7 +121,7 @@ repeat rows; on a table with no event time use `data.sql()`; the column guide ac
 | T1 | abf6b4cf3ba85c1a5 | a335a0dc2e2350249 | APPROVED x6 (round 2); committed (site e3a1ca9); pushed; 20cq logged |
 | D1 | ac29ae2189289eb20 | a1587b1603e0092f5 | written; in review (clock-change repeats only 2021 and 2022; NA vs 0 across file eras) |
 | D2 | a6529fae660c4ff74 | aaa229431fb8d7d45 | written; in review (long-term type none; transmission-losses notebook no longer sums months) |
-| G1 | af234cffef25e4fa7 | | writing |
+| G1 | af234cffef25e4fa7 | adaa14b1da19ee956 | written; in review (weekly OPMR no chart; wind availability one week label) |
 | I1 | a475c72bb4c6ca14f | | writing |
 | I2 | a85a78f0c3de4f450 | | written; seat ruled its chart rule (Day Ahead as fetched, rows uploaded before their hour) for all seven pages; Viking lead reordered (b79c573), regenerated; one checker will review I1 and I2 together |
 | N1 | a0ac37967725c0a93 | | writing |
