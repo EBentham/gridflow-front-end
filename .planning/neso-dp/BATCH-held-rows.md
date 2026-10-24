@@ -145,6 +145,15 @@ one row per outage notice per calendar day, new `outage_date` column; 1-5 Aug we
 without the defect caveat; remaining caveats: timestamps carry no time zone (GIE's reporters mix UTC and local), units
 unstated, an outage running 06:00 to 06:00 appears on two calendar days, the August capture has 13 of 16 pages.
 
+ENTSOG (parent, ~16:45Z): `capacity-by-indicator` and `cmp` fixed in gridflow PR #129 (unmerged, CI green; local silver
+re-written from bronze). Day D's silver keeps every record whose validity overlaps gas day D (06:00-06:00 Brussels);
+`timestamp_utc` is the record's own start if inside that gas day, else the gas-day start; record id + timestamp_utc
+unique (firm_technical 28 rows/0 values -> 126/98; auction premiums 0 -> all 54 a day; unavailable firm capacity 25 on
+one day -> 291 a day; null timestamps gone, 18c). capacity-by-indicator: no defect caveat (say
+`available_through_uioli_short_term` holds only the "no capacity" sentences). cmp: caveat the six mixed units on auction
+premiums and that it is unconfirmed which price the unit applies to (18u). Parked notes on `v5/p26-entsog-gas-held` /
+`docs/v5-p26-entsog-gas-held`; the three cmp vault notes can now be corrected. Write both from current silver.
+
 **Fixed in gridflow PR #134 (unmerged; local silver re-transformed):** current BSUoS day-first files (remediation 20y)
 and system frequency 2014 (20ao: 12 of 12 files, the repeated October hour told apart by `dtm_occurrence`). Their
 pages' defect caveats and notes come off in a small follow-up batch. The DC 4-day forecast's month-first 2022 issue is
