@@ -1,0 +1,209 @@
+{
+ "dataset": "neso_data_portal/bsuos_fixed_tariffs",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "27a36e2bbe71d7ac2f5e93be7743f805e6fee32543da948515d9ee97d247f6d0",
+ "silver": "neso_data_portal/bsuos_fixed_tariffs",
+ "columns": [
+  {
+   "name": "publication",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "fixed_tariff_title",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "published_date",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "fixed_tariff_start_date",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "fixed_tariff_end_date",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "fixed_tariff_gbp_per_mwh",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "Initial Forecast",
+   "Fixed Tariff 7",
+   "2025-06-27",
+   "2026-04-01",
+   "2026-09-30",
+   "14.55",
+   "2026-10-05 15:43:25.730825 UTC",
+   "2026-03-31 23:00:00 UTC",
+   "bronze/neso_data_portal/bsuos_fixed_tariffs/2026/10/08/raw_20261008T090657Z_4dfa533f-bec6-491b-a3f1-7ce92449bc9a_1dbeb874.csv",
+   "2026-10-08 09:06:57.529107 UTC",
+   "2026-03-31 23:00:00 UTC",
+   "2026-10-05 15:43:25.730825 UTC",
+   "1a17634e-5d7c-4cac-b38f-327b49e42237",
+   "1+e1"
+  ],
+  [
+   "Initial Forecast",
+   "Fixed Tariff 8",
+   "2025-06-27",
+   "2026-10-01",
+   "2027-03-31",
+   "11.03",
+   "2026-10-05 15:43:25.730825 UTC",
+   "2026-09-30 23:00:00 UTC",
+   "bronze/neso_data_portal/bsuos_fixed_tariffs/2026/10/08/raw_20261008T090657Z_4dfa533f-bec6-491b-a3f1-7ce92449bc9a_1dbeb874.csv",
+   "2026-10-08 09:06:57.529107 UTC",
+   "2026-09-30 23:00:00 UTC",
+   "2026-10-05 15:43:25.730825 UTC",
+   "1a17634e-5d7c-4cac-b38f-327b49e42237",
+   "1+e1"
+  ],
+  [
+   "Draft",
+   "Fixed Tariff 7",
+   "2025-10-02",
+   "2026-04-01",
+   "2026-09-30",
+   "14.21",
+   "2026-10-05 15:43:25.730825 UTC",
+   "2026-03-31 23:00:00 UTC",
+   "bronze/neso_data_portal/bsuos_fixed_tariffs/2026/10/08/raw_20261008T090657Z_4dfa533f-bec6-491b-a3f1-7ce92449bc9a_1dbeb874.csv",
+   "2026-10-08 09:06:57.529107 UTC",
+   "2026-03-31 23:00:00 UTC",
+   "2026-10-05 15:43:25.730825 UTC",
+   "1a17634e-5d7c-4cac-b38f-327b49e42237",
+   "1+e1"
+  ],
+  [
+   "Draft",
+   "Fixed Tariff 8",
+   "2025-10-02",
+   "2026-10-01",
+   "2027-03-31",
+   "11.93",
+   "2026-10-05 15:43:25.730825 UTC",
+   "2026-09-30 23:00:00 UTC",
+   "bronze/neso_data_portal/bsuos_fixed_tariffs/2026/10/08/raw_20261008T090657Z_4dfa533f-bec6-491b-a3f1-7ce92449bc9a_1dbeb874.csv",
+   "2026-10-08 09:06:57.529107 UTC",
+   "2026-09-30 23:00:00 UTC",
+   "2026-10-05 15:43:25.730825 UTC",
+   "1a17634e-5d7c-4cac-b38f-327b49e42237",
+   "1+e1"
+  ],
+  [
+   "Final",
+   "Fixed Tariff 7",
+   "2025-12-29",
+   "2026-04-01",
+   "2026-09-30",
+   "13.74",
+   "2026-10-05 15:43:25.730825 UTC",
+   "2026-03-31 23:00:00 UTC",
+   "bronze/neso_data_portal/bsuos_fixed_tariffs/2026/10/08/raw_20261008T090657Z_4dfa533f-bec6-491b-a3f1-7ce92449bc9a_1dbeb874.csv",
+   "2026-10-08 09:06:57.529107 UTC",
+   "2026-03-31 23:00:00 UTC",
+   "2026-10-05 15:43:25.730825 UTC",
+   "1a17634e-5d7c-4cac-b38f-327b49e42237",
+   "1+e1"
+  ],
+  [
+   "Final",
+   "Fixed Tariff 8",
+   "2025-12-29",
+   "2026-10-01",
+   "2027-03-31",
+   "12.49",
+   "2026-10-05 15:43:25.730825 UTC",
+   "2026-09-30 23:00:00 UTC",
+   "bronze/neso_data_portal/bsuos_fixed_tariffs/2026/10/08/raw_20261008T090657Z_4dfa533f-bec6-491b-a3f1-7ce92449bc9a_1dbeb874.csv",
+   "2026-10-08 09:06:57.529107 UTC",
+   "2026-09-30 23:00:00 UTC",
+   "2026-10-05 15:43:25.730825 UTC",
+   "1a17634e-5d7c-4cac-b38f-327b49e42237",
+   "1+e1"
+  ],
+  [
+   "Draft",
+   "Fixed Tariff 9",
+   "2026-09-21",
+   "2027-04-01",
+   "2027-09-30",
+   "21.67",
+   "2026-10-05 15:43:25.730825 UTC",
+   "2027-03-31 23:00:00 UTC",
+   "bronze/neso_data_portal/bsuos_fixed_tariffs/2026/10/08/raw_20261008T090657Z_4dfa533f-bec6-491b-a3f1-7ce92449bc9a_1dbeb874.csv",
+   "2026-10-08 09:06:57.529107 UTC",
+   "2027-03-31 23:00:00 UTC",
+   "2026-10-05 15:43:25.730825 UTC",
+   "1a17634e-5d7c-4cac-b38f-327b49e42237",
+   "1+e1"
+  ],
+  [
+   "Draft",
+   "Fixed Tariff 10",
+   "2026-09-21",
+   "2027-10-01",
+   "2028-03-31",
+   "18.42",
+   "2026-10-05 15:43:25.730825 UTC",
+   "2027-09-30 23:00:00 UTC",
+   "bronze/neso_data_portal/bsuos_fixed_tariffs/2026/10/08/raw_20261008T090657Z_4dfa533f-bec6-491b-a3f1-7ce92449bc9a_1dbeb874.csv",
+   "2026-10-08 09:06:57.529107 UTC",
+   "2027-09-30 23:00:00 UTC",
+   "2026-10-05 15:43:25.730825 UTC",
+   "1a17634e-5d7c-4cac-b38f-327b49e42237",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

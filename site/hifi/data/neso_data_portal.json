@@ -97,7 +97,15 @@
         "contract-transfer-of-obligation",
         "disaggregated-bsad",
         "non-bm-ancillary-service-dispatch-platform-asdp-window-prices",
-        "obligatory-reactive-power-service-orps-utilisation"
+        "obligatory-reactive-power-service-orps-utilisation",
+        "bsuos-fixed-tariffs",
+        "current-balancing-services-use-of-system-bsuos-data",
+        "daily-balancing-costs-balancing-services-use-of-system",
+        "balancing-services-use-of-system-bsuos-daily-forecast",
+        "daily-balancing-volume-balancing-services-use-of-system",
+        "gb-system-inertia-bid-and-offer-costs",
+        "bsuos-monthly-forecast",
+        "skip-rates"
       ]
     }
   ],
@@ -270,6 +278,53 @@
         "orps_utilisation_historic_reactive",
         "orps_utilisation_reactive_default"
       ]
+    },
+    {
+      "slug": "current-balancing-services-use-of-system-bsuos-data",
+      "title": "Current BSUoS charges",
+      "note": "current-balancing-services-use-of-system-bsuos-data",
+      "members": [
+        "current_bsuos_ii",
+        "current_bsuos_sf",
+        "current_bsuos_rf",
+        "current_bsuos_historic_ii",
+        "current_bsuos_historic_sf",
+        "current_bsuos_historic_rf",
+        "current_bsuos_cap_adjustments"
+      ]
+    },
+    {
+      "slug": "bsuos-monthly-forecast",
+      "title": "Monthly BSUoS forecast",
+      "note": "bsuos-monthly-forecast",
+      "members": [
+        "bsuos_monthly_forecast_fc_summary",
+        "bsuos_monthly_forecast_actual_sum",
+        "bsuos_monthly_forecast_fc_summary_pct",
+        "bsuos_monthly_forecast_impact_on_due",
+        "bsuos_monthly_forecast_including_new",
+        "bsuos_monthly_forecast_sum_winter",
+        "bsuos_monthly_forecast_summary",
+        "bsuos_monthly_forecast_summary_pct"
+      ]
+    },
+    {
+      "slug": "skip-rates",
+      "title": "Skip rates",
+      "note": "skip-rates",
+      "members": [
+        "skip_rates_summary",
+        "skip_rates_behind_constraints_bmu",
+        "skip_rates_behind_constraints_cons",
+        "skip_rates_exclusion_reasons",
+        "skip_rates_in_merit_all_bm",
+        "skip_rates_in_merit_psa",
+        "skip_rates_in_merit_psa_dsf_unit",
+        "skip_rates_stage5_dsf_technology",
+        "skip_rates_stage5_psa_technology",
+        "skip_rates_stage6_acceptance",
+        "skip_rates_stage6_psa"
+      ]
     }
   ],
   "names": {
@@ -294,7 +349,12 @@
     "stor-windows": "STOR windows",
     "contract-transfer-of-obligation": "Contract transfer of obligation",
     "disaggregated-bsad": "Disaggregated BSAD",
-    "non-bm-ancillary-service-dispatch-platform-asdp-window-prices": "ASDP window prices"
+    "non-bm-ancillary-service-dispatch-platform-asdp-window-prices": "ASDP window prices",
+    "bsuos-fixed-tariffs": "BSUoS fixed tariffs",
+    "daily-balancing-costs-balancing-services-use-of-system": "Daily BSUoS costs",
+    "balancing-services-use-of-system-bsuos-daily-forecast": "Daily BSUoS forecast",
+    "daily-balancing-volume-balancing-services-use-of-system": "Daily BSUoS volume",
+    "gb-system-inertia-bid-and-offer-costs": "GB system inertia bid and offer costs"
   },
   "dropped": {},
   "package_tables": {
@@ -316,7 +376,12 @@
     "stor-windows": "stor_windows",
     "contract-transfer-of-obligation": "contract_transfer_obligation",
     "disaggregated-bsad": "disaggregated_bsad",
-    "non-bm-ancillary-service-dispatch-platform-asdp-window-prices": "asdp_window_prices"
+    "non-bm-ancillary-service-dispatch-platform-asdp-window-prices": "asdp_window_prices",
+    "bsuos-fixed-tariffs": "bsuos_fixed_tariffs",
+    "daily-balancing-costs-balancing-services-use-of-system": "daily_balancing_costs",
+    "balancing-services-use-of-system-bsuos-daily-forecast": "bsuos_daily_forecast",
+    "daily-balancing-volume-balancing-services-use-of-system": "daily_balancing_volume",
+    "gb-system-inertia-bid-and-offer-costs": "inertia_bid_offer_costs"
   },
   "catalogue": {
     "_about": "NESO's catalogue as the hub draws it: its data groups in portal order, each with NESO's description and its packages (NESO's titles and CKAN names). `page_packages` names the CKAN package of a page not named after it; a package is a link when a page in `groups` documents it. `plan` lays the groups out as plots: a slug is one plot, `row` sets its children side by side, `col` stacks them; `wide` from 1100 px, `narrow` below, and `tag_narrow` plots carry their name beneath them when narrow.",
