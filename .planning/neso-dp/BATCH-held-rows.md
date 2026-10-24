@@ -104,5 +104,12 @@ repeat rows; on a table with no event time use `data.sql()`; the column guide ac
 | Batch | Writer | Checker | State |
 |---|---|---|---|
 | A1 | a012e047532732e92 | | writing |
-| A2 | a9f952220257ebd0a | | writing |
-| B1 | a12aa2a2d21abdba4 | | writing |
+| A2 | a9f952220257ebd0a | af25be4d62dca5b4a | written; in review (ORPS frame shows the default-rate member; ASDP window ends before it starts on 29 Mar 2026, a defect) |
+| B1 | a12aa2a2d21abdba4 | aac52199c23c016ff | written; in review (writer: fixed-tariffs rows do carry Published Date, caveat follows the code; cost file restated 170 Sept rows between 8 and 16 Oct captures) |
+| B2 | a948627e0bfe2b68d | | writing |
+| C1 | ad75c58a68842e8b6 | | writing |
+
+Pace raised 2026-10-24 ~13:25Z (Bobbo via the parent): 5 agents at once, aim about 50% of weekly usage over 36 hours;
+park at 98% weekly. After NESO: ruling 66 on the seven blank other-vendor pages (ENTSO-E balancing-energy bids, current
+balancing state, procured balancing capacity, outages; ENTSOG capacity-by-indicator and cmp; GIE unavailability), one
+writer and one checker each, one branch and PR off main plus the vault PR; not NETBSAD or NONBM (silver wrong).
