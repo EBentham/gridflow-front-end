@@ -7,6 +7,9 @@ every column in silver order with its dtype, and the eight rows with each value
 formatted exactly as Polars prints it (the page's "values formatted by Polars").
 ``gridflow-build`` renders the record and the "Eight rows" table from that file.
 
+A held page's ``page.raw_feed.sample`` is written here too, from local bronze (read only), as
+``site/hifi/data/raw-samples/<vendor>/<dataset>.json`` (``raw_sample.py``).
+
 Usage
 -----
     gridflow-sample                               # every note with page.record
@@ -26,10 +29,15 @@ from typing import Any
 
 import polars as pl
 
-from gridflow_front_end import artefacts
+from gridflow_front_end import artefacts, raw_sample
 from gridflow_front_end.distil import _filter_expr, coerce_value
-from gridflow_front_end.page_fields import parse_page_fields
-from gridflow_front_end.paths import SITE_DIR, resolve_silver_path, resolve_vault_path
+from gridflow_front_end.page_fields import PageFields, parse_page_fields
+from gridflow_front_end.paths import (
+    SITE_DIR,
+    resolve_bronze_path,
+    resolve_silver_path,
+    resolve_vault_path,
+)
 
 GENERATED_BY = "gridflow-sample"
 ROWS = 8
@@ -210,11 +218,38 @@ def build_payload(
     }
 
 
+def _write_raw_sample(
+    bronze_root: Path, vendor: str, dataset: str, fields: PageFields, dry_run: bool
+) -> int:
+    """Write one held page's raw sample; 1 when it fails, else 0."""
+    key = f"{vendor}/{dataset}"
+    spec = fields.raw_feed.sample
+    assert spec is not None
+    try:
+        payload = raw_sample.build_payload(bronze_root, vendor, dataset, spec.table, spec.file)
+    except (raw_sample.RawSampleError, OSError, ValueError) as exc:
+        print(f"  FAIL {key} raw sample: {exc}", file=sys.stderr)
+        return 1
+    print(f"  {key}: raw sample of {payload['file']}, {len(payload['lines'])} lines")
+    if dry_run:
+        for line in payload["lines"]:
+            print("   ", line)
+        return 0
+    out = artefacts.raw_sample_path(SITE_DIR, vendor, dataset)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(artefacts.dumps(payload), encoding="utf-8")
+    print(f"  wrote {out.relative_to(SITE_DIR.parent.parent)}")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     """CLI entry point for ``gridflow-sample``."""
     parser = argparse.ArgumentParser(prog="gridflow-sample", description=__doc__.split("\n")[0])
     parser.add_argument(
         "--silver-path", default=None, help="Silver root (default C:/gridflow-data/silver)."
+    )
+    parser.add_argument(
+        "--bronze-path", default=None, help="Bronze root (default C:/gridflow-data/bronze)."
     )
     parser.add_argument("--vault-path", default=None, help="Vault mirror root (default ./vault).")
     parser.add_argument(
@@ -223,6 +258,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--dry-run", action="store_true", help="Print the rows, write nothing.")
     args = parser.parse_args(argv)
     silver_root = resolve_silver_path(args.silver_path)
+    bronze_root = resolve_bronze_path(args.bronze_path)
     vault = resolve_vault_path(args.vault_path)
     sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[attr-defined]
     wanted = set(args.dataset)
@@ -235,6 +271,8 @@ def main(argv: list[str] | None = None) -> int:
         if wanted and key not in wanted:
             continue
         fields, errors = parse_page_fields(note.read_text(encoding="utf-8"))
+        if fields.present and fields.raw_feed.sample is not None and not errors:
+            failures += _write_raw_sample(bronze_root, vendor, dataset, fields, args.dry_run)
         if not fields.present or not fields.record.select:
             continue
         if errors:

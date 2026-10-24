@@ -62,7 +62,7 @@ from typing import Any
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 from markupsafe import Markup
 
-from gridflow_front_end import artefacts, chart_spec, chart_svg, map_svg
+from gridflow_front_end import artefacts, chart_spec, chart_svg, map_svg, raw_sample
 from gridflow_front_end.page_fields import PageFields, anatomy_errors, parse_page_fields
 from gridflow_front_end.paths import DEFAULT_VAULT, REPO_ROOT, SITE_DIR, resolve_vault_path
 
@@ -1054,6 +1054,7 @@ class PageArtefacts:
     sample: dict[str, Any] | None = None
     notebook: dict[str, Any] | None = None
     locations: dict[str, Any] | None = None
+    raw_sample: dict[str, Any] | None = None
 
 
 def highlight(code: str) -> Markup:
@@ -1165,12 +1166,16 @@ def request_lines(request: str) -> Markup:
 def check_artefacts(doc: DatasetDoc) -> tuple[PageArtefacts, list[str]]:
     """Load a new-template page's sample and notebook files and check their digests.
 
-    A held page shows no rows, so it has no artefacts, and a leftover one fails the build.
+    A held page shows no silver rows, so it has no chart, sample, notebook or locations file,
+    and a leftover one fails the build. Its one allowed artefact is a raw sample (the first rows
+    of one bronze file, ``page.raw_feed.sample``), which any other page must not carry.
     """
     key = f"{doc.vendor_id}/{doc.slug}"
     errors: list[str] = []
     fields = doc.page
     arts = PageArtefacts()
+    arts.raw_sample, raw_errors = _check_raw_sample(doc)
+    errors.extend(raw_errors)
     if fields.held:
         leftovers = [
             path.name
@@ -1232,6 +1237,27 @@ def check_artefacts(doc: DatasetDoc) -> tuple[PageArtefacts, list[str]]:
                             f"{key}: page.notebook.plot_alt is required for the plot output"
                         )
     return arts, errors
+
+
+def _check_raw_sample(doc: DatasetDoc) -> tuple[dict[str, Any] | None, list[str]]:
+    """A note's committed raw sample, if it asks for one, and why it cannot be shown."""
+    key = f"{doc.vendor_id}/{doc.slug}"
+    path = artefacts.raw_sample_path(SITE_DIR, doc.vendor_id, doc.slug)
+    spec = doc.page.raw_feed.sample
+    if spec is None:
+        if path.is_file():
+            return None, [f"{key}: the note has no page.raw_feed.sample; delete its {[path.name]}"]
+        return None, []
+    try:
+        raw = artefacts.load_json(path)
+    except (ValueError, TypeError) as exc:
+        return None, [f"{key}: {exc}"]
+    if raw is None:
+        return None, [f"{key}: no raw sample (run gridflow-sample and commit it)"]
+    if raw.get("select_sha256") != artefacts.raw_sample_digest(spec.table, spec.file):
+        stale = f"{key}: the raw sample was read for a different page.raw_feed.sample"
+        return None, [f"{stale}; rerun gridflow-sample"]
+    return raw, []
 
 
 # Columns every silver table carries; the frame shows them, the guide gives them no line.
@@ -1565,6 +1591,7 @@ def page_view(
                     "request": Markup("").join(request_lines(r) for r in mem.requests),
                     # a held page lists the reasons in its silver section instead
                     "held": "" if p.held else mem.held,
+                    "caveat": "" if p.held else mem.caveat,
                 }
             )
 
@@ -1580,6 +1607,7 @@ def page_view(
 
     view = {
         "vendor_id": doc.vendor_id,
+        "caveat": _frame_caveat(doc) if record_v else "",
         "vendor_label": doc.vendor_label,
         "key": key,
         "blank": False,
@@ -1601,6 +1629,7 @@ def page_view(
             "commands": [
                 {"run": command_row(c.run), "comment": c.comment} for c in p.raw_feed.commands
             ],
+            "sample": _raw_sample_view(doc, arts.raw_sample) if arts.raw_sample else None,
         },
         "variants": variants,
         "held": held,
@@ -1609,6 +1638,46 @@ def page_view(
         "related": related,
     }
     return view, errors
+
+
+def _frame_caveat(doc: DatasetDoc) -> str:
+    """The caveat printed with the frame: the page's, or on a family page the shown member's."""
+    p = doc.page
+    if p.family is None:
+        return p.caveat
+    shown = artefacts.sample_silver(doc.vendor_id, doc.slug, p.record.select, p.chart)
+    return next((m.caveat for m in p.family.members if f"{doc.vendor_id}/{m.dataset}" == shown), "")
+
+
+_COUNT_WORDS = ("no", "one", "two", "three", "four", "five", "six", "seven", "eight")
+
+
+def _raw_sample_view(doc: DatasetDoc, raw: dict[str, Any]) -> dict[str, Any]:
+    """A held page's raw sample: its heading, its caveat and the file's lines as fetched."""
+    spec = doc.page.raw_feed.sample
+    assert spec is not None
+    lines: list[str] = raw["lines"]
+    n = len(lines) - 1
+    file = Markup("<code>{}</code>").format(_breakable(raw["file"]))
+    if n == 0:
+        head = Markup("The header of {}, as fetched: the file holds no rows").format(file)
+    elif n == 1:
+        head = Markup("The header and only row of {}, as fetched").format(file)
+    elif n < raw_sample.ROWS:  # read_head stops at ROWS, so fewer is the whole file
+        head = Markup("The header and all {} rows of {}, as fetched").format(_COUNT_WORDS[n], file)
+    else:
+        head = Markup("The header and first {} rows of {}, as fetched").format(
+            _COUNT_WORDS[n], file
+        )
+    if doc.page.family is not None:
+        table = Markup("<code>{}</code>").format(_breakable(f"{doc.vendor_id}/{raw['table']}"))
+        head = Markup("{}, a file of {}").format(head, table)
+    return {
+        "head": head,
+        "caveat": spec.caveat,
+        "lines": well_lines([html_escape(ln, quote=False).replace(",", ",<wbr>") for ln in lines]),
+        "aria": f"The first lines of {raw['file']}",
+    }
 
 
 _DEFAULT_LANDSCAPE = {"entsog": "gas", "gie": "gas"}
