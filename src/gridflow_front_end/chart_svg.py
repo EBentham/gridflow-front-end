@@ -13,6 +13,13 @@ Drawing rules (DESIGN.md "Charts" and the dataset page lock, Decision 2):
   never clipped
 - minimal chrome: an ink axis, a few real ticks, no gridlines, no legend
   inside the plot (the key sits beside it)
+- a missing period is a gap: a line breaks where a value is null or a period
+  is absent, and so does a stacked area where a period is absent or every
+  series is null there; nothing is joined across a gap or drawn at zero
+- the y axis ends at the tick below the data, or at the note's
+  ``chart_view.y_min``: an axis floor that need not be a tick. A floor a little
+  below zero keeps a near-zero line off the axis, so a gap in it reads as a
+  gap; the zero rule is drawn only when a value is below zero
 
 Stdlib only; colours come from ``tokens.css`` so the drawing and the theme
 cannot drift apart.
@@ -234,6 +241,34 @@ def _midnights(lo: float, hi: float, uk: bool) -> list[tuple[float, dt.date]]:
         d += dt.timedelta(days=1)
 
 
+def _season_ticks(
+    firsts: Sequence[tuple[float, dt.date]], narrow: bool
+) -> list[tuple[float, str, float]]:
+    """Half-yearly ticks, or quarterly where those are too few, for a span of one to three years.
+
+    Too short for three 1 January ticks, too long for monthly ones. A 1 January tick reads as the
+    year; any other tick names its month, with the year where the year is not yet on the axis.
+    """
+    marks: list[tuple[float, dt.date]] = []
+    for months in (6, 3):
+        marks = [(t, d) for t, d in firsts if (d.month - 1) % months == 0]
+        if len(marks) >= 3:
+            break
+    if narrow and len(marks) > 4:
+        marks = list(marks[:: math.ceil(len(marks) / 4)])
+    ticks: list[tuple[float, str, float]] = []
+    shown: int | None = None
+    for t, d in marks:
+        if d.month == 1:
+            label = str(d.year)
+        else:
+            month = MONTHS[d.month - 1]
+            label = month if d.year == shown else f"{month} {d.year}"
+        shown = d.year
+        ticks.append((t, label, t))
+    return ticks
+
+
 def _time_axis(
     ts: Sequence[float], fr: Frame, narrow: bool, uk_days: bool = False
 ) -> tuple[list[tuple[float, str, float]], float, float]:
@@ -277,10 +312,15 @@ def _time_axis(
                 label = f"{d.day} {MONTHS[d.month - 1]}" if not narrow or not ticks else str(d.day)
                 ticks.append((t, label, centre))
     elif span_days > 400:
-        # a span of years: ticks on 1 January, labelled by the year alone (a day and month would hide it)
-        years = [(t, d) for t, d in _midnights(lo, hi_edge, uk_days) if d.month == 1 and d.day == 1]
-        step = max(1, math.ceil(len(years) / (4 if narrow else 9)))
-        ticks = [(t, str(d.year), t) for i, (t, d) in enumerate(years) if i % step == 0]
+        firsts = [(t, d) for t, d in _midnights(lo, hi_edge, uk_days) if d.day == 1]
+        years = [(t, d) for t, d in firsts if d.month == 1]
+        if len(years) >= 3:
+            # a span of years: ticks on 1 January, labelled by the year alone (a day and month
+            # would hide it)
+            step = max(1, math.ceil(len(years) / (4 if narrow else 9)))
+            ticks = [(t, str(d.year), t) for i, (t, d) in enumerate(years) if i % step == 0]
+        else:
+            ticks = _season_ticks(firsts, narrow)
     else:
         # weekly ticks on Mondays, or the 1st of each month for long spans
         for t, d in _midnights(lo, hi_edge, uk_days):
@@ -307,12 +347,20 @@ class _Plot:
         hi_v: float,
         narrow: bool,
         uk_days: bool = False,
+        y_min: float | None = None,
+        negative: bool = False,
     ) -> None:
         self.fr = fr
         self.narrow = narrow
         self.ticks, self.t0, self.t1 = _time_axis(ts, fr, narrow, uk_days)
         self.yt = nice_ticks(lo_v, hi_v, fr.y_ticks)
         self.v0, self.v1 = self.yt[0], self.yt[-1]
+        if y_min is not None:
+            # the axis ends at the note's floor, which need not be a tick (check_view keeps it at
+            # or below the lowest value)
+            self.yt = [v for v in self.yt if v >= y_min - abs(y_min) * 1e-9]
+            self.v0 = y_min
+        self.negative = negative
         self.step = _step(ts)
 
     def X(self, t: float) -> float:
@@ -328,7 +376,7 @@ class _Plot:
             f'stroke="{ink}" stroke-width="1.5"/>'
         )
         out = [frame]
-        if self.v0 < 0 < self.v1:
+        if self.negative and self.v0 < 0 < self.v1:
             out.append(
                 f'<path d="M{_f(fr.x0)} {_f(self.Y(0))} H{_f(fr.x1)}" stroke="{ink}" stroke-width="1.1"/>'
             )
@@ -384,6 +432,23 @@ def _runs(
     return runs
 
 
+def _periods(ts: Sequence[float], series: Sequence[dict[str, Any]], step: float) -> list[range]:
+    """Index runs of a stacked chart: split where a period is absent or every series is null."""
+    present = [any(s["values"][i] is not None for s in series) for i in range(len(ts))]
+    out: list[range] = []
+    start: int | None = None
+    for i, here in enumerate(present):
+        gap = i > 0 and ts[i] - ts[i - 1] > step * 1.5
+        if start is not None and (not here or gap):
+            out.append(range(start, i))
+            start = None
+        if here and start is None:
+            start = i
+    if start is not None:
+        out.append(range(start, len(ts)))
+    return out
+
+
 def _stacked(chart: dict[str, Any], view: ChartView, fr: Frame, uid: str, narrow: bool) -> str:
     ts = [_parse_time(x) for x in chart["x"]]
     by_key = {e.series: e for e in view.key}
@@ -407,29 +472,45 @@ def _stacked(chart: dict[str, Any], view: ChartView, fr: Frame, uid: str, narrow
     if chart["unit"] == "%" and top <= 100 + PERCENT_SLACK:
         # shares summing to 100 (100.2 after rounding) end the axis at 100, not at the next step
         top = 100.0
-    plot = _Plot(fr, ts, min(0.0, min(neg)), top, narrow, _settlement_days(view))
+    lo = min(0.0, min(neg))
+    plot = _Plot(
+        fr,
+        ts,
+        lo if view.y_min is None else view.y_min,
+        top,
+        narrow,
+        _settlement_days(view),
+        y_min=view.y_min,
+        negative=lo < 0,
+    )
     half = plot.step / 2
+    periods = _periods(ts, series, plot.step)
     body: list[str] = []
     labels: list[str] = []
     for entry, lower, upper, up in layers:
-        top_pts = [(plot.X(t + half), plot.Y(u)) for t, u in zip(ts, upper)]
-        bot_pts = [(plot.X(t + half), plot.Y(v)) for t, v in zip(ts, lower)]
-        top_pts = [(fr.x0, top_pts[0][1]), *top_pts, (fr.x1, top_pts[-1][1])]
-        bot_pts = [(fr.x0, bot_pts[0][1]), *bot_pts, (fr.x1, bot_pts[-1][1])]
-        d = (
-            "M"
-            + " L".join(f"{_f(x)} {_f(y)}" for x, y in top_pts)
-            + " L"
-            + " L".join(f"{_f(x)} {_f(y)}" for x, y in reversed(bot_pts))
-            + " Z"
-        )
-        body.append(_fill(uid, paint_of(entry), d))
-        edge = top_pts if up else bot_pts
-        body.append(
-            '<path d="M'
-            + " L".join(f"{_f(x)} {_f(y)}" for x, y in edge)
-            + f'" fill="none" stroke="{colour("ink")}" stroke-width=".6" opacity=".55"/>'
-        )
+        for k, idx in enumerate(periods):
+            # each value covers its own interval: a run opens at its first period's start and
+            # closes at its last period's end; the first and last runs reach the axis ends
+            x_start = fr.x0 if k == 0 else plot.X(ts[idx[0]])
+            x_end = fr.x1 if k == len(periods) - 1 else plot.X(ts[idx[-1]] + plot.step)
+            top_pts = [(plot.X(ts[i] + half), plot.Y(upper[i])) for i in idx]
+            bot_pts = [(plot.X(ts[i] + half), plot.Y(lower[i])) for i in idx]
+            top_pts = [(x_start, top_pts[0][1]), *top_pts, (x_end, top_pts[-1][1])]
+            bot_pts = [(x_start, bot_pts[0][1]), *bot_pts, (x_end, bot_pts[-1][1])]
+            d = (
+                "M"
+                + " L".join(f"{_f(x)} {_f(y)}" for x, y in top_pts)
+                + " L"
+                + " L".join(f"{_f(x)} {_f(y)}" for x, y in reversed(bot_pts))
+                + " Z"
+            )
+            body.append(_fill(uid, paint_of(entry), d))
+            edge = top_pts if up else bot_pts
+            body.append(
+                '<path d="M'
+                + " L".join(f"{_f(x)} {_f(y)}" for x, y in edge)
+                + f'" fill="none" stroke="{colour("ink")}" stroke-width=".6" opacity=".55"/>'
+            )
         if entry.tag and up and not narrow:
             best, bi = 0.0, -1
             for i in range(4, n - 4):
@@ -461,7 +542,18 @@ def _lines(chart: dict[str, Any], view: ChartView, fr: Frame, uid: str, narrow: 
     # A line keeps a zero baseline while zero is close to the data; a band far from zero (a temperature,
     # a frequency near 50 Hz) is drawn to its own range, or it flattens into a strip at the top.
     floor = lo - pad if lo < 0 or lo > hi / 2 else 0.0
-    plot = _Plot(fr, ts, floor, hi + pad, narrow, _settlement_days(view))
+    if view.y_min is not None:
+        floor = view.y_min
+    plot = _Plot(
+        fr,
+        ts,
+        floor,
+        hi + pad,
+        narrow,
+        _settlement_days(view),
+        y_min=view.y_min,
+        negative=lo < 0,
+    )
     half = plot.step / 2
     body: list[str] = []
     # points already on the plot, by x; a later series that lands on one is coincident there
@@ -594,9 +686,36 @@ def render(
     return out[0], out[1]
 
 
+def value_range(chart: dict[str, Any]) -> tuple[float, float]:
+    """The lowest and highest value a time chart draws: a stack's sums, else the values."""
+    if chart["type"] == "stacked-area":
+        cols = [[float(v) if v is not None else 0.0 for v in s["values"]] for s in chart["series"]]
+        rows = list(zip(*cols))
+        pos = [sum(max(0.0, v) for v in row) for row in rows]
+        neg = [sum(min(0.0, v) for v in row) for row in rows]
+        return min(0.0, min(neg)), max(pos)
+    values = [float(v) for s in chart["series"] for v in s["values"] if v is not None]
+    return min(values), max(values)
+
+
 def check_view(chart: dict[str, Any], view: ChartView) -> list[str]:
-    """Every series (or bar category) has exactly one key entry, and no entry is orphaned."""
+    """Every series (or bar category) has exactly one key entry, and no entry is orphaned.
+
+    A ``y_min`` floor must sit at or below every value the chart draws, so it never cuts one off.
+    """
     errors: list[str] = []
+    if view.y_min is not None:
+        if chart["type"] == "bar":
+            errors.append("chart_view.y_min: a bar chart has no y axis floor to set")
+        else:
+            lowest, highest = value_range(chart)
+            if view.y_min > lowest:
+                errors.append(
+                    f"chart_view.y_min: {view.y_min:g} is above the lowest value drawn "
+                    f"({lowest:g}); the axis would cut it off"
+                )
+            elif view.y_min >= highest:
+                errors.append(f"chart_view.y_min: {view.y_min:g} is not below the highest value")
     if chart["type"] == "bar":
         names = set(chart["x"]) | {chart["series"][0]["key"]}
         needed: set[str] = set()

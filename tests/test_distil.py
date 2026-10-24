@@ -143,6 +143,47 @@ def test_daily_bucket_leaves_gaps_as_missing_days(tmp_path: Path) -> None:
     assert chart["provenance"]["null_values_dropped"] == 1
 
 
+def test_values_unpivot_a_wide_tables_columns_into_series(tmp_path: Path) -> None:
+    days = [dt.date(2025, 4, d) for d in (1, 2, 2, 4)]
+    df = pl.DataFrame(
+        {
+            "date": days,
+            "published_at": [1, 1, 2, 1],
+            "thermal_gbp": [10.0, 20.0, 25.0, -3.0],
+            "voltage_gbp": [1.0, None, None, 4.0],
+            "inertia_gbp": [5.0, 6.0, 7.0, 8.0],
+        }
+    )
+    _write(tmp_path, "neso_data_portal/constraint_breakdown", {"all": df})
+    spec = {
+        "type": "stacked-area",
+        "silver": "neso_data_portal/constraint_breakdown",
+        "time": "date",
+        "values": ["voltage_gbp", {"column": "thermal_gbp", "series": "thermal"}, "inertia_gbp"],
+        "dedup": {"on": ["date"], "order_by": "published_at"},
+        "aggregation": "sum",
+        "window": {"start": "2025-04-01", "end": "2025-04-30"},
+        "unit": "£",
+    }
+    assert chart_spec.validate_spec(spec) == []
+    chart = distil_spec(spec, tmp_path)
+    # 4 April is absent: a gap on the axis, not a zero
+    assert chart["x"] == ["2025-04-01", "2025-04-02", "2025-04-04"]
+    by_key = {s["key"]: s["values"] for s in chart["series"]}
+    # the listed order, each column under its own key; dedup kept the newest 2 April row
+    assert [s["key"] for s in chart["series"]] == ["voltage_gbp", "thermal", "inertia_gbp"]
+    assert by_key["thermal"] == [10.0, 25.0, -3.0]
+    assert by_key["inertia_gbp"] == [5.0, 7.0, 8.0]
+    # a null cell is missing for its own series only
+    assert by_key["voltage_gbp"] == [1.0, None, 4.0]
+    prov = chart["provenance"]
+    assert prov["duplicates_dropped"] == 1
+    assert prov["rows_unpivoted"] == 3
+    assert prov["null_values_dropped"] == 1
+    reordered = distil_spec(dict(spec, series_order=["inertia_gbp"]), tmp_path)
+    assert [s["key"] for s in reordered["series"]] == ["inertia_gbp", "voltage_gbp", "thermal"]
+
+
 def test_text_times_go_to_the_uk_day_that_starts_at_2300(tmp_path: Path) -> None:
     # Text starts read as UTC: a 23:00-to-23:00 UK day opens at 23:00 UTC in winter and at
     # 22:00 UTC in summer, so both edges of each day land on that day's date.
