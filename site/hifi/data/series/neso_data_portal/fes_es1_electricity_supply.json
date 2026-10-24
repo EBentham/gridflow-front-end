@@ -1,0 +1,19 @@
+{
+  "dataset": "neso_data_portal/fes_es1_electricity_supply",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "be7f748c4fde11a22004677f709bf452ed19b2201212e86d7b878ba51293e6fa",
+  "type": "bar",
+  "unit": "MW",
+  "caption": "",
+  "value_column": "value",
+  "aggregation": "max",
+  "window": null,
+  "provenance": {"duplicates_dropped": 0, "files": 4, "null_values_dropped": 0, "rows_matched": 5, "rows_read": 54359, "rows_used": 5, "silver": "neso_data_portal/fes_es1_electricity_supply"},
+  "spec": {"aggregation": "max", "dedup": {"on": ["resource_id", "edition", "connection", "pathway", "variable", "category", "type", "sub_type", "projection_year"], "order_by": "capture_written_at"}, "filter": [{"column": "edition", "op": "eq", "value": 2025}, {"column": "pathway", "op": "eq", "value": "Holistic Transition"}, {"column": "connection", "op": "eq", "value": "Transmission"}, {"column": "variable", "op": "eq", "value": "Capacity (MW)"}, {"column": "sub_type", "op": "eq", "value": "Offshore Wind"}, {"column": "projection_year", "op": "in", "value": [2030, 2035, 2040, 2045, 2050]}], "group": "projection_year", "silver": "neso_data_portal/fes_es1_electricity_supply", "sort": "label", "type": "bar", "unit": "MW", "value": "value"},
+  "x_kind": "category",
+  "x": ["2030", "2035", "2040", "2045", "2050"],
+  "series": [
+    {"key": "value", "values": [45723.75, 85404.75, 92454.75, 98082.75, 103190.8]}
+  ]
+}

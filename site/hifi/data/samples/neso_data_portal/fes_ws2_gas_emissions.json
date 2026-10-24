@@ -1,0 +1,235 @@
+{
+ "dataset": "neso_data_portal/fes_ws2_gas_emissions",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "f8185c7ed559d89c602d64871e951654b26944ffb7cdaad0a649b541761a8ecf",
+ "silver": "neso_data_portal/fes_ws2_gas_emissions",
+ "columns": [
+  {
+   "name": "sector",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "pathway",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "projection_year",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "value",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "category",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "scenario",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "edition",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "resource_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "DACCS",
+   "Holistic Transition",
+   "2030",
+   "0.0",
+   null,
+   null,
+   "2025",
+   "a80a94cc-b349-412c-83a0-0f5f9eaf4e7e",
+   "2025-12-10 16:59:01.412328 UTC",
+   "2026-10-08 10:58:19.525633 UTC",
+   "bronze/neso_data_portal/fes_ws2_gas_emissions/2026/10/08/raw_20261008T105819Z_a80a94cc-b349-412c-83a0-0f5f9eaf4e7e_075074a4.csv",
+   "2026-10-08 10:58:19.525633 UTC",
+   "2026-10-08 10:58:19.525633 UTC",
+   "2025-12-10 16:59:01.412328 UTC",
+   "cd5a1e27-41fe-4e8a-bc59-6418660c6e1f",
+   "1+e1"
+  ],
+  [
+   "Electricity without BECCS",
+   "Holistic Transition",
+   "2030",
+   "6.80609",
+   null,
+   null,
+   "2025",
+   "a80a94cc-b349-412c-83a0-0f5f9eaf4e7e",
+   "2025-12-10 16:59:01.412328 UTC",
+   "2026-10-08 10:58:19.525633 UTC",
+   "bronze/neso_data_portal/fes_ws2_gas_emissions/2026/10/08/raw_20261008T105819Z_a80a94cc-b349-412c-83a0-0f5f9eaf4e7e_075074a4.csv",
+   "2026-10-08 10:58:19.525633 UTC",
+   "2026-10-08 10:58:19.525633 UTC",
+   "2025-12-10 16:59:01.412328 UTC",
+   "cd5a1e27-41fe-4e8a-bc59-6418660c6e1f",
+   "1+e1"
+  ],
+  [
+   "Industrial Heat",
+   "Holistic Transition",
+   "2030",
+   "21.30512",
+   null,
+   null,
+   "2025",
+   "a80a94cc-b349-412c-83a0-0f5f9eaf4e7e",
+   "2025-12-10 16:59:01.412328 UTC",
+   "2026-10-08 10:58:19.525633 UTC",
+   "bronze/neso_data_portal/fes_ws2_gas_emissions/2026/10/08/raw_20261008T105819Z_a80a94cc-b349-412c-83a0-0f5f9eaf4e7e_075074a4.csv",
+   "2026-10-08 10:58:19.525633 UTC",
+   "2026-10-08 10:58:19.525633 UTC",
+   "2025-12-10 16:59:01.412328 UTC",
+   "cd5a1e27-41fe-4e8a-bc59-6418660c6e1f",
+   "1+e1"
+  ],
+  [
+   "LULUCF N",
+   "Holistic Transition",
+   "2030",
+   "-18.70491",
+   null,
+   null,
+   "2025",
+   "a80a94cc-b349-412c-83a0-0f5f9eaf4e7e",
+   "2025-12-10 16:59:01.412328 UTC",
+   "2026-10-08 10:58:19.525633 UTC",
+   "bronze/neso_data_portal/fes_ws2_gas_emissions/2026/10/08/raw_20261008T105819Z_a80a94cc-b349-412c-83a0-0f5f9eaf4e7e_075074a4.csv",
+   "2026-10-08 10:58:19.525633 UTC",
+   "2026-10-08 10:58:19.525633 UTC",
+   "2025-12-10 16:59:01.412328 UTC",
+   "cd5a1e27-41fe-4e8a-bc59-6418660c6e1f",
+   "1+e1"
+  ],
+  [
+   "LULUCF P",
+   "Holistic Transition",
+   "2030",
+   "20.02532",
+   null,
+   null,
+   "2025",
+   "a80a94cc-b349-412c-83a0-0f5f9eaf4e7e",
+   "2025-12-10 16:59:01.412328 UTC",
+   "2026-10-08 10:58:19.525633 UTC",
+   "bronze/neso_data_portal/fes_ws2_gas_emissions/2026/10/08/raw_20261008T105819Z_a80a94cc-b349-412c-83a0-0f5f9eaf4e7e_075074a4.csv",
+   "2026-10-08 10:58:19.525633 UTC",
+   "2026-10-08 10:58:19.525633 UTC",
+   "2025-12-10 16:59:01.412328 UTC",
+   "cd5a1e27-41fe-4e8a-bc59-6418660c6e1f",
+   "1+e1"
+  ],
+  [
+   "Power Sector BECCS",
+   "Holistic Transition",
+   "2030",
+   "-3.41113",
+   null,
+   null,
+   "2025",
+   "a80a94cc-b349-412c-83a0-0f5f9eaf4e7e",
+   "2025-12-10 16:59:01.412328 UTC",
+   "2026-10-08 10:58:19.525633 UTC",
+   "bronze/neso_data_portal/fes_ws2_gas_emissions/2026/10/08/raw_20261008T105819Z_a80a94cc-b349-412c-83a0-0f5f9eaf4e7e_075074a4.csv",
+   "2026-10-08 10:58:19.525633 UTC",
+   "2026-10-08 10:58:19.525633 UTC",
+   "2025-12-10 16:59:01.412328 UTC",
+   "cd5a1e27-41fe-4e8a-bc59-6418660c6e1f",
+   "1+e1"
+  ],
+  [
+   "Residential Heat",
+   "Holistic Transition",
+   "2030",
+   "60.9297",
+   null,
+   null,
+   "2025",
+   "a80a94cc-b349-412c-83a0-0f5f9eaf4e7e",
+   "2025-12-10 16:59:01.412328 UTC",
+   "2026-10-08 10:58:19.525633 UTC",
+   "bronze/neso_data_portal/fes_ws2_gas_emissions/2026/10/08/raw_20261008T105819Z_a80a94cc-b349-412c-83a0-0f5f9eaf4e7e_075074a4.csv",
+   "2026-10-08 10:58:19.525633 UTC",
+   "2026-10-08 10:58:19.525633 UTC",
+   "2025-12-10 16:59:01.412328 UTC",
+   "cd5a1e27-41fe-4e8a-bc59-6418660c6e1f",
+   "1+e1"
+  ],
+  [
+   "Road Transport and Rail",
+   "Holistic Transition",
+   "2030",
+   "69.0331",
+   null,
+   null,
+   "2025",
+   "a80a94cc-b349-412c-83a0-0f5f9eaf4e7e",
+   "2025-12-10 16:59:01.412328 UTC",
+   "2026-10-08 10:58:19.525633 UTC",
+   "bronze/neso_data_portal/fes_ws2_gas_emissions/2026/10/08/raw_20261008T105819Z_a80a94cc-b349-412c-83a0-0f5f9eaf4e7e_075074a4.csv",
+   "2026-10-08 10:58:19.525633 UTC",
+   "2026-10-08 10:58:19.525633 UTC",
+   "2025-12-10 16:59:01.412328 UTC",
+   "cd5a1e27-41fe-4e8a-bc59-6418660c6e1f",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

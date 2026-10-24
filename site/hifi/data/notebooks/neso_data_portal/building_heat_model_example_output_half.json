@@ -1,0 +1,167 @@
+{
+ "dataset": "neso_data_portal/building_heat_model_example_output_half",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "55be50779a296fc43241a3d997c40ddd5391b27b7d0079dc57f303061f1b6b19",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "data.sql(\"\"\"\n    SELECT run_id, count(*) AS half_hours,\n           count(*) FILTER (WHERE total_gas IS NULL) AS gas_blank,\n           count(*) FILTER (WHERE electricity_space_heat IS NULL) AS space_heat_electricity_blank,\n           count(*) FILTER (WHERE avg_cop_space_heat IS NULL) AS cop_space_heat_blank,\n           count(*) FILTER (WHERE avg_cop_dhw IS NULL) AS cop_dhw_blank\n    FROM silver_neso_data_portal_building_heat_model_example_output_half_latest\n    GROUP BY run_id\n    ORDER BY run_id\n\"\"\")",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "run_id",
+      "half_hours",
+      "gas_blank",
+      "space_heat_electricity_blank",
+      "cop_space_heat_blank",
+      "cop_dhw_blank"
+     ],
+     "index": [
+      "0",
+      "1"
+     ],
+     "rows": [
+      [
+       "run_1",
+       "48",
+       "0",
+       "48",
+       "48",
+       "48"
+      ],
+      [
+       "run_2",
+       "48",
+       "48",
+       "0",
+       "22",
+       "44"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "hm = data.sql(\"\"\"\n    SELECT run_id, hh_period, start_of_hh_period, total_heater_output, total_gas, total_electricity\n    FROM silver_neso_data_portal_building_heat_model_example_output_half_latest\n    ORDER BY run_id, hh_period\n\"\"\")\nhm[hm.start_of_hh_period.isin([\"06:00\", \"14:00\"])]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "run_id",
+      "hh_period",
+      "start_of_hh_period",
+      "total_heater_output",
+      "total_gas",
+      "total_electricity"
+     ],
+     "index": [
+      "12",
+      "28",
+      "60",
+      "76"
+     ],
+     "rows": [
+      [
+       "run_1",
+       "13",
+       "06:00",
+       "8.154941",
+       "9.061045",
+       "0.000000"
+      ],
+      [
+       "run_1",
+       "29",
+       "14:00",
+       "0.105914",
+       "0.117683",
+       "0.000000"
+      ],
+      [
+       "run_2",
+       "13",
+       "06:00",
+       "2.268423",
+       "NaN",
+       "0.675984"
+      ],
+      [
+       "run_2",
+       "29",
+       "14:00",
+       "2.430375",
+       "NaN",
+       "0.694164"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "wide = hm.pivot(index=\"start_of_hh_period\", columns=\"run_id\", values=[\"total_gas\", \"total_electricity\"])\ntwo = wide[[(\"total_gas\", \"run_1\"), (\"total_electricity\", \"run_2\")]].set_axis(\n    [\"run 1 gas, boiler\", \"run 2 electricity, heat pump\"], axis=1)\nax = two.plot(figsize=(9, 3.5), color=[\"#B5651D\", \"#155A6E\"],\n              xlabel=\"NESO's half-hour start, example day\", ylabel=\"kWh per half hour\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "building_heat_model_example_output_half-5.png",
+     "width": 759,
+     "height": 337
+    }
+   ]
+  }
+ ]
+}

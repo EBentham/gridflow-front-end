@@ -1,0 +1,205 @@
+{
+ "dataset": "neso_data_portal/fes_regional_demand_active_power",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "26f2c02c81d32670933c3c499cbe6dd81debc7725db89b5b2288a0a44cbd3d76",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "peak = data.sql(\"\"\"\n    SELECT scenario, year_label, SUM(demand_pk) AS peak_mw\n    FROM silver_neso_data_portal_fes_regional_demand_active_power_latest\n    WHERE edition = 2024\n    GROUP BY scenario, year_label\n\"\"\")\nwide = peak.pivot(index=\"year_label\", columns=\"scenario\", values=\"peak_mw\").rename_axis(columns=None)\nwide.loc[[23, 25, 30, 35, 40, 45, 50]].round(0)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "EE",
+      "HE",
+      "HT",
+      "year_label",
+      "",
+      "",
+      ""
+     ],
+     "index": [
+      "23",
+      "25",
+      "30",
+      "35",
+      "40",
+      "45",
+      "50"
+     ],
+     "rows": [
+      [
+       "57479.0",
+       "57562.0",
+       "57295.0"
+      ],
+      [
+       "58494.0",
+       "59202.0",
+       "57981.0"
+      ],
+      [
+       "66057.0",
+       "65750.0",
+       "62830.0"
+      ],
+      [
+       "82256.0",
+       "77287.0",
+       "74639.0"
+      ],
+      [
+       "102738.0",
+       "90901.0",
+       "90100.0"
+      ],
+      [
+       "114764.0",
+       "101660.0",
+       "100259.0"
+      ],
+      [
+       "118551.0",
+       "105854.0",
+       "104054.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "ax = wide.plot(figsize=(8, 3.5), color=[\"#155A6E\", \"#8A9A2B\", \"#B5651D\"],\n               xlabel=\"year label (25 is 2025/26)\", ylabel=\"peak demand, MW, all locations\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "fes_regional_demand_active_power-4.png",
+     "width": 724,
+     "height": 337
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "mix = data.sql(\"\"\"\n    SELECT type, SUM(demand_pk) AS peak_mw, SUM(demand_am) AS summer_am_mw,\n           SUM(demand_pm) AS summer_pm_mw\n    FROM silver_neso_data_portal_fes_regional_demand_active_power_latest\n    WHERE edition = 2024 AND scenario = 'HT' AND year_label = 50\n    GROUP BY type\n    ORDER BY peak_mw DESC\n\"\"\").set_index(\"type\")\nmix.round(0)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "peak_mw",
+      "summer_am_mw",
+      "summer_pm_mw",
+      "type",
+      "",
+      "",
+      ""
+     ],
+     "index": [
+      "H",
+      "C",
+      "I",
+      "R",
+      "E",
+      "T",
+      "D",
+      "Z"
+     ],
+     "rows": [
+      [
+       "28626.0",
+       "3669.0",
+       "4868.0"
+      ],
+      [
+       "28550.0",
+       "12640.0",
+       "21930.0"
+      ],
+      [
+       "16702.0",
+       "6889.0",
+       "14000.0"
+      ],
+      [
+       "12691.0",
+       "3030.0",
+       "4631.0"
+      ],
+      [
+       "10006.0",
+       "3062.0",
+       "11350.0"
+      ],
+      [
+       "3962.0",
+       "3962.0",
+       "29857.0"
+      ],
+      [
+       "3517.0",
+       "0.0",
+       "151.0"
+      ],
+      [
+       "0.0",
+       "0.0",
+       "8970.0"
+      ]
+     ]
+    }
+   ]
+  }
+ ]
+}

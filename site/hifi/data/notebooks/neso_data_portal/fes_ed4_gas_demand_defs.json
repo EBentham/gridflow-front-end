@@ -1,0 +1,149 @@
+{
+ "dataset": "neso_data_portal/fes_ed4_gas_demand_defs",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "0c2a008a575df4bd10d4765d148d35ad4fef06b55904c10545dc00b5f401486d",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "defs = data.sql(\"\"\"\n    SELECT edition, item_no, description, definition\n    FROM silver_neso_data_portal_fes_ed4_gas_demand_defs_latest\n    ORDER BY edition, item_no\n\"\"\")\ndefs.groupby(\"edition\").item_no.agg([\"count\", \"max\"])",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "count",
+      "max",
+      "edition",
+      "",
+      ""
+     ],
+     "index": [
+      "2023",
+      "2024",
+      "2025",
+      "2026"
+     ],
+     "rows": [
+      [
+       "10",
+       "10"
+      ],
+      [
+       "10",
+       "10"
+      ],
+      [
+       "11",
+       "11"
+      ],
+      [
+       "11",
+       "11"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "wide = defs.pivot(index=\"item_no\", columns=\"edition\", values=\"definition\")\n(wide[2025] != wide[2026]).rename(\"text_differs_2025_to_2026\")",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "item_no\n1     False\n2      True\n3      True\n4     False\n5      True\n6     False\n7     False\n8      True\n9     False\n10     True\n11     True\nName: text_differs_2025_to_2026, dtype: bool"
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "defs[defs.item_no == 11][[\"edition\", \"item_no\", \"definition\"]]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "edition",
+      "item_no",
+      "definition"
+     ],
+     "index": [
+      "30",
+      "41"
+     ],
+     "rows": [
+      [
+       "2025",
+       "11",
+       "= 1+2+3+4+5+6+8"
+      ],
+      [
+       "2026",
+       "11",
+       "= 1+2+4+5+6+8"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "source": "for r in defs.loc[defs.definition.str.len().nlargest(3).index].itertuples():\n    print(f\"Item {r.item_no} ({r.edition}): {r.definition}\\n\")",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "Item 10 (2025): Total daily GB gas demand on a cold day expected to occur once every 20 years. Data is in gas years, i.e. 2023 is GY 2023/24 which is 01/10/2023 - 30/09/2024. \nOne of the inputs for the peak day demand analysis is a forecast for gas demand for power generation. Unlike all of the other modelling for FES (including ED3 annual gas demand for electricity generation) which assumes unconstrained networks, for this particular analysis we do include an estimate for increased gas-fired generation arising from electricity network constraints.\n\nItem 5 (2026): Gas used for power generation by power stations connected to the gas transmission network. This year we have included an outlook for additional gas demand for gas-fired power generation likely to arise from electricity network constraints. In the FES 2026 10 Year Forecast we didn't include this additional gas demand in the annual gas demands quoted in the data workbook, and hence the FES25 10 Year Forecast for power generation is not directly comparable to this year's 2026 10 Year Outlook.\n\nItem 3 (2026): Gas used in the transport sector. This includes networked Compressed Natural Gas (CNG) and non-networked Liquified Natural Gas (LNG). Because this includes both non-networked LNG and networked CNG this is not be added to other demand components to get to total gas networked gas demand. The networked element of gas demand for transport is included within the commercial demand, to enable categories to be summed to calculate total gas demand."
+    }
+   ]
+  }
+ ]
+}
