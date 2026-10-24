@@ -1,0 +1,235 @@
+{
+ "dataset": "neso_data_portal/cmis_intertrip",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "5c2db0ab68c3ad06a8edcb05e72c442df987ed171dad8f6b217611075adec50b",
+ "silver": "neso_data_portal/cmis_intertrip",
+ "columns": [
+  {
+   "name": "bmu_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "arming_date_time",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "disarming_date_time",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "current_arming_fee_gbp_per_sp",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "current_arming_fee_gbp_per_mwh",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "utilisation_cost_gbp",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "b6_ec5",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "resource_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "CRYRW-2",
+   "2024-03-22T22:08:00+00:00",
+   "2024-03-24T05:37:00+00:00",
+   "133.65",
+   null,
+   "8415.49",
+   null,
+   "38c6a5cd-388d-4275-b404-361c6eb102b3",
+   "2024-04-08 11:56:08.968572 UTC",
+   "2026-10-08 09:15:00.029089 UTC",
+   "bronze/neso_data_portal/cmis_intertrip/2026/10/08/raw_20261008T091500Z_38c6a5cd-388d-4275-b404-361c6eb102b3_5baf9a29.csv",
+   "2026-10-08 09:15:00.029089 UTC",
+   "2026-10-08 09:15:00.029089 UTC",
+   "2024-04-08 11:56:08.968572 UTC",
+   "b1d84122-26ad-48bd-9e65-da16f6c6137a",
+   "1+e1"
+  ],
+  [
+   "FALGW-1",
+   "2024-03-22T22:08:00+00:00",
+   "2024-03-24T05:37:00+00:00",
+   "210.6",
+   null,
+   "13260.78",
+   null,
+   "38c6a5cd-388d-4275-b404-361c6eb102b3",
+   "2024-04-08 11:56:08.968572 UTC",
+   "2026-10-08 09:15:00.029089 UTC",
+   "bronze/neso_data_portal/cmis_intertrip/2026/10/08/raw_20261008T091500Z_38c6a5cd-388d-4275-b404-361c6eb102b3_5baf9a29.csv",
+   "2026-10-08 09:15:00.029089 UTC",
+   "2026-10-08 09:15:00.029089 UTC",
+   "2024-04-08 11:56:08.968572 UTC",
+   "b1d84122-26ad-48bd-9e65-da16f6c6137a",
+   "1+e1"
+  ],
+  [
+   "CLDCW-1",
+   "2024-03-22T22:28:00+00:00",
+   "2024-03-24T05:37:00+00:00",
+   "49.0",
+   null,
+   "3052.7",
+   null,
+   "38c6a5cd-388d-4275-b404-361c6eb102b3",
+   "2024-04-08 11:56:08.968572 UTC",
+   "2026-10-08 09:15:00.029089 UTC",
+   "bronze/neso_data_portal/cmis_intertrip/2026/10/08/raw_20261008T091500Z_38c6a5cd-388d-4275-b404-361c6eb102b3_5baf9a29.csv",
+   "2026-10-08 09:15:00.029089 UTC",
+   "2026-10-08 09:15:00.029089 UTC",
+   "2024-04-08 11:56:08.968572 UTC",
+   "b1d84122-26ad-48bd-9e65-da16f6c6137a",
+   "1+e1"
+  ],
+  [
+   "CLDNW-1",
+   "2024-03-22T22:28:00+00:00",
+   "2024-03-24T05:37:00+00:00",
+   "49.0",
+   null,
+   "3052.7",
+   null,
+   "38c6a5cd-388d-4275-b404-361c6eb102b3",
+   "2024-04-08 11:56:08.968572 UTC",
+   "2026-10-08 09:15:00.029089 UTC",
+   "bronze/neso_data_portal/cmis_intertrip/2026/10/08/raw_20261008T091500Z_38c6a5cd-388d-4275-b404-361c6eb102b3_5baf9a29.csv",
+   "2026-10-08 09:15:00.029089 UTC",
+   "2026-10-08 09:15:00.029089 UTC",
+   "2024-04-08 11:56:08.968572 UTC",
+   "b1d84122-26ad-48bd-9e65-da16f6c6137a",
+   "1+e1"
+  ],
+  [
+   "DDGNO-1",
+   "2024-04-17T07:00:00+00:00",
+   "2024-04-17T15:55:00+00:00",
+   null,
+   "2.0",
+   "1135.31",
+   "EC5",
+   "2f0777a3-719c-4ffe-96c2-61117a5ec468",
+   "2025-05-06 10:00:06.772385 UTC",
+   "2026-10-08 09:15:02.989951 UTC",
+   "bronze/neso_data_portal/cmis_intertrip/2026/10/08/raw_20261008T091502Z_2f0777a3-719c-4ffe-96c2-61117a5ec468_c1016587.csv",
+   "2026-10-08 09:15:02.989951 UTC",
+   "2026-10-08 09:15:02.989951 UTC",
+   "2025-05-06 10:00:06.772385 UTC",
+   "b1d84122-26ad-48bd-9e65-da16f6c6137a",
+   "1+e1"
+  ],
+  [
+   "DDGNO-2",
+   "2024-04-17T07:00:00+00:00",
+   "2024-04-17T15:55:00+00:00",
+   null,
+   "2.0",
+   "731.55",
+   "EC5",
+   "2f0777a3-719c-4ffe-96c2-61117a5ec468",
+   "2025-05-06 10:00:06.772385 UTC",
+   "2026-10-08 09:15:02.989951 UTC",
+   "bronze/neso_data_portal/cmis_intertrip/2026/10/08/raw_20261008T091502Z_2f0777a3-719c-4ffe-96c2-61117a5ec468_c1016587.csv",
+   "2026-10-08 09:15:02.989951 UTC",
+   "2026-10-08 09:15:02.989951 UTC",
+   "2025-05-06 10:00:06.772385 UTC",
+   "b1d84122-26ad-48bd-9e65-da16f6c6137a",
+   "1+e1"
+  ],
+  [
+   "DDGNO-3",
+   "2024-04-17T07:00:00+00:00",
+   "2024-04-17T15:55:00+00:00",
+   null,
+   "2.0",
+   "993.36",
+   "EC5",
+   "2f0777a3-719c-4ffe-96c2-61117a5ec468",
+   "2025-05-06 10:00:06.772385 UTC",
+   "2026-10-08 09:15:02.989951 UTC",
+   "bronze/neso_data_portal/cmis_intertrip/2026/10/08/raw_20261008T091502Z_2f0777a3-719c-4ffe-96c2-61117a5ec468_c1016587.csv",
+   "2026-10-08 09:15:02.989951 UTC",
+   "2026-10-08 09:15:02.989951 UTC",
+   "2025-05-06 10:00:06.772385 UTC",
+   "b1d84122-26ad-48bd-9e65-da16f6c6137a",
+   "1+e1"
+  ],
+  [
+   "DDGNO-4",
+   "2024-04-17T07:00:00+00:00",
+   "2024-04-17T15:55:00+00:00",
+   null,
+   "2.0",
+   "1039.71",
+   "EC5",
+   "2f0777a3-719c-4ffe-96c2-61117a5ec468",
+   "2025-05-06 10:00:06.772385 UTC",
+   "2026-10-08 09:15:02.989951 UTC",
+   "bronze/neso_data_portal/cmis_intertrip/2026/10/08/raw_20261008T091502Z_2f0777a3-719c-4ffe-96c2-61117a5ec468_c1016587.csv",
+   "2026-10-08 09:15:02.989951 UTC",
+   "2026-10-08 09:15:02.989951 UTC",
+   "2025-05-06 10:00:06.772385 UTC",
+   "b1d84122-26ad-48bd-9e65-da16f6c6137a",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

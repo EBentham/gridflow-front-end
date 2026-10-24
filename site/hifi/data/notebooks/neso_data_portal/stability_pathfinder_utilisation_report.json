@@ -1,0 +1,129 @@
+{
+ "dataset": "neso_data_portal/stability_pathfinder_utilisation_report",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "4600c535a46eef3f1fd5bc51dde438b9aba7121648b874c3fa44f45b2e991423",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "files = data.sql(\"\"\"\n    SELECT min(settlement_period_start_date_time) AS first_start,\n           max(settlement_period_start_date_time) AS last_start,\n           count(*) AS rows, count(inertia) AS inertia_given,\n           count(*) FILTER (WHERE instruction_code <> 'No') AS instructions\n    FROM silver_neso_data_portal_stability_pathfinder_utilisation_report_latest\n    GROUP BY resource_id ORDER BY first_start\"\"\")\nfiles",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "first_start",
+      "last_start",
+      "rows",
+      "inertia_given",
+      "instructions"
+     ],
+     "index": [
+      "0",
+      "1"
+     ],
+     "rows": [
+      [
+       "2023-09-04T00:00:00+00:00",
+       "2024-03-31T23:30:00+00:00",
+       "110891",
+       "18483",
+       "84"
+      ],
+      [
+       "2026-04-01T00:00:00+00:00",
+       "2026-10-04T23:30:00+00:00",
+       "129027",
+       "129027",
+       "58"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "data.sql(\"\"\"\n    SELECT right(settlement_period_start_date_time, 6) AS offset, count(*) AS rows\n    FROM silver_neso_data_portal_stability_pathfinder_utilisation_report_latest\n    GROUP BY 1\"\"\")",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "offset",
+      "rows"
+     ],
+     "index": [
+      "0"
+     ],
+     "rows": [
+      [
+       "+00:00",
+       "239918"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "ins = data.sql(\"\"\"\n    SELECT unit, count(*) AS instructions,\n           CASE WHEN resource_id = '52af0f68-e1c3-45dd-ae7f-54f68e32e0c6'\n                THEN '2023-2024' ELSE '2026-2027' END AS file\n    FROM silver_neso_data_portal_stability_pathfinder_utilisation_report_latest\n    WHERE instruction_code <> 'No' GROUP BY ALL\"\"\")\nins.pivot_table(index=\"unit\", columns=\"file\", values=\"instructions\", fill_value=0).plot.barh(\n    color=[\"#C77E3C\", \"#155A6E\"], figsize=(8, 4),\n    xlabel=\"rows with a start or cease instruction\", ylabel=\"unit\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "stability_pathfinder_utilisation_report-5.png",
+     "width": 750,
+     "height": 375
+    }
+   ]
+  }
+ ]
+}

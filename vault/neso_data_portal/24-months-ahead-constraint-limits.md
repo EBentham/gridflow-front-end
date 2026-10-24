@@ -4,11 +4,10 @@ package: "24-months-ahead-constraint-limits"
 dataset_key: "constraint_limits_24m"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-23
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: NESO does not map its week numbers to dates, nor say when each week was forecast.
   title: 24-month constraint limits
   summary: >-
     NESO's forecast capability, in MW, of twelve main transmission boundaries, week by week for
@@ -26,6 +25,11 @@ page:
   how_used:
     - The capability side of a boundary, set against forecast flows across it
     - How a boundary's capability is expected to change, week by week
+  chart:
+    type: none
+    reason: >-
+      Rows carry NESO's year and week number but no date, and NESO defines no week calendar, so
+      no time axis is drawn.
   raw_feed:
     note: >-
       From NESO's CKAN portal: `package_show`, then each file whole unless its `last_modified` is
@@ -39,6 +43,60 @@ page:
       - {run: gridflow ingest neso_data_portal constraint_limits_24m --last 24h, comment: whole file to bronze}
       - {run: gridflow transform neso_data_portal constraint_limits_24m --last 24h, comment: "the capture's date to silver"}
       - {run: gridflow ingest neso_data_portal constraint_limits_24m_files --last 24h, comment: the two network diagrams}
+  record:
+    select:
+      filter:
+        - {column: year_vendor, op: in, value: [2026, 2027, 2028]}
+        - {column: week_no, op: in, value: [52, 1]}
+      order_by: [year_vendor, week_no, published_at]
+      columns: [year_vendor, week_no, published_at, scotex, estex, dreshex1, flowsth, gm_snow5a,
+                harspnbly, nkilgrmo, seimppr2, sse_grm, ssen_s, sse_sp2, ssharn3]
+    key: [year_vendor, week_no, published_at]
+    caption: "Weeks 52 and 1 at both year ends, in NESO's September and October 2026 uploads."
+    fields:
+      year_vendor: "NESO's `YEAR`, as written; NESO does not say how it meets the week"
+      week_no: "NESO's `Week No`, 1 to 52 per its dictionary; no dates given"
+      published_at: "NESO's last-modified time for the file, read as UTC; one per upload"
+      scotex: "Boundary capability for `SCOTEX`, MW, as NESO's dictionary describes it"
+      estex: "Boundary capability for `ESTEX`, MW, as NESO's dictionary describes it"
+      dreshex1: "Boundary capability for `DRESHEX1`, MW, as NESO's dictionary describes it"
+      flowsth: "Boundary capability for `FLOWSTH`, MW, as NESO's dictionary describes it"
+      gm_snow5a: "Boundary capability for `GM_SNOW5A`, MW, as NESO's dictionary describes it"
+      harspnbly: "Boundary capability for `HARSPNBLY`, MW, as NESO's dictionary describes it"
+      nkilgrmo: "Boundary capability for `NKILGRMO`, MW, as NESO's dictionary describes it"
+      seimppr2: "Boundary capability for `SEIMPPR2`, MW, as NESO's dictionary describes it"
+      sse_grm: "Boundary capability for `SSE_GRM`, MW, as NESO's dictionary describes it"
+      ssen_s: "Boundary capability for `SSEN_S`, MW, as NESO's dictionary describes it"
+      sse_sp2: "Boundary capability for `SSE_SP2`, MW, as NESO's dictionary describes it"
+      ssharn3: "Boundary capability for `SSHARN3`, MW, as NESO's dictionary describes it"
+      timestamp_utc: "gridflow's capture time, UTC; not the target week"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote the capture to bronze, UTC
+  caveat: NESO numbers weeks 1 to 52 but gives no dates, start day or clock for them.
+  notebook:
+    lead: >-
+      `data.sql` reads the uploads from the table's base view, because `query()` would filter
+      `timestamp_utc`, the capture time. Weeks stay NESO's year and week numbers, never converted
+      to dates.
+    cells:
+      - |
+        df = data.sql("""
+            SELECT * EXCLUDE (timestamp_utc, bronze_capture_id, capture_written_at)
+            FROM silver_neso_data_portal_constraint_limits_24m
+            ORDER BY published_at, year_vendor, week_no""")
+        df["published_at"] = df.published_at.dt.tz_convert("UTC")
+        df.groupby(["published_at", "year_vendor"]).week_no.agg(["min", "max", "count"]).reset_index()
+      - |
+        boundaries = ["scotex", "estex", "dreshex1", "flowsth", "gm_snow5a", "harspnbly",
+                      "nkilgrmo", "seimppr2", "sse_grm", "ssen_s", "sse_sp2", "ssharn3"]
+        newest = df[df.published_at == df.published_at.max()]
+        newest[boundaries].describe().loc[["min", "50%", "max"]].T.rename_axis("boundary").reset_index()
+      - |
+        old, new = (df[df.published_at == t].set_index(["year_vendor", "week_no"])[boundaries]
+                    for t in sorted(df.published_at.unique()))
+        shared = old.index.intersection(new.index)
+        (old.loc[shared] != new.loc[shared]).sum().rename("weeks revised").to_frame().T
+    needs: the September and October 2026 uploads
   related:
     - {dataset: neso_data_portal/day-ahead-constraint-flows-and-limits, note: "Day-ahead limits and forecast flows; ten boundary codes match exactly"}
     - {dataset: neso_data_portal/24-months-ahead-constraint-cost-forecast, note: "NESO's monthly constraint cost forecast over a similar two years"}
@@ -144,8 +202,9 @@ Schema, epoch 1:
 | `available_at` | = `published_at` |
 
 **Held (unit E-SEM).** This family's silver output exists but is not eligible for publication or
-point-in-time use. This page gives schema, row counts and structural counts only. It gives no
-data values, samples or ranges. See Holds.
+point-in-time use. This note gives schema, row counts and structural counts only; under ruling 66
+(2026-10-24) the site page shows the rows, with one line naming the week-calendar question. See
+Holds.
 
 **The two clocks for this family:**
 
@@ -262,8 +321,7 @@ the whole table. Captures: two, on 2026-10-08 (`sept26`, vintage 2026-09-10) and
 - **A monthly upload revises, not only extends.** Compared row by row on bronze (2026-10-23): the
   label window moved four weeks, from 2026 week 40 to 2028 week 40 in `sept26` to 2026 week 44
   to 2028 week 44 in `oct26` (four weeks dropped, four added). Of the 101 weeks in both, 30 rows
-  changed in at least one boundary column (102 cells). No values are stated while the hold
-  stands. Whether every upload revises in this way is `TODO: verify` over more captures.
+  changed in at least one boundary column (102 cells). Whether every upload revises in this way is `TODO: verify` over more captures.
 - `TODO: verify` whether the vendor publishes the file at a fixed point in the month.
 
 ## Licence and attribution
@@ -291,6 +349,7 @@ are missing, and either one alone would block point-in-time use:
    for the missing issue time. This is the same forward-target test applied to the other
    forecast families (RULINGS 529).
 
-Unit E-SEM must answer both questions with NESO. Until then the silver output stays out of
-published artifacts and out of any point-in-time query. Row counts and the schema are fine to
-state, and this page states no values. This family is the only CSV in its package.
+Unit E-SEM must answer both questions with NESO. Until then the silver output stays out of any
+point-in-time query. Under ruling 66 (2026-10-24) the site page shows the rows, with one line
+naming the week-calendar question and no chart on a time axis; this note itself states no
+values. This family is the only CSV in its package.

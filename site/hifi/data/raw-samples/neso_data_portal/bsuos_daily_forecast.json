@@ -1,0 +1,20 @@
+{
+ "dataset": "neso_data_portal/bsuos_daily_forecast",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "adbdc1b1e22c3b0b374952a1ca10a63fa82eb4a606d7b972c33bfdea1c04b3e2",
+ "table": "bsuos_daily_forecast",
+ "file": "daily-bsuos-forecast-2022-23.csv",
+ "body_sha256": "88028879735c65cefbf64e43b9330fe8829c421562fadfd038617fd057e8fd80",
+ "encoding": "cp1252",
+ "lines": [
+  "Date,SP,BSUoS £/MWh,Half hourly cost £,Half hourly volume MWh",
+  "2022-04-01,1,4.47,99049,22143",
+  "2022-04-01,2,4.59,99049,21594",
+  "2022-04-01,3,4.56,99049,21736",
+  "2022-04-01,4,4.35,99049,22773",
+  "2022-04-01,5,4.34,99049,22808",
+  "2022-04-01,6,4.4,99049,22489",
+  "2022-04-01,7,4.47,99049,22144",
+  "2022-04-01,8,4.52,99049,21926"
+ ]
+}

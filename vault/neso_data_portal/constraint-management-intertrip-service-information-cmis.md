@@ -4,12 +4,11 @@ package: "constraint-management-intertrip-service-information-cmis"
 dataset_key: "cmis_intertrip"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-23
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 eligibility_scope: "package-level only; family cmis_intertrip is held (E-SEM, RULINGS 632), see Holds"
 page:
-  held: Times carry +00:00 though NESO says local time, and the fee's unit is given two ways.
   title: Constraint management intertrip service
   summary: >-
     Each time NESO armed a contracted unit to an intertrip scheme to manage a network constraint:
@@ -28,6 +27,38 @@ page:
   how_used:
     - When and for how long each contracted unit was armed, and at what cost
     - Intertrip arming costs beside NESO's other constraint costs
+  chart:
+    type: bar
+    silver: neso_data_portal/cmis_intertrip
+    group: resource_id
+    group_map:
+      60b4055c-d87e-4ebe-8d21-e023f506e461: fy2022
+      38c6a5cd-388d-4275-b404-361c6eb102b3: fy2023
+      2f0777a3-719c-4ffe-96c2-61117a5ec468: fy2024
+      c6f0c279-87c9-4123-a4d1-b2d6d98b43a7: fy2025
+      60a1c0c6-4821-4e38-bc87-c6b4d510be6d: fy2026
+    value: utilisation_cost_gbp
+    dedup: {"on": [resource_id, bmu_id, arming_date_time], order_by: capture_written_at}
+    aggregation: sum
+    sort: label
+    unit: "£"
+  chart_view:
+    title: Indicative intertrip cost by yearly file
+    caption: >-
+      Silver `cmis_intertrip`, £: NESO's `Cost for this utilisation` summed over every arming in
+      each yearly file, so no arming time or fee unit is read. The 2026-27 bar is NESO's file of 1
+      October 2026, armings to August.
+    alt: >-
+      Horizontal bar chart from neso_data_portal/cmis_intertrip of NESO's indicative cost of
+      intertrip armings, in pounds, summed per yearly file. 2022-23 is the largest by far, about
+      10.06 million. 2023-24 is about 1.02 million, 2024-25 about 1.49 million and 2025-26 about
+      1.96 million. The part-year 2026-27 file, armings to August 2026, is about 0.72 million.
+    key:
+      - {series: fy2022, label: 2022-23 file, paint: petrol}
+      - {series: fy2023, label: 2023-24 file, paint: petrol}
+      - {series: fy2024, label: 2024-25 file, paint: petrol, note: "The first file with a `B6/EC5` column and a fee headed £/MWh."}
+      - {series: fy2025, label: 2025-26 file, paint: petrol}
+      - {series: fy2026, label: 2026-27 file, paint: hatch-lines, note: "Part year: NESO's file of 1 October 2026, to 7 August; NESO later filled in some zero costs."}
   raw_feed:
     note: >-
       From NESO's CKAN portal: `package_show`, then each yearly file unless `last_modified` is
@@ -39,6 +70,55 @@ page:
       - "GET https://api.neso.energy/dataset/7c20761d-3aab-4e9f-926e-6117fa8c4524/resource/60a1c0c6-4821-4e38-bc87-c6b4d510be6d/download/cmp-intertrip-arming-2026-2027.csv"
     commands:
       - {run: gridflow ingest neso_data_portal cmis_intertrip --last 24h, comment: every yearly file to bronze}
+  record:
+    select:
+      filter:
+        - {column: arming_date_time, op: ge, value: "2024-03-22T22:00"}
+        - {column: arming_date_time, op: le, value: "2024-04-17T08:00"}
+        - {column: bmu_id, op: in, value: [FALGW-1, CRYRW-2, CLDCW-1, CLDNW-1, DDGNO-1, DDGNO-2, DDGNO-3, DDGNO-4]}
+      dedup: {"on": [resource_id, bmu_id, arming_date_time], order_by: capture_written_at}
+      order_by: [arming_date_time, bmu_id]
+      columns: [bmu_id, arming_date_time, disarming_date_time, current_arming_fee_gbp_per_sp,
+                current_arming_fee_gbp_per_mwh, utilisation_cost_gbp, b6_ec5, resource_id, published_at]
+    key: [resource_id, bmu_id, arming_date_time]
+    caption: "Last armings of the 2023-24 file and first of 2024-25, where the fee heading changes."
+    fields:
+      bmu_id: "The armed BM unit's ID, as registered with NESO"
+      arming_date_time: "When the unit was armed, as written; ends +00:00, NESO says UK local"
+      disarming_date_time: "When the unit was disarmed, as written; the same clock question"
+      current_arming_fee_gbp_per_sp: "Arming fee in files to 2023-24, headed £ per settlement period"
+      current_arming_fee_gbp_per_mwh: "Arming fee from 2024-25, headed £/MWh; NESO's dictionary gives £/SP"
+      utilisation_cost_gbp: "NESO's indicative cost of this arming, £"
+      b6_ec5: "`B6` or `EC5`, NESO's boundary column; in files from 2024-25 only"
+      resource_id: "The yearly file the row came from; part of the key"
+      published_at: "NESO's last-modified time for the yearly file, read as UTC"
+      timestamp_utc: "gridflow's capture time, UTC; not the arming time"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote the capture to bronze, UTC
+  caveat: Times end +00:00 though NESO says UK local; since 2024-25 fees are labelled £/MWh and £/SP.
+  notebook:
+    lead: >-
+      `data.sql` reads the `_latest` view, each yearly file's newest capture, because `query()`
+      would filter `timestamp_utc`, the capture time. Times stay text as written; costs are NESO's
+      pounds.
+    cells:
+      - |
+        df = data.sql("""
+            SELECT resource_id, bmu_id, arming_date_time, disarming_date_time,
+                   current_arming_fee_gbp_per_sp AS fee_per_sp,
+                   current_arming_fee_gbp_per_mwh AS fee_per_mwh, utilisation_cost_gbp, b6_ec5
+            FROM silver_neso_data_portal_cmis_intertrip_latest""")
+        files = df.groupby("resource_id").agg(first=("arming_date_time", "min"), last=("arming_date_time", "max"),
+                                              armings=("bmu_id", "size"), units=("bmu_id", "nunique"),
+                                              cost_gbp=("utilisation_cost_gbp", "sum"))
+        files.sort_values("first").round(0).reset_index(drop=True)
+      - |
+        filled = df.groupby("resource_id")[["fee_per_sp", "fee_per_mwh", "b6_ec5"]].count()
+        filled.loc[files.sort_values("first").index].reset_index()
+      - |
+        top = df.groupby("bmu_id").utilisation_cost_gbp.agg(["count", "sum"]).sort_values("sum", ascending=False)
+        top.head(6).round(0).reset_index()
+    needs: the five yearly files
   related:
     - {dataset: neso_data_portal/thermal-constraint-costs, note: "NESO's daily thermal constraint costs at six named boundaries"}
     - {dataset: neso_data_portal/constraint-breakdown, note: "NESO's daily constraint costs and volumes, split by reason"}
@@ -66,8 +146,9 @@ instruction-issue column.
 The silver output for this package is **held** (unit E-SEM). The front-matter `eligibility:
 eligible` is the registry's package-level status, not a family-level one: the only family,
 `cmis_intertrip`, is held. The arming clock and the newer fee
-unit are both unresolved (see Holds). This page therefore gives schema, row counts and structure
-only. It publishes no data values from the held family.
+unit are both unresolved (see Holds). This note gives schema, row counts and structure only.
+Under ruling 66 (2026-10-24) the site page shows the rows, a cost chart that reads neither the
+times nor the fee, and a notebook, with one line naming both questions.
 
 - Publisher group: Constraint management
 - Registry group: constraint-management · archetype: EVT
@@ -292,8 +373,8 @@ gridflow outputs derived from this package carry the attribution line above.
 - `cmis_intertrip`: held: TODO: do the arming/disarming timestamps carry GB local wall time with a mechanically added +00:00 offset, or actual UTC instants? And is the newer arming fee GBP/MWh (header) or GBP/SP (dictionary)? (unit E-SEM)
 
 The family is held by RULINGS 632 (seat ruling, PROXY-SOURCED). The silver output exists on disk
-(1,047 rows) but is not eligible for publication or point-in-time use. This page gives schema,
-row counts and structural counts only. It gives no data values, ranges or samples. Unit E-SEM
+(1,047 rows) but is not eligible for point-in-time use. This note gives schema, row counts and
+structural counts only; the site page shows the rows with a caveat line (ruling 66). Unit E-SEM
 must answer two things before the hold can lift:
 
 1. Whether the arming and disarming timestamps are GB local wall time with a mechanically
