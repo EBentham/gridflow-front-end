@@ -76,6 +76,6 @@ captures repeat rows (or as a guard). On a table with no event time, `query()` f
 | 2 | a7d6f785b85eb39ff | a7baf4ea258c6e697 | APPROVED, 5 nits fixed (seat-verified); committed; rebuilt under the definitions lead; 20cd logged |
 | 3 | a12902a5b35eeed53 | afcecf730f8b967bd | checking; 20ce logged |
 | 4 | acad0fb61bef04ef6 | | writing |
-| 5 | | | |
+| 5 | a3d393bb8f451101a | | writing |
 | H1 | | | |
 | H2 | | | |
