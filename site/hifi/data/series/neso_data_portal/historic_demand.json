@@ -1,0 +1,19 @@
+{
+  "dataset": "neso_data_portal/historic_demand",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "7b29282889440a366494fb402885125920b07d5b7f63b357e81414b9938144ec",
+  "type": "bar",
+  "unit": "MW",
+  "caption": "",
+  "value_column": "nd",
+  "aggregation": "max",
+  "window": null,
+  "provenance": {"duplicates_dropped": 12478, "files": 27, "null_values_dropped": 0, "rows_matched": 463628, "rows_read": 463628, "rows_used": 451150, "silver": "neso_data_portal/historic_demand"},
+  "spec": {"aggregation": "max", "dedup": {"on": ["resource_id", "settlement_date", "settlement_period"], "order_by": "published_at"}, "group": "resource_id", "group_map": {"01522076-2691-4140-bfb8-c62284752efd": "2011", "18c69c42-f20d-46f0-84e9-e279045befc6": "2021", "2f0f75b8-39c5-46ff-a914-ae38088ed022": "2017", "2ff7aaff-8b42-4c1b-b234-9446573a1e27": "2013", "30650247-acbf-414d-8ae2-2aa4aac57537": "2003", "33ba6857-2a55-479f-9308-e5c4c53d4381": "2020", "3bb75a28-ab44-4a0b-9b1c-9be9715d3c44": "2016", "42a41acd-53b6-450d-af1b-4a92a352895c": "2005", "4bf713a2-ea0c-44d3-a09a-63fc6a634b00": "2012", "4daaac31-ae56-461e-8efe-6b33e147225a": "2002", "5f5c076c-d3a3-4f33-a137-501cc3d2ca9b": "2004", "8a4a771c-3929-4e56-93ad-cdf13219dea5": "2026, to 25 Sep", "949bb4a4-8374-4730-89ef-302d82428d2c": "2006", "b2bde559-3455-4021-b179-dfe60c0337b0": "2025", "b3eae4a5-8c3c-4df1-b9de-7db243ac3a09": "2010", "b9005225-49d3-40d1-921c-03ee2d83a2ff": "2014", "bb44a1b5-75b1-4db2-8491-257f23385006": "2022", "bf5ab335-9b40-4ea4-b93a-ab4af7bce003": "2023", "c0da767c-447d-48d1-93fd-ca3955d078ae": "2007", "cc505e45-65ae-4819-9b90-1fbb06880293": "2015", "dd9de980-d724-415a-b344-d8ae11321432": "2019", "e8608e9a-f56c-457f-b9e7-bfffcfd19731": "2001", "ec63adc8-e8a1-45cc-a593-5953b1ede7b1": "2008", "ed8a37cb-65ac-4581-8dbc-a3130780da3a": "2009", "f6d02c0f-957b-48cb-82ee-09003f2ba759": "2024", "fcb12133-0db0-4f27-a4a5-1669fd9f6d33": "2018"}, "silver": "neso_data_portal/historic_demand", "sort": "label", "type": "bar", "unit": "MW", "value": "nd"},
+  "x_kind": "category",
+  "x": ["2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025", "2026, to 25 Sep"],
+  "series": [
+    {"key": "nd", "values": [57147.0, 60333.0, 59899.0, 59357.0, 59425.0, 59010.0, 59969.0, 57619.0, 58594.0, 59095.0, 55113.0, 55765.0, 55572.0, 51208.0, 52516.0, 51102.0, 49883.0, 49807.0, 47081.0, 45986.0, 46433.0, 46147.0, 44109.0, 45202.0, 45924.0, 47382.0]}
+  ]
+}
