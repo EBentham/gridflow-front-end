@@ -226,19 +226,19 @@ def test_a_page_without_a_page_block_is_blank(tmp_path: Path) -> None:
     assert 'href="outages.html#outages_offshore_grid"' in pointer
 
 
-def test_the_page_set_is_390_datasets_on_178_pages() -> None:
+def test_the_page_set_is_398_datasets_on_179_pages() -> None:
     """Rulings 12 to 14: families are one page each; the headline count is computed."""
     manifests = [build.load_manifest(v) for v in build.REAL_VENDORS]
     for vendor_id, m in zip(build.REAL_VENDORS, manifests, strict=True):
         assert build.manifest_errors(vendor_id, m) == []
-    assert sum(build.manifest_total_count(m) for m in manifests) == 390
-    assert sum(len(g["pages"]) for m in manifests for g in m["groups"]) == 178
+    assert sum(build.manifest_total_count(m) for m in manifests) == 398
+    assert sum(len(g["pages"]) for m in manifests for g in m["groups"]) == 179
 
 
 def test_hubs_and_landing_link_every_page(tmp_path: Path) -> None:
     build.build(DEFAULT_VAULT, tmp_path)
     landing = (tmp_path / "data-sources.html").read_text(encoding="utf-8")
-    assert '<span class="hub-n">390 datasets</span>' in landing
+    assert '<span class="hub-n">398 datasets</span>' in landing
     for vendor_id in build.REAL_VENDORS:
         assert f'href="data-sources/{vendor_id}.html"' in landing
         hub = (tmp_path / "data-sources" / f"{vendor_id}.html").read_text(encoding="utf-8")
