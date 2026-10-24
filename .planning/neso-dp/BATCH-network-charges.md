@@ -51,4 +51,6 @@ note-body statements yourself when the data proves them wrong.
 
 | # | Writer | Checker | State |
 |---|---|---|---|
-| H | ac3e2546998f4ced8 | aad538bc417ff3731 | checking; 20bz logged |
+| H | ac3e2546998f4ced8 | aad538bc417ff3731 | APPROVED with nits x3, nits fixed (seat-verified); committed; 20bz logged |
+
+Group closed 2026-10-24: gates green (pytest 206, build check 178 pages, htmlhint 0, lychee 0, detector clean); site PR EBentham/gridflow-front-end#72, vault PR EBentham/quant-vault#75, both waiting for Bobbo.
