@@ -44,3 +44,42 @@ Page `neso_data_portal/fes-road-transport-notes-data-table-ed6` (one table, `fes
 ## Defects (pasteable)
 
 - **NESO FES road transport notes (ED6) versus ED5 (labels only, same edition):** `V2G Maximum Capacity available at Peak` (ED6) is `V2G available at Peak` in ED5 in 2024 to 2026; ED5 2024 already carries `Annual` while the 2024 ED6 notes carry `# Vehicles`; `# Vehicles - Hydrogen` sits under `Fuel` in ED6 only. Vendor labelling, no gridflow code defect. Matches the note's existing `TODO: verify`.
+
+---
+
+# Round 2
+
+**Verdict: APPROVE (nit-only).** Finding 1 (major) is fixed and the counts reproduce exactly. Findings 2 to 7 are fixed. One new optional nit (8). Rebuilt with `--only neso_data_portal/fes_ed6_road_transport_notes`: no errors, detector `[]`, 0 em dashes, mirror `cmp` matches the canonical note. The frame selection, caption and notebook are unchanged, so no layout re-check was needed; I checked the rebuilt page text. No server was needed.
+
+## Match counts: reproduced on silver
+
+Same-edition ED5 labels, exact string match of ED6 `category` against the distinct values of the matching ED5 column (`data_item`, `fuel`, `peak_annual_minimum`), labels only:
+
+| Edition | Matches | Unmatched rows |
+|---|---|---|
+| 2023 | 24 of 27 | `# Vehicles - Hydrogen` (Fuel; the label is in an ED5 column, not `fuel`), `Reference data`, `# Vehicles` |
+| 2024 | 23 of 27 | the same three plus `V2G Maximum Capacity available at Peak` |
+| 2025 | 24 of 26 | `V2G Maximum Capacity available at Peak`, `# Vehicles - Hydrogen` |
+| 2026 | 24 of 26 | the same two |
+
+This equals the page's "24 of 27, 23 of 27, 24 of 26 and 24 of 26", and the body's per-column counts and its list of unmatched rows ("`# Vehicles` and `Reference data` ... no ED5 label in any column" is true: neither appears in any ED5 column). The counts are the seat-ruled wording; the sentence says "most", not "all", and no ED5 row is described.
+
+## Findings 1 to 7
+
+1. **Major, fixed.** `what_it_is` now reads "a value NESO names under it" and gives the four counts; `category` guide "most, not all, match an ED5 label"; `related[0]` "The road transport table these notes support" (NESO's own relation); `how_used[0]` and `[1]` no longer assert ED5 values or an `Annual` note in every edition ("which the 2025 and 2026 files give" is true: both `Peak` and `Annual` are in those files). The body's Join to ED5 section carries the totals and the unmatched rows and keeps `TODO: verify`.
+2. **Fixed.** `column_name` guide: "NESO files the `# Vehicles - Hydrogen` count under `Fuel`". Bronze lines confirmed in round 1 (line 8 in 2023, line 14 in 2024 to 2026).
+3. **Fixed.** "vehicle-to-grid (V2G)" expanded at first use in page prose (`how_used[2]`); "heavy goods vehicles and buses at depots" is true for both NESO wordings ("depot charged", "parked at the depot"); `grain` no longer uses ED5 before it is introduced.
+4. **Fixed.** The body list now says "the main revisions", names the unlisted kinds of edit, and each named kind exists in silver.
+5. **Fixed, see below.** `package_show` is listed in the same form as ED4 and the other siblings.
+6. **Fixed.** "2023 and 2024 notes: reference data not used in ED1's Peak/Annual/Minimum" (11 words) follows NESO's "Data is not used in the calculation of Peak/Annual/Minimum in ED1".
+7. **Fixed.** The trailing-space clause is gone from the `category` guide.
+
+## The requests list: not misleading
+
+The note reads "one `package_show`, then four CSVs ... Shown: 2023, 2025 and 2026; edition comes from the file name", and the hero fact still says "four CSVs, one per edition, 2023 to 2026". The page therefore says four files exist and that three are shown; a reader is not led to think 2024 is missing. The 2024 resource id is also visible in the frame rows. This is word for word the ED4 note.
+
+## New nit
+
+8. **Nit (optional). `raw_feed.requests`:** the frame draws its rows from the 2024 and 2025 files, but the shown set is 2023, 2025 and 2026, so the 2024 file the frame uses has no URL on the page. If the seat prefers the shown set to cover the frame, show 2024, 2025 and 2026 and say "Shown: 2024, 2025 and 2026". Not needed for approval (ED4 follows the same convention).
+
+Seat items from round 1 are unchanged (long text column folds at every width, `none` reason not rendered, generic hero scene).
