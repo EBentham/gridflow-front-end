@@ -8,7 +8,7 @@ updated: 2026-10-10
 layer_coverage: "bronze"
 eligibility: "eligible"
 page:
-  held: Rows are not labelled with a settlement run, so there is no silver table.
+  held: Each upload repeats and can restate earlier periods, with no run column to tell versions apart.
   title: Daily BSUoS cost data
   summary: >-
     NESO's balancing cost for each settlement period, in £, split into six categories, from energy
@@ -41,6 +41,9 @@ page:
     commands:
       - {run: gridflow ingest neso_data_portal daily_balancing_costs --last 24h, comment: "every yearly file, bronze only"}
       - {run: gridflow ingest neso_data_portal daily_balancing_costs_files --last 24h, comment: the missing-periods workbook}
+    sample:
+      file: q1_cost_fy2627.csv
+      caveat: These rows are one upload; a later upload may restate them, with no run label.
   related:
     - {dataset: neso_data_portal/daily-balancing-volume-balancing-services-use-of-system, note: "The volumes, in MWh, for the same settlement periods"}
     - {dataset: neso_data_portal/current-balancing-services-use-of-system-bsuos-data, note: "The BSUoS charges that recover these costs, per settlement run"}
@@ -67,7 +70,7 @@ BSUoS charge package (@current-balancing-services-use-of-system-bsuos-data.md).
 no key that includes `run_type` can be built, and gridflow's record model cannot generate a
 constant run column. The family stays ingest-only (RULINGS 653, the same no-record disposition
 as RULINGS 538). This page therefore describes the bronze files and the reason silver is
-absent. It publishes no data values.
+absent. It shows the header and first eight lines of one file as fetched, and no silver table.
 
 - Publisher group: Balancing costs
 - Registry group: balancing · archetype: SER

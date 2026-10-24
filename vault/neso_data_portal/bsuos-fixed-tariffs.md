@@ -8,7 +8,6 @@ updated: 2026-10-10
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: NESO dates each publication but not when each row appeared, nor whether old rows change.
   title: BSUoS fixed tariffs
   summary: >-
     NESO's fixed BSUoS tariffs: each tariff's stages and publication dates, the settlement dates
@@ -22,10 +21,41 @@ page:
     Balancing Services Use of System (BSUoS) charges recover the cost of day-to-day operation of the
     transmission system. A fixed tariff is a rate in £/MWh set in advance for a stated range of
     settlement dates. NESO's revenue team forecasts and sets them; each row is one stage of one
-    tariff, such as draft or final, with its publication date.
+    tariff, initial forecast, draft or final, with its publication date.
   how_used:
     - The BSUoS rate NESO announced for a range of settlement dates, stage by stage
+    - How far each tariff moved between its draft and final stages
     - Read beside the settled BSUoS charges for the same settlement dates
+  chart:
+    type: line
+    silver: neso_data_portal/bsuos_fixed_tariffs
+    time: fixed_tariff_start_date
+    value: fixed_tariff_gbp_per_mwh
+    group: publication
+    group_map: {"Initial Forecast": initial, Draft: draft, Final: final}
+    series_order: [final, draft, initial]
+    dedup: {"on": [publication, fixed_tariff_title, published_date], order_by: published_at}
+    aggregation: last
+    window: {start: "2023-04-01", end: "2027-10-01"}
+    unit: "£/MWh"
+  chart_view:
+    title: Fixed BSUoS tariff by stage, April 2023 to March 2028
+    caption: >-
+      Silver `neso_data_portal/bsuos_fixed_tariffs`, £/MWh: each tariff's rate at each stage NESO
+      published, one point per six-month tariff, placed at its period. Lines join tariffs, not dates
+      within one. Published dates are not drawn.
+    alt: >-
+      Line chart from neso_data_portal/bsuos_fixed_tariffs in £/MWh, one point per six-month tariff,
+      April 2023 to the period from October 2027. Final rates, in order: 13.41, 14.03, 7.63, 12.17,
+      10.74, 15.69, 13.74 and 12.49 for the period from October 2026. Draft rates run from 7.60 for
+      October 2024 to 21.67 and 18.42 for the two periods from April 2027, which have no final rate
+      in the file. Initial forecasts: 14.55 and 11.03 for the two periods from April 2026.
+    x_label: "each tariff's six months, from its first date"
+    key:
+      - {series: final, label: Final, paint: petrol}
+      - {series: draft, label: Draft, paint: clay}
+      - {series: initial, label: Initial forecast, paint: olive}
+  caveat: Published Date has no time, and NESO does not say older rows stay unchanged.
   raw_feed:
     note: >-
       From NESO's CKAN portal: one `package_show`, then the file downloaded whole unless its
@@ -36,6 +66,48 @@ page:
     commands:
       - {run: gridflow ingest neso_data_portal bsuos_fixed_tariffs --last 24h, comment: whole file to bronze}
       - {run: gridflow transform neso_data_portal bsuos_fixed_tariffs --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: fixed_tariff_title, op: in, value: [Fixed Tariff 7, Fixed Tariff 8, Fixed Tariff 9, Fixed Tariff 10]}
+      dedup: {"on": [publication, fixed_tariff_title, published_date], order_by: published_at}
+      order_by: [published_date, fixed_tariff_start_date]
+      columns: [publication, fixed_tariff_title, published_date, fixed_tariff_start_date, fixed_tariff_end_date, fixed_tariff_gbp_per_mwh, published_at, timestamp_utc]
+    key: [publication, fixed_tariff_title, published_date]
+    caption: "Tariffs 7 to 10 at every stage NESO published: initial forecast, draft and final."
+    fields:
+      publication: "The stage: Initial Forecast, Draft or Final; part of the key"
+      fixed_tariff_title: "NESO's name for the tariff, one per six-month period; part of the key"
+      published_date: "NESO's published date for this stage, with no time; part of the key"
+      fixed_tariff_start_date: "First settlement date the tariff applies to (NESO's dictionary)"
+      fixed_tariff_end_date: "Final settlement date the tariff applies to (NESO's dictionary)"
+      fixed_tariff_gbp_per_mwh: "The BSUoS tariff at this stage, £/MWh (NESO's dictionary)"
+      published_at: "NESO's last-modified time for the whole file, read as UTC; one per capture"
+      timestamp_utc: "Start of `fixed_tariff_start_date`, GB local midnight, as UTC; gridflow's anchor"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote the capture to bronze, UTC
+  notebook:
+    lead: >-
+      Returns a pandas DataFrame from the DuckDB view
+      `silver_neso_data_portal_bsuos_fixed_tariffs_latest`, every row of the newest capture,
+      filtered on `fixed_tariff_start_date` with both ends included; lineage columns dropped.
+    cells:
+      - |
+        df = data.neso_data_portal.query("bsuos_fixed_tariffs", "2023-04-01", "2027-10-01")
+        df = df.sort_values(["published_date", "fixed_tariff_start_date"], ignore_index=True)
+        df[["publication", "fixed_tariff_title", "published_date", "fixed_tariff_start_date", "fixed_tariff_gbp_per_mwh"]].tail()
+      - |
+        rates = df.pivot(index="fixed_tariff_title", columns="publication", values="fixed_tariff_gbp_per_mwh")
+        rates = rates.loc[df.fixed_tariff_title.unique(), ["Initial Forecast", "Draft", "Final"]].rename_axis(index=None, columns=None)
+        rates["final_minus_draft"] = rates.Final - rates.Draft
+        rates
+      - |
+        rates.final_minus_draft.dropna().plot.bar(color="#155A6E", rot=0, figsize=(8, 3.5),
+                                                  xlabel="tariff", ylabel="final minus draft, £/MWh");
+    needs: the fixed tariffs file
+    plot_alt: >-
+      Bar plot of each tariff's final rate minus its draft rate, in £/MWh, for Fixed Tariffs 4 to 8,
+      the tariffs with both stages: 4.57, -1.74, 3.70, -0.47 and 0.56.
   related:
     - {dataset: neso_data_portal/current-balancing-services-use-of-system-bsuos-data, note: "The settled BSUoS charges, one file per settlement run"}
     - {dataset: neso_data_portal/bsuos-monthly-forecast, note: "NESO's rolling monthly forecast of BSUoS costs, 24 months ahead"}
@@ -61,9 +133,8 @@ which are a separate package.
 
 The capture holds 17 rows. gridflow has a silver output for it, but it is **held**: the evidence
 does not establish when each publication was actually available (see Holds). The package is
-still eligible and the silver exists on disk, but nothing in it may be published or used for
-point-in-time models yet. This page therefore gives schema, row counts, clocks and missingness
-only, with **no data values**.
+still eligible and the silver exists on disk, but it may not be used for point-in-time models
+yet. The site page shows the rows and a chart with a caveat naming this question (ruling 66).
 
 - Publisher group: Balancing costs
 - Registry group: balancing · archetype: TAR
@@ -227,8 +298,8 @@ gridflow outputs derived from this package carry the attribution line above.
 
 - `bsuos_fixed_tariffs`: held: TODO: precise issue clock and availability of each publication at its Published Date, and whether historical publication rows are immutable — 15 of 17 targets start on or before the capture vintage, so RULINGS 529's forward-target exception does not apply. (unit E-SEM)
 
-The silver output exists on disk but is **held**. It may not be published or used for
-point-in-time models until unit E-SEM answers the question above. The hold sits in the record,
+The silver output exists on disk but is **held**. It may not be used for point-in-time models
+until unit E-SEM answers the question above; the site shows its rows with a caveat (ruling 66). The hold sits in the record,
 and RULINGS 653 set it when the batch was ruled.
 
 **Why the usual shortcut fails.** Where every row in a forecast-style file targets a period
@@ -245,4 +316,4 @@ row is never rewritten in place. gridflow will not manufacture a midnight-UTC is
 
 What settles it: an immutable, dated vendor publication history that shows when each row was
 available, or an approved conservative publication-date availability recipe. Either is a
-record edit once ruled. Until then, row counts, schema and clocks are all this page asserts.
+record edit once ruled.

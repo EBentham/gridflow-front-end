@@ -1,0 +1,183 @@
+{
+ "dataset": "neso_data_portal/inertia_bid_offer_costs",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "d25c36aec1fc45d66d28ef2cd3afad3eab55fbf507c3a0ae0cf01956e5f79704",
+ "silver": "neso_data_portal/inertia_bid_offer_costs",
+ "columns": [
+  {
+   "name": "date",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "method_a_average_bid_price",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "method_b_average_wind_price",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "method_c_highest_bid_price",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2020-11-12",
+   "-488.0",
+   "6233.0",
+   "12738.0",
+   "2022-10-19 17:16:40.960429 UTC",
+   "2020-11-12 00:00:00 UTC",
+   "bronze/neso_data_portal/inertia_bid_offer_costs/2026/10/08/raw_20261008T111157Z_8da765a1-004f-46a5-8b3f-0e5b1787fcb1_abe236d5.csv",
+   "2026-10-08 11:11:57.162696 UTC",
+   "2020-11-12 00:00:00 UTC",
+   "2022-10-19 17:16:40.960429 UTC",
+   "530b6f64-5d55-40d3-8c86-fb4a8a15d450",
+   "1+e1"
+  ],
+  [
+   "2022-02-01",
+   "3380.0",
+   "10264.0",
+   "16697.0",
+   "2022-10-19 17:16:40.960429 UTC",
+   "2022-02-01 00:00:00 UTC",
+   "bronze/neso_data_portal/inertia_bid_offer_costs/2026/10/08/raw_20261008T111157Z_8da765a1-004f-46a5-8b3f-0e5b1787fcb1_abe236d5.csv",
+   "2026-10-08 11:11:57.162696 UTC",
+   "2022-02-01 00:00:00 UTC",
+   "2022-10-19 17:16:40.960429 UTC",
+   "530b6f64-5d55-40d3-8c86-fb4a8a15d450",
+   "1+e1"
+  ],
+  [
+   "2022-02-02",
+   "0.0",
+   "0.0",
+   "0.0",
+   "2022-10-19 17:16:40.960429 UTC",
+   "2022-02-02 00:00:00 UTC",
+   "bronze/neso_data_portal/inertia_bid_offer_costs/2026/10/08/raw_20261008T111157Z_8da765a1-004f-46a5-8b3f-0e5b1787fcb1_abe236d5.csv",
+   "2026-10-08 11:11:57.162696 UTC",
+   "2022-02-02 00:00:00 UTC",
+   "2022-10-19 17:16:40.960429 UTC",
+   "530b6f64-5d55-40d3-8c86-fb4a8a15d450",
+   "1+e1"
+  ],
+  [
+   "2022-02-24",
+   "2296.0",
+   "16220.0",
+   "26088.0",
+   "2022-10-19 17:16:40.960429 UTC",
+   "2022-02-24 00:00:00 UTC",
+   "bronze/neso_data_portal/inertia_bid_offer_costs/2026/10/08/raw_20261008T111157Z_8da765a1-004f-46a5-8b3f-0e5b1787fcb1_abe236d5.csv",
+   "2026-10-08 11:11:57.162696 UTC",
+   "2022-02-24 00:00:00 UTC",
+   "2022-10-19 17:16:40.960429 UTC",
+   "530b6f64-5d55-40d3-8c86-fb4a8a15d450",
+   "1+e1"
+  ],
+  [
+   "2022-02-25",
+   "5234.0",
+   "17063.0",
+   "26041.0",
+   "2022-10-19 17:16:40.960429 UTC",
+   "2022-02-25 00:00:00 UTC",
+   "bronze/neso_data_portal/inertia_bid_offer_costs/2026/10/08/raw_20261008T111157Z_8da765a1-004f-46a5-8b3f-0e5b1787fcb1_abe236d5.csv",
+   "2026-10-08 11:11:57.162696 UTC",
+   "2022-02-25 00:00:00 UTC",
+   "2022-10-19 17:16:40.960429 UTC",
+   "530b6f64-5d55-40d3-8c86-fb4a8a15d450",
+   "1+e1"
+  ],
+  [
+   "2022-02-26",
+   "0.0",
+   "16154.0",
+   "25416.0",
+   "2022-10-19 17:16:40.960429 UTC",
+   "2022-02-26 00:00:00 UTC",
+   "bronze/neso_data_portal/inertia_bid_offer_costs/2026/10/08/raw_20261008T111157Z_8da765a1-004f-46a5-8b3f-0e5b1787fcb1_abe236d5.csv",
+   "2026-10-08 11:11:57.162696 UTC",
+   "2022-02-26 00:00:00 UTC",
+   "2022-10-19 17:16:40.960429 UTC",
+   "530b6f64-5d55-40d3-8c86-fb4a8a15d450",
+   "1+e1"
+  ],
+  [
+   "2022-02-27",
+   "3825.0",
+   "17359.0",
+   "27107.0",
+   "2022-10-19 17:16:40.960429 UTC",
+   "2022-02-27 00:00:00 UTC",
+   "bronze/neso_data_portal/inertia_bid_offer_costs/2026/10/08/raw_20261008T111157Z_8da765a1-004f-46a5-8b3f-0e5b1787fcb1_abe236d5.csv",
+   "2026-10-08 11:11:57.162696 UTC",
+   "2022-02-27 00:00:00 UTC",
+   "2022-10-19 17:16:40.960429 UTC",
+   "530b6f64-5d55-40d3-8c86-fb4a8a15d450",
+   "1+e1"
+  ],
+  [
+   "2022-02-28",
+   "0.0",
+   "0.0",
+   "0.0",
+   "2022-10-19 17:16:40.960429 UTC",
+   "2022-02-28 00:00:00 UTC",
+   "bronze/neso_data_portal/inertia_bid_offer_costs/2026/10/08/raw_20261008T111157Z_8da765a1-004f-46a5-8b3f-0e5b1787fcb1_abe236d5.csv",
+   "2026-10-08 11:11:57.162696 UTC",
+   "2022-02-28 00:00:00 UTC",
+   "2022-10-19 17:16:40.960429 UTC",
+   "530b6f64-5d55-40d3-8c86-fb4a8a15d450",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

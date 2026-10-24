@@ -4,11 +4,11 @@ package: "gis-boundaries-for-gb-dno-license-areas"
 dataset_keys: ["gis_dno_license_areas_files"]
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-23
+updated: 2026-10-24
 layer_coverage: "bronze"
 eligibility: "held"
 page:
-  held: "Western Power Distribution supplied the boundaries; NESO does not say it is authorised to license them."
+  held: "NESO has not confirmed it may license Western Power Distribution's boundaries; map files are only listed."
   title: DNO licence area boundaries
   summary: >-
     NESO's approximate map boundaries of the 14 Distribution Network Operator licence areas of Great

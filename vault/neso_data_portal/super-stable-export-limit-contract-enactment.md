@@ -4,11 +4,10 @@ package: "super-stable-export-limit-contract-enactment"
 dataset_key: "ssel_contract_enactment"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-23
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: "All years are withheld together: from 2021-22, `Cost` is labelled £/h but described as a total."
   title: Super SEL contract enactments
   summary: >-
     NESO's log of Super Stable Export Limit (Super SEL) contracts it enacted, each lowering a
@@ -28,6 +27,34 @@ page:
   how_used:
     - How often and when NESO lowered generators' minimum levels
     - "MW and price per enactment; the 2020-21 £/MW/hr is not a £/MWh price"
+  chart:
+    type: bar
+    silver: neso_data_portal/ssel_contract_enactment
+    group: resource_id
+    group_map:
+      "835d50b9-2d7c-4318-bd04-c7f94b149041": "2020-21"
+      "bf9ca254-e9de-4aa2-841a-fb34566de38a": "2021-22"
+      "34f185bc-087a-41b2-b514-305e31158e5a": "2022-23"
+      "817036a8-10af-442e-93d4-8f21ae038b52": "2023-24"
+      "43078fd2-7583-4b0a-b398-e48de3817515": "2024-25"
+      "8e7168fa-8617-4d83-9696-d6bf1f09c9c5": "2025-26"
+    dedup: {"on": [resource_id, id], order_by: capture_written_at}
+    aggregation: count
+    sort: label
+    unit: enactments
+  chart_view:
+    title: Enactments in each yearly table, 2020-21 to 2025-26
+    caption: >-
+      Silver `neso_data_portal/ssel_contract_enactment`: rows per financial-year table, both layouts.
+      The 2020-21 table, from July 2020, gives a MW reduction and £/MW/hr; later tables use the
+      enactment columns with `Cost`.
+    alt: >-
+      Horizontal bar chart counting the rows of each yearly table in
+      neso_data_portal/ssel_contract_enactment: 20 in 2020-21, then 1 in 2021-22, 2 in 2022-23, 2 in
+      2023-24, 1 in 2024-25 and 1 in 2025-26.
+    key:
+      - {series: count, label: Enactments, paint: petrol}
+  caveat: "`Cost` is labelled £/h, but NESO describes it as a total: volume times price times duration."
   raw_feed:
     note: >-
       From NESO's CKAN portal: one `package_show`, then each yearly table's datastore dump, kept only
@@ -40,6 +67,53 @@ page:
     commands:
       - {run: gridflow ingest neso_data_portal ssel_contract_enactment --last 24h, comment: "the six yearly dumps to bronze"}
       - {run: gridflow transform neso_data_portal ssel_contract_enactment --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: id, op: in, value: ["1", "4", "8", "17", ES00159754, ES00232575, ES00299447, ES00326939]}
+      dedup: {"on": [resource_id, id], order_by: capture_written_at}
+      order_by: [starttime, id]
+      columns: [id, unit, asset_id, starttime, endtime, reduction_mw, price_mw_hr, volume, price, cost, reason, last_updated]
+    key: [resource_id, id]
+    caption: "Four 2020-21 rows in the older layout, four later; two share a window with opposite signs."
+    fields:
+      id: "NESO's enactment id: a number in 2020-21, an `ES` id from 2021-22"
+      unit: "The generating unit, in the 2020-21 layout only"
+      asset_id: "The asset from 2021-22: a BM unit name, or a contract name"
+      starttime: "Start of the enactment window, UTC"
+      endtime: "End of the window, UTC; NESO does not say whether it is included"
+      reduction_mw: "2020-21 only: the reduction in minimum generating capability, MW"
+      price_mw_hr: "2020-21 only: the payment rate, £/MW/hr, not a £/MWh price"
+      volume: "From 2021-22: average volume, MW; positive raises generation, NESO says"
+      price: "From 2021-22: average price, £/MWh"
+      cost: "From 2021-22: NESO's cost, labelled £/h, described as a total"
+      reason: "From 2021-22: NESO's reason, such as `Downward Reg` or `V_NORTH`"
+      last_updated: "When NESO last updated the row, UTC; not its first publication"
+      so_flag: "From 2021-22: `T` mainly system security, `F` mainly balancing"
+      cp_name: "From 2021-22: the contract counterparty"
+      area: "The asset's delivery area; blank in these tables"
+      note: "NESO's free-text note; blank in these tables"
+      resource_id: "The yearly table the row comes from (CKAN resource id)"
+      timestamp_utc: "Equals `starttime`; gridflow's event time"
+      published_at: "Null: these dumps carry no usable publication time"
+      bronze_capture_id: The bronze file the row was read from
+      capture_written_at: When gridflow wrote the capture to bronze, UTC
+  notebook:
+    lead: >-
+      Returns a pandas DataFrame from the view `silver_neso_data_portal_ssel_contract_enactment_latest`,
+      both layouts, filtered on the window's start with both ends included; times come back in
+      Europe/London.
+    cells:
+      - |
+        df = data.neso_data_portal.query("ssel_contract_enactment", "2020-04-01", "2026-03-31")
+        df[["id", "unit", "asset_id", "starttime", "reduction_mw", "price_mw_hr", "volume", "price", "cost"]].tail()
+      - |
+        modern = df[df.cost.notna()].copy()
+        modern["hours"] = (modern.endtime - modern.starttime).dt.total_seconds() / 3600
+        modern[["id", "hours", "volume", "price", "cost"]]
+      - |
+        df.unit.fillna(df.asset_id).value_counts()
+    needs: the yearly Super SEL tables
   related:
     - {dataset: neso_data_portal/balancing-services-contract-enactment, note: "General contract enactments, in the same columns from 2021-22"}
     - {dataset: neso_data_portal/index-linked-contract-volume, note: "Index-linked voltage contract enactments, in the same columns"}
@@ -63,8 +137,9 @@ The package spans **two header epochs** under one family. The oldest year (FY 20
 legacy layout with `Reduction (MW)` and `Price (£/MW/hr)`. Later years use the modern layout
 shared with the other contract-enactment tables (`Volume`, `Price`, `Cost`, ...). The two value
 vocabularies are **different quantities** and are never merged in silver. The family's silver
-output is **held** (see Holds): the modern `Cost` column has an unresolved unit question. Row
-counts and the schema are published here. No data values are.
+output is **held** (see Holds): the modern `Cost` column has an unresolved unit question, so
+gridflow's models do not consume it. The site page shows the rows of both layouts (ruling 66): a
+chart, eight sample rows and a notebook, with the `Cost` question as a caveat.
 
 - Publisher group: Trading
 - Registry group: trade-data · archetype: EVT
@@ -270,8 +345,13 @@ gridflow outputs derived from this package carry the attribution line above.
 
 The hold is on the **whole family record**, not on one column or epoch. The registry carries a
 single eligibility per record, so the legacy rows are held together with the modern rows. The
-silver output exists on disk (27 rows) and is not published. This page shows no data values from
-it: no sample rows and no minimum, maximum or other value statistics.
+silver output exists on disk (27 rows) and is not consumed by gridflow's models; the site page
+shows its rows with the `Cost` question as a caveat (ruling 66).
+
+**What the rows show (silver, checked 2026-10-24).** In all 7 modern rows, `Cost` equals `Volume` ×
+`Price` × the window's length in hours, for example `ES00263168`: -100 × 58 × 6.5 = -37,700. That
+is how a total in £ behaves, not a rate in £/h. It supports NESO's description over its label, but
+it does not settle what NESO intends to publish, so the hold stands.
 
 The question for NESO is which of two quantities the modern `Cost` column holds: a rate in £/h,
 as its unit label says, or a total in £ over the enactment, as its description and formula say.

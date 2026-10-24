@@ -1,0 +1,23 @@
+{
+  "dataset": "neso_data_portal/dc_dm_dr_long_term_fc",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "ff318078dbc6e572e0827d63a2f6a6361b1aca5d819ef3bee89b98efa9761323",
+  "type": "stacked-area",
+  "unit": "Possibilities",
+  "caption": "",
+  "value_column": "possibilities",
+  "aggregation": "mean",
+  "window": {"end": "2027-04-01", "rule": "fixed", "start": "2026-04-01"},
+  "provenance": {"duplicates_dropped": 0, "files": 1, "null_values_dropped": 0, "rows_matched": 390, "rows_read": 4212, "rows_used": 390, "silver": "neso_data_portal/dc_dm_dr_long_term_fc", "silver_first": "2026-04-01", "silver_last": "2027-04-01"},
+  "spec": {"aggregation": "mean", "dedup": {"on": ["forecast_created", "forecast_target_month", "service_type", "efa", "interval"], "order_by": "capture_written_at"}, "filter": [{"column": "service_type", "op": "eq", "value": "DC-H"}, {"column": "interval", "op": "in", "value": ["800-1000", "1000-1200", "1200-1400", "1400-1600", "1600-1800"]}], "group": "interval", "group_map": {"1000-1200": "b1000", "1200-1400": "b1200", "1400-1600": "b1400", "1600-1800": "b1600", "800-1000": "b800"}, "series_order": ["b800", "b1000", "b1200", "b1400", "b1600"], "silver": "neso_data_portal/dc_dm_dr_long_term_fc", "time": "forecast_target_month", "type": "stacked-area", "unit": "Possibilities", "value": "possibilities", "window": {"end": "2027-04-01", "start": "2026-04-01"}},
+  "x_kind": "time",
+  "x": ["2026-04-01", "2026-05-01", "2026-06-01", "2026-07-01", "2026-08-01", "2026-09-01", "2026-10-01", "2026-11-01", "2026-12-01", "2027-01-01", "2027-02-01", "2027-03-01", "2027-04-01"],
+  "series": [
+    {"key": "b800", "values": [0.044, 0.005, 0.0, 0.016, 0.0, 0.0, 0.0, 0.078, 0.102, 0.113, 0.071, 0.016, 0.095]},
+    {"key": "b1000", "values": [0.514, 0.57, 0.55, 0.435, 0.521, 0.667, 0.758, 0.678, 0.592, 0.586, 0.387, 0.478, 0.5]},
+    {"key": "b1200", "values": [0.282, 0.247, 0.205, 0.21, 0.231, 0.217, 0.134, 0.161, 0.151, 0.135, 0.172, 0.172, 0.381]},
+    {"key": "b1400", "values": [0.159, 0.151, 0.228, 0.242, 0.226, 0.117, 0.108, 0.083, 0.102, 0.097, 0.173, 0.145, 0.024]},
+    {"key": "b1600", "values": [0.0, 0.027, 0.017, 0.097, 0.022, 0.0, 0.0, 0.0, 0.054, 0.07, 0.197, 0.188, 0.0]}
+  ]
+}

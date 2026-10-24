@@ -1,0 +1,20 @@
+{
+ "dataset": "neso_data_portal/da_constraint_flows_limits",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "7270bafa9c48c1829a91d300a5c5608e8d4613436e0b233f952d594fb71dffda",
+ "table": "da_constraint_flows_limits",
+ "file": "day-ahead-constraints-limits-and-flow-output-v1.5.csv",
+ "body_sha256": "695f8890a6a157bb0847628e7eb9d639082795fe2ffab39eb40a5eafc4ddfb97",
+ "encoding": "utf-8",
+ "lines": [
+  "Constraint Group,Date_ Time GMT_BST,Limit_MW,Flow_MW",
+  "ESTEX,2023-01-01T00:00:00,3950,894",
+  "ESTEX,2023-01-01T00:30:00,3950,919",
+  "ESTEX,2023-01-01T01:00:00,3950,927",
+  "ESTEX,2023-01-01T01:30:00,3950,937",
+  "ESTEX,2023-01-01T02:00:00,3950,946",
+  "ESTEX,2023-01-01T02:30:00,3950,953",
+  "ESTEX,2023-01-01T03:00:00,3950,959",
+  "ESTEX,2023-01-01T03:30:00,3950,966"
+ ]
+}
