@@ -156,3 +156,36 @@ No gridflow defect found. Vendor data points, kept as published (no gridflow act
 - Within a nation, the indicative local authority files do not sum to the RESP nation (Scotland up to 44.9 MW, Wales
   up to 60.0 MW apart), although all cuts agree at the GB total. This is consistent with NESO's stated method; it is
   recorded so nobody rolls local authorities up to a RESP nation.
+
+## Round 2 (checker's review: REVISE, 1 major, 4 nits; all fixed)
+
+1. **Major, `page.raw_feed.note`:** it now reads "one `package_show`, then the table's file downloaded whole, unless its
+   `last_modified` is unchanged. Dates select nothing; silver keeps every capture." This follows the approved
+   `demand-flexibility` note: each family ingest fetches only its own file.
+2. **Nit, chart words:** the title is now "Large solar capacity projected, tRESP Holistic Transition, 2025 to 2050"
+   (10 words). The caption says "projected MW installed at 31 March", and the chart alt and `notebook.plot_alt` say
+   "projected". The spec is unchanged, so the series digest still passes.
+3. **Nit, `record.fields.projection_year`:** now "Year the value is for: MW installed at 31 March, per NESO".
+4. **Nit, `record.fields.value` and `building_block_id`:**
+   - `value`: "MW; vehicle-to-grid (`Srg_BB005`) is zero or negative, no sign stated; FES: \"MW availability\"".
+   - `building_block_id`: "Block id; all 23 match a Future Energy Scenarios (FES) id; definitions not compared".
+   - I re-checked the FES unit: silver `fes_building_blocks_block_definitions` gives `Srg_BB005` "MW availability" in
+     the 2024 to 2026 resources and "MW" in the 2020 one.
+   - The note body's negative-values paragraph now says the block is zero or negative (118 GSP zeros) and records the
+     FES unit, dated 2026-10-24.
+5. **Nit, note body "Cross-geography consistency":** it now adds that the English file differs from the nine English
+   regions by up to 72.2 MW, and that the three differences net out at the total. I reproduced this: `Srg_BB005`, HT,
+   2050, 72.23 MW. The older TODO on whether the 11 regions tile Great Britain is reworded to geometry only, with
+   double counting ruled out by the cuts agreeing at the total.
+
+**Gates:**
+- `gridflow-build --only neso_data_portal/tresp_generation_pathways_resp_region`: no errors.
+- Detector `[]`; 0 em dashes.
+- Mirror `cmp` clean (CRLF, 567 lines, 0 bare LF).
+- No artefacts regenerated: the chart spec, record select and notebook cells are unchanged, and the build's digest
+  checks pass.
+- I took no new screenshots. Only prose changed, and the new title is the same length class as the round-1 title,
+  which wrapped cleanly at 390.
+
+**Defects:** unchanged; no gridflow defect. Vendor observation added: NESO calls `Srg_BB005` "Capacity installed (MW)"
+in tRESP but "MW availability" in the FES 2021 to 2025 definitions, and publishes it zero or negative in both.
