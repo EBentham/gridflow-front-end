@@ -144,3 +144,46 @@ Body corrections (`viking.md`):
   auctions. Archive repeats one whole row (already adjudicated; carried).
 - gridflow / planning: the ledger and registry hold text for `nsl` cite the archive calendar and `Version`, while the
   archive is out on a repeated row (seat item, not a code defect). No gridflow code defect found.
+
+## Round 2 (after `held-2-review.md`, REVISE: 3 majors, 6 nits)
+
+Gates rerun: `--only` builds for `nemolink_ntc`, `nsl` and `viking_ntc` wrote each page with no errors; full
+`gridflow-build --check` exit 0 (172 pages + 7 hubs); detector `[]` on all three; mirrors `cmp` clean; CR count equals
+LF count in all three notes. Rendered `<main>` has no country names, no "restricts.", no "No row means", no
+"repeats", and none of the earlier banned words. The only "held" is the shared raw-feed sentence ("the table held
+every row"), which is batch 1's wording. No new screenshots: the changes are shorter text in the same fields as
+round 1, whose screenshots were clean at all four widths.
+
+Wording matched to batch 1's round-2 edits on ElecLink and IFA, as they stood in the vault worktree at 02:2x on
+2026-10-24 (their round-2 report had not landed). If batch 1 changes again, these pages take the same change.
+
+1. **Major, restriction claims (all three).** Summary now "NESO's hourly limits on flow each way over the <Link>
+   interconnector, in MW, with reasons." `what_it_is` uses batch 1's opener, which attributes NESO's note and gives
+   the dated counter-fact: "It says it publishes only restrictions, yet its October 2026 files hold many No
+   Restriction rows." `how_used` are batch 1's three lines ("Which hours NESO restricted the link, by direction, from
+   the stated reason"; "A feature for flow and price models: when NESO restricted the link"; the facilitator line).
+   Note bodies: NemoLink "Absence means no restriction" rewritten as "Absence and 'No Restriction'" with the counts;
+   NSL intro and Sentinels bullet; Viking intro, Sentinels and Cadence. Each now attributes the "only where
+   restricted" sentence to NESO and records the `No Restriction` and blank-reason counts (bronze read 2026-10-24,
+   reproduced: NemoLink 16 Oct 13,778 / 9,823 of 16,031, archive 1,752 of 11,280, weekly 457 blank; NSL 16 Oct
+   17,952 / 17,592 of 17,976, archive 6,959 of 16,632 plus 1,705 blank; Viking 16 Oct 20,014 / 19,000 of 20,087,
+   archive 6,360 of 6,456; intraday none).
+2. **Major, countries.** Per the seat's ruling: dropped Belgium, Norway and Denmark from all three summaries. Neither
+   NESO's text nor a source cited in the notes names them. The NSL and Viking note bodies still say "GB–Norway" and
+   "GB–Denmark" with no cited source (nit 4); I left those approved body lines alone. The seat may want them sourced
+   or dropped in a later vault pass.
+3. **Major, NSL hold.** Now ElecLink's current line word for word: "NESO does not say rows are unchanged since upload,
+   and archive days and versions are undefined." NemoLink `nemolink_ntc` takes the same line (ElecLink changed from
+   "current rows ... or define" since round 1). The repeated archive row stays a fact in the note only.
+4. **Nits.** NSL cadence "Daily, NESO says; one upload a day, at 10:30 GMT in October 2026" (5). NSL "Every row is
+   day-ahead." (6). Viking related "NESO's limits on NemoLink, with two archives and an undated table" (7). NemoLink
+   intraday command comment "bronze only: NESO renamed its columns" (8). Raw-feed note now batch 1's: "From NESO's
+   CKAN portal: `package_show`, the current table's dump and the archive CSV (NemoLink: each table's dump and each
+   archive CSV). Fetched 16 October 2026, the (current) table held every row fetched 8 October unchanged, plus new
+   ones." (9: phrased as two fetches, as batch 1 did). Nit 4 as above. To fit the budget, Viking's `what_it_is` keeps
+   "Archive rows add an operational date and version." and NemoLink's says "Its two older files say Network Transfer
+   Capacity."
+
+Defects: none new beyond round 1. Added a NESO point: all three packages say values are published only where NESO
+restricts, yet most current-table rows (and many archive rows) carry `No Restriction`, and the NemoLink weekly and
+NSL archives carry blank reasons.

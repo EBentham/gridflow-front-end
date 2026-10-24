@@ -54,5 +54,5 @@ note-body statements (for example "only one capture") yourself when the data pro
 
 | # | Writer | Checker | State |
 |---|---|---|---|
-| H1 | a62fc78e8e26ffa05 | a21506c7e680b4a33 | revising (REVISE x4: restriction claim); 20bv logged |
-| H2 | acef9b7cce5ed5f19 | a64b820b2fb288aa4 | revising (REVISE x3: restriction claim, country names, NSL hold line) |
+| H1 | a62fc78e8e26ffa05 | a21506c7e680b4a33 | round 2: ElecLink, BritNed APPROVED; IFA, IFA2 one prescribed fix (round 3); 20bv logged |
+| H2 | acef9b7cce5ed5f19 | a64b820b2fb288aa4 | APPROVED x3 (round 2); two last nits |

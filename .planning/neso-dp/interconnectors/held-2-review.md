@@ -78,3 +78,38 @@ Field: `page.raw_feed.commands[2]`. `gridflow ingest neso_data_portal nemolink_i
 - **NSL page:** `nsl.html` renders as a one-table page with no pointer page; lead chip `neso_data_portal/nsl`; three requests listed.
 - **Build and render:** all three builds wrote their page with no errors; detector `[]` on `nemolink.html`, `nsl.html`, `viking.html`; screenshots NSL 1440 and NemoLink 390 (390 px iframe) clean, long URLs wrap, nothing clipped. Other widths not re-shot (writer did); dark mode not checked.
 - **Rendered text:** no em dashes, no planning words, no codes, British spelling.
+
+---
+
+# Round 2 re-check (2026-10-24)
+
+Rebuilt `--only neso_data_portal/{nemolink_ntc,nsl,viking_ntc}`: each wrote its page, no errors. Detector `[]` on `nemolink.html`, `nsl.html`, `viking.html`. Mirrors `cmp` clean. Rendered `<main>` text has no country name, no "restricts.", no "No row means", no "repeats", no dashes or arrows, no planning words, with one exception (nit 10). No new screenshots (text-only changes in the same fields). The port 9832 server from round 1 stays stopped.
+
+## Verdicts
+
+| Page | Verdict |
+|---|---|
+| `nemolink` | **APPROVE** (nit 10 to apply) |
+| `nsl` | **APPROVE** (nit 10 to apply) |
+| `viking` | **APPROVE** (nits 10 and 11 to apply) |
+
+## Round 1 findings, rechecked
+
+1. **Restriction claim (was major): fixed.** Summary is now "NESO's hourly limits on flow each way over the <Link> interconnector, in MW, with reasons". `what_it_is` attributes NESO's note and gives the counter-fact ("It says it publishes only restrictions, yet its October 2026 files hold many No Restriction rows"), word for word the opener on ElecLink, IFA and IFA2; true on all three (the NemoLink and NSL archives and all three current tables carry `No Restriction`). `how_used` matches batch 1's three lines. Note bodies now attribute NESO's sentence and give counts. I reproduced every count from bronze: NemoLink 13,778 To GB and 9,823 From GB of 16,031, both on 8,628, archive 1,752 of 11,280, weekly 457 blank reasons and no `No Restriction`; NSL 17,952 and 17,592 of 17,976, archive 6,959 of 16,632 plus 1,705 blank; Viking 20,014 and 19,000 of 20,087, archive 6,360 of 6,456; intraday none. The NSL and Viking cadence sentences ("most rows are marked No Restriction") are true.
+2. **Countries (was major): fixed on the pages.** None of the three pages names Belgium, Norway or Denmark. The note bodies still say GB-Norway and GB-Denmark in prose; they do not render, and the writer flagged them.
+3. **NSL hold line (was major): fixed, and true for the NSL archive question.** The line is "NESO does not say rows are unchanged since upload, and archive days and versions are undefined", identical to ElecLink and NemoLink's `nemolink_ntc`. The ledger question for the NSL archive is the operational-date calendar and rollover and the meaning of `Version` (ledger row and `eligibility.md` line 223); the archive carries an operational date and versions 001 to 004 and NESO defines neither. The repeated row stays in the note only, which is fine.
+4. **Far ends in note bodies (nit): left as is**, acceptable under the ruling (not rendered).
+5. **NSL cadence (nit): fixed** ("one upload a day, at 10:30 GMT in October 2026").
+6. **NSL day-ahead (nit): fixed** ("Every row is day-ahead"; true of both dumps and the archive).
+7. **Viking related (nit): fixed** ("NESO's limits on NemoLink, with two archives and an undated table"; true: two archive CSVs and the undated intraday table).
+8. **NemoLink intraday command comment (nit): fixed** ("bronze only: NESO renamed its columns"); command itself unchanged and right.
+9. **Raw-feed sentence (nit): fixed as two fetches** ("Fetched 16 October 2026, the current table ... held every row fetched 8 October unchanged, plus new ones"; verified 0 rows missing or changed on all three). See nit 10 on the verb.
+
+## New findings
+
+10. **NIT (all three, field `page.raw_feed.note`): "held" should be "kept".** The writer says "held" is batch 1's wording, but ElecLink, IFA and IFA2 in the vault worktree now read "the table kept every row fetched 8 October unchanged". "Held" is also the batch's planning word for these very pages, and it is the only banned-list hit in the rendered text. Change "held" to "kept" on `nemolink`, `nsl` and `viking`.
+11. **NIT (`viking.md` body, not rendered): leftover over-claim.** Line 76 still reads "hours when the GB system operator capped Viking imports or exports, and the reason it gave" as the use of the table, while most rows are `No Restriction`. Suggest "each hour's directional limit, and the reason NESO gave (often No Restriction)". Not a page issue.
+
+## Consistency with batch 1 (vault worktree as at this check)
+
+Same: summary shape, `what_it_is` opener, three `how_used` lines, archive hold line, current-table hold line, one-table hold line, `landscape`, `pipeline`/`ingest` forms, "Fetched 16 October 2026" raw-feed shape. Differs only in the raw-feed verb (nit 10) and the one-table command comments (ElecLink "the capture's date to silver" against NSL "the current table to silver"), which are harmless.

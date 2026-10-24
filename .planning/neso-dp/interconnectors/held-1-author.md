@@ -103,3 +103,36 @@ Body corrections (`brit-ned.md`), all stale since IC-2H:
 - NESO, BritNed: the 20221012 file gives `20221012 04:00 - 05:00` twice with different values; the 20241016 file carries two `0xA0` bytes (not UTF-8); the 20230118 file's download name is `ifa2-da-id-weekly-itls-20230118.csv`. Already in the note and the ledger; carried.
 - Vault (fixed here): `brit-ned.md` described the 20241016 failure as an open reconcile gap after IC-2H closed it.
 - gridflow / planning (not fixed, seat item): `v0.22-FE-LEDGER.md` row `brit-ned` still says "B-ENC open → IC-2H"; the batch file says one failure adjudicated. No gridflow code defect found.
+
+## Round 2 (2026-10-24): fixes for `held-1-review.md` and the seat's country ruling
+
+Gates after the changes: `cmp` of each note against its mirror is clean on all four; 0 bare LF in all four notes; `gridflow-build --only neso_data_portal/<lead>` (`ifa_itl`, `ifa2_ifa_itl`, `eleclink`, `brit_ned`) writes each page with no errors; detector `[]` on all four. The rendered `<main>` text has no em or en dashes, arrows or middle dots. It has none of live, real-time, soon, pending, planned, shipped, locally, ruling, ledger, TODO, held, E-SEM, France, Netherlands, "No row" or "capped". Every internal link resolves. I took no new screenshots: the text only got shorter, and the layout is the same as round 1.
+
+**Finding 1 (major, all four pages): rows marked as restricted hours.** I reproduced the checker's counts from bronze (`ic-h1-writer\reasons.py`, `hours.py`). On the 16 October tables, `No Restriction` is the reason for flow to GB on 10,741 of 11,782 IFA rows, 7,477 of 7,920 IFA2 rows and 23,354 of 24,599 ElecLink rows. The ElecLink archive gives `No Restriction` on 3,120 of 8,472 rows. The IFA and IFA2 archives leave the reason blank on 3,922 and 2,822 rows. BritNed leaves it blank on 8,466 of 19,129 rows. The archives give 24 rows for every labelled day (IFA 474 days plus one of 25; IFA2 320; ElecLink 353 date, auction and version groups). BritNed gives 24 rows on 792 of 797 file-days.
+- `summary` (and so the meta description): "NESO's hourly limits on flow each way over the <Link> interconnector, in MW, with reasons."
+- `how_used[0]`: "Which hours NESO restricted the link, by direction, from the stated reason". `how_used[1]`: "A feature for flow and price models: when NESO restricted the link".
+- `what_it_is`: "No row means no restriction" is gone. NESO's rule is now attributed and the dated fact follows. IFA and IFA2 say "It says it publishes only restrictions, yet its October 2026 files list every archive hour and many No Restriction rows." ElecLink says "...hold many No Restriction rows." BritNed says "...yet many rows in its files give no reason." The page carries no local counts. The shared opener is now "NESO says it submits these to interconnector capacity calculations, capping GB imports and exports, in hourly MW; final capacity can be lower." I dropped the import and export glosses to fit the 60-word budget.
+
+**Finding 2 (major, note bodies).** `ifa.md`, `ifa2.md`, `eleclink.md` and `brit-ned.md` now attribute "published only where a restriction applied" to the package notes. Each adds the measured, dated fact with counts (bronze read 2026-10-24) as listed above. `ifa2.md`: "Each row is a NESO restriction" now reads "Each row is a NESO limit".
+
+**Nits.**
+- ElecLink `held`: now "NESO does not say rows are unchanged since upload, and archive days and versions are undefined." (15 words; the checker's wording). It covers both files. It still leaves out "past", which no longer fits the budget alongside the archive half. That is a seat call.
+- Raw-feed note (IFA, IFA2, ElecLink): "From NESO's CKAN portal: `package_show`, the current table's dump and the archive CSV. Fetched 16 October 2026, the table kept every row fetched 8 October unchanged, plus new ones." I dropped the "kept if changed" and `last_modified` detail to fit the budget. I used "kept", not "held", so the checker's banned-word grep stays clean.
+- BritNed raw-feed note: "Shown: 20221012 (first), 20241016, 20260923 (newest). 20221012 gives one hour two values; 20241016 is not UTF-8; gridflow loads neither."
+- BritNed related IFA line: "NESO's IFA limits; its current table has an upload time per row".
+- BritNed `facts.vendor` is dated "(6 October 2026)"; `history` now reads "Files named 12 October 2022 to 23 September 2026, NESO lists".
+- `ifa2.md`: both Activation paragraphs now say "one capture at activation".
+- "Newer" and "older" link wording: replaced (see the country ruling below).
+- `ifa_itl` and `ifa2_ifa_itl` hold lines ("already past"): left unchanged, as the checker suggested, for the seat to decide.
+
+**Seat ruling (country names).** Neither NESO's package text (titles, notes, resource descriptions) nor NESO's interconnector register (16 October 2026 capture: link, customer, landing substation, MW) names a far-end country. K-IC-1-FACTS and K-IC-2-FACTS take the countries as given and cite no source. So all four page blocks drop France and the Netherlands:
+- The summaries name only the link ("the IFA interconnector").
+- The sibling related lines say "another GB interconnector".
+- The ENTSO-E NTC line now reads "ENTSO-E's forecast capacity across each GB border, all links together".
+- The BritNed ENTSO-E line now reads "ENTSO-E's intraday limits on GB's DC links, one direction per series". The ENTSO-E page states "The GB and NL pair is BritNed", but that is gridflow's own page, not NESO's text.
+
+The note bodies still say "GB–France" and "GB–Netherlands" in their opening paragraphs. Those lines are not on the pages. Rewording them is a seat call for the vault.
+
+**Defects added this round:**
+- NESO, all four packages: NESO's notes say values are published only where a restriction was applied. Its files list unrestricted hours instead: reason `No Restriction` on most current-table rows (flow to GB) and on 3,120 ElecLink archive rows, blank reasons in the IFA and IFA2 archives and BritNed, and 24 rows a day in every archive. Confirmed (the checker's finding).
+- NESO, all four packages: no NESO text states the far-end country of these links. The vault notes and FACTS files assume it without a source.

@@ -87,3 +87,60 @@ Checked and fine: both failed captures are described correctly (the page says on
 - NESO, four packages: NTC expanded two ways; BritNed title "Trading" against "Transfer" in resources. Confirmed.
 - NESO, BritNed: `20221012` repeats `04:00 - 05:00` with two values; `20241016` has two `0xA0` bytes; first file's columns are in the other order with a "Restiction" typo in the header. Confirmed (the typo and column order are extra).
 - gridflow planning (seat item): `v0.22-FE-LEDGER.md` row `brit-ned` still says "B-ENC open → IC-2H"; the batch file says one failure adjudicated; both are adjudicated. Confirmed. No gridflow code defect found; no template problem found; the manifest leads and members are right.
+
+---
+
+# Round 2 re-check (2026-10-24)
+
+Scope: only what changed in the writer's round-2 section. Reran `cmp` (clean on all four), `gridflow-build --only neso_data_portal/<lead>` (each page written, no errors) and the detector (`[]` on all four). I read the rebuilt `<main>` text and the round-2 note diffs against `origin/master`, and reproduced the new counts from bronze (read only, Polars and the csv module, scratch in `ic-h1-checker`). No new screenshots (the text only got shorter; layout unchanged from round 1). The round-1 server is already stopped.
+
+## Verdicts
+
+| Page | Verdict | blocker | major | nit |
+|---|---|---|---|---|
+| `ifa` | REVISE | 0 | 1 (R2-1) | 2 (R2-3, R2-4) |
+| `ifa2` | REVISE | 0 | 1 (R2-1) | 2 (R2-3, R2-4) |
+| `eleclink` | APPROVE | 0 | 0 | 2 (R2-3, R2-5) |
+| `brit-ned` | APPROVE | 0 | 0 | 3 (R2-3, R2-6, R2-7) |
+
+## Round-1 findings, status
+
+| Round 1 | Status |
+|---|---|
+| 1 (summary, how_used, "No row means no restriction") | Fixed on all four pages. Summaries now read "NESO's hourly limits on flow each way over the <Link> interconnector, in MW, with reasons." (meta description follows). `how_used[0..1]` read "Which hours NESO restricted the link, by direction, from the stated reason" and "when NESO restricted the link". NESO's rule is attributed ("It says it publishes only restrictions, yet ..."). IFA and IFA2 still have one wrong clause, R2-1. |
+| 2 (note bodies state NESO's rule as fact) | Fixed in `ifa.md`, `ifa2.md`, `eleclink.md` and `brit-ned.md`: each now attributes the rule to the package notes and adds a dated measurement. Counts reproduced below. One wording slip in `brit-ned.md`, R2-6. |
+| 3 (ElecLink hold line) | Rewritten; see R2-5. |
+| 4 (raw-feed note, IFA, IFA2, ElecLink) | Fixed: "Fetched 16 October 2026, the table kept every row fetched 8 October unchanged, plus new ones." |
+| 5 (newer and older GB and France link) | Fixed: "another GB interconnector". |
+| 6, 7 (Activation "at activation") | Fixed in `ifa2.md` (both paragraphs); `ifa.md` already said "at the time". |
+| 11 to 13 (BritNed raw feed, vendor date, IFA related line) | Fixed: "Shown: 20221012 (first), 20241016, 20260923 (newest). 20221012 gives one hour two values; 20241016 is not UTF-8; gridflow loads neither."; "(6 October 2026)" on the vendor line; "NESO's IFA limits; its current table has an upload time per row". |
+
+## Reproduced counts (round-2 note bodies)
+
+| Claim | Result |
+|---|---|
+| 16 October current tables, reason `No Restriction`: to GB 10,741 of 11,782 (IFA), 7,477 of 7,920 (IFA2), 23,354 of 24,599 (ElecLink); from GB 5,196, 3,903, 18,822; both directions 4,866, 3,682, 18,429 | Reproduced. |
+| IFA archive 11,401 rows over 475 days, reason blank on 3,922 and `System Security` on the other 7,479; IFA2 archive 7,680 rows over 320 days of 24, blank on 2,822 and `System Security` on 4,858 | Reproduced. |
+| ElecLink archive: 24 hours for each of 353 operational date, auction and version groups; `No Restriction` on 3,120 of 8,472 rows | Reproduced. |
+| BritNed: 19,129 non-empty rows across the 187 bodies (the 144 rows of `20241016` read as Windows-1252); `System Security` on 10,663, blank on 8,466; 24 rows on 792 of 797 labelled days (25 on 3, 23 on 2) | Reproduced. |
+| Round-1 dump counts, new-row counts, unchanged rows, upload instants | Unchanged and still reproduced. |
+
+## Country names
+
+No built page (the whole HTML, not only `<main>`) contains France, Netherlands, French or Dutch: 0 hits on all four. The summaries name only the link; sibling related lines say "another GB interconnector"; the ENTSO-E lines read "ENTSO-E's forecast capacity across each GB border, all links together" and "ENTSO-E's intraday limits on GB's DC links, one direction per series" (the second matches the ENTSO-E page's own wording about GB's DC links). Satisfied. The note bodies still open with "a GB-France interconnector" and the like; that is not on any page and is the seat's call for the vault, as the writer says.
+
+## Findings
+
+R2-1. **major** (`ifa`, `ifa2`) `page.what_it_is`: "yet its October 2026 files list every archive hour". The archives list every hour only of the days they label. IFA labels 475 days across a 798-day span (323 days have no rows; longest gap 21 days after 30 April 2024). IFA2 labels 320 days across 799 (479 days with no rows; longest gap 96 days after 20 November 2023). A reader will take "every archive hour" as every hour of the archive's period, which is wrong. It also overstates the contradiction with NESO's rule (a missing day is consistent with "no restriction"). The note body is right ("the archive lists every hour of each labelled day"); the page needs the same limit. Suggest "list 24 hours for every day they cover" in place of "list every archive hour", and check the 60-word budget.
+
+R2-3. **nit** (all four) `page.what_it_is`: "yet" is meant as the conjunction, but it is on the banned-word list for public copy ("not yet") and the checker's grep flags it on all four pages. "but" says the same.
+
+R2-4. **nit** (`ifa`, `ifa2`) `page.what_it_is`: the sentence now does three jobs (NESO's rule, the contradiction, the names ITL and NTC) and "It calls them" has lost its antecedent after the "yet" clause. "NESO calls these limits Intraday Transfer Limit (ITL) and, in the archive, Network Transfer Capacity (NTC) restrictions" would be unambiguous if the budget allows.
+
+R2-5. **nit** (`eleclink`) `page.held`: "NESO does not say rows are unchanged since upload, and archive days and versions are undefined." is 16 words, not 15 (the writer's report and the coordinator's brief say 15). That is inside the budget of 16, so no change is needed. It covers both files and is accurate. It no longer says "current" or "already past"; the ledger's question is covered by "unchanged since upload" plus the archive half, so I accept it (the "past" half is a seat call, as the writer says).
+
+R2-6. **nit** (`brit-ned.md`, Rules paragraph): "the reason is `System Security` on 10,663 of the 19,129 non-blank rows across the 187 bodies and blank on the other 8,466" contradicts itself, because the 19,129 include the 8,466 blank-reason rows. Say "of the 19,129 rows". The counts are right.
+
+R2-7. **nit** (`brit-ned`) `page.what_it_is`: "yet many rows in its files give no reason" assumes a blank reason means unrestricted, which NESO does not say. The files do give 24 rows for 792 of 797 days; "its files list 24 hours for most days and many rows give no reason" states only what they show. Also `facts.history` "Files named 12 October 2022 to 23 September 2026, NESO lists" reads oddly; "..., from NESO's list" is plainer.
+
+Checked and fine in round 2: the three-line `how_used` lists, the shared opener ("capping GB imports and exports, in hourly MW; final capacity can be lower" follows NESO's note), the four raw-feed notes, the related lines, titles and meta descriptions (no local counts, planning words or country names), internal links, the cmp gate, detector `[]`.
