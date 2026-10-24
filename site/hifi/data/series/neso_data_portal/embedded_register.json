@@ -1,0 +1,19 @@
+{
+  "dataset": "neso_data_portal/embedded_register",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "46c655a99e306f44c2d438ff3eb3bafb9964d7c55f83999db03060c6085011fd",
+  "type": "bar",
+  "unit": "MW",
+  "caption": "",
+  "value_column": "mw_increase_decrease",
+  "aggregation": "sum",
+  "window": null,
+  "provenance": {"duplicates_dropped": 0, "files": 2, "null_values_dropped": 0, "rows_matched": 562, "rows_read": 1123, "rows_used": 562, "silver": "neso_data_portal/embedded_register"},
+  "spec": {"aggregation": "sum", "dedup": {"on": ["project_number"], "order_by": "capture_written_at"}, "filter": [{"column": "published_at", "op": "eq", "value": "2026-10-16T18:05:22.024485+00:00"}], "group": "plant_type", "group_map": {"Biomass": "biomass", "CCGT (Combined Cycle Gas Turbine)": "thermal", "CHP (Combined Heat and Power)": "thermal", "CHP (Combined Heat and Power);Demand": "mixed", "CHP (Combined Heat and Power);PV Array (Photo Voltaic/solar)": "mixed", "Demand;Energy Storage System": "mixed", "Demand;Energy Storage System;Wind Onshore": "mixed", "Demand;Hydro": "mixed", "Demand;PV Array (Photo Voltaic/solar);Wind Onshore": "mixed", "Demand;Tidal": "mixed", "Demand;Wind Onshore": "mixed", "Energy Storage System": "storage", "Energy Storage System;PV Array (Photo Voltaic/solar)": "mixed", "Energy Storage System;PV Array (Photo Voltaic/solar);Wind Onshore": "mixed", "Energy Storage System;Wind Onshore": "mixed", "Gas Reciprocating": "thermal", "Hydro": "water", "Hydro;PV Array (Photo Voltaic/solar)": "mixed", "PV Array (Photo Voltaic/solar)": "solar", "PV Array (Photo Voltaic/solar);Wind Onshore": "mixed", "Thermal": "thermal", "Tidal": "water", "Waste": "biomass", "Wave": "water", "Wind Onshore": "wind"}, "silver": "neso_data_portal/embedded_register", "sort": "value_desc", "type": "bar", "unit": "MW", "value": "mw_increase_decrease"},
+  "x_kind": "category",
+  "x": ["storage", "mixed", "wind", "solar", "biomass", "thermal", "water"],
+  "series": [
+    {"key": "mw_increase_decrease", "values": [4853.48, 2019.86, 1881.78, 1106.14, 138.8, 106.16, 85.25]}
+  ]
+}

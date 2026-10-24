@@ -163,7 +163,10 @@
         "ifa2",
         "nemolink",
         "nsl",
-        "viking"
+        "viking",
+        "embedded-register",
+        "interconnector-register",
+        "transmission-entry-capacity-tec-register"
       ]
     }
   ],
@@ -687,7 +690,10 @@
     "wind-bmu-boa-volumes": "Wind BMU BOA volumes",
     "brit-ned": "BritNed",
     "eleclink": "ElecLink",
-    "nsl": "North Sea Link"
+    "nsl": "North Sea Link",
+    "embedded-register": "Embedded register",
+    "interconnector-register": "Interconnector register",
+    "transmission-entry-capacity-tec-register": "Transmission Entry Capacity (TEC) register"
   },
   "dropped": {},
   "package_tables": {
@@ -748,7 +754,10 @@
     "wind-bmu-boa-volumes": "wind_bmu_boa_volumes",
     "brit-ned": "brit_ned",
     "eleclink": "eleclink",
-    "nsl": "nsl"
+    "nsl": "nsl",
+    "embedded-register": "embedded_register",
+    "interconnector-register": "interconnector_register",
+    "transmission-entry-capacity-tec-register": "tec_register"
   },
   "catalogue": {
     "_about": "NESO's catalogue as the hub draws it: its data groups in portal order, each with NESO's description and its packages (NESO's titles and CKAN names). `page_packages` names the CKAN package of a page not named after it; a package is a link when a page in `groups` documents it. `plan` lays the groups out as plots: a slug is one plot, `row` sets its children side by side, `col` stacks them; `wide` from 1100 px, `narrow` below, and `tag_narrow` plots carry their name beneath them when narrow.",
