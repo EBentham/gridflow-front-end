@@ -115,8 +115,8 @@ repeat rows; on a table with no event time use `data.sql()`; the column guide ac
 | A2 | a9f952220257ebd0a | af25be4d62dca5b4a | APPROVED x4 (round 2); committed (vault, then mirror and artefacts f95709e); 20cm logged |
 | B1 | a12aa2a2d21abdba4 | aac52199c23c016ff | APPROVED x5; committed (vault 96396ba, site be9a3f6); 20cl logged |
 | B2 | a948627e0bfe2b68d | aaf248079da8934b8 | APPROVED x2 (round 2); committed (site 8a9f6fe); leads reordered; 20co logged |
-| C1 | ad75c58a68842e8b6 | aa4a892ba7c0e0bd4 | written; in review (cost forecast metadata £m is valid, file names no unit since 9 Sept; CMIS transform command fails on the 14 Oct file: seat rules drop it if so) |
-| S1 | a7ab77ada40837869 | a0a8c6d80773615fa | written; in review (SOP body corrected: maximum-loss columns are defined; pathfinder availability held on repeated rows) |
+| C1 | ad75c58a68842e8b6 | aa4a892ba7c0e0bd4 | round 1: cost forecast, voltage APPROVED with nits; limits, CMIS (transform command dropped), OTF (window from 24 Oct), day-ahead REVISE (6 majors); round 2 with writer |
+| S1 | a7ab77ada40837869 | a0a8c6d80773615fa | APPROVED x3 with 5 nits; nits with writer |
 | T1 | abf6b4cf3ba85c1a5 | a335a0dc2e2350249 | written; in review (GTMA count 239,906 after NESO removals; several NESO cost and sign defects) |
 
 Pace raised 2026-10-24 ~13:25Z (Bobbo via the parent): 5 agents at once, aim about 50% of weekly usage over 36 hours;
