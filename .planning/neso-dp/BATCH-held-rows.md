@@ -123,7 +123,7 @@ repeat rows; on a table with no event time use `data.sql()`; the column guide ac
 | D2 | a6529fae660c4ff74 | aaa229431fb8d7d45 | written; in review (long-term type none; transmission-losses notebook no longer sums months) |
 | G1 | af234cffef25e4fa7 | | writing |
 | I1 | a475c72bb4c6ca14f | | writing |
-| I2 | a85a78f0c3de4f450 | | writing |
+| I2 | a85a78f0c3de4f450 | | written; seat ruled its chart rule (Day Ahead as fetched, rows uploaded before their hour) for all seven pages; Viking lead reordered (b79c573), writer regenerating; one checker will review I1 and I2 together |
 
 Pace raised 2026-10-24 ~13:25Z (Bobbo via the parent): 5 agents at once, aim about 50% of weekly usage over 36 hours;
 park at 98% weekly. After NESO: ruling 66 on the seven blank other-vendor pages (ENTSO-E balancing-energy bids, current
