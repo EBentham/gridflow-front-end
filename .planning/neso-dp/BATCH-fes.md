@@ -79,3 +79,5 @@ captures repeat rows (or as a guard). On a table with no event time, `query()` f
 | 5 | a3d393bb8f451101a | ad4effc3d413bfdeb | APPROVED (round 2, nit-only; frame file URL not listed under the four-request limit, a template item); committed; no chart; 20cg logged |
 | H1 | a52a6a2f2e6d644da | a415e4312cd06fbfa | APPROVED (4 with nits, FLX1 clean), 8 of 9 nits fixed (one skipped: would add a claim; seat-verified); committed; 20ch logged; ED1 hold line departs from the shared wording (writer: shared line would be false) |
 | H2 | abb3fef4553450b53 | af53fc2261e34135e | all six APPROVED (round 2: WS2 major closed, nits fixed; seat-verified); committed; 20cj logged; no-silver heading added to template follow-ups |
+
+Group closed 2026-10-24: gates green (pytest 206, build check 199 pages, htmlhint 0, lychee 0, detector clean on all 16); site PR EBentham/gridflow-front-end#75, vault PR EBentham/quant-vault#78, both waiting for Bobbo.

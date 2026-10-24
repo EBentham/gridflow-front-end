@@ -50,3 +50,5 @@ or commit (the seat commits). Do not end your turn until your report or review i
 |---|---|---|---|
 | 1 | a38fce4dccab3dbc6 | ae9fe78524bd08512 | APPROVED (round 2 fixes seat-verified); committed; 20ci logged |
 | H | a0b72c16a49a0f95f | a53b1c14d6caaf419 | APPROVED with nits; file feature counts dropped beside NESO's zone counts (seat); committed; 20ck logged (kept off the page) |
+
+Strategic Energy Planning closed 2026-10-24: gates green (pytest 206, build check 200 pages, htmlhint 0, lychee 0, detector clean); site PR EBentham/gridflow-front-end#76, vault PR EBentham/quant-vault#79, both waiting for Bobbo.
