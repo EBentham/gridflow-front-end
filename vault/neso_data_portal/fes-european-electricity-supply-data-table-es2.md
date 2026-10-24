@@ -8,7 +8,6 @@ updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: "NESO states no period for the year labels, or what blanks mean."
   title: FES European electricity supply
   summary: >-
     NESO's European electricity supply table (ES2) from its Future Energy Scenarios (FES) and
@@ -28,10 +27,39 @@ page:
     - "Capacity by technology in European countries, under each EU scenario"
     - "European demand beside GB supply from the same FES edition"
     - "Neighbouring countries' capacity set beside GB interconnector flows in ES1"
+  chart:
+    type: bar
+    silver: neso_data_portal/fes_es2_european_supply
+    value: value
+    filter:
+      - {column: edition, op: eq, value: 2025}
+      - {column: country, op: eq, value: France}
+      - {column: eu_scenario, op: eq, value: EU Green}
+      - {column: variable, op: eq, value: Capacity (MW)}
+      - {column: subtype, op: eq, value: Nuclear}
+      - {column: projection_year, op: in, value: [2030, 2035, 2040, 2045, 2050]}
+    dedup: {"on": [resource_id, edition, country, eu_scenario, fes_pathway_alignment, variable, category, type, subtype, projection_year], order_by: capture_written_at}
+    group: projection_year
+    aggregation: max
+    sort: label
+    unit: MW
+  chart_view:
+    title: French nuclear capacity, FES 2025, EU Green
+    caption: >-
+      Silver `fes_es2_european_supply`, FES 2025 edition (NESO's file last modified 10 December
+      2025), EU scenario `EU Green`, aligned by NESO with Holistic Transition and Electric
+      Engagement: France, `Capacity (MW)`, `Nuclear`, one row per fifth year label, as written.
+    alt: >-
+      Horizontal bar chart of NESO's nuclear capacity for France in the FES 2025 edition, EU
+      scenario EU Green, in MW, one bar per year label: 2030 63,020; 2035 57,610; 2040 51,550;
+      2045 47,195; 2050 44,395. Each label is lower than the one before.
+    key:
+      - {series: value, label: French nuclear capacity, codes: EU Green, paint: petrol,
+         note: "NESO's year labels as written; NESO states no date behind a capacity value"}
   raw_feed:
     note: >-
       From NESO's CKAN portal: `package_show`, then four CSVs, downloaded whole when
-      `last_modified` changes. On 9 October 2026 NESO replaced its 2026 notes with a supply table.
+      `last_modified` changes. 2026 has no rows; NESO replaced its notes file on 9 October 2026.
       Shown: 2023, 2025, 2026.
     requests:
       - "GET https://api.neso.energy/api/3/action/package_show?id=fes-european-electricity-supply-data-table-es2"
@@ -41,6 +69,71 @@ page:
     commands:
       - {run: gridflow ingest neso_data_portal fes_es2_european_supply --last 24h, comment: "changed CSVs to bronze"}
       - {run: gridflow transform neso_data_portal fes_es2_european_supply --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: edition, op: eq, value: 2025}
+        - {column: country, op: eq, value: France}
+        - {column: projection_year, op: eq, value: 2036}
+        - {column: subtype, op: in, value: [Nuclear, Demand Total (TWh)]}
+      dedup: {"on": [resource_id, edition, country, eu_scenario, fes_pathway_alignment, variable, category, type, subtype, projection_year], order_by: capture_written_at}
+      order_by: [variable, eu_scenario, fes_pathway_alignment]
+      columns: [country, eu_scenario, fes_pathway_alignment, variable, subtype, projection_year, value, category, type,
+                edition, resource_id, published_at, timestamp_utc]
+    key: [resource_id, edition, country, eu_scenario, fes_scenario_alignment, variable, category, type, subtype,
+          subsubtype, fes_pathway_alignment, projection_year]
+    caption: "France, FES 2025, label 2036: nuclear capacity per EU scenario, then demand per alignment."
+    fields:
+      country: "NESO's country or market name, such as `France` or `SEM`; not a code"
+      eu_scenario: "NESO's European scenario, such as `EU Green`; names change by edition"
+      fes_pathway_alignment: "The FES pathways NESO aligns the row with, 2024 and 2025 files"
+      variable: "`Capacity (MW)` or `Demand (TWh)`: the row's measure and unit"
+      subtype: "NESO's technology, or `Demand Total (TWh)` on demand rows"
+      projection_year: "NESO's year header as an integer; its period or date is not stated"
+      value: "NESO's value in the unit named in `variable`; blanks stay blank"
+      category: "NESO's group: `Renewable`, `Low Carbon`, `Thermal`, `Storage` or `Demand`"
+      type: "NESO's technology type, between category and subtype"
+      edition: "The FES edition, from the file name; 2026 has no rows"
+      fes_scenario_alignment: "The FES scenarios NESO aligns the row with, 2023 file only"
+      subsubtype: "NESO's finest technology split, 2023 file only"
+      resource_id: "CKAN file id, one per edition; first column of the entity key"
+      published_at: "NESO's last-modified time for the edition's file, read as UTC"
+      timestamp_utc: "When gridflow captured the file, UTC; the table has no event time"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  caveat: "NESO states no period or date for the year labels, or what blanks mean."
+  notebook:
+    lead: >-
+      `query()` filters on `timestamp_utc`, the capture time here, so these cells use `data.sql()`
+      on the `_latest` view, which keeps every edition's file, and pick FES 2025 by `edition`.
+    cells:
+      - |
+        es2 = data.sql("""
+            SELECT eu_scenario, projection_year, value
+            FROM silver_neso_data_portal_fes_es2_european_supply_latest
+            WHERE edition = 2025 AND country = 'France'
+              AND variable = 'Capacity (MW)' AND subtype = 'Nuclear'
+        """)
+        wide = es2.pivot(index="projection_year", columns="eu_scenario", values="value").rename_axis(index=None, columns=None)
+        wide.loc[[2030, 2035, 2040, 2045, 2050]]
+      - |
+        ax = wide.plot(figsize=(9, 3.5), color=["#155A6E", "#8A9A2B", "#B5651D"],
+                       xlabel="NESO's year label, as written", ylabel="France nuclear capacity, MW");
+      - |
+        data.sql("""
+            SELECT variable, eu_scenario, fes_pathway_alignment, count(*) AS cells,
+                   count(value) AS filled, min(projection_year) FILTER (WHERE value IS NULL) AS first_blank_label
+            FROM silver_neso_data_portal_fes_es2_european_supply_latest
+            WHERE edition = 2025
+            GROUP BY variable, eu_scenario, fes_pathway_alignment
+            ORDER BY variable, eu_scenario, fes_pathway_alignment
+        """)
+    needs: NESO's three FES European electricity supply files from 2023 to 2025
+    plot_alt: >-
+      Line plot of NESO's nuclear capacity for France in the FES 2025 edition, MW, by year label
+      2024 to 2050, one line per EU scenario. All three are 61,370 at label 2024 and 63,020 from
+      2025 to 2032, then fall overall. EU Blue and EU Central are equal at every label, 39,595 at
+      2050; EU Green ends at 44,395.
   related:
     - {dataset: neso_data_portal/future-energy-scenario-electricity-supply-data-table-es1, note: "The GB counterpart: NESO's FES electricity supply table"}
     - {dataset: neso_data_portal/interconnector-register, note: "NESO's register of GB interconnectors, many to countries listed here"}
@@ -73,8 +166,10 @@ which **2,608** have a blank (null) `value`. The silver output is **held** (unit
 Holds). **The 2026 resource is held at resource level and has no silver at all**: its body is an
 11-row notes table, not the supply table (see Resource detail). On 2026-10-09 NESO replaced that
 body with a supply table under the same resource id and file name; gridflow captured it on
-2026-10-16, and it stays held at resource level (see "Second 2026 capture"). This page therefore gives schema,
-row counts, clocks and missingness only, never data values, samples or ranges of values.
+2026-10-16, and it stays held at resource level (see "Second 2026 capture"). This note gives
+schema, row counts, clocks and missingness; the site page shows the 2023 to 2025 rows, a chart
+of one FES 2025 row and a notebook, with one line naming the hold question (ruling 66,
+2026-10-24).
 
 Edition is a dimension: **never sum or combine editions.** Each edition is a separate vintage of
 the vendor's modelling, not an increment of the previous one. The scenario and pathway columns
@@ -368,8 +463,8 @@ gridflow outputs derived from this package carry the attribution line above.
 
 - `fes_es2_european_supply`: held: TODO: For each quantitative ES2 edition, what interval does `Demand (TWh)` cover, and what observation date does `Capacity (MW)` represent? Does a year label denote the starting or ending year? What does a blank projection cell mean? Is `10yo2026_es2_v001.csv` intentionally a notes resource, or was the European electricity supply table replaced by an incorrect upload? Please identify or republish the quantitative European supply resource for this edition. (unit E-SEM)
 
-The silver output exists on disk (67,968 rows, 2023 to 2025) but is **held**: it is not eligible
-for publication or for point-in-time model use until unit E-SEM answers the question above (held
+The silver output exists on disk (67,968 rows, 2023 to 2025) but is **held**: gridflow's models
+may not use it for point-in-time work until unit E-SEM answers the question above (held
 at activation, RULINGS 827). The registry carries `eligible` at package level and `held` at
 family level (gridflow `@docs/neso_data_portal/eligibility.md`); the family status governs the
 silver output. The hold has three parts:
@@ -396,8 +491,9 @@ silver output. The hold has three parts:
 Settles it: a NESO statement of the period each year label covers per edition (and the
 observation date of a capacity value), a meaning for a blank cell, and either a quantitative
 ES2 2026 upload or a confirmation that the 2026 file is a notes resource (then DOC disposition or
-a reference family). Until then the page shows no values, samples or statistics of values, and
-gridflow gold does not read this family (no gold view or gridflow_models consumer for this
+a reference family). The site page shows the 2023 to 2025 rows, read through the `_latest`
+silver view, with one line naming the year-label and blank-cell questions (ruling 66,
+2026-10-24). Until the hold lifts, gridflow gold does not read this family (no gold view or gridflow_models consumer for this
 package; RULINGS 611 applies the same decision to the sibling SCN docs-wave packages).
 
 ## Links

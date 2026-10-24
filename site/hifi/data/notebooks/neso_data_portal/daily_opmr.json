@@ -1,0 +1,152 @@
+{
+ "dataset": "neso_data_portal/daily_opmr",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "ad97062bce3e5002238445fe059e9a250229eaee74c74b4ab888b4583e2a926d",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "import pandas as pd\ndf = data.neso_data_portal.query(\"daily_opmr\", \"2026-09-01\", \"2026-10-30\")\npub = df[df.publish_date.astype(str) == \"2026-10-16\"].sort_values(\"date\", ignore_index=True)\npub[[\"publish_date\", \"date\", \"peak_demand_forecast\", \"generator_availability\",\n     \"generation_availability_margin\", \"opmr_total\", \"national_surplus\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "publish_date",
+      "date",
+      "peak_demand_forecast",
+      "generator_availability",
+      "generation_availability_margin",
+      "opmr_total",
+      "national_surplus"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2026-10-16",
+       "2026-10-18",
+       "33466.0",
+       "47708.0",
+       "14242.0",
+       "4277.0",
+       "9965.0"
+      ],
+      [
+       "2026-10-16",
+       "2026-10-19",
+       "35997.0",
+       "48779.0",
+       "12782.0",
+       "4957.0",
+       "7825.0"
+      ],
+      [
+       "2026-10-16",
+       "2026-10-20",
+       "35660.0",
+       "51632.0",
+       "15972.0",
+       "7561.0",
+       "8411.0"
+      ],
+      [
+       "2026-10-16",
+       "2026-10-21",
+       "35841.0",
+       "52928.0",
+       "17087.0",
+       "6037.0",
+       "11050.0"
+      ],
+      [
+       "2026-10-16",
+       "2026-10-22",
+       "35882.0",
+       "56441.0",
+       "20559.0",
+       "7834.0",
+       "12725.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "sep = df[df.publish_date.astype(str).str.startswith(\"2026-09\")]\nahead = pd.to_datetime(sep.date) - pd.to_datetime(sep.publish_date)\nahead.dt.days.value_counts().sort_index().rename_axis(\"days ahead\").rename(\"September rows\")",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "days ahead\n2     30\n3     30\n4     30\n5     30\n6     30\n7     30\n8     30\n9     30\n10    30\n11    30\n12    30\n13    30\n14    30\n15    30\nName: September rows, dtype: int64"
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "ax = pub.plot(x=\"date\", y=[\"generation_availability_margin\", \"opmr_total\"],\n              color=[\"#155A6E\", \"#C77E3C\"], ylim=(0, None), figsize=(8, 3.5),\n              xlabel=\"target day\", ylabel=\"MW\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "daily_opmr-5.png",
+     "width": 724,
+     "height": 369
+    }
+   ]
+  }
+ ]
+}

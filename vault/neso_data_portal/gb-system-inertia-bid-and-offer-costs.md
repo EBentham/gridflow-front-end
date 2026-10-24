@@ -8,7 +8,6 @@ updated: 2026-10-10
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: "NESO's units disagree, £/GVA or £ per GVAs, and it never says what a zero means."
   title: System inertia bid and offer costs
   summary: >-
     NESO's indicative daily price of inertia bought through Balancing Mechanism offers, with the bids
@@ -26,6 +25,40 @@ page:
   how_used:
     - An indicative daily cost of buying inertia through the Balancing Mechanism
     - How far that cost moves with the bid price assumed, Method A to C
+  chart:
+    type: line
+    silver: neso_data_portal/inertia_bid_offer_costs
+    time: date
+    values:
+      - {column: method_c_highest_bid_price, series: c}
+      - {column: method_b_average_wind_price, series: b}
+      - {column: method_a_average_bid_price, series: a}
+    filter:
+      - {column: method_a_average_bid_price, op: ne, value: 0}
+      - {column: method_b_average_wind_price, op: ne, value: 0}
+      - {column: method_c_highest_bid_price, op: ne, value: 0}
+    dedup: {"on": [date], order_by: published_at}
+    aggregation: last
+    window: {start: "2022-02-01", end: "2022-02-28"}
+    unit: "£/GVA or £ per GVAs"
+  chart_view:
+    title: Inertia cost by method, February 2022
+    caption: >-
+      Silver `neso_data_portal/inertia_bid_offer_costs`, daily, 1 to 28 February 2022. Days with a
+      zero in any method are gaps, as NESO does not define a zero; most days outside this month are zero
+      in every method. NESO gives the unit two ways.
+    alt: >-
+      Line chart from neso_data_portal/inertia_bid_offer_costs, in NESO's unit (£/GVA or £ per
+      GVAs), one point per date and method, 1 to 27 February 2022, with gaps on 2, 10 and 26
+      February. Method C runs from 13,171 on 14 February to 27,107 on 27 February, and Method B from
+      7,867 to 17,359 on the same days; both climb after 16 February. Method A is lowest throughout,
+      from 1,543 on 7 February to 5,234 on 25 February.
+    x_label: NESO's date; day window not stated
+    key:
+      - {series: c, label: "Method C, highest bid", codes: "Method C: Highest bid price", paint: clay, note: "Displaced energy replaced at the highest bid price"}
+      - {series: b, label: "Method B, wind bid", codes: "Method B: Average wind price", paint: olive, note: "Displaced energy replaced at the average wind bid price"}
+      - {series: a, label: "Method A, average bid", codes: "Method A: Average bid price", paint: petrol, note: "At the average bid price"}
+  caveat: "NESO's unit is £/GVA or £ per GVAs; its day window and its zeros are unexplained."
   raw_feed:
     note: >-
       From NESO's CKAN portal: one `package_show`, then the file downloaded whole unless its
@@ -36,6 +69,47 @@ page:
     commands:
       - {run: gridflow ingest neso_data_portal inertia_bid_offer_costs --last 24h, comment: whole file to bronze}
       - {run: gridflow transform neso_data_portal inertia_bid_offer_costs --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: date, op: in, value: ["2020-11-12", "2022-02-01", "2022-02-02", "2022-02-24", "2022-02-25", "2022-02-26", "2022-02-27", "2022-02-28"]}
+      dedup: {"on": [date], order_by: published_at}
+      order_by: [date]
+      columns: [date, method_a_average_bid_price, method_b_average_wind_price, method_c_highest_bid_price, published_at, timestamp_utc]
+    key: [date]
+    caption: "12 November 2020, with a negative Method A, and seven February 2022 days, some zero."
+    fields:
+      date: "NESO's date of the price; NESO does not state the day's window or zone"
+      method_a_average_bid_price: "Method A, at the average bid price; NESO's unit: £/GVA or £ per GVAs"
+      method_b_average_wind_price: "Method B: displaced energy replaced at the average wind bid price; unit as A"
+      method_c_highest_bid_price: "Method C: displaced energy replaced at the highest bid price; unit as A"
+      published_at: "NESO's last-modified time for the whole file, read as UTC; one per capture"
+      timestamp_utc: "Start of settlement period 1 of `date`, GB local midnight, as UTC; gridflow's anchor"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote the capture to bronze, UTC
+  notebook:
+    lead: >-
+      Returns a pandas DataFrame from the DuckDB view
+      `silver_neso_data_portal_inertia_bid_offer_costs_latest`, every row of the newest capture,
+      filtered on `date` with both ends included; lineage columns dropped.
+    cells:
+      - |
+        df = data.neso_data_portal.query("inertia_bid_offer_costs", "2019-04-01", "2022-03-31")
+        m = ["method_a_average_bid_price", "method_b_average_wind_price", "method_c_highest_bid_price"]
+        df[["date", *m]].tail()
+      - |
+        april_year = (df.date.dt.year - (df.date.dt.month < 4)).rename("april_year")
+        zero = df[m].eq(0).rename(columns=lambda c: c[:8] + "_zero")
+        zero.groupby(april_year).sum().assign(days=df.groupby(april_year).size()).rename_axis(None)
+      - |
+        no_zero = df[m].ne(0).all(axis=1).groupby(df.date.dt.strftime("%Y-%m")).sum()
+        ax = no_zero.plot.bar(color="#155A6E", figsize=(8, 3.5), xlabel="month", ylabel="days with no zero")
+        ax.set_xticks(range(0, len(no_zero), 6), no_zero.index[::6], rotation=0);
+    needs: the inertia costs file
+    plot_alt: >-
+      Bar plot of the days in each month, April 2019 to March 2022, on which all three methods are
+      non-zero. July 2019 and January 2020 have 1; May 2020 has 23 and February 2022 has 24; 31 of
+      the 36 months have 2 to 15.
   related:
     - {dataset: neso_data_portal/constraint-breakdown, note: "Daily spend on increasing system inertia, in £, among four constraint costs"}
 ---
@@ -54,7 +128,7 @@ NESO publishes indicative daily prices for the cost of procuring system inertia 
 
 NESO states that these prices represent all bid prices in each category, not necessarily the accepted bid price, so they are indicative scenario costs and not settled outturn. The body covers 2019-04-01 to 2022-03-31 (1,096 distinct dates, one row each). The CKAN resource was last modified on 2022-10-19, so the package is operationally treated as frozen. NESO's catalogue says "Ad hoc" update frequency, not "will never update"; the registry's `frozen` refresh is a gridflow operating choice. TODO: verify whether NESO guarantees permanent non-update.
 
-**This family is HELD.** Silver exists (row counts and schema below) but its values are not published or consumed until the hold question is answered. See [Holds](#holds).
+**This family is HELD.** Silver exists (row counts and schema below) but its values are not consumed by gridflow's models until the hold question is answered; the site page shows the rows and a chart with a caveat naming the question (ruling 66). See [Holds](#holds).
 
 - Publisher group: Balancing costs
 - Registry group: balancing · archetype: SER
@@ -133,7 +207,7 @@ Units come only from the vendor field dictionary (CKAN field-info snapshot 20261
 
 - `inertia_bid_offer_costs`: held: TODO: the unit denominator — every field dictionary says £/GVA while the package description says £ per GVAs; the exact averaging-day window; what a zero method value means. (unit E-SEM)
 
-The package stays `eligible` in the registry; only the family's outputs are held (RULINGS 653; held-exactly-as-ruled test in batch BAL-1). Row counts and schema are documented here, but no data values (samples, minima, maxima, aggregates or example values) are published for this family, and downstream models must not consume it until E-SEM rules on the three questions above.
+The package stays `eligible` in the registry; only the family's outputs are held (RULINGS 653; held-exactly-as-ruled test in batch BAL-1). The site page shows its rows with a caveat (ruling 66), but downstream models must not consume it until E-SEM rules on the three questions above.
 
 ## Known issues and gotchas
 

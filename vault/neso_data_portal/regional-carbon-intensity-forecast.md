@@ -8,7 +8,6 @@ updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: "No row says when NESO first published it; half-hour labels and negative values are unexplained."
   title: Carbon intensity forecast by region
   summary: >-
     NESO's forecast carbon intensity of electricity per half hour for 14 GB regions drawn on
@@ -27,6 +26,40 @@ page:
   how_used:
     - "Regional differences in GB grid carbon intensity, per half hour"
     - "Weighting regional demand by forecast intensity for emissions estimates"
+  chart:
+    type: line
+    silver: neso_data_portal/regional_ci_forecast
+    time: datetime
+    time_text: {format: "%Y-%m-%dT%H:%M:%S"}
+    filter:
+      - {column: published_at, op: eq, value: "2026-10-16T20:10:38.828649"}
+    values:
+      - {column: south_wales, series: south_wales}
+      - {column: london, series: london}
+      - {column: yorkshire, series: yorkshire}
+      - {column: north_scotland, series: north_scotland}
+    aggregation: last
+    window: {start: "2026-07-17", end: "2026-07-24"}
+    unit: gCO2/kWh
+  chart_view:
+    title: Four regions' forecasts, 17 to 24 July 2026
+    caption: >-
+      Silver `regional_ci_forecast`, gCO2/kWh: four of 14 regions in NESO's file of 16 October 2026,
+      its last week of values. With no issue time, these are the file's values, not forecasts known
+      beforehand. Points sit at `datetime` as written.
+    alt: >-
+      Line chart from neso_data_portal/regional_ci_forecast of four regions' values in gCO2/kWh in
+      NESO's file of 16 October 2026, 17 July to 12:00 on 24 July 2026, each at datetime as written.
+      South Wales runs highest, from 391 at 03:00 on 17 July to 9 at noon on 18 July, and swings by
+      up to 192 between half hours early on 20 July. London runs 81 to 306 and Yorkshire 23 to 157.
+      North Scotland is 0 throughout, just above the axis floor.
+    x_label: "datetime as NESO writes it, UTC"
+    y_min: -10
+    key:
+      - {series: south_wales, label: South Wales, codes: South Wales, paint: clay}
+      - {series: london, label: London, codes: London, paint: petrol}
+      - {series: yorkshire, label: Yorkshire, codes: Yorkshire, paint: olive}
+      - {series: north_scotland, label: North Scotland, codes: North Scotland, paint: horizon}
   raw_feed:
     note: >-
       From NESO's CKAN portal: `package_show`, then the CSV and PDF, downloaded whole unless
@@ -39,6 +72,56 @@ page:
       - {run: gridflow ingest neso_data_portal regional_ci_forecast --last 24h, comment: "the CSV to bronze"}
       - {run: gridflow transform neso_data_portal regional_ci_forecast --last 24h, comment: "the capture's date to silver"}
       - {run: gridflow ingest neso_data_portal regional_ci_forecast_files --last 24h, comment: "the methodology PDF, bronze only"}
+  record:
+    select:
+      filter:
+        - {column: published_at, op: eq, value: "2026-10-16T20:10:38.828649"}
+        - {column: datetime, op: ge, value: "2018-10-06T20:00:00"}
+        - {column: datetime, op: le, value: "2018-10-06T23:30:00"}
+      order_by: [datetime]
+      columns: [datetime, london, west_midlands, published_at]
+    key: [datetime]
+    caption: "Evening of 6 October 2018, when London and West Midlands fall below zero."
+    fields:
+      datetime: "`datetime`, UTC, kept as text; start or end of its half hour unstated"
+      london: "NESO's forecast for London, gCO2/kWh; NESO does not explain its negatives"
+      west_midlands: "NESO's forecast for West Midlands, gCO2/kWh; negatives unexplained"
+      published_at: "NESO's last-modified time for the file, read as UTC; one per file"
+      north_scotland: "NESO's forecast for North Scotland, gCO2/kWh"
+      south_scotland: "NESO's forecast for South Scotland, gCO2/kWh"
+      north_west_england: "NESO's forecast for North West England, gCO2/kWh"
+      north_east_england: "NESO's forecast for North East England, gCO2/kWh"
+      yorkshire: "NESO's forecast for Yorkshire, gCO2/kWh"
+      north_wales_and_merseyside: "NESO's forecast for North Wales and Merseyside, gCO2/kWh"
+      south_wales: "NESO's forecast for South Wales, gCO2/kWh"
+      east_midlands: "NESO's forecast for East Midlands, gCO2/kWh"
+      east_england: "NESO's forecast for East England, gCO2/kWh"
+      south_west_england: "NESO's forecast for South West England, gCO2/kWh"
+      south_england: "NESO's forecast for South England, gCO2/kWh"
+      south_east_england: "NESO's forecast for South East England, gCO2/kWh"
+      timestamp_utc: "When gridflow fetched the file, not the half hour the row describes"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote the capture to bronze, UTC
+  caveat: No row says when its forecast was made; half-hour labels and negative values are unexplained.
+  notebook:
+    lead: >-
+      `query()` filters this table on fetch time, so the cells read the `_latest` view, NESO's 16
+      October 2026 file, with `data.sql()`. Its values end at 12:00 on 24 July 2026.
+    cells:
+      - |
+        df = data.sql("""
+            SELECT * FROM silver_neso_data_portal_regional_ci_forecast_latest ORDER BY datetime""")
+        regions = list(df.columns[1:15])
+        (df[regions] < 0).sum()
+      - |
+        week = df[df.datetime >= "2026-07-17"][regions].mean().round(0).sort_values()
+        ax = week.plot.barh(figsize=(8, 4.5), color="#155A6E",
+                            xlabel="mean forecast, 17 to 24 July 2026, gCO2/kWh")
+    needs: NESO's 16 October 2026 file
+    plot_alt: >-
+      Horizontal bars of each region's mean value in gCO2/kWh from 17 July to 12:00 on 24 July 2026,
+      NESO's file of 16 October 2026. South Wales is highest at 266, then South West England 238 and
+      East England 192; North East England is 16, South Scotland 1 and North Scotland 0.
   related:
     - {dataset: neso/regional_intensity, note: "The Carbon Intensity API's regional routes, which this package's methodology describes"}
     - {dataset: neso_data_portal/country-carbon-intensity-forecast, note: "NESO's forecast for England, Scotland and Wales, in the same unit"}
@@ -62,7 +145,9 @@ dispersion of grid carbon or to weight regional load by marginal emissions. Conc
 background: @../../../20-domain/concepts/carbon-intensity.md. The file has no issue column,
 and in both captures (2026-10-08 and 2026-10-16) the populated targets stop well before the capture date (see
 "Target coverage" below). So it is **not** a point-in-time forecast archive and not a
-current forward forecast. gridflow's silver output is **held** (unit E-SEM).
+current forward forecast. gridflow's silver output is **held** from point-in-time use (unit
+E-SEM); under ruling 66 (2026-10-24) the site page shows its rows with one line naming the
+questions.
 
 - Publisher group: Carbon intensity
 - Registry group: carbon-intensity1 · archetype: FC
@@ -171,7 +256,10 @@ inferred from column names. The dictionary gives `datetime` unit `N/A` and zone 
   vendor convention. A vendor dictionary statement or correction notice would settle it.
 - Long runs of zeros occur in at least one region column. `TODO: verify` whether a zero
   means a true zero forecast or missing data. The values are kept as they are.
-- Value statistics are deliberately not published here while the family is held.
+- Negatives in the 2026-10-16 body (silver, read 2026-10-24): London 329, from
+  `2018-09-18T23:00:00` to `2020-04-20T23:30:00`, minimum -8; West Midlands 6, on 2018-10-06
+  (21:00 to 22:30), 2019-02-08T22:00 and 2019-02-13T15:00, minimum -13; no other column. The
+  site page's frame shows the 2018-10-06 evening and its notebook prints these counts.
 
 #### Keys and `_latest`
 
@@ -263,8 +351,9 @@ only from sweep runs.
 
 - `regional_ci_forecast`: held: TODO: no issue column; which forecast issue a past target's value reflects, and whether values are revised after the period, is undocumented; whether datetime marks period start or end; meaning of negative intensities (min -13.0) (unit E-SEM)
 
-In plain terms, the silver output is written but held from publication until the
-semantics work (unit E-SEM) answers three questions:
+In plain terms, the silver output is written but held from point-in-time use until the
+semantics work (unit E-SEM) answers three questions (the site page shows the rows with one
+line naming them, ruling 66):
 
 1. **Issue and revision:** which forecast issue a past target's value reflects, and
    whether values are rewritten after the period. With no issue column, a row cannot be

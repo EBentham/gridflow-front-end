@@ -1,0 +1,300 @@
+{
+ "dataset": "neso_data_portal/fes_es2_european_supply",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "cc984cd3b365ae835847b3b8d061b420f586aeb83e80a300659005a32813c892",
+ "silver": "neso_data_portal/fes_es2_european_supply",
+ "columns": [
+  {
+   "name": "country",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "eu_scenario",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "fes_pathway_alignment",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "variable",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "subtype",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "projection_year",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "value",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "category",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "edition",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "resource_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "fes_scenario_alignment",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "subsubtype",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "France",
+   "EU Blue",
+   "Hydrogen Evolution",
+   "Capacity (MW)",
+   "Nuclear",
+   "2036",
+   "55610.0",
+   "Low Carbon",
+   "Nuclear",
+   "2025",
+   "fbfdc6c6-52b6-4e3a-96b9-f4e7941f61ec",
+   "2025-12-10 16:55:04.054020 UTC",
+   "2026-10-08 10:55:20.326635 UTC",
+   null,
+   null,
+   "bronze/neso_data_portal/fes_es2_european_supply/2026/10/08/raw_20261008T105520Z_fbfdc6c6-52b6-4e3a-96b9-f4e7941f61ec_3f5a30e5.csv",
+   "2026-10-08 10:55:20.326635 UTC",
+   "2026-10-08 10:55:20.326635 UTC",
+   "2025-12-10 16:55:04.054020 UTC",
+   "2cd2eac3-c248-492a-86dc-1386ed3fa9d2",
+   "1+e1"
+  ],
+  [
+   "France",
+   "EU Central",
+   "Falling Behind, 10YF",
+   "Capacity (MW)",
+   "Nuclear",
+   "2036",
+   "55610.0",
+   "Low Carbon",
+   "Nuclear",
+   "2025",
+   "fbfdc6c6-52b6-4e3a-96b9-f4e7941f61ec",
+   "2025-12-10 16:55:04.054020 UTC",
+   "2026-10-08 10:55:20.326635 UTC",
+   null,
+   null,
+   "bronze/neso_data_portal/fes_es2_european_supply/2026/10/08/raw_20261008T105520Z_fbfdc6c6-52b6-4e3a-96b9-f4e7941f61ec_3f5a30e5.csv",
+   "2026-10-08 10:55:20.326635 UTC",
+   "2026-10-08 10:55:20.326635 UTC",
+   "2025-12-10 16:55:04.054020 UTC",
+   "2cd2eac3-c248-492a-86dc-1386ed3fa9d2",
+   "1+e1"
+  ],
+  [
+   "France",
+   "EU Green",
+   "Holistic Transition, Electric Engagement",
+   "Capacity (MW)",
+   "Nuclear",
+   "2036",
+   "55610.0",
+   "Low Carbon",
+   "Nuclear",
+   "2025",
+   "fbfdc6c6-52b6-4e3a-96b9-f4e7941f61ec",
+   "2025-12-10 16:55:04.054020 UTC",
+   "2026-10-08 10:55:20.326635 UTC",
+   null,
+   null,
+   "bronze/neso_data_portal/fes_es2_european_supply/2026/10/08/raw_20261008T105520Z_fbfdc6c6-52b6-4e3a-96b9-f4e7941f61ec_3f5a30e5.csv",
+   "2026-10-08 10:55:20.326635 UTC",
+   "2026-10-08 10:55:20.326635 UTC",
+   "2025-12-10 16:55:04.054020 UTC",
+   "2cd2eac3-c248-492a-86dc-1386ed3fa9d2",
+   "1+e1"
+  ],
+  [
+   "France",
+   "EU Blue",
+   "Hydrogen Evolution",
+   "Demand (TWh)",
+   "Demand Total (TWh)",
+   "2036",
+   "660.5",
+   "Demand",
+   "Demand",
+   "2025",
+   "fbfdc6c6-52b6-4e3a-96b9-f4e7941f61ec",
+   "2025-12-10 16:55:04.054020 UTC",
+   "2026-10-08 10:55:20.326635 UTC",
+   null,
+   null,
+   "bronze/neso_data_portal/fes_es2_european_supply/2026/10/08/raw_20261008T105520Z_fbfdc6c6-52b6-4e3a-96b9-f4e7941f61ec_3f5a30e5.csv",
+   "2026-10-08 10:55:20.326635 UTC",
+   "2026-10-08 10:55:20.326635 UTC",
+   "2025-12-10 16:55:04.054020 UTC",
+   "2cd2eac3-c248-492a-86dc-1386ed3fa9d2",
+   "1+e1"
+  ],
+  [
+   "France",
+   "EU Central",
+   "10YF",
+   "Demand (TWh)",
+   "Demand Total (TWh)",
+   "2036",
+   null,
+   "Demand",
+   "Demand",
+   "2025",
+   "fbfdc6c6-52b6-4e3a-96b9-f4e7941f61ec",
+   "2025-12-10 16:55:04.054020 UTC",
+   "2026-10-08 10:55:20.326635 UTC",
+   null,
+   null,
+   "bronze/neso_data_portal/fes_es2_european_supply/2026/10/08/raw_20261008T105520Z_fbfdc6c6-52b6-4e3a-96b9-f4e7941f61ec_3f5a30e5.csv",
+   "2026-10-08 10:55:20.326635 UTC",
+   "2026-10-08 10:55:20.326635 UTC",
+   "2025-12-10 16:55:04.054020 UTC",
+   "2cd2eac3-c248-492a-86dc-1386ed3fa9d2",
+   "1+e1"
+  ],
+  [
+   "France",
+   "EU Central",
+   "Falling Behind",
+   "Demand (TWh)",
+   "Demand Total (TWh)",
+   "2036",
+   "598.2548",
+   "Demand",
+   "Demand",
+   "2025",
+   "fbfdc6c6-52b6-4e3a-96b9-f4e7941f61ec",
+   "2025-12-10 16:55:04.054020 UTC",
+   "2026-10-08 10:55:20.326635 UTC",
+   null,
+   null,
+   "bronze/neso_data_portal/fes_es2_european_supply/2026/10/08/raw_20261008T105520Z_fbfdc6c6-52b6-4e3a-96b9-f4e7941f61ec_3f5a30e5.csv",
+   "2026-10-08 10:55:20.326635 UTC",
+   "2026-10-08 10:55:20.326635 UTC",
+   "2025-12-10 16:55:04.054020 UTC",
+   "2cd2eac3-c248-492a-86dc-1386ed3fa9d2",
+   "1+e1"
+  ],
+  [
+   "France",
+   "EU Green",
+   "Electric Engagement",
+   "Demand (TWh)",
+   "Demand Total (TWh)",
+   "2036",
+   "694.9",
+   "Demand",
+   "Demand",
+   "2025",
+   "fbfdc6c6-52b6-4e3a-96b9-f4e7941f61ec",
+   "2025-12-10 16:55:04.054020 UTC",
+   "2026-10-08 10:55:20.326635 UTC",
+   null,
+   null,
+   "bronze/neso_data_portal/fes_es2_european_supply/2026/10/08/raw_20261008T105520Z_fbfdc6c6-52b6-4e3a-96b9-f4e7941f61ec_3f5a30e5.csv",
+   "2026-10-08 10:55:20.326635 UTC",
+   "2026-10-08 10:55:20.326635 UTC",
+   "2025-12-10 16:55:04.054020 UTC",
+   "2cd2eac3-c248-492a-86dc-1386ed3fa9d2",
+   "1+e1"
+  ],
+  [
+   "France",
+   "EU Green",
+   "Holistic Transition",
+   "Demand (TWh)",
+   "Demand Total (TWh)",
+   "2036",
+   "694.4",
+   "Demand",
+   "Demand",
+   "2025",
+   "fbfdc6c6-52b6-4e3a-96b9-f4e7941f61ec",
+   "2025-12-10 16:55:04.054020 UTC",
+   "2026-10-08 10:55:20.326635 UTC",
+   null,
+   null,
+   "bronze/neso_data_portal/fes_es2_european_supply/2026/10/08/raw_20261008T105520Z_fbfdc6c6-52b6-4e3a-96b9-f4e7941f61ec_3f5a30e5.csv",
+   "2026-10-08 10:55:20.326635 UTC",
+   "2026-10-08 10:55:20.326635 UTC",
+   "2025-12-10 16:55:04.054020 UTC",
+   "2cd2eac3-c248-492a-86dc-1386ed3fa9d2",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

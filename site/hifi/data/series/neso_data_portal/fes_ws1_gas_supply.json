@@ -1,0 +1,19 @@
+{
+  "dataset": "neso_data_portal/fes_ws1_gas_supply",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "b84d2bd8242e1af2c41144b98513dfad9681ae31ce7934e254e7bd6a5fed7988",
+  "type": "bar",
+  "unit": "bcm/yr",
+  "caption": "",
+  "value_column": "value",
+  "aggregation": "sum",
+  "window": null,
+  "provenance": {"duplicates_dropped": 0, "files": 2, "null_values_dropped": 0, "rows_matched": 7, "rows_read": 18569, "rows_used": 7, "silver": "neso_data_portal/fes_ws1_gas_supply"},
+  "spec": {"aggregation": "sum", "dedup": {"on": ["resource_id", "edition", "fuel_type", "scenario", "pathway", "units", "category", "sector", "fuel", "feedstock", "category_lookup", "projection_year"], "order_by": "capture_written_at"}, "filter": [{"column": "edition", "op": "eq", "value": 2026}, {"column": "fuel_type", "op": "eq", "value": "Natural Gas"}, {"column": "category", "op": "eq", "value": "Supply"}, {"column": "units", "op": "eq", "value": "bcm/yr"}, {"column": "projection_year", "op": "eq", "value": 2030}], "group": "sector", "silver": "neso_data_portal/fes_ws1_gas_supply", "sort": "value_desc", "type": "bar", "unit": "bcm/yr", "value": "value"},
+  "x_kind": "category",
+  "x": ["Norway", "Generic Imports", "UKCS", "LNG", "Green Gas", "Continent", "Shale"],
+  "series": [
+    {"key": "value", "values": [26.46, 17.16, 16.53, 2.92, 0.84, 0.0, 0.0]}
+  ]
+}

@@ -4,11 +4,10 @@ package: "historic-gtma-grid-trade-master-agreement-trades-data"
 dataset_keys: ["gtma_trades_data", "gtma_trades_data_pre", "gtma_trades_fy"]
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-23
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: true
   title: Historic GTMA trades
   summary: >-
     NESO's Grid Trade Master Agreement (GTMA) trades since April 2015: when, how much, at what
@@ -27,6 +26,33 @@ page:
   how_used:
     - How much NESO traded, when and at what price, year by year since 2015
     - "System trades against energy trades, and the reasons given from 2021-22"
+  chart:
+    type: bar
+    silver: neso_data_portal/gtma_trades_data
+    group: resource_id
+    group_map:
+      "bde33bcf-efc6-4e4a-bc7c-452b7424ea45": "2015-16"
+      "b24d619b-f6ea-41e6-87ab-569960594d3f": "2016-17"
+      "6f2772a4-ac7a-4eb7-a8ee-59ca6a03e205": "2017-18"
+      "58f3079a-1440-4a70-b227-f4e661defee7": "2018-19"
+      "6a03c415-475f-4005-bf55-b9108291c511": "2019-20"
+    dedup: {"on": [resource_id, trade_id], order_by: capture_written_at}
+    value: cost
+    aggregation: sum
+    sort: label
+    unit: £
+  chart_view:
+    title: Net cost of GTMA trades per yearly file
+    caption: >-
+      Silver `neso_data_portal/gtma_trades_data`, the five yearly files with rows: the sum of each
+      trade's `Cost` in £, which NESO's dictionary counts positive when NESO pays. The 2020-21 file
+      and the files and tables from 2021-22 are not drawn.
+    alt: >-
+      Horizontal bar chart from neso_data_portal/gtma_trades_data of the summed trade cost in each
+      yearly file, in pounds: 69.7 million in 2015-16, 139.9 million in 2016-17, 51.7 million in
+      2017-18, 100.1 million in 2018-19 and 102.4 million in 2019-20.
+    key:
+      - {series: cost, label: Net cost, paint: clay}
   raw_feed:
     note: >-
       From NESO's CKAN portal: one `package_show`, then each file unless its `last_modified` is
@@ -34,29 +60,71 @@ page:
     commands:
       - {run: gridflow ingest neso_data_portal gtma_trades_data --last 24h, comment: "yearly files; swap in any key"}
       - {run: gridflow transform neso_data_portal gtma_trades_data --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: trade_id, op: in, value: [ES00000109, ES00001314, ES00007382, ES00005140, ES00008415, ES00029863, ES00029916, ES00029965]}
+      dedup: {"on": [resource_id, trade_id], order_by: capture_written_at}
+      order_by: [start_time, trade_id]
+      columns: [trade_id, start_time, end_time, volume, price, cost, so_flag, resource_id]
+    key: [resource_id, trade_id]
+    caption: "Eight trades, 2015 to 2019: zero prices, two reversed windows, both flags."
+    fields:
+      trade_id: "NESO's trade identifier, unique within each yearly file"
+      start_time: "Start of the trade's delivery window, UTC"
+      end_time: "End of the window, UTC; a few precede their start, as published"
+      volume: "The trade's total volume: MWh in NESO's dictionary, MW in its package text"
+      price: "Price, £/MWh"
+      cost: "Cost, £, positive when NESO pays"
+      so_flag: "`T` a system trade, `F` an energy trade, NESO's dictionary says"
+      resource_id: "The yearly file the row comes from (CKAN resource id)"
+      timestamp_utc: "Equals `start_time`; gridflow's event time"
+      published_at: "The file's CKAN last-modified time, read as UTC; one per file"
+      bronze_capture_id: The bronze file the row was read from
+      capture_written_at: When gridflow wrote the capture to bronze, UTC
+  notebook:
+    lead: >-
+      Returns a pandas DataFrame from the view `silver_neso_data_portal_gtma_trades_data_latest`, the
+      five yearly files, filtered on the delivery start with both ends included; times come back in
+      Europe/London.
+    cells:
+      - |
+        df = data.neso_data_portal.query("gtma_trades_data", "2015-04-01", "2020-03-31")
+        df[["trade_id", "start_time", "end_time", "volume", "price", "cost", "so_flag"]].tail()
+      - |
+        start = df.start_time.dt.tz_convert("UTC")
+        year = (start.dt.year - (start.dt.month < 4)).rename("april_year")
+        (df.groupby([year, "so_flag"]).cost.sum() / 1e6).unstack().round(1)
+      - |
+        monthly = df.groupby([start.dt.strftime("%Y-%m"), "so_flag"]).size().unstack()
+        ax = monthly.plot(color=["#C77E3C", "#155A6E"], figsize=(8, 3.5),
+                          xlabel="month of delivery start, UTC", ylabel="trades");
+    needs: the five yearly GTMA files
+    plot_alt: >-
+      Monthly count of GTMA trades by delivery-start month, UTC, April 2015 to March 2020, system
+      (`T`) and energy (`F`). Both stay under 600 a month until mid-2018, then climb; system trades
+      peak at 3,672 in August 2019, when energy trades also peak, at 1,681.
   family:
     slug: historic-gtma-grid-trade-master-agreement-trades-data
     members:
       - dataset: gtma_trades_data
-        differs: "Six yearly files, 2015-16 to 2020-21 (first and newest shown); total per trade, MWh"
+        differs: "Yearly files 2015-16 to 2020-21; 2020-21 repeats ten trades, so has no rows here"
         request:
           - "GET https://api.neso.energy/api/3/action/package_show?id=historic-gtma-grid-trade-master-agreement-trades-data"
           - "GET https://api.neso.energy/dataset/8e511255-6cd7-41c0-868e-8d4d29bced0b/resource/bde33bcf-efc6-4e4a-bc7c-452b7424ea45/download/gtma_trades_2015-16.csv"
           - "GET https://api.neso.energy/dataset/8e511255-6cd7-41c0-868e-8d4d29bced0b/resource/8e14ae8e-2091-4abc-a2e6-a4b82e5519ab/download/gtma_trades_2020-21.csv"
-        held: "NESO's package text says `Volume` is MW, its dictionary MWh; the 2020-21 file repeats ten trades."
       - dataset: gtma_trades_data_pre
         differs: "One file NESO names Pre June 2021; same columns and units as above"
         request:
           - "GET https://api.neso.energy/api/3/action/package_show?id=historic-gtma-grid-trade-master-agreement-trades-data"
           - "GET https://api.neso.energy/dataset/8e511255-6cd7-41c0-868e-8d4d29bced0b/resource/8cf964b6-b94c-4d35-88f4-312834aa6e8c/download/gtma_trades_2021-22.csv"
-        held: "NESO's package text says `Volume` is MW; this file's dictionary says MWh, a trade's total."
       - dataset: gtma_trades_fy
         differs: "Yearly tables from 2021-22, first and newest shown; average MW, a reason and note"
         request:
           - "GET https://api.neso.energy/api/3/action/package_show?id=historic-gtma-grid-trade-master-agreement-trades-data"
           - "GET https://api.neso.energy/datastore/dump/11a2f532-a7ce-46f8-9d82-88b3289daa82"
           - "GET https://api.neso.energy/datastore/dump/e7a8abae-4e96-48b0-b9d7-54651da0cdb5"
-        held: "`Cost` is labelled £/h, but NESO describes it as a total: volume times price times duration."
+        caveat: "`Cost` is labelled £/h, but NESO describes it as a total: volume times price times duration."
   related:
     - {dataset: neso_data_portal/upcoming-trades, note: "GTMA trades still due for delivery, per settlement period"}
     - {dataset: neso_data_portal/balancing-services-contract-enactment, note: "Contract enactments, which NESO's trading team weighs against trades"}
@@ -179,7 +247,7 @@ other four. The FY family does not use it (see the clocks below).
 |---|---|---|---|---|
 | Historic GTMA Trades Data - Apr 2020 - March 2021 | CSV | upload | `8e14ae8e-2091-4abc-a2e6-a4b82e5519ab` | TODO: GTMA-2020-DUPLICATES — identifiers ES00104406–ES00104415 each appear twice as identical full rows; publication defect or distinct trades needing another identifier? (v0.22-K-TRD) |
 
-Download (held, not published): [gtma_trades_2020-21.csv](https://api.neso.energy/dataset/8e511255-6cd7-41c0-868e-8d4d29bced0b/resource/8e14ae8e-2091-4abc-a2e6-a4b82e5519ab/download/gtma_trades_2020-21.csv)
+Download (held: no silver rows, so no rows on the site page): [gtma_trades_2020-21.csv](https://api.neso.energy/dataset/8e511255-6cd7-41c0-868e-8d4d29bced0b/resource/8e14ae8e-2091-4abc-a2e6-a4b82e5519ab/download/gtma_trades_2020-21.csv)
 (CKAN `last_modified` 2021-04-06T11:20:05.467319). Captured: 4,006,832 bytes, 55,542 data rows
 (`raw_20261008T110453Z_8e14ae8e-2091-4abc-a2e6-a4b82e5519ab_4bd1f961.csv`). Bronze keeps the file
 byte for byte. The resource-level HOLD means it produces **no silver rows** (51,230 =
@@ -320,8 +388,10 @@ ids do not overlap.
 
 - Kind: tabular · archetype: EVT · refresh: daily · empty allowed: no
 
-**Status: held (COST-DIMENSION).** Silver exists on disk (237,735 rows from activation). This page
-publishes no data values from it, and no value statistics: only structure and row counts.
+**Status: held (COST-DIMENSION).** Silver exists on disk (237,735 rows from activation). gridflow's
+models do not consume it until the question is answered. The site page names the question as a
+caveat for this table (ruling 66); its chart, sample rows and notebook show the upload family
+`gtma_trades_data`, not this table.
 
 Schema, epoch 1:
 
@@ -373,7 +443,7 @@ an ADR-040 reconcile adjudication in
 FY resources overlaps. The reconcile of 2026-10-12 therefore reports this overlap as adjudicated,
 not as a gap.
 
-**Units and the hold (dictionary text; no values here).** `Volume` is **average** volume in
+**Units and the hold (dictionary text).** `Volume` is **average** volume in
 **MW**, signed: the dictionary comment gives a positive number as an action that increases
 generation, decreases demand or provides upward margin. `Price` is the average price in
 **£/MWh**. `Cost` is labelled **£/h**, but the dictionary also describes it as the *total* cost to
@@ -387,9 +457,17 @@ on). In the 2026-10-08 captures, `Reason` is blank in 3,427 of 237,735 rows and 
 every row (bronze, 237,735 of 237,735); NESO fills blank reasons later (1,245 FY 25-26 rows by
 2026-10-16, see Files by disposition). In the 2026-10-08 silver runs, `reason` carries 3,427 nulls. Silver `note` carries 223,075 nulls plus
 14,660 empty-string cells, all in FY 23-24 (`f659641a-…`); `TODO: verify` the null-token handling
-that leaves those cells as empty strings rather than null (counts only, no values, so the hold is
-respected). This is the vendor's
+that leaves those cells as empty strings rather than null. This is the vendor's
 "System Flag" and "Trade Reason", not a settlement `run_type`.
+
+**What the rows show about `Cost` (silver, checked 2026-10-24).** Taking the newest capture of each
+FY resource (239,906 rows), 239,385 rows have a non-zero `Cost` and `Price` and a positive window.
+On 239,199 of them `Cost` equals `Volume` × `Price` × the window's hours exactly, and on all but
+one the implied volume, `Cost` ÷ (`Price` × hours), is within 0.05 MW of the published `Volume`,
+which NESO rounds to one decimal place. The exception, `ES00126077`, has a 31-hour window but a
+`Cost` of 334,530, which is 135 × 177 × 14. Most trades last one hour, so `Volume` × `Price` alone
+matches 236,725 rows. The rows behave as a total in £, as NESO describes, not as the £/h it labels;
+that does not settle what NESO intends to publish, so the hold stands.
 
 Because the dictionary for `Volume` here is **MW** and in the upload families it is **MWh**, never
 stack `gtma_trades_fy.volume` with `gtma_trades_data.volume` without a documented conversion.
@@ -443,8 +521,9 @@ gridflow outputs derived from this package carry the attribution line above.
 **`gtma_trades_fy` (COST-DIMENSION).** Held by the seat on the FACTS recommendation (RULINGS 707).
 The unit question is whether `Cost` is a rate (£/h, as labelled) or a total (£, as described). It
 decides what a consumer may multiply or sum. Until NESO corrects the dictionary or answers, the
-silver output stays on disk and this page publishes no `volume`, `price` or `cost` values from
-it. The structure, key, clocks and row counts above are not in dispute. The hold lifts when NESO
+silver output stays on disk and gridflow's models do not consume it; the site page names the
+question as this table's caveat (ruling 66) and draws its chart and rows from `gtma_trades_data`.
+The structure, key, clocks and row counts above are not in dispute. The hold lifts when NESO
 states the dimension of `Cost`, or when a corrected dictionary is captured.
 
 **`gtma_trades_data`, FY 2020-21 resource (GTMA-2020-DUPLICATES).** In the captured body, ten

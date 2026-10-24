@@ -8,7 +8,6 @@ updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: "NESO states no period for the year labels, or what blanks mean."
   title: FES road transport summary
   summary: >-
     NESO's Future Energy Scenarios (FES) table of GB road transport: energy demand, vehicle numbers
@@ -28,6 +27,32 @@ page:
     - "Electric vehicle numbers and charging demand under each FES scenario or pathway"
     - "Road transport energy demand by fuel, edition by edition"
     - "Each item read with the same edition's ED6 notes"
+  chart:
+    type: bar
+    silver: neso_data_portal/fes_ed5_road_transport
+    value: value
+    filter:
+      - {column: edition, op: eq, value: 2025}
+      - {column: pathway, op: eq, value: Holistic Transition}
+      - {column: data_item, op: eq, value: Electric Vehicle Peak Demand}
+      - {column: projection_year, op: in, value: [2025, 2030, 2035, 2040, 2045, 2050]}
+    dedup: {"on": [resource_id, edition, data_item, scenario, pathway, projection_year], order_by: capture_written_at}
+    group: projection_year
+    aggregation: sum
+    sort: label
+    unit: GW
+  chart_view:
+    title: EV peak demand, FES 2025, Holistic Transition
+    caption: >-
+      Silver `fes_ed5_road_transport`, FES 2025 (NESO's file of 10 December 2025), pathway Holistic
+      Transition: `Electric Vehicle Peak Demand` in `GW`, one row per bar, every fifth year label as
+      NESO heads its columns. A projection, not an outturn.
+    alt: >-
+      Horizontal bar chart of NESO's projected electric vehicle peak demand in GW, FES 2025 edition,
+      pathway Holistic Transition, one bar every fifth year label: 2025 0.9; 2030 2.2; 2035 5.1;
+      2040 8.1; 2045 9.2; 2050 9.0. It rises tenfold to 2045, then dips slightly.
+    key:
+      - {series: value, label: EV peak demand, codes: Electric Vehicle Peak Demand, paint: petrol, note: "NESO's 2025 ED6 notes: demand at winter system peak, 5pm to 6pm, after smart charging"}
   raw_feed:
     note: >-
       From NESO's CKAN portal: one `package_show`, then four CSVs, each downloaded whole unless its
@@ -40,6 +65,66 @@ page:
     commands:
       - {run: gridflow ingest neso_data_portal fes_ed5_road_transport --last 24h, comment: "changed files only; whole CSVs"}
       - {run: gridflow transform neso_data_portal fes_ed5_road_transport --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: edition, op: eq, value: 2025}
+        - {column: data_item, op: eq, value: Electric Vehicle Peak Demand}
+        - {column: projection_year, op: in, value: [2035, 2036]}
+        - {column: pathway, op: in, value: [Holistic Transition, Electric Engagement, Falling Behind, Ten Year Forecast]}
+      dedup: {"on": [resource_id, edition, data_item, scenario, pathway, projection_year], order_by: capture_written_at}
+      order_by: [projection_year, pathway]
+      columns: [data_item, pathway, projection_year, value, unit, fuel, peak_annual_minimum, scenario,
+                edition, resource_id, published_at, timestamp_utc]
+    key: [resource_id, edition, data_item, scenario, pathway, projection_year]
+    caption: "FES 2025 electric vehicle peak demand, labels 2035 and 2036, four of the five pathways."
+    fields:
+      data_item: "NESO's data item; the same edition's ED6 notes describe each one"
+      pathway: "NESO's pathway name in the 2024 and 2025 files; null in the others"
+      projection_year: "NESO's year column header, as an integer; NESO states no period for it"
+      value: "The cell, in the row's `unit`; a blank is null, a zero a value"
+      unit: "NESO's unit for the row: `GW`, `TWh` or a count such as `# Cars`"
+      fuel: "NESO's fuel label, such as `Electricity` or `Petrol/Diesel`"
+      peak_annual_minimum: "NESO's item type; these files carry only `Peak` and `Annual`"
+      scenario: "NESO's scenario name in the 2023 and 2026 files; null in these rows"
+      edition: "FES edition, from the file name; 2026 is NESO's Ten-Year Outlook"
+      resource_id: "CKAN file id, one per edition; first column of the entity key"
+      published_at: "NESO's last-modified time for the edition's file, read as UTC"
+      timestamp_utc: "When gridflow captured the file, UTC; the table has no event time"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  caveat: "NESO states no period or date for the year labels, or what blanks mean."
+  notebook:
+    lead: >-
+      `query()` filters on `timestamp_utc`, the capture time here, so these cells use `data.sql()`
+      on the `_latest` view, which keeps every edition's file, and pick FES 2025 by name.
+    cells:
+      - |
+        peak = data.sql("""
+            SELECT pathway, projection_year, value AS gw
+            FROM silver_neso_data_portal_fes_ed5_road_transport_latest
+            WHERE edition = 2025 AND data_item = 'Electric Vehicle Peak Demand'
+        """)
+        wide = peak.pivot(index="projection_year", columns="pathway", values="gw").rename_axis(index=None, columns=None)
+        wide.loc[[2025, 2030, 2035, 2036, 2040, 2045, 2050]]
+      - |
+        ax = wide.loc[2025:].plot(figsize=(8, 3.5), xlabel="NESO's year label",
+                                 ylabel="EV peak demand, GW");
+      - |
+        data.sql("""
+            SELECT edition, scenario, pathway, MIN(projection_year) AS first_blank_label,
+                   COUNT(*) AS blank_cells
+            FROM silver_neso_data_portal_fes_ed5_road_transport_latest
+            WHERE value IS NULL
+            GROUP BY edition, scenario, pathway
+            ORDER BY edition
+        """)
+    needs: NESO's four FES road transport files
+    plot_alt: >-
+      Line plot of NESO's projected electric vehicle peak demand in GW, FES 2025 edition, year labels
+      2025 to 2050, one line per pathway. All start near 0.9; Falling Behind ends highest at 15.0,
+      Hydrogen Evolution 13.8, Electric Engagement 13.5, Holistic Transition 9.0. Ten Year Forecast
+      stops at 5.6 at label 2035.
   related:
     - {dataset: neso_data_portal/fes-road-transport-notes-data-table-ed6, note: "NESO's notes on these items; read both from one edition"}
     - {dataset: neso_data_portal/fes-electricity-demand-summary-data-table-ed1, note: "NESO's FES GB electricity demand table, from the same editions"}
@@ -67,9 +152,10 @@ catalogue snapshot `20261006T195819Z`).
 `TODO: verify` how NESO scopes the 2026 outlook against the 2023–2025 FES editions before
 comparing the editions column for column.
 
-**The silver output of this family is held (unit E-SEM).** It exists on disk, and this page gives
-its schema, row counts and structure. It publishes no data values from it. The meaning of the
-year label and of a blank cell is not established (see Holds). The package-level
+**The silver output of this family is held in gridflow (unit E-SEM).** This note gives its schema,
+row counts and structure. Under ruling 66 the site page shows its rows (a chart, eight sample rows
+and a notebook) with one caveat line naming the open question: the meaning of the year label and
+of a blank cell is not established (see Holds). The package-level
 `eligibility: eligible` in the front matter is the package registry entry. The hold is per family.
 
 Reading rules for anyone who does open the silver:
@@ -233,8 +319,7 @@ Every edition has 63 distinct `data_item` values and 7 distinct `fuel` values. T
 the header's third word, `Minimum`. The 2023 file has 5 distinct `scenario` values, the 2024 and
 2025 files have 5 distinct `pathway` values, and the 2026 file has 1 `scenario` value. Each of
 the 63 data items therefore appears once per scenario or pathway: 5 × 63 = 315 wide rows in the
-2023–2025 files and 1 × 63 = 63 in the 2026 file. This page publishes no label lists for the
-held family. `TODO: verify` the vendor's definition of each scenario and pathway label, and
+2023–2025 files and 1 × 63 = 63 in the 2026 file. `TODO: verify` the vendor's definition of each scenario and pathway label, and
 whether a label in one edition is the same scenario as a label in another.
 
 **Units (vendor dictionary: the row's `Unit` field).** Each wide row carries its own unit. The
@@ -353,9 +438,10 @@ gridflow outputs derived from this package carry the attribution line above.
 - `fes_ed5_road_transport`: held: TODO: For each ED5 annual-energy, vehicle-count and capacity item, what interval or observation date does the year label denote? For winter-peak items, does the integer label identify the starting or ending winter year? What does a blank projection cell mean? (unit E-SEM)
 
 The family is held by the SCN-2 batch records (RULINGS 821 and 822, with the activation in 825 and
-827). Its silver output stays on disk. No gold view or model feed is planned for it while the hold stands, and this page
-publishes no data values from it: no sample rows and no minimum, maximum or other value
-statistics. Unit E-SEM must answer three things before the hold can lift:
+827). No gold view or model feed is planned for it while the hold stands. Under ruling 66 the site
+page shows its rows with the caveat "NESO states no period or date for the year labels, or what
+blanks mean."; its chart draws one FES 2025 peak item at NESO's year labels, without reading them as
+dates. Unit E-SEM must answer three things before the hold can lift:
 
 1. **The period behind each year label.** What interval or observation date the integer
    denotes, separately for the annual-energy items, the vehicle-count items and the capacity
@@ -380,7 +466,7 @@ What the vendor text does establish, and what it does not (FACTS §6 and g1):
 
 Until the hold lifts:
 
-- Do not publish ED5 values, or join ED5 to an observed series by `projection_year`.
+- Do not join ED5 to an observed series by `projection_year`, or read a label as a dated period.
 - Do not use ED5 point-in-time. Its only clock is the CKAN `last_modified` vintage (the
   per-resource `last_modified` in the file table), which is a conservative proxy and nothing finer.
 - Do not sum across editions, across units or across `scenario` and `pathway`.

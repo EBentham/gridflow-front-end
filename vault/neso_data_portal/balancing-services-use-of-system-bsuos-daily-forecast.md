@@ -8,7 +8,7 @@ updated: 2026-10-12
 layer_coverage: "bronze"
 eligibility: "eligible"
 page:
-  held: "Rows give no settlement run or issue time; the header's £ byte is not valid UTF-8."
+  held: "Files repeat periods and give no issue time or run; the header's £ is not UTF-8."
   title: Daily BSUoS forecast
   summary: >-
     NESO's half-hourly forecast of the Balancing Services Use of System (BSUoS) charge in £/MWh,
@@ -37,6 +37,9 @@ page:
       - "GET https://api.neso.energy/dataset/a8368560-87ac-4d31-85b7-625322430456/resource/b98095a8-310a-4fee-8d51-e20531c49465/download/daily-bsuos-forecast-2022-23.csv"
     commands:
       - {run: gridflow ingest neso_data_portal bsuos_daily_forecast --last 24h, comment: "all five files, bronze only"}
+    sample:
+      file: daily-bsuos-forecast-2022-23.csv
+      caveat: The files give no issue time, so it cannot be told when each value was forecast.
   related:
     - {dataset: neso_data_portal/current-balancing-services-use-of-system-bsuos-data, note: "The settled half-hourly BSUoS charges, one file per settlement run"}
     - {dataset: neso_data_portal/daily-balancing-costs-balancing-services-use-of-system, note: "NESO's balancing cost per settlement period, in six categories"}
@@ -73,8 +76,8 @@ and no issue column, so a settlement key that includes `run_type` cannot be buil
 record model cannot generate a constant run column. The family stays ingest-only (RULINGS 667,
 the same no-record disposition as RULINGS 538 and 653). A second, independent blocker is an
 unresolved encoding (see Known issues). This page therefore describes the bronze files and the
-reason silver is absent. Nothing here is held and no output of this package is published; no
-data values appear on this page.
+reason silver is absent. Nothing here is held and there is no silver output; the page shows the
+header and first eight lines of one file as fetched, and no table.
 
 - Publisher group: Balancing costs
 - Registry group: balancing · archetype: FC

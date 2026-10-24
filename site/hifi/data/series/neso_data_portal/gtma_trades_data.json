@@ -1,0 +1,19 @@
+{
+  "dataset": "neso_data_portal/gtma_trades_data",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "1978e8a7b29ffb2ab0cb752f45d2d2fa7d3e318f0ef15cccc49384b15d43d3f3",
+  "type": "bar",
+  "unit": "£",
+  "caption": "",
+  "value_column": "cost",
+  "aggregation": "sum",
+  "window": null,
+  "provenance": {"duplicates_dropped": 0, "files": 5, "null_values_dropped": 0, "rows_matched": 51230, "rows_read": 51230, "rows_used": 51230, "silver": "neso_data_portal/gtma_trades_data"},
+  "spec": {"aggregation": "sum", "dedup": {"on": ["resource_id", "trade_id"], "order_by": "capture_written_at"}, "group": "resource_id", "group_map": {"58f3079a-1440-4a70-b227-f4e661defee7": "2018-19", "6a03c415-475f-4005-bf55-b9108291c511": "2019-20", "6f2772a4-ac7a-4eb7-a8ee-59ca6a03e205": "2017-18", "b24d619b-f6ea-41e6-87ab-569960594d3f": "2016-17", "bde33bcf-efc6-4e4a-bc7c-452b7424ea45": "2015-16"}, "silver": "neso_data_portal/gtma_trades_data", "sort": "label", "type": "bar", "unit": "£", "value": "cost"},
+  "x_kind": "category",
+  "x": ["2015-16", "2016-17", "2017-18", "2018-19", "2019-20"],
+  "series": [
+    {"key": "cost", "values": [69656348.415, 139912441.085, 51658065.521, 100125771.278, 102423092.385]}
+  ]
+}

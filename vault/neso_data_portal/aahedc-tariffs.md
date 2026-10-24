@@ -8,7 +8,6 @@ updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: NESO dates each publication but not when each row appeared, nor whether old rows change.
   title: AAHEDC tariffs
   summary: >-
     NESO's tariffs for Assistance for Areas of High Electricity Distribution Costs (AAHEDC): draft
@@ -26,6 +25,12 @@ page:
   how_used:
     - The AAHEDC rate NESO set for each financial year, in pence per kWh
     - How far the final rate moved from its draft, financial years 2025 to 2027
+  chart:
+    type: none
+    reason: >-
+      Nine rows, every rate between 0.0115 and 0.0443 p/kWh: a bar chart labels each bar to one
+      decimal (0.0) and rounds the series to three, so the frame and notebook show them instead.
+  caveat: Stages are dated, not timed; NESO does not promise unchanged rows.
   raw_feed:
     note: >-
       From NESO's CKAN portal: one `package_show`, then the file downloaded whole unless its
@@ -36,6 +41,55 @@ page:
     commands:
       - {run: gridflow ingest neso_data_portal aahedc_tariffs --last 24h, comment: whole file to bronze}
       - {run: gridflow transform neso_data_portal aahedc_tariffs --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: year_fy, op: ge, value: 2023}
+      dedup: {"on": [publication_type, year_fy, published_date], order_by: published_at}
+      order_by: [year_fy, published_date]
+      columns: [publication_type, year_fy, published_date, total_scheme_tariff_p_per_kwh, shetland_tariff_p_per_kwh, tariff_excluding_shetland_assistance_amount_p_per_kwh, published_at, timestamp_utc]
+    key: [publication_type, year_fy, published_date]
+    caption: "Years 2023 to 2027 at every stage, drafts from 2025."
+    fields:
+      publication_type: "The stage, Draft or Final (NESO); part of the key"
+      year_fy: "Financial year, April to March, named by its ending year; part of the key"
+      published_date: "NESO's date the tariff was published, with no time; part of the key"
+      total_scheme_tariff_p_per_kwh: "Total scheme tariff, p/kWh, to six decimal places (NESO's dictionary)"
+      shetland_tariff_p_per_kwh: "Shetland tariff, p/kWh (NESO)"
+      tariff_excluding_shetland_assistance_amount_p_per_kwh: "Tariff excluding the Shetland assistance amount, p/kWh (NESO)"
+      published_at: "NESO's last-modified time for the whole file, read as UTC; one per capture"
+      timestamp_utc: "When gridflow wrote the capture, UTC; not a tariff or publication date"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote the capture to bronze, UTC
+  notebook:
+    lead: >-
+      Reads every row with `data.sql` from the `_latest` view, the newest captured file, because
+      `query()` filters on capture time, not the financial year. Then the total scheme tariff by
+      stage, side by side.
+    cells:
+      - |
+        df = data.sql("""
+            SELECT publication_type, year_fy, published_date,
+                   total_scheme_tariff_p_per_kwh, shetland_tariff_p_per_kwh,
+                   tariff_excluding_shetland_assistance_amount_p_per_kwh
+            FROM silver_neso_data_portal_aahedc_tariffs_latest
+            ORDER BY year_fy, published_date""")
+        df
+      - |
+        total = df.pivot(index="year_fy", columns="publication_type",
+                         values="total_scheme_tariff_p_per_kwh")[["Draft", "Final"]]
+        total = total.rename_axis(index=None, columns=None)
+        total
+      - |
+        ax = total.plot.bar(color=["#C77E3C", "#155A6E"], rot=0, figsize=(8, 3.5),
+                            xlabel="financial year, by its ending year",
+                            ylabel="total scheme tariff, p/kWh")
+        ax.legend(loc="upper left", bbox_to_anchor=(1, 1));
+    needs: the AAHEDC tariffs file
+    plot_alt: >-
+      Bar plot of the total scheme tariff in p/kWh by financial year, draft beside final. 2022 to 2024
+      have a final only: 0.040427, 0.040670 and 0.042038. Draft then final: 0.042288 and 0.042145 for
+      2025, 0.041099 and 0.040984 for 2026, 0.044201 and 0.044269 for 2027.
   related:
     - {dataset: neso_data_portal/transmission-network-use-of-system-tnuos-tariffs, note: "Transmission network charges, forecast and set by the same NESO team"}
     - {dataset: neso_data_portal/bsuos-fixed-tariffs, note: "Fixed BSUoS rates, also published by stage with a publication date"}
@@ -68,9 +122,8 @@ The capture holds 9 rows (6 `Final`, 3 `Draft`). gridflow has a silver output fo
 **held**: the body mixes `Draft` and `Final` rows with no publication instant, so what was
 available when is not established (see Holds). The package-level status in the front matter is
 generated from the registry and reads `eligible`, but the family-level eligibility is **held**.
-The silver exists on disk, yet nothing in it may be published or used for point-in-time models
-yet. This page therefore gives schema, row counts, clocks and missingness only, with **no data
-values**.
+The silver exists on disk, but it may not be used for point-in-time models yet. The site page
+shows the rows with a caveat naming this question (ruling 66).
 
 - Publisher group: Network charges
 - Registry group: network-charges · archetype: TAR
@@ -149,6 +202,13 @@ info for the resource (gridflow
   decimal places". `TODO: verify` the arithmetic relationship between the three columns (for
   example whether the total is the sum of the other two); the dictionary does not state it and
   gridflow does not infer it from values.
+- **The 2027 `Final` row (measured on the 2026-10-08 bronze and silver, 2026-10-24).** NESO's
+  file has `Shetland Tariff` 0.031503 and the excluding-Shetland tariff 0.012766 in that row. In
+  every other row the Shetland tariff is between 0.011503 and 0.012766 and the excluding tariff
+  between 0.028378 and 0.031435, and each year's `Draft` and `Final` Shetland values are equal
+  (2025, 2026). The 2027 `Draft` has Shetland 0.012766. The two values look swapped in NESO's
+  file. gridflow keeps them as delivered. `TODO: verify` with NESO's AAHEDC statement for
+  2026/27.
 
 **Units (vendor dictionary only).** The three tariff columns' dictionary `unit` field is **Pence
 per kilowatt hour**, and each header also carries `p/kwh`. gridflow keeps the value as delivered
@@ -250,8 +310,8 @@ gridflow outputs derived from this package carry the attribution line above.
 
 - `aahedc_tariffs`: held: TODO: TARIFF-ISSUE-AVAILABILITY — each body mixes Forecast/Draft/Final rows with no publication instant; what was available when (publication-level evidence), and how should mixed stages be treated? A publication date alone does not establish availability at midnight. (unit v0.22-K-BAL-2c)
 
-The silver output exists on disk but is **held**. It may not be published or used for
-point-in-time models until the question above is answered. The record's own unit tag is
+The silver output exists on disk but is **held**. It may not be used for point-in-time models
+until the question above is answered; the site shows its rows with a caveat (ruling 66). The record's own unit tag is
 v0.22-K-BAL-2c; no resolving unit is named yet (`TODO: name the unit that will settle TARIFF-ISSUE-AVAILABILITY`). The hold sits in the record,
 and RULINGS 692 set it when the batch was specified (class 3, merged under RULINGS 701).
 
@@ -270,5 +330,4 @@ row is never rewritten in place. gridflow will not manufacture a midnight-UTC is
 
 What settles it: an immutable, dated vendor publication history that shows when each row was
 available, or an approved conservative publication-date availability recipe that also rules how
-mixed stages are treated. Either is a record edit once ruled. Until then, row counts, schema and
-clocks are all this page asserts.
+mixed stages are treated. Either is a record edit once ruled.

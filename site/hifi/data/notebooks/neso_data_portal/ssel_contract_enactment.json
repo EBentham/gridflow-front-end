@@ -1,0 +1,229 @@
+{
+ "dataset": "neso_data_portal/ssel_contract_enactment",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "df499f8be70bb4c7b9f41b325e9da96fd93a5ff6e71eb0bf42460c8eb033e57f",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.neso_data_portal.query(\"ssel_contract_enactment\", \"2020-04-01\", \"2026-03-31\")\ndf[[\"id\", \"unit\", \"asset_id\", \"starttime\", \"reduction_mw\", \"price_mw_hr\", \"volume\", \"price\", \"cost\"]].tail()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "id",
+      "unit",
+      "asset_id",
+      "starttime",
+      "reduction_mw",
+      "price_mw_hr",
+      "volume",
+      "price",
+      "cost"
+     ],
+     "index": [
+      "22",
+      "23",
+      "24",
+      "25",
+      "26"
+     ],
+     "rows": [
+      [
+       "ES00206316",
+       "NaN",
+       "DRAXX-3",
+       "2022-11-01 22:00:00+00:00",
+       "NaN",
+       "NaN",
+       "-100.0",
+       "58.0",
+       "-46400.0"
+      ],
+      [
+       "ES00263167",
+       "NaN",
+       "DRAXX-2",
+       "2023-09-24 23:00:00+01:00",
+       "NaN",
+       "NaN",
+       "-100.0",
+       "58.0",
+       "-40600.0"
+      ],
+      [
+       "ES00263168",
+       "NaN",
+       "DRAXX-3",
+       "2023-09-24 23:30:00+01:00",
+       "NaN",
+       "NaN",
+       "-100.0",
+       "58.0",
+       "-37700.0"
+      ],
+      [
+       "ES00299447",
+       "NaN",
+       "GRAI-6",
+       "2024-06-13 12:00:00+01:00",
+       "NaN",
+       "NaN",
+       "-95.0",
+       "29.6",
+       "-11248.0"
+      ],
+      [
+       "ES00326939",
+       "NaN",
+       "DRAXX-3",
+       "2025-05-13 13:00:00+01:00",
+       "NaN",
+       "NaN",
+       "-100.0",
+       "58.0",
+       "-11600.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "modern = df[df.cost.notna()].copy()\nmodern[\"hours\"] = (modern.endtime - modern.starttime).dt.total_seconds() / 3600\nmodern[[\"id\", \"hours\", \"volume\", \"price\", \"cost\"]]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "id",
+      "hours",
+      "volume",
+      "price",
+      "cost"
+     ],
+     "index": [
+      "20",
+      "21",
+      "22",
+      "23",
+      "24",
+      "25",
+      "26"
+     ],
+     "rows": [
+      [
+       "ES00232575",
+       "8.0",
+       "-100.0",
+       "58.0",
+       "-46400.0"
+      ],
+      [
+       "ES00159754",
+       "8.0",
+       "100.0",
+       "58.0",
+       "46400.0"
+      ],
+      [
+       "ES00206316",
+       "8.0",
+       "-100.0",
+       "58.0",
+       "-46400.0"
+      ],
+      [
+       "ES00263167",
+       "7.0",
+       "-100.0",
+       "58.0",
+       "-40600.0"
+      ],
+      [
+       "ES00263168",
+       "6.5",
+       "-100.0",
+       "58.0",
+       "-37700.0"
+      ],
+      [
+       "ES00299447",
+       "4.0",
+       "-95.0",
+       "29.6",
+       "-11248.0"
+      ],
+      [
+       "ES00326939",
+       "2.0",
+       "-100.0",
+       "58.0",
+       "-11600.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "df.unit.fillna(df.asset_id).value_counts()",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "unit\nDRAXX-3    8\nDRAXX-1    6\nHUMR-1     5\nDRAXX-2    3\nSCCL-1     2\nSCCL-2     2\nGRAI-6     1\nName: count, dtype: int64"
+    }
+   ]
+  }
+ ]
+}

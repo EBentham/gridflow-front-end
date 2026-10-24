@@ -8,7 +8,6 @@ updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: true
   title: Building heat model
   summary: >-
     NESO's Excel tool that models a home's heat demand, with example half-hourly profiles for a
@@ -28,6 +27,31 @@ page:
     - "Set a heat pump's half-hourly electricity beside a gas boiler's gas"
     - "Run the workbook for other buildings and heating systems"
     - "Synthetic heating profiles for energy system models, NESO's stated use"
+  chart:
+    type: bar
+    silver: neso_data_portal/building_heat_model_example_output_half
+    value: total_electricity
+    filter:
+      - {column: run_id, op: eq, value: run_2}
+    dedup: {"on": [resource_id, run_id, hh_period], order_by: capture_written_at}
+    group: start_of_hh_period
+    aggregation: max
+    sort: label
+    unit: kWh
+  chart_view:
+    title: Heat pump electricity per half hour, example day
+    caption: >-
+      Silver `building_heat_model_example_output_half`, NESO's run 2 (air-source heat pump, an
+      average January day with no date): `total_electricity`, kWh per half hour, one row per
+      half-hour start, nothing summed. NESO calls the profiles synthetic.
+    alt: >-
+      Horizontal bar chart of electricity used in NESO's example heat pump run, kWh per half hour,
+      one bar per half-hour start from 00:00 to 23:30. The highest is 0.818 at 00:30, then 0.746 at
+      05:00. It is zero at 00:00, from 01:30 to 03:30, from 09:00 to 13:30 and at 23:00 and 23:30.
+      From 14:00 it starts at 0.694 and is 0.27 to 0.28 from 21:00 to 22:30.
+    key:
+      - {series: total_electricity, label: Heat pump electricity, codes: run_2, paint: petrol,
+         note: "NESO's run 2, an air-source heat pump; the gas boiler run is not drawn"}
   raw_feed:
     note: >-
       From NESO's CKAN portal: `package_show`, then two CSVs, the macro-enabled workbook and the
@@ -37,6 +61,73 @@ page:
       - {run: gridflow pipeline neso_data_portal building_heat_model_example_output_half --last 24h, comment: "output CSV to bronze, then silver"}
       - {run: gridflow ingest neso_data_portal building_heat_model_list_input --last 24h, comment: "input list, bronze only"}
       - {run: gridflow ingest neso_data_portal building_heat_model_files --last 24h, comment: "workbook and guide, bronze only"}
+  record:
+    select:
+      filter:
+        - {column: hh_period, op: in, value: [13, 18, 19, 29]}
+      dedup: {"on": [resource_id, run_id, hh_period], order_by: capture_written_at}
+      order_by: [run_id, hh_period]
+      columns: [run_id, start_of_hh_period, hh_period, total_heater_output, total_gas, total_electricity,
+                avg_cop_space_heat, avg_cop_dhw, resource_id, published_at, timestamp_utc]
+    key: [resource_id, run_id, hh_period]
+    caption: "Both runs at 06:00, 08:30, 09:00 and 14:00; the blank cells differ by run."
+    fields:
+      run_id: "NESO's model run: `run_1` gas combi boiler, `run_2` air-source heat pump"
+      start_of_hh_period: "NESO's half-hour start, `HH:MM`, on an example day with no date"
+      hh_period: "Half-hour index, 1 to 48 within a run; not a settlement period"
+      total_heater_output: "NESO's total heat output in the half hour, kWh"
+      total_gas: "NESO's total gas used in the half hour, kWh"
+      total_electricity: "NESO's total electricity used in the half hour, kWh"
+      avg_cop_space_heat: "NESO's average coefficient of performance for space heat; no unit or scale stated"
+      avg_cop_dhw: "NESO's average coefficient of performance for hot water; no unit or scale stated"
+      resource_id: "CKAN file id; with run and half hour, the entity key"
+      published_at: "NESO's last-modified time for the file, read as UTC"
+      timestamp_utc: "When gridflow captured the file, UTC; the rows carry no date"
+      building_archetype: "NESO's building type; one semi-detached archetype in both runs"
+      month_vendor: "NESO's `month` column, renamed; `jan` in both runs"
+      heater_output_space_heat: "Heat output for space heating in the half hour, kWh"
+      gas_space_heat: "Gas for space heating in the half hour, kWh"
+      electricity_space_heat: "Electricity for space heating in the half hour, kWh"
+      heater_output_dhw: "Heat output for domestic hot water in the half hour, kWh"
+      gas_dhw: "Gas for domestic hot water in the half hour, kWh"
+      electricity_dhw: "Electricity for domestic hot water in the half hour, kWh"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      `query()` filters on `timestamp_utc`, the capture time here, so these cells use `data.sql()`
+      on the `_latest` view. Each run is a different heating system: never add the runs together.
+    cells:
+      - |
+        data.sql("""
+            SELECT run_id, count(*) AS half_hours,
+                   count(*) FILTER (WHERE total_gas IS NULL) AS gas_blank,
+                   count(*) FILTER (WHERE electricity_space_heat IS NULL) AS space_heat_electricity_blank,
+                   count(*) FILTER (WHERE avg_cop_space_heat IS NULL) AS cop_space_heat_blank,
+                   count(*) FILTER (WHERE avg_cop_dhw IS NULL) AS cop_dhw_blank
+            FROM silver_neso_data_portal_building_heat_model_example_output_half_latest
+            GROUP BY run_id
+            ORDER BY run_id
+        """)
+      - |
+        hm = data.sql("""
+            SELECT run_id, hh_period, start_of_hh_period, total_heater_output, total_gas, total_electricity
+            FROM silver_neso_data_portal_building_heat_model_example_output_half_latest
+            ORDER BY run_id, hh_period
+        """)
+        hm[hm.start_of_hh_period.isin(["06:00", "14:00"])]
+      - |
+        wide = hm.pivot(index="start_of_hh_period", columns="run_id", values=["total_gas", "total_electricity"])
+        two = wide[[("total_gas", "run_1"), ("total_electricity", "run_2")]].set_axis(
+            ["run 1 gas, boiler", "run 2 electricity, heat pump"], axis=1)
+        ax = two.plot(figsize=(9, 3.5), color=["#B5651D", "#155A6E"],
+                      xlabel="NESO's half-hour start, example day", ylabel="kWh per half hour");
+    needs: NESO's example output file for the building heat model
+    plot_alt: >-
+      Line plot over NESO's example January day, kWh per half hour: run 1's gas (boiler) and run 2's
+      electricity (heat pump). Gas peaks at 9.06 at 06:00 and 6.69 at 16:30, spikes through the
+      evening and stays below 0.31 from 09:00 to 15:30. Electricity is never above 0.82, its
+      highest at 00:30.
   related:
     - {dataset: neso_data_portal/local-authority-level-spatial-heat-model-outputs-fes, note: "NESO's FES heat model outputs for each local authority"}
     - {dataset: neso_data_portal/fes-natural-gas-residential-and-non-domestic-i-c-heat-demand-summary-data-table-ed3, note: "FES natural gas heat demand for homes and businesses"}
@@ -50,7 +141,7 @@ page:
         request:
           - "GET https://api.neso.energy/api/3/action/package_show?id=building-heat-model"
           - "GET https://api.neso.energy/dataset/14d99094-165e-4de1-9452-137c2835b102/resource/27522340-008d-4c82-97c1-17eeb7ed1b6a/download/example_profiles-output_data.csv"
-        held: "NESO states no unit or scale for the two COP columns, or what blanks mean."
+        caveat: "NESO states no unit or scale for the two COP columns, or what blanks mean."
       - dataset: building_heat_model_list_input
         differs: "The inputs behind both runs: one parameter per row, one column per run"
         request: "GET https://api.neso.energy/dataset/14d99094-165e-4de1-9452-137c2835b102/resource/b809e59a-e681-4ecb-af07-80997abbbd6f/download/example_profiles-list_of_input_parameters.csv"
@@ -76,8 +167,9 @@ not hold observed or forecast demand for any date. The half-hourly rows carry a 
 treat them as GB settlement periods, as an observed series or as a scenario projection.
 
 **The silver output of `building_heat_model_example_output_half` is held (unit E-SEM).** It exists
-on disk, and this page gives its schema, row counts and structure. It publishes no data values
-from it: no sample rows and no minimum, maximum or other value statistics. The unit of the two
+on disk, and this note gives its schema, row counts and structure. The site page shows its rows,
+a chart of run 2's electricity and a notebook, with one line naming the hold question (ruling 66,
+2026-10-24). The unit of the two
 average coefficient-of-performance (COP) columns is not declared, and the meaning of a blank gas,
 electricity or COP cell is not established (see Holds). The package-level `eligibility: eligible`
 in the front matter is the package registry entry. The hold is per family.
@@ -338,8 +430,8 @@ gridflow outputs derived from this package carry the attribution line above.
 
 The family is held by the SCN-3 batch record (ruling 839, seat ruling 7; activation in rulings 842
 and 844). Its silver output stays on disk. No gold view or model feed is planned for it while the
-hold stands, and this page publishes no data values from it: no sample rows and no minimum,
-maximum or other value statistics. Row counts and schema are given above. Unit E-SEM must answer
+hold stands. The site page shows its rows with one line naming the question below (ruling 66,
+2026-10-24). Row counts and schema are given above. Unit E-SEM must answer
 two things before the hold can lift:
 
 1. **The unit or scale of the COP columns.** The dictionary calls them average coefficients of
@@ -358,7 +450,7 @@ What the vendor text does establish (FACTS §2.2):
 
 Until the hold lifts:
 
-- Do not publish values from `building_heat_model_example_output_half`.
+- Show its values only as NESO wrote them, with the question named; never derive a COP unit.
 - Do not use it point-in-time beyond its vintage, `available_at` (the CKAN `last_modified`), a
   conservative proxy and nothing finer.
 - Do not sum across `run_id`, across gas and electricity or across any of the periods and treat

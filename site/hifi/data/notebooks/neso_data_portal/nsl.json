@@ -1,0 +1,211 @@
+{
+ "dataset": "neso_data_portal/nsl",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "d0a96fa588cca5150f13b5bace910c0c6fd9658bcb5e5bc51599dd3af9cc23c6",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "import pandas as pd\ndf = data.sql(\"\"\"\n    SELECT operational_period_start_gmt AS hour, data_upload_time_gmt,\n           flow_to_gb_mw, flow_from_gb_mw, reason_for_restriction_from_gb\n    FROM silver_neso_data_portal_nsl_latest\n    ORDER BY hour\"\"\")\ndf[\"hour\"] = df.hour.dt.tz_convert(\"UTC\")\ndf[\"data_upload_time_gmt\"] = df.data_upload_time_gmt.dt.tz_convert(\"UTC\")\ndf.tail()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "hour",
+      "data_upload_time_gmt",
+      "flow_to_gb_mw",
+      "flow_from_gb_mw",
+      "reason_for_restriction_from_gb"
+     ],
+     "index": [
+      "17971",
+      "17972",
+      "17973",
+      "17974",
+      "17975"
+     ],
+     "rows": [
+      [
+       "2026-10-17 17:00:00+00:00",
+       "2026-10-16 10:30:06+00:00",
+       "1400.0",
+       "1400.0",
+       "No Restriction"
+      ],
+      [
+       "2026-10-17 18:00:00+00:00",
+       "2026-10-16 10:30:06+00:00",
+       "1400.0",
+       "1357.0",
+       "Margin Extremes"
+      ],
+      [
+       "2026-10-17 19:00:00+00:00",
+       "2026-10-16 10:30:06+00:00",
+       "1400.0",
+       "1400.0",
+       "No Restriction"
+      ],
+      [
+       "2026-10-17 20:00:00+00:00",
+       "2026-10-16 10:30:06+00:00",
+       "1400.0",
+       "1400.0",
+       "No Restriction"
+      ],
+      [
+       "2026-10-17 21:00:00+00:00",
+       "2026-10-16 10:30:06+00:00",
+       "1400.0",
+       "1400.0",
+       "No Restriction"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "pd.crosstab(df.hour.dt.strftime(\"%Y-%m\"), df.reason_for_restriction_from_gb).tail(8)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "reason_for_restriction_from_gb",
+      "Largest System Loss",
+      "Margin Extremes",
+      "No Restriction",
+      "hour",
+      "",
+      "",
+      ""
+     ],
+     "index": [
+      "2026-03",
+      "2026-04",
+      "2026-05",
+      "2026-06",
+      "2026-07",
+      "2026-08",
+      "2026-09",
+      "2026-10"
+     ],
+     "rows": [
+      [
+       "0",
+       "0",
+       "744"
+      ],
+      [
+       "0",
+       "0",
+       "720"
+      ],
+      [
+       "0",
+       "0",
+       "744"
+      ],
+      [
+       "0",
+       "0",
+       "696"
+      ],
+      [
+       "0",
+       "68",
+       "676"
+      ],
+      [
+       "0",
+       "115",
+       "605"
+      ],
+      [
+       "0",
+       "99",
+       "621"
+      ],
+      [
+       "0",
+       "78",
+       "328"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "october = df[df.hour >= pd.Timestamp(\"2026-10-01\", tz=\"UTC\")]\noctober.flow_to_gb_mw.unique()",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "array([1400.])"
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "source": "october.plot(x=\"hour\", y=\"flow_from_gb_mw\", drawstyle=\"steps-post\", color=\"#C77E3C\",\n             legend=False, figsize=(8, 3.5), xlabel=\"hour start, UTC\",\n             ylabel=\"day-ahead export limit from GB, MW\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "nsl-6.png",
+     "width": 707,
+     "height": 369
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,19 @@
+{
+  "dataset": "neso_data_portal/fes_es2_european_supply",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "10adff6caa7d18b37cd3fe961bb88309d6ed55124bb8139fb662de6cebdb5731",
+  "type": "bar",
+  "unit": "MW",
+  "caption": "",
+  "value_column": "value",
+  "aggregation": "max",
+  "window": null,
+  "provenance": {"duplicates_dropped": 0, "files": 3, "null_values_dropped": 0, "rows_matched": 5, "rows_read": 67968, "rows_used": 5, "silver": "neso_data_portal/fes_es2_european_supply"},
+  "spec": {"aggregation": "max", "dedup": {"on": ["resource_id", "edition", "country", "eu_scenario", "fes_pathway_alignment", "variable", "category", "type", "subtype", "projection_year"], "order_by": "capture_written_at"}, "filter": [{"column": "edition", "op": "eq", "value": 2025}, {"column": "country", "op": "eq", "value": "France"}, {"column": "eu_scenario", "op": "eq", "value": "EU Green"}, {"column": "variable", "op": "eq", "value": "Capacity (MW)"}, {"column": "subtype", "op": "eq", "value": "Nuclear"}, {"column": "projection_year", "op": "in", "value": [2030, 2035, 2040, 2045, 2050]}], "group": "projection_year", "silver": "neso_data_portal/fes_es2_european_supply", "sort": "label", "type": "bar", "unit": "MW", "value": "value"},
+  "x_kind": "category",
+  "x": ["2030", "2035", "2040", "2045", "2050"],
+  "series": [
+    {"key": "value", "values": [63020.0, 57610.0, 51550.0, 47195.0, 44395.0]}
+  ]
+}
