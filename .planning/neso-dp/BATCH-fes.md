@@ -74,7 +74,7 @@ captures repeat rows (or as a guard). On a table with no event time, `query()` f
 |---|---|---|---|
 | 1 | a0c28a65bd96ca1f4 | | writing |
 | 2 | a7d6f785b85eb39ff | | writing |
-| 3 | | | |
+| 3 | a12902a5b35eeed53 | | writing |
 | 4 | | | |
 | 5 | | | |
 | H1 | | | |

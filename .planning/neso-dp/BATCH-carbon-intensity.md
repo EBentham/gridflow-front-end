@@ -51,4 +51,4 @@ note-body statements yourself when the data proves them wrong.
 
 | # | Writer | Checker | State |
 |---|---|---|---|
-| H | a057fdca986005d8a | a71f8c32a052eb729 | APPROVED with nits x4, nits with writer; 20cb logged; held lines share the first clause, second halves follow each table's question (seat, PROXY-SOURCED) |
+| H | a057fdca986005d8a | a71f8c32a052eb729 | APPROVED with nits x4, nits fixed (seat-verified); committed; 20cb logged; held lines share the first clause, second halves follow each table's question (seat, PROXY-SOURCED) |
