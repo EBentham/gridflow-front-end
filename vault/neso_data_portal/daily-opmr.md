@@ -4,9 +4,46 @@ package: "daily-opmr"
 dataset_key: "daily_opmr"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-09
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: "Publications give a date, no time or zone, and nearly all rows forecast days already past."
+  title: Daily operational planning margin requirement
+  summary: >-
+    NESO's daily view, days ahead, of the spare generation it needs above forecast demand for
+    reserve, beside demand, availability and surplus.
+  facts:
+    vendor: "NESO Data Portal, package `daily-opmr`: one CSV file"
+    cadence: "Daily (weekdays), NESO lists; its October 2026 files include weekend publications"
+    grain: "Each row: one target day, as forecast on one publication date"
+    history: "NESO's 16 October 2026 file holds daily publications from 12 March 2021"
+  landscape: power
+  what_it_is: >-
+    NESO defines the operational planning margin requirement (OPMR) as the generation needed above
+    its demand forecast to cover its reserve requirement. Each daily publication gives, in MW, the
+    peak and minimum demand forecasts, generator availability, interconnector limits, the OPMR and
+    the national surplus left after demand and the OPMR, for each day 2 to 14 days ahead, NESO says.
+  how_used:
+    - Track how NESO's margin view of one day moves as the day approaches
+    - Flag days NESO expects to be tight on margin, up to two weeks ahead
+    - Read beside NESO's negative reserve margin forecast for low-demand days
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then the CSV, downloaded whole unless
+      `last_modified` is unchanged. The 8 October 2026 publication has different figures in NESO's
+      8 and 16 October files.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=daily-opmr"
+      - "GET https://api.neso.energy/dataset/8e0c417f-ee54-4c8b-8ed2-0d64b042c6ed/resource/0eede912-8820-4c66-a58a-f7436d36b95f/download/csv_opmr_daily.csv"
+    commands:
+      - {run: gridflow ingest neso_data_portal daily_opmr --last 24h, comment: "the CSV to bronze"}
+      - {run: gridflow transform neso_data_portal daily_opmr --last 24h, comment: "the capture's date to silver"}
+  related:
+    - {dataset: neso_data_portal/weekly-opmr, note: "The same margin terms by engineering week, 2 to 52 weeks ahead"}
+    - {dataset: neso_data_portal/negative-reserve-active-power-margin-nrapm-forecast, note: "NESO's forecast margin from negative reserve risk, on low-demand days"}
+    - {dataset: neso_data_portal/2-14-days-ahead-national-demand-forecast, note: "NESO's national demand forecast for the same days ahead"}
+    - {dataset: elexon/uou2t14d, note: "Elexon's availability forecast by BM unit, 2 to 14 days ahead"}
 ---
 
 # Daily operational planning margin requirement (OPMR)
@@ -49,6 +86,8 @@ historical rows carry only a publication **date**, with no evidenced issue insta
   is published on a daily basis and contains a view of 2-14 days ahead forecast for the OPMR."
 - Captured: `raw_20261008T100510Z_0eede912-8820-4c66-a58a-f7436d36b95f_6c474505.csv`,
   2,161,291 bytes, 26,828 raw data rows (one all-empty), one header epoch.
+- Second capture: `raw_20261016T200145Z_0eede912-8820-4c66-a58a-f7436d36b95f_0fb60a83.csv`,
+  2,170,323 bytes, 26,938 raw data rows (one all-empty), the same header.
 
 The package has no DOC resource and no `_files` family (gridflow
 `@.planning/phases/v0.22-K-GEN-1/K-GEN-1-FACTS.md` GEN1-4).
@@ -90,8 +129,8 @@ Schema, epoch 1:
 **The two clocks for this family:**
 
 1. **Vintage (`ckan_last_modified`).** `published_at` and `available_at` both equal the CKAN
-   `last_modified` of the captured resource. For the one capture to date that is
-   `2026-10-08T09:20:23.077566`, taken from the capture's sidecar. CKAN emits it without an
+   `last_modified` of the captured resource: `2026-10-08T09:20:23.077566` for the first capture
+   and `2026-10-16T19:20:20.671046` for the second, taken from the captures' sidecars. CKAN emits it without an
    offset, and gridflow reads it as UTC (gridflow
    `@docs/DECISION_LOG/ADR-030-neso-data-portal-ckan-source.md`). Every silver row of the
    capture shares this one vintage (checked on silver 2026-10-09: one distinct `published_at`,
@@ -155,8 +194,25 @@ NESO ever revises a past publication in place (FACTS T02, g2, g3). `_latest` is
 - `TODO: verify` the horizon. The package notes say "2-13 days ahead", the resource
   description says "2-14 days ahead", and the body measures 2–15.
 
+**Second capture (2026-10-16, silver read 2026-10-24).** 26,937 rows; 2,038 publication dates
+(2021-03-12 to 2026-10-16) and 2,057 target dates (to 2026-10-30); `(publish_date, date)` unique;
+the same four columns with 14 nulls each; the same 8 off-grid rows. Publication dates cover every
+day from 2021-03-12 to 2026-10-16 except seven (2022-04-24, 2024-02-23 to 25, 2024-03-09,
+2024-07-30, 2026-08-23). Against the first capture:
+
+- Every first-capture key is still present; 110 rows are new (one more target, 2026-10-23, for
+  the 2026-10-08 publication, and the publications of 9 to 16 October).
+- 26,814 shared rows are identical. The other 13 are every row of the 2026-10-08 publication:
+  each changed `generator_availability`, `generation_availability_margin`, `opmr_total`,
+  `national_surplus`, `minimum_demand_forecast`, `high_freq_response_requirement` and
+  `negative_reserve` (12 also `constrained_plant`, 6 `peak_demand_forecast`, 5 the interconnector
+  limits). The first capture's 2026-10-08 rows match neither the 7 nor the 9 October
+  publication, so NESO replaced that day's publication after its 09:20 UTC file under the same
+  `Publish Date`. No earlier publication changed. This answers part of the revision `TODO`
+  above: a publication can change on its own day; whether older ones ever do is still open.
+
 **Activation (2026-10-09, master `f19effb`, PR #92).** The family was transformed with cutoff
-2026-10-08 (one capture). Silver has **26,827 rows**, equal to the planned count. Reconcile
+2026-10-08 (one capture at the time). Silver has **26,827 rows**, equal to the planned count. Reconcile
 `--all --cutoff 2026-10-08` found 0 gaps over 55 recorded families, overlap 0. No prior silver
 existed, so nothing was overwritten (gridflow `@.planning/v0.22-RESULTS.md` §GEN-1; RULINGS
 545–546).
@@ -173,12 +229,14 @@ the capture, not of the target dates.
 - Vendor metadata (snapshot extras, verbatim):
   - Update Frequency: Daily (Weekdays)
 
-The resource description says the OPMR "is published on a daily basis". The one capture's CKAN
-`last_modified` is `2026-10-08T09:20:23.077566`. `TODO: verify` the publication time of day;
-no vendor source states it. The extras say weekdays, but the measured publication dates spread
-evenly over all seven weekdays (288–291 each); `TODO: verify` which is right (see
-Implementation delta). No scheduled gridflow refresh exists yet, so captures are on demand. One
-capture (2026-10-08) exists to date.
+The resource description says the OPMR "is published on a daily basis". The CKAN
+`last_modified` was `2026-10-06T19:20:23.655476` in the catalogue snapshot,
+`2026-10-08T09:20:23.077566` at the first capture and `2026-10-16T19:20:20.671046` at the second.
+`TODO: verify` the publication time of day; no vendor source states it. The extras say weekdays,
+but the measured publication dates spread evenly over all seven days of the week (288–291 each in
+the first capture, 289–292 in the second); `TODO: verify` which is right (see Implementation
+delta). No scheduled gridflow refresh exists yet, so captures are on demand. Two captures
+(2026-10-08 and 2026-10-16) exist.
 
 ## Licence and attribution
 
@@ -201,7 +259,7 @@ eligible when every target in the captured file falls after the capture's CKAN
 `last_modified`, so the vintage can stand in for an issue time. The daily NRAPM families in
 the same batch pass it. This body fails it: it is the full archive of past publications, and
 26,709 of its 26,827 target rows fall at or before the vintage (FACTS GEN1-1, reproduced on
-silver 2026-10-09). For those rows the vintage is far later than the moment the forecast was
+silver 2026-10-09); in the 2026-10-16 capture it is 26,821 of 26,937. For those rows the vintage is far later than the moment the forecast was
 made, and the only per-row clue, `Publish Date`, is a date with no time of day or zone. Turning
 it into an issue instant (for example midnight UK time) would invent an availability time. A
 vendor statement of when each daily OPMR is published, in which zone, and whether past
@@ -224,10 +282,10 @@ ordinary 14-day wind bodies, all unit E-SEM.
   names.
 - The package notes announce that the column ids changed on 17 September 2026:
   `Maximum I/C Import` → `Maximum IC Import`, `Maximum I/C Export` → `Maximum IC Export`,
-  `Operating Reserve provided by I/Cs` → `Operating Reserve provided by ICs`. The one capture and
-  the 2026-10-08 field info both use the new names, hence one header epoch. A body captured
-  before the rename would need a second epoch. `TODO: verify` that no pre-rename body exists in
-  bronze.
+  `Operating Reserve provided by I/Cs` → `Operating Reserve provided by ICs`. Both captures and
+  the 2026-10-08 field info use the new names, hence one header epoch. A body captured
+  before the rename would need a second epoch. Both bronze bodies (2026-10-08 and 2026-10-16)
+  carry the new names, so no pre-rename body exists in bronze.
 - The dictionary types every power column as `integer` (`int4`). The record casts them to
   nullable `float64`.
 - The extras say "Daily (Weekdays)"; the publication dates cover all seven weekdays evenly.
