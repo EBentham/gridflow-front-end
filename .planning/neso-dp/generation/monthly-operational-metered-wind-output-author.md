@@ -131,3 +131,29 @@ Per-capture counts (silver, all captures 2026-10-08):
   547). New detail for the NESO question: on all 193 shared keys the 2026-27 file's total is greater than or equal to
   the 2025-26 file's (0 to 70.874 MW, mean 31.3 MW), so the later file reads as a systematic upward restatement, not
   noise.
+
+## Round 2 (review APPROVE with 8 nits)
+
+All eight nits applied. Build `--only neso_data_portal/metered_wind_output_monthly` passes, detector `[]`, 0 em
+dashes, note CRLF kept (486 of 486), mirror `cmp` identical. Chart spec, frame select and notebook cells unchanged, so
+no artefact was regenerated. Re-shot 1440 and 390 for the prose changes: they fit with nothing clipped. Server on 9804
+was started with its PID recorded and stopped by that PID only.
+
+1. First half-hour of 5 April: `what_it_is` now says the two files "cover 1 April to the first half-hour of 5 April
+   2026 and differ". The chart caption now says "Shared April 2026 periods use the 2026-27 file" (true for every
+   shared period).
+2. Why the page stops: `what_it_is` now says "This page stops at the 3 October file: gridflow does not read the header
+   NESO renamed on 16 October." I left out "yet" because the batch rules ban it as a planning word.
+3. `sett_period`: "Half-hour of the day, 1 to 48; 46 or 50 on clock-change days".
+4. `timestamp_utc`: "Period start, UTC: GB midnight, plus 30 minutes for each period after the first".
+5. Average or spot: the chart caption now says "(averages or spot readings: NESO does not say)". The guide lines for
+   `england_wales_wind_output` and `total` now carry "average or spot not stated", like `scottish_wind_output`.
+6. BOA related note: "Balancing acceptances taken on wind BM units".
+7. No precedence: `what_it_is` says "NESO does not say which wins". The frame caption says "values differ; NESO names
+   no precedence". To stay within the 60-word budget, NESO's settlement-metering caveat moved to the third `how_used`
+   line ("Not settlement-grade: NESO expects it to differ from its settlement-metered forecasting metrics").
+8. Note body: replaced the scheduler TODO with the fact (first daily refresh ran 2026-10-16, BACKLOG section 19,
+   RULINGS 888). Added a "Fresh install" paragraph: until 20bp is fixed, the page's notebook returns no 2026-2027 rows
+   on a fresh install.
+
+Not applied: none.
