@@ -1,0 +1,20 @@
+{
+  "dataset": "neso_data_portal/daily_opmr",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "4680f591d9026dbd96a474087c20a6eb879eb08cbd73aa2c9afbfa578b52a14d",
+  "type": "line",
+  "unit": "MW",
+  "caption": "",
+  "value_column": null,
+  "aggregation": "last",
+  "window": {"end": "2026-10-30", "rule": "fixed", "start": "2026-10-18"},
+  "provenance": {"duplicates_dropped": 0, "files": 2, "null_values_dropped": 0, "rows_matched": 13, "rows_read": 53764, "rows_unpivoted": 13, "rows_used": 26, "silver": "neso_data_portal/daily_opmr", "silver_first": "2026-10-18", "silver_last": "2026-10-30"},
+  "spec": {"aggregation": "last", "dedup": {"on": ["publish_date", "date"], "order_by": "published_at"}, "filter": [{"column": "publish_date", "op": "eq", "value": "2026-10-16"}], "silver": "neso_data_portal/daily_opmr", "time": "date", "type": "line", "unit": "MW", "values": [{"column": "generation_availability_margin", "series": "margin"}, {"column": "opmr_total", "series": "opmr"}], "window": {"end": "2026-10-30", "start": "2026-10-18"}},
+  "x_kind": "time",
+  "x": ["2026-10-18", "2026-10-19", "2026-10-20", "2026-10-21", "2026-10-22", "2026-10-23", "2026-10-24", "2026-10-25", "2026-10-26", "2026-10-27", "2026-10-28", "2026-10-29", "2026-10-30"],
+  "series": [
+    {"key": "margin", "values": [14242.0, 12782.0, 15972.0, 17087.0, 20559.0, 24897.0, 24412.0, 25485.0, 23369.0, 20051.0, 20293.0, 19358.0, 20723.0]},
+    {"key": "opmr", "values": [4277.0, 4957.0, 7561.0, 6037.0, 7834.0, 9275.0, 9193.0, 9488.0, 9314.0, 7562.0, 7573.0, 6617.0, 6760.0]}
+  ]
+}

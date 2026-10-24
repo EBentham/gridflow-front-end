@@ -8,7 +8,6 @@ updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: "Publications give a date, no time or zone, and nearly all rows forecast days already past."
   title: Daily operational planning margin requirement
   summary: >-
     NESO's daily view, days ahead, of the spare generation it needs above forecast demand for
@@ -28,6 +27,36 @@ page:
     - Track how NESO's margin view of one day moves as the day approaches
     - Flag days NESO expects to be tight on margin, up to two weeks ahead
     - Read beside NESO's negative reserve margin forecast for low-demand days
+  chart:
+    type: line
+    silver: neso_data_portal/daily_opmr
+    time: date
+    values:
+      - {column: generation_availability_margin, series: margin}
+      - {column: opmr_total, series: opmr}
+    filter:
+      - {column: publish_date, op: eq, value: "2026-10-16"}
+    dedup: {"on": [publish_date, date], order_by: published_at}
+    aggregation: last
+    window: {start: "2026-10-18", end: "2026-10-30"}
+    unit: MW
+  chart_view:
+    title: Margin and OPMR in the 16 October 2026 publication
+    caption: >-
+      Silver `daily_opmr`, MW: the publication dated 16 October 2026, as in NESO's file of that day,
+      for target days 18 to 30 October, one point per day. Earlier publications are not drawn.
+    alt: >-
+      Line chart from neso_data_portal/daily_opmr of NESO's publication dated 16 October 2026, in MW,
+      for target days 18 to 30 October. The generation availability margin runs from 12,782 on
+      19 October to 25,485 on 25 October. The OPMR runs from 4,277 on 18 October to 9,488 on
+      25 October, below the margin on every day.
+    x_label: target day, UK date
+    y_min: 0
+    key:
+      - {series: margin, label: Availability margin, codes: Generation Availability Margin, paint: petrol,
+         note: "Generation available after meeting national demand, NESO's dictionary says"}
+      - {series: opmr, label: OPMR, codes: OPMR total, paint: clay,
+         note: "Generation NESO needs above its demand forecast to meet its reserve requirement"}
   raw_feed:
     note: >-
       From NESO's CKAN portal: one `package_show`, then the CSV, downloaded whole unless
@@ -39,6 +68,62 @@ page:
     commands:
       - {run: gridflow ingest neso_data_portal daily_opmr --last 24h, comment: "the CSV to bronze"}
       - {run: gridflow transform neso_data_portal daily_opmr --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: publish_date, op: eq, value: "2026-10-08"}
+        - {column: date, op: ge, value: "2026-10-10"}
+        - {column: date, op: le, value: "2026-10-13"}
+      order_by: [date, published_at]
+      columns: [publish_date, date, published_at, generator_availability, generation_availability_margin,
+                opmr_total, national_surplus, peak_demand_forecast]
+    key: [publish_date, date, published_at]
+    caption: "Four target days of the 8 October 2026 publication, in NESO's 8 and 16 October files."
+    fields:
+      publish_date: "NESO's `Publish Date`: the publication's date, with no time or zone"
+      date: The target day the row forecasts, a UK date
+      published_at: "NESO's last-modified time for the file, read as UTC; one per file"
+      generator_availability: Generator availability for the target day, MW
+      generation_availability_margin: "Generation available after meeting national demand, MW, NESO's dictionary says"
+      opmr_total: "The OPMR: generation needed above the demand forecast for reserve, MW"
+      national_surplus: "NESO's dictionary: total generation minus demand minus OPMR, MW"
+      peak_demand_forecast: Peak demand forecast for the target day, MW
+      maximum_ic_import: Maximum interconnector import limit into GB, MW
+      maximum_ic_export: Maximum interconnector export limit out of GB, MW
+      operating_reserve_provided_by_ics: Operating reserve provided by interconnectors, MW
+      constrained_plant: "Constrained plant, MW, as NESO's column names it"
+      minimum_demand_forecast: Minimum demand forecast for the target day, MW
+      high_freq_response_requirement: High-frequency response requirement at minimum demand, MW
+      negative_reserve: "Negative regulating reserve plus reserve for high-frequency response, MW"
+      timestamp_utc: "UK midnight opening `date`, in UTC; not a publication time"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  caveat: "`Publish Date` has no time or zone, and NESO later changed its 8 October 2026 publication."
+  notebook:
+    lead: >-
+      `query()` filters `date`, the target day, on the `_latest` view. The second cell counts
+      September 2026 rows by days ahead. NESO says 2 to 14; 436 publications from 26 September 2024
+      run to 15.
+    cells:
+      - |
+        import pandas as pd
+        df = data.neso_data_portal.query("daily_opmr", "2026-09-01", "2026-10-30")
+        pub = df[df.publish_date.astype(str) == "2026-10-16"].sort_values("date", ignore_index=True)
+        pub[["publish_date", "date", "peak_demand_forecast", "generator_availability",
+             "generation_availability_margin", "opmr_total", "national_surplus"]].head()
+      - |
+        sep = df[df.publish_date.astype(str).str.startswith("2026-09")]
+        ahead = pd.to_datetime(sep.date) - pd.to_datetime(sep.publish_date)
+        ahead.dt.days.value_counts().sort_index().rename_axis("days ahead").rename("September rows")
+      - |
+        ax = pub.plot(x="date", y=["generation_availability_margin", "opmr_total"],
+                      color=["#155A6E", "#C77E3C"], ylim=(0, None), figsize=(8, 3.5),
+                      xlabel="target day", ylabel="MW");
+    needs: NESO's daily OPMR file, any capture from 16 October 2026 on
+    plot_alt: >-
+      Line plot of NESO's publication dated 16 October 2026, in MW, for target days 18 to 30
+      October: the generation availability margin from 12,782 to 25,485, highest on 25 October, and
+      the OPMR from 4,277 to 9,488, below the margin every day.
   related:
     - {dataset: neso_data_portal/weekly-opmr, note: "The same margin terms by engineering week, 2 to 52 weeks ahead"}
     - {dataset: neso_data_portal/negative-reserve-active-power-margin-nrapm-forecast, note: "NESO's forecast margin from negative reserve risk, on low-demand days"}
@@ -250,9 +335,10 @@ gridflow outputs derived from this package carry the attribution line above.
 
 - `daily_opmr`: held: TODO: history-bearing body (26,709 targets at or before the CKAN vintage); Publish Date is a date with no issue instant or zone (unit E-SEM)
 
-The silver output exists on disk, but it is **held**: it is not eligible for publication or for
-point-in-time model use until unit E-SEM answers the question above (RULINGS 542). This page
-therefore gives schema, units, row counts and key structure only, not data values or ranges.
+The silver output exists on disk, but it is **held**: it is not eligible for point-in-time model
+use until unit E-SEM answers the question above (RULINGS 542). Under ruling 66 (2026-10-24) the
+site page shows its rows, a chart of the 16 October 2026 publication and a notebook, with the
+question as a caveat.
 
 Why the forward-target rule (RULINGS 529) does not rescue it: that rule makes a forecast
 eligible when every target in the captured file falls after the capture's CKAN

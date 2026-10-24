@@ -4,11 +4,10 @@ package: "long-term-2-52-weeks-ahead-national-demand-forecast"
 dataset_key: "demand_forecast_2_52w"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-16
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: "NESO never defines its ESI weeks, and 2027's week 29 appears twice, with two peak dates."
   title: Long-term national demand forecast
   summary: >-
     NESO's forecast of GB national demand 2 to 52 weeks ahead: each week's peak and minimums, in MW.
@@ -25,6 +24,11 @@ page:
   how_used:
     - Weekly peak and minimum GB demand, which NESO labels 2 to 52 weeks ahead
     - "Balancing supply and demand positions, the purpose NESO states for it"
+  chart:
+    type: none
+    reason: >-
+      NESO defines no week calendar, so the weeks cannot be placed on a time axis and the page
+      draws no chart; the notebook plots each peak at NESO's own peak date.
   raw_feed:
     note: >-
       From NESO's CKAN portal: one `package_show`, then the CSV, downloaded whole unless its
@@ -35,10 +39,60 @@ page:
     commands:
       - {run: gridflow ingest neso_data_portal demand_forecast_2_52w --last 24h, comment: "a changed file to bronze"}
       - {run: gridflow transform neso_data_portal demand_forecast_2_52w --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: calendar_year, op: eq, value: 2027}
+        - {column: esiwk, op: in, value: [26, 27, 28, 29, 30, 31, 32]}
+      dedup: {"on": [calendar_year, esiwk, cdate_peak], order_by: capture_written_at}
+      order_by: [cdate_peak]
+      columns: [calendar_year, esiwk, cdate_peak, tsd_peak, tsd_min, day_min, night_min,
+                financial_year, published_at, timestamp_utc]
+    key: [calendar_year, esiwk, cdate_peak]
+    caption: "2027's weeks 26 to 32, in peak-date order."
+    fields:
+      calendar_year: "NESO's calendar year label for the week; no week calendar given"
+      esiwk: "NESO's ESI week number; in this file 2026 runs 42 to 53"
+      cdate_peak: "Date of the week's peak demand, NESO says; no day boundary or zone"
+      tsd_peak: "The week's peak demand, MW, per NESO's dictionary"
+      tsd_min: "The week's minimum demand, MW; NESO gives no date for it"
+      day_min: "The week's minimum daytime demand, MW; NESO does not define daytime"
+      night_min: "The week's minimum overnight demand, MW; NESO does not define overnight"
+      financial_year: "NESO's financial year label; NESO does not say when its year starts"
+      published_at: "NESO's last-modified time for the file, read as UTC; not an issue time"
+      timestamp_utc: "When gridflow captured the file, UTC; not the week the row forecasts"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  caveat: "NESO never defines its ESI weeks, and 2027's week 29 appears twice, with two peak dates."
+  notebook:
+    lead: >-
+      `query()` filters on `timestamp_utc`, the capture time here, so these cells use `data.sql()`
+      on the `_latest` view. Weeks stay NESO's year and week labels; the plot puts each peak at
+      NESO's own peak date.
+    cells:
+      - |
+        weeks = data.sql("""
+            SELECT calendar_year, financial_year, esiwk, cdate_peak,
+                   tsd_peak, tsd_min, day_min, night_min
+            FROM silver_neso_data_portal_demand_forecast_2_52w_latest
+            ORDER BY cdate_peak
+        """)
+        weeks[weeks.duplicated(["calendar_year", "esiwk"], keep=False)]
+      - |
+        weeks.groupby("calendar_year").esiwk.agg(["min", "max", "count"]).reset_index()
+      - |
+        ax = weeks.plot(x="cdate_peak", y="tsd_peak", style="o-", legend=False, color="#155A6E",
+                        figsize=(8, 3.5), xlabel="NESO's peak date", ylabel="peak demand, MW");
+    needs: NESO's long-term national demand forecast file
+    plot_alt: >-
+      NESO's weekly peak demand in MW, one dot per row at its peak date: 35,497 on 15 October
+      2026, 43,519 on 5 January 2027 (after 38,162 on 30 December), 28,186 on 17 June, 43,175 on
+      21 December, then 39,125 on 29 December 2027. Week 29's two dots, 21 and 22 July 2027, show
+      28,673.
   related:
     - {dataset: neso_data_portal/2-14-days-ahead-national-demand-forecast, note: "NESO's national demand forecast 2 to 14 days ahead"}
     - {dataset: neso_data_portal/7-day-ahead-national-forecast, note: "A shorter-range NESO national demand forecast, for the next week"}
-    - {dataset: neso_data_portal/historic-demand-data, note: "National demand outturn by half hour, to set the forecasts against"}
+    - {dataset: neso_data_portal/historic-demand-data, note: "The national demand outturn NESO publishes, by half hour"}
 ---
 
 # Long Term (2-52 weeks ahead) National Demand Forecast
@@ -66,8 +120,9 @@ horizons in @7-day-ahead-national-forecast.md and @2-14-days-ahead-national-dema
 start and end day, its numbering, or how it rolls over against the calendar and financial year
 labels), and the table repeats one `(calendar_year, ESIWK)` label at two different peak dates. No
 week can be placed on a calendar with certainty, so the table is not eligible for publication or
-point-in-time use until NESO answers. See Holds. **This page gives schema, clocks and structural
-counts only, and no data values.**
+point-in-time use until NESO answers. See Holds. This note gives schema, clocks and structural
+counts only; under ruling 66 (2026-10-24) the site page shows the rows and a notebook, with one
+line naming the week-calendar question and no chart on a time axis.
 
 - Publisher group: Demand
 - Registry group: demand · archetype: FC
@@ -123,8 +178,9 @@ Schema, epoch 1:
 | `available_at` | = `published_at` |
 
 **Held (unit E-SEM).** This family's silver output exists but is not eligible for publication or
-point-in-time use. This page gives schema, row counts and structural counts only. It gives no
-data values, samples or ranges. See Holds.
+point-in-time use. This note gives schema, row counts and structural counts only; under ruling
+66 (2026-10-24) the site page shows the rows, with one line naming the week-calendar question.
+See Holds.
 
 **The two clocks for this family:**
 
@@ -254,9 +310,11 @@ missing, and either one alone would block point-in-time use:
    missing issue time. This is the same forward-target test applied to the other forecast
    families (RULINGS 529).
 
-Unit E-SEM must answer both questions with NESO. Until then the silver output stays out of
-published artifacts and out of any point-in-time query. There is no gold view for this family.
-Row counts and the schema are fine to state, and this page states no values. Rulings 591 and 596
+Unit E-SEM must answer both questions with NESO. Until then the silver output stays out of any
+point-in-time query. There is no gold view for this family. Under ruling 66 (2026-10-24) the site
+page shows the rows, with one line naming the week-calendar question and no chart on a time
+axis; its notebook plots each peak at NESO's own peak date only. This note itself states no
+MW values. Rulings 591 and 596
 (ADR-041, `@docs/DECISION_LOG/ADR-041-gold-forecast-vs-outturn-contracts.md`, status proposed
 since RULINGS 874) concern the day-ahead demand forecast and its performance pairing and do not
 lift this hold; the pairing of the day-ahead forecast with its performance family stays held with

@@ -1,0 +1,149 @@
+{
+ "dataset": "neso_data_portal/demand_forecast_2_52w",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "a06e7fafc24ee1289b29cbf24ae3e17d389bc0e8f51152068e8f203c448d1e62",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "weeks = data.sql(\"\"\"\n    SELECT calendar_year, financial_year, esiwk, cdate_peak,\n           tsd_peak, tsd_min, day_min, night_min\n    FROM silver_neso_data_portal_demand_forecast_2_52w_latest\n    ORDER BY cdate_peak\n\"\"\")\nweeks[weeks.duplicated([\"calendar_year\", \"esiwk\"], keep=False)]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "calendar_year",
+      "financial_year",
+      "esiwk",
+      "cdate_peak",
+      "tsd_peak",
+      "tsd_min",
+      "day_min",
+      "night_min"
+     ],
+     "index": [
+      "40",
+      "41"
+     ],
+     "rows": [
+      [
+       "2027",
+       "2027",
+       "29",
+       "2027-07-21",
+       "28673",
+       "15375",
+       "15375",
+       "17299"
+      ],
+      [
+       "2027",
+       "2027",
+       "29",
+       "2027-07-22",
+       "28673",
+       "15375",
+       "15375",
+       "17299"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "weeks.groupby(\"calendar_year\").esiwk.agg([\"min\", \"max\", \"count\"]).reset_index()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "calendar_year",
+      "min",
+      "max",
+      "count"
+     ],
+     "index": [
+      "0",
+      "1"
+     ],
+     "rows": [
+      [
+       "2026",
+       "42",
+       "53",
+       "12"
+      ],
+      [
+       "2027",
+       "1",
+       "52",
+       "53"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "ax = weeks.plot(x=\"cdate_peak\", y=\"tsd_peak\", style=\"o-\", legend=False, color=\"#155A6E\",\n                figsize=(8, 3.5), xlabel=\"NESO's peak date\", ylabel=\"peak demand, MW\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "demand_forecast_2_52w-5.png",
+     "width": 716,
+     "height": 332
+    }
+   ]
+  }
+ ]
+}
