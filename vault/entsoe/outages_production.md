@@ -2,7 +2,7 @@
 source: entsoe
 dataset_key: outages_production
 vendor: ENTSO-E Transparency Platform
-last_verified: 2026-05-08
+last_verified: 2026-10-24
 layer_coverage: bronze, silver
 ---
 
@@ -78,7 +78,7 @@ Live verification 2026-05-08:
 ```xml
 <Unavailability_MarketDocument xmlns="urn:iec62325.351:tc57wg16:451-6:outagedocument:3:0">
   <type>A77</type>
-  <docStatus><value>A05</value></docStatus>
+  <!-- docStatus is sent only on cancelled notices: <docStatus><value>A09</value></docStatus> -->
   <TimeSeries>
     <businessType>A53</businessType>
     <biddingZone_Domain.mRID>10Y1001A1001A82H</biddingZone_Domain.mRID>
@@ -101,25 +101,31 @@ Live verification 2026-05-08:
 **Path pattern**: `{data_root}/silver/entsoe/outages_production/year=YYYY/month=MM/outages_production_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.entsoe.outages_h7.OutagesProductionTransformer`
 **Pydantic schema**: `gridflow.schemas.entsoe.EntsoeOutagesProduction`
-**Dedup key**: `(timestamp_utc, area_code, unit_mrid, timeseries_mrid)`
-**Point-in-time (as-of) field**: `available_at` (the bitemporal as-of column written by `BaseSilverTransformer`, reconstructable from bronze sidecars on reingest). `ingested_at` is the transform wall-clock (`datetime.now(UTC)`), **not** a publication vintage, so do not use it as a leak-proof as-of anchor. `published_at` is the document `createdDateTime` (`outages_h7.py:107`), the notice's creation time (dates from October 2025 onwards in bronze fetched in 2026), and it feeds `available_at`.
+**Dedup key**: `(document_mrid, timeseries_mrid, unit_mrid, timestamp_utc)` (`outages_h7.py:66, 98-103`, `_outages.py:199-219`; gridflow `fix/entsoe-pt1m-steps`, `DATASET_VERSION` 2.0.0)
+**Row shape**: as [outages generation](outages_generation.md): one row per step of each document's highest revision in that day's bronze, clipped to the UTC day (`_outages.py:87-156`); `outage_start_utc` / `outage_end_utc` keep the period unclipped.
+**Point-in-time (as-of) field**: `available_at` (the bitemporal as-of column written by `BaseSilverTransformer`, reconstructable from bronze sidecars on reingest). `ingested_at` is the transform wall-clock (`datetime.now(UTC)`), **not** a publication vintage, so do not use it as a leak-proof as-of anchor. `published_at` is the revision's `createdDateTime` (`outages_h7.py:67-69`), the notice revision's creation time (from 6 October 2025 in silver built from bronze fetched in 2026), and it feeds `available_at`.
 
 ### Silver schema
 
 | Field | Python type | Nullable | Source field | Notes |
 |-------|-------------|----------|--------------|-------|
-| timestamp_utc | datetime[UTC] | No | `Available_Period` start + (position - 1) × resolution (`parsers.py:530`) | tz-aware UTC. One row per declared `<Point>`; the period end is not kept. `PT1M` steps by 1 hour (see Known issues). |
+| timestamp_utc | datetime[UTC] | No | `Available_Period` start + (position - 1) × resolution | Step start, tz-aware UTC (`PT1M` = one minute); clipped to the partition day. |
+| step_end_utc | datetime[UTC] | No | next declared point's start, else the period end | Step end, clipped to the next midnight. |
 | area_code | str | No | `<biddingZone_Domain.mRID>` | EIC |
 | unit_mrid | str | No | `<production_RegisteredResource.mRID>` | Production unit EIC |
 | unit_name | str | No | `<production_RegisteredResource.name>` | Default "" in canonical. |
 | production_type | str | No | `<production_RegisteredResource.pSRType.psrType>` | Default "" in canonical. EIC PSR. |
+| nominal_mw | float | Yes | `<...powerSystemResources.nominalP>` | Nominal power, MW. |
 | outage_type | str | No | derived from `<businessType>` | "planned" / "unplanned" |
 | unavailable_mw | float | No | `<Point><quantity>` of `Available_Period` | MW. Available or unavailable is unverified (see Known issues). |
 | business_type | str | No | `<businessType>` | Default "" in canonical. Raw. |
 | document_mrid | str | No | root `<mRID>` | Default "" in canonical. |
-| document_status | str | No | `<docStatus><value>` | Default "" in canonical. A05/A09/A13. |
-| timeseries_mrid | str | No | TimeSeries `<mRID>` | Default "" in canonical. |
-| resolution | str | No | parsed | Default "" in canonical. ISO code as sent (`parsers.py:438`); `PT1M` in every document received 2026. |
+| revision_number | int | Yes | root `<revisionNumber>` | Highest revision in that day's bronze. |
+| document_status | str | No | `<docStatus><value>` | `A09` on cancelled notices; "" when no `docStatus` is sent. |
+| timeseries_mrid | str | No | TimeSeries `<mRID>` | Default "" in canonical; "1" in every document received. |
+| outage_start_utc | datetime[UTC] | Yes | Period `timeInterval/start` | Not clipped. |
+| outage_end_utc | datetime[UTC] | Yes | Period `timeInterval/end` | Not clipped. |
+| resolution | str | No | parsed | Default "" in canonical. ISO code as sent; `PT1M` in every document received 2026. |
 | published_at | datetime[UTC] | Yes | root `<createdDateTime>` | Notice creation time; typed null when absent. |
 | data_provider | str | No | constant | "entsoe" |
 | ingested_at | datetime[UTC] | Yes | derived | optional |
@@ -130,16 +136,21 @@ Live verification 2026-05-08:
 [
     {
         "timestamp_utc": "2026-04-10T00:00:00+00:00",
+        "step_end_utc": "2026-04-10T06:00:00+00:00",
         "area_code": "10Y1001A1001A82H",
         "unit_mrid": "11WD7--AAA-VATTI",
         "unit_name": "UNIT-XYZ",
         "production_type": "B11",
+        "nominal_mw": 300.0,
         "outage_type": "planned",
         "unavailable_mw": 250.0,
         "business_type": "A53",
         "document_mrid": "DOC-001",
-        "document_status": "A05",
+        "revision_number": 2,
+        "document_status": "",
         "timeseries_mrid": "1",
+        "outage_start_utc": "2026-04-09T22:00:00+00:00",
+        "outage_end_utc": "2026-04-12T06:00:00+00:00",
         "resolution": "PT1M",
         "data_provider": "entsoe",
         "ingested_at": "2026-05-08T18:00:00+00:00",
@@ -158,12 +169,12 @@ None implemented.
 ## Known issues and gotchas
 
 - **GB EMPTY post-Brexit.**
-- **200-record cap** — DE-LU 30-day window observed to return HTTP 400 reason 999 "exceeds maximum 200". Use shorter windows (daily) or split queries by `psrType`.
-- **A77 vs A80 overlap** — A77 production units and A80 generation units are distinct documentTypes but content overlaps for many TSOs. Some TSOs publish to A77 only, others to A80 only. Best practice: ingest both and dedup by `unit_mrid + document_mrid + revision`. (Silver has no revision column: the parser reads `revisionNumber`, `parsers.py:139-140`, but `output_cols` drops it, `outages_h7.py:193-209`.)
+- **200-record cap** — DE-LU 30-day window observed to return HTTP 400 reason 999 "exceeds maximum 200". Use shorter windows (daily) or split queries by `psrType`. ENTSO-E's API documentation ("15.1.C-D Unavailability of Production Units", read 2026-10-24) caps a ZIP reply at 200 documents and pages with `offset`; gridflow sends no `offset` for outages. Its daily replies in August and September 2026 held at most 106 documents.
+- **A77 vs A80 overlap** — A77 production units and A80 generation units are distinct documentTypes but content overlaps for many TSOs. Some TSOs publish to A77 only, others to A80 only. Best practice: ingest both and dedup by `unit_mrid + document_mrid + revision`. (Silver keeps `revision_number`, the highest in each day's bronze.)
 - **30-day window for ingestion** — gives reasonable coverage but watch for 200-cap rejection.
-- **Outage status codes** (DocStatus): `A05` Active, `A09` Cancelled, `A13` Withdrawn. gridflow sends no `DocStatus` (`endpoints.py:86-92`); responses include cancelled documents (402 of 569 document versions in bronze fetched in August and September 2026), kept in silver as `document_status` `A09`. Active documents arrive with `document_status` empty.
+- **Outage status codes** (DocStatus): `A05` Active, `A09` Cancelled, `A13` Withdrawn (ENTSO-E's API documentation). gridflow sends no `DocStatus` (`endpoints.py:86-92`); responses include cancelled documents (402 of 564 documents in silver built from bronze fetched in August and September 2026), kept in silver as `document_status` `A09`. Non-cancelled documents send no `docStatus`, so `document_status` is empty.
 - ZIP archives for multi-document responses, same as A80.
-- **Shared with A80** (details in [outages generation](outages_generation.md)): outages repeat in every daily file they overlap (exempt from the event-window trim, `_event_window.py:193-195`; 569 document versions fetched 933 times over 12 days); `PT1M` points after position 1 are stamped in hours (`parsers.py:35-51`; 90 of 569 versions carry a point past their own period end, up to 2077); `unavailable_mw` meaning unverified (quantity below `nominalP` in 567 of 569 versions, 0 in 121); `BusinessType=A53` only.
+- **Shared with A80** (details in [outages generation](outages_generation.md)): steps clipped to each partition day, the highest revision kept per day's bronze, not overall; `unavailable_mw` meaning unverified (gridflow backlog 13am; quantity at or below `nominal_mw` on all 1,539 step rows, 0 on 257); `BusinessType=A53` only; the `<Reason>` is not kept. GB, BE and IE-SEM answered every request with Acknowledgement 999 (1 to 5 August and 8 to 14 September 2026).
 
 ---
 
