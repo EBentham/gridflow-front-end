@@ -4,9 +4,46 @@ package: "carbon-intensity-of-balancing-actions"
 dataset_key: "ci_balancing_actions"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-09
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: "No row says when NESO first published it, or whether times mark half-hour starts or ends."
+  title: Carbon intensity of balancing actions
+  summary: >-
+    NESO's half-hourly GB carbon intensity in gCO2/kWh before and after Balancing Mechanism (BM)
+    actions, and the difference between them.
+  facts:
+    vendor: "NESO Data Portal, package Carbon Intensity of Balancing Actions: a CSV and methodology PDF"
+    cadence: "Daily, NESO says"
+    grain: "Each row: one UTC half hour and three intensities in gCO2/kWh"
+    history: "NESO's October 2026 files start on 31 March 2021"
+  landscape: market
+  what_it_is: >-
+    `FPN` is the intensity had every BM unit followed its Final Physical Notice; `BOA` applies
+    NESO's accepted bids and offers; `Difference` is positive when `BOA` is higher. NESO's April
+    2021 methodology says it tracks intensity change, not emissions, and omits interconnectors and
+    small units. NESO's 16 October 2026 file changed values its 8 October file gave for past half
+    hours.
+  how_used:
+    - "How much accepted bids and offers raised or lowered GB intensity, per half hour"
+    - "Finding half hours when constraint actions, like wind bid down, raised intensity"
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then the CSV and methodology PDF, each downloaded
+      whole unless its `last_modified` is unchanged.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=carbon-intensity-of-balancing-actions"
+      - "GET https://api.neso.energy/dataset/5d3a7f30-020b-4bf2-9f56-1a7522ece994/resource/0b7edf10-4328-4b85-a0af-e6daa6bb8428/download/balancing_actions_carbon_intensity_ckan.csv"
+      - "GET https://api.neso.energy/dataset/5d3a7f30-020b-4bf2-9f56-1a7522ece994/resource/86fb2746-4f5f-4a22-85bd-dbb63b75a791/download/eso-ci-balancing-actions-methodology_neso.pdf"
+    commands:
+      - {run: gridflow ingest neso_data_portal ci_balancing_actions --last 24h, comment: "the CSV to bronze"}
+      - {run: gridflow transform neso_data_portal ci_balancing_actions --last 24h, comment: "the capture's date to silver"}
+      - {run: gridflow ingest neso_data_portal ci_balancing_actions_files --last 24h, comment: "the methodology PDF, bronze only"}
+  related:
+    - {dataset: elexon/boal, note: "Elexon's accepted bids and offers per BM unit, the actions `BOA` applies"}
+    - {dataset: neso_data_portal/wind-bmu-boa-volumes, note: "Wind curtailed by accepted bids, a case NESO says can raise `BOA`"}
+    - {dataset: neso_data_portal/national-carbon-intensity-forecast, note: "NESO's GB intensity forecast and estimate per half hour, a separate measure"}
 ---
 
 # Carbon Intensity of Balancing Actions
@@ -110,12 +147,14 @@ has no physical unit; the dictionary gives its unit as UTC ISO 8601.
 1. **Vintage: `ckan_last_modified`.** `published_at` and `available_at` both equal the CKAN
    `last_modified` of the resource at capture time. CKAN gives this value without an offset;
    gridflow reads it as UTC (ADR-030 D-15, corroborated rather than vendor-documented). For
-   the one capture so far, `published_at` = `available_at` = 2026-10-07T11:38:19.659640Z.
+   the 2026-10-08 capture, `published_at` = `available_at` = 2026-10-07T11:38:19.659640Z; for
+   the 2026-10-16 capture, 2026-10-16T11:44:41.199607Z (bronze sidecars).
    The resource is `url_type=upload`, so this is the file's upload time and not a release
    time for any one row.
 2. **Event time: temporal recipe `none`.** gridflow does **not** derive the half-hour from
    the data. `timestamp_utc`, and `event_time` copied from it, hold the **capture time** (the
-   bronze write instant, 2026-10-08T09:14:50.052577Z on every row of the current output).
+   bronze write instant: 2026-10-08T09:14:50.052577Z on every row of the first capture's
+   output, 2026-10-16T19:21:05.900749Z on every row of the second's).
    They are not the time the measurement refers to. The vendor's half-hour stays in
    `datetime` as the raw string, for example `YYYY-MM-DDTHH:MM:SS` with no `Z` suffix. The
    value is UTC by the dictionary, and UTC-date DST-day checks support that (K-CI-FACTS
@@ -128,20 +167,28 @@ has no physical unit; the dictionary gives its unit as UTC ISO 8601.
      vendor methodology PDF does not say. This blocks a `utc_instant` recipe and lifting
      the hold.
 
-**Identity and `_latest`.** `datetime` is a uniqueness guard on each capture. In the
-current capture it is unique and never missing (96,163 distinct, 0 duplicates, 0 nulls),
+**Identity and `_latest`.** `datetime` is a uniqueness guard on each capture. In both
+captures it is unique and never missing (96,163 and 96,595 distinct, 0 duplicates, 0 nulls),
 but the vendor does not guarantee that a timestamp keeps the same identity when values are
 corrected. `whole_capture` makes the newest capture the latest view, so rows the vendor
 drops are not carried forward.
-- TODO: verify whether the vendor rewrites, appends or rolls the file between uploads.
-  This needs a second authorised capture of the same resource to compare (K-CI-FACTS §3.1
-  CI-1).
-- TODO: verify whether past half-hours are revised after first publication. Nothing in
-  the dictionary, resource description or methodology says either way.
+- **Second capture (2026-10-16), compared with the first** (Polars on both bronze bodies,
+  values compared as floats, read 2026-10-24): the 2026-10-16 file kept all 96,163 earlier
+  timestamps, dropped none and appended 432 (2026-10-07T01:00:00 to 2026-10-16T00:30:00).
+  `FPN` is unchanged on every shared row. `BOA` and `Difference` changed on 4 shared rows,
+  2026-10-06T00:00, 2026-10-06T00:30, 2026-10-07T00:00 and 2026-10-07T00:30 (for example
+  `BOA` 224.85 to 229.33 at 2026-10-06T00:00), all already in the first file and past at
+  its upload. So NESO does revise past half-hours, and the file keeps no record of a row's
+  first value or when it was first published. Two captures do not show how often or how far
+  back revisions reach.
+- TODO: verify the vendor's revision policy for past half-hours. Nothing in the dictionary,
+  resource description or methodology says either way. The registry's hold question names
+  only the period position; the measured revisions raise the first-publication question as
+  well (front-end ledger gloss, 2026-10-24).
 
 **No issue clock.** The epoch's issue is `{"kind": "none"}`. The file has no issue or
 forecast-run column, so it is not a forecast archive. Each target timestamp appears once
-in the capture (multiplicity `{1: 96163}`).
+in each capture (multiplicity `{1: 96163}`, then `{1: 96595}`).
 
 **Sentinels and nulls (K-CI-FACTS g5).** The record declares no null tokens.
 - A `Difference` of `-1.0` is **valid signed arithmetic, not a null sentinel**. It matches
@@ -158,6 +205,9 @@ in the capture (multiplicity `{1: 96163}`).
 - Rows: **96,163**, equal to the planned count and the bronze body
   (`raw_20261008T091450Z_0b7edf10-…_1ae8306e.csv`, 4,755,075 bytes, one header epoch).
 - Reconcile `--cutoff 2026-10-08`: 0 gaps.
+- Second capture: a second Parquet file of **96,595** rows from
+  `raw_20261016T192105Z_0b7edf10-…_c7f20642.csv` (4,776,011 bytes, same header), so
+  `_latest` now takes the 2026-10-16 capture whole.
 - Columns: `datetime` (String), `fpn`, `boa`, `difference` (Float64), and the engine columns
   `timestamp_utc`, `published_at`, `capture_written_at`, `event_time`, `available_at`
   (Datetime µs, UTC), `bronze_capture_id`, `source_run_id`, `dataset_version` (String).
@@ -176,7 +226,11 @@ This family holds the methodology PDF only: one capture,
 2024-10-01T03:19:45.417470 (read as UTC). There is no silver record and no temporal recipe;
 the PDF is kept as vendor evidence. It describes the method (fuel-type emission factors,
 FPN against BOA profiles, demand-normalised) but says nothing about where the CSV
-timestamp sits in the period.
+timestamp sits in the period. Its text (extracted with `pdftotext`, read 2026-10-24) gives
+"Issue: April 2021", says the metric "is not a measure of emissions but instead tracks the
+difference of carbon intensity", and excludes "the balancing actions of interconnectors or
+small BMUs"; it cites the Carbon Intensity API only as reference [1]. No body was captured
+on 2026-10-16.
 
 ## Cadence
 
@@ -187,7 +241,13 @@ timestamp sits in the period.
 The CSV's CKAN `last_modified` was 2026-10-06T11:41:19 in the catalogue snapshot and
 2026-10-07T11:38:19 at capture, which fits a roughly daily re-upload. TODO: verify the
 vendor's upload time of day and how far behind real time the latest row is (publication
-lag). One capture cannot establish either. No scheduled gridflow refresh exists yet (OWNER
+lag). Two observations only: the 2026-10-08 capture (`last_modified` 2026-10-07T11:38:19)
+ends at 2026-10-07T00:30:00 and the 2026-10-16 capture (`last_modified` 2026-10-16T11:44:41)
+ends at 2026-10-16T00:30:00, so each file ended at 00:30 on its upload day. In the 2026-10-16
+body (UTC dates), nine past days carry only their 00:00 and 00:30 rows (2022-03-26,
+2022-04-25, 2022-08-24, 2022-12-26, 2023-01-26, 2023-02-24, 2023-09-17, 2023-10-05,
+2026-03-06), four days carry none (2023-01-27, 2023-10-06 to 2023-10-08), and
+2022-10-27T23:30:00 is missing. No scheduled gridflow refresh exists yet (OWNER
 457–460), so new captures need a manual sweep.
 
 ## Licence and attribution
