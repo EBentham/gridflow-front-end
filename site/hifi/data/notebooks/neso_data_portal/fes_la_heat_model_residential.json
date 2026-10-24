@@ -1,0 +1,192 @@
+{
+ "dataset": "neso_data_portal/fes_la_heat_model_residential",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "e01179a5ae76fe2a487778f7957274eef7b39cf548ec5909d28509647249c094",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "hp = data.sql(\"\"\"\n    SELECT pathway, projection_year, SUM(stock_ashp) AS ashp\n    FROM silver_neso_data_portal_fes_la_heat_model_residential_latest\n    WHERE edition = 2025\n    GROUP BY pathway, projection_year\n\"\"\")\nwide = hp.pivot(index=\"projection_year\", columns=\"pathway\", values=\"ashp\").rename_axis(index=None, columns=None)\nwide.round(-3)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "Electric Engagement",
+      "Falling Behind",
+      "Holistic Transition",
+      "Hydrogen Evolution"
+     ],
+     "index": [
+      "2025",
+      "2030",
+      "2035",
+      "2040",
+      "2045",
+      "2050"
+     ],
+     "rows": [
+      [
+       "359000.0",
+       "359000.0",
+       "359000.0",
+       "359000.0"
+      ],
+      [
+       "2065000.0",
+       "1104000.0",
+       "2070000.0",
+       "2065000.0"
+      ],
+      [
+       "5838000.0",
+       "2994000.0",
+       "6341000.0",
+       "5621000.0"
+      ],
+      [
+       "8459000.0",
+       "4752000.0",
+       "9162000.0",
+       "7590000.0"
+      ],
+      [
+       "10695000.0",
+       "6562000.0",
+       "11571000.0",
+       "9352000.0"
+      ],
+      [
+       "12263000.0",
+       "7675000.0",
+       "13209000.0",
+       "10659000.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "ax = wide.plot(figsize=(8, 3.5), style=\"o-\", xlabel=\"NESO's modelled year\",\n               ylabel=\"air-source heat pumps, all authorities\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "fes_la_heat_model_residential-4.png",
+     "width": 695,
+     "height": 352
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "data.sql(\"\"\"\n    SELECT la_code, local_authority, stock_ashp, stock_gas_boiler, stock_hydrogen_boiler\n    FROM silver_neso_data_portal_fes_la_heat_model_residential_latest\n    WHERE edition = 2025 AND pathway = 'Holistic Transition' AND projection_year = 2050\n    ORDER BY stock_ashp DESC\n    LIMIT 5\n\"\"\").round(0)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "la_code",
+      "local_authority",
+      "stock_ashp",
+      "stock_gas_boiler",
+      "stock_hydrogen_boiler"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "E08000025",
+       "Birmingham",
+       "196918.0",
+       "0.0",
+       "0.0"
+      ],
+      [
+       "E08000035",
+       "Leeds",
+       "171476.0",
+       "0.0",
+       "0.0"
+      ],
+      [
+       "S12000049",
+       "Glasgow City",
+       "132427.0",
+       "0.0",
+       "0.0"
+      ],
+      [
+       "E06000052",
+       "Cornwall",
+       "121833.0",
+       "0.0",
+       "0.0"
+      ],
+      [
+       "E06000047",
+       "County Durham",
+       "115938.0",
+       "0.0",
+       "0.0"
+      ]
+     ]
+    }
+   ]
+  }
+ ]
+}

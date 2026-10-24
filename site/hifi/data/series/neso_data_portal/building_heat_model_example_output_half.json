@@ -1,0 +1,19 @@
+{
+  "dataset": "neso_data_portal/building_heat_model_example_output_half",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "b2076dc260236502ada9d96f2c4d54b380c12d2d89f530b74769f15a4964121b",
+  "type": "bar",
+  "unit": "kWh",
+  "caption": "",
+  "value_column": "total_electricity",
+  "aggregation": "max",
+  "window": null,
+  "provenance": {"duplicates_dropped": 0, "files": 1, "null_values_dropped": 0, "rows_matched": 48, "rows_read": 96, "rows_used": 48, "silver": "neso_data_portal/building_heat_model_example_output_half"},
+  "spec": {"aggregation": "max", "dedup": {"on": ["resource_id", "run_id", "hh_period"], "order_by": "capture_written_at"}, "filter": [{"column": "run_id", "op": "eq", "value": "run_2"}], "group": "start_of_hh_period", "silver": "neso_data_portal/building_heat_model_example_output_half", "sort": "label", "type": "bar", "unit": "kWh", "value": "total_electricity"},
+  "x_kind": "category",
+  "x": ["00:00", "00:30", "01:00", "01:30", "02:00", "02:30", "03:00", "03:30", "04:00", "04:30", "05:00", "05:30", "06:00", "06:30", "07:00", "07:30", "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30", "22:00", "22:30", "23:00", "23:30"],
+  "series": [
+    {"key": "total_electricity", "values": [0.0, 0.818, 0.244, 0.0, 0.0, 0.0, 0.0, 0.0, 0.163, 0.601, 0.746, 0.696, 0.676, 0.669, 0.663, 0.596, 0.504, 0.436, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.694, 0.551, 0.446, 0.657, 0.681, 0.635, 0.594, 0.477, 0.397, 0.355, 0.329, 0.307, 0.298, 0.283, 0.276, 0.27, 0.277, 0.273, 0.0, 0.0]}
+  ]
+}

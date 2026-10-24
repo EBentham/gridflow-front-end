@@ -1,0 +1,287 @@
+{
+ "dataset": "neso_data_portal/fes_flx1_flexibility",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "7d1ac4a1f455f6c63aead3fff010ed592472f4d01304fdb17df0562599744d06",
+ "silver": "neso_data_portal/fes_flx1_flexibility",
+ "columns": [
+  {
+   "name": "data_item",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "detail",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "unit",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "projection_year",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "value",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "pathway",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "flexibility_sub_type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "fuel",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "edition",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "resource_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "flexibility_type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "scenario",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "Electricity storage connection capacity",
+   "Battery",
+   "GW",
+   "2035",
+   "29.8402",
+   "Holistic Transition",
+   "Supply side flexibility",
+   "Electricity",
+   "2025",
+   "299bc6c8-7608-4946-ab0a-5bc22129c897",
+   "2025-12-10 17:00:25.208610 UTC",
+   "2026-10-08 10:55:33.057523 UTC",
+   "Electricity system flexibility",
+   null,
+   "bronze/neso_data_portal/fes_flx1_flexibility/2026/10/08/raw_20261008T105533Z_299bc6c8-7608-4946-ab0a-5bc22129c897_a5049beb.csv",
+   "2026-10-08 10:55:33.057523 UTC",
+   "2026-10-08 10:55:33.057523 UTC",
+   "2025-12-10 17:00:25.208610 UTC",
+   "a897de9a-e4fb-4a31-be12-4dcff887d974",
+   "1+e1"
+  ],
+  [
+   "Electricity storage energy storage potential",
+   "Battery",
+   "GWh",
+   "2035",
+   "43.29357",
+   "Holistic Transition",
+   "Supply side flexibility",
+   "Electricity",
+   "2025",
+   "299bc6c8-7608-4946-ab0a-5bc22129c897",
+   "2025-12-10 17:00:25.208610 UTC",
+   "2026-10-08 10:55:33.057523 UTC",
+   "Electricity system flexibility",
+   null,
+   "bronze/neso_data_portal/fes_flx1_flexibility/2026/10/08/raw_20261008T105533Z_299bc6c8-7608-4946-ab0a-5bc22129c897_a5049beb.csv",
+   "2026-10-08 10:55:33.057523 UTC",
+   "2026-10-08 10:55:33.057523 UTC",
+   "2025-12-10 17:00:25.208610 UTC",
+   "a897de9a-e4fb-4a31-be12-4dcff887d974",
+   "1+e1"
+  ],
+  [
+   "Interconnectors",
+   "Capacity",
+   "GW",
+   "2035",
+   "19.4",
+   "Holistic Transition",
+   "Supply side flexibility",
+   "Electricity",
+   "2025",
+   "299bc6c8-7608-4946-ab0a-5bc22129c897",
+   "2025-12-10 17:00:25.208610 UTC",
+   "2026-10-08 10:55:33.057523 UTC",
+   "Electricity system flexibility",
+   null,
+   "bronze/neso_data_portal/fes_flx1_flexibility/2026/10/08/raw_20261008T105533Z_299bc6c8-7608-4946-ab0a-5bc22129c897_a5049beb.csv",
+   "2026-10-08 10:55:33.057523 UTC",
+   "2026-10-08 10:55:33.057523 UTC",
+   "2025-12-10 17:00:25.208610 UTC",
+   "a897de9a-e4fb-4a31-be12-4dcff887d974",
+   "1+e1"
+  ],
+  [
+   "Interconnectors",
+   "Export",
+   "TWh",
+   "2035",
+   "-108.791",
+   "Holistic Transition",
+   "Supply side flexibility",
+   "Electricity",
+   "2025",
+   "299bc6c8-7608-4946-ab0a-5bc22129c897",
+   "2025-12-10 17:00:25.208610 UTC",
+   "2026-10-08 10:55:33.057523 UTC",
+   "Electricity system flexibility",
+   null,
+   "bronze/neso_data_portal/fes_flx1_flexibility/2026/10/08/raw_20261008T105533Z_299bc6c8-7608-4946-ab0a-5bc22129c897_a5049beb.csv",
+   "2026-10-08 10:55:33.057523 UTC",
+   "2026-10-08 10:55:33.057523 UTC",
+   "2025-12-10 17:00:25.208610 UTC",
+   "a897de9a-e4fb-4a31-be12-4dcff887d974",
+   "1+e1"
+  ],
+  [
+   "Interconnectors",
+   "Import",
+   "TWh",
+   "2035",
+   "27.55558",
+   "Holistic Transition",
+   "Supply side flexibility",
+   "Electricity",
+   "2025",
+   "299bc6c8-7608-4946-ab0a-5bc22129c897",
+   "2025-12-10 17:00:25.208610 UTC",
+   "2026-10-08 10:55:33.057523 UTC",
+   "Electricity system flexibility",
+   null,
+   "bronze/neso_data_portal/fes_flx1_flexibility/2026/10/08/raw_20261008T105533Z_299bc6c8-7608-4946-ab0a-5bc22129c897_a5049beb.csv",
+   "2026-10-08 10:55:33.057523 UTC",
+   "2026-10-08 10:55:33.057523 UTC",
+   "2025-12-10 17:00:25.208610 UTC",
+   "a897de9a-e4fb-4a31-be12-4dcff887d974",
+   "1+e1"
+  ],
+  [
+   "Interconnectors",
+   "Netflows",
+   "TWh",
+   "2035",
+   "-81.23571",
+   "Holistic Transition",
+   "Supply side flexibility",
+   "Electricity",
+   "2025",
+   "299bc6c8-7608-4946-ab0a-5bc22129c897",
+   "2025-12-10 17:00:25.208610 UTC",
+   "2026-10-08 10:55:33.057523 UTC",
+   "Electricity system flexibility",
+   null,
+   "bronze/neso_data_portal/fes_flx1_flexibility/2026/10/08/raw_20261008T105533Z_299bc6c8-7608-4946-ab0a-5bc22129c897_a5049beb.csv",
+   "2026-10-08 10:55:33.057523 UTC",
+   "2026-10-08 10:55:33.057523 UTC",
+   "2025-12-10 17:00:25.208610 UTC",
+   "a897de9a-e4fb-4a31-be12-4dcff887d974",
+   "1+e1"
+  ],
+  [
+   "Total consumer led flexibility",
+   "Combined flexibility capacity from all consumer led sources",
+   "GW",
+   "2035",
+   "-33.01897",
+   "Holistic Transition",
+   "Demand side flexibility",
+   "Electricity",
+   "2025",
+   "299bc6c8-7608-4946-ab0a-5bc22129c897",
+   "2025-12-10 17:00:25.208610 UTC",
+   "2026-10-08 10:55:33.057523 UTC",
+   "Electricity system flexibility",
+   null,
+   "bronze/neso_data_portal/fes_flx1_flexibility/2026/10/08/raw_20261008T105533Z_299bc6c8-7608-4946-ab0a-5bc22129c897_a5049beb.csv",
+   "2026-10-08 10:55:33.057523 UTC",
+   "2026-10-08 10:55:33.057523 UTC",
+   "2025-12-10 17:00:25.208610 UTC",
+   "a897de9a-e4fb-4a31-be12-4dcff887d974",
+   "1+e1"
+  ],
+  [
+   "Vehicle to Grid",
+   "V2G potential at peak",
+   "GW",
+   "2035",
+   "-11.78851",
+   "Holistic Transition",
+   "Demand side flexibility",
+   "Electricity",
+   "2025",
+   "299bc6c8-7608-4946-ab0a-5bc22129c897",
+   "2025-12-10 17:00:25.208610 UTC",
+   "2026-10-08 10:55:33.057523 UTC",
+   "Electricity system flexibility",
+   null,
+   "bronze/neso_data_portal/fes_flx1_flexibility/2026/10/08/raw_20261008T105533Z_299bc6c8-7608-4946-ab0a-5bc22129c897_a5049beb.csv",
+   "2026-10-08 10:55:33.057523 UTC",
+   "2026-10-08 10:55:33.057523 UTC",
+   "2025-12-10 17:00:25.208610 UTC",
+   "a897de9a-e4fb-4a31-be12-4dcff887d974",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

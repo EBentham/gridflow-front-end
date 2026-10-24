@@ -8,7 +8,6 @@ updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: "NESO states no period for the year labels, or what blanks and `N/A` mean."
   title: FES whole system and gas supply
   summary: >-
     NESO's Future Energy Scenarios (FES) table of GB natural gas, hydrogen, bioenergy and oil:
@@ -21,25 +20,113 @@ page:
   landscape: gas
   what_it_is: >-
     Each row is an item by fuel type, category, sector, fuel and feedstock, in `TWh`, `GW` or
-    `bcm/yr` as its unit column says. NESO's 2024 file, last modified July 2024, has an
-    undefined `N/A` in many 2023 to 2049 cells. Its 2025 file, last modified December 2025, has
-    four pairs of rows that share every label but not their values.
+    `bcm/yr` as its unit column says. Silver reads only the 2023 and 2026 files: NESO's 2024 file
+    (July 2024) has an undefined `N/A` in many cells, and its 2025 file (December 2025) has four
+    pairs of rows sharing every label but not values.
   how_used:
     - "Gas, hydrogen and bioenergy supply and demand under each FES scenario or pathway"
     - "Hydrogen capacity and storage, edition by edition"
     - "Read beside WS2, the emissions table for the same whole system"
+  chart:
+    type: bar
+    silver: neso_data_portal/fes_ws1_gas_supply
+    value: value
+    filter:
+      - {column: edition, op: eq, value: 2026}
+      - {column: fuel_type, op: eq, value: Natural Gas}
+      - {column: category, op: eq, value: Supply}
+      - {column: units, op: eq, value: bcm/yr}
+      - {column: projection_year, op: eq, value: 2030}
+    dedup: {"on": [resource_id, edition, fuel_type, scenario, pathway, units, category, sector, fuel, feedstock, category_lookup, projection_year], order_by: capture_written_at}
+    group: sector
+    aggregation: sum
+    sort: value_desc
+    unit: bcm/yr
+  chart_view:
+    title: Natural gas supply by source, 2026 Ten Year Outlook
+    caption: >-
+      Silver `fes_ws1_gas_supply`, NESO's 2026 Ten Year Outlook (file of 16 September 2026),
+      scenario `Ten Year Outlook`: natural gas `Supply` rows in `bcm/yr` at the year label 2030, one
+      row per bar, nothing summed. A projection, not an outturn.
+    alt: >-
+      Horizontal bar chart of NESO's projected GB natural gas supply in bcm/yr by source, 2026 Ten
+      Year Outlook, year label 2030: Norway 26.46; Generic Imports 17.16; UKCS 16.53; LNG 2.92;
+      Green Gas 0.84; Continent 0; Shale 0. Norway is the largest single source.
+    key:
+      - {series: value, label: Natural gas supply, codes: "Natural Gas, Supply", paint: petrol, note: "NESO's `sector` names the source; `category_lookup` groups Norway, LNG, Continent and Generic Imports as Imports"}
   raw_feed:
     note: >-
       From NESO's CKAN portal: one `package_show`, then four CSVs, each downloaded whole unless its
-      `last_modified` is unchanged. Shown: 2024, 2025 and 2026; edition comes from the file name.
+      `last_modified` is unchanged. Shown: 2023, 2025 and 2026; silver reads 2023 and 2026.
     requests:
       - "GET https://api.neso.energy/api/3/action/package_show?id=fes-whole-system-gas-supply-data-table-ws1"
-      - "GET https://api.neso.energy/dataset/8cbe76c7-6971-40ed-8e0c-2d8c8520cd0c/resource/fa5697c5-9810-480f-b4c5-ab41dc53777a/download/fes2024_ws1_v001.csv"
+      - "GET https://api.neso.energy/dataset/8cbe76c7-6971-40ed-8e0c-2d8c8520cd0c/resource/b04e227d-f329-4ccf-8e25-821ea6ea03ca/download/fes2023_ws1_v001.csv"
       - "GET https://api.neso.energy/dataset/8cbe76c7-6971-40ed-8e0c-2d8c8520cd0c/resource/ebf4f503-0a13-45e6-89ad-b707748613b6/download/fes2025_ws1_v006.csv"
       - "GET https://api.neso.energy/dataset/8cbe76c7-6971-40ed-8e0c-2d8c8520cd0c/resource/0dd30611-5b9f-452d-bd34-966737d14fca/download/10yo2026_ws1_v001.csv"
     commands:
       - {run: gridflow ingest neso_data_portal fes_ws1_gas_supply --last 24h, comment: "changed files only; whole CSVs"}
       - {run: gridflow transform neso_data_portal fes_ws1_gas_supply --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: edition, op: eq, value: 2026}
+        - {column: projection_year, op: eq, value: 2030}
+        - {column: sector, op: in, value: [Networked Electrolysis, Methane Reformation with CCUS, UKCS, Norway]}
+      dedup: {"on": [resource_id, edition, fuel_type, scenario, pathway, units, category, sector, fuel, feedstock, category_lookup, projection_year], order_by: capture_written_at}
+      order_by: [fuel_type, sector, category]
+      columns: [fuel_type, category, sector, units, projection_year, value, fuel, feedstock,
+                category_lookup, scenario, pathway, edition, resource_id, published_at, timestamp_utc]
+    key: [resource_id, edition, fuel_type, scenario, pathway, units, category, sector, fuel, feedstock,
+          category_lookup, projection_year]
+    caption: "2026 Ten Year Outlook, label 2030: two hydrogen routes in three units, two gas sources."
+    fields:
+      fuel_type: "NESO's fuel: `Natural Gas`, `Hydrogen`, `Bioenergy` or `Oil`"
+      category: "NESO's row type, such as `Supply`, `Demand`, `Capacity` or `Feedstock`"
+      sector: "NESO's sector, source or production route for the row"
+      units: "NESO's unit for the row: `TWh`, `GW` or `bcm/yr`; never summed across"
+      projection_year: "NESO's year column header, as an integer; NESO states no period for it"
+      value: "The cell, in the row's `units`; a blank is null, a zero a value"
+      fuel: "NESO's fuel used or demanded, where the row names one"
+      feedstock: "NESO's feedstock label, where the row names one"
+      category_lookup: "NESO's grouping label for the row, such as `Imports`"
+      scenario: "NESO's scenario name in the 2023 and 2026 files"
+      pathway: "NESO's pathway name in the 2024 and 2025 files; null for 2023 and 2026"
+      edition: "FES edition, from the file name; 2026 is NESO's Ten-Year Outlook"
+      resource_id: "CKAN file id, one per edition; first column of the entity key"
+      published_at: "NESO's last-modified time for the edition's file, read as UTC"
+      timestamp_utc: "When gridflow captured the file, UTC; the table has no event time"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  caveat: "NESO states no period or date for the year labels, or what blanks mean."
+  notebook:
+    lead: >-
+      `query()` filters on `timestamp_utc`, the capture time here, so these cells use `data.sql()`
+      on the `_latest` view, which keeps the 2023 and 2026 files. Each row keeps its own unit.
+    cells:
+      - |
+        gas = data.sql("""
+            SELECT sector, projection_year, value AS bcm_per_year
+            FROM silver_neso_data_portal_fes_ws1_gas_supply_latest
+            WHERE edition = 2026 AND fuel_type = 'Natural Gas' AND category = 'Supply'
+              AND units = 'bcm/yr'
+        """)
+        wide = gas.pivot(index="projection_year", columns="sector", values="bcm_per_year").rename_axis(index=None, columns=None)
+        wide.loc[[2025, 2030, 2035, 2036, 2037]]
+      - |
+        ax = wide.loc[2025:2036].plot(figsize=(8, 3.5), xlabel="NESO's year label",
+                                     ylabel="natural gas supply, bcm/yr");
+      - |
+        data.sql("""
+            SELECT edition, units, COUNT(*) AS cells, COUNT(value) AS filled
+            FROM silver_neso_data_portal_fes_ws1_gas_supply_latest
+            GROUP BY edition, units
+            ORDER BY edition, units
+        """)
+    needs: NESO's 2023 and 2026 FES whole system and gas supply files
+    plot_alt: >-
+      Line plot of NESO's values for natural gas supply in bcm/yr by source, 2026 Ten Year Outlook,
+      year labels 2025 to 2036. UKCS falls from 26.83 to 6.4; Norway from 29.05 to 17.63; Generic
+      Imports rises from 0 to 26.8; LNG falls from 11.96 to 2.92 by label 2030.
   related:
     - {dataset: neso_data_portal/fes-whole-system-gas-supply-emissions-data-table-ws2, note: "NESO's FES emissions table for whole system and gas supply"}
     - {dataset: neso_data_portal/fes-natural-gas-residential-and-non-domestic-i-c-heat-demand-summary-data-table-ed3, note: "NESO's FES gas and heat demand tables, from the same editions"}
@@ -66,10 +153,11 @@ the **Ten Year Outlook** rather than a full FES edition (catalogue snapshot reso
 `TODO: verify` how NESO scopes the 2026 outlook against the 2023-2025 FES editions before
 comparing the editions column for column.
 
-**The silver output of this family is held (unit E-SEM).** It exists on disk for two of the four
-editions, and this page gives its schema, row counts and structure. It publishes no data values from
-it: no sample rows and no minimum, maximum or other value statistics. What a year label denotes and
-what a blank cell means is not established (see Holds). The package-level `eligibility: eligible`
+**The silver output of this family is held in gridflow (unit E-SEM).** It exists for two of the
+four editions (2023 and 2026), and this note gives its schema, row counts and structure. Under
+ruling 66 the site page shows those rows (a chart, eight sample rows and a notebook) with one
+caveat line naming the open question: what a year label denotes and what a blank cell means is not
+established (see Holds). The package-level `eligibility: eligible`
 in the front matter is the package registry entry. The hold is per family. Two of the four
 resources have a further problem of their own, described under Per-resource status.
 
@@ -247,8 +335,7 @@ silver row count is the wide-row count × 31.
 | 2026 | 52 | 1,612 | 1,612 | 2020-2050 |
 
 The 2023 file has 6 distinct `scenario` values and the 2026 file has 1. The 2024 and 2025 files each
-head the column `Pathway`. This page publishes no label lists for the held family.
-`TODO: verify` the vendor's definition of each scenario and pathway label, and whether a label in one
+head the column `Pathway`. `TODO: verify` the vendor's definition of each scenario and pathway label, and whether a label in one
 edition is the same scenario as a label in another. Activation (2026-10-15, master `06378b9`,
 PR #125): transform window 2026-10-08, one capture per resource and no prior silver, **18,569 rows**
 (2023: 16,957 · 2026: 1,612) = the planned count, with the one planned failure (2025 capture,
@@ -360,9 +447,12 @@ gridflow outputs derived from this package carry the attribution line above.
 - `fes_ws1_gas_supply`: held: TODO: For each WS1 edition and quantity class (`TWh`, `GW`, `bcm/yr` rows), what interval or assessment date does a year header denote, and is the integer a starting or ending label? What does a blank projection cell mean? What does the literal `N/A` in `fes2024_ws1_v001.csv` mean? Which omitted dimension distinguishes the four repeated Bioenergy / Waste / `MSW, C&I (biogenic)` rows per pathway in `fes2025_ws1_v006.csv`, and can NESO publish a corrected file? (unit E-SEM)
 
 The family is held by the SCN-3 batch records (RULINGS 838 and 839, with the activation in 842
-and 844). Its silver output stays on disk for 2023 and 2026. No gold view or model feed is planned for it
-while the hold stands, and this page publishes no data values from it. Unit E-SEM must answer
-four things before the hold can lift:
+and 844). Its silver output exists for 2023 and 2026. No gold view or model feed is planned for it
+while the hold stands. Under ruling 66 the site page shows the 2023 and 2026 rows with the caveat
+"NESO states no period or date for the year labels, or what blanks mean."; its chart draws single 2026
+rows in one unit at one year label, nothing summed. The 2024 and 2025 questions below concern
+files gridflow does not read, so no row from them is shown. Unit E-SEM must answer four things
+before the hold can lift:
 
 1. **The period behind each year label**, separately for the `TWh`, `GW` and `bcm/yr` rows, and for
    each edition. For example, is a `TWh` item a calendar year, a financial year, a gas year or a
@@ -389,7 +479,7 @@ What the vendor text does establish, and what it does not (FACTS g1):
 
 Until the hold lifts:
 
-- Do not publish WS1 values, or join WS1 to an observed series by `projection_year`.
+- Do not join WS1 to an observed series by `projection_year`, or read a label as a dated period.
 - Do not use WS1 point-in-time. Its only clock is the CKAN `last_modified` vintage, a conservative
   proxy and nothing finer.
 - Do not sum across editions, across units, across `scenario` and `pathway`, or across WS1 rows.

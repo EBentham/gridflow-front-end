@@ -1,0 +1,227 @@
+{
+ "dataset": "neso_data_portal/fes_es1_electricity_supply",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "27268bcc0703ad2e192b5e7c4108863afab8ca6f3f5d7376ba108b013b2d22f8",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "es1 = data.sql(\"\"\"\n    SELECT pathway, projection_year, value\n    FROM silver_neso_data_portal_fes_es1_electricity_supply_latest\n    WHERE edition = 2025 AND connection = 'Transmission'\n      AND variable = 'Capacity (MW)' AND sub_type = 'Offshore Wind'\n\"\"\")\nwide = es1.pivot(index=\"projection_year\", columns=\"pathway\", values=\"value\").rename_axis(index=None, columns=None)\nwide.loc[[2030, 2035, 2040, 2045, 2050]]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "Electric Engagement",
+      "Falling Behind",
+      "Holistic Transition",
+      "Hydrogen Evolution",
+      "Ten Year Forecast"
+     ],
+     "index": [
+      "2030",
+      "2035",
+      "2040",
+      "2045",
+      "2050"
+     ],
+     "rows": [
+      [
+       "47083.75",
+       "35056.75",
+       "45723.75",
+       "41636.75",
+       "40136.75"
+      ],
+      [
+       "66779.75",
+       "54301.75",
+       "85404.75",
+       "76484.75",
+       "60811.75"
+      ],
+      [
+       "91275.75",
+       "73739.75",
+       "92454.75",
+       "91292.75",
+       "NaN"
+      ],
+      [
+       "95625.75",
+       "77789.75",
+       "98082.75",
+       "94942.75",
+       "NaN"
+      ],
+      [
+       "95625.75",
+       "79689.75",
+       "103190.80",
+       "94942.75",
+       "NaN"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "ax = wide.plot(figsize=(9, 3.5), color=[\"#155A6E\", \"#8A9A2B\", \"#B5651D\", \"#6E4A7E\", \"#5A6B70\"],\n               xlabel=\"NESO's year label, as written\", ylabel=\"transmission offshore wind, MW\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "fes_es1_electricity_supply-4.png",
+     "width": 802,
+     "height": 337
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "data.sql(\"\"\"\n    SELECT variable, count(*) AS cells, count(value) AS filled\n    FROM silver_neso_data_portal_fes_es1_electricity_supply_latest\n    WHERE edition = 2025\n    GROUP BY variable\n    ORDER BY variable\n\"\"\")",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "variable",
+      "cells",
+      "filled"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12"
+     ],
+     "rows": [
+      [
+       "CO2 Intensity of Generation (gCO2/kWh)",
+       "135",
+       "120"
+      ],
+      [
+       "CO2 Intensity of Generation excluding BECCS (g...",
+       "135",
+       "120"
+      ],
+      [
+       "Capacity (MW)",
+       "6507",
+       "5817"
+      ],
+      [
+       "Consumption (TWh)",
+       "1161",
+       "1041"
+      ],
+      [
+       "Curtailment (TWh)",
+       "405",
+       "360"
+      ],
+      [
+       "Curtailment including DACCS (TWh)",
+       "135",
+       "120"
+      ],
+      [
+       "Demand (TWh)",
+       "135",
+       "120"
+      ],
+      [
+       "Demand Reduction (TWh)",
+       "135",
+       "120"
+      ],
+      [
+       "Export (TWh)",
+       "135",
+       "120"
+      ],
+      [
+       "Generation (TWh)",
+       "6372",
+       "5697"
+      ],
+      [
+       "Import (TWh)",
+       "135",
+       "120"
+      ],
+      [
+       "Netflows (TWh)",
+       "135",
+       "120"
+      ],
+      [
+       "Storage Capacity (GWh)",
+       "1215",
+       "1080"
+      ]
+     ]
+    }
+   ]
+  }
+ ]
+}

@@ -8,7 +8,6 @@ updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: true
   title: FES gas and heat demand summary
   summary: >-
     NESO's Future Energy Scenarios (FES) tables of GB natural gas and heat demand, by sector,
@@ -28,13 +27,99 @@ page:
     - "GB gas demand by sector under each FES scenario or pathway"
     - "Heat demand and heating technology numbers by sector, edition by edition"
     - "Each gas item read with the same edition's ED4 definition"
+  chart:
+    type: bar
+    silver: neso_data_portal/fes_ed3_heat_demand_natural_gas_sum_ed
+    value: value
+    filter:
+      - {column: edition, op: eq, value: 2025}
+      - {column: pathway, op: eq, value: Holistic Transition}
+      - {column: description, op: eq, value: Total GB Peak 1-in-20 Demand}
+      - {column: projection_year, op: in, value: [2025, 2030, 2035, 2040, 2045, 2050]}
+    dedup: {"on": [resource_id, edition, pathway, scenario, description, data_type, projection_year], order_by: capture_written_at}
+    group: projection_year
+    group_map: {"2025": "2025/26", "2030": "2030/31", "2035": "2035/36", "2040": "2040/41", "2045": "2045/46", "2050": "2050/51"}
+    aggregation: sum
+    sort: label
+    unit: GWh/day
+  chart_view:
+    title: GB 1-in-20 peak gas demand, FES 2025, Holistic Transition
+    caption: >-
+      Silver `fes_ed3_heat_demand_natural_gas_sum_ed`, the gas summary, FES 2025 (NESO's file of 10
+      December 2025), pathway Holistic Transition: `Total GB Peak 1-in-20 Demand` in `GWh/day`, one
+      row per bar, every fifth gas year. ED4 defines this item's gas year. A projection.
+    alt: >-
+      Horizontal bar chart of NESO's projected total GB gas demand on a 1-in-20 cold day, in GWh per
+      day, FES 2025 edition, pathway Holistic Transition, one bar every fifth gas year: 2025/26
+      5,182; 2030/31 4,543; 2035/36 3,536; 2040/41 2,525; 2045/46 1,606; 2050/51 1,382. It falls
+      by about three quarters.
+    key:
+      - {series: value, label: Peak 1-in-20 demand, codes: Total GB Peak 1-in-20 Demand, paint: petrol, note: "NESO's ED4: gas year from 1 October; counts extra gas generation from network constraints"}
   raw_feed:
     note: >-
       From NESO's CKAN portal: one `package_show` per table, then its edition files, each downloaded
       whole unless its `last_modified` is unchanged. Swap in any table's key.
     commands:
-      - {run: gridflow ingest neso_data_portal fes_ed3_heat_demand_natural_gas --last 24h, comment: "whole CSVs; swap in any key"}
-      - {run: gridflow transform neso_data_portal fes_ed3_heat_demand_natural_gas --last 24h, comment: "the capture's date to silver"}
+      - {run: gridflow ingest neso_data_portal fes_ed3_heat_demand_natural_gas_sum_ed --last 24h, comment: "whole CSVs; swap in any key"}
+      - {run: gridflow transform neso_data_portal fes_ed3_heat_demand_natural_gas_sum_ed --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      silver: neso_data_portal/fes_ed3_heat_demand_natural_gas_sum_ed
+      filter:
+        - {column: edition, op: eq, value: 2025}
+        - {column: pathway, op: eq, value: Holistic Transition}
+        - {column: projection_year, op: eq, value: 2030}
+        - {column: component, op: in, value: [Industrial demand, Commercial demand, Residential demand, Electricity generation, Flexible electricity generation, Hydrogen production SMR, Total GB demand]}
+      dedup: {"on": [resource_id, edition, pathway, scenario, description, data_type, projection_year], order_by: capture_written_at}
+      order_by: [data_type, component]
+      columns: [description, component, data_type, units, pathway, projection_year, value, fuel,
+                scenario, edition, resource_id, published_at, timestamp_utc]
+    key: [resource_id, edition, pathway, scenario, description, data_type, projection_year]
+    caption: "The gas summary, FES 2025 Holistic Transition, year label 2030: seven annual items and the peak."
+    fields:
+      description: "NESO's item name, as defined in the same edition's ED4"
+      component: "NESO's short label for the item; `Total GB demand` names two items"
+      data_type: "`Annuals` or `Peak 1in20`, NESO's timeframe for the row"
+      units: "NESO's unit: `GWh` for `Annuals`, `GWh/day` for the peak"
+      pathway: "NESO's pathway name in the 2025 file; null in 2026"
+      projection_year: "NESO's year column header, as an integer; a gas year only for the peak"
+      value: "The cell, in the row's `units`; a blank is null, a zero a value"
+      fuel: "NESO's fuel label: `gas` in every row of both files"
+      scenario: "NESO's scenario name in the 2026 file; null in these rows"
+      edition: "FES edition, from the file name; 2026 is NESO's Ten-Year Outlook"
+      resource_id: "CKAN file id, one per edition; first column of the entity key"
+      published_at: "NESO's last-modified time for the edition's file, read as UTC"
+      timestamp_utc: "When gridflow captured the file, UTC; the table has no event time"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      `query()` filters on `timestamp_utc`, the capture time here, so these cells use `data.sql()`
+      on the `_latest` views. The gas summary's peak item is the one NESO's ED4 dates by gas year.
+    cells:
+      - |
+        print(data.sql("""
+            SELECT definition
+            FROM silver_neso_data_portal_fes_ed4_gas_demand_defs_latest
+            WHERE item_no = 10 AND edition = 2025
+        """).definition.iloc[0])
+      - |
+        peak = data.sql("""
+            SELECT pathway, projection_year, value AS gwh_per_day
+            FROM silver_neso_data_portal_fes_ed3_heat_demand_natural_gas_sum_ed_latest
+            WHERE edition = 2025 AND description = 'Total GB Peak 1-in-20 Demand'
+        """)
+        wide = peak.pivot(index="projection_year", columns="pathway", values="gwh_per_day").rename_axis(index=None, columns=None)
+        wide.loc[[2025, 2030, 2035, 2036, 2040, 2045, 2050]].round(0)
+      - |
+        ax = wide.loc[2025:].plot(figsize=(8, 3.5), xlabel="gas year starting 1 October of the label",
+                                 ylabel="1-in-20 peak, GWh/day");
+    needs: NESO's FES gas summary and ED4 definition files
+    plot_alt: >-
+      Line plot of NESO's projected total GB 1-in-20 peak gas demand in GWh per day, FES 2025
+      edition, gas years 2025/26 to 2050/51, one line per pathway. All start between 5,043 and 5,340;
+      Falling Behind ends highest at 4,693, Hydrogen Evolution 2,603, Electric Engagement 1,671 and
+      Holistic Transition 1,382. Ten Year Forecast stops at 2035/36.
   family:
     slug: fes-natural-gas-residential-and-non-domestic-i-c-heat-demand-summary-data-table-ed3
     members:
@@ -44,19 +129,19 @@ page:
           - "GET https://api.neso.energy/api/3/action/package_show?id=fes-natural-gas-residential-and-non-domestic-i-c-heat-demand-summary-data-table-ed3"
           - "GET https://api.neso.energy/dataset/2fd7b713-9a85-45d8-87d8-cb3f01fd0e89/resource/1f1de28d-eff7-4c5b-83fa-33cd7ad1bd39/download/fes2023_ed3_v001.csv"
           - "GET https://api.neso.energy/dataset/2fd7b713-9a85-45d8-87d8-cb3f01fd0e89/resource/fb452e53-881c-4d4e-a236-a5b6b50f2840/download/fes2024_ed3_v005.csv"
-        held: "NESO states no period for the year labels except total GB peak, or what blanks mean."
+        caveat: "NESO states no period for the year labels except total GB peak, or what blanks mean."
       - dataset: fes_ed3_heat_demand_natural_gas_sum_ed
         differs: "2025 and 2026 natural gas demand: annual in `GWh`, 1-in-20 peak in `GWh/day`"
         request:
           - "GET https://api.neso.energy/dataset/2fd7b713-9a85-45d8-87d8-cb3f01fd0e89/resource/f33e8ded-d302-40c4-be10-c7ca3a04b401/download/fes2025_ed3_v006.csv"
           - "GET https://api.neso.energy/dataset/2fd7b713-9a85-45d8-87d8-cb3f01fd0e89/resource/c3d4acaf-5cd5-47f8-81a9-a4c10e16d55a/download/10yo2026_ed3_v001.csv"
-        held: "NESO states no period for the year labels except total GB peak, or what blanks mean."
+        caveat: "NESO states no period for the year labels except total GB peak, or what blanks mean."
       - dataset: fes_ed3_heat_demand_sum_ed
         differs: "2025 and 2026 heat demand (ED7) by technology: `TWh`, `GW`, `stock` and `uptake`"
         request:
           - "GET https://api.neso.energy/dataset/2fd7b713-9a85-45d8-87d8-cb3f01fd0e89/resource/2019e900-11eb-40ce-ae54-a49a2abb5d4b/download/fes2025_ed7_v006.csv"
           - "GET https://api.neso.energy/dataset/2fd7b713-9a85-45d8-87d8-cb3f01fd0e89/resource/9394f025-8454-4db0-b73c-083e301a1e74/download/10yo2026_ed7_v001.csv"
-        held: "NESO states no period for the year labels, or what blanks mean; `uptake` is undefined."
+        caveat: "NESO states no period or date for year labels, or what blanks, `uptake` and `stock` mean."
   related:
     - {dataset: neso_data_portal/fes-natural-gas-demand-definitions-ed4, note: "NESO's definitions of these gas items; read both from one edition"}
     - {dataset: neso_data_portal/local-authority-level-spatial-heat-model-outputs-fes, note: "NESO's spatial heat model results, by local authority"}
@@ -95,9 +180,11 @@ equivalence between an old and a new label is asserted (FACTS §5). The family k
 `fes_ed3_heat_demand_sum_ed` holds **ED7**, not an ED3 summary. The `sum_ed` suffix is the registry's
 name for the heat summary.
 
-**The silver output of all three families is held (unit E-SEM).** It exists on disk, and this page
-gives its schema, row counts and structure. It publishes no data values from it. The meaning of the
-year label, of the non-physical units and of a blank cell is not established (see Holds). The
+**The silver output of all three families is held in gridflow (unit E-SEM).** This note gives its
+schema, row counts and structure. Under ruling 66 the site page shows rows, with one caveat line
+per table naming its open question; its chart, eight sample rows and notebook come from the gas
+summary (`fes_ed3_heat_demand_natural_gas_sum_ed`). The meaning of the year label, of the
+non-physical units and of a blank cell is not established (see Holds). The
 package-level `eligibility: eligible` in the front matter is the package registry entry. The hold
 is per family.
 
@@ -275,7 +362,7 @@ comparison, not a silver field. `TODO: verify` the vendor's rule for separating 
 anything on a split. The 55 gas-summary rows span eleven description categories, and they sit in the
 same `scenario` or `pathway`, `technology`, `time` or `data_type` and `units` columns as the heat
 rows (the later gas summary has `description` and `component` columns instead). Distinct label
-counts per edition (counts only, no label lists for a held family):
+counts per edition:
 
 | Edition | Scenario / pathway | Sector or sector-aggregation | Fuel (non-null) | Technology | Timeframe (`time` or `data_type`) | Units |
 |---|---:|---:|---:|---:|---:|---:|
@@ -535,8 +622,7 @@ Rows per edition and resource:
 | | | | **43,288** | **9,639** | |
 
 The 2025 file populates `pathway` and nulls `scenario` on all 36,316 rows, and the 2026 file
-populates `scenario` and nulls `pathway` on all 6,972 rows. Distinct label counts per edition
-(counts only, no label lists for a held family):
+populates `scenario` and nulls `pathway` on all 6,972 rows. Distinct label counts per edition:
 
 | Edition | Scenario / pathway | Sector-aggregation levels | Fuel (non-null) | Technology | `data_type` | Units |
 |---|---:|---:|---:|---:|---:|---:|
@@ -670,11 +756,12 @@ gridflow outputs derived from this package carry the attribution line above.
 - `fes_ed3_heat_demand_sum_ed`: held: TODO: For every ED7 unit and data type, what interval or observation date does a year header denote? What are the scale and denominator of `uptake`, the counting basis and snapshot date of `stock`, and the start/end convention for peak-year labels? How are savings related to the reported technology demand? What does a blank projection cell mean? (unit E-SEM)
 
 All three families are held by the SCN-2 batch records (RULINGS 821 and 822, with the activation in
-831 and 833). Their silver output stays on disk. No gold view or model feed is planned for any of
-them while the holds stand. This page publishes no data values from them: no sample rows and no
-minimum, maximum or other value statistics. Row counts, null-cell counts and schema are given
-because they describe structure, not values. Unit E-SEM must answer these things before the holds
-can lift:
+831 and 833). No gold view or model feed is planned for any of them while the holds stand. Under
+ruling 66 the site page shows rows with one caveat per table: "NESO states no period for the year
+labels except total GB peak, or what blanks mean." on the two gas tables, and "NESO states no
+period or date for year labels, or what blanks, `uptake` and `stock` mean." on ED7. Its chart draws
+only the total GB peak 1-in-20 item, the one item ED4 dates by gas year. Unit E-SEM must answer
+these things before the holds can lift:
 
 1. **The period behind each year label.** What interval or observation date the integer denotes,
    separately for energy items (`TWh`, `GWh`), power items (`GW`, `GWh/day`) and count or share
@@ -710,8 +797,8 @@ What the vendor text does establish, and what it does not (FACTS §5 and g1):
 
 Until the holds lift:
 
-- Do not publish values from any of the three families, or join them to an observed series by
-  `projection_year`.
+- Do not join any of the three families to an observed series by `projection_year`, or read a
+  label as a dated period (the ED4 gas year applies to the total GB peak 1-in-20 item only).
 - Do not use them point-in-time at finer than the CKAN `last_modified` vintage.
 - Do not add aggregate gas demand to technology-level heat demand, do not sum across editions,
   across units, or across `scenario` and `pathway`, and do not read `item_no` as a measure.

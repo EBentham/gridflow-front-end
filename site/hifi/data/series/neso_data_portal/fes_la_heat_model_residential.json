@@ -1,0 +1,19 @@
+{
+  "dataset": "neso_data_portal/fes_la_heat_model_residential",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "17d10669601b42e1606ffb0633fcf4bbb3a27ea6f8059e3d1553e5aa96ab8cac",
+  "type": "bar",
+  "unit": "dwellings or buildings",
+  "caption": "",
+  "value_column": "stock_ashp",
+  "aggregation": "sum",
+  "window": null,
+  "provenance": {"duplicates_dropped": 0, "files": 13, "null_values_dropped": 0, "rows_matched": 2226, "rows_read": 19292, "rows_used": 2226, "silver": "neso_data_portal/fes_la_heat_model_residential"},
+  "spec": {"aggregation": "sum", "dedup": {"on": ["resource_id", "edition", "la_code", "projection_year", "pathway", "sector"], "order_by": "capture_written_at"}, "filter": [{"column": "edition", "op": "eq", "value": 2025}, {"column": "pathway", "op": "eq", "value": "Holistic Transition"}], "group": "projection_year", "silver": "neso_data_portal/fes_la_heat_model_residential", "sort": "label", "type": "bar", "unit": "dwellings or buildings", "value": "stock_ashp"},
+  "x_kind": "category",
+  "x": ["2025", "2030", "2035", "2040", "2045", "2050"],
+  "series": [
+    {"key": "stock_ashp", "values": [359177.95, 2070328.0, 6341009.97, 9162201.16, 11571185.11, 13209035.01]}
+  ]
+}

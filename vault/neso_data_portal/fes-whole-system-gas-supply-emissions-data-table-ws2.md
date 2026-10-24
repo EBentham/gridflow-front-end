@@ -8,7 +8,6 @@ updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: "NESO states no period for the year labels, or what blanks mean; 2023, 2024 lack units."
   title: FES whole system emissions
   summary: >-
     NESO's Future Energy Scenarios (FES) table of GB emissions from whole system and gas supply, by
@@ -27,6 +26,33 @@ page:
   how_used:
     - "GB emissions by sector under each FES scenario or pathway"
     - "Read beside WS1, the gas supply table these emissions accompany"
+  chart:
+    type: bar
+    silver: neso_data_portal/fes_ws2_gas_emissions
+    value: value
+    filter:
+      - {column: edition, op: eq, value: 2025}
+      - {column: pathway, op: eq, value: Holistic Transition}
+      - {column: sector, op: eq, value: Electricity without BECCS}
+      - {column: projection_year, op: in, value: [2025, 2030, 2035, 2040, 2045, 2050]}
+    dedup: {"on": [resource_id, edition, scenario, pathway, category, sector, projection_year], order_by: capture_written_at}
+    group: projection_year
+    aggregation: sum
+    sort: label
+    unit: MTCO2e
+  chart_view:
+    title: Power emissions, FES 2025, Holistic Transition
+    caption: >-
+      Silver `fes_ws2_gas_emissions`, FES 2025 (NESO's file of 10 December 2025), pathway Holistic
+      Transition: sector `Electricity without BECCS`, one row per bar, every fifth year label. Unit
+      `MTCO2e` from NESO's 2025 dictionary, the one edition that states it. A projection.
+    alt: >-
+      Horizontal bar chart of NESO's projected emissions from the sector Electricity without BECCS,
+      in MTCO2e, FES 2025 edition, pathway Holistic Transition, one bar every fifth year label:
+      2025 12.8; 2030 6.81; 2035 2.75; 2040 1.18; 2045 1.08; 2050 0.91. Most of the fall comes
+      by 2035.
+    key:
+      - {series: value, label: Power emissions, codes: Electricity without BECCS, paint: petrol, note: "NESO's sector name; its BECCS power sector is a separate row"}
   raw_feed:
     note: >-
       From NESO's CKAN portal: one `package_show`, then four CSVs, each downloaded whole unless its
@@ -39,6 +65,63 @@ page:
     commands:
       - {run: gridflow ingest neso_data_portal fes_ws2_gas_emissions --last 24h, comment: "changed files only; whole CSVs"}
       - {run: gridflow transform neso_data_portal fes_ws2_gas_emissions --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: edition, op: eq, value: 2025}
+        - {column: pathway, op: eq, value: Holistic Transition}
+        - {column: projection_year, op: eq, value: 2030}
+        - {column: sector, op: in, value: [Electricity without BECCS, Power Sector BECCS, Road Transport and Rail, Residential Heat, Industrial Heat, LULUCF N, LULUCF P, DACCS]}
+      dedup: {"on": [resource_id, edition, scenario, pathway, category, sector, projection_year], order_by: capture_written_at}
+      order_by: [sector]
+      columns: [sector, pathway, projection_year, value, category, scenario, edition, resource_id,
+                published_at, timestamp_utc]
+    key: [resource_id, edition, scenario, pathway, category, sector, projection_year]
+    caption: "Eight FES 2025 Holistic Transition sectors at year label 2030, two of them negative."
+    fields:
+      sector: "NESO's emissions sector; sets differ by edition, and NESO gives no totals rule"
+      pathway: "NESO's pathway name in the 2024 and 2025 files; null in the others"
+      projection_year: "NESO's year column header, as an integer; NESO states no period for it"
+      value: "The cell; `MTCO2e` per NESO's 2025 dictionary; sign convention not stated"
+      category: "2026 file only: `Emissions (MtCO2e)` or `Carbon Captured (MtCO2e)`"
+      scenario: "NESO's scenario name in the 2023 and 2026 files; null in these rows"
+      edition: "FES edition, from the file name; 2026 is NESO's Ten-Year Outlook"
+      resource_id: "CKAN file id, one per edition; first column of the entity key"
+      published_at: "NESO's last-modified time for the edition's file, read as UTC"
+      timestamp_utc: "When gridflow captured the file, UTC; the table has no event time"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  caveat: "NESO gives no year-label period or blank meaning; only 2025's dictionary states a unit."
+  notebook:
+    lead: >-
+      `query()` filters on `timestamp_utc`, the capture time here, so these cells use `data.sql()`
+      on the `_latest` view, which keeps every edition's file, and pick FES 2025, whose dictionary
+      gives the unit.
+    cells:
+      - |
+        power = data.sql("""
+            SELECT pathway, projection_year, value AS mtco2e
+            FROM silver_neso_data_portal_fes_ws2_gas_emissions_latest
+            WHERE edition = 2025 AND sector = 'Electricity without BECCS'
+        """)
+        wide = power.pivot(index="projection_year", columns="pathway", values="mtco2e").rename_axis(index=None, columns=None)
+        wide.loc[[2025, 2030, 2035, 2036, 2040, 2045, 2050]].round(2)
+      - |
+        ax = wide.loc[2025:].plot(figsize=(8, 3.5), xlabel="NESO's year label",
+                                 ylabel="MTCO2e, NESO's 2025 dictionary");
+      - |
+        data.sql("""
+            SELECT edition, category, COUNT(*) AS cells, COUNT(DISTINCT sector) AS sectors
+            FROM silver_neso_data_portal_fes_ws2_gas_emissions_latest
+            GROUP BY edition, category
+            ORDER BY edition, category
+        """)
+    needs: NESO's four FES whole system emissions files
+    plot_alt: >-
+      Line plot of NESO's projected emissions from Electricity without BECCS in MTCO2e, FES 2025
+      edition, year labels 2025 to 2050, one line per pathway. Holistic Transition falls from 12.8 to
+      0.91; Falling Behind peaks at 24.13 at label 2030 and ends at 16.3. Ten Year Forecast stops at
+      label 2035.
   related:
     - {dataset: neso_data_portal/fes-whole-system-gas-supply-data-table-ws1, note: "NESO's FES whole system and gas supply table, its companion"}
     - {dataset: neso_data_portal/fes-natural-gas-residential-and-non-domestic-i-c-heat-demand-summary-data-table-ed3, note: "NESO's FES gas and heat demand tables, from the same editions"}
@@ -65,10 +148,11 @@ tables as the Ten Year Outlook (gridflow `@.planning/phases/v0.22-K-SCN-3/K-SCN-
 `TODO: verify` how NESO scopes the 2026 outlook against the 2023–2025 FES editions before
 comparing the editions column for column.
 
-**The silver output of this family is held (unit E-SEM).** It exists on disk, and this page
-gives its schema, row counts and structure. It publishes no data values from it. The unit of the
-year columns in three of the four editions, the period a year label denotes and the meaning of a
-blank cell are not established (see Holds). The package-level `eligibility: eligible` in the
+**The silver output of this family is held in gridflow (unit E-SEM).** This note gives its schema,
+row counts and structure. Under ruling 66 the site page shows its rows (a chart and eight sample
+rows from the 2025 edition, whose dictionary states the unit, and a notebook) with one caveat line
+naming the open question. The unit of the year columns in three of the four editions, the period a
+year label denotes and the meaning of a blank cell are not established (see Holds). The package-level `eligibility: eligible` in the
 front matter is the package registry entry. The hold is per family.
 
 Reading rules for anyone who does open the silver:
@@ -235,8 +319,7 @@ Distinct dimension values per edition (counts only):
 The sector sets differ between editions (20, 20, 23 and 14 labels), so a row present in one
 edition has no guaranteed counterpart in another. The tables are not rectangular grids of sector
 by scenario: the row counts do not equal sectors times scenarios. gridflow keeps the rows the
-vendor published. This page publishes no label lists for the held family beyond the forecast
-labels named above. `TODO: verify` the vendor's definition of each scenario, pathway, sector and
+vendor published. `TODO: verify` the vendor's definition of each scenario, pathway, sector and
 category label, and whether a label in one edition is the same concept as a label in another.
 
 **Units (vendor dictionary; no unit column).** The table has no `Unit` column, and silver adds
@@ -356,9 +439,11 @@ gridflow outputs derived from this package carry the attribution line above.
 - `fes_ws2_gas_emissions`: held: TODO: What emissions unit do the 2023, 2024 and 2026 WS2 year columns carry (their dictionaries give `N/A` or no unit; only 2025 states `MTCO2e`)? For each edition, is a year label a calendar or financial year, and a starting or ending label? What does a blank projection cell mean? (unit E-SEM)
 
 The family is held by the SCN-3 batch record (spec ruling 7, ratified in RULINGS 839; activation in
-RULINGS 844). Its silver output stays on disk. No gold view or model feed is planned for it while
-the hold stands, and this page publishes no data values from it: no sample rows and no minimum,
-maximum or other value statistics. Unit E-SEM must answer three things before the hold can lift:
+RULINGS 844). No gold view or model feed is planned for it while the hold stands. Under ruling 66
+the site page shows its rows with the caveat "NESO gives no year-label period or blank meaning;
+only 2025's dictionary states a unit."; its chart and frame use only the 2025 edition, the one whose
+dictionary gives a unit, and its chart draws one sector at NESO's year labels, nothing summed.
+Unit E-SEM must answer three things before the hold can lift:
 
 1. **The unit of the 2023, 2024 and 2026 values.** The dictionaries give `N/A` (2023, 2024) or no
    unit (2026). Only the 2025 dictionary states `MTCO2e`.
@@ -386,7 +471,8 @@ What the vendor text does establish, and what it does not (FACTS §3.2, g1 and g
 
 Until the hold lifts:
 
-- Do not publish WS2 values, or join WS2 to an observed emissions series by `projection_year`.
+- Do not join WS2 to an observed emissions series by `projection_year`, or read a label as a dated
+  period.
 - Do not use WS2 point-in-time. Its only clock is the CKAN `last_modified` vintage.
 - Do not sum across editions, across `scenario` and `pathway`, across `sector` or `category`, or
   across WS1 units (WS1 is a separate table with a unit on every row; the two tables are not

@@ -1,0 +1,199 @@
+{
+ "dataset": "neso_data_portal/fes_ed5_road_transport",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "04c6a58281609ffcded86861716c7288a9d24513706c33eb3af35e86b3911bb1",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "peak = data.sql(\"\"\"\n    SELECT pathway, projection_year, value AS gw\n    FROM silver_neso_data_portal_fes_ed5_road_transport_latest\n    WHERE edition = 2025 AND data_item = 'Electric Vehicle Peak Demand'\n\"\"\")\nwide = peak.pivot(index=\"projection_year\", columns=\"pathway\", values=\"gw\").rename_axis(index=None, columns=None)\nwide.loc[[2025, 2030, 2035, 2036, 2040, 2045, 2050]]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "Electric Engagement",
+      "Falling Behind",
+      "Holistic Transition",
+      "Hydrogen Evolution",
+      "Ten Year Forecast"
+     ],
+     "index": [
+      "2025",
+      "2030",
+      "2035",
+      "2036",
+      "2040",
+      "2045",
+      "2050"
+     ],
+     "rows": [
+      [
+       "0.9",
+       "0.9",
+       "0.9",
+       "1.0",
+       "0.9"
+      ],
+      [
+       "3.0",
+       "2.7",
+       "2.2",
+       "3.5",
+       "2.6"
+      ],
+      [
+       "6.7",
+       "5.9",
+       "5.1",
+       "7.7",
+       "5.6"
+      ],
+      [
+       "7.6",
+       "6.7",
+       "5.8",
+       "8.6",
+       "NaN"
+      ],
+      [
+       "11.2",
+       "9.9",
+       "8.1",
+       "11.7",
+       "NaN"
+      ],
+      [
+       "13.4",
+       "13.2",
+       "9.2",
+       "13.5",
+       "NaN"
+      ],
+      [
+       "13.5",
+       "15.0",
+       "9.0",
+       "13.8",
+       "NaN"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "ax = wide.loc[2025:].plot(figsize=(8, 3.5), xlabel=\"NESO's year label\",\n                         ylabel=\"EV peak demand, GW\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "fes_ed5_road_transport-4.png",
+     "width": 690,
+     "height": 337
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "data.sql(\"\"\"\n    SELECT edition, scenario, pathway, MIN(projection_year) AS first_blank_label,\n           COUNT(*) AS blank_cells\n    FROM silver_neso_data_portal_fes_ed5_road_transport_latest\n    WHERE value IS NULL\n    GROUP BY edition, scenario, pathway\n    ORDER BY edition\n\"\"\")",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "edition",
+      "scenario",
+      "pathway",
+      "first_blank_label",
+      "blank_cells"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3"
+     ],
+     "rows": [
+      [
+       "2023",
+       "Five Year Forecast",
+       "NaN",
+       "2029",
+       "1386"
+      ],
+      [
+       "2024",
+       "NaN",
+       "Five Year Forecast",
+       "2030",
+       "1233"
+      ],
+      [
+       "2025",
+       "NaN",
+       "Ten Year Forecast",
+       "2036",
+       "945"
+      ],
+      [
+       "2026",
+       "Ten Year Outlook",
+       "NaN",
+       "2037",
+       "882"
+      ]
+     ]
+    }
+   ]
+  }
+ ]
+}

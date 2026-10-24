@@ -1,0 +1,274 @@
+{
+ "dataset": "neso_data_portal/fes_es1_electricity_supply",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "91fa39c21f30a357f7cb56a02e0e83abc42512e7276c4026974cb85404d10661",
+ "silver": "neso_data_portal/fes_es1_electricity_supply",
+ "columns": [
+  {
+   "name": "connection",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "variable",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "sub_type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "projection_year",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "value",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "pathway",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "category",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "edition",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "resource_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "scenario",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "Transmission",
+   "Capacity (MW)",
+   "Battery",
+   "2035",
+   "16876.71",
+   "Holistic Transition",
+   "Storage",
+   "Battery",
+   "2025",
+   "6c78a777-b885-4bb6-bc35-8100f9e137a2",
+   "2025-12-10 16:48:54.482473 UTC",
+   "2026-10-08 10:55:08.139618 UTC",
+   null,
+   "bronze/neso_data_portal/fes_es1_electricity_supply/2026/10/08/raw_20261008T105508Z_6c78a777-b885-4bb6-bc35-8100f9e137a2_7b795744.csv",
+   "2026-10-08 10:55:08.139618 UTC",
+   "2026-10-08 10:55:08.139618 UTC",
+   "2025-12-10 16:48:54.482473 UTC",
+   "90efcd6f-2d08-490c-b069-036fc03e33a7",
+   "1+e1"
+  ],
+  [
+   "Transmission",
+   "Generation (TWh)",
+   "Battery",
+   "2035",
+   "29.10506",
+   "Holistic Transition",
+   "Storage",
+   "Battery",
+   "2025",
+   "6c78a777-b885-4bb6-bc35-8100f9e137a2",
+   "2025-12-10 16:48:54.482473 UTC",
+   "2026-10-08 10:55:08.139618 UTC",
+   null,
+   "bronze/neso_data_portal/fes_es1_electricity_supply/2026/10/08/raw_20261008T105508Z_6c78a777-b885-4bb6-bc35-8100f9e137a2_7b795744.csv",
+   "2026-10-08 10:55:08.139618 UTC",
+   "2026-10-08 10:55:08.139618 UTC",
+   "2025-12-10 16:48:54.482473 UTC",
+   "90efcd6f-2d08-490c-b069-036fc03e33a7",
+   "1+e1"
+  ],
+  [
+   "Transmission",
+   "Storage Capacity (GWh)",
+   "Battery",
+   "2035",
+   "27.45938",
+   "Holistic Transition",
+   "Storage",
+   "Battery",
+   "2025",
+   "6c78a777-b885-4bb6-bc35-8100f9e137a2",
+   "2025-12-10 16:48:54.482473 UTC",
+   "2026-10-08 10:55:08.139618 UTC",
+   null,
+   "bronze/neso_data_portal/fes_es1_electricity_supply/2026/10/08/raw_20261008T105508Z_6c78a777-b885-4bb6-bc35-8100f9e137a2_7b795744.csv",
+   "2026-10-08 10:55:08.139618 UTC",
+   "2026-10-08 10:55:08.139618 UTC",
+   "2025-12-10 16:48:54.482473 UTC",
+   "90efcd6f-2d08-490c-b069-036fc03e33a7",
+   "1+e1"
+  ],
+  [
+   "Transmission",
+   "Capacity (MW)",
+   "Interconnectors",
+   "2035",
+   "19400.0",
+   "Holistic Transition",
+   "Interconnectors",
+   "Interconnectors",
+   "2025",
+   "6c78a777-b885-4bb6-bc35-8100f9e137a2",
+   "2025-12-10 16:48:54.482473 UTC",
+   "2026-10-08 10:55:08.139618 UTC",
+   null,
+   "bronze/neso_data_portal/fes_es1_electricity_supply/2026/10/08/raw_20261008T105508Z_6c78a777-b885-4bb6-bc35-8100f9e137a2_7b795744.csv",
+   "2026-10-08 10:55:08.139618 UTC",
+   "2026-10-08 10:55:08.139618 UTC",
+   "2025-12-10 16:48:54.482473 UTC",
+   "90efcd6f-2d08-490c-b069-036fc03e33a7",
+   "1+e1"
+  ],
+  [
+   "Transmission",
+   "Netflows (TWh)",
+   "Interconnectors",
+   "2035",
+   "-81.23571",
+   "Holistic Transition",
+   "Interconnectors",
+   "Interconnectors",
+   "2025",
+   "6c78a777-b885-4bb6-bc35-8100f9e137a2",
+   "2025-12-10 16:48:54.482473 UTC",
+   "2026-10-08 10:55:08.139618 UTC",
+   null,
+   "bronze/neso_data_portal/fes_es1_electricity_supply/2026/10/08/raw_20261008T105508Z_6c78a777-b885-4bb6-bc35-8100f9e137a2_7b795744.csv",
+   "2026-10-08 10:55:08.139618 UTC",
+   "2026-10-08 10:55:08.139618 UTC",
+   "2025-12-10 16:48:54.482473 UTC",
+   "90efcd6f-2d08-490c-b069-036fc03e33a7",
+   "1+e1"
+  ],
+  [
+   "Transmission",
+   "Capacity (MW)",
+   "Offshore Wind",
+   "2035",
+   "85404.75",
+   "Holistic Transition",
+   "Renewable",
+   "Offshore Wind",
+   "2025",
+   "6c78a777-b885-4bb6-bc35-8100f9e137a2",
+   "2025-12-10 16:48:54.482473 UTC",
+   "2026-10-08 10:55:08.139618 UTC",
+   null,
+   "bronze/neso_data_portal/fes_es1_electricity_supply/2026/10/08/raw_20261008T105508Z_6c78a777-b885-4bb6-bc35-8100f9e137a2_7b795744.csv",
+   "2026-10-08 10:55:08.139618 UTC",
+   "2026-10-08 10:55:08.139618 UTC",
+   "2025-12-10 16:48:54.482473 UTC",
+   "90efcd6f-2d08-490c-b069-036fc03e33a7",
+   "1+e1"
+  ],
+  [
+   "Both",
+   "Curtailment (TWh)",
+   "Offshore Wind",
+   "2035",
+   "3.56587",
+   "Holistic Transition",
+   "Renewable",
+   "Offshore Wind",
+   "2025",
+   "6c78a777-b885-4bb6-bc35-8100f9e137a2",
+   "2025-12-10 16:48:54.482473 UTC",
+   "2026-10-08 10:55:08.139618 UTC",
+   null,
+   "bronze/neso_data_portal/fes_es1_electricity_supply/2026/10/08/raw_20261008T105508Z_6c78a777-b885-4bb6-bc35-8100f9e137a2_7b795744.csv",
+   "2026-10-08 10:55:08.139618 UTC",
+   "2026-10-08 10:55:08.139618 UTC",
+   "2025-12-10 16:48:54.482473 UTC",
+   "90efcd6f-2d08-490c-b069-036fc03e33a7",
+   "1+e1"
+  ],
+  [
+   "Transmission",
+   "Generation (TWh)",
+   "Offshore Wind",
+   "2035",
+   "340.4683",
+   "Holistic Transition",
+   "Renewable",
+   "Offshore Wind",
+   "2025",
+   "6c78a777-b885-4bb6-bc35-8100f9e137a2",
+   "2025-12-10 16:48:54.482473 UTC",
+   "2026-10-08 10:55:08.139618 UTC",
+   null,
+   "bronze/neso_data_portal/fes_es1_electricity_supply/2026/10/08/raw_20261008T105508Z_6c78a777-b885-4bb6-bc35-8100f9e137a2_7b795744.csv",
+   "2026-10-08 10:55:08.139618 UTC",
+   "2026-10-08 10:55:08.139618 UTC",
+   "2025-12-10 16:48:54.482473 UTC",
+   "90efcd6f-2d08-490c-b069-036fc03e33a7",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

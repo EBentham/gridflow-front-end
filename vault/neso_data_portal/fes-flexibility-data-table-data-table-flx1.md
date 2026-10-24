@@ -8,7 +8,6 @@ updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: "NESO states no period for the year labels, or what blanks mean; 2023 numbers carry spaces."
   title: FES flexibility data
   summary: >-
     NESO's GB electricity system flexibility table (FLX1) from its Future Energy Scenarios (FES)
@@ -29,10 +28,39 @@ page:
     - "GB storage, demand side response and vehicle to grid under each FES pathway"
     - "Flexibility beside FES supply and demand from the same edition"
     - "Interconnector capacity and annual flows in each scenario or pathway"
+  chart:
+    type: bar
+    silver: neso_data_portal/fes_flx1_flexibility
+    value: value
+    filter:
+      - {column: edition, op: eq, value: 2025}
+      - {column: pathway, op: eq, value: Holistic Transition}
+      - {column: data_item, op: eq, value: Electricity storage connection capacity}
+      - {column: detail, op: eq, value: Battery}
+      - {column: projection_year, op: in, value: [2030, 2035, 2040, 2045, 2050]}
+    dedup: {"on": [resource_id, edition, flexibility_sub_type, data_item, unit, pathway, fuel, detail, projection_year], order_by: capture_written_at}
+    group: projection_year
+    aggregation: max
+    sort: label
+    unit: GW
+  chart_view:
+    title: Battery connection capacity, FES 2025, Holistic Transition
+    caption: >-
+      Silver `fes_flx1_flexibility`, FES 2025 edition (NESO's file last modified 10 December 2025),
+      pathway Holistic Transition: `Electricity storage connection capacity`, `Battery`, in GW, one
+      row per fifth year label, as written. NESO states no date behind the labels.
+    alt: >-
+      Horizontal bar chart of NESO's battery storage connection capacity in the FES 2025 edition,
+      pathway Holistic Transition, in GW, one bar per year label: 2030 23.169; 2035 29.84; 2040
+      34.652; 2045 37.015; 2050 39.347. Each label is higher than the one before.
+    key:
+      - {series: value, label: Battery connection capacity, codes: Holistic Transition, paint: petrol,
+         note: "NESO's year labels as written; the GW row, not the GWh storage potential row"}
   raw_feed:
     note: >-
-      From NESO's CKAN portal: `package_show`, then four CSVs, each downloaded whole unless its
-      `last_modified` is unchanged. Shown: 2023, 2024, 2026.
+      From NESO's CKAN portal: `package_show`, then four CSVs, downloaded whole when
+      `last_modified` changes. 2024 to 2026 have rows; 2023 numbers carry spaces. Shown: 2023,
+      2024, 2026.
     requests:
       - "GET https://api.neso.energy/api/3/action/package_show?id=fes-flexibility-data-table-data-table-flx1"
       - "GET https://api.neso.energy/dataset/2e3275e2-dd6a-4c2e-8cfb-eeb9b4320dcb/resource/e86745fd-1ef2-4112-a14c-84682a387b68/download/fes2023_flx1_v001.csv"
@@ -41,6 +69,70 @@ page:
     commands:
       - {run: gridflow ingest neso_data_portal fes_flx1_flexibility --last 24h, comment: "changed CSVs to bronze"}
       - {run: gridflow transform neso_data_portal fes_flx1_flexibility --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: edition, op: eq, value: 2025}
+        - {column: pathway, op: eq, value: Holistic Transition}
+        - {column: projection_year, op: eq, value: 2035}
+        - {column: detail, op: in, value: [Battery, Capacity, Export, Import, Netflows, V2G potential at peak,
+                                            Combined flexibility capacity from all consumer led sources]}
+      dedup: {"on": [resource_id, edition, flexibility_sub_type, data_item, unit, pathway, fuel, detail, projection_year], order_by: capture_written_at}
+      order_by: [data_item, detail]
+      columns: [data_item, detail, unit, projection_year, value, pathway, flexibility_sub_type, fuel, edition,
+                resource_id, published_at, timestamp_utc]
+    key: [resource_id, edition, flexibility_type, flexibility_sub_type, data_item, unit, scenario, fuel, detail,
+          pathway, projection_year]
+    caption: "FES 2025 Holistic Transition, label 2035: GW, GWh and TWh rows; signs as NESO writes them."
+    fields:
+      data_item: "NESO's flexibility item, such as `Interconnectors` or `Vehicle to Grid`"
+      detail: "NESO's split of the item, such as a storage technology or `Export`"
+      unit: "NESO's unit for the row: GW, GWh or TWh"
+      projection_year: "NESO's year header as an integer; its period or date is not stated"
+      value: "NESO's value in the row's unit, sign as written; blanks stay blank"
+      pathway: "NESO's pathway name in the 2024 and 2025 files; blank in 2026"
+      flexibility_sub_type: "`Supply side flexibility` or `Demand side flexibility`"
+      fuel: "NESO's fuel label, such as `Electricity`, `Gas` or `Hydrogen`"
+      edition: "The FES edition, from the file name; 2026 is the Ten-Year Outlook"
+      flexibility_type: "`Electricity system flexibility` on every row"
+      scenario: "NESO's scenario name in the 2026 file only, `Ten Year Outlook`"
+      resource_id: "CKAN file id, one per edition; first column of the entity key"
+      published_at: "NESO's last-modified time for the edition's file, read as UTC"
+      timestamp_utc: "When gridflow captured the file, UTC; the table has no event time"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  caveat: "NESO states no period or date for the year labels, or what blanks mean."
+  notebook:
+    lead: >-
+      `query()` filters on `timestamp_utc`, the capture time here, so these cells use `data.sql()`
+      on the `_latest` view, which keeps every edition's file, and pick FES 2025 by `edition`.
+    cells:
+      - |
+        flx = data.sql("""
+            SELECT pathway, projection_year, value
+            FROM silver_neso_data_portal_fes_flx1_flexibility_latest
+            WHERE edition = 2025 AND data_item = 'Electricity storage connection capacity'
+              AND detail = 'Battery'
+        """)
+        wide = flx.pivot(index="projection_year", columns="pathway", values="value").rename_axis(index=None, columns=None)
+        wide.loc[[2030, 2035, 2040, 2045, 2050]].round(2)
+      - |
+        ax = wide.plot(figsize=(9, 3.5), color=["#155A6E", "#8A9A2B", "#B5651D", "#6E4A7E", "#5A6B70"],
+                       xlabel="NESO's year label, as written", ylabel="battery connection capacity, GW");
+      - |
+        data.sql("""
+            SELECT unit, data_item, count(*) AS cells, count(value) AS filled
+            FROM silver_neso_data_portal_fes_flx1_flexibility_latest
+            WHERE edition = 2025
+            GROUP BY unit, data_item
+            ORDER BY unit, data_item
+        """)
+    needs: NESO's three FES flexibility files from 2024 to 2026
+    plot_alt: >-
+      Line plot of NESO's battery storage connection capacity in the FES 2025 edition, GW, by year
+      label 2024 to 2050, one line per pathway. All five start at 6.78 at label 2024. At 2050
+      Electric Engagement is highest at 40.44, then Holistic Transition 39.35, Hydrogen Evolution
+      31.23 and Falling Behind 27.39. Ten Year Forecast is blank after 2035.
   related:
     - {dataset: neso_data_portal/future-energy-scenario-electricity-supply-data-table-es1, note: "NESO's FES electricity supply table, including storage and interconnectors"}
     - {dataset: neso_data_portal/fes-electricity-demand-summary-data-table-ed1, note: "NESO's FES electricity demand table, by component and scenario"}
@@ -68,8 +160,9 @@ holds **11,382 rows from 3 resources** (2024: 5,550 · 2025: 4,860 · 2026: 972)
 **1,848** have a blank (null) `value`. The 2023 resource is a resource-level **HOLD** (padded
 numbers fail the strict cast, below) and has **no silver rows**. The family itself is **held**
 (unit E-SEM, see Holds): the period each year label denotes and the meaning of a blank cell are
-not established. This page therefore gives schema, row counts, clocks and missingness only,
-never data values, samples or ranges of values.
+not established. This note gives schema, row counts, clocks and missingness; the site page
+shows the 2024 to 2026 rows, a chart of one FES 2025 row and a notebook, with one line naming
+the hold question (ruling 66, 2026-10-24).
 
 Sibling scenario packages in this vault: @./fes-electricity-demand-summary-data-table-ed1.md,
 @./fes-european-electricity-supply-data-table-es2.md,
@@ -345,8 +438,8 @@ gridflow outputs derived from this package carry the attribution line above.
 
 - `fes_flx1_flexibility`: held: TODO: For each FLX1 edition and measure, what interval or observation date does its year label denote, including annual interconnector energy, storage energy potential, installed capacity and flexibility at peak? Does a winter-related label identify the starting or ending year? What does a blank projection cell mean? Can NESO republish `fes2023_flx1_v001.csv` without numeric edge whitespace, or will a separately authorized engine change permit explicitly declared ASCII trimming of unpivot values? (unit E-SEM)
 
-The silver output exists on disk (11,382 rows) but is **held**: it is not eligible for
-publication or for point-in-time model use until unit E-SEM answers the question above
+The silver output exists on disk (11,382 rows) but is **held**: gridflow's models may not use
+it for point-in-time work until unit E-SEM answers the question above
 (held at activation, RULINGS 827). The registry carries `eligible` at package level and `held`
 at family level (gridflow `@docs/neso_data_portal/eligibility.md`); the family status governs
 the silver output. The hold has three parts:
@@ -369,8 +462,9 @@ the silver output. The hold has three parts:
 
 Settles it: a NESO statement (or matching-edition workbook notes) of the period each year label
 covers per measure and edition, the meaning of an empty projection cell, and a republished 2023
-file without edge whitespace. Until then the page shows no values, samples or statistics of
-values, and no gold view or gridflow_models consumer reads this family.
+file without edge whitespace. Until then no gold view or gridflow_models consumer reads this
+family. The site page shows the 2024 to 2026 rows, read through the `_latest` silver view, with
+one line naming the year-label and blank-cell questions (ruling 66, 2026-10-24).
 
 ## Links
 
