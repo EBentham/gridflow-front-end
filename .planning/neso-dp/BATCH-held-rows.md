@@ -127,6 +127,7 @@ repeat rows; on a table with no event time use `data.sql()`; the column guide ac
 | N1 | a0ac37967725c0a93 | | writing |
 | CI1 | ace01fca13556e033 | | writing |
 | F1 | a34676c0e232141b9 | | writing |
+| F2 | a52e0573a78ee0c3e | | writing |
 
 Pace raised 2026-10-24 ~13:25Z (Bobbo via the parent): 5 agents at once, aim about 50% of weekly usage over 36 hours;
 park at 98% weekly. After NESO: ruling 66 on the seven blank other-vendor pages (ENTSO-E balancing-energy bids, current

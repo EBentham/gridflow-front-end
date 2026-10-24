@@ -11,7 +11,7 @@ line after `after_backlog` (next id 20cs, after "(20cr)").
 
 ## In flight (at hand-off)
 
-- G1 generation: all five approved; writer fixing 7 nits; then seat-verify, commit on `fe-neso-gen` / `vault-neso-gen`.
+- G1 generation: DONE (pushed, parent told). F2 FES second batch writer a52e0573a78ee0c3e launched.
 - I1 + I2 interconnectors: one joint checker (a1fdee2150037abad) reviewing seven pages; writers I1 a475c72bb4c6ca14f,
   I2 a85a78f0c3de4f450. Viking lead reordered (b79c573).
 - N1 network charges writer a0ac37967725c0a93; CI1 carbon intensity writer ace01fca13556e033; F1 FES writer
