@@ -367,8 +367,8 @@
       "title": "Stability pathfinder service information",
       "note": "stability-pathfinder-service-information",
       "members": [
-        "stability_pathfinder_availability_report",
-        "stability_pathfinder_utilisation_report"
+        "stability_pathfinder_utilisation_report",
+        "stability_pathfinder_availability_report"
       ]
     },
     {
