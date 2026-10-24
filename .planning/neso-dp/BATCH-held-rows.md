@@ -103,3 +103,6 @@ repeat rows; on a table with no event time use `data.sql()`; the column guide ac
 
 | Batch | Writer | Checker | State |
 |---|---|---|---|
+| A1 | a012e047532732e92 | | writing |
+| A2 | a9f952220257ebd0a | | writing |
+| B1 | a12aa2a2d21abdba4 | | writing |
