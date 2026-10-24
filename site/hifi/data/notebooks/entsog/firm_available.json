@@ -1,7 +1,7 @@
 {
  "dataset": "entsog/firm_available",
  "generated_by": "scripts/run_notebooks.py",
- "cells_sha256": "072d47623a7db083343c0d6be5339b79ba9485444ce68c13c6f2fb7d4881d3af",
+ "cells_sha256": "346718a07c6642d634ba610144d2fbaeb1917b7c62777f7f656ab2cbefd3da6d",
  "kernel": "gridflow_models",
  "source": "entsog",
  "cells": [
@@ -55,87 +55,87 @@
   },
   {
    "n": 3,
-   "source": "avail = data.entsog.query(\"firm_available\", \"2026-09-13\", \"2026-09-21\")\nbooked = data.entsog.query(\"firm_booked\", \"2026-09-13\", \"2026-09-21\")",
+   "source": "tech = data.entsog.query(\"firm_technical\", \"2026-09-13\", \"2026-09-21\")\nbooked = data.entsog.query(\"firm_booked\", \"2026-09-13\", \"2026-09-21\")\navail = data.entsog.query(\"firm_available\", \"2026-09-13\", \"2026-09-21\")",
    "outputs": []
   },
   {
    "n": 4,
-   "source": "key = [\"timestamp_utc\", \"operator_key\", \"point_key\", \"direction_key\"]\nmoffat = (avail[key + [\"value\"]].rename(columns={\"value\": \"available\"})\n          .merge(booked[key + [\"value\"]].rename(columns={\"value\": \"booked\"}), on=key))\nmoffat = moffat[(moffat.point_key == \"ITP-00495\") & (moffat.direction_key == \"entry\")]\nmoffat = moffat.sort_values(\"timestamp_utc\").assign(\n    timestamp_utc=lambda d: d.timestamp_utc.dt.tz_convert(\"UTC\"),\n    available_plus_booked=lambda d: d.available + d.booked)\nmoffat[[\"timestamp_utc\", \"available\", \"booked\", \"available_plus_booked\"]]",
+   "source": "key = [\"timestamp_utc\", \"operator_key\", \"point_key\", \"direction_key\"]\nfirm = (tech[key + [\"value\"]].rename(columns={\"value\": \"technical\"})\n        .merge(booked[key + [\"value\"]].rename(columns={\"value\": \"booked\"}), on=key)\n        .merge(avail[key + [\"value\"]].rename(columns={\"value\": \"available\"}), on=key))\nmoffat = firm[(firm.point_key == \"ITP-00495\") & (firm.direction_key == \"entry\")]\nmoffat = moffat.sort_values(\"timestamp_utc\").assign(\n    timestamp_utc=lambda d: d.timestamp_utc.dt.tz_convert(\"UTC\"))\nmoffat[[\"timestamp_utc\", \"technical\", \"booked\", \"available\"]]",
    "outputs": [
     {
      "kind": "df",
      "columns": [
       "",
       "timestamp_utc",
-      "available",
+      "technical",
       "booked",
-      "available_plus_booked"
+      "available"
      ],
      "index": [
-      "3",
-      "7",
+      "2",
       "11",
-      "15",
       "19",
-      "23",
-      "27",
-      "31",
-      "35"
+      "30",
+      "40",
+      "45",
+      "56",
+      "64",
+      "73"
      ],
      "rows": [
       [
        "2026-09-13 04:00:00+00:00",
-       "145654424.0",
+       "433368000.0",
        "287713576.0",
-       "433368000.0"
+       "145654424.0"
       ],
       [
        "2026-09-14 04:00:00+00:00",
-       "162488829.0",
+       "433368000.0",
        "270879171.0",
-       "433368000.0"
+       "162488829.0"
       ],
       [
        "2026-09-15 04:00:00+00:00",
-       "170379342.0",
+       "433368000.0",
        "262988658.0",
-       "433368000.0"
+       "170379342.0"
       ],
       [
        "2026-09-16 04:00:00+00:00",
-       "170371375.0",
+       "433368000.0",
        "262996625.0",
-       "433368000.0"
+       "170371375.0"
       ],
       [
        "2026-09-17 04:00:00+00:00",
-       "170379481.0",
+       "433368000.0",
        "262988519.0",
-       "433368000.0"
+       "170379481.0"
       ],
       [
        "2026-09-18 04:00:00+00:00",
-       "170299881.0",
+       "433368000.0",
        "263068119.0",
-       "433368000.0"
+       "170299881.0"
       ],
       [
        "2026-09-19 04:00:00+00:00",
-       "170746545.0",
+       "433368000.0",
        "262621455.0",
-       "433368000.0"
+       "170746545.0"
       ],
       [
        "2026-09-20 04:00:00+00:00",
-       "170746023.0",
+       "433368000.0",
        "262621977.0",
-       "433368000.0"
+       "170746023.0"
       ],
       [
        "2026-09-21 04:00:00+00:00",
-       "163891514.0",
+       "433368000.0",
        "269476486.0",
-       "433368000.0"
+       "163891514.0"
       ]
      ]
     }
@@ -143,7 +143,7 @@
   },
   {
    "n": 5,
-   "source": "moffat.plot(x=\"timestamp_utc\", y=[\"available\", \"booked\"], color=[\"#155A6E\", \"#C77E3C\"],\n            ylabel=\"kWh/d\", figsize=(8, 3.5))",
+   "source": "moffat.plot(x=\"timestamp_utc\", y=[\"technical\", \"booked\", \"available\"],\n            style=[\"--\", \"-\", \"-\"], color=[\"#66793B\", \"#C77E3C\", \"#155A6E\"],\n            ylabel=\"kWh/d\", figsize=(8, 3.5))",
    "outputs": [
     {
      "kind": "text",
@@ -152,7 +152,7 @@
     {
      "kind": "image",
      "src": "firm_available-5.png",
-     "width": 703,
+     "width": 698,
      "height": 358
     }
    ]
