@@ -51,4 +51,4 @@ note-body statements yourself when the data proves them wrong.
 
 | # | Writer | Checker | State |
 |---|---|---|---|
-| H | a057fdca986005d8a | | writing |
+| H | a057fdca986005d8a | a71f8c32a052eb729 | checking; 20cb logged; held lines share the first clause, second halves follow each table's question (seat, PROXY-SOURCED) |
