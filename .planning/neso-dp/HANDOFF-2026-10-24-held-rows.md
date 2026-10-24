@@ -69,3 +69,18 @@ id 20cz, after "(20cy)"). Nothing merged; waits for Bobbo. Now: the other-vendor
 `.planning/v5/p26/BATCH-other-held.md` (worktrees `C:\gridflow-wt\fe-other-held` / `vault-other-held`; branch
 `feat/other-vendor-held` includes a merge of the template branch, PR #60). Still to launch: outages, ENTSOG
 capacity-by-indicator and cmp, NETBSAD, NONBM writers; every checker.
+
+## Update: other-vendor batch, parked at 99% of the 5-hour window (resets 20:20Z)
+
+Done and committed on `feat/other-vendor-held` / `docs/other-vendor-held` (not pushed, no PR yet): ENTSO-E current
+balancing state, ENTSO-E procured balancing capacity, GIE unavailability. In flight: ENTSO-E energy bids writer
+a77c0dcd4743a2675 revising round 1 (checker ac32d21fd7f56f7ab re-checks next). Still to launch after the reset: writers
+for outages, ENTSOG capacity-by-indicator, ENTSOG cmp, Elexon NETBSAD, Elexon NONBM (ports and members in
+`.planning/v5/p26/BATCH-other-held.md`), then their checkers. A one-shot check-in is scheduled for 21:23 local.
+When all nine are approved: gates on fe-other-held, push both branches, open the site PR (base main; say it includes
+the template branch merge until PR #60 merges, and that GIE unavailability waits for gridflow #133 and the ENTSO-E
+pages for #130-#132, ENTSOG for #129, Elexon for #128) and the vault PR (base master), bind the site PR with ccd_pr,
+log defects (next id 20cz: France quarter-hour values repeated per minute in current balancing state; procured
+capacity drops allocation decision time and 2-5 Aug need re-ingest; bids 2-5 Aug and 13-21 Sep page-one only, BE
+series ids may collide across documents; GIE bronze writer collapses identical same-second pages into one file and
+GIE `last_page` overstates pages with records), tell the parent. Nothing merges until Bobbo looks.
