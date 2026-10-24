@@ -1,0 +1,354 @@
+{
+ "dataset": "neso_data_portal/resource_adequacy_2030s_results",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "850a127df53486f0e81a2c16e02f6e7dd56b6c45ac122c9a2b506b1520363674",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "res = data.sql(\"\"\"\n    SELECT simulation_name, spotlight_year, historical_weather_year,\n           weather_conditional_lole_h_year AS lole_h,\n           weather_conditional_eeu_mwh_year AS eeu_mwh\n    FROM silver_neso_data_portal_resource_adequacy_2030s_results_latest\n    WHERE simulation_name LIKE 'Portfolio %'\n\"\"\")\nres.assign(weather_years_with_loss=res.lole_h > 0).pivot_table(\n    index=\"simulation_name\", columns=\"spotlight_year\",\n    values=\"weather_years_with_loss\", aggfunc=\"sum\")",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "spotlight_year",
+      "2030/31",
+      "2035/36",
+      "2040/41",
+      "simulation_name",
+      "",
+      "",
+      ""
+     ],
+     "index": [
+      "Portfolio 1",
+      "Portfolio 2",
+      "Portfolio 3",
+      "Portfolio 4",
+      "Portfolio 5",
+      "Portfolio 6"
+     ],
+     "rows": [
+      [
+       "4.0",
+       "3.0",
+       "4.0"
+      ],
+      [
+       "4.0",
+       "4.0",
+       "4.0"
+      ],
+      [
+       "4.0",
+       "3.0",
+       "5.0"
+      ],
+      [
+       "NaN",
+       "2.0",
+       "2.0"
+      ],
+      [
+       "NaN",
+       "2.0",
+       "1.0"
+      ],
+      [
+       "NaN",
+       "4.0",
+       "1.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "p1 = res[res.simulation_name == \"Portfolio 1\"].pivot(\n    index=\"historical_weather_year\", columns=\"spotlight_year\", values=\"lole_h\")\nax = p1.plot.bar(figsize=(9, 3.5), width=0.8, color=[\"#155A6E\", \"#8A9A2B\", \"#B5651D\"],\n                 xlabel=\"historical weather year\", ylabel=\"Portfolio 1 LOLE, hours/year\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "resource_adequacy_2030s_results-4.png",
+     "width": 759,
+     "height": 395
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "peak = data.sql(\"\"\"\n    SELECT spotlight_year, historical_weather_year, peak_demand_mw\n    FROM silver_neso_data_portal_resource_adequacy_2030s_peak_demand_latest\n\"\"\")\np1_2035 = res[(res.simulation_name == \"Portfolio 1\") & (res.spotlight_year == \"2035/36\")]\np1_2035.merge(peak, on=[\"spotlight_year\", \"historical_weather_year\"]).nlargest(\n    6, \"peak_demand_mw\")[[\"historical_weather_year\", \"peak_demand_mw\", \"lole_h\", \"eeu_mwh\"]]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "historical_weather_year",
+      "peak_demand_mw",
+      "lole_h",
+      "eeu_mwh"
+     ],
+     "index": [
+      "25",
+      "12",
+      "6",
+      "26",
+      "0",
+      "2"
+     ],
+     "rows": [
+      [
+       "2009/10",
+       "80744.0",
+       "0.00",
+       "0.0"
+      ],
+      [
+       "1996/97",
+       "80487.0",
+       "0.00",
+       "0.0"
+      ],
+      [
+       "1990/91",
+       "80238.0",
+       "0.00",
+       "0.0"
+      ],
+      [
+       "2010/11",
+       "79618.0",
+       "0.00",
+       "0.0"
+      ],
+      [
+       "1984/85",
+       "79388.0",
+       "1.52",
+       "9450.0"
+      ],
+      [
+       "1986/87",
+       "79040.0",
+       "0.00",
+       "0.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "source": "cap = data.sql(\"\"\"\n    SELECT name, technology, installed_capacity_mw\n    FROM silver_neso_data_portal_resource_adequacy_2030s_portfolio_latest\n    WHERE future_year = '2035/36' AND name LIKE 'Portfolio %'\n\"\"\")\ncap.pivot(index=\"technology\", columns=\"name\", values=\"installed_capacity_mw\")",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "name",
+      "Portfolio 1",
+      "Portfolio 2",
+      "Portfolio 3",
+      "Portfolio 4",
+      "Portfolio 5",
+      "Portfolio 6",
+      "technology",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     "index": [
+      "Batteries",
+      "Biomass+BECCS",
+      "DSR",
+      "Gas CCS",
+      "Hydrogen-to-power",
+      "Interconnectors",
+      "Max. Dynamic Demand Shifting",
+      "Nuclear",
+      "Offshore wind",
+      "Onshore wind",
+      "Other LDES",
+      "Other renewables",
+      "Pumped hydro",
+      "Solar",
+      "Unabated Gas: GT, CCGT & GT CHP"
+     ],
+     "rows": [
+      [
+       "29000.0",
+       "47900.0",
+       "47000.0",
+       "41000.0",
+       "51000.0",
+       "38000.0"
+      ],
+      [
+       "2800.0",
+       "3200.0",
+       "2800.0",
+       "2800.0",
+       "2800.0",
+       "2800.0"
+      ],
+      [
+       "4000.0",
+       "3400.0",
+       "4000.0",
+       "4000.0",
+       "4000.0",
+       "4000.0"
+      ],
+      [
+       "3900.0",
+       "900.0",
+       "3900.0",
+       "3900.0",
+       "3900.0",
+       "3900.0"
+      ],
+      [
+       "10000.0",
+       "0.0",
+       "10000.0",
+       "10000.0",
+       "0.0",
+       "10000.0"
+      ],
+      [
+       "14200.0",
+       "11700.0",
+       "14200.0",
+       "14200.0",
+       "14200.0",
+       "11700.0"
+      ],
+      [
+       "15500.0",
+       "5900.0",
+       "15500.0",
+       "15500.0",
+       "15500.0",
+       "15500.0"
+      ],
+      [
+       "5800.0",
+       "4600.0",
+       "5800.0",
+       "4600.0",
+       "5800.0",
+       "5800.0"
+      ],
+      [
+       "60300.0",
+       "89000.0",
+       "60300.0",
+       "60300.0",
+       "60300.0",
+       "60300.0"
+      ],
+      [
+       "31200.0",
+       "31200.0",
+       "31200.0",
+       "31200.0",
+       "31200.0",
+       "31200.0"
+      ],
+      [
+       "2000.0",
+       "0.0",
+       "0.0",
+       "2000.0",
+       "2000.0",
+       "2000.0"
+      ],
+      [
+       "5200.0",
+       "5200.0",
+       "5200.0",
+       "5200.0",
+       "5200.0",
+       "5200.0"
+      ],
+      [
+       "6600.0",
+       "2700.0",
+       "2700.0",
+       "8300.0",
+       "8800.0",
+       "6600.0"
+      ],
+      [
+       "63800.0",
+       "69000.0",
+       "63800.0",
+       "63800.0",
+       "63800.0",
+       "63800.0"
+      ],
+      [
+       "27200.0",
+       "41100.0",
+       "29700.0",
+       "27200.0",
+       "34200.0",
+       "27200.0"
+      ]
+     ]
+    }
+   ]
+  }
+ ]
+}

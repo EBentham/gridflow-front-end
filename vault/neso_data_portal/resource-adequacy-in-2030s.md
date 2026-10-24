@@ -7,6 +7,145 @@ skeleton: false
 updated: 2026-10-15
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: Resource adequacy in the 2030s
+  summary: >-
+    NESO's modelled loss of load and unserved energy for 2030/31, 2035/36 and 2040/41, per
+    portfolio, sensitivity and historical weather year.
+  facts:
+    vendor: "NESO Data Portal, package `resource-adequacy-in-2030s`: three CSV files"
+    cadence: "Once in 2 years, NESO says; files last modified 11 and 12 December 2025"
+    grain: "One results row per case, spotlight year and historical weather year"
+    history: "NESO created the package on 11 December 2025"
+  landscape: power
+  what_it_is: >-
+    NESO's Resource Adequacy in the 2030s study models spotlight years 2030/31, 2035/36 and
+    2040/41 (1 April to 31 March), under historical weather years 1984/85 to 2017/18. Files
+    give peak demands, portfolio capacities, and weather-conditional Loss of Load Expectation (LOLE)
+    and Expected Energy Unserved (EEU) for six portfolios and twelve sensitivities; sensitivity
+    capacities deviate from Portfolio 1 (NESO). Modelled, not history.
+  how_used:
+    - "Compare weather-conditional LOLE and EEU across portfolios and sensitivities within one spotlight year"
+    - "Find the historical weather years that carry each case's loss of load"
+    - "Reuse NESO's portfolio capacities and peak demands as inputs to an adequacy model"
+  chart:
+    type: bar
+    silver: neso_data_portal/resource_adequacy_2030s_results
+    value: weather_conditional_lole_h_year
+    filter:
+      - {column: simulation_name, op: eq, value: "Portfolio 1"}
+      - {column: spotlight_year, op: eq, value: "2035/36"}
+    dedup: {"on": [resource_id, simulation_name, spotlight_year, historical_weather_year], order_by: capture_written_at}
+    group: historical_weather_year
+    aggregation: max
+    sort: label
+    unit: hours/year
+  chart_view:
+    title: Portfolio 1 modelled loss of load by weather year, 2035/36
+    caption: >-
+      Silver `resource_adequacy_2030s_results`, case `Portfolio 1`, spotlight year 2035/36 (1 April
+      2035 to 31 March 2036): NESO's modelled weather-conditional LOLE in hours/year, one row per
+      historical weather year, nothing summed. NESO's file last modified 12 December 2025.
+    alt: >-
+      Horizontal bar chart of NESO's modelled weather-conditional LOLE for Portfolio 1 in spotlight
+      year 2035/36, in hours/year, one bar per historical weather year from 1984/85 to 2017/18.
+      Three of the 34 bars are above zero: 1985/86 at 6.23, 1984/85 at 1.52 and 2000/01 at 0.1.
+      The other 31 weather years are zero.
+    key:
+      - {series: weather_conditional_lole_h_year, label: Weather-conditional LOLE, codes: Portfolio 1, paint: petrol,
+         note: "NESO: \"the average number of hours demand exceeds supply across all simulations\""}
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then each table's file downloaded whole, unless
+      its `last_modified` is unchanged. Dates select nothing; silver keeps every capture.
+    commands:
+      - {run: gridflow pipeline neso_data_portal resource_adequacy_2030s_results --last 24h, comment: "results file; window must end recently"}
+      - {run: gridflow pipeline neso_data_portal resource_adequacy_2030s_peak_demand --last 24h, comment: "the peak demand file, both steps"}
+      - {run: gridflow pipeline neso_data_portal resource_adequacy_2030s_portfolio --last 24h, comment: "the portfolio file, both steps"}
+  record:
+    select:
+      filter:
+        - {column: simulation_name, op: in, value: ["Portfolio 1", "Portfolio 2", "Portfolio 3", "Portfolio 4"]}
+        - {column: spotlight_year, op: eq, value: "2035/36"}
+        - {column: historical_weather_year, op: in, value: ["1984/85", "1985/86"]}
+      dedup: {"on": [resource_id, simulation_name, spotlight_year, historical_weather_year], order_by: capture_written_at}
+      order_by: [historical_weather_year, simulation_name]
+      columns: [simulation_name, spotlight_year, historical_weather_year, weather_conditional_lole_h_year,
+                weather_conditional_eeu_mwh_year, resource_id, published_at, timestamp_utc]
+    key: [simulation_name, spotlight_year, historical_weather_year, resource_id]
+    caption: "Portfolios 1 to 4 in spotlight year 2035/36, under weather years 1984/85 and 1985/86."
+    fields:
+      simulation_name: "Case label: `Portfolio 1` to `6`, or `Sensitivity 01` to `12` with a description"
+      spotlight_year: "Modelled year, 1 April to 31 March per NESO: `2035/36` starts 1 April 2035"
+      historical_weather_year: "Past weather NESO used to generate supply and demand; a label only"
+      weather_conditional_lole_h_year: "Hours/year demand exceeds supply, averaged across simulations covering 100 randomly selected forced-outage patterns"
+      weather_conditional_eeu_mwh_year: 'MWh/year; NESO: "average volume of demand exceeds supply across all simulations"; same 100 patterns'
+      resource_id: "CKAN file id; with case, spotlight and weather year, the entity key"
+      published_at: "NESO's last-modified time for the file, read as UTC"
+      timestamp_utc: "When gridflow captured the file, UTC; the table has no event time"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      `query()` filters on `timestamp_utc`, which here is the capture time, so these cells use
+      `data.sql()` on the `_latest` views, naming the vendor columns to leave lineage out.
+    cells:
+      - |
+        res = data.sql("""
+            SELECT simulation_name, spotlight_year, historical_weather_year,
+                   weather_conditional_lole_h_year AS lole_h,
+                   weather_conditional_eeu_mwh_year AS eeu_mwh
+            FROM silver_neso_data_portal_resource_adequacy_2030s_results_latest
+            WHERE simulation_name LIKE 'Portfolio %'
+        """)
+        res.assign(weather_years_with_loss=res.lole_h > 0).pivot_table(
+            index="simulation_name", columns="spotlight_year",
+            values="weather_years_with_loss", aggfunc="sum")
+      - |
+        p1 = res[res.simulation_name == "Portfolio 1"].pivot(
+            index="historical_weather_year", columns="spotlight_year", values="lole_h")
+        ax = p1.plot.bar(figsize=(9, 3.5), width=0.8, color=["#155A6E", "#8A9A2B", "#B5651D"],
+                         xlabel="historical weather year", ylabel="Portfolio 1 LOLE, hours/year");
+      - |
+        peak = data.sql("""
+            SELECT spotlight_year, historical_weather_year, peak_demand_mw
+            FROM silver_neso_data_portal_resource_adequacy_2030s_peak_demand_latest
+        """)
+        p1_2035 = res[(res.simulation_name == "Portfolio 1") & (res.spotlight_year == "2035/36")]
+        p1_2035.merge(peak, on=["spotlight_year", "historical_weather_year"]).nlargest(
+            6, "peak_demand_mw")[["historical_weather_year", "peak_demand_mw", "lole_h", "eeu_mwh"]]
+      - |
+        cap = data.sql("""
+            SELECT name, technology, installed_capacity_mw
+            FROM silver_neso_data_portal_resource_adequacy_2030s_portfolio_latest
+            WHERE future_year = '2035/36' AND name LIKE 'Portfolio %'
+        """)
+        cap.pivot(index="technology", columns="name", values="installed_capacity_mw")
+    needs: NESO's three Resource Adequacy in the 2030s files
+    plot_alt: >-
+      Grouped bar chart of NESO's modelled weather-conditional LOLE for Portfolio 1, hours/year, by
+      historical weather year 1984/85 to 2017/18, one bar each for 2030/31, 2035/36 and 2040/41.
+      Only 1984/85 (3.97, 1.52, 0.36) and 1985/86 (4.98, 6.23, 5.63) reach above 0.1; the rest
+      are zero or at most 0.1.
+  related:
+    - {dataset: neso_data_portal/capacity-market-register, note: "Capacity awarded per delivery year; these portfolios give installed MW"}
+    - {dataset: neso_data_portal/future-energy-scenario-electricity-supply-data-table-es1, note: "FES electricity supply by scenario or pathway, a separate NESO study"}
+    - {dataset: neso_data_portal/interconnector-register, note: "Contracted interconnectors; Sensitivities 08 to 10 here vary interconnection and imports"}
+    - {dataset: neso_data_portal/historic-demand-data, note: "Half-hourly outturn demand; NESO does not state the modelled peaks' demand basis"}
+  family:
+    slug: resource-adequacy-in-2030s
+    members:
+      - dataset: resource_adequacy_2030s_results
+        differs: "Study output: weather-conditional LOLE and EEU per case, spotlight and weather year"
+        request:
+          - "GET https://api.neso.energy/api/3/action/package_show?id=resource-adequacy-in-2030s"
+          - "GET https://api.neso.energy/dataset/531e616c-7192-443f-bee0-ed067d55b182/resource/71221dca-c792-4fb6-b6b4-893f392d893a/download/resource-adequacy-in-the-2030s-results-dataset-.csv"
+      - dataset: resource_adequacy_2030s_peak_demand
+        differs: "Input: MW peak demand per spotlight and weather year, for NESO's 2025 study"
+        request: "GET https://api.neso.energy/dataset/531e616c-7192-443f-bee0-ed067d55b182/resource/5ca210f2-96cb-4fcd-939d-a9f34b2b8174/download/peak-demand-dataset.csv"
+      - dataset: resource_adequacy_2030s_portfolio
+        differs: "Input: MW and MWh per portfolio, technology and year; sensitivity capacities excluded"
+        request: "GET https://api.neso.energy/dataset/531e616c-7192-443f-bee0-ed067d55b182/resource/c2bba528-b75a-42c5-bb98-3af3a5b3f720/download/portfolio-capacity-dataset.csv"
 ---
 
 # Resource Adequacy in the 2030s
@@ -237,7 +376,11 @@ MWh/year** (vendor dictionary units). The dictionary describes them as averaged 
 plant-outage simulations for the given spotlight-year and weather-year pair. They are not
 averaged across weather years. Both cast strictly to float64. There are no blanks and no sentinel
 tokens. **Zeros are real values**: 1,195 LOLE cells and 1,197 EEU cells are 0 (longest consecutive run 33 for both columns).
-Do not read a zero as missing.
+Do not read a zero as missing. In the 2026-10-08 capture every EEU value is a whole multiple of
+10 MWh and every LOLE value a whole hundredth of an hour, and two rows carry a LOLE above zero
+with an EEU of 0 (`Sensitivity 08`, 2040/41, weather year 1996/97, 0.02 h; `Sensitivity 09`,
+2035/36, 2012/13, 0.01 h). That fits EEU rounded to 10 MWh, but NESO does not state any
+rounding (`TODO: verify`).
 
 ## Cadence
 
