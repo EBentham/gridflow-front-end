@@ -125,9 +125,9 @@ repeat rows; on a table with no event time use `data.sql()`; the column guide ac
 | I1 | a475c72bb4c6ca14f | a1fdee2150037abad | APPROVED x4 (round 2); committed (site e9fbe4e) with I2; pushed; parent told; 20cs logged |
 | I2 | a85a78f0c3de4f450 | a1fdee2150037abad | APPROVED x3; committed with I1 |
 | N1 | a0ac37967725c0a93 | a24fb2d76dca812ba | APPROVED x2 (round 2); committed (site 4ae7dc4); pushed; parent told; 20ct logged |
-| CI1 | ace01fca13556e033 | a50d6c3658e06feeb | written; in review (national and country rows show past values revised; regional chart of the file's last week) |
-| F1 | a34676c0e232141b9 | a34861f355f97978d | written; in review (ED1 caveat differs: NESO calls annual rows fiscal) |
-| F2 | a52e0573a78ee0c3e | | writing |
+| CI1 | ace01fca13556e033 | a50d6c3658e06feeb | DONE: approved after one revision (national alt, country caption); pushed 42b7cb7 / vault 172559a; 20cu-20cw logged |
+| F1 | a34676c0e232141b9 | a34861f355f97978d | all five APPROVE with nits; writer fixing nits |
+| F2 | a52e0573a78ee0c3e | aa0ab3c0490d93fb0 | written; in review (seat reordered ED3 lead to `_sum_ed` and LA heat lead to residential, artefacts renamed) |
 | R1 | a2169fe0f64b6cf11 | a0829310d3f9bfefb | written; in review (2014 frequency table now a caveat, not held; BSUoS sample from the 16 Oct upload) |
 
 Pace raised 2026-10-24 ~13:25Z (Bobbo via the parent): 5 agents at once, aim about 50% of weekly usage over 36 hours;
@@ -155,6 +155,17 @@ one day -> 291 a day; null timestamps gone, 18c). capacity-by-indicator: no defe
 `available_through_uioli_short_term` holds only the "no capacity" sentences). cmp: caveat the six mixed units on auction
 premiums and that it is unconfirmed which price the unit applies to (18u). Parked notes on `v5/p26-entsog-gas-held` /
 `docs/v5-p26-entsog-gas-held`; the three cmp vault notes can now be corrected. Write both from current silver.
+
+ENTSO-E (parent, ~18:40Z): fixed in gridflow PRs #130, #131, #132 (unmerged, CI green; local silver re-built).
+`current_balancing_state`: no defect caveat; rows per minute with zone and direction, 21,600 rows over 1-5 Aug
+(FR/NL/BE), and the data really exists only for those five days. `balancing-energy-bids` and
+`procured_balancing_capacity`: no defect caveat for 1 Aug 2026 (re-ingested: bids 6,852 -> 80,843 rows, every zone
+00:00-23:45; procured 126,156 rows with area, agreement type, direction, price); other days still hold page-one-only
+bronze until re-ingested, so chart and sample 1 Aug only and say so. Procured MW for an area is the sum over its rows.
+Aggregated bids: area filled on all 768 BE rows. `outages` (5 tables): one row per step clipped to the day, latest
+revision per document, identity/revision/cancelled status/unclipped start and end/unit/nominal power kept; generation
+11,011 -> 5,501 rows (no post-2027 stamps; 299 of 909 documents cancelled). Keep two caveats: the meaning of
+`unavailable_mw` is unverified (13am), and only planned outages are requested (13an). Write all from current silver.
 
 **Fixed in gridflow PR #134 (unmerged; local silver re-transformed):** current BSUoS day-first files (remediation 20y)
 and system frequency 2014 (20ao: 12 of 12 files, the repeated October hour told apart by `dtm_occurrence`). Their
