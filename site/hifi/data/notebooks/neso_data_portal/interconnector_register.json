@@ -1,0 +1,172 @@
+{
+ "dataset": "neso_data_portal/interconnector_register",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "aeb7ff96e960d7c273f01f8c2c5e56164976e0cfcfe178a7547f1de90fcfc4e5",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.sql(\"\"\"\n    SELECT project_number, project_name, stage, project_status,\n           mw_import_current, mw_import_increase_decrease,\n           mw_import_total, mw_export_total, mw_effective_from,\n           gate, published_at\n    FROM silver_neso_data_portal_interconnector_register_latest\n    ORDER BY project_number\"\"\")\ndf[df.project_name.duplicated(keep=False)]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "project_number",
+      "project_name",
+      "stage",
+      "project_status",
+      "mw_import_current",
+      "mw_import_increase_decrease",
+      "mw_import_total",
+      "mw_export_total",
+      "mw_effective_from",
+      "gate",
+      "published_at"
+     ],
+     "index": [
+      "24",
+      "25"
+     ],
+     "rows": [
+      [
+       "PRO-001292-1",
+       "Auchencrosh (interconnector CCT)",
+       "1.0",
+       "Built",
+       "270.0",
+       "205.0",
+       "475.0",
+       "500.0",
+       "2022-04-01",
+       "NaN",
+       "2026-10-16 19:06:23.602416+01:00"
+      ],
+      [
+       "PRO-001292-2",
+       "Auchencrosh (interconnector CCT)",
+       "2.0",
+       "Built",
+       "475.0",
+       "25.0",
+       "500.0",
+       "500.0",
+       "2022-08-01",
+       "NaN",
+       "2026-10-16 19:06:23.602416+01:00"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "one = df[df.project_number != \"PRO-001292-1\"]\none.groupby(\"project_status\").agg(\n    projects=(\"project_number\", \"count\"),\n    import_mw=(\"mw_import_total\", \"sum\"),\n    export_mw=(\"mw_export_total\", \"sum\")).reset_index()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "project_status",
+      "projects",
+      "import_mw",
+      "export_mw"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3"
+     ],
+     "rows": [
+      [
+       "Awaiting Consents",
+       "3",
+       "4000.0",
+       "4135.0"
+      ],
+      [
+       "Built",
+       "11",
+       "10791.0",
+       "11097.0"
+      ],
+      [
+       "Scoping",
+       "19",
+       "26830.0",
+       "26904.0"
+      ],
+      [
+       "Under Construction/Commissioning",
+       "1",
+       "1400.0",
+       "1470.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "due = one[one.project_status != \"Built\"]\nyear = due.mw_effective_from.dt.year\nspan = range(year.min(), year.max() + 1)\nby_year = (due.groupby(year).mw_import_total.sum()\n              .reindex(span, fill_value=0))\nby_year.plot.bar(color=\"#6B7A3A\", figsize=(8, 3.5),\n                 xlabel=\"contracted effective year\",\n                 ylabel=\"import capacity, MW\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "interconnector_register-5.png",
+     "width": 707,
+     "height": 357
+    }
+   ]
+  }
+ ]
+}
