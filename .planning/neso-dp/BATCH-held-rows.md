@@ -111,11 +111,13 @@ repeat rows; on a table with no event time use `data.sql()`; the column guide ac
 
 | Batch | Writer | Checker | State |
 |---|---|---|---|
-| A1 | a012e047532732e92 | | writing |
-| A2 | a9f952220257ebd0a | af25be4d62dca5b4a | round 1: contract transfer APPROVED; disaggregated BSAD APPROVED, 1 nit (rows repeat within each file, not across: corrected-reasons file wrong); ASDP and ORPS REVISE (stale body lines); round 2 with writer |
-| B1 | a12aa2a2d21abdba4 | aac52199c23c016ff | round 1 REVISE x5 (stale "no data values" body lines; nits); fixed-tariffs caveat confirmed (rows carry Published Date); round 2 with writer |
+| A1 | a012e047532732e92 | a4ec36bb8e74245fd | written; in review (DC chart avoids the ambiguous Date; 16 Oct capture dates can only be day-first; EAC mock dedup on delivery_end) |
+| A2 | a9f952220257ebd0a | af25be4d62dca5b4a | APPROVED x4 (round 2); committed (vault, then mirror and artefacts f95709e); 20cm logged |
+| B1 | a12aa2a2d21abdba4 | aac52199c23c016ff | APPROVED x5; committed (vault 96396ba, site be9a3f6); 20cl logged |
 | B2 | a948627e0bfe2b68d | | writing |
 | C1 | ad75c58a68842e8b6 | | writing |
+| S1 | a7ab77ada40837869 | | writing |
+| T1 | abf6b4cf3ba85c1a5 | | writing |
 
 Pace raised 2026-10-24 ~13:25Z (Bobbo via the parent): 5 agents at once, aim about 50% of weekly usage over 36 hours;
 park at 98% weekly. After NESO: ruling 66 on the seven blank other-vendor pages (ENTSO-E balancing-energy bids, current
