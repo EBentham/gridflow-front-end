@@ -51,4 +51,4 @@ note-body statements yourself when the data proves them wrong.
 
 | # | Writer | Checker | State |
 |---|---|---|---|
-| H | ac3e2546998f4ced8 | | writing |
+| H | ac3e2546998f4ced8 | aad538bc417ff3731 | checking; 20bz logged |
