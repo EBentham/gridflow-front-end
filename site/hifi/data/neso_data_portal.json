@@ -83,7 +83,21 @@
         "dynamic-containment-4-day-forecast",
         "long-term-forecasts-for-dc-dm-dr-requirements",
         "eac-mock-auction-results",
-        "eac-br-mock-auction-results"
+        "eac-br-mock-auction-results",
+        "ancillary-services-important-industry-notifications",
+        "balancing-services-adjustment-data-forward-contracts",
+        "non-bm-ancillary-service-dispatch-platform-asdp-instructions",
+        "obp-non-bm-reserve-instructions",
+        "obp-non-bm-physical-notifications",
+        "obp-reserve-availability-utilisation-price",
+        "optional-downward-flexibility-management-odfm-market-information",
+        "short-term-operating-reserve-stor-day-ahead-auction-results",
+        "short-term-operating-reserve-stor-day-ahead-buy-curve",
+        "stor-windows",
+        "contract-transfer-of-obligation",
+        "disaggregated-bsad",
+        "non-bm-ancillary-service-dispatch-platform-asdp-window-prices",
+        "obligatory-reactive-power-service-orps-utilisation"
       ]
     }
   ],
@@ -223,6 +237,39 @@
         "eac_br_mock_results_buy_orders",
         "eac_br_mock_results_sell_orders"
       ]
+    },
+    {
+      "slug": "ancillary-services-important-industry-notifications",
+      "title": "Ancillary services industry notifications",
+      "note": "ancillary-services-important-industry-notifications",
+      "members": [
+        "as_industry_notifications_balancing",
+        "as_industry_notifications_dc_dm_dr",
+        "as_industry_notifications_quick_reserve",
+        "as_industry_notifications_slow_reserve",
+        "as_industry_notifications_stor_important",
+        "as_industry_notifications_sffr_important"
+      ]
+    },
+    {
+      "slug": "optional-downward-flexibility-management-odfm-market-information",
+      "title": "ODFM market information",
+      "note": "optional-downward-flexibility-management-odfm-market-information",
+      "members": [
+        "odfm_market_information_instructed",
+        "odfm_market_information_load_factors",
+        "odfm_market_information_results"
+      ]
+    },
+    {
+      "slug": "obligatory-reactive-power-service-orps-utilisation",
+      "title": "ORPS reactive power utilisation",
+      "note": "obligatory-reactive-power-service-orps-utilisation",
+      "members": [
+        "orps_utilisation_reactive",
+        "orps_utilisation_historic_reactive",
+        "orps_utilisation_reactive_default"
+      ]
     }
   ],
   "names": {
@@ -236,7 +283,18 @@
     "quick-reserve-auction-requirement-forecast": "Quick Reserve requirement forecast",
     "slow-reserve-requirement-forecast": "Slow Reserve requirement forecast",
     "static-firm-frequency-response-requirement": "Static FFR requirement",
-    "long-term-forecasts-for-dc-dm-dr-requirements": "DC, DM and DR long-term forecasts"
+    "long-term-forecasts-for-dc-dm-dr-requirements": "DC, DM and DR long-term forecasts",
+    "balancing-services-adjustment-data-forward-contracts": "BSAD forward contracts",
+    "non-bm-ancillary-service-dispatch-platform-asdp-instructions": "ASDP instructions",
+    "obp-non-bm-reserve-instructions": "OBP non-BM reserve instructions",
+    "obp-non-bm-physical-notifications": "OBP non-BM physical notifications",
+    "obp-reserve-availability-utilisation-price": "OBP reserve availability and utilisation prices",
+    "short-term-operating-reserve-stor-day-ahead-auction-results": "STOR day-ahead auction results",
+    "short-term-operating-reserve-stor-day-ahead-buy-curve": "STOR day-ahead buy curve",
+    "stor-windows": "STOR windows",
+    "contract-transfer-of-obligation": "Contract transfer of obligation",
+    "disaggregated-bsad": "Disaggregated BSAD",
+    "non-bm-ancillary-service-dispatch-platform-asdp-window-prices": "ASDP window prices"
   },
   "dropped": {},
   "package_tables": {
@@ -247,7 +305,18 @@
     "quick-reserve-auction-requirement-forecast": "qr_auction_requirement_fc",
     "slow-reserve-requirement-forecast": "slow_reserve_requirement_fc",
     "static-firm-frequency-response-requirement": "sffr_requirement",
-    "long-term-forecasts-for-dc-dm-dr-requirements": "dc_dm_dr_long_term_fc"
+    "long-term-forecasts-for-dc-dm-dr-requirements": "dc_dm_dr_long_term_fc",
+    "balancing-services-adjustment-data-forward-contracts": "bsad_forward_contracts",
+    "non-bm-ancillary-service-dispatch-platform-asdp-instructions": "asdp_instructions",
+    "obp-non-bm-reserve-instructions": "obp_reserve_instructions",
+    "obp-non-bm-physical-notifications": "obp_physical_notifications",
+    "obp-reserve-availability-utilisation-price": "obp_reserve_avail_price",
+    "short-term-operating-reserve-stor-day-ahead-auction-results": "stor_da_auction_results",
+    "short-term-operating-reserve-stor-day-ahead-buy-curve": "stor_da_buy_curve",
+    "stor-windows": "stor_windows",
+    "contract-transfer-of-obligation": "contract_transfer_obligation",
+    "disaggregated-bsad": "disaggregated_bsad",
+    "non-bm-ancillary-service-dispatch-platform-asdp-window-prices": "asdp_window_prices"
   },
   "catalogue": {
     "_about": "NESO's catalogue as the hub draws it: its data groups in portal order, each with NESO's description and its packages (NESO's titles and CKAN names). `page_packages` names the CKAN package of a page not named after it; a package is a link when a page in `groups` documents it. `plan` lays the groups out as plots: a slug is one plot, `row` sets its children side by side, `col` stacks them; `wide` from 1100 px, `narrow` below, and `tag_narrow` plots carry their name beneath them when narrow.",

@@ -1,0 +1,248 @@
+{
+ "dataset": "neso_data_portal/stor_da_buy_curve",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "e3b1cb9a34f204f7614fee5a60ba44357727787db782d1740f556ef6c639a095",
+ "silver": "neso_data_portal/stor_da_buy_curve",
+ "columns": [
+  {
+   "name": "buy_curve_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "effective_from_date",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "mw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "availability_price",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "buy_curve_step_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "effective_to_date",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "buy_curve_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "service_catalog",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "curve_to_be_applied_to",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "BCN-00001874",
+   "2026-03-28 05:00:00 UTC",
+   "1700.0",
+   "0.0",
+   "BCS-5632",
+   "2026-03-29 04:00:00 UTC",
+   "BCN-Short Term Operating Reserve-00001874",
+   "Short Term Operating Reserve",
+   "Service Period - All Operational Day windows",
+   "2026-03-28 05:00:00 UTC",
+   "2026-03-30 04:22:46.013246 UTC",
+   "bronze/neso_data_portal/stor_da_buy_curve/2026/10/08/raw_20261008T112735Z_8abc71ba-4484-4683-be68-5bc241b6ae7a_d240b649.csv",
+   "2026-10-08 11:27:35.997765 UTC",
+   "2026-03-28 05:00:00 UTC",
+   "2026-03-30 04:22:46.013246 UTC",
+   "8a653d29-5132-45b7-bac9-d0ae161155e6",
+   "1+e1"
+  ],
+  [
+   "BCN-00001874",
+   "2026-03-28 05:00:00 UTC",
+   "1700.0",
+   "7.17",
+   "BCS-5633",
+   "2026-03-29 04:00:00 UTC",
+   "BCN-Short Term Operating Reserve-00001874",
+   "Short Term Operating Reserve",
+   "Service Period - All Operational Day windows",
+   "2026-03-28 05:00:00 UTC",
+   "2026-03-30 04:22:46.013246 UTC",
+   "bronze/neso_data_portal/stor_da_buy_curve/2026/10/08/raw_20261008T112735Z_8abc71ba-4484-4683-be68-5bc241b6ae7a_d240b649.csv",
+   "2026-10-08 11:27:35.997765 UTC",
+   "2026-03-28 05:00:00 UTC",
+   "2026-03-30 04:22:46.013246 UTC",
+   "8a653d29-5132-45b7-bac9-d0ae161155e6",
+   "1+e1"
+  ],
+  [
+   "BCN-00001874",
+   "2026-03-28 05:00:00 UTC",
+   "0.0",
+   "7.17",
+   "BCS-5634",
+   "2026-03-29 04:00:00 UTC",
+   "BCN-Short Term Operating Reserve-00001874",
+   "Short Term Operating Reserve",
+   "Service Period - All Operational Day windows",
+   "2026-03-28 05:00:00 UTC",
+   "2026-03-30 04:22:46.013246 UTC",
+   "bronze/neso_data_portal/stor_da_buy_curve/2026/10/08/raw_20261008T112735Z_8abc71ba-4484-4683-be68-5bc241b6ae7a_d240b649.csv",
+   "2026-10-08 11:27:35.997765 UTC",
+   "2026-03-28 05:00:00 UTC",
+   "2026-03-30 04:22:46.013246 UTC",
+   "8a653d29-5132-45b7-bac9-d0ae161155e6",
+   "1+e1"
+  ],
+  [
+   "BCN-00001875",
+   "2026-03-29 04:00:00 UTC",
+   "1700.0",
+   "0.0",
+   "BCS-5635",
+   "2026-03-30 04:00:00 UTC",
+   "BCN-Short Term Operating Reserve-00001875",
+   "Short Term Operating Reserve",
+   "Service Period - All Operational Day windows",
+   "2026-03-29 04:00:00 UTC",
+   "2026-03-30 04:22:46.013246 UTC",
+   "bronze/neso_data_portal/stor_da_buy_curve/2026/10/08/raw_20261008T112735Z_8abc71ba-4484-4683-be68-5bc241b6ae7a_d240b649.csv",
+   "2026-10-08 11:27:35.997765 UTC",
+   "2026-03-29 04:00:00 UTC",
+   "2026-03-30 04:22:46.013246 UTC",
+   "8a653d29-5132-45b7-bac9-d0ae161155e6",
+   "1+e1"
+  ],
+  [
+   "BCN-00001875",
+   "2026-03-29 04:00:00 UTC",
+   "1700.0",
+   "6.82",
+   "BCS-5636",
+   "2026-03-30 04:00:00 UTC",
+   "BCN-Short Term Operating Reserve-00001875",
+   "Short Term Operating Reserve",
+   "Service Period - All Operational Day windows",
+   "2026-03-29 04:00:00 UTC",
+   "2026-03-30 04:22:46.013246 UTC",
+   "bronze/neso_data_portal/stor_da_buy_curve/2026/10/08/raw_20261008T112735Z_8abc71ba-4484-4683-be68-5bc241b6ae7a_d240b649.csv",
+   "2026-10-08 11:27:35.997765 UTC",
+   "2026-03-29 04:00:00 UTC",
+   "2026-03-30 04:22:46.013246 UTC",
+   "8a653d29-5132-45b7-bac9-d0ae161155e6",
+   "1+e1"
+  ],
+  [
+   "BCN-00001875",
+   "2026-03-29 04:00:00 UTC",
+   "0.0",
+   "6.82",
+   "BCS-5637",
+   "2026-03-30 04:00:00 UTC",
+   "BCN-Short Term Operating Reserve-00001875",
+   "Short Term Operating Reserve",
+   "Service Period - All Operational Day windows",
+   "2026-03-29 04:00:00 UTC",
+   "2026-03-30 04:22:46.013246 UTC",
+   "bronze/neso_data_portal/stor_da_buy_curve/2026/10/08/raw_20261008T112735Z_8abc71ba-4484-4683-be68-5bc241b6ae7a_d240b649.csv",
+   "2026-10-08 11:27:35.997765 UTC",
+   "2026-03-29 04:00:00 UTC",
+   "2026-03-30 04:22:46.013246 UTC",
+   "8a653d29-5132-45b7-bac9-d0ae161155e6",
+   "1+e1"
+  ],
+  [
+   "BCN-00001876",
+   "2026-03-30 04:00:00 UTC",
+   "1700.0",
+   "0.0",
+   "BCS-5638",
+   "2026-03-31 04:00:00 UTC",
+   "BCN-Short Term Operating Reserve-00001876",
+   "Short Term Operating Reserve",
+   "Service Period - All Operational Day windows",
+   "2026-03-30 04:00:00 UTC",
+   "2026-03-30 04:22:46.013246 UTC",
+   "bronze/neso_data_portal/stor_da_buy_curve/2026/10/08/raw_20261008T112735Z_8abc71ba-4484-4683-be68-5bc241b6ae7a_d240b649.csv",
+   "2026-10-08 11:27:35.997765 UTC",
+   "2026-03-30 04:00:00 UTC",
+   "2026-03-30 04:22:46.013246 UTC",
+   "8a653d29-5132-45b7-bac9-d0ae161155e6",
+   "1+e1"
+  ],
+  [
+   "BCN-00001876",
+   "2026-03-30 04:00:00 UTC",
+   "1700.0",
+   "7.26",
+   "BCS-5639",
+   "2026-03-31 04:00:00 UTC",
+   "BCN-Short Term Operating Reserve-00001876",
+   "Short Term Operating Reserve",
+   "Service Period - All Operational Day windows",
+   "2026-03-30 04:00:00 UTC",
+   "2026-03-30 04:22:46.013246 UTC",
+   "bronze/neso_data_portal/stor_da_buy_curve/2026/10/08/raw_20261008T112735Z_8abc71ba-4484-4683-be68-5bc241b6ae7a_d240b649.csv",
+   "2026-10-08 11:27:35.997765 UTC",
+   "2026-03-30 04:00:00 UTC",
+   "2026-03-30 04:22:46.013246 UTC",
+   "8a653d29-5132-45b7-bac9-d0ae161155e6",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

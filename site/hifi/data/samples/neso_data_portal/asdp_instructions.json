@@ -1,0 +1,287 @@
+{
+ "dataset": "neso_data_portal/asdp_instructions",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "d96d94e1603377da34eb3be8b7ab4fda4a252eeb027b829a0b0e437b3020d3ae",
+ "silver": "neso_data_portal/asdp_instructions",
+ "columns": [
+  {
+   "name": "entry_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "instruction_start_date_time",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "dispatch_date_time_stamp",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "mw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "indicative_price",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "asset_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "party_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "service_type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "instruction_cease_date_time",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "cease_date_time_stamp",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "tendered",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "resource_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "73427",
+   "2026-03-29T00:43:00",
+   "2026-03-29T00:40:35",
+   "36.0",
+   "142.07",
+   "OFR-ENWL-1",
+   "ENWL",
+   "Non-BM Fast Reserve",
+   "2026-03-29T01:40:36",
+   "2026-03-29T01:40:07",
+   "Non-tendered",
+   "ba09543b-79e0-46c7-a229-089d83df6304",
+   "2026-10-08 08:50:28.361511 UTC",
+   null,
+   "bronze/neso_data_portal/asdp_instructions/2026/10/08/raw_20261008T085028Z_ba09543b-79e0-46c7-a229-089d83df6304_e36dbf51.csv",
+   "2026-10-08 08:50:28.361511 UTC",
+   "2026-10-08 08:50:28.361511 UTC",
+   "2026-10-08 08:50:28.361511 UTC",
+   "ca34767d-9230-4d19-82fa-3c1a5548b097",
+   "1+e1"
+  ],
+  [
+   "73429",
+   "2026-03-29T00:43:00",
+   "2026-03-29T00:40:35",
+   "100.0",
+   "174.0",
+   "OFR-UKPR-6",
+   "UKPR",
+   "Non-BM Fast Reserve",
+   "2026-03-29T01:44:00",
+   "2026-03-29T01:42:07",
+   "Non-tendered",
+   "ba09543b-79e0-46c7-a229-089d83df6304",
+   "2026-10-08 08:50:28.361511 UTC",
+   null,
+   "bronze/neso_data_portal/asdp_instructions/2026/10/08/raw_20261008T085028Z_ba09543b-79e0-46c7-a229-089d83df6304_e36dbf51.csv",
+   "2026-10-08 08:50:28.361511 UTC",
+   "2026-10-08 08:50:28.361511 UTC",
+   "2026-10-08 08:50:28.361511 UTC",
+   "ca34767d-9230-4d19-82fa-3c1a5548b097",
+   "1+e1"
+  ],
+  [
+   "73430",
+   "2026-03-29T01:03:00",
+   "2026-03-29T01:00:36",
+   "45.0",
+   "136.0",
+   "OFR-HAB-2",
+   "HABITAT ENERGY LIMITED",
+   "Non-BM Fast Reserve",
+   "2026-03-29T01:12:55",
+   "2026-03-29T01:12:06",
+   "Non-tendered",
+   "ba09543b-79e0-46c7-a229-089d83df6304",
+   "2026-10-08 08:50:28.361511 UTC",
+   null,
+   "bronze/neso_data_portal/asdp_instructions/2026/10/08/raw_20261008T085028Z_ba09543b-79e0-46c7-a229-089d83df6304_e36dbf51.csv",
+   "2026-10-08 08:50:28.361511 UTC",
+   "2026-10-08 08:50:28.361511 UTC",
+   "2026-10-08 08:50:28.361511 UTC",
+   "ca34767d-9230-4d19-82fa-3c1a5548b097",
+   "1+e1"
+  ],
+  [
+   "73433",
+   "2026-03-29T01:03:00",
+   "2026-03-29T01:00:36",
+   "28.0",
+   "134.0",
+   "OFR-HAB-6",
+   "HABITAT ENERGY LIMITED",
+   "Non-BM Fast Reserve",
+   "2026-03-29T01:17:00",
+   "2026-03-29T01:16:06",
+   "Non-tendered",
+   "ba09543b-79e0-46c7-a229-089d83df6304",
+   "2026-10-08 08:50:28.361511 UTC",
+   null,
+   "bronze/neso_data_portal/asdp_instructions/2026/10/08/raw_20261008T085028Z_ba09543b-79e0-46c7-a229-089d83df6304_e36dbf51.csv",
+   "2026-10-08 08:50:28.361511 UTC",
+   "2026-10-08 08:50:28.361511 UTC",
+   "2026-10-08 08:50:28.361511 UTC",
+   "ca34767d-9230-4d19-82fa-3c1a5548b097",
+   "1+e1"
+  ],
+  [
+   "73436",
+   "2026-03-29T01:08:00",
+   "2026-03-29T01:05:36",
+   "48.0",
+   "176.5",
+   "OFR-UKPR-5",
+   "UKPR",
+   "Non-BM Fast Reserve",
+   "2026-03-29T01:43:55",
+   "2026-03-29T01:41:37",
+   "Non-tendered",
+   "ba09543b-79e0-46c7-a229-089d83df6304",
+   "2026-10-08 08:50:28.361511 UTC",
+   null,
+   "bronze/neso_data_portal/asdp_instructions/2026/10/08/raw_20261008T085028Z_ba09543b-79e0-46c7-a229-089d83df6304_e36dbf51.csv",
+   "2026-10-08 08:50:28.361511 UTC",
+   "2026-10-08 08:50:28.361511 UTC",
+   "2026-10-08 08:50:28.361511 UTC",
+   "ca34767d-9230-4d19-82fa-3c1a5548b097",
+   "1+e1"
+  ],
+  [
+   "73437",
+   "2026-03-29T01:08:00",
+   "2026-03-29T01:05:36",
+   "86.0",
+   "190.0",
+   "OFR-UKPR-7",
+   "UKPR",
+   "Non-BM Fast Reserve",
+   "2026-03-29T01:20:00",
+   "2026-03-29T01:18:06",
+   "Non-tendered",
+   "ba09543b-79e0-46c7-a229-089d83df6304",
+   "2026-10-08 08:50:28.361511 UTC",
+   null,
+   "bronze/neso_data_portal/asdp_instructions/2026/10/08/raw_20261008T085028Z_ba09543b-79e0-46c7-a229-089d83df6304_e36dbf51.csv",
+   "2026-10-08 08:50:28.361511 UTC",
+   "2026-10-08 08:50:28.361511 UTC",
+   "2026-10-08 08:50:28.361511 UTC",
+   "ca34767d-9230-4d19-82fa-3c1a5548b097",
+   "1+e1"
+  ],
+  [
+   "73441",
+   "2026-03-29T01:33:00",
+   "2026-03-29T01:30:36",
+   "50.0",
+   "135.0",
+   "OFR-HAB-3",
+   "HABITAT ENERGY LIMITED",
+   "Non-BM Fast Reserve",
+   "2026-03-29T01:39:00",
+   "2026-03-29T01:37:37",
+   "Non-tendered",
+   "ba09543b-79e0-46c7-a229-089d83df6304",
+   "2026-10-08 08:50:28.361511 UTC",
+   null,
+   "bronze/neso_data_portal/asdp_instructions/2026/10/08/raw_20261008T085028Z_ba09543b-79e0-46c7-a229-089d83df6304_e36dbf51.csv",
+   "2026-10-08 08:50:28.361511 UTC",
+   "2026-10-08 08:50:28.361511 UTC",
+   "2026-10-08 08:50:28.361511 UTC",
+   "ca34767d-9230-4d19-82fa-3c1a5548b097",
+   "1+e1"
+  ],
+  [
+   "73447",
+   "2026-03-29T02:03:00",
+   "2026-03-29T02:00:07",
+   "45.0",
+   "136.0",
+   "OFR-HAB-2",
+   "HABITAT ENERGY LIMITED",
+   "Non-BM Fast Reserve",
+   "2026-03-29T02:19:55",
+   "2026-03-29T02:18:38",
+   "Non-tendered",
+   "ba09543b-79e0-46c7-a229-089d83df6304",
+   "2026-10-08 08:50:28.361511 UTC",
+   null,
+   "bronze/neso_data_portal/asdp_instructions/2026/10/08/raw_20261008T085028Z_ba09543b-79e0-46c7-a229-089d83df6304_e36dbf51.csv",
+   "2026-10-08 08:50:28.361511 UTC",
+   "2026-10-08 08:50:28.361511 UTC",
+   "2026-10-08 08:50:28.361511 UTC",
+   "ca34767d-9230-4d19-82fa-3c1a5548b097",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

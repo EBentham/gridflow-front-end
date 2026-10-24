@@ -1,0 +1,195 @@
+{
+ "dataset": "neso_data_portal/stor_da_buy_curve",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "800954a07191e4c1371dd4a23badff7a67513c35ac4159f6be354979da79b972",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "import pandas as pd\ndf = data.neso_data_portal.query(\"stor_da_buy_curve\", \"2021-04-01\", \"2026-03-31\")\nfor col in df.select_dtypes(\"datetimetz\"):\n    df[col] = df[col].dt.tz_convert(\"UTC\")\nuk = df.effective_from_date.dt.tz_convert(\"Europe/London\")\ndf[\"day\"] = pd.to_datetime(uk.dt.date)\npd.DataFrame({\"uk_start\": uk.dt.strftime(\"%H:%M\"),\n    \"hours\": (df.effective_to_date - df.effective_from_date) / pd.Timedelta(hours=1),\n}).value_counts().rename(\"rows\").reset_index()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "uk_start",
+      "hours",
+      "rows"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2"
+     ],
+     "rows": [
+      [
+       "05:00",
+       "24.0",
+       "5445"
+      ],
+      [
+       "05:00",
+       "25.0",
+       "15"
+      ],
+      [
+       "05:00",
+       "23.0",
+       "15"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "def one_step(c):\n    q, p = c.mw.max(), c.availability_price.max()\n    return set(zip(c.mw, c.availability_price)) == {(q, 0), (q, p), (0, p)}\ncurves = df.groupby(\"day\").agg(curve=(\"buy_curve_id\", \"first\"),\n    curves=(\"buy_curve_id\", \"nunique\"), points=(\"mw\", \"size\"),\n    mw=(\"mw\", \"max\"), price=(\"availability_price\", \"max\"))\ncurves[\"one_step\"] = df.groupby(\"day\")[[\"mw\", \"availability_price\"]].apply(one_step)\npd.Series({\"service days in the file\": len(curves),\n    \"with one curve\": (curves.curves == 1).sum(),\n    \"with three points\": (curves.points == 3).sum(),\n    \"points (MW, 0), (MW, price), (0, price)\": curves.one_step.sum()})",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "service days in the file                   1825\nwith one curve                             1825\nwith three points                          1825\npoints (MW, 0), (MW, price), (0, price)    1825\ndtype: int64"
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "res = data.neso_data_portal.query(\"stor_da_auction_results\", \"2021-04-01\", \"2026-03-31\")\nacc = res[res.status == \"Accepted\"].groupby(\"buy_curve_id\").contracted_mw.sum()\nj = curves.join(acc, on=\"curve\")\nj[\"contracted_above_mw\"] = j.contracted_mw > j.mw\nstart = j.index.year - (j.index.month < 4)\nj.groupby([f\"{y}-{(y + 1) % 100:02d}\" for y in start]).agg(days=(\"curve\", \"size\"),\n    mw_low=(\"mw\", \"min\"), mw_high=(\"mw\", \"max\"), median_price=(\"price\", \"median\"),\n    top_price=(\"price\", \"max\"), days_accepted=(\"contracted_mw\", \"count\"),\n    contracted_above_mw=(\"contracted_above_mw\", \"sum\")).rename_axis(\"year\").reset_index()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "year",
+      "days",
+      "mw_low",
+      "mw_high",
+      "median_price",
+      "top_price",
+      "days_accepted",
+      "contracted_above_mw"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2021-22",
+       "365",
+       "1310.0",
+       "1640.0",
+       "9.01",
+       "205.48",
+       "362",
+       "63"
+      ],
+      [
+       "2022-23",
+       "364",
+       "1340.0",
+       "1343.0",
+       "16.37",
+       "250.69",
+       "362",
+       "103"
+      ],
+      [
+       "2023-24",
+       "366",
+       "1211.0",
+       "1311.0",
+       "7.85",
+       "55.62",
+       "365",
+       "158"
+      ],
+      [
+       "2024-25",
+       "365",
+       "1210.0",
+       "1313.0",
+       "8.14",
+       "184.62",
+       "363",
+       "243"
+      ],
+      [
+       "2025-26",
+       "365",
+       "1260.0",
+       "1700.0",
+       "9.83",
+       "33.53",
+       "365",
+       "141"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "source": "import matplotlib.pyplot as plt\nfig, ax = plt.subplots(figsize=(8, 3.5))\nfor day, colour in zip([\"2021-04-01\", \"2025-04-01\", \"2025-10-16\", \"2026-03-19\"],\n                       [\"#155A6E\", \"#7A8B2E\", \"#B5562F\", \"#4F7FA8\"]):\n    c = df[df.day == day].sort_values([\"availability_price\", \"mw\"], ascending=[True, False])\n    ax.plot(c.mw, c.availability_price, marker=\"o\", color=colour, label=day)\nax.set(xlabel=\"MW\", ylabel=\"availability price, £/MWh\", xlim=(0, 1800), ylim=(0, None))\nax.legend(title=\"service day\", fontsize=8, loc=\"upper left\", bbox_to_anchor=(1.01, 1));",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "stor_da_buy_curve-6.png",
+     "width": 799,
+     "height": 341
+    }
+   ]
+  }
+ ]
+}

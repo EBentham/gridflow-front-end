@@ -1,0 +1,196 @@
+{
+ "dataset": "neso_data_portal/odfm_market_information_instructed",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "846ef228487ac4fd916294dc6a39830f13e8f2c72485151254e8ffda5c395824",
+ "silver": "neso_data_portal/odfm_market_information_instructed",
+ "columns": [
+  {
+   "name": "settlement_date",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "settlement_period",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "time_label",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "odfm_instructed_mw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "resource_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2020-07-04",
+   "47",
+   "23:00",
+   "0.0",
+   "2020-07-04 22:00:00 UTC",
+   "2020-07-08 13:37:56.620172 UTC",
+   "5c507a16-d2f3-44df-b1bb-98acc0d74e1c",
+   "bronze/neso_data_portal/odfm_market_information_instructed/2026/10/08/raw_20261008T111532Z_5c507a16-d2f3-44df-b1bb-98acc0d74e1c_0bb7cae7.csv",
+   "2026-10-08 11:15:32.392120 UTC",
+   "2020-07-04 22:00:00 UTC",
+   "2020-07-08 13:37:56.620172 UTC",
+   "a8ed94bd-db5d-4465-82a6-1ec3990aa711",
+   "1+e1"
+  ],
+  [
+   "2020-07-04",
+   "48",
+   "23:30",
+   "0.0",
+   "2020-07-04 22:30:00 UTC",
+   "2020-07-08 13:37:56.620172 UTC",
+   "5c507a16-d2f3-44df-b1bb-98acc0d74e1c",
+   "bronze/neso_data_portal/odfm_market_information_instructed/2026/10/08/raw_20261008T111532Z_5c507a16-d2f3-44df-b1bb-98acc0d74e1c_0bb7cae7.csv",
+   "2026-10-08 11:15:32.392120 UTC",
+   "2020-07-04 22:30:00 UTC",
+   "2020-07-08 13:37:56.620172 UTC",
+   "a8ed94bd-db5d-4465-82a6-1ec3990aa711",
+   "1+e1"
+  ],
+  [
+   "2020-07-05",
+   "1",
+   "00:00",
+   "66.0",
+   "2020-07-04 23:00:00 UTC",
+   "2020-07-08 13:37:56.620172 UTC",
+   "5c507a16-d2f3-44df-b1bb-98acc0d74e1c",
+   "bronze/neso_data_portal/odfm_market_information_instructed/2026/10/08/raw_20261008T111532Z_5c507a16-d2f3-44df-b1bb-98acc0d74e1c_0bb7cae7.csv",
+   "2026-10-08 11:15:32.392120 UTC",
+   "2020-07-04 23:00:00 UTC",
+   "2020-07-08 13:37:56.620172 UTC",
+   "a8ed94bd-db5d-4465-82a6-1ec3990aa711",
+   "1+e1"
+  ],
+  [
+   "2020-07-05",
+   "2",
+   "00:30",
+   "249.0",
+   "2020-07-04 23:30:00 UTC",
+   "2020-07-08 13:37:56.620172 UTC",
+   "5c507a16-d2f3-44df-b1bb-98acc0d74e1c",
+   "bronze/neso_data_portal/odfm_market_information_instructed/2026/10/08/raw_20261008T111532Z_5c507a16-d2f3-44df-b1bb-98acc0d74e1c_0bb7cae7.csv",
+   "2026-10-08 11:15:32.392120 UTC",
+   "2020-07-04 23:30:00 UTC",
+   "2020-07-08 13:37:56.620172 UTC",
+   "a8ed94bd-db5d-4465-82a6-1ec3990aa711",
+   "1+e1"
+  ],
+  [
+   "2020-07-05",
+   "3",
+   "01:00",
+   "488.0",
+   "2020-07-05 00:00:00 UTC",
+   "2020-07-08 13:37:56.620172 UTC",
+   "5c507a16-d2f3-44df-b1bb-98acc0d74e1c",
+   "bronze/neso_data_portal/odfm_market_information_instructed/2026/10/08/raw_20261008T111532Z_5c507a16-d2f3-44df-b1bb-98acc0d74e1c_0bb7cae7.csv",
+   "2026-10-08 11:15:32.392120 UTC",
+   "2020-07-05 00:00:00 UTC",
+   "2020-07-08 13:37:56.620172 UTC",
+   "a8ed94bd-db5d-4465-82a6-1ec3990aa711",
+   "1+e1"
+  ],
+  [
+   "2020-07-05",
+   "4",
+   "01:30",
+   "776.0",
+   "2020-07-05 00:30:00 UTC",
+   "2020-07-08 13:37:56.620172 UTC",
+   "5c507a16-d2f3-44df-b1bb-98acc0d74e1c",
+   "bronze/neso_data_portal/odfm_market_information_instructed/2026/10/08/raw_20261008T111532Z_5c507a16-d2f3-44df-b1bb-98acc0d74e1c_0bb7cae7.csv",
+   "2026-10-08 11:15:32.392120 UTC",
+   "2020-07-05 00:30:00 UTC",
+   "2020-07-08 13:37:56.620172 UTC",
+   "a8ed94bd-db5d-4465-82a6-1ec3990aa711",
+   "1+e1"
+  ],
+  [
+   "2020-07-05",
+   "5",
+   "02:00",
+   "1049.0",
+   "2020-07-05 01:00:00 UTC",
+   "2020-07-08 13:37:56.620172 UTC",
+   "5c507a16-d2f3-44df-b1bb-98acc0d74e1c",
+   "bronze/neso_data_portal/odfm_market_information_instructed/2026/10/08/raw_20261008T111532Z_5c507a16-d2f3-44df-b1bb-98acc0d74e1c_0bb7cae7.csv",
+   "2026-10-08 11:15:32.392120 UTC",
+   "2020-07-05 01:00:00 UTC",
+   "2020-07-08 13:37:56.620172 UTC",
+   "a8ed94bd-db5d-4465-82a6-1ec3990aa711",
+   "1+e1"
+  ],
+  [
+   "2020-07-05",
+   "6",
+   "02:30",
+   "1049.0",
+   "2020-07-05 01:30:00 UTC",
+   "2020-07-08 13:37:56.620172 UTC",
+   "5c507a16-d2f3-44df-b1bb-98acc0d74e1c",
+   "bronze/neso_data_portal/odfm_market_information_instructed/2026/10/08/raw_20261008T111532Z_5c507a16-d2f3-44df-b1bb-98acc0d74e1c_0bb7cae7.csv",
+   "2026-10-08 11:15:32.392120 UTC",
+   "2020-07-05 01:30:00 UTC",
+   "2020-07-08 13:37:56.620172 UTC",
+   "a8ed94bd-db5d-4465-82a6-1ec3990aa711",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

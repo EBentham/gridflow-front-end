@@ -1,0 +1,19 @@
+{
+  "dataset": "neso_data_portal/as_industry_notifications_balancing",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "4659a8884890b4d6cd3836af58e0d35d0d5c1ddae0a4fe45103984b17e921482",
+  "type": "bar",
+  "unit": "notices",
+  "caption": "",
+  "value_column": null,
+  "aggregation": "count",
+  "window": null,
+  "provenance": {"files": 1, "rows_matched": 28, "rows_read": 28, "rows_used": 28, "silver": "neso_data_portal/as_industry_notifications_dc_dm_dr"},
+  "spec": {"aggregation": "count", "filter": [{"column": "published_at", "op": "eq", "value": "2026-08-19T15:12:17.130148"}], "group": "service", "group_map": {"DC": "dc", "DC, DM": "dc_dm", "DC, DM, DR": "all_three", "DM": "dm", "DM, DR": "dm_dr"}, "silver": "neso_data_portal/as_industry_notifications_dc_dm_dr", "sort": "value_desc", "type": "bar", "unit": "notices"},
+  "x_kind": "category",
+  "x": ["all_three", "dm", "dc", "dc_dm", "dm_dr"],
+  "series": [
+    {"key": "count", "values": [12, 11, 3, 1, 1]}
+  ]
+}

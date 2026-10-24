@@ -1,0 +1,186 @@
+{
+ "dataset": "neso_data_portal/as_industry_notifications_balancing",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "9382d5884e5300d0998fbffd27f0d81d7c117c351bd361cd0a2afeda332bf57a",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "import pandas as pd\nfiles = [\"balancing\", \"dc_dm_dr\", \"quick_reserve\", \"slow_reserve\", \"stor_important\"]\nframes = []\nfor f in files:\n    t = data.neso_data_portal.query(\"as_industry_notifications_\" + f, \"2024-01-01\", \"2026-09-30\")\n    frames.append(t.assign(file=f))\ndf = pd.concat(frames, ignore_index=True)\ndf.groupby(\"file\").tail(1)[[\"file\", \"notification_issued_date_time\", \"effective_from_date_time\", \"notes\"]]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "file",
+      "notification_issued_date_time",
+      "effective_from_date_time",
+      "notes"
+     ],
+     "index": [
+      "12",
+      "40",
+      "53",
+      "57",
+      "66"
+     ],
+     "rows": [
+      [
+       "balancing",
+       "2026-09-04 12:00:00+01:00",
+       "2026-09-04 12:00:00+01:00",
+       "This only applies to a single auction."
+      ],
+      [
+       "dc_dm_dr",
+       "2026-08-19 16:15:00+01:00",
+       "2026-08-19 16:15:00+01:00",
+       "NaN"
+      ],
+      [
+       "quick_reserve",
+       "2026-08-19 16:15:00+01:00",
+       "2026-08-19 16:15:00+01:00",
+       "NaN"
+      ],
+      [
+       "slow_reserve",
+       "2026-08-19 16:15:00+01:00",
+       "2026-08-19 16:15:00+01:00",
+       "NaN"
+      ],
+      [
+       "stor_important",
+       "2025-04-01 09:00:00+01:00",
+       "2025-04-02 05:00:00+01:00",
+       "Please note that STOR day-ahead requirement ha..."
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "shared = df.groupby(\"notification_issued_date_time\", as_index=False).agg(\n    files=(\"file\", \"nunique\"), texts=(\"description\", \"nunique\"), which=(\"file\", \", \".join))\nshared[shared.files > 1].tail(6)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "notification_issued_date_time",
+      "files",
+      "texts",
+      "which"
+     ],
+     "index": [
+      "33",
+      "34",
+      "35",
+      "36",
+      "40",
+      "41"
+     ],
+     "rows": [
+      [
+       "2026-02-25 15:40:00+00:00",
+       "2",
+       "1",
+       "dc_dm_dr, quick_reserve"
+      ],
+      [
+       "2026-03-26 14:45:00+00:00",
+       "4",
+       "2",
+       "balancing, dc_dm_dr, quick_reserve, slow_reserve"
+      ],
+      [
+       "2026-04-24 12:00:00+01:00",
+       "2",
+       "1",
+       "balancing, slow_reserve"
+      ],
+      [
+       "2026-05-22 10:00:00+01:00",
+       "2",
+       "1",
+       "balancing, slow_reserve"
+      ],
+      [
+       "2026-08-07 15:35:00+01:00",
+       "3",
+       "3",
+       "balancing, dc_dm_dr, quick_reserve"
+      ],
+      [
+       "2026-08-19 16:15:00+01:00",
+       "4",
+       "1",
+       "balancing, dc_dm_dr, quick_reserve, slow_reserve"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "import matplotlib.pyplot as plt, matplotlib.dates as mdates\nfig, ax = plt.subplots(figsize=(8, 3))\nax.scatter(df.notification_issued_date_time, df.file, marker=\"|\", s=300, color=\"#155A6E\")\nax.xaxis.set_major_locator(mdates.MonthLocator((1, 7)))\nax.xaxis.set_major_formatter(mdates.DateFormatter(\"%b %Y\"))\nax.set_xlabel(\"notice issued\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "as_industry_notifications_balancing-5.png",
+     "width": 750,
+     "height": 298
+    }
+   ]
+  }
+ ]
+}
