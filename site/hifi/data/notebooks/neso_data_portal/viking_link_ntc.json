@@ -1,0 +1,171 @@
+{
+ "dataset": "neso_data_portal/viking_link_ntc",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "cb5691116430389b3bfabe3a0dfc07505b2ce9c43f2a6fa84274e7ee8d4728e3",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "import pandas as pd\ndf = data.neso_data_portal.query(\"viking_link_ntc\", \"2026-10-13\", \"2026-10-15\")\ndf[\"timestamp_utc\"] = df.timestamp_utc.dt.tz_convert(\"UTC\")\ndf[\"data_upload_time_gmt\"] = df.data_upload_time_gmt.dt.tz_convert(\"UTC\")\ndf[[\"timestamp_utc\", \"auction_type\", \"data_upload_time_gmt\", \"flow_from_gb_mw\",\n    \"reason_for_restriction_from_gb\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "auction_type",
+      "data_upload_time_gmt",
+      "flow_from_gb_mw",
+      "reason_for_restriction_from_gb"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2026-10-13 00:00:00+00:00",
+       "Day Ahead",
+       "2026-10-12 09:30:09+00:00",
+       "1457.0",
+       "No Restriction"
+      ],
+      [
+       "2026-10-13 00:00:00+00:00",
+       "Intraday 1",
+       "2026-10-12 16:30:05+00:00",
+       "1457.0",
+       "No Restriction"
+      ],
+      [
+       "2026-10-13 01:00:00+00:00",
+       "Day Ahead",
+       "2026-10-12 09:30:09+00:00",
+       "1457.0",
+       "No Restriction"
+      ],
+      [
+       "2026-10-13 01:00:00+00:00",
+       "Intraday 1",
+       "2026-10-12 16:30:05+00:00",
+       "1457.0",
+       "No Restriction"
+      ],
+      [
+       "2026-10-13 02:00:00+00:00",
+       "Day Ahead",
+       "2026-10-12 09:30:09+00:00",
+       "1457.0",
+       "No Restriction"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "pd.crosstab(df.auction_type, df.reason_for_restriction_from_gb)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "reason_for_restriction_from_gb",
+      "Margin Extremes",
+      "Network Constraints",
+      "No Restriction",
+      "auction_type",
+      "",
+      "",
+      ""
+     ],
+     "index": [
+      "Day Ahead",
+      "Intraday 1",
+      "Intraday 2"
+     ],
+     "rows": [
+      [
+       "12",
+       "0",
+       "60"
+      ],
+      [
+       "0",
+       "14",
+       "32"
+      ],
+      [
+       "0",
+       "27",
+       "21"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "df.pivot(index=\"timestamp_utc\", columns=\"auction_type\", values=\"flow_from_gb_mw\").plot(\n    drawstyle=\"steps-post\", color=[\"#155A6E\", \"#C77E3C\", \"#7A8B3C\"], figsize=(8, 3.5),\n    xlabel=\"hour start, UTC\", ylabel=\"export limit from GB, MW\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "viking_link_ntc-5.png",
+     "width": 707,
+     "height": 370
+    }
+   ]
+  }
+ ]
+}

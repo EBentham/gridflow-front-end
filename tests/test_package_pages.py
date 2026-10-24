@@ -126,6 +126,35 @@ def test_the_page_set_must_have_every_package_note(vault: Path) -> None:
     assert build.manifest_errors(VENDOR, _manifest(), {"pkg-one", "pkg-two"}) == []
 
 
+def test_a_package_named_after_its_one_table_is_one_page(
+    vault: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    m = _manifest()
+    m["groups"][0]["pages"].append("t_d")
+    m["package_tables"]["t_d"] = "t_d"
+    m["names"]["t_d"] = "Package d"
+    assert build.manifest_errors(VENDOR, m) == []
+    monkeypatch.setattr(
+        build,
+        "load_manifest",
+        lambda vendor_id="elexon": m if vendor_id == VENDOR else REAL_LOAD_MANIFEST(vendor_id),
+    )
+    (vault / VENDOR / "t_d.md").write_text(_note("t_d", ["t_d"]), encoding="utf-8")
+    out_root = tmp_path / "site"
+    build.build_vendor(build.make_env(), VENDOR, vault, out_root)
+    page = (out_root / "data-sources" / VENDOR / "t_d.html").read_text(encoding="utf-8")
+    assert '<main id="main" class="ds-blank">' in page and 'id="t_d"' in page
+
+
+def test_a_package_page_slug_may_not_be_another_tables_key() -> None:
+    m = _manifest()
+    m["package_tables"]["pkg-one"] = "t_c"
+    m["families"][0]["members"] = ["t_a", "pkg-one"]
+    assert f"{VENDOR}: family slug(s) ['pkg-one'] are also dataset slugs" in build.manifest_errors(
+        VENDOR, m
+    )
+
+
 def test_a_table_key_is_on_one_page_only() -> None:
     m = _manifest()
     m["package_tables"]["pkg-one"] = "t_a"
