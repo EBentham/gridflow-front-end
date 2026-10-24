@@ -1,0 +1,125 @@
+{
+ "dataset": "neso_data_portal/school_holiday_percentages",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "5bd09b369888e9f2627868723a8123ee5611e889f91d22371b8b1c76a520d554",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "total = data.sql(\"\"\"\n    SELECT date, school_holiday\n    FROM silver_neso_data_portal_school_holiday_percentages_latest\n    WHERE local_authority = 'Total'\n    ORDER BY date\n\"\"\")\ntotal.school_holiday.agg([\"count\", \"min\", \"max\"]).to_frame().T",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "count",
+      "min",
+      "max"
+     ],
+     "index": [
+      "school_holiday"
+     ],
+     "rows": [
+      [
+       "2108.0",
+       "0.0",
+       "1.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "data.sql(\"\"\"\n    SELECT school_holiday, count(*) AS rows, count(DISTINCT local_authority) AS authorities\n    FROM silver_neso_data_portal_school_holiday_percentages_latest\n    WHERE local_authority <> 'Total'\n    GROUP BY school_holiday\n    ORDER BY school_holiday\n\"\"\")",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "school_holiday",
+      "rows",
+      "authorities"
+     ],
+     "index": [
+      "0",
+      "1"
+     ],
+     "rows": [
+      [
+       "0.0",
+       "306108",
+       "209"
+      ],
+      [
+       "1.0",
+       "126717",
+       "209"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "import pandas as pd\ndaily = total.assign(date=pd.to_datetime(total.date)).set_index(\"date\").school_holiday.asfreq(\"D\")\nax = daily.plot(color=\"#155A6E\", figsize=(9, 3.5), xlabel=\"NESO's date\",\n                ylabel=\"Total row, as written\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "school_holiday_percentages-5.png",
+     "width": 772,
+     "height": 337
+    }
+   ]
+  }
+ ]
+}

@@ -1,7 +1,7 @@
 {
  "dataset": "neso_data_portal/transmission_losses_main",
  "generated_by": "scripts/run_notebooks.py",
- "cells_sha256": "cc5ba4209543bcf9a56e63c1e0287100130999ea10556bf33bb08d4ce3aca0dd",
+ "cells_sha256": "c311e2e51589ec2f7ba56cc136dd5cbdacd04df2ba0877681f166a7d03e55da9",
  "kernel": "gridflow_models",
  "source": "neso_data_portal",
  "cells": [
@@ -122,16 +122,17 @@
   },
   {
    "n": 4,
-   "source": "gap = data.sql(\"\"\"\n    SELECT y.financial_year, y.sum_of_gb_totals AS yearly_twh,\n           round(sum(m.gb_totals), 4) AS months_summed_twh,\n           round(y.sum_of_gb_totals - sum(m.gb_totals), 4) AS gap_twh\n    FROM silver_neso_data_portal_transmission_losses_financial_year_latest AS y\n    JOIN silver_neso_data_portal_transmission_losses_main_latest AS m USING (financial_year)\n    GROUP BY y.financial_year, y.sum_of_gb_totals\n    ORDER BY y.financial_year\n\"\"\")\ngap",
+   "source": "years = data.sql(\"\"\"\n    SELECT financial_year, sum_of_nget, sum_of_spt, sum_of_shetl, sum_of_gb_totals\n    FROM silver_neso_data_portal_transmission_losses_financial_year_latest\n    ORDER BY financial_year\n\"\"\")\nyears",
    "outputs": [
     {
      "kind": "df",
      "columns": [
       "",
       "financial_year",
-      "yearly_twh",
-      "months_summed_twh",
-      "gap_twh"
+      "sum_of_nget",
+      "sum_of_spt",
+      "sum_of_shetl",
+      "sum_of_gb_totals"
      ],
      "index": [
       "0",
@@ -151,81 +152,94 @@
      "rows": [
       [
        "2013-14",
-       "5.426425",
-       "5.4280",
-       "-0.0016"
+       "4.556393",
+       "0.544060",
+       "0.325972",
+       "5.426425"
       ],
       [
        "2014-15",
-       "5.636473",
-       "5.6370",
-       "-0.0005"
+       "4.577865",
+       "0.688095",
+       "0.370513",
+       "5.636473"
       ],
       [
        "2015-16",
-       "5.371663",
-       "5.3730",
-       "-0.0013"
+       "4.598267",
+       "0.502708",
+       "0.270689",
+       "5.371663"
       ],
       [
        "2016-17",
-       "4.850311",
-       "4.8490",
-       "0.0013"
+       "4.033267",
+       "0.530273",
+       "0.286770",
+       "4.850311"
       ],
       [
        "2017-18",
-       "5.232787",
-       "5.2350",
-       "-0.0022"
+       "4.422121",
+       "0.537615",
+       "0.273051",
+       "5.232787"
       ],
       [
        "2018-19",
-       "5.651236",
-       "5.6510",
-       "0.0002"
+       "4.576551",
+       "0.704262",
+       "0.370423",
+       "5.651236"
       ],
       [
        "2019-20",
-       "6.871700",
-       "6.8720",
-       "-0.0003"
+       "5.675309",
+       "0.760173",
+       "0.436218",
+       "6.871700"
       ],
       [
        "2020-21",
-       "6.558124",
-       "6.5580",
-       "0.0001"
+       "5.385933",
+       "0.701456",
+       "0.470735",
+       "6.558124"
       ],
       [
        "2021-22",
-       "6.505530",
-       "6.5540",
-       "-0.0485"
+       "5.429284",
+       "0.637141",
+       "0.439106",
+       "6.505530"
       ],
       [
        "2022-23",
-       "8.175523",
-       "7.9540",
-       "0.2215"
+       "6.719072",
+       "0.869475",
+       "0.586976",
+       "8.175523"
       ],
       [
        "2023-24",
-       "7.147000",
-       "7.1470",
-       "0.0000"
+       "5.924000",
+       "0.728000",
+       "0.499000",
+       "7.147000"
       ],
       [
        "2024-25",
-       "7.540900",
-       "7.5093",
-       "0.0316"
+       "6.247800",
+       "0.768500",
+       "0.524400",
+       "7.540900"
       ],
       [
        "2025-26",
-       "6.845600",
-       "6.8532",
-       "-0.0076"
+       "5.678800",
+       "0.690000",
+       "0.476900",
+       "6.845600"
       ]
      ]
     }
@@ -233,12 +247,12 @@
   },
   {
    "n": 5,
-   "source": "ax = gap.plot.bar(x=\"financial_year\", y=\"gap_twh\", legend=False, color=\"#155A6E\",\n                  figsize=(8, 3.5), xlabel=\"financial year\",\n                  ylabel=\"yearly minus months summed, TWh\");",
+   "source": "ax = years.plot.bar(x=\"financial_year\", y=\"sum_of_gb_totals\", legend=False,\n                    color=\"#155A6E\", figsize=(8, 3.5), xlabel=\"financial year\",\n                    ylabel=\"NESO's GB total, TWh\");",
    "outputs": [
     {
      "kind": "image",
      "src": "transmission_losses_main-5.png",
-     "width": 712,
+     "width": 682,
      "height": 379
     }
    ]
