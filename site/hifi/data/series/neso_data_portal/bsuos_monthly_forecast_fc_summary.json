@@ -1,0 +1,21 @@
+{
+  "dataset": "neso_data_portal/bsuos_monthly_forecast_fc_summary",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "304c54bd7601ecba63d04bb54a5f7ac9850878be4f825e4c936d3d8a79c209eb",
+  "type": "line",
+  "unit": "£m",
+  "caption": "",
+  "value_column": "balancing_costs_central_gbp_m",
+  "aggregation": "last",
+  "window": {"end": "2028-08-31", "rule": "fixed", "start": "2025-09-01"},
+  "provenance": {"duplicates_dropped": 0, "files": 53, "null_values_dropped": 0, "rows_matched": 72, "rows_read": 1272, "rows_used": 72, "silver": "neso_data_portal/bsuos_monthly_forecast_fc_summary", "silver_first": "2025-09-01T00:00:00Z", "silver_last": "2028-08-01T00:00:00Z"},
+  "spec": {"aggregation": "last", "dedup": {"on": ["edition", "month_vendor"], "order_by": "published_at"}, "filter": [{"column": "edition", "op": "in", "value": [202510, 202604, 202610]}], "group": "edition", "group_map": {"202510": "oct2025", "202604": "apr2026", "202610": "oct2026"}, "max_points": 40, "series_order": ["oct2025", "apr2026", "oct2026"], "silver": "neso_data_portal/bsuos_monthly_forecast_fc_summary", "time": "month_vendor", "time_text": {"format": "%d/%m/%Y"}, "type": "line", "unit": "£m", "value": "balancing_costs_central_gbp_m", "window": {"end": "2028-08-31", "start": "2025-09-01"}},
+  "x_kind": "time",
+  "x": ["2025-09-01T00:00:00Z", "2025-10-01T00:00:00Z", "2025-11-01T00:00:00Z", "2025-12-01T00:00:00Z", "2026-01-01T00:00:00Z", "2026-02-01T00:00:00Z", "2026-03-01T00:00:00Z", "2026-04-01T00:00:00Z", "2026-05-01T00:00:00Z", "2026-06-01T00:00:00Z", "2026-07-01T00:00:00Z", "2026-08-01T00:00:00Z", "2026-09-01T00:00:00Z", "2026-10-01T00:00:00Z", "2026-11-01T00:00:00Z", "2026-12-01T00:00:00Z", "2027-01-01T00:00:00Z", "2027-02-01T00:00:00Z", "2027-03-01T00:00:00Z", "2027-04-01T00:00:00Z", "2027-05-01T00:00:00Z", "2027-06-01T00:00:00Z", "2027-07-01T00:00:00Z", "2027-08-01T00:00:00Z", "2027-09-01T00:00:00Z", "2027-10-01T00:00:00Z", "2027-11-01T00:00:00Z", "2027-12-01T00:00:00Z", "2028-01-01T00:00:00Z", "2028-02-01T00:00:00Z", "2028-03-01T00:00:00Z", "2028-04-01T00:00:00Z", "2028-05-01T00:00:00Z", "2028-06-01T00:00:00Z", "2028-07-01T00:00:00Z", "2028-08-01T00:00:00Z"],
+  "series": [
+    {"key": "oct2025", "values": [196.1, 277.3, 284.6, 250.8, 224.6, 275.9, 261.0, 195.1, 208.1, 239.9, 203.1, 208.1, 235.4, 276.6, 260.7, 237.6, 193.8, 191.1, 184.4, 168.7, 170.6, 170.7, 173.8, 176.5, null, null, null, null, null, null, null, null, null, null, null, null]},
+    {"key": "apr2026", "values": [null, null, null, null, null, null, 261.3, 260.0, 245.9, 255.9, 236.0, 244.7, 259.8, 318.8, 289.3, 286.6, 253.9, 266.4, 257.5, 236.7, 230.6, 216.7, 208.3, 204.5, 197.5, 206.6, 189.2, 200.3, 183.6, 179.0, null, null, null, null, null, null]},
+    {"key": "oct2026", "values": [null, null, null, null, null, null, null, null, null, null, null, null, 294.5, 390.3, 390.9, 353.7, 311.6, 343.4, 310.5, 268.0, 266.6, 312.8, 241.6, 246.1, 285.4, 327.0, 318.4, 312.0, 260.1, 262.3, 258.5, 230.0, 226.7, 219.3, 200.1, 222.1]}
+  ]
+}

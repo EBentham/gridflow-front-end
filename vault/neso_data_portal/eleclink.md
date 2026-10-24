@@ -8,7 +8,6 @@ updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: "NESO does not say rows are unchanged since upload, and archive days and versions are undefined."
   title: ElecLink transfer limits
   summary: >-
     NESO's hourly limits on flow each way over the ElecLink interconnector, in MW, with reasons.
@@ -27,6 +26,36 @@ page:
     - Which hours NESO restricted the link, by direction, from the stated reason
     - "A feature for flow and price models: when NESO restricted the link"
     - Set beside the final capacity the link's trading facilitator publishes
+  caveat: "NESO does not say rows stay as uploaded, or define the operational day or `Version`."
+  chart:
+    type: line
+    silver: neso_data_portal/eleclink
+    time: operational_period_start_gmt
+    filter:
+      - {column: auction_type, op: eq, value: Day Ahead}
+    dedup: {on: [operational_period_start_gmt], order_by: capture_written_at}
+    values:
+      - {column: flow_to_gb_mw, series: to_gb}
+      - {column: flow_from_gb_mw, series: from_gb}
+    aggregation: min
+    window: {start: "2026-10-09", end: "2026-10-15"}
+    unit: MW
+  chart_view:
+    title: Day-ahead limits each way, 9 to 15 October 2026
+    caption: >-
+      Silver `eleclink` day-ahead rows, hourly, as fetched 16 October 2026; no row covers 12 October
+      22:00 to 13 October 21:00 UTC. All say No Restriction; lines coincide. Each upload precedes its
+      hour; NESO does not say rows are unchanged since.
+    alt: >-
+      Line chart from neso_data_portal/eleclink of NESO's day-ahead limits each way over ElecLink, MW,
+      hourly, 9 to 15 October 2026, with no rows from 22:00 UTC on 12 October to 21:00 on 13 October.
+      Both directions are 1,014 MW in every hour drawn, so the To GB line lies under From GB
+      throughout.
+    x_label: hour start, UTC (NESO labels it GMT)
+    y_min: -40
+    key:
+      - {series: to_gb, label: To GB, note: "Import limit, NESO's `Flow in MW To GB`", paint: petrol}
+      - {series: from_gb, label: From GB, note: "Export limit, NESO's `Flow in MW From GB`", paint: clay}
   raw_feed:
     note: >-
       From NESO's CKAN portal: `package_show`, the current table's dump and the archive CSV. Fetched
@@ -38,6 +67,71 @@ page:
     commands:
       - {run: gridflow ingest neso_data_portal eleclink --last 24h, comment: "the dump and archive to bronze"}
       - {run: gridflow transform neso_data_portal eleclink --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: bronze_capture_id, op: eq, value: "bronze/neso_data_portal/eleclink/2026/10/16/raw_20261016T201759Z_1f748d48-1daf-4f1a-a5f1-d581e86a2190_cfed84ef.csv"}
+        - {column: operational_period_start_gmt, op: ge, value: "2026-08-19T15:00:00Z"}
+        - {column: operational_period_start_gmt, op: le, value: "2026-08-19T16:00:00Z"}
+      order_by: [operational_period_start_gmt, auction_type]
+      columns: [operational_period_start_gmt, auction_type, data_upload_time_gmt, flow_to_gb_mw,
+                reason_for_restriction_to_gb, flow_from_gb_mw, reason_for_restriction_from_gb,
+                operational_date, version, hourly_time_period, reason_for_restriction, issue_time,
+                resource_id]
+    key: [resource_id, issue_time, auction_type, operational_period_start_gmt, operational_date, hourly_time_period]
+    caption: "Two hours of 19 August 2026, four auctions each; `Intraday 2` and `3` lower both limits."
+    fields:
+      operational_period_start_gmt: "Current table: start of the hour; header says GMT, read as UTC"
+      auction_type: "The auction: `Day Ahead` or `Intraday 1` to `3`; the archive writes `DayAhead`, `Intraday1`"
+      data_upload_time_gmt: "Current table: when NESO says the row was published; GMT, read as UTC"
+      flow_to_gb_mw: "The most power that may flow into GB in the hour, MW"
+      reason_for_restriction_to_gb: "Current table: NESO's reason for the import limit, or `No Restriction`"
+      flow_from_gb_mw: "The most power that may flow out of GB in the hour, MW"
+      reason_for_restriction_from_gb: "Current table: NESO's reason for the export limit, or `No Restriction`"
+      operational_date: "Archive only: NESO's operational date, `YYYYMMDD`; NESO does not say when it starts"
+      version: "Archive only: NESO's `Version`, `001` to `004`; NESO does not define it"
+      hourly_time_period: "Archive only: the hour as NESO writes it, like `22:00 to 23:00`; headed GMT"
+      reason_for_restriction: "Archive only: NESO's `Reason For Reduction`, one for both directions"
+      issue_time: "A copy of the upload time; not taken as when the row first appeared"
+      resource_id: "Which file the row came from: the current table or the archive"
+      timestamp_utc: "When gridflow fetched the file, UTC; not the hour the limits apply to"
+      published_at: "Null: neither file gives gridflow a publication time"
+      bronze_capture_id: The bronze file the row was read from
+      capture_written_at: When gridflow wrote the capture to bronze, UTC
+  notebook:
+    lead: >-
+      `data.sql` reads `silver_neso_data_portal_eleclink_latest` (the newest capture of each file),
+      because `query()` would filter `timestamp_utc`, the capture time. The first cell converts times
+      to UTC.
+    cells:
+      - |
+        df = data.sql("""
+            SELECT operational_period_start_gmt, auction_type, data_upload_time_gmt,
+                   flow_to_gb_mw, flow_from_gb_mw, reason_for_restriction_from_gb
+            FROM silver_neso_data_portal_eleclink_latest
+            WHERE operational_period_start_gmt >= TIMESTAMPTZ '2026-10-09 00:00:00+00'
+              AND operational_period_start_gmt < TIMESTAMPTZ '2026-10-16 00:00:00+00'
+            ORDER BY operational_period_start_gmt, auction_type""")
+        for c in ["operational_period_start_gmt", "data_upload_time_gmt"]:
+            df[c] = df[c].dt.tz_convert("UTC")
+        df.head()
+      - |
+        data.sql("""
+            SELECT version, auction_type, count(*) AS rows, count(DISTINCT operational_date) AS dates
+            FROM silver_neso_data_portal_eleclink_latest
+            WHERE operational_date IS NOT NULL
+            GROUP BY version, auction_type ORDER BY version, auction_type""")
+      - |
+        wide = df.pivot(index="operational_period_start_gmt", columns="auction_type",
+                        values="flow_from_gb_mw").asfreq("h")
+        ax = wide.plot(drawstyle="steps-post", figsize=(8, 3.5), xlabel="hour start, UTC",
+                       ylabel="export limit, MW")
+        ax.legend(loc="lower left", bbox_to_anchor=(0, 1), ncols=4);
+    needs: ElecLink's current table and archive
+    plot_alt: >-
+      Step plot, UTC, of NESO's ElecLink export limit by auction, 9 to 15 October 2026. Day Ahead is
+      1,014 MW in every hour listed, broken from 22:00 on 12 October to 21:00 on 13 October. Intraday
+      1 lists only 9 and 10 October: 0 in 16 hours, otherwise 90 to 1,014.
   related:
     - {dataset: neso_data_portal/ifa, note: "NESO's limits on IFA, another GB interconnector"}
     - {dataset: neso_data_portal/ifa2, note: "NESO's limits on IFA2, another GB interconnector"}
@@ -77,8 +171,9 @@ version and an hourly GMT range. Both load under the single family `eleclink`, p
 **The output is held (unit E-SEM).** The dump also returns past targets, and NESO does not state
 that a row is unchanged since its `Data Upload Time GMT`. The archive's Operational Date calendar
 and Version meaning are also undocumented. See Holds. The output exists in silver, but it is not
-eligible for publication or point-in-time model use until E-SEM is answered (RULINGS 565, 567).
-**This page gives schema, clocks and row counts only, and no data values.**
+eligible for point-in-time model use until E-SEM is answered (RULINGS 565, 567).
+This note gives schema, clocks and row counts; under ruling 66 (2026-10-24) the site page shows the
+rows, with one line naming the question.
 
 Related: the sibling interconnector packages @ifa.md, @ifa2.md, @nemolink.md, @nsl.md and
 @viking.md use the same column conventions. On the ENTSO-E side,
@@ -170,7 +265,7 @@ Schema, epoch 2:
 | `published_at` | null |
 | `available_at` | gridflow capture time (sidecar `written_at`), labelled so |
 
-**Held (unit E-SEM). This page gives schema, clocks and counts only, and no data values.**
+**Held (unit E-SEM).** This note gives schema, clocks and counts; the site page shows the rows with a caveat line (ruling 66, 2026-10-24).
 
 **The two clocks for this family:**
 
@@ -330,9 +425,9 @@ gridflow outputs derived from this package carry the attribution line above.
 
 - `eleclink`: held: TODO: the dump returns past targets (rows before the capture) and NESO does not state that a row is unchanged since its `Data Upload Time GMT`, so historical issued limits are not evidenced, and the archive's Operational Date calendar / rollover and Version meaning are undocumented. (unit E-SEM)
 
-The held output exists in silver but is not eligible for publication or point-in-time model use
-until unit E-SEM answers its question (RULINGS 565, 567). This page publishes its schema, clocks
-and row counts only. No data value, sample row or value statistic for this family is published
-here. The hold covers both resources and later captures until NESO documents dump-row
+The held output exists in silver but is not eligible for point-in-time model use
+until unit E-SEM answers its question (RULINGS 565, 567). Under ruling 66 (2026-10-24) the site
+page shows the rows with one line naming the question, and draws the current table's limits only
+as the table stood when fetched, not as first issued. The hold covers both resources and later captures until NESO documents dump-row
 immutability (or publishes per-issue files) and the archive's date calendar and `Version`
 contract.

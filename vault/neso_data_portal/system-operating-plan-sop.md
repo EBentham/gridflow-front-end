@@ -4,11 +4,10 @@ package: "system-operating-plan-sop"
 dataset_key: "system_operating_plan"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-23
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: "NESO returns each plan's latest version and does not say when those figures were made public."
   title: System operating plan
   summary: >-
     NESO's control-room plan for each key demand peak or trough: expected demand, reserve, margins,
@@ -26,6 +25,34 @@ page:
   how_used:
     - The reserve and margins NESO's plan expected at each peak and trough
     - Expected availability and output by technology and interconnector, cardinal point by cardinal point
+  chart:
+    type: line
+    silver: neso_data_portal/system_operating_plan
+    time: timestamp_utc
+    values:
+      - total_sop_demand
+      - total_temx
+    dedup: {"on": [sop_datetime], order_by: capture_written_at}
+    aggregation: last
+    window: {start: "2026-10-01", end: "2026-10-16"}
+    unit: MW
+  chart_view:
+    title: SOP demand and maximum availability, 1 to 16 October 2026
+    caption: >-
+      Silver `neso_data_portal/system_operating_plan`, as NESO's table stood on 16 October 2026: one
+      point per plan at its cardinal point, in its latest version, not necessarily as first issued.
+      These 16 days hold only 56 plans; many cardinal points are missing.
+    alt: >-
+      Line chart from neso_data_portal/system_operating_plan of SOP demand and expected maximum
+      availability in MW at each cardinal point, 1 to 16 October 2026: 56 plans, the first for the
+      evening of 2 October. Both rise and fall each day between overnight troughs and evening peaks. Demand runs from 17,782 MW (1B, 10
+      October) to 33,937 MW (3C, 15 October); availability sits 1,164 to 4,489 MW above it, peaking
+      at 36,943 MW on 16 October.
+    x_label: cardinal point time, UTC
+    key:
+      - {series: total_sop_demand, label: SOP demand, paint: petrol, note: "Customer demand plus station demand, NESO's `total_sop_demand`"}
+      - {series: total_temx, label: Maximum availability, paint: clay, note: "NESO: the sum of all expected maximum availabilities, `total_temx`"}
+  caveat: "Each row is a plan's latest version; NESO does not say it was public when created."
   raw_feed:
     note: >-
       From NESO's CKAN portal: one `package_show` per command, then the table's whole datastore dump,
@@ -39,6 +66,139 @@ page:
       - {run: gridflow ingest neso_data_portal system_operating_plan --last 24h, comment: whole dump to bronze}
       - {run: gridflow transform neso_data_portal system_operating_plan --last 24h, comment: "the capture's date to silver"}
       - {run: gridflow ingest neso_data_portal system_operating_plan_files --last 24h, comment: the introduction and glossary PDFs}
+  record:
+    select:
+      filter:
+        - {column: sop_datetime, op: ge, value: "2026-10-15T00:00:00"}
+        - {column: sop_datetime, op: lt, value: "2026-10-16T05:00:00"}
+      dedup: {"on": [sop_datetime], order_by: capture_written_at}
+      order_by: [sop_datetime]
+      columns: [sop_datetime, cardinal_point, latest_version, latest_status, sop_report_creation_time_gmt,
+                total_sop_demand, total_temx, total_positive_reserve, positive_residual]
+    key: [issue_time, sop_datetime]
+    caption: "One cycle of cardinal points, 15 to 16 October 2026, each plan at its latest version."
+    fields:
+      sop_datetime: "UTC time the plan is for: its cardinal point"
+      cardinal_point: "Daily demand peak or trough the plan is for, such as `1A` or `4B`"
+      latest_version: "Version number of the plan; numbers start at 1 and increase"
+      latest_status: "Plan status, `Final`, `Revised` or `Day Ahead`; NESO says it should be final"
+      sop_report_creation_time_gmt: "When NESO says the plan was created, UTC; not proof its values were public"
+      total_sop_demand: "Customer demand plus station demand, MW"
+      total_temx: "NESO: the sum of all expected maximum availabilities, MW"
+      total_positive_reserve: "Positive regulating reserve plus reserve for response, MW"
+      positive_residual: "Maximum availability less demand and positive reserve, MW; may include manual adjustments"
+      report_date: "Date NESO's dictionary says the plan was created; often differs from creation time"
+      customer_demand_forcast: "Customer demand forecast: national five-minute spot demand, MW; NESO spells it `forcast`"
+      station_transformer: "Assumed total national station demand, MW"
+      dsbr: "Demand Side Balancing Reserve, MW; NESO marks it no longer valid"
+      standing_reserve_requirement: "STOR requirement, MW: a fixed value by time of day and year"
+      standing_reserve_availability: "STOR usable: the sum of STOR declared available, MW"
+      standing_reserve_shortfall: "STOR requirement minus STOR usable, showing any shortfall, MW"
+      standing_reserve_excess: "Any standing reserve excess, MW; NESO's formula reads requirement minus availability"
+      standing_res_wind_adj: "Adjustment to the standing reserve requirement for wind forecast error, MW"
+      net_positive_regulating_reserve: "Regulating reserve for plant loss and demand forecast error to real time, MW"
+      positive_reg_res_wind_adj: "Adjustment to positive regulating reserve for wind forecast error, MW"
+      reserve_for_response: "Reserve kept on synchronised generators so they can hold frequency response, MW"
+      percentage_of_standing_reserve_excess: "NESO: covers wind and demand forecast errors; dictionary unit MW despite the name"
+      net_negative_regulating_reserve: "Reserve on synchronised generators so they can be picked up for high-frequency response, MW"
+      negative_reg_res_wind_adj: "Adjustment to negative regulating reserve for wind forecast error, MW"
+      negative_response_reserve: "Negative response reserve after contracted response is subtracted, MW"
+      total_negative_reserve: "Negative regulating reserve plus negative response reserve, MW"
+      maximum_loss_generation: "Largest credible generation loss on the system at the cardinal point, MW"
+      maximum_loss_demand: "Largest credible demand loss on the system at the cardinal point, MW"
+      imbalance: "Demand less expected output: the bids or offers NESO expects to need, MW"
+      negative_residual: "Demand less minimum output and negative reserve, MW; may include manual adjustments"
+      sop_d_and_c_time_gmt: "When the demand and constraint process was run, UTC"
+      contingency_requirement: "Plant kept able to synchronise and reach full output by the cardinal point, MW"
+      operating_margin_surplus: "Whether the contingency requirement is met; NESO's title says surplus (shortfall), MW"
+      trigger_level: "Level used with the contingency requirement to consider an Electricity Margin Notification, MW"
+      no1_temx: "Non-wind BM units, north dispatch zone: expected maximum availability, MW"
+      no1_teol: "Non-wind BM units, north dispatch zone: expected output, MW"
+      no1_temi: "Non-wind BM units, north dispatch zone: expected minimum output, MW"
+      nw1_temx: "Wind BM units, north dispatch zone: expected maximum availability, MW"
+      nw1_teol: "Wind BM units, north dispatch zone: expected output, MW"
+      nw1_temi: "Wind BM units, north dispatch zone: expected minimum output, MW"
+      so1_temx: "Non-wind BM units, south dispatch zone: expected maximum availability, MW"
+      so1_teol: "Non-wind BM units, south dispatch zone: expected output, MW"
+      so1_temi: "Non-wind BM units, south dispatch zone: expected minimum output, MW"
+      sw1_temx: "Wind BM units, south dispatch zone: expected maximum availability, MW"
+      sw1_teol: "Wind BM units, south dispatch zone: expected output, MW"
+      sw1_temi: "Wind BM units, south dispatch zone: expected minimum output, MW"
+      britned_temx: "Expected BritNed flow, latest reference program, MW; NESO describes all three alike"
+      britned_teol: "Expected BritNed flow, latest reference program, MW; NESO describes all three alike"
+      britned_temi: "Expected BritNed flow, latest reference program, MW; NESO describes all three alike"
+      ewic_temx: "Expected East West Interconnector flow, latest reference program, MW; all three alike"
+      ewic_teol: "Expected East West Interconnector flow, latest reference program, MW; all three alike"
+      ewic_temi: "Expected East West Interconnector flow, latest reference program, MW; all three alike"
+      france_temx: "Expected IFA flow, latest reference program, MW; NESO describes all three alike"
+      france_teol: "Expected IFA flow, latest reference program, MW; NESO describes all three alike"
+      france_temi: "Expected IFA flow, latest reference program, MW; NESO describes all three alike"
+      intifa2_temx: "Expected IFA2 flow, latest reference program, MW; NESO describes all three alike"
+      intifa2_teol: "Expected IFA2 flow, latest reference program, MW; NESO describes all three alike"
+      intifa2_temi: "Expected IFA2 flow, latest reference program, MW; NESO describes all three alike"
+      moyle_temx: "Expected Moyle flow, latest reference program, MW; NESO describes all three alike"
+      moyle_teol: "Expected Moyle flow, latest reference program, MW; NESO describes all three alike"
+      moyle_temi: "Expected Moyle flow, latest reference program, MW; NESO describes all three alike"
+      nemo_temx: "Expected Nemo flow, latest reference program, MW; NESO describes all three alike"
+      nemo_teol: "Expected Nemo flow, latest reference program, MW; NESO describes all three alike"
+      nemo_temi: "Expected Nemo flow, latest reference program, MW; NESO describes all three alike"
+      ps_temx: "Pumped storage units: expected maximum availability, MW"
+      ps_teol: "Pumped storage units: expected output, MW"
+      ps_temi: "Pumped storage units: expected minimum output, MW"
+      sto_temx: "STOR, NESO's `temx` figure, MW; adjusted by hand if excess offsets regulating reserve"
+      sto_teol: "STOR, NESO's `teol` figure, MW; adjusted by hand if excess offsets regulating reserve"
+      sto_temi: "STOR, NESO's `temi` figure, MW; adjusted by hand if excess offsets regulating reserve"
+      sb_temx: "Small BM units: expected maximum availability, MW"
+      sb_teol: "Small BM units: expected output, MW"
+      sb_temi: "Small BM units: expected minimum output, MW"
+      total_teol: "NESO: the sum of all expected outputs, MW"
+      total_temi: "NESO: the sum of all expected minimum outputs, MW"
+      intnsl_temx: "Expected NSL flow, latest reference program, MW; NESO describes all three alike"
+      intnsl_teol: "Expected NSL flow, latest reference program, MW; NESO describes all three alike"
+      intnsl_temi: "Expected NSL flow, latest reference program, MW; NESO describes all three alike"
+      intelec_temx: "Expected ElecLink flow, latest reference program, MW; NESO describes all three alike"
+      intelec_teol: "Expected ElecLink flow, latest reference program, MW; NESO describes all three alike"
+      intelec_temi: "Expected ElecLink flow, latest reference program, MW; NESO describes all three alike"
+      bat_temx: "Batteries: expected maximum availability, MW"
+      bat_teol: "Batteries: expected output, MW"
+      bat_temi: "Batteries: expected minimum, from the Maximum Import Level, MW"
+      slr_temx: "Solar: expected maximum availability, MW"
+      slr_teol: "Solar: expected output, MW"
+      slr_temi: "Solar: expected minimum, the lower of Stable Export and Maximum Import Level, MW"
+      intgrnl_temx: "Expected Greenlink flow, latest reference program, `Mw` in NESO's dictionary; all three alike"
+      intgrnl_teol: "Expected Greenlink flow, latest reference program, MW; NESO describes all three alike"
+      intgrnl_temi: "Expected Greenlink flow, latest reference program, MW; NESO describes all three alike"
+      intvkl_temx: "Expected Viking Link flow, latest reference program, MW; NESO describes all three alike"
+      intvkl_teol: "Expected Viking Link flow, latest reference program, MW; NESO describes all three alike"
+      intvkl_temi: "Expected Viking Link flow, latest reference program, MW; NESO describes all three alike"
+      issue_time: "The creation time again: gridflow's issue label, part of the key"
+      timestamp_utc: "The cardinal point's time again, UTC: the column `query()` filters on"
+      published_at: "Empty: gridflow does not use NESO's stale `last_modified` for this table"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      `query()` reads the `_latest` view, filtering `timestamp_utc`, the cardinal point's time, by UTC
+      day with both ends included. Times come back in UK time, so the first cell converts them to UTC.
+    cells:
+      - |
+        df = data.neso_data_portal.query("system_operating_plan", "2026-10-01", "2026-10-16")
+        times = ["sop_datetime", "sop_report_creation_time_gmt"]
+        df[times] = df[times].apply(lambda c: c.dt.tz_convert("UTC"))
+        df = df.sort_values("sop_datetime", ignore_index=True)
+        df[["sop_datetime", "cardinal_point", "latest_version", "sop_report_creation_time_gmt",
+            "total_sop_demand", "total_temx"]].tail()
+      - |
+        hours_ahead = (df.sop_datetime - df.sop_report_creation_time_gmt).dt.total_seconds() / 3600
+        hours_ahead.groupby(df.cardinal_point).agg(["count", "min", "max"]).round(1)
+      - |
+        df.plot(x="sop_datetime", y=["total_sop_demand", "total_temx"], color=["#155A6E", "#C77E3C"],
+                figsize=(8, 3.5), marker=".", xlabel="cardinal point time, UTC", ylabel="MW");
+    needs: the plan table's capture of 16 October 2026
+    plot_alt: >-
+      SOP demand and expected maximum availability in MW at each cardinal point, 2 to 16 October
+      2026, one dot per plan. Demand swings daily between about 18,000 and 34,000 MW; availability
+      reaches about 37,000 MW and sits above demand at every point.
   related:
     - {dataset: neso_data_portal/historic_generation_mix, note: "Half-hourly GB generation by source, in MW"}
     - {dataset: neso_data_portal/embedded_wind_solar_forecast, note: "NESO's forecast of embedded wind and solar output, per settlement period"}
@@ -50,8 +210,9 @@ NESO's **System Operating Plan**: a planning snapshot that the control-room stra
 produces for each key demand peak or trough of the day (a **cardinal point**, CP) and hands to
 the real-time team. One row is the plan for one cardinal point. It records the expected demand
 at that point, the reserve the plan requires and has available, two maximum-loss columns
-(`maximum_loss_generation`, `maximum_loss_demand`; TODO: verify their meaning with NESO — not
-defined in the dictionary), the resulting margins and residuals, and, for each generation
+(`maximum_loss_generation`, `maximum_loss_demand`; the vendor field dictionary, snapshot
+`20261008T114228Z`, defines them as the maximum credible generation and demand loss on the
+system at the cardinal point, manually adjusted by NESO), the resulting margins and residuals, and, for each generation
 technology and each interconnector, three expected figures (see Units). The vendor says the SOP
 is a snapshot of what the control room knew when the plan was created, and that the real-time
 team keeps reviewing and, if needed, modifies the plan as the cardinal point approaches. So a
@@ -66,9 +227,10 @@ so it is **not** a regular hourly or settlement-period series.
 does not state that a returned version's values were fixed and public at the plan's creation
 time. Every target in the first capture (2026-10-08) also precedes that capture, so the
 forward-target rule (RULINGS 529) cannot release it; the second capture (2026-10-16) holds one
-target after its capture instant (see the clocks below), and the hold still covers the whole table. The output exists in silver, but it is not eligible for publication or
-point-in-time model use until E-SEM is answered (RULINGS 569, 571, 579, 580). **This page gives
-schema, clocks and row counts only, and no data values.**
+target after its capture instant (see the clocks below), and the hold still covers the whole table. The output exists in silver, but it is not eligible for
+point-in-time model use until E-SEM is answered (RULINGS 569, 571, 579, 580). This note gives
+schema, clocks and row counts; the site page shows the rows, a chart and a notebook with a caveat
+naming this question (ruling 66).
 
 Related pages: @brit-ned.md and @interconnector-register.md cover BritNed and the
 interconnectors, whose expected flows appear here as triplets named after each link. Those
@@ -238,7 +400,8 @@ Schema, epoch 1:
 | `published_at` | null |
 | `available_at` | gridflow capture time (sidecar `written_at`), labelled so |
 
-**Held (unit E-SEM). This page gives schema, clocks and counts only, and no data values.**
+**Held (unit E-SEM).** This note gives schema, clocks and counts; the site page shows the rows
+with a caveat (ruling 66), and downstream models must not consume them until E-SEM rules.
 
 **Shape of the silver output (counts only).** One bronze capture (`2026-10-08`, 93 vendor
 columns) became one silver Parquet of **10,322 rows and 102 columns** (activation cutoff
@@ -337,7 +500,7 @@ and keeps zero and `-1` as the published numbers: **no value is replaced, droppe
 A blank, a zero and a `-1` are three different facts, and the page does not say what any of them
 means for a given column. `TODO: verify` column-specific missing and not-applicable conventions
 with NESO. Long runs of consecutive zero rows exist in some columns. They are row runs in an irregularly spaced series, not
-durations. Counts per column are not published here because the family is held.
+durations. Counts per column are not given in this note.
 
 **Quality notes.**
 
@@ -399,9 +562,9 @@ gridflow outputs derived from this package carry the attribution line above. Pac
 
 - `system_operating_plan`: held: TODO: the dump returns each plan's latest version and NESO does not state that its values are fixed and public at their creation time, and every target precedes the capture, so the forward-target rule (RULINGS 529) cannot apply. (unit E-SEM)
 
-The held output exists in silver but is not eligible for publication or point-in-time model use
-until unit E-SEM answers its question (RULINGS 569, 571, 579, 580). This page publishes its
-schema, clocks and row counts only. No data value, sample row or value statistic is published
-here. The hold applies to the captured body and to later captures unless NESO supplies the
+The held output exists in silver but is not eligible for point-in-time model use until unit
+E-SEM answers its question (RULINGS 569, 571, 579, 580). This note gives its schema, clocks and
+row counts; the site page shows its rows, a chart and a notebook with a caveat naming the
+question (ruling 66). The hold applies to the captured body and to later captures unless NESO supplies the
 missing evidence. The DOC family `system_operating_plan_files` is not held: it is catalogue
 only.

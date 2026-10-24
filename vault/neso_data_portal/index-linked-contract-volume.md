@@ -4,11 +4,10 @@ package: "index-linked-contract-volume"
 dataset_key: "index_linked_contract_volume"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-23
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: "`Cost` is labelled £/h, but NESO describes it as a total: volume times price times duration."
   title: Index Linked Contracted Energy Volume
   summary: >-
     NESO's log of the index-linked contracts it enacted, which it can use to meet voltage needs:
@@ -28,6 +27,33 @@ page:
   how_used:
     - When NESO enacted index-linked contracts, with which assets, and why
     - "Average MW and £/MWh per enactment, beside NESO's voltage requirement and costs"
+  chart:
+    type: bar
+    silver: neso_data_portal/index_linked_contract_volume
+    group: resource_id
+    group_map:
+      "8f694d01-68a5-41b9-9542-dd27c42fdbbf": "2021-22"
+      "ff292de9-59aa-45cc-85ce-e21fed09f5ff": "2022-23"
+      "dff083d2-666b-4e23-9b46-9edd9298f0d3": "2023-24"
+      "9b72a2f5-db92-40ca-aa95-b9f1c56f7373": "2024-25"
+    dedup: {"on": [resource_id, id], order_by: capture_written_at}
+    aggregation: count
+    sort: label
+    unit: enactments
+  chart_view:
+    title: Enactments in each yearly table, 2021-22 to 2024-25
+    caption: >-
+      Silver `neso_data_portal/index_linked_contract_volume`: rows per financial-year table. Every
+      2021-22 row is an enactment of `ROCK-1` with counterparty Coryton Energy Company Ltd, for
+      `V_MERSEY` or no stated reason.
+      The archive ZIP's older files are not drawn.
+    alt: >-
+      Horizontal bar chart counting the rows of each yearly table in
+      neso_data_portal/index_linked_contract_volume: 12 in 2021-22, 2 in 2022-23, 1 in 2023-24 and
+      1 in 2024-25.
+    key:
+      - {series: count, label: Enactments, paint: petrol}
+  caveat: "`Cost` is labelled £/h, but NESO describes it as a total: volume times price times duration."
   raw_feed:
     note: >-
       From NESO's CKAN portal: one `package_show`, then each yearly datastore dump (first and newest
@@ -41,6 +67,49 @@ page:
       - {run: gridflow ingest neso_data_portal index_linked_contract_volume --last 24h, comment: "the yearly dumps to bronze"}
       - {run: gridflow transform neso_data_portal index_linked_contract_volume --last 24h, comment: "the capture's date to silver"}
       - {run: gridflow ingest neso_data_portal index_linked_contract_volume_files --last 24h, comment: "the archive ZIP, bronze only"}
+  record:
+    select:
+      filter:
+        - {column: id, op: in, value: [ES00151372, ES00151377, ES00152294, ES00164522, ES00177627, ES00239190, ES00241156, ES00312361]}
+      dedup: {"on": [resource_id, id], order_by: capture_written_at}
+      order_by: [starttime]
+      columns: [id, starttime, endtime, volume, price, cost, so_flag, reason, asset_id, cp_name, area, note, last_updated, resource_id]
+    key: [resource_id, id]
+    caption: "Eight of the 16 enactments, October 2021 to November 2024, across four assets."
+    fields:
+      id: "NESO's identifier of the enactment action"
+      starttime: "Start of the delivery window, UTC as NESO states"
+      endtime: "End of the window, UTC; NESO does not say whether it is included"
+      volume: "Average volume, MW; positive raises generation or cuts demand, NESO says"
+      price: "Average price, £/MWh"
+      cost: "NESO's cost of the action: labelled £/h, described as a total"
+      so_flag: "`T` mainly for system security, `F` mainly for balancing, NESO says"
+      reason: "NESO's reason for the action, such as `V_MERSEY` or `V_LONBAR`"
+      asset_id: "The asset: a BM unit name, or a name for the contract"
+      cp_name: "The contract counterparty, which may differ from the asset owner"
+      area: "The asset's delivery area, as NESO writes it"
+      note: "NESO's free-text note; blank in all 16 rows"
+      last_updated: "When NESO last updated the row, UTC; not its first publication"
+      resource_id: "The yearly table the row comes from (CKAN resource id)"
+      timestamp_utc: "Equals `starttime`; gridflow's event time"
+      published_at: "Null: these dumps carry no usable publication time"
+      bronze_capture_id: The bronze file the row was read from
+      capture_written_at: When gridflow wrote the capture to bronze, UTC
+  notebook:
+    lead: >-
+      Returns a pandas DataFrame from the view
+      `silver_neso_data_portal_index_linked_contract_volume_latest`, filtered on the delivery start
+      with both ends included; times come back in Europe/London.
+    cells:
+      - |
+        df = data.neso_data_portal.query("index_linked_contract_volume", "2021-04-01", "2025-03-31")
+        df[["id", "starttime", "endtime", "volume", "price", "cost", "asset_id"]].tail()
+      - |
+        df.assign(hours=(df.endtime - df.starttime).dt.total_seconds() / 3600)[
+            ["id", "hours", "volume", "price", "cost"]]
+      - |
+        df.groupby(["asset_id", "reason"], dropna=False).size()
+    needs: the yearly index-linked tables
   related:
     - {dataset: neso_data_portal/voltage-requirement, note: "The voltage need NESO can meet with these contracts"}
     - {dataset: neso_data_portal/outturn-voltage-costs, note: "NESO's monthly spend on voltage, by constraint group"}
@@ -74,10 +143,9 @@ gridflow holds **16 rows** across four year-labelled resources, all captured on 
 silver output exists on disk but is **held**: the vendor dictionary labels `Cost` as pounds per hour
 while describing it as a total cost (price times volume times duration), and gridflow will not
 choose between the two readings (see Holds). The package-level status in the front matter is
-generated from the registry and reads `eligible`; the family-level eligibility is **held**. This
-page therefore gives schema, row counts, clocks and missingness only, with **no data values**: no
-sample rows and no value statistics. Nothing in the silver output may be published or used for
-models until the cost question is answered.
+generated from the registry and reads `eligible`; the family-level eligibility is **held**:
+gridflow's models do not consume it until the cost question is answered. The site page shows its
+rows (ruling 66): a chart, eight sample rows and a notebook, with the cost question as a caveat.
 
 - Publisher group: Trading
 - Registry group: trade-data · archetype: EVT
@@ -500,12 +568,17 @@ gridflow outputs derived from this package carry the attribution line above.
 
 - `index_linked_contract_volume`: held: TODO: COST-DIMENSION — the dictionary labels `Cost` £/h but describes it as total cost (price × volume × duration); which is published? (unit v0.22-K-TRD)
 
-The silver output exists on disk but is **held**. It may not be published or used for models until
-the question above is answered. The hold sits in the record (RULINGS 707); the sibling modern
-enactment families (balancing, GTMA financial-year and super-stable export limit) carry the same
-question under the same unit tag. It is a vendor-semantics question, so a NESO answer settles it,
-not inspection of values, and this page asserts none. The archive ZIP is held separately and is
-not part of this hold.
+The silver output exists on disk but is **held**. It may not be used for models until the question
+above is answered; the site page shows its rows with the question as a caveat (ruling 66). The hold
+sits in the record (RULINGS 707); the sibling modern enactment families (balancing, GTMA
+financial-year and super-stable export limit) carry the same question under the same unit tag. It
+is a vendor-semantics question, so a NESO answer settles it, not inspection of values. The archive
+ZIP is held separately and is not part of this hold.
+
+**What the rows show (silver, checked 2026-10-24).** In all 16 rows, `Cost` equals `Volume` ×
+`Price` × the window's length in hours, for example `ES00151372`: 110 × 71.82 × 9 = 71,101.8. That
+is how a total in £ behaves, not a rate in £/h. It supports NESO's description over its label, but
+it does not settle what NESO intends to publish, so the hold stands.
 
 **What is not established.** Whether `Cost` is a rate (pounds per hour) or a total (pounds), the
 duration unit in the NESO formula, the end-of-window convention, whether a published `ID` is

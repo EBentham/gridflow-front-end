@@ -1,0 +1,247 @@
+{
+ "dataset": "neso_data_portal/eac_br_mock_results_summary",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "5b577d8e1d1ac18f8fa7b9c8d60cf98413ce3156398f58616f92be85d60ff1c3",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "data.sql(\"\"\"\n    SELECT auction_id, MIN(delivery_start) AS first_window, MAX(delivery_start) AS last_window,\n           COUNT(*) FILTER (WHERE cleared_volume > 0) AS windows_cleared,\n           ROUND(AVG(clearing_price) FILTER (WHERE cleared_volume > 0), 2) AS mean_price\n    FROM silver_neso_data_portal_eac_br_mock_results_summary_latest\n    WHERE auction_product = 'PBR'\n    GROUP BY auction_id\n    HAVING COUNT(*) FILTER (WHERE cleared_volume > 0) > 0\n    ORDER BY first_window\"\"\")",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "auction_id",
+      "first_window",
+      "last_window",
+      "windows_cleared",
+      "mean_price"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10"
+     ],
+     "rows": [
+      [
+       "1",
+       "2024-02-14T23:00:00",
+       "2024-02-15T22:30:00",
+       "48",
+       "3.81"
+      ],
+      [
+       "2",
+       "2024-02-15T23:00:00",
+       "2024-02-16T22:30:00",
+       "48",
+       "4.39"
+      ],
+      [
+       "3",
+       "2024-02-16T23:00:00",
+       "2024-02-17T22:30:00",
+       "48",
+       "9.33"
+      ],
+      [
+       "4",
+       "2024-02-17T23:00:00",
+       "2024-06-19T21:30:00",
+       "48",
+       "8.08"
+      ],
+      [
+       "5",
+       "2024-02-18T23:00:00",
+       "2024-06-20T21:30:00",
+       "48",
+       "9.63"
+      ],
+      [
+       "6",
+       "2024-02-19T23:00:00",
+       "2024-02-20T22:30:00",
+       "48",
+       "8.83"
+      ],
+      [
+       "7",
+       "2024-02-20T23:00:00",
+       "2024-02-21T22:30:00",
+       "48",
+       "6.07"
+      ],
+      [
+       "8",
+       "2024-02-21T23:00:00",
+       "2024-09-12T21:30:00",
+       "48",
+       "3.70"
+      ],
+      [
+       "9",
+       "2024-02-22T23:00:00",
+       "2024-09-13T21:30:00",
+       "96",
+       "4.42"
+      ],
+      [
+       "10",
+       "2024-02-23T23:00:00",
+       "2024-02-24T22:30:00",
+       "48",
+       "7.79"
+      ],
+      [
+       "11",
+       "2024-02-24T23:00:00",
+       "2024-02-25T22:30:00",
+       "48",
+       "8.00"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "day = data.sql(\"\"\"\n    SELECT s.delivery_start, s.auction_product, s.cleared_volume,\n           SUM(u.executed_quantity) AS units_mw, s.clearing_price\n    FROM silver_neso_data_portal_eac_br_mock_results_summary_latest s\n    LEFT JOIN silver_neso_data_portal_eac_br_mock_results_by_unit_latest u\n      ON u.auction_product = s.auction_product AND u.delivery_start = s.delivery_start\n    WHERE s.auction_id = '1'\n    GROUP BY ALL ORDER BY s.delivery_start, s.auction_product\"\"\")\nday.iloc[14:20]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "delivery_start",
+      "auction_product",
+      "cleared_volume",
+      "units_mw",
+      "clearing_price"
+     ],
+     "index": [
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19"
+     ],
+     "rows": [
+      [
+       "2024-02-15T02:30:00",
+       "NBR",
+       "36.0",
+       "36.0",
+       "4.0"
+      ],
+      [
+       "2024-02-15T02:30:00",
+       "PBR",
+       "144.0",
+       "144.0",
+       "6.0"
+      ],
+      [
+       "2024-02-15T03:00:00",
+       "NBR",
+       "51.0",
+       "51.0",
+       "0.1"
+      ],
+      [
+       "2024-02-15T03:00:00",
+       "PBR",
+       "80.0",
+       "80.0",
+       "2.0"
+      ],
+      [
+       "2024-02-15T03:30:00",
+       "NBR",
+       "51.0",
+       "51.0",
+       "0.1"
+      ],
+      [
+       "2024-02-15T03:30:00",
+       "PBR",
+       "81.0",
+       "81.0",
+       "1.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "mw = day.pivot(index=\"delivery_start\", columns=\"auction_product\", values=\"cleared_volume\")\nmw.index = mw.index.str[11:16]\nmw[[\"PBR\", \"NBR\"]].plot(drawstyle=\"steps-post\", color=[\"#155A6E\", \"#C77E3C\"], figsize=(8, 3.5),\n                        xlabel=\"window start as written; the day opens 23:00, 14 February\",\n                        ylabel=\"mock cleared volume, MW\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "eac_br_mock_results_summary-5.png",
+     "width": 699,
+     "height": 337
+    }
+   ]
+  }
+ ]
+}

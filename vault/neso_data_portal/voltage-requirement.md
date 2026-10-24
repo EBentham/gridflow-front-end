@@ -4,11 +4,10 @@ package: "voltage-requirement"
 dataset_key: "voltage_requirement"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-23
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: NESO leaves unstated what each range covers (some run backwards), each group's area and issue times.
   title: Voltage requirement
   summary: >-
     How many voltage machines NESO expects to need overnight in each voltage group, in its
@@ -26,6 +25,42 @@ page:
   how_used:
     - Expected voltage support needs, region by region, for the week ahead
     - Regional voltage needs beside what NESO spends on voltage constraints
+  chart:
+    type: stacked-area
+    silver: neso_data_portal/voltage_requirement
+    time: start_date
+    value: units
+    group: group
+    group_map: {V_North: north, V_Scotland: scotland, V_SouthCentral: south_central, V_NorthLondon: north_london,
+                V_Midlands: midlands, V_Mersey: mersey, V_SouthWales: south_wales, V_SWPen: sw_pen, V_SouthEast: south_east}
+    series_order: [north, scotland, south_central, north_london, midlands, mersey, south_wales, sw_pen, south_east]
+    dedup: {"on": [start_date, group, last_updated], order_by: published_at}
+    aggregation: sum
+    window: {start: "2026-04-11", end: "2026-10-23"}
+    unit: units
+  chart_view:
+    title: Voltage units in NESO's plan, per range, by group
+    caption: >-
+      Silver `voltage_requirement`, NESO's `Units` per plan range for each of its nine voltage
+      groups, stacked, at each range's `Start Date` as written, April to October 2026. NESO
+      does not say which nights a range covers.
+    alt: >-
+      Stacked area chart from neso_data_portal/voltage_requirement of NESO's expected voltage units
+      for each plan range, nine groups stacked, ranges starting 11 April to 20 October 2026. The
+      total is 25 for the first range, falls to 14 for the range starting 23 June and ends at 16.
+      V_North, at the bottom, is the largest group overall, 4 to 8 units; V_SouthEast is 0 throughout.
+    x_label: "Start Date of each range, as written"
+    y_min: 0
+    key:
+      - {series: south_east, label: V_SouthEast, paint: hatch-dots}
+      - {series: sw_pen, label: V_SWPen, paint: hatch-cross}
+      - {series: south_wales, label: V_SouthWales, paint: hatch-lines}
+      - {series: mersey, label: V_Mersey, paint: bronze}
+      - {series: midlands, label: V_Midlands, paint: chartreuse}
+      - {series: north_london, label: V_NorthLondon, paint: olive}
+      - {series: south_central, label: V_SouthCentral, paint: clay}
+      - {series: scotland, label: V_Scotland, paint: horizon}
+      - {series: north, label: V_North, paint: petrol}
   raw_feed:
     note: >-
       From NESO's CKAN portal: `package_show`, then each file whole unless its `last_modified` is
@@ -39,6 +74,54 @@ page:
       - {run: gridflow ingest neso_data_portal voltage_requirement --last 24h, comment: whole file to bronze}
       - {run: gridflow transform neso_data_portal voltage_requirement --last 24h, comment: "the capture's date to silver"}
       - {run: gridflow ingest neso_data_portal voltage_requirement_files --last 24h, comment: the three PDFs}
+  record:
+    select:
+      filter:
+        - {column: group, op: eq, value: V_North}
+        - {column: start_date, op: ge, value: "2025-08-09"}
+        - {column: start_date, op: le, value: "2025-09-02"}
+      dedup: {"on": [start_date, group, last_updated], order_by: published_at}
+      order_by: [start_date, last_updated]
+      columns: [start_date, end_date, group, units, last_updated, notes, published_at]
+    key: [start_date, group, last_updated]
+    caption: "`V_North` from 9 August 2025: one range listed twice, and one that runs backwards."
+    fields:
+      start_date: "NESO's `Start Date`; which nights a range covers is not stated"
+      end_date: "NESO's `End Date`, as written; it can fall before the start"
+      group: "NESO's voltage group code; its map shows zones without a code list"
+      units: "NESO's `Units`: the number of units that might be required"
+      last_updated: "NESO's `Last Updated`, read as UTC from its `Z`; part of the key"
+      notes: "NESO's free-text note, where it gives one"
+      published_at: "NESO's last-modified time for the file, read as UTC; one per upload"
+      timestamp_utc: "UK midnight opening `start_date`, in UTC; gridflow's anchor, not NESO's"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote the capture to bronze, UTC
+  caveat: NESO leaves unstated what each range covers (some run backwards), each group's area and issue times.
+  notebook:
+    lead: >-
+      `query()` reads the `_latest` view, the newest upload, filtering `start_date`, both ends
+      included. Ranges stay as written, backwards ones too; nights are never inferred from them.
+    cells:
+      - |
+        df = data.neso_data_portal.query("voltage_requirement", "2025-10-01", "2026-10-23")
+        plans = df.pivot_table(index="start_date", columns="group", values="units", aggfunc="sum")
+        plans.tail(6).rename_axis(columns=None).reset_index()
+      - |
+        data.sql("""
+            SELECT start_date, end_date, count(*) AS groups, sum(units) AS units
+            FROM silver_neso_data_portal_voltage_requirement_latest
+            WHERE end_date < start_date
+            GROUP BY ALL ORDER BY start_date""")
+      - |
+        total = df.groupby("start_date").units.sum()
+        total.plot(figsize=(8, 3.5), color="#155A6E", marker=".", ylim=(0, None),
+                   xlabel="Start Date of each range, as written", ylabel="units, nine groups summed");
+    needs: the newest upload of the voltage requirement file
+    plot_alt: >-
+      Line plot of NESO's expected voltage units summed over nine groups, one point per range Start
+      Date, October 2025 to October 2026, newest upload. The total holds 20 to 22 in October 2025,
+      falls to 15 in early January 2026, peaks at 25 for the range starting 11 April, drops to 14
+      from 23 June and ends at 16.
   related:
     - {dataset: neso_data_portal/outturn-voltage-costs, note: "What NESO spent keeping voltage within limits, by voltage group"}
     - {dataset: neso_data_portal/obligatory-reactive-power-service-orps-utilisation, note: "Reactive power each unit was asked to absorb or produce, monthly"}
@@ -52,7 +135,7 @@ NESO publishes, for each regional voltage group, the number of voltage machines 
 
 gridflow captures the single CSV as a whole-file snapshot and writes one silver family, `voltage_requirement`. Three PDFs (an introduction to voltage management, a Voltage Deep Dive slide deck from the Operational Transparency Forum, and the group map) are retained as documents only.
 
-**The silver output is held (unit E-SEM).** Rows exist (5,221 after the 2026-10-08 activation; the 2026-10-16 capture has 5,257) and the schema is fixed, but the output is not published as an eligible forecast until the hold question below is answered. No data values for this family appear on this page.
+**The silver output is held (unit E-SEM).** Rows exist (5,221 after the 2026-10-08 activation; the 2026-10-16 capture has 5,257) and the schema is fixed, but the output is not an eligible forecast until the hold question below is answered. This note gives no data values; under ruling 66 (2026-10-24) the site page shows the rows, a chart and a notebook, with one line naming the open questions.
 
 Attribution: Supported by National Energy SO Open Data
 

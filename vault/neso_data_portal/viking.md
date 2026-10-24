@@ -8,7 +8,6 @@ updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: true
   title: Viking Link transfer limits
   summary: >-
     NESO's hourly limits on flow each way over the Viking Link interconnector, in MW, with reasons.
@@ -27,30 +26,109 @@ page:
     - Which hours NESO restricted the link, by direction, from the stated reason
     - "A feature for flow and price models: when NESO restricted the link"
     - Set beside the final capacity the link's trading facilitator publishes
+  chart:
+    type: line
+    silver: neso_data_portal/viking_link_ntc
+    time: operational_period_start_gmt
+    filter:
+      - {column: auction_type, op: eq, value: Day Ahead}
+    dedup: {on: [operational_period_start_gmt], order_by: capture_written_at}
+    values:
+      - {column: flow_to_gb_mw, series: to_gb}
+      - {column: flow_from_gb_mw, series: from_gb}
+    aggregation: min
+    window: {start: "2026-10-09", end: "2026-10-15"}
+    unit: MW
+  chart_view:
+    title: Day-ahead limits each way, 9 to 15 October 2026
+    caption: >-
+      Silver `viking_link_ntc`, day-ahead rows, one per hour, as NESO's file stood when fetched on 16
+      October 2026; each row's upload precedes its hour, but NESO does not say rows are unchanged
+      since. To GB lies under From GB where equal.
+    alt: >-
+      Line chart from neso_data_portal/viking_link_ntc of NESO's day-ahead limits each way over
+      Viking Link, MW, hourly, 9 to 15 October 2026. To GB stays at 1,457 MW. From GB is 1,457
+      except on three days: on 11 October 683 at 15:00 UTC, 0 from 16:00 to 19:00 and 234 at 20:00;
+      1,335 at 18:00 on 13 October; on 15 October 153 at 10:00, rising to 1,121 at 13:00 and 14:00,
+      then 978 at 15:00, 0 from 16:00 to 19:00 and 469 at 20:00.
+    x_label: hour start, UTC (NESO labels it GMT)
+    y_min: -40
+    key:
+      - {series: to_gb, label: To GB, note: "Import limit, NESO's `Flow in MW To GB`", paint: petrol}
+      - {series: from_gb, label: From GB, note: "Export limit, NESO's `Flow in MW From GB`", paint: clay}
   raw_feed:
     note: >-
       From NESO's CKAN portal: `package_show`, the current table's dump and the archive CSV. Fetched
       16 October 2026, the table kept every row fetched 8 October unchanged, plus new ones.
     commands:
-      - {run: gridflow pipeline neso_data_portal viking_ntc --last 24h,
-         comment: "archive to bronze, then silver"}
       - {run: gridflow pipeline neso_data_portal viking_link_ntc --last 24h,
          comment: "current table to bronze, then silver"}
+      - {run: gridflow pipeline neso_data_portal viking_ntc --last 24h,
+         comment: "archive to bronze, then silver"}
+  record:
+    select:
+      filter:
+        - {column: auction_type, op: in, value: [Day Ahead, Intraday 2]}
+        - column: operational_period_start_gmt
+          op: in
+          value: ["2026-10-14T02:00:00", "2026-10-14T06:00:00", "2026-10-14T13:00:00", "2026-10-14T15:00:00"]
+      order_by: [operational_period_start_gmt, auction_type]
+      columns: [operational_period_start_gmt, auction_type, data_upload_time_gmt, flow_from_gb_mw,
+                reason_for_restriction_from_gb, flow_to_gb_mw, reason_for_restriction_to_gb]
+    key: [operational_period_start_gmt, auction_type, data_upload_time_gmt]
+    caption: "14 October 2026, day-ahead and second intraday; the 02:00 intraday row was uploaded at 02:30."
+    fields:
+      operational_period_start_gmt: "Start of the hour the limit applies to, UTC; NESO labels it GMT"
+      auction_type: "NESO's auction, `Day Ahead` or `Intraday 1` to `4`"
+      data_upload_time_gmt: "When NESO uploaded the row, per its dictionary; GMT, read as UTC"
+      flow_from_gb_mw: "Export limit from GB, MW: NESO's maximum flow in this direction"
+      reason_for_restriction_from_gb: "NESO's reason for the export limit, including `No Restriction`"
+      flow_to_gb_mw: "Import limit to GB, MW: NESO's maximum flow in this direction"
+      reason_for_restriction_to_gb: "NESO's reason for the import limit, including `No Restriction`"
+      issue_time: "gridflow's copy of `data_upload_time_gmt`, in the row key"
+      timestamp_utc: "The hour start again, UTC: gridflow's time axis for this table"
+      published_at: "Null on every row: gridflow takes no vendor file time for this table"
+      bronze_capture_id: Path of the bronze capture the row was read from
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      `query()` filters `timestamp_utc`, which here is the hour start, on the `_latest` view: the
+      16 October 2026 file. Several auctions give a limit for the same hour.
+    cells:
+      - |
+        import pandas as pd
+        df = data.neso_data_portal.query("viking_link_ntc", "2026-10-13", "2026-10-15")
+        df["timestamp_utc"] = df.timestamp_utc.dt.tz_convert("UTC")
+        df["data_upload_time_gmt"] = df.data_upload_time_gmt.dt.tz_convert("UTC")
+        df[["timestamp_utc", "auction_type", "data_upload_time_gmt", "flow_from_gb_mw",
+            "reason_for_restriction_from_gb"]].head()
+      - |
+        pd.crosstab(df.auction_type, df.reason_for_restriction_from_gb)
+      - |
+        df.pivot(index="timestamp_utc", columns="auction_type", values="flow_from_gb_mw").plot(
+            drawstyle="steps-post", color=["#155A6E", "#C77E3C", "#7A8B3C"], figsize=(8, 3.5),
+            xlabel="hour start, UTC", ylabel="export limit from GB, MW");
+    needs: the 16 October 2026 fetch of the current table
+    plot_alt: >-
+      Step lines of export limit from GB, MW, by auction, 13 to 15 October 2026. Day Ahead sits at
+      1,457 apart from 18:00 on 13 October and 10:00 to 20:00 on 15 October, reaching 0 from 16:00
+      to 19:00. Intraday 1 is 0 in two runs on 13 October; Intraday 2 is 0 from 06:00 on 14 and 15
+      October.
   family:
     slug: viking
     members:
-      - dataset: viking_ntc
-        differs: "Archive to September 2024: operational date, GMT hour range and version; no upload time"
-        request:
-          - "GET https://api.neso.energy/api/3/action/package_show?id=viking"
-          - "GET https://api.neso.energy/dataset/53a942cc-f9ab-4ad3-a274-5beed51635ec/resource/0d20456e-85cc-47a9-b476-e2d8e7c1b8eb/download/archived_viking_data-1.csv"
-        held: "Hour labels have no defined day or clock, and no row says when NESO issued it."
       - dataset: viking_link_ntc
         differs: "Current table from September 2024: upload time, auction and hour start in GMT"
         request:
           - "GET https://api.neso.energy/api/3/action/package_show?id=viking"
           - "GET https://api.neso.energy/datastore/dump/f4ee9a34-1bb5-405e-b4a0-bacb193fb188"
-        held: "Nearly every hour is already past, and NESO does not say rows are unchanged since upload."
+        caveat: "NESO does not say rows stay as uploaded, so past limits may not be as issued."
+      - dataset: viking_ntc
+        differs: "Archive to September 2024: operational date, GMT hour range and version; no upload time"
+        request:
+          - "GET https://api.neso.energy/api/3/action/package_show?id=viking"
+          - "GET https://api.neso.energy/dataset/53a942cc-f9ab-4ad3-a274-5beed51635ec/resource/0d20456e-85cc-47a9-b476-e2d8e7c1b8eb/download/archived_viking_data-1.csv"
+        caveat: "NESO does not define the operational day or GMT/BST hours; each hour predates the file's upload."
   related:
     - {dataset: neso_data_portal/historic-demand-data, note: "Viking Link's half-hourly flow, in NESO's historic demand files"}
     - {dataset: neso_data_portal/interconnector-requirement-and-auction-summary-data, note: "NESO's own trades across links, with the volume cleared on Viking Link"}
@@ -93,9 +171,10 @@ The package has two resources and gridflow keeps them as **two families**:
 
 **Both outputs are held (unit E-SEM).** For the current dump, NESO does not say that past rows
 are unchanged since their upload time. For the archive, the operational-date calendar is
-undocumented. See Holds. Both outputs exist in silver, but neither can be published or used for
-point-in-time modelling until E-SEM answers its question (RULINGS 565, 567). **This page gives
-schema, clocks, row counts and structural counts only. It gives no data values.**
+undocumented. See Holds. Both outputs exist in silver, but neither can be used for
+point-in-time modelling until E-SEM answers its question (RULINGS 565, 567). Under ruling 66
+(2026-10-24) the site page shows their rows, each table with one caveat line naming its
+question; this note gives schema, clocks and counts.
 
 - Publisher group: Interconnectors
 - Registry group: interconnectors · archetype: FC
@@ -179,7 +258,7 @@ Schema, epoch 1:
 | `published_at` | null |
 | `available_at` | gridflow capture time (sidecar `written_at`), labelled so |
 
-**Held (unit E-SEM). Schema, clocks and counts only, no data values.**
+**Held (unit E-SEM) in gridflow; the site page shows the rows with a caveat line (ruling 66).**
 
 **The two clocks for this family:**
 
@@ -268,7 +347,7 @@ Schema, epoch 1:
 | `published_at` | CKAN `last_modified` of the captured file (ADR-030) |
 | `available_at` | = `published_at` |
 
-**Held (unit E-SEM). Schema, clocks and counts only, no data values.**
+**Held (unit E-SEM) in gridflow; the site page shows the rows with a caveat line (ruling 66).**
 
 **The two clocks for this family:**
 
@@ -380,10 +459,10 @@ gridflow outputs derived from this package carry the attribution line above.
 - `viking_link_ntc`: held: TODO: the dump returns past targets (rows before the capture) and NESO does not state that a row is unchanged since its `Data Upload Time GMT`, so historical issued limits are not evidenced. (unit E-SEM)
 - `viking_ntc`: held: TODO: the archive's operational-date rollover and GMT/BST interpretation are undocumented, and every target precedes the upload's last_modified, so the forward-target rule (RULINGS 529) cannot apply. (unit E-SEM)
 
-Both held outputs exist in silver, but they cannot be published or used for point-in-time
-modelling until unit E-SEM answers its question (RULINGS 565, 567). This page publishes their
-schema, clocks, row counts and structural counts only. It publishes no data value, sample row
-or value statistic for either family. Each hold applies to the captured bodies and to later
+Both held outputs exist in silver, but they cannot be used for point-in-time modelling until
+unit E-SEM answers its question (RULINGS 565, 567). Under ruling 66 (2026-10-24) the site page
+shows both families' rows, each with one caveat line naming its question; its chart, frame and
+notebook read `viking_link_ntc`. Each hold applies to the captured bodies and to later
 captures until NESO gives what it asks for: for `viking_link_ntc`, a retention or revision
 guarantee or immutable issue-specific files; for `viking_ntc`, the operational-date calendar,
 its rollover and the meaning of `Version`.

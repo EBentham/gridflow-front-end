@@ -4,7 +4,7 @@ package: "transmission-losses"
 dataset_keys: ["transmission_losses_financial_year", "transmission_losses_main"]
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-09
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
@@ -22,8 +22,7 @@ page:
     Losses in TWh on the networks of National Grid Electricity Transmission (England and Wales),
     Scottish Power Transmission and Scottish Hydro Electric Transmission, with a GB total. NESO
     monitors them after the event: they turn on where generation runs, chiefly the north-south
-    balance. NESO's yearly GB total for 2022-23 is 0.22 TWh above its months summed; 2021-22's is
-    0.05 TWh below.
+    balance. A second file gives NESO's own total for each financial year.
   how_used:
     - The long-run scale and trend of GB transmission losses
     - How losses split between the English and Welsh network and the Scottish networks
@@ -44,14 +43,13 @@ page:
     title: Monthly transmission losses by network, April 2013 to July 2026
     caption: >-
       Silver `neso_data_portal/transmission_losses_main`, TWh per month, April 2013 to July 2026.
-      The stack's top is NESO's GB total within 0.001 TWh. August 2026 (0.14 TWh, in the rows
-      below) is left out; NESO does not say it is complete.
+      August 2026 (0.14 TWh, in the rows below) is left out; NESO does not say it is complete.
     alt: >-
       Stacked area chart from neso_data_portal/transmission_losses_main of monthly transmission
       losses in TWh, April 2013 to July 2026: NGET at the bottom and most of every month, then SPT
       and SHETL. Monthly totals run 0.33 to 0.73 TWh from 2013 to 2019, higher in winter than
-      summer. The highest is 0.97 TWh in January 2023; the lowest, 0.23 TWh in March 2022, stands
-      alone. The Scottish networks are 9% to 26% of a month.
+      summer. The highest month in the window is 0.97 TWh in January 2023 and the lowest is 0.23
+      TWh in March 2022. SPT and SHETL are the two thinner bands on top.
     x_label: NESO's month label; no day boundary stated
     key:
       - {series: shetl, label: SHETL, codes: SHETL, paint: hatch-dots, note: "Scottish Hydro Electric Transmission's network"}
@@ -87,8 +85,8 @@ page:
     key: [month_vendor]
     caption: "Every August from 2019 to 2026; August 2026 is far below the rest."
     fields:
-      month_vendor: "NESO's month label, like `Aug-26`, kept as text; no day or clock stated"
-      gb_totals: "NESO's GB total, TWh; 2022-23's months sum 0.22 TWh below NESO's yearly figure"
+      month_vendor: "NESO's month label, like `Aug-26`, kept as text; no day boundary or zone stated"
+      gb_totals: "NESO's GB total for the month, TWh"
       nget: "England and Wales transmission losses, TWh (National Grid Electricity Transmission)"
       spt: "Scottish Power Transmission system losses, TWh"
       shetl: "Scottish Hydro Electric Transmission system losses, TWh"
@@ -100,8 +98,7 @@ page:
   notebook:
     lead: >-
       `query()` filters on `timestamp_utc`, the capture time here, so these cells use `data.sql()`
-      on the `_latest` views: the months in order, then NESO's yearly figures against its months
-      summed.
+      on the `_latest` views: the months in order, then NESO's yearly file as published.
     cells:
       - |
         months = data.sql("""
@@ -111,25 +108,22 @@ page:
         """)
         months.tail()
       - |
-        gap = data.sql("""
-            SELECT y.financial_year, y.sum_of_gb_totals AS yearly_twh,
-                   round(sum(m.gb_totals), 4) AS months_summed_twh,
-                   round(y.sum_of_gb_totals - sum(m.gb_totals), 4) AS gap_twh
-            FROM silver_neso_data_portal_transmission_losses_financial_year_latest AS y
-            JOIN silver_neso_data_portal_transmission_losses_main_latest AS m USING (financial_year)
-            GROUP BY y.financial_year, y.sum_of_gb_totals
-            ORDER BY y.financial_year
+        years = data.sql("""
+            SELECT financial_year, sum_of_nget, sum_of_spt, sum_of_shetl, sum_of_gb_totals
+            FROM silver_neso_data_portal_transmission_losses_financial_year_latest
+            ORDER BY financial_year
         """)
-        gap
+        years
       - |
-        ax = gap.plot.bar(x="financial_year", y="gap_twh", legend=False, color="#155A6E",
-                          figsize=(8, 3.5), xlabel="financial year",
-                          ylabel="yearly minus months summed, TWh");
+        ax = years.plot.bar(x="financial_year", y="sum_of_gb_totals", legend=False,
+                            color="#155A6E", figsize=(8, 3.5), xlabel="financial year",
+                            ylabel="NESO's GB total, TWh");
     needs: NESO's two transmission losses files
     plot_alt: >-
-      Bar chart of NESO's yearly GB transmission losses minus the same year's months summed, in
-      TWh, 2013-14 to 2025-26. Nine years are within 0.003 TWh of zero. 2022-23 stands at +0.2215,
-      2021-22 at -0.0485, 2024-25 at +0.0316 and 2025-26 at -0.0076.
+      Bar chart of NESO's yearly GB transmission losses in TWh, 2013-14 to 2025-26, from its
+      financial-year file. 5.23 to 5.65 each year to 2018-19 except 4.85 in 2016-17, the lowest;
+      6.51 to 6.87 from 2019-20 to 2021-22; 8.18 in 2022-23, the highest; then 7.15, 7.54 and
+      6.85.
   related:
     - {dataset: elexon/fuelhh, note: "Generation by fuel; NESO says where generation runs drives losses"}
     - {dataset: neso_data_portal/historic-demand-data, note: "GB demand by half hour, for scale"}
