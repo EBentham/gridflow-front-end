@@ -7,6 +7,140 @@ skeleton: false
 updated: 2026-10-09
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: Day-ahead wind forecast
+  summary: >-
+    NESO's forecast of GB metered wind output for each half-hour of the next day, in MW, nationally
+    and per wind BM unit.
+  facts:
+    vendor: "NESO Data Portal, package `day-ahead-wind-forecast`: 11 CSV files"
+    cadence: "Daily; NESO states 09:00 to 09:15 clock time, which file stamps do not match"
+    grain: "One row per settlement period; in the BMU file, per period and BM unit"
+    history: NESO describes its archives as all day-ahead forecasts from 2018
+  landscape: power
+  what_it_is: >-
+    NESO's day-ahead forecast of metered wind output, in MW, for each half-hour of the next UK day,
+    beside operational wind capacity on the transmission network. The BMU file splits the day by wind BM unit, the farms
+    behind the national forecast. In NESO's 8 and 16 October 2026 files the units sum
+    to the national figure, to the nearest MW.
+  how_used:
+    - Benchmark a day-ahead wind model against NESO's half-hourly forecast
+    - Set beside Elexon's wind forecast and wind outturn for the same periods
+    - Attach a day-ahead forecast to individual wind BM units, by unit name
+  chart:
+    type: line
+    silver: neso_data_portal/da_wind_forecast_day_ahead
+    time: timestamp_utc
+    value: incentive_forecast
+    filter:
+      - {column: date, op: eq, value: "2026-10-17"}
+    dedup: {"on": [datetime_gmt], order_by: published_at}
+    aggregation: last
+    window: {start: "2026-10-16", end: "2026-10-17"}
+    unit: MW
+  chart_view:
+    title: Forecast wind output, 17 October 2026
+    caption: >-
+      Silver `da_wind_forecast_day_ahead`, MW: NESO's national forecast for the 48 settlement periods
+      of 17 October 2026, which start at 23:00 UTC on the 16th (BST), in the file stamped 08:40 on 16
+      October, read as UTC. The axis starts at zero.
+    alt: >-
+      Line chart from neso_data_portal/da_wind_forecast_day_ahead: NESO's forecast wind output in MW
+      for each settlement period of 17 October 2026, from 23:00 UTC on the 16th to 22:30 UTC on the
+      17th, on an axis from zero. It starts at the day's highest, 11,425, falls to 10,119 at 05:30,
+      edges up to 10,214 at 07:30, falls to 9,479 at 15:00, rises to 9,619 at 18:00 and ends at the
+      lowest, 8,966.
+    x_label: settlement period start, UTC
+    y_min: 0
+    key:
+      - {series: incentive_forecast, label: Forecast wind output, codes: Incentive_forecast, paint: horizon,
+         note: "Out of 25,501 MW of operational wind capacity, the `capacity` column below"}
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then each current or archive file downloaded whole
+      unless unchanged; the yearly unit archives are datastore dumps. Dates select nothing.
+    commands:
+      - {run: gridflow ingest neso_data_portal da_wind_forecast_day_ahead --last 24h,
+         comment: whole file; window must end recently}
+      - {run: gridflow transform neso_data_portal da_wind_forecast_day_ahead --last 24h,
+         comment: the capture's date to silver}
+      - {run: gridflow pipeline neso_data_portal da_wind_forecast_day_ahead_bmu --last 24h,
+         comment: "the unit file: bronze, then silver"}
+  record:
+    select:
+      filter:
+        - {column: date, op: eq, value: "2026-10-17"}
+        - {column: settlement_period, op: le, value: 8}
+      dedup: {"on": [datetime_gmt], order_by: published_at}
+      order_by: [settlement_period]
+      columns: [datetime_gmt, date, settlement_period, incentive_forecast, capacity, published_at]
+    key: [datetime_gmt, published_at]
+    caption: "Periods 1 to 8 of 17 October 2026: in BST the day starts 23:00 UTC."
+    fields:
+      datetime_gmt: "Start of the settlement period; NESO's dictionary gives UTC despite the name"
+      date: The UK settlement date the period belongs to
+      settlement_period: "Half-hour of the settlement day; NESO says period 1 ends 00:30 UK time"
+      incentive_forecast: "Forecast wind output for the half-hour, MW; NESO calls it the incentive forecast"
+      capacity: "Operational wind capacity on the transmission network, MW; the same in every row"
+      published_at: "NESO's last-modified time for the file, read as UTC; rows carry no issue time"
+      timestamp_utc: "Equals `datetime_gmt`: the period start, UTC"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      `tail()` reads each table's `_latest` view (the newest capture, latest periods first), lineage
+      columns dropped. Times arrive in the session zone, so the cells convert them to UTC; the second
+      sums the units per period.
+    cells:
+      - |
+        nat = data.neso_data_portal.tail("da_wind_forecast_day_ahead")
+        for c in ["timestamp_utc", "published_at"]:
+            nat[c] = nat[c].dt.tz_convert("UTC")
+        nat = nat.sort_values("timestamp_utc", ignore_index=True)
+        nat[["timestamp_utc", "date", "settlement_period", "incentive_forecast", "capacity",
+             "published_at"]].head()
+      - |
+        bmu = data.neso_data_portal.tail("da_wind_forecast_day_ahead_bmu", 20_000)
+        bmu["timestamp_utc"] = bmu["timestamp_utc"].dt.tz_convert("UTC")
+        units = bmu.groupby("timestamp_utc").agg(units=("generator_name", "nunique"),
+                                                 unit_sum=("wind_forecast", "sum"))
+        check = nat.set_index("timestamp_utc").join(units)
+        print("units per period:", sorted(check.units.unique().tolist()))
+        print("largest national minus unit sum, MW:",
+              round((check.incentive_forecast - check.unit_sum).abs().max(), 3))
+      - |
+        top = nat.incentive_forecast.max() * 1.1
+        ax = nat.plot(x="timestamp_utc", y="incentive_forecast", ylim=(0, top), legend=False,
+                      color="#3E8C97", figsize=(8, 3.5), xlabel="settlement period start, UTC",
+                      ylabel="forecast wind output, MW");
+    needs: a recent capture of NESO's national and BMU day-ahead wind files
+    plot_alt: >-
+      Line plot of NESO's forecast wind output in MW for the 48 settlement periods of 17 October 2026,
+      from 23:00 UTC on the 16th, on an axis from zero: 11,425 at the start, falling to 8,966 at
+      22:30 UTC, with small rises around 07:30 and 18:00.
+  related:
+    - {dataset: elexon/windfor, note: "Elexon's wind generation forecast, issued several times a day"}
+    - {dataset: neso_data_portal/embedded_wind_solar_forecast, note: "NESO's embedded wind forecast, outside this transmission-connected one"}
+    - {dataset: neso_data_portal/14-days-ahead-operational-metered-wind-forecasts, note: "NESO's metered wind forecast out to 14 days, also per farm"}
+    - {dataset: neso_data_portal/daily_wind_availability, note: "Availability per wind BM unit, beside these per-unit forecasts"}
+  family:
+    slug: day-ahead-wind-forecast
+    members:
+      - {dataset: da_wind_forecast_day_ahead,
+         differs: "The next UK day's half-hours: national forecast and operational wind capacity",
+         request: "GET https://api.neso.energy/dataset/fbe3701d-1487-443e-abe9-47a6c01ecce2/resource/b2f03146-f05d-4824-a663-3a4f36090c71/download/b2f03146-f05d-4824-a663-3a4f36090c71-20261016084006.csv"}
+      - {dataset: da_wind_forecast_day_ahead_bmu,
+         differs: "The same day per wind BM unit, with unit name, region and capacity",
+         request: "GET https://api.neso.energy/dataset/fbe3701d-1487-443e-abe9-47a6c01ecce2/resource/90e581e9-2d7f-4eaa-8fe0-6e323ee0f5f7/download/da_windunit_forecast_20261016083509.csv"}
+      - {dataset: da_wind_forecast_historic_day_ahead,
+         differs: "The national forecasts NESO has kept since 2018, each with a forecast time stamp",
+         request: "GET https://api.neso.energy/dataset/fbe3701d-1487-443e-abe9-47a6c01ecce2/resource/7524ec65-f782-4258-aaf8-5b926c17b966/download/7524ec65-f782-4258-aaf8-5b926c17b966-20261016084502.csv",
+         held: "Forecast time stamps carry no zone, and many fall at or after the period they forecast."}
+      - {dataset: da_wind_forecast_historic_day_ahead_bmu,
+         differs: "Per BM unit, in eight files labelled 2018 to 2025; first and last shown",
+         request: ["GET https://api.neso.energy/datastore/dump/9c26224d-ba6f-4fff-a21f-6f0090d8ac7d",
+                   "GET https://api.neso.energy/datastore/dump/81413643-508e-4358-8414-c87e7c4bcc43"],
+         held: "NESO gives each forecast's UK publication time, but nothing shows the values unchanged since."}
 ---
 
 # Day Ahead Wind Forecast
@@ -17,13 +151,17 @@ ahead timescale as well as all historic day ahead wind forecasts". There are two
 and two archives:
 
 - The **national** file is one half-hourly forecast for the next UK day (48 settlement periods
-  in the current capture), with the total operational wind capacity beside it. The resource
+  in each of the 2026-10-08 and 2026-10-16 captures), with the total operational wind capacity
+  beside it. The resource
   description calls it "the NESO's day ahead operational metered wind forecast", in MW.
 - The **BMU** file breaks the same day into one forecast per wind Balancing Mechanism unit. The
   vendor says these are the windfarms used to build the national forecast. It is not a complete
-  list of BM units, and it excludes licence-exempt windfarms.
-- The **historic national** file is the archive of every day-ahead national forecast since 2018,
-  with a forecast-creation timestamp per row.
+  list of BM units, and it excludes licence-exempt windfarms. In both captures (2026-10-08 and
+  2026-10-16) the unit `Wind_Forecast` values summed per period equal the national
+  `Incentive_forecast` to the nearest MW (largest gap 0.497 MW over 96 periods), and the unit
+  capacities sum to the national `Capacity` (25,365.8 against 25,366; 25,500.8 against 25,501).
+- The **historic national** file is, in NESO's words, "all historic day ahead wind forecasts from
+  2018 to the most recent forecast", with a forecast timestamp per row.
 - The **historic BMU** archive is eight datastore resources, labelled 2018 to 2025, each with a
   publication timestamp per row.
 
@@ -88,8 +226,11 @@ always lists the current one):
   [2024](https://api.neso.energy/datastore/dump/22625e0b-f63b-4d0e-9bbd-54383fc3e931) ·
   [2025](https://api.neso.energy/datastore/dump/81413643-508e-4358-8414-c87e7c4bcc43).
   The dumps have no CKAN `last_modified` (blank in every sidecar).
+- The 2026-10-16 captures fetched `b2f03146-…-20261016084006.csv` (CKAN `last_modified`
+  2026-10-16T08:40:07.867477), `da_windunit_forecast_20261016083509.csv` (08:35:11.316089) and
+  `7524ec65-…-20261016084502.csv` (08:45:08.186884).
 
-Captures to date (one per resource, all 2026-10-08; gridflow
+Captures on 2026-10-08, one per resource (gridflow
 `@.planning/phases/v0.22-K-GEN-1/K-GEN-1-FACTS.md` §1):
 
 | Family | Body | Bytes | Data rows |
@@ -98,6 +239,17 @@ Captures to date (one per resource, all 2026-10-08; gridflow
 | `da_wind_forecast_day_ahead_bmu` | `raw_20261008T091716Z_90e581e9-…_13bdee1b.csv` | 1,012,023 | 11,088 |
 | `da_wind_forecast_historic_day_ahead` | `raw_20261008T091720Z_7524ec65-…_0e7ab229.csv` | 9,672,511 | 148,825 |
 | `da_wind_forecast_historic_day_ahead_bmu` | 8 dump bodies (per-resource table in that family) | 2,400,858,694 | 21,906,814 |
+
+Recaptures on 2026-10-16 (bronze and silver row counts agree; for the other seven BMU dumps the
+ingest log reports "7 unchanged since newest capture", the connector's identical-body skip;
+gridflow `@.planning/phases/v0.22-close/refresh-20261016/ingest.log`):
+
+| Family | Body | Bytes | Data rows | Against 2026-10-08 |
+|---|---|---:|---:|---|
+| `da_wind_forecast_day_ahead` | `raw_20261016T192201Z_b2f03146-…_b8940f74.csv` | 2,236 | 48 | next target day (2026-10-17); no row repeats |
+| `da_wind_forecast_day_ahead_bmu` | `raw_20261016T192207Z_90e581e9-…_098114f3.csv` | 1,014,033 | 11,088 | same 231 generators, target 2026-10-17; no row repeats |
+| `da_wind_forecast_historic_day_ahead` | `raw_20261016T192211Z_7524ec65-…_b4a0929f.csv` | 9,697,699 | 149,209 | all 148,825 earlier rows unchanged; 384 added |
+| `da_wind_forecast_historic_day_ahead_bmu` (2025) | `raw_20261016T193728Z_81413643-…_09e13458.csv` | 405,732,852 | 3,683,474 | all 3,136,000 earlier rows unchanged; 547,474 added (see that family) |
 
 The package has **no DOC resources** and no `_files` family (FACTS GEN1-4). There is no vendor
 documentation file to download. The vendor sources are the package notes, the resource
@@ -135,24 +287,29 @@ Schema, epoch 1:
 **The two clocks for this family:**
 
 1. **Vintage (`ckan_last_modified`).** `published_at` = `available_at` = the CKAN
-   `last_modified` of the captured file: `2026-10-08T08:40:07.850057` for the one capture.
+   `last_modified` of the captured file: `2026-10-08T08:40:07.850057` for the 2026-10-08
+   capture and `2026-10-16T08:40:07.867477` for the 2026-10-16 one.
    CKAN emits it without an offset, and gridflow reads it as UTC (gridflow
-   `@docs/DECISION_LOG/ADR-030-neso-data-portal-ckan-source.md`). All 48 rows share it. The
+   `@docs/DECISION_LOG/ADR-030-neso-data-portal-ckan-source.md`). Each capture's 48 rows share
+   its own vintage. The
    file has no issue column, so the issue recipe is `none`. The date-time token in the upload
    filename is not a documented issue instant and is not used as one (FACTS §2).
 2. **Event time (`utc_instant` on `datetime_gmt`).** `timestamp_utc` = `event_time` =
    `datetime_gmt`, the UTC **start** of the target settlement period. Checked on every silver
    row on 2026-10-09. The column is named "GMT" and the body carries no `Z`, but the dictionary
    unit is "UTC ISO 8601". Every measured timestamp equals UK settlement-day start plus
-   `30 × (SP − 1)` minutes, including on a BST day (FACTS T01, g1). The capture covers UK
-   settlement date 2026-10-09, SP 1–48: 2026-10-08T23:00Z to 2026-10-09T22:30Z.
+   `30 × (SP − 1)` minutes, including on a BST day (FACTS T01, g1). The 2026-10-08 capture covers
+   UK settlement date 2026-10-09, SP 1–48: 2026-10-08T23:00Z to 2026-10-09T22:30Z. The
+   2026-10-16 capture covers 2026-10-17, SP 1–48: 2026-10-16T23:00Z to 2026-10-17T22:30Z, with
+   `timestamp_utc` equal to `datetime_gmt` on all 48 rows (silver, 2026-10-24).
 
 **Why this family is eligible (forward-target rule, RULINGS 529, applied by RULINGS 542).**
 Every target in the capture starts after the file's vintage. The earliest target is
 2026-10-08T23:00Z; the vintage is 2026-10-08T08:40Z. So the CKAN vintage is a safe
 availability clock for every row: no value can be read as available before it existed. A test
-pins this property on the fixture. It holds for this capture; later captures are not guaranteed
-to satisfy it (FACTS GEN1-1).
+pins this property on the fixture. It holds for the 2026-10-08 capture and for the 2026-10-16
+one (earliest target 2026-10-16T23:00Z, vintage 2026-10-16T08:40Z); later captures are not
+guaranteed to satisfy it (FACTS GEN1-1).
 
 **Units (vendor dictionary only).** `Capacity` and `Incentive_forecast` are **MW**, declared in
 the dictionary (FACTS g4). `Settlement_period` is an index with no physical unit. `Date` is the
@@ -162,13 +319,14 @@ the same column as the "Wind incentive forecast for day ahead produced for each 
 settlement period". `TODO: verify` what "incentive" means here, for example whether it names
 the forecast submitted under a NESO forecasting incentive scheme. The vendor does not say.
 
-**Sentinels and missing values (FACTS g5).** No null token is declared. The capture has no
-blank, `N/A`, `NA` or `-1` cells, and no value numerically equal to −1. In silver, no column is
-null, and neither `capacity` nor `incentive_forecast` has a zero or a negative value (checked
-2026-10-09). No bounds are imposed.
+**Sentinels and missing values (FACTS g5).** No null token is declared. The 2026-10-08 capture
+has no blank, `N/A`, `NA` or `-1` cells, and no value numerically equal to −1. In silver, no
+column is null in either capture, and neither `capacity` nor `incentive_forecast` has a zero or
+a negative value (checked 2026-10-09; 2026-10-16 capture checked 2026-10-24). No bounds are
+imposed.
 
-**Identity and selection.** `datetime_gmt` is unique in the capture: 48 rows, 48 targets (FACTS
-T04). That is a measured guard, not a vendor-stated key (`TODO: verify` contractual key).
+**Identity and selection.** `datetime_gmt` is unique in each capture: 48 rows, 48 targets (FACTS
+T04; 2026-10-16 checked in silver). The two captures share no target. That is a measured guard, not a vendor-stated key (`TODO: verify` contractual key).
 `_latest` is `whole_capture`: each new capture replaces the forecast as a whole.
 
 **Elexon cross-check.** The local WINDFOR store (target times 2021-09-01T20:00Z to
@@ -178,7 +336,8 @@ C10).
 **Activation (2026-10-09, master `f19effb`, PR #92).** Transformed at cutoff 2026-10-08:
 **48 silver rows**, equal to the planned count, with no prior silver overwritten. Reconcile
 `--all` at that cutoff found 0 gaps over 55 families, overlap 0 (gridflow
-`@.planning/v0.22-RESULTS.md` §GEN-1; RULINGS 545 merge, 546 activation).
+`@.planning/v0.22-RESULTS.md` §GEN-1; RULINGS 545 merge, 546 activation). After the 2026-10-16
+recapture the base table holds 96 rows and `_latest` the newer 48.
 
 Silver columns beyond the vendor columns: `timestamp_utc`, `published_at`, `bronze_capture_id`,
 `capture_written_at`, `event_time`, `available_at`, `source_run_id`, `dataset_version` (all
@@ -214,34 +373,46 @@ Schema, epoch 1:
 **The two clocks for this family:**
 
 1. **Vintage (`ckan_last_modified`).** `published_at` = `available_at` =
-   `2026-10-08T08:35:11.947478`, the CKAN `last_modified` of the one capture, read as UTC
-   (ADR-030). Every row shares it. No issue column exists, so the issue recipe is `none`.
+   `2026-10-08T08:35:11.947478` for the 2026-10-08 capture and `2026-10-16T08:35:11.316089` for
+   the 2026-10-16 one, the CKAN `last_modified` read as UTC (ADR-030). Every row of a capture
+   shares its vintage. No issue column exists, so the issue recipe is `none`.
 2. **Event time (`utc_instant` on `datetime`).** `timestamp_utc` = `event_time` = `datetime`,
    the UTC start of the target settlement period (FACTS T01, g1; checked on every silver row
-   2026-10-09). The capture covers UK settlement date 2026-10-09, SP 1–48,
-   2026-10-08T23:00Z to 2026-10-09T22:30Z.
+   2026-10-09, and on the 2026-10-16 capture 2026-10-24). The 2026-10-08 capture covers UK
+   settlement date 2026-10-09, SP 1–48, 2026-10-08T23:00Z to 2026-10-09T22:30Z; the 2026-10-16
+   capture covers 2026-10-17, 2026-10-16T23:00Z to 2026-10-17T22:30Z.
 
 **Why this family is eligible (RULINGS 529/542).** Every target starts after the vintage
-(earliest target 2026-10-08T23:00Z against vintage 08:35Z), so the vintage is a safe
-availability clock for every row (FACTS GEN1-1). A fixture test pins the property.
+(earliest target 2026-10-08T23:00Z against vintage 08:35Z; on 2026-10-16, 23:00Z against
+08:35Z), so the vintage is a safe availability clock for every row (FACTS GEN1-1). A fixture
+test pins the property.
 
 **Units (vendor dictionary only).** `Capacity` and `Wind_Forecast` are **MW** (FACTS g4).
 `Generator_Name`, `Generator_Full_Name` and `Region` are text dimensions. The vendor
 defines the regions as the ITL 1 regions for England plus the DNO licence areas for Wales and
 Scotland, extended to national borders. Offshore regions use the IHO sea areas, split by the land
-area their mainland connection is in. The capture has 231 generators and 10 distinct regions,
-with no blank region.
+area their mainland connection is in. Each capture has the same 231 generators and 10 distinct
+regions, with no blank region.
+
+**Relation to the national file (measured, not vendor-stated).** NESO says the BMU file covers
+the windfarms used to produce the national forecast. In both captures the per-period sum of
+`wind_forecast` over the 231 generators equals the national `incentive_forecast` for the same
+period to within 0.497 MW (96 periods; the national figure is whole MW), and the sum of unit
+`capacity` is 25,365.8 MW against the national 25,366 (2026-10-08) and 25,500.8 against 25,501
+(2026-10-16). Silver, 2026-10-24.
 
 **Sentinels and missing values (FACTS g5).** No null token is declared, and none of `N/A`, `NA`,
-`-1` or blank occurs. Zeros are real values and are kept: 144 zero `capacity` cells (three
-generators across all 48 periods) and 320 zero `wind_forecast` cells, 176 of them beside a
-positive capacity. The longest zero run is the whole 48-period day for both columns (FACTS g5;
-silver checked 2026-10-09). No negative values occur in this capture. `TODO: verify` whether a
+`-1` or blank occurs. Zeros are real values and are kept. The 2026-10-08 capture has 144 zero
+`capacity` cells (three generators across all 48 periods) and 320 zero `wind_forecast` cells,
+176 of them beside a positive capacity; the 2026-10-16 capture has 96 zero `capacity` cells (two
+generators) and 288 zero `wind_forecast` cells, 192 beside a positive capacity. The longest zero
+run is the whole 48-period day for both columns (FACTS g5; silver checked 2026-10-09 and
+2026-10-24). No negative values occur in either capture. `TODO: verify` whether a
 zero capacity means "not operational" or "not reported". No vendor source says, so zeros are not
 converted to nulls.
 
-**Identity and selection.** `(datetime, generator_name)` is unique in the capture: 11,088 rows =
-231 generators × 48 periods (FACTS T04). It is a measured guard, not a vendor key
+**Identity and selection.** `(datetime, generator_name)` is unique in each capture: 11,088 rows =
+231 generators × 48 periods (FACTS T04; 2026-10-16 checked in silver). It is a measured guard, not a vendor key
 (`TODO: verify` contractual key). `_latest` is `whole_capture`. A generator missing from a newer
 capture is not carried forward from an older one.
 
@@ -253,6 +424,7 @@ case or alias changes.
 
 **Activation (2026-10-09, master `f19effb`, PR #92).** **11,088 silver rows** at cutoff
 2026-10-08, equal to the planned count, nothing overwritten; reconcile 0 gaps (RULINGS 546).
+After the 2026-10-16 recapture the base table holds 22,176 rows and `_latest` the newer 11,088.
 Silver carries the same eight lineage/clock columns as the national family, at
 `C:/gridflow-data/silver/neso_data_portal/da_wind_forecast_day_ahead_bmu/`.
 
@@ -288,8 +460,9 @@ no data values or ranges. See Holds.
 
 1. **Vintage (`ckan_last_modified`).** `published_at` = `available_at` = the CKAN
    `last_modified` of the captured archive, `2026-10-08T08:45:11.458782` (offset-less, read as
-   UTC per ADR-030). All 148,825 rows share this one vintage. It says when the archive file last
-   changed, not when any archived forecast became available. The issue recipe is `none`.
+   UTC per ADR-030); all 148,825 rows of that capture share it. The 2026-10-16 capture's 149,209
+   rows share `2026-10-16T08:45:08.186884`. It says when the archive file last changed, not when
+   any archived forecast became available. The issue recipe is `none`.
 2. **Event time (`utc_instant` on `datetime_gmt`).** `timestamp_utc` = `event_time` =
    `datetime_gmt`, the UTC start of the target period. The dictionary describes the column as
    "in UTC", and every measured offset against UK settlement start is zero (FACTS T01, g1).
@@ -297,10 +470,23 @@ no data values or ranges. See Holds.
 **Why `Forecast_Timestamp` is kept as raw text, not an issue clock.** The vendor dictionary
 describes it as "the date and time at which the forecast was made", but gives no zone and no
 unit. Its example ends in `Z`; the delivered values carry no offset, so the `Z` cannot be
-borrowed (FACTS T03). The archive holds 3,007 distinct labels. 148,441 targets carry one label
-and 192 carry two. About 14,000 target/label rows have a label at or after the start of the
-period they forecast, under either a UTC or a Europe/London reading (14,021 and 13,755). A zone
-choice alone does not resolve that (FACTS §2, C06). `TODO: verify` the issue zone, whether late
+borrowed (FACTS T03). The 2026-10-08 capture holds 3,007 distinct labels; 148,441 targets carry
+one label and 192 carry two. About 14,000 target/label rows have a label at or after the start
+of the period they forecast, under either a UTC or a Europe/London reading (14,021 and 13,755).
+A zone choice alone does not resolve that (FACTS §2, C06). The 2026-10-16 capture holds 3,015
+labels, 148,825 one-label targets and the same 192 two-label targets; 14,181 and 13,899 rows
+have a label at or after target start (silver, 2026-10-24).
+
+**Recent labels sit on the target day itself (observed).** In the 2026-10-08 capture, 115 of the
+118 target days from 13 June to 8 October 2026 (5,520 rows) carry only the label
+`<target day>T08:45:00`; the other three carry other or extra labels (for example `14:55`). The
+days just before (9 to 12 June) carry `<target day>T09:25:00`, and older labels vary in day and
+time. The 2026-10-16 capture adds UK days 9 to 16 October (384 rows, 48 each) in the same form,
+123 such days in all. The 9 October values equal, on all 48 periods, the current national file
+captured on 2026-10-08 (CKAN `last_modified` 2026-10-08T08:40:07, read as UTC), yet their label
+is `2026-10-09T08:45:00`, about a day later and after the target day began under either zone.
+Inference, not shown: for these rows the label looks like the time the archive was appended, not
+when the forecast was first published. Labels before 13 June follow other patterns. `TODO: verify` the issue zone, whether late
 labels are backfill or recovery times, and whether each label dates the availability of the
 exact value beside it.
 
@@ -322,7 +508,8 @@ establishes neither equivalence nor difference. `TODO: verify` with same-publica
 both sides.
 
 **Activation (2026-10-09, master `f19effb`).** **148,825 silver rows** at cutoff 2026-10-08,
-equal to the planned count, nothing overwritten; reconcile 0 gaps (RULINGS 546). Silver columns:
+equal to the planned count, nothing overwritten; reconcile 0 gaps (RULINGS 546). The 2026-10-16
+recapture adds 149,209 rows (base table 298,034; `_latest` the newer 149,209). Silver columns:
 the six vendor columns plus the same eight lineage/clock columns, at
 `C:/gridflow-data/silver/neso_data_portal/da_wind_forecast_historic_day_ahead/`.
 
@@ -365,7 +552,9 @@ See Holds.
    is the **gridflow capture time** (gridflow
    `@docs/DECISION_LOG/ADR-035-neso-datastore-dump-leg.md`). So `published_at` is **null** on
    every row, and `available_at` = `capture_written_at`, the sidecar `written_at` of that
-   resource's capture (checked on all 21,906,814 rows, 2026-10-09). This clock says only when
+   resource's capture (checked on all 21,906,814 rows of the 2026-10-08 captures, 2026-10-09; the
+   2026-10-16 recapture of 2025 carries null `published_at` and its own `written_at`,
+   2026-10-16T19:37:29.287953). This clock says only when
    gridflow first held the values. It is not when NESO published them.
 2. **Event time (`utc_instant` on `datetime`).** `timestamp_utc` = `event_time` = `datetime`,
    the UTC start of the target period. All eight resources agree with the settlement-start
@@ -392,6 +581,19 @@ GEN1-1):
 | 2023 | `b8a784ac-f6fe-4f93-a965-ce6a32df0963` | 328,503,284 | 2,994,880 | 365 | 2026-10-08T10:03:52.141679 |
 | 2024 | `22625e0b-f63b-4d0e-9bbd-54383fc3e931` | 389,845,121 | 3,546,588 | 366 | 2026-10-08T09:25:38.824145 |
 | 2025 | `81413643-508e-4358-8414-c87e7c4bcc43` | 345,332,122 | 3,136,000 | 311 | 2026-10-08T09:34:53.316402 |
+| 2025 (recapture) | `81413643-508e-4358-8414-c87e7c4bcc43` | 405,732,852 | 3,683,474 | 365 | 2026-10-16T19:37:29.287953 |
+
+**The 2026-10-08 capture of 2025 looks cut short (inferred from two captures).** It ends after
+exactly 3,136,000 rows, partway
+through one settlement period: 38 of the 210 generators at 2025-11-07T22:00Z, against 209 to 211
+in every other period. The 2026-10-16 recapture keeps all 3,136,000 earlier rows unchanged,
+completes that period, and runs to 2025-12-31T23:30Z (17,520 periods, 365 labels, the last
+2025-12-30T09:00 UK time). The other seven resources each run to 23:30Z on 31 December of their
+year (2018 from 2018-04-16T23:00Z). So the growth most likely reflects a complete download of
+the same resource rather than NESO appending to it; the resource's CKAN `metadata_modified`
+(2026-07-20T09:09:48) is the same in both sidecars. gridflow admitted the short body as a
+complete capture (no declared length on a dump). Per-resource `_latest` now selects the
+2026-10-16 capture for 2025 (ADR-039), so `_latest` holds 22,454,288 rows.
 
 The year in each resource name is a vendor label. It does not prove the resource holds a
 complete calendar year (FACTS GEN1-2). There is no 2026 resource. The archive and the current
@@ -418,7 +620,8 @@ capture of one year never discards another year (gridflow
 and revision grain.
 
 **Activation (2026-10-09, master `f19effb`).** **21,906,814 silver rows** over 8 resources at
-cutoff 2026-10-08, equal to the planned count, nothing overwritten. Peak transform memory was
+cutoff 2026-10-08, equal to the planned count, nothing overwritten. The 2026-10-16 recapture of
+2025 adds 3,683,474 rows to the base table (25,590,288 over 9 captures). Peak transform memory was
 2,596.1 MiB. Reconcile 0 gaps (RULINGS 546). Silver columns: the nine vendor columns plus
 `issue_time`, `resource_id`, `timestamp_utc`, `published_at`, `bronze_capture_id`,
 `capture_written_at`, `event_time`, `available_at`, `source_run_id`, `dataset_version`
@@ -433,20 +636,22 @@ cutoff 2026-10-08, equal to the planned count, nothing overwritten. Peak transfo
 
 The national resource description gives the publication as **daily, between 09:00 and 09:15
 (clock time)**. The BMU and historic resources state no schedule. The three upload files were
-modified together each morning: on 2026-10-06 at 08:35–08:45 and on 2026-10-08 at 08:35–08:45
+modified together each morning: on 2026-10-06, 2026-10-08 and 2026-10-16 at 08:35–08:45
 (CKAN `last_modified`, read as UTC). Read as UTC, 08:40 is 09:40 BST, which is after the stated
 window. `TODO: verify` whether the CKAN time is the upload time and the window describes the
 forecast run, or whether the window is out of date.
 
 The historic BMU dumps were created on 2026-07-07 (2024, 2025) and 2026-07-22 (2018–2023). Their
-CKAN metadata was last modified in July 2026. `TODO: verify` whether the 2025 resource is still
-appended to, whether a 2026 resource will be added, and whether current BMU forecasts ever
-migrate into the archive.
+CKAN metadata was last modified in July 2026. The 2025 dump recaptured on 2026-10-16 ends at
+2025-12-31T23:30Z; its larger size most likely reflects the first capture's truncation, not an
+append (see that family). `TODO: verify` whether a 2026 resource will be added, and whether current BMU forecasts
+ever migrate into the archive.
 
 Because the files publish daily and gridflow captures intraday, most captures will repeat the
-same upload. Each capture is still stored. `TODO: verify` whether the historic national file is
-appended or rewritten on each publication. Only repeated captures compared row by row can show
-that. One capture per resource exists to date (2026-10-08).
+same upload. Each capture is still stored. Two captures per upload resource exist (2026-10-08 and
+2026-10-16). Between them the historic national file kept all 148,825 earlier rows unchanged and
+added 384 (UK days 9 to 16 October). `TODO: verify` whether it is ever rewritten rather than
+appended; two captures cannot show that.
 
 ## Licence and attribution
 
