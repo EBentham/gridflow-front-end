@@ -115,3 +115,34 @@ carries `TODO: verify`. Nothing is presented as NESO's rule. Good.
 
 - None in gridflow code. Vendor data note: LOLE above zero with EEU 0 in two rows, all EEU values multiples of 10 MWh
   (see above); a vendor presentation question.
+
+## Round 2
+
+**Verdict: APPROVE** (0 blockers, 0 majors, 1 new nit). Rebuilt `--only neso_data_portal/resource_adequacy_2030s_results`:
+no errors. Detector `[]`. Mirror `cmp` identical (430 lines, 430 CRs). Checked against the rebuilt page text; layout
+unchanged, so no new screenshots and no server was started.
+
+1. Missing portfolio command: **fixed.** The page now has one `gridflow pipeline neso_data_portal <dataset> --last 24h`
+   per table. Valid as written: `pipeline` takes `source`, an optional `dataset` and `--last`
+   (`cli.py:484-493`); `resolve_datasets` returns the single named dataset (`pipeline/runner.py:513-544`); all three keys
+   exist under `neso_data_portal` in `config/sources.yaml:1029-1031`. Ingest and transform run in one window, so the
+   three commands produce the results, peak demand and portfolio silver tables that cells 2 to 6 read through their
+   `_latest` views, matching `needs`.
+2. ES1 related note: **fixed.** "FES electricity supply by scenario or pathway, a separate NESO study" makes no
+   projection or fleet claim, and "scenario or pathway" is the ES1 note's own wording.
+3. Capacity Market: **fixed** ("Capacity awarded per delivery year; these portfolios give installed MW").
+4. Interconnector: **fixed** ("Contracted interconnectors; Sensitivities 08 to 10 here vary interconnection and
+   imports"); 08, 09 and 10 are the three that change interconnection or imports.
+5. Historic demand: **fixed** ("Half-hourly outturn demand; NESO does not state the modelled peaks' demand basis").
+6. Column guide: **fixed.** EEU now quotes NESO verbatim ("average volume of demand exceeds supply across all
+   simulations", a substring of NESO's dictionary text); LOLE reads "averaged across simulations covering 100 randomly
+   selected forced-outage patterns", which follows NESO's two sentences. "by which" and the unquoted "NESO:" repair are
+   gone.
+7. Title and Portfolio 1: **fixed.** Title says "modelled"; the caption has "NESO's modelled weather-conditional LOLE";
+   `what_it_is` states the sensitivities deviate from Portfolio 1, which NESO's portfolio resource description says.
+8. Bar labels at one decimal: template item for the seat, unchanged.
+
+New nit (not blocking): `page.what_it_is` ends "six portfolios and twelve sensitivities, whose capacities deviate from
+Portfolio 1 (NESO)". "Whose" can be read as covering the six portfolios too, and Portfolios 2 to 6 are not deviations.
+NESO says only that the sensitivity capacities are deviations. Suggest "twelve sensitivities (NESO: their capacities
+deviate from Portfolio 1)".

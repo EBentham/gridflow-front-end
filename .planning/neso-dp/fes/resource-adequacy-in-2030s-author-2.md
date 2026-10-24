@@ -57,3 +57,7 @@ did not change.
 
 None new. The vendor data note from round 1 stands: two results rows have LOLE above zero with EEU 0, and every EEU
 value is a multiple of 10 MWh.
+
+## Round 3 nit
+
+`what_it_is`: "whose capacities deviate from Portfolio 1 (NESO)" became "; sensitivity capacities deviate from Portfolio 1 (NESO)", so the clause covers the sensitivities only (still 60 words). Nothing else changed. Rebuild passes, detector `[]`, mirror `cmp` identical.
