@@ -24,7 +24,7 @@ held batches), one branch and one PR stacked on Carbon intensity. Bobbo looks at
 | # | Page (slug) | Members, lead first | Writer port | Checker port |
 |---|---|---|---|---|
 | 1 | `regional-breakdown-of-fes-data-electricity` | `fes_regional_demand_active_power`, `_dg_gt_1mw`, `_dg_lt_1mw`, `_dsr`, `_gsp_info`, `_storage_gt_1mw`, `_storage_gt_1mw_pre2023`, `_storage_lt_1mw`, `_storage_lt_1mw_pre2023` | 9941 | 9951 |
-| 2 | `future-energy-scenario-fes-building-block-data` | `fes_building_blocks_main`, `_block_definitions`, `_block_licence_area` | 9942 | 9952 |
+| 2 | `future-energy-scenario-fes-building-block-data` | `fes_building_blocks_block_definitions`, `_block_licence_area`, `fes_building_blocks_main` (held; seat reordered at the writer's request, 6c47d2c) | 9942 | 9952 |
 | 3 | `resource-adequacy-in-2030s` | `resource_adequacy_2030s_results`, `_peak_demand`, `_portfolio` | 9943 | 9953 |
 | 4 | `fes-natural-gas-demand-definitions-ed4` | `fes_ed4_gas_demand_defs` | 9944 | 9954 |
 | 5 | `fes-road-transport-notes-data-table-ed6` | `fes_ed6_road_transport_notes` | 9945 | 9955 |
@@ -73,7 +73,7 @@ captures repeat rows (or as a guard). On a table with no event time, `query()` f
 | # | Writer | Checker | State |
 |---|---|---|---|
 | 1 | a0c28a65bd96ca1f4 | ad2d312da0c3c01c9 | checking; 20cc logged |
-| 2 | a7d6f785b85eb39ff | | writing |
+| 2 | a7d6f785b85eb39ff | | rebuilding under the definitions lead; 20cd logged |
 | 3 | a12902a5b35eeed53 | | writing |
 | 4 | | | |
 | 5 | | | |
