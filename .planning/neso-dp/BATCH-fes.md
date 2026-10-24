@@ -39,8 +39,8 @@ Known risks:
   edition a chart, frame or count uses and date it to NESO's file.
 - **Size:** `fes_building_blocks_main` (about 1.3-1.6 million rows per edition) and `fes_regional_demand_active_power`
   (about 1.3 million) are large: read lazily, select columns, never collect whole tables.
-- **Regional breakdown:** the `_pre2023` storage tables are a different file shape from the current ones; never sum
-  across them without saying so. GSP info is reference data.
+- **Regional breakdown:** the `_pre2023` storage tables are separate gridflow tables (the writer found the 2022 file has
+  the same header as 2023 and 2024); never sum across tables without saying so. GSP info is reference data.
 - **WS1:** never sum across units (the ledger). **Local authority heat model:** the domestic and residential tables are
   separate; never join them.
 - **Levelised cost of green hydrogen:** licence carve-out (gridflow ruling 477): publish nothing from the files; a
@@ -72,7 +72,7 @@ captures repeat rows (or as a guard). On a table with no event time, `query()` f
 
 | # | Writer | Checker | State |
 |---|---|---|---|
-| 1 | a0c28a65bd96ca1f4 | | writing |
+| 1 | a0c28a65bd96ca1f4 | ad2d312da0c3c01c9 | checking; 20cc logged |
 | 2 | a7d6f785b85eb39ff | | writing |
 | 3 | a12902a5b35eeed53 | | writing |
 | 4 | | | |
