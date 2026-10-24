@@ -4,9 +4,90 @@ package: "fes-road-transport-notes-data-table-ed6"
 dataset_key: "fes_ed6_road_transport_notes"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-14
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: FES road transport notes
+  summary: >-
+    NESO's notes on the road transport table of its Future Energy Scenarios: what each column
+    value means, one set per edition.
+  facts:
+    vendor: "NESO Data Portal: four CSVs, one per edition, 2023 to 2026"
+    cadence: "Ad hoc (NESO); editions 2023 to 2026, as at 6 October 2026"
+    grain: "One note per column name and value NESO lists, per edition"
+    history: "NESO created the package on 7 July 2023"
+  landscape: power
+  what_it_is: >-
+    NESO calls each file "a file supporting" its road transport data tables (ED5). Each row gives
+    an ED5 column name (`Data Item`, `Fuel` or `Peak/Annual/Minimum`), a value NESO names under
+    it, and NESO's note. Most values match a same-edition ED5 label: 24 of 27, 23 of 27, 24 of 26
+    and 24 of 26, 2023 to 2026.
+  how_used:
+    - "Read what a road transport data item counts or measures, and NESO's formula"
+    - "Read NESO's definitions of `Peak` and `Annual`, which the 2025 and 2026 files give"
+    - "Track how NESO's definitions change between editions, such as vehicle-to-grid (V2G) scope"
+  chart:
+    type: none
+    reason: The notes are text with no measure; the rows below show how NESO's wording changes between editions.
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then four CSVs, each downloaded whole unless its
+      `last_modified` is unchanged. Shown: 2023, 2025 and 2026; edition comes from the file name.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=fes-road-transport-notes-data-table-ed6"
+      - "GET https://api.neso.energy/dataset/5a3b9d32-5da8-4237-8468-dfb7bb4ebe78/resource/30012023-6c0b-4da5-bd77-4f2b244a950d/download/fes2023_ed6_v001.csv"
+      - "GET https://api.neso.energy/dataset/5a3b9d32-5da8-4237-8468-dfb7bb4ebe78/resource/43add83b-bf94-493b-8f5d-de7fdbefc5bb/download/fes2025_ed6_v006.csv"
+      - "GET https://api.neso.energy/dataset/5a3b9d32-5da8-4237-8468-dfb7bb4ebe78/resource/06601add-c47b-427c-bdde-845b270e72e1/download/10yo2026_ed6_v001.csv"
+    commands:
+      - {run: gridflow ingest neso_data_portal fes_ed6_road_transport_notes --last 24h, comment: "changed files to bronze"}
+      - {run: gridflow transform neso_data_portal fes_ed6_road_transport_notes --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      silver: neso_data_portal/fes_ed6_road_transport_notes
+      filter:
+        - {column: category, op: in, value: [V2G Maximum Capacity, V2G Maximum Capacity available at Peak, Peak, "# Vehicles", Annual]}
+        - {column: edition, op: in, value: [2024, 2025]}
+      dedup: {"on": [resource_id, edition, column_name, category], order_by: capture_written_at}
+      order_by: [column_name, category, edition]
+      columns: [column_name, category, edition, published_at, resource_id, description, timestamp_utc]
+    key: [column_name, category, edition, resource_id]
+    caption: "V2G and period notes, FES 2024 and 2025: 2025 adds `Annual`, drops `# Vehicles`."
+    fields:
+      column_name: "ED5 column name; NESO files the `# Vehicles - Hydrogen` count under `Fuel`"
+      category: "A value NESO names under that column; most, not all, match an ED5 label"
+      edition: "FES edition, from the file name; 2026 is the Ten-Year Outlook file"
+      description: "NESO's note; 2025's V2G notes add heavy goods vehicles and buses at depots"
+      resource_id: "CKAN id of the edition's file; with edition, column and value, the key"
+      published_at: "NESO's last-modified time for the edition's file, read as UTC"
+      timestamp_utc: "When gridflow captured the file, UTC; the table has no event time"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      `query()` filters on `timestamp_utc`, here the capture time, so these cells use `data.sql()` on
+      the `_latest` view, which keeps the newest capture of every edition's file.
+    cells:
+      - |
+        notes = data.sql("""
+            SELECT edition, column_name, category, description
+            FROM silver_neso_data_portal_fes_ed6_road_transport_notes_latest
+            ORDER BY edition, column_name, category
+        """)
+        notes.groupby(["edition", "column_name"]).size().unstack().rename_axis(columns=None).reset_index()
+      - |
+        editions = notes.groupby(["column_name", "category"]).edition.apply(list)
+        editions[editions.str.len() < 4]
+      - |
+        h2 = notes[notes.category == "TWh Vehicles - Hydrogen"]
+        for edition, text in zip(h2.edition, h2.description):
+            print(edition, text.split("(")[0].strip())
+    needs: the four ED6 road transport notes files
+  related:
+    - {dataset: neso_data_portal/fes-road-transport-summary-data-table-ed5, note: "The road transport table these notes support"}
+    - {dataset: neso_data_portal/fes-electricity-demand-summary-data-table-ed1, note: "2023 and 2024 notes: reference data not used in ED1's Peak/Annual/Minimum"}
+    - {dataset: neso_data_portal/fes-natural-gas-demand-definitions-ed4, note: "The same kind of codebook, for FES natural gas demand"}
+    - {dataset: neso_data_portal/future-energy-scenario-fes-building-block-data, note: "FES split to Grid Supply Points, including electric vehicle blocks"}
 ---
 
 # FES: Pathways to Net Zero – Road Transport Notes Data Table (ED6)
@@ -147,7 +228,24 @@ What changed between editions (labels only):
   `# Vehicles` note is `TODO: verify` with NESO; gridflow does not map one to the other.
 - The description text of a given category is revised between editions (for example the
   2024-2026 versions of some descriptions run across several lines where the 2023 text is one
-  line). gridflow keeps each edition's text as published and does not diff them.
+  line). gridflow keeps each edition's text as published and does not diff them. Read from
+  the 2026-10-08 captures, the main revisions are below; smaller edits (a capital letter, a
+  typo fixed, "including" to "includes", "is" to "would be") are not listed:
+  - 2024: the `# Vehicles - Internal Combustion Engine` note drops "This therefore covers mild
+    hybrid vehicles for instance"; the `# Motorbikes - All` note changes "attempting to reduce
+    the number of powerful e-bicycles represented" to "removing powerful e-bicycles".
+  - 2025: both V2G notes widen from residential vehicles to "cars & vans" parked residentially
+    and "HGV's and buses" at the depot; `Peak` changes from "Demand at the current winter
+    transmission system peak (5pm-6pm)" to "Data representing demand or available capacity,
+    applicable at the time of transmission system peak (5pm-6pm)"; the new `Annual` note covers
+    annual demand, vehicle numbers and V2G capacity in a given year.
+  - 2026: `TWh Vehicles - Hydrogen` adds "Report in the higher heating value of hydrogen";
+    `Electric Vehicle Peak Demand` adds "This does not consider any use of vehicle-to-grid";
+    the five `# ... - All` notes replace the DfT definitions PDF link with a gov.uk page.
+- **One `Fuel` row is a vehicle count.** In every edition the `Fuel` rows are
+  `# Vehicles - Hydrogen` (a count of hydrogen vehicles, with a formula like the `Data Item`
+  counts) and `Hybrid (Electricity & Petrol/Diesel)`; the bronze files carry `Fuel` in the
+  `Column` cell of the hydrogen row, so this is NESO's labelling, kept as received.
 
 #### Silver sample
 
@@ -220,8 +318,12 @@ the descriptions reference ED5 items in square brackets. The join is **not liter
   same-edition ED5 column (labels only, no ED5 values): of the 22 `Data Item` rows, 22 (2023)
   or 21 (2024, 2025, 2026) match an ED5 `data_item` label exactly; 1 of the 2 `Fuel` rows
   matches an ED5 `fuel` label in every edition; of the `Peak/Annual/Minimum` rows, 1 of 3
-  (2023, 2024) or 2 of 2 (2025, 2026) match. The unmatched labels differ by exact string; the
-  cause (whitespace, wording, or a note with no ED5 counterpart) was not investigated.
+  (2023, 2024) or 2 of 2 (2025, 2026) match. In total 24 of 27 (2023), 23 of 27 (2024), 24 of
+  26 (2025) and 24 of 26 (2026) rows match. Re-checked 2026-10-24, the unmatched rows are
+  `# Vehicles - Hydrogen` under `Fuel` (every edition; the label exists in ED5 `data_item`
+  instead), `V2G Maximum Capacity available at Peak` (2024 to 2026; no ED5 label of that
+  spelling), and `# Vehicles` and `Reference data` (2023, 2024; no ED5 label in any column).
+  Why NESO's labels differ was not investigated.
   `TODO: verify` before treating ED6 as a complete key to ED5.
 - Join on edition: an ED6 row of one edition describes the ED5 file of the same edition. Do
   not apply a 2025 note to 2023 data.
