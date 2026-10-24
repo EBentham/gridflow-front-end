@@ -122,4 +122,12 @@ repeat rows; on a table with no event time use `data.sql()`; the column guide ac
 Pace raised 2026-10-24 ~13:25Z (Bobbo via the parent): 5 agents at once, aim about 50% of weekly usage over 36 hours;
 park at 98% weekly. After NESO: ruling 66 on the seven blank other-vendor pages (ENTSO-E balancing-energy bids, current
 balancing state, procured balancing capacity, outages; ENTSOG capacity-by-indicator and cmp; GIE unavailability), one
-writer and one checker each, one branch and PR off main plus the vault PR; not NETBSAD or NONBM (silver wrong).
+writer and one checker each, one branch and PR off main plus the vault PR. Added 2026-10-24 ~15:10Z (parent):
+Elexon `netbsad` and `nonbm`, same staffing, after gridflow's fix (gridflow PR #128, unmerged; local silver re-ingested).
+NETBSAD: no parser bug; Elexon publishes zeros almost always, non-zero buy-price adjustments on only four days since
+January 2024 (24 May 2024, 13 Aug 2024, 24 Oct 2025, 15 Jan 2026; 19 periods on 15 Jan, 1.49 to 10.65 GBP/MWh);
+balancing actions appear in DISBSAD; seven duplicate boundary rows in the January week (backlog 12e); chart 15 Jan 2026.
+NONBM: the connector sent parameters Elexon ignores (fixed); silver 741 distinct rows (12-19 Jan and 25 Mar-2 Apr
+2026); Elexon stopped publishing after 1 Apr 2026 10:04 UTC (SP22); each day's file holds what was published that UTC
+day, so it starts with the previous day's last half-hour; most periods 0 (17, 28, 11 MW on 15 Jan 2026 SP25-27).
+Verify all of this against silver before writing.
