@@ -8,7 +8,6 @@ updated: 2026-10-13
 layer_coverage: "bronze, silver"
 eligibility: "held"
 page:
-  held: true
   title: EAC mock auction results
   summary: >-
     NESO's test runs of its EAC auction platform for response and reserve services: summaries, unit
@@ -27,6 +26,41 @@ page:
   how_used:
     - Learning the EAC tables and auction mechanics before reading the real results
     - "How orders fare in the auction: acceptance ratio, rejection reason, executed MW"
+  chart:
+    type: line
+    silver: neso_data_portal/eac_mock_results_summary
+    time: delivery_start
+    time_text: {format: "%Y-%m-%dT%H:%M:%S", day: {zone: Europe/London, starts: -1}}
+    value: clearing_price
+    filter:
+      - {column: cleared_volume, op: gt, value: 0}
+      - {column: auction_product, op: in, value: [PSR, NSR, PBR, PQR]}
+    dedup: {on: [auction_id, auction_product, delivery_end], order_by: capture_written_at}
+    group: auction_product
+    group_map: {PSR: psr, NSR: nsr, PBR: pbr, PQR: pqr}
+    series_order: [psr, nsr, pbr, pqr]
+    aggregation: mean
+    window: {start: "2026-02-24", end: "2026-03-17"}
+    unit: "£/MW/h"
+  chart_view:
+    title: Mean mock reserve clearing price by delivery day
+    caption: >-
+      Mock data, not real prices. Silver `neso_data_portal/eac_mock_results_summary`, £/MW/h: each
+      mock day's unweighted mean over half-hours that cleared MW. Negative Balancing and Quick are
+      left out. Days run 23:00 to 23:00, all in GMT, so either clock gives the same day.
+    alt: >-
+      Line chart from neso_data_portal/eac_mock_results_summary of the daily mean mock clearing price,
+      £/MW/h, over half-hours that cleared, for mock delivery days 24 February to 17 March 2026.
+      Positive Slow (PSR) is highest, 3.89 to 15.56 (3 March). Negative Slow (NSR) runs 0 to 5.
+      Positive Balancing (PBR) runs 1.34 to 4.04 and Positive Quick (PQR) 0.74 to 2.71, mostly 2.44.
+      Neither PBR nor PQR cleared on 11 and 12 March, nor NSR on 12 March: gaps. Negative Balancing
+      (NBR, always 0) and Negative Quick (NQR) are not drawn.
+    x_label: mock delivery day, 23:00 to 23:00
+    key:
+      - {series: psr, label: Positive Slow (PSR), codes: PSR, paint: clay}
+      - {series: nsr, label: Negative Slow (NSR), codes: NSR, paint: olive}
+      - {series: pbr, label: Positive Balancing (PBR), codes: PBR, paint: petrol}
+      - {series: pqr, label: Positive Quick (PQR), codes: PQR, paint: horizon}
   raw_feed:
     note: >-
       From NESO's CKAN portal: one `package_show`, then each table's datastore dump, or each daily
@@ -34,41 +68,105 @@ page:
     commands:
       - {run: gridflow ingest neso_data_portal eac_mock_results_summary --last 24h, comment: "whole dump to bronze"}
       - {run: gridflow transform neso_data_portal eac_mock_results_summary --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: auction_id, op: eq, value: "9"}
+        - {column: delivery_start, op: eq, value: "2026-03-04T15:00:00"}
+        - {column: auction_product, op: in, value: [DCH, DCL, DMH, DML, NBR, NSR, PBR, PSR]}
+      dedup: {on: [auction_id, auction_product, delivery_start], order_by: capture_written_at}
+      order_by: [auction_product]
+      columns: [auction_product, delivery_start, delivery_end, cleared_volume, clearing_price, service_type, auction_id, linked_service_window_id]
+    key: [auction_id, auction_product, delivery_start]
+    caption: "Mock auction 9's windows starting 15:00 on 4 March 2026: response, Balancing and Slow Reserve."
+    fields:
+      auction_product: Product code as NESO writes it; its dictionary lists the codes without names
+      delivery_start: "Window start as NESO wrote it, kept as text; NESO states no clock"
+      delivery_end: "Window end as written: four hours for response, half an hour for reserve"
+      cleared_volume: MW cleared in the mock window (NESO's unit); 0 means nothing cleared
+      clearing_price: "Mock clearing price, £/MW/h (NESO's unit); 0 in some windows that cleared MW"
+      service_type: "NESO's service name: `Response`, `Quick Reserve`, `Slow Reserve` or `Balancing Reserve`"
+      auction_id: "NESO's mock auction number, as text; 1 to 13 also number real EAC auctions"
+      linked_service_window_id: "NESO's id linking windows of one service; blank on most mock rows"
+      timestamp_utc: gridflow's capture time, UTC; not the delivery window
+      published_at: "Null: when NESO first published each result is unknown"
+      bronze_capture_id: Path of the bronze capture the row was read from
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      Reads with `data.sql` from the `_latest` views (newest capture): `query()` would filter on
+      `timestamp_utc`, the capture time. The second query checks winning units' MW against the
+      summary; the plot shows response prices per mock auction.
+    cells:
+      - |
+        data.sql("""
+            SELECT service_type, auction_product, COUNT(*) AS windows,
+                   COUNT(*) FILTER (WHERE cleared_volume > 0) AS windows_cleared,
+                   ROUND(AVG(clearing_price) FILTER (WHERE cleared_volume > 0), 2) AS mean_price
+            FROM silver_neso_data_portal_eac_mock_results_summary_latest
+            GROUP BY ALL ORDER BY service_type, auction_product""")
+      - |
+        data.sql("""
+            WITH u AS (SELECT auction_product, delivery_start, SUM(executed_quantity) AS units_mw
+                       FROM silver_neso_data_portal_eac_mock_results_by_unit_latest GROUP BY ALL)
+            SELECT COUNT(*) AS windows,
+                   COUNT(*) FILTER (WHERE ABS(s.cleared_volume - COALESCE(u.units_mw, 0)) < 0.001)
+                       AS units_sum_to_cleared
+            FROM silver_neso_data_portal_eac_mock_results_summary_latest s
+            LEFT JOIN u USING (auction_product, delivery_start)""")
+      - |
+        resp = data.sql("""
+            SELECT CAST(auction_id AS INTEGER) AS auction, auction_product,
+                   AVG(clearing_price) AS price
+            FROM silver_neso_data_portal_eac_mock_results_summary_latest
+            WHERE service_type = 'Response' AND cleared_volume > 0
+            GROUP BY ALL ORDER BY auction""")
+        ax = resp.pivot(index="auction", columns="auction_product", values="price").plot(
+            marker="o", figsize=(8, 3.5), xlabel="mock auction number",
+            ylabel="mean clearing price, £/MW/h",
+            color=["#155A6E", "#3E8C97", "#AFC64E", "#66793B", "#7C5530", "#C77E3C"])
+        ax.legend(ncol=6, loc="lower center", bbox_to_anchor=(0.5, 1.0), frameon=False);
+    needs: a capture of the summary and by-unit tables
+    plot_alt: >-
+      Line plot of each response product's mean clearing price over cleared windows,
+      £/MW/h, for mock auctions 1 to 22. Pairs mostly coincide: DCH and DCL hold 1.41
+      in auctions 3 to 15 and 18, DMH and DML 0.94. DRH and DRL clear only in auctions 1 and 2, at 1.70 and
+      -1.90. Auction 19 has DCL at 0.
   family:
     slug: eac-mock-auction-results
     members:
       - dataset: eac_mock_results_summary
         differs: "Cleared MW and clearing price per mock auction, product and window"
         request: "GET https://api.neso.energy/datastore/dump/454216d8-61f3-40b6-b787-4dff035ce3c3"
-        held: Test-run results, not real procurement; NESO does not say if times are UTC or UK local.
+        caveat: "Mock results, not real procurement; NESO does not say if times are UTC or UK local."
       - dataset: eac_mock_results_by_unit
         differs: "Winning units' MW and price per window, with participant and technology"
         request: "GET https://api.neso.energy/datastore/dump/955cf89f-232e-4b9c-8414-6351080f49fa"
-        held: Test-run results, not real procurement; NESO does not say if times are UTC or UK local.
+        caveat: "Mock results, not real procurement; NESO does not say if times are UTC or UK local."
       - dataset: eac_mock_results_buy_orders
         differs: "NESO's buy orders per window: quantity, price, status and executed MW"
         request: "GET https://api.neso.energy/datastore/dump/700a73ff-38e9-45ff-a674-085bcbfc9faf"
-        held: Test-run results, not real procurement; NESO does not say if times are UTC or UK local.
+        caveat: "Mock results, not real procurement; NESO does not say if times are UTC or UK local."
       - dataset: eac_mock_results_sell_orders
         differs: "Every provider's sell order, with price limit, status and executed MW"
         request: "GET https://api.neso.energy/datastore/dump/3b18345a-1933-44d7-abd9-062a2e695ccd"
-        held: Test-run results, not real procurement; NESO does not say if times are UTC or UK local.
+        caveat: "Mock results, not real procurement; NESO does not say if times are UTC or UK local."
       - dataset: eac_mock_results_daily_summary
         differs: The daily counterpart of the summary; header only when fetched
         request: "GET https://api.neso.energy/dataset/8a6f23d7-8489-49ac-9b0a-566fb53d32f8/resource/f67a53d7-d46d-4550-8947-0c60328b2347/download/neso-response-reserve-daily-results-summary.csv"
-        held: "NESO's daily file holds only a header row when fetched; gridflow keeps it in bronze only."
+        held: "NESO's daily mock file holds only a header row, unchanged on its portal since June 2026."
       - dataset: eac_mock_results_daily_by_unit
         differs: The daily counterpart of the results by unit; header only when fetched
         request: "GET https://api.neso.energy/dataset/8a6f23d7-8489-49ac-9b0a-566fb53d32f8/resource/6a051ca2-715b-4966-9c16-58e52254f10b/download/neso-response-reserve-daily-results-by-unit.csv"
-        held: "NESO's daily file holds only a header row when fetched; gridflow keeps it in bronze only."
+        held: "NESO's daily mock file holds only a header row, unchanged on its portal since June 2026."
       - dataset: eac_mock_results_daily_buy_orders
         differs: The daily counterpart of the buy orders; header only when fetched
         request: "GET https://api.neso.energy/dataset/8a6f23d7-8489-49ac-9b0a-566fb53d32f8/resource/f994f9bb-a2f3-48ff-a776-0b343806d978/download/neso-response-reserve-daily-buy-orders.csv"
-        held: "NESO's daily file holds only a header row when fetched; gridflow keeps it in bronze only."
+        held: "NESO's daily mock file holds only a header row, unchanged on its portal since June 2026."
       - dataset: eac_mock_results_daily_sell_orders
         differs: The daily counterpart of the sell orders; header only when fetched
         request: "GET https://api.neso.energy/dataset/8a6f23d7-8489-49ac-9b0a-566fb53d32f8/resource/c4d0341d-806d-4e53-9ae8-2c54df740ba3/download/neso-response-reserve-daily-sell-orders.csv"
-        held: "NESO's daily file holds only a header row when fetched; gridflow keeps it in bronze only."
+        held: "NESO's daily mock file holds only a header row, unchanged on its portal since June 2026."
   related:
     - {dataset: neso_data_portal/eac-auction-results, note: The real auctions these runs rehearse; never join on auction number}
     - {dataset: neso_data_portal/eac-br-mock-auction-results, note: "A second mock package, named 2023-2024, for Balancing Reserve alone"}
@@ -89,17 +187,18 @@ A model must therefore not use them as price or volume history for the live anci
 use is to understand the shape of the EAC tables and the auction mechanics before the live package
 (@./eac-auction-results.md) is read.
 
-**The whole package is held, and every output is held twice.** Nothing in this package is published
-(RULINGS 738, 751, 752; ledger in `.planning/RULINGS.md`):
+**The whole package is held in gridflow, and every output is held twice** (RULINGS 738, 751, 752;
+ledger in `.planning/RULINGS.md`):
 
-1. **Package hold, EAC-MOCK-TEST-DATA.** The package is registered `held` so the rows stay unpublished even
-   after the clock question below is answered, until an explicit test/mock label with separate provenance exists.
+1. **Package hold, EAC-MOCK-TEST-DATA.** The package is registered `held`: even after the clock question below
+   is answered, the rows appear only under an explicit test/mock label with separate provenance (the site page
+   labels every member and the chart mock).
 2. **Family hold, EAC-MOCK-CLOCK.** Each of the four populated families carries a hold on the unanswered
    question of which clock the mock exports use for their naive time cells.
 
-Held means silver is written and reconciled but **no consumer-facing output is released**. This page therefore
-documents the **schema, row counts, clocks and the hold questions only; it states no data values** for any
-held family (no sample rows, no value ranges, no zero or outlier counts). Eight resources, eight families:
+Held means silver is written and reconciled but no gold or model input uses it. Under front-end ruling 66 the
+site page shows the four populated families' rows, labelled mock in the caveats and the chart caption, with the
+clock question named on each. Eight resources, eight families:
 four populated (hold EAC-MOCK-CLOCK) and four **header-only** daily resources that have no record and no silver.
 
 **What this package is not.**
@@ -496,8 +595,8 @@ package hold dominates. Both holds apply.
   would be different keys. Do not normalise it until the clock is settled.
 - **The daily families are empty.** A query against `eac_mock_results_daily_*` finds no silver; the bronze
   captures are header-only. Do not interpret them as "no mock auctions today".
-- **Held means unpublished.** Silver exists and reconciles, but no gold, chart, front-end page or model input
-  may use these rows.
+- **Held means no gold or model input.** Silver exists and reconciles; the site page shows the rows labelled
+  mock, with the clock question as a caveat (front-end ruling 66), but no gold or model input may use them.
 
 ## Implementation delta
 
