@@ -4,9 +4,54 @@ package: "levelised-cost-of-green-hydrogen"
 dataset_keys: ["lcoh_capex_opex_input_assumptions_pem", "lcoh_levelised_cost_blue_hydrogen", "lcoh_levelised_cost_green_hydrogen"]
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-16
+updated: 2026-10-24
 layer_coverage: "bronze"
 eligibility: "held"
+page:
+  held: true
+  title: Levelised cost of green hydrogen
+  summary: >-
+    NESO's modelled levelised cost of green hydrogen from electrolysers, with blue hydrogen for
+    comparison, 2025 to 2050.
+  facts:
+    vendor: "NESO Data Portal: three CSVs, beside a Power BI dashboard"
+    cadence: "Ad hoc (NESO); files last modified June and September 2026"
+    grain: "Three files: input assumptions, then green and blue hydrogen cost modelling"
+    history: "NESO created the package on 20 March 2025"
+  landscape: gas
+  what_it_is: >-
+    NESO divides the net present value of a hydrogen plant's lifetime costs by that of its output,
+    and says the green modelling is not a forecast. The package cites Bloomberg NEF, Aurora Energy
+    Research and the International Energy Agency among its sources. NESO does not say it may
+    license their data, so this page shows nothing from the files.
+  how_used:
+    - "Compare green and blue hydrogen production costs, as NESO's modelling does"
+    - "Test how financing, capacity factor and electricity price move green hydrogen cost"
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show` per key, then that key's file downloaded whole
+      unless its `last_modified` is unchanged. Ingest only: gridflow builds no silver table.
+    commands:
+      - {run: gridflow ingest neso_data_portal lcoh_capex_opex_input_assumptions_pem --last 24h, comment: "bronze only; swap in any key"}
+  family:
+    slug: levelised-cost-of-green-hydrogen
+    members:
+      - dataset: lcoh_capex_opex_input_assumptions_pem
+        differs: "Three-scenario capital cost benchmarks, plus operating costs, for proton-exchange membrane and alkaline electrolysers"
+        request:
+          - "GET https://api.neso.energy/api/3/action/package_show?id=levelised-cost-of-green-hydrogen"
+          - "GET https://api.neso.energy/dataset/36f600ae-56cb-41b4-adee-6dbd05df6668/resource/88cfa584-db79-4573-a0c0-c14086257f8f/download/electrolysers_capex_and_opex_inputs.csv"
+        held: "The package cites third-party sources; NESO does not say it is authorised to license them."
+      - dataset: lcoh_levelised_cost_blue_hydrogen
+        differs: "Blue hydrogen cost: autothermal reforming with carbon capture and storage, 2025 to 2050"
+        request: "GET https://api.neso.energy/dataset/36f600ae-56cb-41b4-adee-6dbd05df6668/resource/3f3b1bf0-4664-494f-a501-a39adabecd0d/download/blue_h2_lcoh_modelled_results_2025_to_2050.csv"
+        held: "The package cites third-party sources; NESO does not say it is authorised to license them."
+      - dataset: lcoh_levelised_cost_green_hydrogen
+        differs: "Green hydrogen cost across discount rate, capacity factor and electricity price, 2025 to 2050"
+        request: "GET https://api.neso.energy/dataset/36f600ae-56cb-41b4-adee-6dbd05df6668/resource/cc2dad0c-393c-4ae0-ae67-a98703169ad4/download/green_h2_lcoh_modelled_results_2025_to_2050.csv"
+        held: "The package cites third-party sources; NESO does not say it is authorised to license them."
+  related:
+    - {dataset: neso_data_portal/fes-whole-system-gas-supply-data-table-ws1, note: "NESO's FES hydrogen supply, demand and capacity, among other fuels"}
 ---
 
 # Levelised cost of green hydrogen
@@ -30,7 +75,7 @@ dataset set; for the vendor index see @../README.md.
 
 - Publisher group: FES: Pathways to Net Zero
 - Registry group: future-energy-scenarios · archetype: SCN
-- Vendor portal page (the only link this page gives to the files):
+- Vendor portal page (the site page also lists the three download URLs, as the raw feed):
   [levelised-cost-green-hydrogen](https://www.neso.energy/data-portal/levelised-cost-green-hydrogen)
 - Attribution: Supported by National Energy SO Open Data
 

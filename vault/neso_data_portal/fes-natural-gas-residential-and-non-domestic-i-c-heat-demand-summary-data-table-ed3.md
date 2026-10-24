@@ -4,9 +4,64 @@ package: "fes-natural-gas-residential-and-non-domestic-i-c-heat-demand-summary-d
 dataset_keys: ["fes_ed3_heat_demand_natural_gas", "fes_ed3_heat_demand_natural_gas_sum_ed", "fes_ed3_heat_demand_sum_ed"]
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-15
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: true
+  title: FES gas and heat demand summary
+  summary: >-
+    NESO's Future Energy Scenarios (FES) tables of GB natural gas and heat demand, by sector,
+    technology and fuel, per edition.
+  facts:
+    vendor: "NESO Data Portal: six CSVs, three tables across editions 2023 to 2026"
+    cadence: "Ad hoc (NESO); editions 2023 to 2026, as at 6 October 2026"
+    grain: "One value per item, scenario or pathway, and year label, per edition"
+    history: "NESO created the package on 7 July 2023"
+  landscape: gas
+  what_it_is: >-
+    One package, three tables: a 2023 and 2024 table of gas and residential heat demand, then from
+    2025 a natural gas summary (ED3) and a heat demand summary (ED7). NESO's ED4 package defines the
+    gas items and puts total GB 1-in-20 peak demand in gas years starting in October; the files
+    label it `GWh` in 2023 and `GWh/day` from 2024.
+  how_used:
+    - "GB gas demand by sector under each FES scenario or pathway"
+    - "Heat demand and heating technology numbers by sector, edition by edition"
+    - "Each gas item read with the same edition's ED4 definition"
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show` per table, then its edition files, each downloaded
+      whole unless its `last_modified` is unchanged. Swap in any table's key.
+    commands:
+      - {run: gridflow ingest neso_data_portal fes_ed3_heat_demand_natural_gas --last 24h, comment: "whole CSVs; swap in any key"}
+      - {run: gridflow transform neso_data_portal fes_ed3_heat_demand_natural_gas --last 24h, comment: "the capture's date to silver"}
+  family:
+    slug: fes-natural-gas-residential-and-non-domestic-i-c-heat-demand-summary-data-table-ed3
+    members:
+      - dataset: fes_ed3_heat_demand_natural_gas
+        differs: "2023 and 2024: gas and heat demand; `number` and `uptake` have no stated scale"
+        request:
+          - "GET https://api.neso.energy/api/3/action/package_show?id=fes-natural-gas-residential-and-non-domestic-i-c-heat-demand-summary-data-table-ed3"
+          - "GET https://api.neso.energy/dataset/2fd7b713-9a85-45d8-87d8-cb3f01fd0e89/resource/1f1de28d-eff7-4c5b-83fa-33cd7ad1bd39/download/fes2023_ed3_v001.csv"
+          - "GET https://api.neso.energy/dataset/2fd7b713-9a85-45d8-87d8-cb3f01fd0e89/resource/fb452e53-881c-4d4e-a236-a5b6b50f2840/download/fes2024_ed3_v005.csv"
+        held: "NESO states no period for the year labels except total GB peak, or what blanks mean."
+      - dataset: fes_ed3_heat_demand_natural_gas_sum_ed
+        differs: "2025 and 2026 natural gas demand: annual in `GWh`, 1-in-20 peak in `GWh/day`"
+        request:
+          - "GET https://api.neso.energy/dataset/2fd7b713-9a85-45d8-87d8-cb3f01fd0e89/resource/f33e8ded-d302-40c4-be10-c7ca3a04b401/download/fes2025_ed3_v006.csv"
+          - "GET https://api.neso.energy/dataset/2fd7b713-9a85-45d8-87d8-cb3f01fd0e89/resource/c3d4acaf-5cd5-47f8-81a9-a4c10e16d55a/download/10yo2026_ed3_v001.csv"
+        held: "NESO states no period for the year labels except total GB peak, or what blanks mean."
+      - dataset: fes_ed3_heat_demand_sum_ed
+        differs: "2025 and 2026 heat demand (ED7) by technology: `TWh`, `GW`, `stock` and `uptake`"
+        request:
+          - "GET https://api.neso.energy/dataset/2fd7b713-9a85-45d8-87d8-cb3f01fd0e89/resource/2019e900-11eb-40ce-ae54-a49a2abb5d4b/download/fes2025_ed7_v006.csv"
+          - "GET https://api.neso.energy/dataset/2fd7b713-9a85-45d8-87d8-cb3f01fd0e89/resource/9394f025-8454-4db0-b73c-083e301a1e74/download/10yo2026_ed7_v001.csv"
+        held: "NESO states no period for the year labels, or what blanks mean; `uptake` is undefined."
+  related:
+    - {dataset: neso_data_portal/fes-natural-gas-demand-definitions-ed4, note: "NESO's definitions of these gas items; read both from one edition"}
+    - {dataset: neso_data_portal/local-authority-level-spatial-heat-model-outputs-fes, note: "NESO's spatial heat model results, by local authority"}
+    - {dataset: neso_data_portal/building-heat-model, note: "NESO's tool modelling one home's half-hourly heat demand"}
+    - {dataset: neso_data_portal/fes-whole-system-gas-supply-data-table-ws1, note: "NESO's FES whole system and gas supply table, same editions"}
 ---
 
 # FES: Pathways to Net Zero – Natural Gas, Residential and non-domestic (I&C) Heat Demand Summary Data table (ED3)

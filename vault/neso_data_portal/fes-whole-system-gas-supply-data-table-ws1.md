@@ -4,9 +4,46 @@ package: "fes-whole-system-gas-supply-data-table-ws1"
 dataset_key: "fes_ws1_gas_supply"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-15
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: "NESO states no period for the year labels, or what blanks and `N/A` mean."
+  title: FES whole system and gas supply
+  summary: >-
+    NESO's Future Energy Scenarios (FES) table of GB natural gas, hydrogen, bioenergy and oil:
+    supply, demand and capacity, per edition.
+  facts:
+    vendor: "NESO Data Portal: four CSVs, one per edition, 2023 to 2026"
+    cadence: "Ad hoc (NESO); editions 2023 to 2026, as at 6 October 2026"
+    grain: "One value per item, scenario or pathway, unit and year label, per edition"
+    history: "NESO created the package on 7 July 2023"
+  landscape: gas
+  what_it_is: >-
+    Each row is an item by fuel type, category, sector, fuel and feedstock, in `TWh`, `GW` or
+    `bcm/yr` as its unit column says. NESO's 2024 file, last modified July 2024, has an
+    undefined `N/A` in many 2023 to 2049 cells. Its 2025 file, last modified December 2025, has
+    four pairs of rows that share every label but not their values.
+  how_used:
+    - "Gas, hydrogen and bioenergy supply and demand under each FES scenario or pathway"
+    - "Hydrogen capacity and storage, edition by edition"
+    - "Read beside WS2, the emissions table for the same whole system"
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then four CSVs, each downloaded whole unless its
+      `last_modified` is unchanged. Shown: 2024, 2025 and 2026; edition comes from the file name.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=fes-whole-system-gas-supply-data-table-ws1"
+      - "GET https://api.neso.energy/dataset/8cbe76c7-6971-40ed-8e0c-2d8c8520cd0c/resource/fa5697c5-9810-480f-b4c5-ab41dc53777a/download/fes2024_ws1_v001.csv"
+      - "GET https://api.neso.energy/dataset/8cbe76c7-6971-40ed-8e0c-2d8c8520cd0c/resource/ebf4f503-0a13-45e6-89ad-b707748613b6/download/fes2025_ws1_v006.csv"
+      - "GET https://api.neso.energy/dataset/8cbe76c7-6971-40ed-8e0c-2d8c8520cd0c/resource/0dd30611-5b9f-452d-bd34-966737d14fca/download/10yo2026_ws1_v001.csv"
+    commands:
+      - {run: gridflow ingest neso_data_portal fes_ws1_gas_supply --last 24h, comment: "changed files only; whole CSVs"}
+      - {run: gridflow transform neso_data_portal fes_ws1_gas_supply --last 24h, comment: "the capture's date to silver"}
+  related:
+    - {dataset: neso_data_portal/fes-whole-system-gas-supply-emissions-data-table-ws2, note: "NESO's FES emissions table for whole system and gas supply"}
+    - {dataset: neso_data_portal/fes-natural-gas-residential-and-non-domestic-i-c-heat-demand-summary-data-table-ed3, note: "NESO's FES gas and heat demand tables, from the same editions"}
+    - {dataset: neso_data_portal/levelised-cost-of-green-hydrogen, note: "NESO's modelled cost of producing green and blue hydrogen"}
 ---
 
 # FES: Pathways to Net Zero – Whole System & Gas Supply Data table (WS1)
