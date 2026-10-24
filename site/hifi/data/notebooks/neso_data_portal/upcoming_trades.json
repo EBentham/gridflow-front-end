@@ -1,0 +1,174 @@
+{
+ "dataset": "neso_data_portal/upcoming_trades",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "3bab4012352785eb2879f24cd47d1eda731e31ca8ccd989c37f7ca492f1a7894",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.neso_data_portal.query(\"upcoming_trades\", \"2026-10-16\", \"2026-10-17\")\ndf[[\"id\", \"date\", \"sp\", \"volume\", \"price\", \"cost\", \"so_flag\", \"reason\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "id",
+      "date",
+      "sp",
+      "volume",
+      "price",
+      "cost",
+      "so_flag",
+      "reason"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "ES00382991",
+       "2026-10-16",
+       "47",
+       "110.0",
+       "218.0",
+       "23980.0",
+       "T",
+       "V_MIDLANDS"
+      ],
+      [
+       "ES00382992",
+       "2026-10-16",
+       "47",
+       "117.5",
+       "265.0",
+       "31137.5",
+       "T",
+       "V_SWPEN"
+      ],
+      [
+       "ES00382993",
+       "2026-10-16",
+       "47",
+       "105.0",
+       "270.0",
+       "28350.0",
+       "T",
+       "V_MIDLANDS"
+      ],
+      [
+       "ES00382991",
+       "2026-10-16",
+       "48",
+       "110.0",
+       "218.0",
+       "23980.0",
+       "T",
+       "V_MIDLANDS"
+      ],
+      [
+       "ES00382992",
+       "2026-10-16",
+       "48",
+       "117.5",
+       "265.0",
+       "31137.5",
+       "T",
+       "V_SWPEN"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "df.groupby([\"id\", \"reason\"]).agg(periods=(\"sp\", \"size\"), price=(\"price\", \"first\"))",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "",
+      "periods",
+      "price",
+      "id",
+      "reason",
+      "",
+      ""
+     ],
+     "index": [
+      "ES00382991",
+      "ES00382992",
+      "ES00382993"
+     ],
+     "rows": [
+      [
+       "16",
+       "218.0"
+      ],
+      [
+       "16",
+       "265.0"
+      ],
+      [
+       "16",
+       "270.0"
+      ]
+     ]
+    }
+   ]
+  }
+ ]
+}

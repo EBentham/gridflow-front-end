@@ -1,0 +1,19 @@
+{
+  "dataset": "neso_data_portal/index_linked_contract_volume",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "91faea2a3778589f61adfbbef07ac848ae1d7f08fcc9915bb4e7549c52ad7a3a",
+  "type": "bar",
+  "unit": "enactments",
+  "caption": "",
+  "value_column": null,
+  "aggregation": "count",
+  "window": null,
+  "provenance": {"duplicates_dropped": 0, "files": 4, "rows_matched": 16, "rows_read": 16, "rows_used": 16, "silver": "neso_data_portal/index_linked_contract_volume"},
+  "spec": {"aggregation": "count", "dedup": {"on": ["resource_id", "id"], "order_by": "capture_written_at"}, "group": "resource_id", "group_map": {"8f694d01-68a5-41b9-9542-dd27c42fdbbf": "2021-22", "9b72a2f5-db92-40ca-aa95-b9f1c56f7373": "2024-25", "dff083d2-666b-4e23-9b46-9edd9298f0d3": "2023-24", "ff292de9-59aa-45cc-85ce-e21fed09f5ff": "2022-23"}, "silver": "neso_data_portal/index_linked_contract_volume", "sort": "label", "type": "bar", "unit": "enactments"},
+  "x_kind": "category",
+  "x": ["2021-22", "2022-23", "2023-24", "2024-25"],
+  "series": [
+    {"key": "count", "values": [12, 2, 1, 1]}
+  ]
+}
