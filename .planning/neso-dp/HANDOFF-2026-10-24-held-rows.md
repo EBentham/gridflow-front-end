@@ -60,3 +60,12 @@ No recomputed values on pages or notebooks; family lead = the frame's table (sea
 monthly BSUoS forecast, Stability Pathfinder, Viking); one interconnector chart rule (Day Ahead as fetched 16 Oct, rows
 uploaded before their hour, 9-15 Oct 2026; nearest honest equivalent where absent); a command that fails on NESO's
 current file is dropped; caveats state NESO facts only (gridflow's own gaps go in the note's Holds).
+
+## Update: NESO held-rows pass complete
+
+Every NESO group is fixed, merged up the stack (template ... ci, fes, sep, dpc) and pushed in both repos; gates green
+on fes and dpc (219 tests, 201 pages, htmlhint, lychee 0 errors, detector []). Remediation logged through 20cy (next
+id 20cz, after "(20cy)"). Nothing merged; waits for Bobbo. Now: the other-vendor batch, tracked in
+`.planning/v5/p26/BATCH-other-held.md` (worktrees `C:\gridflow-wt\fe-other-held` / `vault-other-held`; branch
+`feat/other-vendor-held` includes a merge of the template branch, PR #60). Still to launch: outages, ENTSOG
+capacity-by-indicator and cmp, NETBSAD, NONBM writers; every checker.
