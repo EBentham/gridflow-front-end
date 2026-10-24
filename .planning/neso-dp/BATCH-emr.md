@@ -57,4 +57,4 @@ captures repeat rows (or as a guard). The column guide accepts only the lead tab
 
 | # | Writer | Checker | State |
 |---|---|---|---|
-| 1 | ab7eef35f60c4efae | | writing |
+| 1 | ab7eef35f60c4efae | a65e1ecf6ab01097f | checking; 20ca logged (CMU change log carries contact data); bar-label rounding added to template follow-ups |
