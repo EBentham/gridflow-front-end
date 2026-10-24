@@ -1,0 +1,182 @@
+{
+ "dataset": "entsoe/balancing_energy_bids",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "6663ec538162707b946485c1cd98270d5e357b301477822adeadadc2892151e9",
+ "kernel": "gridflow_models",
+ "source": "entsoe",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.entsoe",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.entsoe.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.entsoe.query(\"balancing_energy_bids\", \"2026-08-01\", \"2026-08-01\")\ndf[\"timestamp_utc\"] = df[\"timestamp_utc\"].dt.tz_convert(\"UTC\")\ndf = df.sort_values([\"area_code\", \"timestamp_utc\", \"energy_price\"])",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df[[\"timestamp_utc\", \"area_code\", \"direction\", \"standard_market_product\", \"quantity_mw\", \"energy_price\"]].head(8)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "area_code",
+      "direction",
+      "standard_market_product",
+      "quantity_mw",
+      "energy_price"
+     ],
+     "index": [
+      "204",
+      "208",
+      "303",
+      "168",
+      "61",
+      "4",
+      "187",
+      "110"
+     ],
+     "rows": [
+      [
+       "2026-08-01 00:00:00+00:00",
+       "10Y1001A1001A82H",
+       "A02",
+       "A07",
+       "4.0",
+       "-14997.0"
+      ],
+      [
+       "2026-08-01 00:00:00+00:00",
+       "10Y1001A1001A82H",
+       "A02",
+       "A07",
+       "5.0",
+       "-14980.0"
+      ],
+      [
+       "2026-08-01 00:00:00+00:00",
+       "10Y1001A1001A82H",
+       "A02",
+       "A07",
+       "2.0",
+       "-14980.0"
+      ],
+      [
+       "2026-08-01 00:00:00+00:00",
+       "10Y1001A1001A82H",
+       "A02",
+       "A07",
+       "1.0",
+       "-14970.0"
+      ],
+      [
+       "2026-08-01 00:00:00+00:00",
+       "10Y1001A1001A82H",
+       "A02",
+       "A07",
+       "1.0",
+       "-14950.0"
+      ],
+      [
+       "2026-08-01 00:00:00+00:00",
+       "10Y1001A1001A82H",
+       "A02",
+       "A07",
+       "1.0",
+       "-14930.0"
+      ],
+      [
+       "2026-08-01 00:00:00+00:00",
+       "10Y1001A1001A82H",
+       "A02",
+       "A07",
+       "1.0",
+       "-14912.0"
+      ],
+      [
+       "2026-08-01 00:00:00+00:00",
+       "10Y1001A1001A82H",
+       "A02",
+       "A07",
+       "1.0",
+       "-14910.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "df.groupby([\"area_code\", \"direction\", \"standard_market_product\", \"original_market_product\"]).size()",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "area_code         direction  standard_market_product  original_market_product\n10Y1001A1001A82H  A01        A07                                                 15717\n                  A02        A05                                                    11\n                             A07                                                 17353\n10YBE----------2  A01        A05                                                  1814\n                             A07                                                  9424\n                  A02        A05                                                   943\n                             A07                                                  2567\n10YFR-RTE------C  A01                                 A02                         6649\n                  A02                                 A02                        24839\n                             A05                                                  1526\ndtype: int64"
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "source": "be = df[df[\"area_code\"].str.startswith(\"10YBE\")]\nedge = be.groupby([\"timestamp_utc\", \"direction\"])[\"energy_price\"].agg([\"min\", \"max\"]).unstack()\nedge = edge[[(\"min\", \"A01\"), (\"max\", \"A02\")]]\nedge.columns = [\"lowest upward\", \"highest downward\"]\nedge.plot(ylabel=\"EUR/MWh\", color=[\"#155A6E\", \"#C77E3C\"], figsize=(8, 3.5))",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: xlabel='timestamp_utc', ylabel='EUR/MWh'>"
+    },
+    {
+     "kind": "image",
+     "src": "balancing_energy_bids-6.png",
+     "width": 699,
+     "height": 353
+    }
+   ]
+  }
+ ]
+}

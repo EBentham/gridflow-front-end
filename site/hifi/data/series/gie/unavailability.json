@@ -1,0 +1,19 @@
+{
+  "dataset": "gie/unavailability",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "54dbcceb31b45b51d2fda22ca44120eea4f41b22b77d55c499a028e04ccc9873",
+  "type": "bar",
+  "unit": "withdrawal, no unit stated",
+  "caption": "",
+  "value_column": "withdrawal",
+  "aggregation": "max",
+  "window": null,
+  "provenance": {"files": 5, "null_values_dropped": 0, "rows_matched": 39, "rows_read": 76, "rows_used": 39, "silver": "gie_agsi/unavailability"},
+  "spec": {"aggregation": "max", "filter": [{"column": "outage_date", "op": "ge", "value": "2026-08-01"}, {"column": "outage_date", "op": "le", "value": "2026-08-05"}, {"column": "withdrawal", "op": "gt", "value": 0}], "group": "facility_eic", "group_map": {"16ZAS01--------8": "carrico", "21W0000000000087": "bergermeer", "21W0000000000702": "sediane_b", "21W000000000073X": "serene_nord", "21W000000000084S": "saline", "63W197197128864M": "serene_atlantique"}, "silver": "gie_agsi/unavailability", "sort": "value_desc", "type": "bar", "unit": "withdrawal, no unit stated", "value": "withdrawal"},
+  "x_kind": "category",
+  "x": ["saline", "serene_atlantique", "sediane_b", "bergermeer", "serene_nord", "carrico"],
+  "series": [
+    {"key": "withdrawal", "values": [304.4, 270.5, 167.5, 108.0, 89.0, 85.7]}
+  ]
+}

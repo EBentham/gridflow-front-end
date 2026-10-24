@@ -1,0 +1,141 @@
+{
+ "dataset": "gie/unavailability",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "50e67b531178de745c8258f10892d6a55ca61799bdc6d29e0a8686b09bae105e",
+ "kernel": "gridflow_models",
+ "source": "gie_agsi",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.gie_agsi",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.gie_agsi.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.sql(\"\"\"\n    SELECT outage_date, country_code, facility_name, published, start, \"end\",\n           type, end_flag, injection, withdrawal, description\n    FROM silver_gie_agsi_unavailability\n    WHERE outage_date BETWEEN '2026-08-01' AND '2026-08-05'\n    ORDER BY outage_date, facility_name, published\n\"\"\")",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df[[\"outage_date\", \"country_code\", \"start\", \"end\", \"injection\", \"withdrawal\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "outage_date",
+      "country_code",
+      "start",
+      "end",
+      "injection",
+      "withdrawal"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2026-08-01",
+       "PL",
+       "2026-08-01 05:50:00",
+       "2026-08-01 07:30:00",
+       "10.9",
+       "0.0"
+      ],
+      [
+       "2026-08-01",
+       "FR",
+       "2026-08-01 06:00:00",
+       "2026-08-02 06:00:00",
+       "0.0",
+       "182.6"
+      ],
+      [
+       "2026-08-01",
+       "FR",
+       "2026-08-01 06:00:00",
+       "2026-08-02 06:00:00",
+       "0.0",
+       "0.0"
+      ],
+      [
+       "2026-08-01",
+       "FR",
+       "2026-08-01 06:00:00",
+       "2026-08-02 06:00:00",
+       "0.0",
+       "167.5"
+      ],
+      [
+       "2026-08-01",
+       "FR",
+       "2026-08-01 06:00:00",
+       "2026-08-02 06:00:00",
+       "0.0",
+       "270.5"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "import matplotlib.pyplot as plt\nimport matplotlib.dates as mdates\nu = df.loc[df.type == \"Unplanned\", df.columns[1:]].drop_duplicates()\nu = u.assign(site=u.facility_name.str.split(\" (\", regex=False).str[0])\nfig, ax = plt.subplots(figsize=(8, 3.5))\nax.hlines(u.site, u.start, u[\"end\"], lw=6, color=\"#155A6E\", alpha=0.5)\nax.xaxis.set_major_formatter(mdates.DateFormatter(\"%d %b\"))\nax.set_xlabel(\"outage window, as sent (no time zone)\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "unavailability-5.png",
+     "width": 801,
+     "height": 337
+    }
+   ]
+  }
+ ]
+}

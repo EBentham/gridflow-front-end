@@ -2,7 +2,7 @@
 source: elexon
 dataset_key: netbsad
 vendor: Elexon BMRS
-last_verified: 2026-05-21
+last_verified: 2026-10-24
 layer_coverage: bronze, silver
 v2_fix_history:
   - date: 2026-05-20
@@ -13,13 +13,126 @@ v2_fix_history:
     phase: gridflow-G5-W4
     pr: https://github.com/EBentham/gridflow/pull/7
     change: ElexonNETBSAD Pydantic schema declared
+page:
+  title: Net balancing services adjustments
+  summary: >-
+    The system operator's net balancing services adjustments per GB settlement period, published
+    by Elexon: cost, volume and price terms, buy and sell.
+  facts:
+    vendor: Elexon BMRS, dataset NETBSAD
+    cadence: Half-hourly, by settlement period
+    grain: One row per settlement period
+  landscape: market
+  what_it_is: >-
+    Buy and sell carry net cost, volume and price adjustments. Per Elexon, the buy price
+    price adjustment (BPA) is added to the buy price when the system is short, the SPA to the
+    sell price when long. A check of Elexon's replies on 24 October 2026 for January 2024 to
+    October 2026 found non-zero values on four days, BPA only.
+  caveat: Elexon's glossary states no unit for the six net cost and volume terms.
+  how_used:
+    - Checking whether a period's imbalance price carries a BPA or SPA adder.
+    - Adding the BPA or SPA when rebuilding system buy and sell prices.
+  chart:
+    type: line
+    silver: elexon/netbsad
+    time: timestamp_utc
+    value: buy_price_price_adjustment
+    filter:
+      - {column: settlement_date, op: eq, value: "2026-01-15"}
+    dedup: {"on": [settlement_date, settlement_period], order_by: ingested_at}
+    aggregation: last
+    window: {start: "2026-01-15", end: "2026-01-15"}
+    unit: £/MWh
+  chart_view:
+    title: Buy price price adjustment, 15 January 2026
+    caption: >-
+      Silver `elexon/netbsad`, £/MWh, each half-hour of settlement date 15 January 2026: the buy
+      price price adjustment (BPA). The 24 October 2026 check of Elexon's replies also found
+      non-zero BPA on 24 May 2024, 13 August 2024 and 24 October 2025.
+    alt: >-
+      Line chart of the buy price price adjustment from elexon/netbsad, in £/MWh, for every
+      half-hour of settlement date 15 January 2026. It is 0 until 10:00 UTC, 1.49 from 10:00 to
+      15:30, 10.65 from 16:00 to 18:30 and 9.15 at 19:00, then 0 again from 19:30 to the end of
+      the day.
+    x_label: half-hour start, UTC
+    y_min: -0.5
+    key:
+      - {series: buy_price_price_adjustment, label: Buy price price adjustment, codes: BPA, paint: petrol, note: "The SPA and the six cost and volume terms are 0 in every period this day."}
+  raw_feed:
+    note: >-
+      From the Elexon Insights API in 24-hour `from`/`to` windows from midnight UTC. Elexon's reply
+      also carries the half-hour starting at `to`, so silver keeps it in two days' partitions.
+    requests:
+      - "GET https://data.elexon.co.uk/bmrs/api/v1/datasets/NETBSAD?from=2026-01-15T00:00:00Z&to=2026-01-16T00:00:00Z&page=1"
+    commands:
+      - {run: gridflow ingest elexon netbsad --start 2026-01-15 --end 2026-01-16, comment: "bronze; the end is exclusive"}
+      - {run: gridflow transform elexon netbsad --start 2026-01-15 --end 2026-01-15, comment: bronze to silver}
+  record:
+    select:
+      filter:
+        - {column: settlement_date, op: eq, value: "2026-01-15"}
+        - {column: settlement_period, op: ge, value: 33}
+        - {column: settlement_period, op: le, value: 40}
+      dedup: {"on": [settlement_date, settlement_period], order_by: ingested_at}
+      order_by: [settlement_period]
+      columns: [settlement_date, settlement_period, buy_price_price_adjustment, sell_price_price_adjustment, timestamp_utc]
+    key: [settlement_date, settlement_period]
+    caption: "Settlement date 2026-01-15, periods 33 to 40: the BPA steps from 10.65 to 9.15, then 0."
+    fields:
+      settlement_date: GB settlement date, as Elexon labels it
+      settlement_period: Settlement-day half-hour, 1 to 48; runs to 46 or 50 on clock-change days
+      buy_price_price_adjustment: "BPA, £/MWh; per Elexon, added to the buy price when the system is short"
+      sell_price_price_adjustment: "SPA; per Elexon, added to the sell price when the system is long"
+      timestamp_utc: Start of the half-hour, computed from settlement date and period
+      net_buy_price_cost_adjustment_energy: "Elexon: the energy volume adjustment times a weighted average price"
+      net_buy_price_volume_adjustment_energy: "Elexon: energy balancing volume bought less sold, floored at 0"
+      net_buy_price_volume_adjustment_system: "Net buy price volume adjustment (system), as sent"
+      net_sell_price_cost_adjustment_energy: "Sell-side counterpart of the energy cost adjustment, as sent"
+      net_sell_price_volume_adjustment_energy: "Sell-side counterpart of the energy volume adjustment, as sent"
+      net_sell_price_volume_adjustment_system: "Sell-side counterpart of the system volume adjustment, as sent"
+  notebook:
+    lead: >-
+      Returns a pandas DataFrame from the DuckDB relation `silver_elexon_netbsad`, filtered on
+      `settlement_date` with both ends included. Lineage columns are dropped; the 00:00 UTC
+      half-hour can come twice, so drop repeats on the key.
+    cells:
+      - |
+        df = data.elexon.query("netbsad", "2026-01-15", "2026-01-15")
+        key = ["settlement_date", "settlement_period"]
+        df = df.drop_duplicates(key).sort_values("timestamp_utc")
+      - df.loc[df.buy_price_price_adjustment != 0, key + ["timestamp_utc", "buy_price_price_adjustment"]].head()
+      - (df.filter(like="adjustment") != 0).sum()
+      - |
+        df.plot(x="timestamp_utc", y=["buy_price_price_adjustment", "sell_price_price_adjustment"],
+                ylabel="£/MWh", color=["#155A6E", "#8A6D3B"], figsize=(8, 3.5))
+    needs: 15 January 2026
+    plot_alt: >-
+      Line plot of buy_price_price_adjustment and sell_price_price_adjustment against
+      timestamp_utc, 15 January 2026: the buy adjustment is 0, then 1.49 from 10:00 UTC, 10.65
+      from 16:00 and 9.15 at 19:00, then 0; the sell adjustment stays at 0 all day.
+  related:
+    - {dataset: elexon/disbsad, note: "The individual adjustment actions, one row each, per period"}
+    - {dataset: elexon/system_prices, note: "The prices BPA and SPA adjust; its net imbalance picks which"}
+    - {dataset: elexon/boal, note: "Balancing Mechanism acceptances, the other actions behind the price"}
+    - {dataset: elexon/market_depth, note: "Accepted bid and offer volumes for the same settlement periods"}
 ---
 
 # Elexon - Net Balancing Services Adjustment Data (`NETBSAD`)
 
 ## Overview
 
-Net Balancing Services Adjustment Data (NETBSAD) — net price-adjustment and volume-adjustment terms applied to BSP/SSP so the cash-out prices reflect the cost of balancing services other than energy actions in BOALF. NETBSAD is computed from the disaggregated DISBSAD components.
+Net Balancing Services Adjustment Data (NETBSAD) — net price-adjustment and volume-adjustment terms applied to BSP/SSP so the cash-out prices reflect the cost of balancing services other than energy actions in BOALF. Elexon's guidance splits BSAD into two components, the individual Balancing Services Adjustment Actions ("disaggregated BSAD", the DISBSAD dataset) and the Buy/Sell Price Price Adjustment (BPA/SPA); no vendor text found says NETBSAD is computed from DISBSAD (checked 2026-09-29).
+
+### Vendor documentation (quoted 2026-09-29)
+
+- Elexon, *Imbalance Pricing Guidance*, v15.0, 25 June 2020 (https://www.elexon.co.uk/bsc/documents/training-guidance/bscguidance-notes/imbalance-pricing/), p. 11: "BSAD is split into two components: Balancing Services Adjustment Actions (BSAA); and Buy Price Price Adjustment (BPA)/Sell Price Price Adjustment (SPA)." "The BPA is added when the net imbalance of the Transmission System is short. The SPA is added when the net imbalance of the Transmission System is long." p. 12: "It does not have a volume. It simply adjusts the volume-weighted average price."
+- Same, p. 29: "The BPA is used when the Transmission System is short (and the NIV is positive), and the SPA is used when the Transmission System is long (and the NIV is negative)." Worked example, p. 30: "System Buy Price = 30 + 6.50 = £36.50/MWh" with a BPA of £6.50/MWh. (Page numbers for the p. 12 and p. 30 quotes corrected 2026-10-24 from a reading of the v15.0 PDF; they were given as p. 11 and p. 29.)
+- Elexon glossary, Buy Price Price Adjustment (https://www.elexon.co.uk/glossary/buy-price-price-adjustment/): "The amount sent by the Transmission Company ... as part of Balancing Services Adjustment Data (BSAD), as the 'Buy Price Price Adjustment'."
+- Elexon glossary, Buy Price Volume Adjustment (Energy) (https://www.elexon.co.uk/bsc/glossary/buy-price-volume-adjustment-energy/): EBVA is "The amount sent by the Transmission Company as the 'Net Buy Price Volume Adjustment (Energy)'"; EBVA = max(aggregated volume of relevant Balancing Services purchased for energy balancing less that sold, 0).
+- Elexon glossary, Buy Price Cost Adjustment (Energy) (https://www.elexon.co.uk/bsc/glossary/buy-price-cost-adjustment-energy/), read 2026-10-24: EBCA is "The amount sent by the Transmission Company as the 'Net Buy Price Cost Adjustment (Energy)'"; EBCA = EBVA times the weighted average price of the relevant Balancing Services purchased and sold for energy (as opposed to system) balancing.
+- Elexon glossary, Sell Price Cost Adjustment (Energy) (https://www.elexon.co.uk/bsc/glossary/sell-price-cost-adjustment-energy/), Sell Price Volume Adjustment (Energy) (https://www.elexon.co.uk/bsc/glossary/sell-price-volume-adjustment-energy/) and Sell Price Volume Adjustment (System) (https://www.elexon.co.uk/bsc/glossary/sell-price-volume-adjustment-system/), read 2026-10-24: ESCA = ESVA times the same kind of weighted average price; ESVA = min(energy balancing volume purchased less sold, 0), and "This value is non zero only for pre P217 Settlement dates."; SSVA is "The amount sent by the Transmission Company as the 'Net Sell Price Volume Adjustment (System)'". None states a unit.
+- Elexon glossary, Buy Price Volume Adjustment (System) (https://www.elexon.co.uk/bsc/glossary/buy-price-volume-adjustment-system/) and Sell Price Price Adjustment (https://www.elexon.co.uk/bsc/glossary/sell-price-price-adjustment/), read 2026-10-24: each is "The amount sent by the Transmission Company as the" named item; neither states a unit.
+- Units of the six net cost and volume terms, and their sign conventions, are not stated in the sources above (the EBCA, EBVA, SBVA, ESCA, ESVA and SSVA glossary pages give none, read 2026-10-24; the page's caveat says so). The £/MWh unit is evidenced for the BPA only (the p. 30 worked example); the SPA glossary formula divides fees by MWh but states no unit.
 
 ---
 
@@ -62,7 +175,7 @@ curl --ssl-no-revoke -fsS \
 
 ## Bronze layer
 
-**Path pattern**: `{data_root}/bronze/elexon/netbsad/<year>/<month>/<day>/raw_<uuid>.json`
+**Path pattern**: `{data_root}/bronze/elexon/netbsad/<year>/<month>/<day>/raw_<UTC fetch stamp>_<body hash>.json`, with a `.meta.json` sidecar (for example `raw_20261024T133122Z_ad1bdbac.json`)
 **Format**: Raw JSON, as-received. Immutable — never modified after write.
 **Granularity**: One file per API call (paginated requests append additional files for the same date partition).
 
@@ -115,10 +228,11 @@ Captured live 2026-05-08 from the https://data.elexon.co.uk/bmrs/api/v1/datasets
 
 ### Silver schema
 
-The transformer emits **both** the legacy 4 columns (populated when historical
-pre-2026 bronze is processed) and the current 8 columns (populated when fresh
-bronze captured from the live API 2026-05+ is processed). Schema declarations
-mark all 12 as `Optional` — exactly one set is populated per row.
+The transformer keeps only the columns present in the bronze it reads
+(`netbsad.py:167`, `available = [c for c in output_cols if c in df.columns]`):
+legacy bronze yields the legacy 4, current bronze the current 8. Silver built
+from current bronze carries only the 8; the legacy 4 are absent, not null
+(checked 2026-09-29). Schema declarations mark all 12 as `Optional`.
 
 | Field | Python type | Nullable | Source field | Notes |
 |-------|-------------|----------|--------------|-------|
@@ -138,22 +252,26 @@ mark all 12 as `Optional` — exactly one set is populated per row.
 | `net_sell_price_volume_adjustment_system` | `float` | Yes | `netSellPriceVolumeAdjustmentSystem` | Volume adjustment to net sell price, system axis. |
 | `sell_price_price_adjustment` | `float` | Yes | `sellPricePriceAdjustment` | Price-on-price adjustment to net sell price. |
 | `data_provider` | `str` | No | _derived_ | Default `"elexon"`. |
-| `ingested_at` | `datetime[UTC]` | Yes | _derived_ | Time ingested into bronze. |
+| `ingested_at` | `datetime[UTC]` | Yes | _derived_ | Silver transform time (`netbsad.py:138-142`, `datetime.now(UTC)`), not bronze ingest time. |
 
 ### Silver sample
 
 ```python
 [
     {
-        "settlement_date": "2026-05-06",
-        "settlement_period": 9,
-        "timestamp_utc": "2026-05-06T04:00:00+00:00",
-        "net_buy_price_adjustment": "...",
-        "net_sell_price_adjustment": "...",
-        "net_buy_volume_adjustment": "...",
-        "net_sell_volume_adjustment": "...",
+        "settlement_date": "2026-01-15",
+        "settlement_period": 33,
+        "timestamp_utc": "2026-01-15T16:00:00+00:00",
+        "net_buy_price_cost_adjustment_energy": 0.0,
+        "net_buy_price_volume_adjustment_energy": 0.0,
+        "net_buy_price_volume_adjustment_system": 0.0,
+        "buy_price_price_adjustment": 10.65,
+        "net_sell_price_cost_adjustment_energy": 0.0,
+        "net_sell_price_volume_adjustment_energy": 0.0,
+        "net_sell_price_volume_adjustment_system": 0.0,
+        "sell_price_price_adjustment": 0.0,
         "data_provider": "elexon",
-        "ingested_at": "2026-05-08T12:00:00Z"
+        "ingested_at": "2026-10-24T13:38:12.751296+00:00"
     },
 ]
 ```
@@ -168,7 +286,10 @@ None implemented.
 
 ## Known issues and gotchas
 
-- **Computed from DISBSAD** — the netting is at the API level. Local recomputation requires summing DISBSAD components; can disagree at edges due to rounding.
+- **Relation to DISBSAD is not "computed from"**: Elexon's guidance treats the disaggregated actions (DISBSAD) and the BPA/SPA as the two parts of BSAD (see Vendor documentation above); no vendor text found says NETBSAD sums DISBSAD.
+- **Boundary half-hour repeats across partitions**: the connector requests `from=D 00:00Z` to `to=D+1 00:00Z` (`endpoints.py` `netbsad`, `client.py` `_fetch_datetime_range`), and the replies fetched for 12 to 19 January, 1 to 5 August and 13 to 21 September 2026 (checked 2026-09-29 and 2026-10-24) also carry the period starting at `to`, so the 00:00 UTC half-hour lands in two silver partitions. `netbsad` is in `PUBLICATION_WINDOW_EXEMPT` (`_publication_window.py:61`), so nothing trims it; readers of `silver_elexon_netbsad` must dedup on `(settlement_date, settlement_period)`.
+- **Almost always zero, as Elexon sends it**: a check of Elexon's replies made on 24 October 2026, gridflow's live sweep of the endpoint in weekly windows from 1 January 2024 to 23 October 2026, found a non-zero value on four days only. The evidence is that sweep as recorded in the body of gridflow PR #128 (follow-up section dated 2026-10-24); no script or result table is committed, and the PR does not say whether the four days are settlement dates or UTC days. It found them on 24 May 2024, 13 August 2024, 24 October 2025 and 15 January 2026, each in `buyPricePriceAdjustment`; every other field was 0 throughout. Earlier spot windows in March 2016, 2017 and 2021 also carried a non-zero BPA (same PR). On 15 January 2026 the BPA is 1.49 £/MWh for periods 21 to 32, 10.65 for 33 to 38 and 9.15 for 39; silver matches the bronze reply value for value, and the same day's `system-prices` reply carries the same figures in its `buyPriceAdjustment` field (checked 2026-10-24).
+- **DISBSAD carries the actions**: in the August and September 2026 periods where NETBSAD is 0, DISBSAD lists non-zero actions, and Elexon's `system-prices` replies give `buyPriceAdjustment` = `sellPriceAdjustment` = 0 with total adjustment volumes that match the per-period DISBSAD volume sums in 660 of 674 periods, the other 14 within 1.5 MWh (gridflow PR #128). The zeros are the net terms' real values, not a gap; do not read NETBSAD as a sum of DISBSAD.
 
 ---
 

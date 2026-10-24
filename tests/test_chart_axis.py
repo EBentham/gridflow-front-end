@@ -154,3 +154,47 @@ def test_a_percent_share_axis_ends_at_100() -> None:
     for svg in (wide, narrow):
         labels = re.findall(r'text-anchor="end">([\d,.]+)</text>', svg)
         assert labels[-1] == "100" and "125" not in labels and "150" not in labels
+
+
+def _daily(start: dt.date, end: dt.date) -> list[float]:
+    t0 = dt.datetime(start.year, start.month, start.day, tzinfo=dt.UTC).timestamp()
+    return [t0 + i * DAY for i in range((end - start).days + 1)]
+
+
+def _drawn_labels(ts: list[float], fr: chart_svg.Frame, narrow: bool) -> list[str]:
+    plot = chart_svg._Plot(fr, ts, 0.0, 10.0, narrow=narrow)
+    svg = plot.axes("£", "")
+    return re.findall(r'text-anchor="middle">([^<]+)</text>', svg)
+
+
+def test_a_span_of_a_year_and_a_half_ticks_every_half_year() -> None:
+    # the Balancing Reserve archive: 13 March 2024 to 29 October 2025, one 1 January inside
+    ts = _daily(dt.date(2024, 3, 13), dt.date(2025, 10, 29))
+    for fr, narrow in ((chart_svg.WIDE, False), (chart_svg.NARROW, True)):
+        ticks, _lo, _hi = chart_svg._time_axis(ts, fr, narrow=narrow)
+        assert [label for _t, label, _c in ticks] == ["Jul 2024", "2025", "Jul"]
+        assert _drawn_labels(ts, fr, narrow) == ["Jul 2024", "2025", "Jul"]
+
+
+def test_a_span_just_over_a_year_ticks_every_quarter() -> None:
+    ts = _daily(dt.date(2024, 2, 10), dt.date(2025, 3, 28))
+    ticks, _lo, _hi = chart_svg._time_axis(ts, chart_svg.WIDE, narrow=False)
+    assert [label for _t, label, _c in ticks] == ["Apr 2024", "Jul", "Oct", "2025"]
+    for fr, narrow in ((chart_svg.WIDE, False), (chart_svg.NARROW, True)):
+        assert len(_drawn_labels(ts, fr, narrow)) >= 3
+
+
+def test_a_thinned_axis_keeps_the_year_on_each_tick_that_changes_it() -> None:
+    firsts = [
+        (float(i), dt.date(2024 + (m - 1) // 12, (m - 1) % 12 + 1, 1))
+        for i, m in enumerate(range(4, 4 + 15, 3))
+    ]
+    # Apr 2024 to Apr 2025: two half-year marks are too few, so five quarters, thinned on a phone
+    ticks = chart_svg._season_ticks(firsts, narrow=True)
+    assert [label for _t, label, _c in ticks] == ["Apr 2024", "Oct", "Apr 2025"]
+
+
+def test_a_span_of_several_years_keeps_its_yearly_ticks() -> None:
+    ts = _daily(dt.date(2021, 6, 1), dt.date(2025, 11, 30))
+    ticks, _lo, _hi = chart_svg._time_axis(ts, chart_svg.WIDE, narrow=False)
+    assert [label for _t, label, _c in ticks] == ["2022", "2023", "2024", "2025"]

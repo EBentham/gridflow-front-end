@@ -1,0 +1,123 @@
+{
+ "dataset": "entsog/cmp_auction_premiums",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "7c5d8dca8dba578ab5c7df27547e893a4a96313f2f8ba646ea135695239d0c4d",
+ "kernel": "gridflow_models",
+ "source": "entsog",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.entsog",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.entsog.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "ap = data.entsog.query(\"cmp_auction_premiums\", \"2026-08-03\", \"2026-08-03\")\nresults = ap[ap.auction_premium.notna()]\nresults[\"unit\"].value_counts()",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "unit\nEUR/kWh/h    22\nEUR          18\nHUF           7\nEUR/kWh/y     4\nEUR/kWh/q     2\nBGN/kWh/d     1\nName: count, dtype: int64"
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "results[results.point_key == \"ITP-00027\"][[\"operator_label\", \"direction_key\", \"unit\",\n                                           \"auction_premium\", \"cleared_price\", \"reserve_price\"]]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "operator_label",
+      "direction_key",
+      "unit",
+      "auction_premium",
+      "cleared_price",
+      "reserve_price"
+     ],
+     "index": [
+      "269",
+      "272"
+     ],
+     "rows": [
+      [
+       "FGSZ",
+       "exit",
+       "HUF",
+       "1275.8118",
+       "2538.9918",
+       "1263.18"
+      ],
+      [
+       "eustream",
+       "entry",
+       "EUR",
+       "368.6500",
+       "NaN",
+       "NaN"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "ur = data.entsog.query(\"cmp_unsuccessful_requests\", \"2026-08-03\", \"2026-08-03\")\nur = ur[ur.requested_volume.notna() & (ur.unit == \"kWh/d\")]\nur.plot.scatter(x=\"requested_volume\", y=\"allocated_volume\", color=\"#155A6E\", figsize=(6, 4),\n                xlabel=\"requested_volume, kWh/d\", ylabel=\"allocated_volume, kWh/d\")",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: xlabel='requested_volume, kWh/d', ylabel='allocated_volume, kWh/d'>"
+    },
+    {
+     "kind": "image",
+     "src": "cmp_auction_premiums-5.png",
+     "width": 540,
+     "height": 391
+    }
+   ]
+  }
+ ]
+}

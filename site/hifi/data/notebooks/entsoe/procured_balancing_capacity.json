@@ -1,0 +1,145 @@
+{
+ "dataset": "entsoe/procured_balancing_capacity",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "a41d34afdcb31e45e91923cb9ff3a78f690c2e79ff48e1e82cb9fe6966fc6fc3",
+ "kernel": "gridflow_models",
+ "source": "entsoe",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.entsoe",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.entsoe.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.entsoe.query(\"procured_balancing_capacity\", \"2026-08-01\", \"2026-08-01\")",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df[[\"timestamp_utc\", \"area_code\", \"direction\", \"market_agreement_type\", \"quantity_mw\", \"procurement_price\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "area_code",
+      "direction",
+      "market_agreement_type",
+      "quantity_mw",
+      "procurement_price"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2026-08-01 01:00:00+01:00",
+       "10Y1001A1001A82H",
+       "A02",
+       "A01",
+       "5.0",
+       "0.12"
+      ],
+      [
+       "2026-08-01 01:00:00+01:00",
+       "10Y1001A1001A82H",
+       "A02",
+       "A01",
+       "3.0",
+       "0.11"
+      ],
+      [
+       "2026-08-01 01:00:00+01:00",
+       "10Y1001A1001A82H",
+       "A01",
+       "A01",
+       "5.0",
+       "0.51"
+      ],
+      [
+       "2026-08-01 01:00:00+01:00",
+       "10Y1001A1001A82H",
+       "A02",
+       "A01",
+       "5.0",
+       "0.10"
+      ],
+      [
+       "2026-08-01 01:00:00+01:00",
+       "10Y1001A1001A82H",
+       "A01",
+       "A01",
+       "5.0",
+       "0.51"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "up = df[(df.direction == \"A01\") & (df.market_agreement_type == \"A01\")]\nmw = up.groupby([\"timestamp_utc\", \"area_code\"]).quantity_mw.sum().unstack()\nmw.plot(figsize=(8, 3.5), ylabel=\"MW procured, upward\")",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: xlabel='timestamp_utc', ylabel='MW procured, upward'>"
+    },
+    {
+     "kind": "image",
+     "src": "procured_balancing_capacity-5.png",
+     "width": 712,
+     "height": 353
+    }
+   ]
+  }
+ ]
+}

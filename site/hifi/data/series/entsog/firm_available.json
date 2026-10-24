@@ -1,0 +1,20 @@
+{
+  "dataset": "entsog/firm_available",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "b8a101c1a18fddedc8cd867b32484b47eb0c70c735dc06cfebe0de092cefa406",
+  "type": "line",
+  "unit": "kWh/d",
+  "caption": "",
+  "value_column": "value",
+  "aggregation": "last",
+  "window": {"end": "2026-09-21", "rule": "fixed", "start": "2026-09-13"},
+  "provenance": {"files": 14, "null_values_dropped": 0, "rows_matched": 28, "rows_read": 126, "rows_used": 18, "silver": "entsog/firm_available", "silver_first": "2026-08-01T04:00:00Z", "silver_last": "2026-09-21T04:00:00Z"},
+  "spec": {"aggregation": "last", "filter": [{"column": "operator_key", "op": "in", "value": ["IE-TSO-0002", "UK-TSO-0003"]}, {"column": "point_key", "op": "in", "value": ["ITP-00495", "ITP-00005"]}, {"column": "direction_key", "op": "eq", "value": "entry"}, {"column": "value", "op": "not_null"}], "group": "operator_key", "group_map": {"IE-TSO-0002": "moffat_ie", "UK-TSO-0003": "bacton_iuk"}, "series_order": ["moffat_ie", "bacton_iuk"], "silver": "entsog/firm_available", "time": "timestamp_utc", "type": "line", "unit": "kWh/d", "value": "value", "window": {"end": "2026-09-21", "start": "2026-09-13"}},
+  "x_kind": "time",
+  "x": ["2026-09-13T04:00:00Z", "2026-09-14T04:00:00Z", "2026-09-15T04:00:00Z", "2026-09-16T04:00:00Z", "2026-09-17T04:00:00Z", "2026-09-18T04:00:00Z", "2026-09-19T04:00:00Z", "2026-09-20T04:00:00Z", "2026-09-21T04:00:00Z"],
+  "series": [
+    {"key": "moffat_ie", "values": [145654424.0, 162488829.0, 170379342.0, 170371375.0, 170379481.0, 170299881.0, 170746545.0, 170746023.0, 163891514.0]},
+    {"key": "bacton_iuk", "values": [88226760.0, 88226760.0, 88226760.0, 88226760.0, 88226760.0, 88226760.0, 88226760.0, 88226760.0, 88226760.0]}
+  ]
+}
