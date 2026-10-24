@@ -4,9 +4,45 @@ package: "nsl"
 dataset_key: "nsl"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-09
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: "NESO does not say rows are unchanged since upload, and archive days and versions are undefined."
+  title: North Sea Link transfer limits
+  summary: >-
+    NESO's hourly limits on flow each way over the North Sea Link interconnector, in MW, with reasons.
+  facts:
+    vendor: "NESO Data Portal, package `nsl`: a current datastore table and an archive CSV"
+    cadence: "Daily, NESO says; one upload a day, at 10:30 GMT in October 2026"
+    grain: "Each row: one hour's import and export limits; current rows add upload time"
+    history: "NESO's files label hours from 5 October 2022: archive, then the current table"
+  landscape: power
+  what_it_is: >-
+    NESO says it submits these to interconnector capacity calculations, capping GB imports and
+    exports, in hourly MW; final capacity can be lower. It says it publishes only restrictions,
+    yet its October 2026 files hold many No Restriction rows. It calls them Net Transfer
+    Capacity (NTC) restrictions. Every row is day-ahead.
+  how_used:
+    - Which hours NESO restricted the link, by direction, from the stated reason
+    - "A feature for flow and price models: when NESO restricted the link"
+    - Set beside the final capacity the link's trading facilitator publishes
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: `package_show`, the current table's dump and the archive CSV. Fetched
+      16 October 2026, the table kept every row fetched 8 October unchanged, plus new ones.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=nsl"
+      - "GET https://api.neso.energy/datastore/dump/9db51c01-922d-413d-8b67-3938fdc14bdb"
+      - "GET https://api.neso.energy/dataset/7bf2e43d-1a24-4a0e-95b0-6ba4eba3daa9/resource/33646e05-1af1-41b5-a056-9e95fb9f0534/download/archived_nsl_link_ntc_data.csv"
+    commands:
+      - {run: gridflow ingest neso_data_portal nsl --last 24h, comment: "changed files to bronze"}
+      - {run: gridflow transform neso_data_portal nsl --last 24h, comment: "the current table to silver"}
+  related:
+    - {dataset: neso_data_portal/historic-demand-data, note: "North Sea Link's half-hourly flow, in NESO's historic demand files"}
+    - {dataset: neso_data_portal/viking, note: "The same NESO limits on Viking Link, with intraday auctions too"}
+    - {dataset: neso_data_portal/nemolink, note: "The same NESO limits on NemoLink, with intraday auctions too"}
+    - {dataset: neso_data_portal/day-ahead-power-exchange-prices-nordpool, note: "GB's hourly day-ahead price, beside each hour's day-ahead limit"}
 ---
 
 # North Sea Link - NESO's Net Transfer Capacity
@@ -22,7 +58,9 @@ capacity is calculated from NESO's values, the connected system operator's value
 interconnector's own capability, so it "may be lower than the NESO values shown here", and
 the final figures are on the interconnector's trading facilitator's website. The notes also
 say values are published only where NESO applied a restriction: "If there are no values,
-NESO has not applied a restriction." Use this package to see when and why the GB side
+NESO has not applied a restriction." The files also list unrestricted hours: most current-table
+rows carry the reason `No Restriction` (see Sentinels), so a row is an hour NESO gave a limit
+for, restricted or not. Use this package to see when and why the GB side
 constrained NSL's day-ahead capacity, for example as a feature for GB–Norway flow or
 GB price models, alongside measured flows such as the `NSL_FLOW` column of
 @./historic-demand-data.md. Sibling packages with the same shape: @./eleclink.md and
@@ -49,8 +87,9 @@ row counts, clocks and missingness only, never data values or ranges of values.
 | NSL NTC Data | CSV | dump | `9db51c01-922d-413d-8b67-3938fdc14bdb` |
 
 Both resources carry the SILVER disposition in the registry, but only one produces silver.
-Downloads and the one capture of each (2026-10-08; sizes, URLs and CKAN `last_modified` from
-each sidecar under `C:/gridflow-data/bronze/neso_data_portal/nsl/2026/10/08/`). "Epoch" uses
+Downloads and the 2026-10-08 capture of each (sizes, URLs and CKAN `last_modified` from each
+sidecar under `C:/gridflow-data/bronze/neso_data_portal/nsl/2026/10/08/`); the current dump was
+captured again on 2026-10-16 (below), the archive was not. "Epoch" uses
 this page's numbering (the schema tables below).
 
 | Resource | Download | Epoch | Bytes | Data rows | CKAN `last_modified` | Silver |
@@ -62,6 +101,19 @@ this page's numbering (the schema tables below).
   Loaded normally. The catalogue resource was created 2024-09-23; its description reads
   "NESO's Net Transfer Capacity restrictions submitted to Day-ahead and Intraday auctions".
   CKAN `metadata_modified` at capture was 2026-10-08T10:40:04.892567.
+- **Current dump, second capture (2026-10-16; bronze and silver read 2026-10-24)**
+  (`raw_20261016T204234Z_9db51c01-…_c6c86a80.csv`, 1,617,906 bytes, 17,976 rows, the same
+  header and request URL, CKAN `last_modified` still 2026-09-17T08:57:32.333754,
+  `metadata_modified` 2026-10-16T10:40:09.149592). Every one of the 17,784 rows of the
+  2026-10-08 body is present with identical values (no key missing, no key with a changed value,
+  no full row missing). 192 rows are new: one upload a day, 2026-10-09 to 2026-10-16, each at
+  10:30 GMT (`10:30:06` to `10:30:16`), for target hours 2026-10-09 22:00 to 2026-10-17 21:00 UTC;
+  749 distinct upload times in all, all rows still `Day Ahead`, no target before its own upload
+  time, 17,951 targets before the capture. So between these two captures NESO only appended; that
+  does not show rows are never revised, and the hold stands. Silver holds a second Parquet file of
+  17,976 rows (`available_at` 2026-10-16T20:42:34.768654Z), which `_latest` takes for the dump's
+  `resource_id`. The archive's `last_modified` had not moved, so the 2026-10-16 run did not
+  download it (gridflow `client.py` `iter_members`).
 - **Archive upload** (`raw_20261008T111452Z_33646e05-…_0519d13a.csv`, `url_type: upload`,
   created 2024-11-27). Note the filename says `nsl_link`, not `nsl`. The body has 16,632 rows
   but only 16,631 distinct complete rows: one whole row appears twice (the 2023-10-29,
@@ -226,9 +278,11 @@ has no null-token map.
   converted to null or filled with a nameplate capacity.
 - **Blank reasons → null**, with no reason invented. The current dump has no blank reason
   cells (0 nulls in either reason column, silver 2026-10-09); the archive has 1,705.
-- **Absent rows mean "no NESO restriction"**, per the package notes. Do not fill gaps with
-  zero, a nameplate capacity or a reconstructed limit. FACTS g5 also records explicit
-  `No Restriction` reason rows in the captures.
+- **Absent rows mean "no NESO restriction"**, per the package notes; that is NESO's word,
+  not something the files show. Do not fill gaps with zero, a nameplate capacity or a
+  reconstructed limit. The files also list unrestricted hours with the reason `No Restriction`
+  (bronze read 2026-10-24): in the 16 October current table 17,952 of 17,976 rows To GB and
+  17,592 From GB; in the archive 6,959 of 16,632, plus 1,705 blank reasons.
 
 **Identity and selection (ADR-039).** The family key is the union of each epoch's grain plus
 `resource_id`:
@@ -262,8 +316,9 @@ plan. The archive capture failed with `DuplicateEntityKeyError` as designed, so 
 transform exits 1. Reconcile `--all --cutoff 2026-10-08` exited 0: 69 families, 0 gaps, 6
 adjudicated (including this archive) (gridflow `@.planning/v0.22-RESULTS.md` §IC-1).
 
-Silver layout: one Parquet file under
-`C:/gridflow-data/silver/neso_data_portal/nsl/year=2026/month=10/`. The `year=`/`month=`
+Silver layout: one Parquet file per capture under
+`C:/gridflow-data/silver/neso_data_portal/nsl/year=2026/month=10/` (the activation file, then
+the 2026-10-16 capture's, 17,976 rows). The `year=`/`month=`
 partition is the **capture** date, not the target date. Columns (21): the 11-column vendor
 union (the 7 epoch-1 columns, then `operational_date`, `version`, `hourly_time_period`,
 `reason_for_restriction`); then `issue_time`, `resource_id`, `timestamp_utc`, `published_at`,
@@ -278,8 +333,10 @@ union (the 7 epoch-1 columns, then `operational_date`, `version`, `hourly_time_p
 
 The current dump is the live resource. The archive's CKAN `last_modified` is 2024-11-27, and
 the vendor says nothing about whether it will change again. The publication time of day is not stated by the vendor (see the
-inference under Vintage). One capture of each resource exists (2026-10-08). `TODO: verify`
-whether a later dump revises earlier rows; only comparing successive captures can show it.
+inference under Vintage). The current dump has two captures (2026-10-08, 2026-10-16) and the
+archive one (2026-10-08). Between the two dump captures NESO added one upload a day at 10:30
+GMT and changed no earlier row (see Files by disposition). `TODO: verify` whether a later dump
+revises earlier rows; eight days of appends only is not a guarantee.
 
 ## Licence and attribution
 
@@ -298,7 +355,7 @@ for point-in-time model use until unit E-SEM answers the question above (RULINGS
 at activation, RULINGS 567). The hold has three parts:
 
 1. **Historical immutability (FACTS g2).** The dump returns 17,750 past targets alongside
-   34 future ones. Each row carries a publication time, but NESO does not say the values
+   34 future ones (2026-10-08 capture; 17,951 and 25 on 2026-10-16). Each row carries a publication time, but NESO does not say the values
    are unchanged since then. Without that, a past row cannot be treated as the limit issued
    at its upload time. Settles it: a NESO revision or retention statement, or immutable
    per-issue files.

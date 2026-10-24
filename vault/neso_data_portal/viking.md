@@ -4,9 +4,58 @@ package: "viking"
 dataset_keys: ["viking_link_ntc", "viking_ntc"]
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-09
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: true
+  title: Viking Link transfer limits
+  summary: >-
+    NESO's hourly limits on flow each way over the Viking Link interconnector, in MW, with reasons.
+  facts:
+    vendor: "NESO Data Portal, package `viking`: a current datastore table and an archive CSV"
+    cadence: "Ad hoc, NESO says"
+    grain: "Each row: one hour's import and export limits; current rows add upload time"
+    history: "NESO's files label hours from 29 December 2023: archive, then the current table"
+  landscape: power
+  what_it_is: >-
+    NESO says it submits these to interconnector capacity calculations, capping GB imports and
+    exports, in hourly MW; final capacity can be lower. It says it publishes only restrictions,
+    yet its October 2026 files hold many No Restriction rows. It calls them Net Transfer
+    Capacity (NTC) restrictions. Archive rows add an operational date and version.
+  how_used:
+    - Which hours NESO restricted the link, by direction, from the stated reason
+    - "A feature for flow and price models: when NESO restricted the link"
+    - Set beside the final capacity the link's trading facilitator publishes
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: `package_show`, the current table's dump and the archive CSV. Fetched
+      16 October 2026, the table kept every row fetched 8 October unchanged, plus new ones.
+    commands:
+      - {run: gridflow pipeline neso_data_portal viking_ntc --last 24h,
+         comment: "archive to bronze, then silver"}
+      - {run: gridflow pipeline neso_data_portal viking_link_ntc --last 24h,
+         comment: "current table to bronze, then silver"}
+  family:
+    slug: viking
+    members:
+      - dataset: viking_ntc
+        differs: "Archive to September 2024: operational date, GMT hour range and version; no upload time"
+        request:
+          - "GET https://api.neso.energy/api/3/action/package_show?id=viking"
+          - "GET https://api.neso.energy/dataset/53a942cc-f9ab-4ad3-a274-5beed51635ec/resource/0d20456e-85cc-47a9-b476-e2d8e7c1b8eb/download/archived_viking_data-1.csv"
+        held: "Hour labels have no defined day or clock, and no row says when NESO issued it."
+      - dataset: viking_link_ntc
+        differs: "Current table from September 2024: upload time, auction and hour start in GMT"
+        request:
+          - "GET https://api.neso.energy/api/3/action/package_show?id=viking"
+          - "GET https://api.neso.energy/datastore/dump/f4ee9a34-1bb5-405e-b4a0-bacb193fb188"
+        held: "Nearly every hour is already past, and NESO does not say rows are unchanged since upload."
+  related:
+    - {dataset: neso_data_portal/historic-demand-data, note: "Viking Link's half-hourly flow, in NESO's historic demand files"}
+    - {dataset: neso_data_portal/interconnector-requirement-and-auction-summary-data, note: "NESO's own trades across links, with the volume cleared on Viking Link"}
+    - {dataset: neso_data_portal/nemolink, note: "NESO's limits on NemoLink, with two archives and an undated table"}
+    - {dataset: neso_data_portal/nsl, note: "The same NESO limits on North Sea Link, day-ahead rows only"}
 ---
 
 # Viking Link - NESO's Net Transfer Capacity
@@ -18,13 +67,16 @@ given in MW per hourly time period, for the day-ahead and intraday auctions. The
 NESO submitted, not measured flows and not the final capacity**. The notes say the final capacity
 also uses values from the connected system operator and the interconnector's own capability, so
 it may be lower than the NESO value. The final values are published by each interconnector's
-trading facilitator, not in this package. NESO publishes a value only when it has applied a
-restriction. A missing hour means no NESO restriction. It does not mean zero capacity, and it
-does not give a nameplate figure ([package page](https://www.neso.energy/data-portal/viking)).
+trading facilitator, not in this package. NESO says it publishes a value only when it has
+applied a restriction, and that a missing hour means no NESO restriction
+([package page](https://www.neso.energy/data-portal/viking)). The files also list unrestricted
+hours, with the reason `No Restriction` (see Sentinels), so a row is an hour NESO gave a limit
+for, restricted or not. A missing hour does not mean zero capacity, and it does not give a
+nameplate figure.
 
 Use: a model of GB cross-border flows or of interconnector price coupling can use these as
-NESO-side **directional ceilings**: hours when the GB system operator capped Viking imports or
-exports, and the reason it gave. Each row carries two separate directional maxima. `To GB` is the
+NESO-side **directional ceilings**: each hour's import and export limit with NESO's stated reason,
+which names the hours NESO says it restricted (many rows read `No Restriction`). Each row carries two separate directional maxima. `To GB` is the
 import limit (Denmark → GB) and `From GB` is the export limit (GB → Denmark). They are never one
 signed net-flow series (gridflow `@.planning/phases/v0.22-K-IC-1/K-IC-1-FACTS.md` §4 IC1-1).
 Related pages: the other NESO interconnector packages @eleclink.md, @ifa.md, @ifa2.md,
@@ -74,7 +126,10 @@ in FACTS about a package-id mismatch was checked and rejected: the ids are equal
   also 6,456. Vendor dictionary: [Archived Viking NTC Data](https://www.neso.energy/data-portal/viking/archived_viking_ntc_data).
 
 Both bodies match their sidecar SHA-256 and byte length (FACTS §1, C-VERIFY). Each resource has
-one capture to date, made on 2026-10-08, and one header epoch.
+one header epoch. The archive has one capture (2026-10-08); the current dump has two, 2026-10-08
+and 2026-10-16 (see the second capture under `viking_link_ntc`). The 2026-10-16 refresh skipped
+the archive because its CKAN `last_modified` had not moved (gridflow `client.py`
+`iter_members`).
 
 **Column rename on the current resource.** The resource description says NESO renamed four column
 ids on **2026-09-17**:
@@ -161,7 +216,20 @@ upload time, 421 targets fall before `Data Upload Time GMT` and 19,354 after (FA
 IC1-6). The issue column says when a row was first published. Nothing from NESO says the
 **values** returned today for a past hour are the values that were current at that upload time,
 so historically issued limits are not evidenced. The forward-target rule (RULINGS 529) does not
-settle a family that has an issue column.
+settle a family that has an issue column. (Counts are the 2026-10-08 capture; the 2026-10-16
+capture has 20,062 of 20,087 targets before the capture and 431 before their own upload time.)
+
+**Second capture (2026-10-16; bronze and silver read 2026-10-24).**
+`raw_20261016T204803Z_f4ee9a34-1bb5-405e-b4a0-bacb193fb188_07fa69ea.csv`, 1,809,697 bytes,
+20,087 rows, the same header and request URL, CKAN `last_modified` still
+`2026-09-17T09:02:57.546341` (`metadata_modified` `2026-10-16T09:40:07.165472`). Every one of the
+19,775 rows of the 2026-10-08 body is present with identical values (no key missing, no key with
+a changed value, no full row missing). 312 rows are new, over 13 new upload times from
+`2026-10-09T09:30:09` to `2026-10-16T09:30:10` (eight at 09:30, three at 16:30, two at 02:30
+GMT), for target hours 2026-10-09 22:00 to 2026-10-17 21:00 UTC; 837 distinct upload times in
+all. So between these two captures NESO only appended. That does not show rows are never
+revised, and the hold stands. Silver holds a second Parquet file of 20,087 rows (`available_at`
+`2026-10-16T20:48:03.544087Z`), which `_latest` takes as the whole family.
 
 **Identity.** `(issue_time, auction_type, operational_period_start_gmt)` is unique over the full
 body (also checked on silver). `(auction_type, operational_period_start_gmt)` alone is **not**
@@ -264,7 +332,9 @@ reason columns are blank in no row. No vendor column is null in silver. The dict
 zero limits**, including multi-hour runs of zeros in the current dump. No vendor source says
 zero means missing, so zeros stay numeric zero and are never converted to null. Hours with no
 row are not filled: the package notes say a missing value means NESO applied no restriction. The
-bodies also carry explicit "no restriction" reason rows. `TODO: verify` with NESO whether a zero
+bodies also carry explicit `No Restriction` reason rows (bronze read 2026-10-24): in the
+16 October current table 20,014 of 20,087 rows To GB and 19,000 From GB, and 6,360 of 6,456
+archive rows. `TODO: verify` with NESO whether a zero
 limit means a full outage of the direction or something else.
 
 **Activation (2026-10-09, master `6cccc4e`, PR #95).** Cutoff 2026-10-08, no prior silver, so
@@ -285,9 +355,12 @@ Silver columns beyond the vendor columns: `viking_link_ntc` adds `issue_time`, a
 - Vendor metadata (snapshot extras, verbatim):
   - Update frequency: Ad hoc
 
-"Ad hoc" is the only vendor statement of cadence. The package publishes only when NESO applies a
-restriction, so gaps in time are expected. `TODO: verify` how often the current datastore resource
-is appended and whether past rows are rewritten. The archive upload has not changed since its
+"Ad hoc" is the only vendor statement of cadence. NESO says the package publishes only when it
+applies a restriction, yet most rows are marked `No Restriction` (see Sentinels). Between the 2026-10-08 and 2026-10-16 captures the
+current resource gained 13 upload times on all eight days from 2026-10-09 and rewrote no earlier
+row (see the second capture under `viking_link_ntc`). `TODO: verify` how often the current
+datastore resource is appended and whether past rows are ever rewritten. The archive upload has
+not changed since its
 `last_modified` of 2024-12-18, and it looks closed (its targets end where the current resource
 begins). `TODO: verify` with NESO that the archive will not be re-uploaded. gridflow's refresh
 captures one state of the dump per run, so any rewrite between runs is lost. The dated silver

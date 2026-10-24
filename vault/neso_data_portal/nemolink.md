@@ -4,9 +4,67 @@ package: "nemolink"
 dataset_keys: ["nemolink_intraday", "nemolink_nemo_da_id_weekly_ntcs", "nemolink_ntc"]
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-09
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: true
+  title: NemoLink transfer limits
+  summary: >-
+    NESO's hourly limits on flow each way over the NemoLink interconnector, in MW, with reasons.
+  facts:
+    vendor: "NESO Data Portal, package `nemolink`: two datastore tables and two archive CSVs"
+    cadence: "Daily, NESO says"
+    grain: "Each row: one hour's import and export limits, with NESO's reason"
+    history: "NESO's files label hours from 12 October 2022: archives, then the current table"
+  landscape: power
+  what_it_is: >-
+    NESO says it submits these to interconnector capacity calculations, capping GB imports and
+    exports, in hourly MW; final capacity can be lower. It says it publishes only restrictions,
+    yet its October 2026 files hold many No Restriction rows. It calls them Net Transfer
+    Capacity (NTC) restrictions. Its two older files say Network Transfer Capacity.
+  how_used:
+    - Which hours NESO restricted the link, by direction, from the stated reason
+    - "A feature for flow and price models: when NESO restricted the link"
+    - Set beside the final capacity the link's trading facilitator publishes
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: `package_show`, each table's dump and each archive CSV. Fetched 16
+      October 2026, the current table kept every row fetched 8 October unchanged, plus new ones.
+    commands:
+      - {run: gridflow pipeline neso_data_portal nemolink_ntc --last 24h,
+         comment: "both files to bronze, then silver"}
+      - {run: gridflow pipeline neso_data_portal nemolink_nemo_da_id_weekly_ntcs --last 24h,
+         comment: "weekly archive to bronze, then silver"}
+      - {run: gridflow ingest neso_data_portal nemolink_intraday --last 24h,
+         comment: "bronze only: NESO renamed its columns"}
+  family:
+    slug: nemolink
+    members:
+      - dataset: nemolink_ntc
+        differs: "Current table: upload time, auction, GMT hour start; archive from December 2022 with versions"
+        request:
+          - "GET https://api.neso.energy/api/3/action/package_show?id=nemolink"
+          - "GET https://api.neso.energy/datastore/dump/7d43e2a0-1c22-4e05-895d-756bae210756"
+          - "GET https://api.neso.energy/dataset/24b229de-2806-45a6-89a9-88097d67e5f2/resource/f169676e-67ec-4f2f-befd-1863c713179c/download/archived_nemolink_link_ntc_data.csv"
+        held: "NESO does not say rows are unchanged since upload, and archive days and versions are undefined."
+      - dataset: nemolink_intraday
+        differs: "One table of 24 hourly rows with no date, named `NemoLink-Intraday1-20240127-001`"
+        request:
+          - "GET https://api.neso.energy/api/3/action/package_show?id=nemolink"
+          - "GET https://api.neso.energy/datastore/dump/aae5acff-fd30-4c46-b996-a10e50cf4d50"
+        held: "Rows give hours but no date; NESO explains neither the table's name nor whether it changes."
+      - dataset: nemolink_nemo_da_id_weekly_ntcs
+        differs: "Archive NESO calls weekly: hourly rows labelled 12 October to 16 December 2022"
+        request:
+          - "GET https://api.neso.energy/api/3/action/package_show?id=nemolink"
+          - "GET https://api.neso.energy/dataset/24b229de-2806-45a6-89a9-88097d67e5f2/resource/ed977959-ccec-4cb6-b26f-c528863a243b/download/archived_weekly_nemolink_link_ntc_data.csv"
+        held: "Hour labels have no defined day or clock, and no row says when NESO issued it."
+  related:
+    - {dataset: neso_data_portal/historic-demand-data, note: "NemoLink's half-hourly flow, in NESO's historic demand files"}
+    - {dataset: neso_data_portal/interconnector-requirement-and-auction-summary-data, note: "NESO's own trades across links, with the volume cleared on NemoLink"}
+    - {dataset: neso_data_portal/viking, note: "The same NESO limits on Viking Link, a current table and archive"}
+    - {dataset: neso_data_portal/nsl, note: "The same NESO limits on North Sea Link, current table and archive"}
 ---
 
 # NemoLink - NESO's Net Transfer Capacity
@@ -27,10 +85,14 @@ series. gridflow stores both as non-negative magnitudes in `flow_to_gb_mw` and `
 never signed and never netted. A signed convention would be a separate derived definition
 downstream.
 
-**Absence means no restriction.** The package note says values are published only where NESO
-applied a restriction: "If there are no values, NESO has not applied a restriction". A missing
-hour is therefore not a zero limit, not the nameplate capacity, and not something to
-reconstruct. gridflow synthesises no rows.
+**Absence and "No Restriction".** The package note says values are published only where NESO
+applied a restriction: "If there are no values, NESO has not applied a restriction". The files
+do not bear the first half out: they also list hours NESO marks `No Restriction` (bronze read
+2026-10-24: in the 16 October current table 13,778 of 16,031 rows To GB and 9,823 From GB, both
+on 8,628; in the daily archive 1,752 of 11,280; none in the weekly archive, which has 457 blank
+reasons, or the intraday file). So a row is an hour NESO gave a limit for, restricted or not, and
+an absent hour is only NESO's word for no restriction. It is not a zero limit, not the nameplate
+capacity, and not something to reconstruct. gridflow synthesises no rows.
 
 The far end of the link is not named in the NESO package. The batch research compared NemoLink
 with ENTSO-E's GB/Belgium border (`10YGB----------A` / `10YBE----------2`). The agreement was
@@ -71,9 +133,11 @@ Net Transfer Capacity, Net Transmission Capacity, Network Transfer Capacity, Sub
 
 All four resources are SILVER. The package has no DOC resources, so there is no methodology
 file and no `_files` family. The URLs below come from the 2026-10-06 catalogue snapshot and
-match the 2026-10-08 capture sidecars. All captures are under
+match the 2026-10-08 capture sidecars. The 2026-10-08 captures are under
 `C:/gridflow-data/bronze/neso_data_portal/<family>/2026/10/08/`. Each body's hash and length match
-its sidecar (FACTS C-VERIFY).
+its sidecar (FACTS C-VERIFY). The 2026-10-16 refresh captured the two datastore dumps again (under
+`.../<family>/2026/10/16/`, same URLs in the sidecars) and skipped the two archives, whose CKAN
+`last_modified` had not moved (gridflow `client.py` `iter_members`; read 2026-10-24).
 
 - **NemoLink NTC Data** -> `nemolink_ntc`, epoch 1 (held). Datastore dump:
   [7d43e2a0-...](https://api.neso.energy/datastore/dump/7d43e2a0-1c22-4e05-895d-756bae210756).
@@ -145,8 +209,19 @@ corroborates the date (FACTS `nemolink_intraday`, IC1-5). The resource was creat
 2026-04-15, long after its name's date. The `filename_token` issue recipe cannot read the date
 because the sidecar `resource_filename` is the UUID. `TODO: verify` with NESO whether this is a
 static historical example (then a DOC reclassification is a candidate) or a resource that is
-refreshed, and what `20240127` and `-001` mean. One capture with unchanged metadata does not
-prove "not refreshed".
+refreshed, and what `20240127` and `-001` mean.
+
+**Second capture (2026-10-16; bronze read 2026-10-24).**
+`raw_20261016T204104Z_aae5acff-fd30-4c46-b996-a10e50cf4d50_d2eaa2ef.csv`, 1,145 bytes, 24 rows.
+The 24 data rows are byte-identical to the 2026-10-08 body, but NESO renamed three column ids:
+`Hourly Time Period GMT`, `Flow in MW To GB`, `Flow in MW From GB` (`Reason For Reduction`
+unchanged). CKAN `last_modified` is still empty; `metadata_modified` moved to
+`2026-10-09T08:21:47.747573`. So NESO does touch this resource, though its values did not change
+between the two captures. The frozen record has one epoch, so the transform failed the capture
+with `HeaderEpochError` and wrote nothing; silver keeps the 2026-10-08 capture (gridflow
+`@.planning/phases/v0.22-close/refresh-20261016/DRIFT.md`, BACKLOG remediation row). Until a new
+epoch is frozen, `gridflow transform neso_data_portal nemolink_intraday` exits non-zero on this
+capture.
 
 **Shape (counts only).** 24 rows, one per hourly interval, in file order from `23:00 to 00:00`
 onwards. `hourly_time_period` was measured unique over the body. That is a capture guard only:
@@ -320,9 +395,23 @@ that a row is unchanged since its `Data Upload Time GMT`, so the dump is not evi
 limits **as issued** at the time (FACTS g2). The archive's Operational Date calendar and rollover
 and the meaning of `Version` are also undocumented (FACTS T03, T04). `TODO: verify` with NESO a
 retention or revision guarantee for the dump (or immutable per-issue files), the archive's
-operational-day definition, and what `Version` (`001`, `002`, ...) orders.
+operational-day definition, and what `Version` (`001`, `002`, ...) orders. (Counts are the
+2026-10-08 capture; the 2026-10-16 capture has 16,005 of 16,031 targets before the capture and
+1,684 before their own upload time.)
 
-**Shape and identity (counts only).**
+**Second capture of the dump (2026-10-16; bronze and silver read 2026-10-24).**
+`raw_20261016T204134Z_7d43e2a0-1c22-4e05-895d-756bae210756_d91a1a0a.csv`, 1,484,249 bytes,
+16,031 rows, the same post-rename header, CKAN `last_modified` still
+`2026-09-17T09:11:37.682451`. Every one of the 15,623 rows of the 2026-10-08 body is present with
+identical values (no key missing, no key with a changed value, no full row missing). 408 rows are
+new, over 17 new upload times from `2026-10-08T16:10:04` to `2026-10-16T09:30:06` (eight at
+09:30, seven at 20:11, one at 16:10, one at 10:30), for target hours `2026-10-07 22:00` to
+`2026-10-17 21:00` UTC; 668 distinct upload times in all. So between these two captures NESO only
+appended. That does not show rows are never revised, and the hold stands. Silver holds a third
+Parquet file of 16,031 rows (`available_at` `2026-10-16T20:41:34.688010Z`), which `_latest` takes
+for the dump's `resource_id`; the archive's 2026-10-08 file stays its latest.
+
+**Shape and identity (counts only, 2026-10-08 capture).**
 
 | Resource | Rows | Auction labels (raw spelling) |
 |---|---:|---|
@@ -391,7 +480,10 @@ epoch. Archive rows of `nemolink_ntc` also read `1+e1`.
 
 "Daily" is the package-level statement, and it fits the current dump, which carries several
 intraday auctions per day. The two archives are fixed uploads (`last_modified` 2024-11-27, the
-same day as their creation) and look static. The one-off resource has no `last_modified`.
+same day as their creation) and look static; neither moved by the 2026-10-16 refresh. The
+one-off resource has no `last_modified`, but its column ids were renamed by 2026-10-16 (see
+`nemolink_intraday`). The dump's new upload times between the 2026-10-08 and 2026-10-16
+captures fall mostly at 09:30 and 20:11 GMT (see the second capture under `nemolink_ntc`).
 `TODO: verify` whether the archives and the one-off are ever re-issued, and the dump's update
 times. For the sibling NSL dump, the batch research found upload-time labels consistent with a
 fixed UK-local schedule expressed in GMT. That is an inference, not an availability contract,
