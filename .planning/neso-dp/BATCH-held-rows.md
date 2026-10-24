@@ -119,7 +119,7 @@ repeat rows; on a table with no event time use `data.sql()`; the column guide ac
 | C1 | ad75c58a68842e8b6 | aa4a892ba7c0e0bd4 | APPROVED x6 (round 2); committed (site 43a7188); 20cp logged |
 | S1 | a7ab77ada40837869 | a0a8c6d80773615fa | APPROVED x3; committed (site 5a00070, 733b52c); Pathfinder lead reordered (7342b43) |
 | T1 | abf6b4cf3ba85c1a5 | a335a0dc2e2350249 | APPROVED x6 (round 2); committed (site e3a1ca9); pushed; 20cq logged |
-| D1 | ac29ae2189289eb20 | | writing |
+| D1 | ac29ae2189289eb20 | a1587b1603e0092f5 | written; in review (clock-change repeats only 2021 and 2022; NA vs 0 across file eras) |
 | D2 | a6529fae660c4ff74 | aaa229431fb8d7d45 | written; in review (long-term type none; transmission-losses notebook no longer sums months) |
 | G1 | af234cffef25e4fa7 | | writing |
 | I1 | a475c72bb4c6ca14f | | writing |
