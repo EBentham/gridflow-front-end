@@ -84,3 +84,9 @@ log defects (next id 20cz: France quarter-hour values repeated per minute in cur
 capacity drops allocation decision time and 2-5 Aug need re-ingest; bids 2-5 Aug and 13-21 Sep page-one only, BE
 series ids may collide across documents; GIE bronze writer collapses identical same-second pages into one file and
 GIE `last_page` overstates pages with records), tell the parent. Nothing merges until Bobbo looks.
+
+## Update: other-vendor batch complete
+
+All nine other-vendor pages approved, committed and pushed: site PR EBentham/gridflow-front-end#78, vault PR
+EBentham/quant-vault#81. Remediation logged through 20dh (next id 20di). Nothing merged; waits for Bobbo and for
+gridflow #128-#133. Remaining: the deploy record to the overseer after Bobbo's merges and a green deploy.

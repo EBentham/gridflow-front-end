@@ -73,12 +73,18 @@ ENTSO-E paragraphs). Verify every one against local silver before writing it.
 
 | Page | Writer | Checker | State |
 |---|---|---|---|
-| `current_balancing_state` | a4cb0fff7df521d95 | a30c0bcff807fc21d | DONE: approved round 2, nits fixed; committed 12ca780 / vault a0d19bc (not pushed) |
-| `unavailability` (GIE) | aca4443f38f5d0077 | a62afd949e6ba56c1 | DONE: approved round 2, nits fixed; committed (not pushed). Ships only after gridflow #133 merges (notebook uses data.sql until then) |
-| `procured_balancing_capacity` | a304ded779c679e9e | a2ff306455c8c2d69 | DONE: approved round 2; committed (not pushed). Template limit: frame folds market_agreement_type at 768 |
-| `balancing-energy-bids` | a77c0dcd4743a2675 | ac32d21fd7f56f7ab | DONE: approved round 2, nits fixed; committed (not pushed). Key-collision defect withdrawn (0 collisions) |
-| `outages` | ae36f09ef6e0639ad | a63ec338ce292b296 | REVISE round 1 (zones unnamed; "in force" vs latest revision as fetched; DocStatus quote; 200-document bullets); writer revising |
-| `capacity-by-indicator` | ac0bdc96719e22118 | af2898390ac84e5aa | DONE: approved round 2; committed (not pushed). Template limit: id key folds at every width |
-| `cmp` | ad9551166d4bfee02 | abea4baf1a6c87ad7 | DONE: approved round 2; committed (not pushed). Chart type none (label rounding); alternative chart: unallocated kWh/d from unsuccessful requests |
-| `netbsad` | a00f12902b3632a4d | a3862abe8d47e4491 | DONE: approved round 2; committed (not pushed). Gridflow gap: PR #128 sweep has no committed script or result |
-| `nonbm` | ac0848f63e8af4f35 | a1500352d7d87526a | DONE: approved round 2; committed (not pushed). End-date citation resolves once gridflow #128 merges |
+| `current_balancing_state` | a4cb0fff7df521d95 | a30c0bcff807fc21d | DONE: approved round 2, nits fixed; committed 12ca780 / vault a0d19bc (pushed) |
+| `unavailability` (GIE) | aca4443f38f5d0077 | a62afd949e6ba56c1 | DONE: approved round 2, nits fixed; committed (pushed). Ships only after gridflow #133 merges (notebook uses data.sql until then) |
+| `procured_balancing_capacity` | a304ded779c679e9e | a2ff306455c8c2d69 | DONE: approved round 2; committed (pushed). Template limit: frame folds market_agreement_type at 768 |
+| `balancing-energy-bids` | a77c0dcd4743a2675 | ac32d21fd7f56f7ab | DONE: approved round 2, nits fixed; committed (pushed). Key-collision defect withdrawn (0 collisions) |
+| `outages` | ae36f09ef6e0639ad | a63ec338ce292b296 | DONE: approved round 2; committed |
+| `capacity-by-indicator` | ac0bdc96719e22118 | af2898390ac84e5aa | DONE: approved round 2; committed (pushed). Template limit: id key folds at every width |
+| `cmp` | ad9551166d4bfee02 | abea4baf1a6c87ad7 | DONE: approved round 2; committed (pushed). Chart type none (label rounding); alternative chart: unallocated kWh/d from unsuccessful requests |
+| `netbsad` | a00f12902b3632a4d | a3862abe8d47e4491 | DONE: approved round 2; committed (pushed). Gridflow gap: PR #128 sweep has no committed script or result |
+| `nonbm` | ac0848f63e8af4f35 | a1500352d7d87526a | DONE: approved round 2; committed (pushed). End-date citation resolves once gridflow #128 merges |
+
+All nine approved and pushed 2026-10-24. Site PR EBentham/gridflow-front-end#78 (base main; includes the template
+branch merge until #60 merges), vault PR EBentham/quant-vault#81 (base master). Gates on the branch: 217 tests, build
+and --check, htmlhint, lychee 0 errors, detector [] or the accepted EIC advisory. A test fix rides along (087d9ae:
+the blank-page test strips page blocks in a vault copy). Remediation 20cz-20dh logged. Merge after gridflow #128-#133
+and after Bobbo looks. The app could not bind #78 to the session (cache), so CI is not monitored here.
