@@ -1,0 +1,430 @@
+{
+ "dataset": "neso_data_portal/ic_requirement_auction",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "580b1eb7ca4d1c43b0d1bf415ad0d40fa247821f5d891c3b94687c86d27d5dcf",
+ "silver": "neso_data_portal/ic_requirement_auction",
+ "columns": [
+  {
+   "name": "auction_lot_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "buy_sell",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "volume_required",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "qualified_ic",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "start_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "end_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "clearing_price",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "vwa_price",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "cleared_volume",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "notes",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "published_datetime",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "auction_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "bid_deadline",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "default_price",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "best_price",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "total_bid_volume",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "ifa1_volume",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "bn_volume",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "nemo_volume",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "ifa2_volume",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "el_volume",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "vkl_volume",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "system_flag",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2021_03_10-15_57-4",
+   "Sell",
+   "65.0",
+   "NEMO",
+   "2021-03-10 23:00:00 UTC",
+   "2021-03-11 00:00:00 UTC",
+   "-1.0",
+   "-1.0",
+   "65.0",
+   "",
+   "2021-03-10 17:17:20 UTC",
+   "2021_03_10-15_57",
+   "2021-03-10 16:45:00 UTC",
+   "40.0",
+   "-1.0",
+   "520.0",
+   null,
+   null,
+   "65.0",
+   null,
+   null,
+   null,
+   null,
+   "2021-03-10 23:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/ic_requirement_auction/2026/10/16/raw_20261016T203718Z_6a928369-bed3-445f-af8a-69cdb2cc5089_d1fc25d1.csv",
+   "2026-10-16 20:37:18.225890 UTC",
+   "2021-03-10 23:00:00 UTC",
+   "2026-10-16 20:37:18.225890 UTC",
+   "drain-88214d16-631d-4482-80f5-cde218f4bfff",
+   "1+e1"
+  ],
+  [
+   "2023_07_22-22_42-5",
+   "Sell",
+   "0.0",
+   "IFA1/NEMO/EL",
+   "2023-07-23 04:00:00 UTC",
+   "2023-07-23 05:00:00 UTC",
+   "0.0",
+   "0.0",
+   "0.0",
+   "This Lot was cancelled",
+   "2023-07-22 22:35:27 UTC",
+   "2023_07_22-22_42",
+   "2023-07-22 22:20:00 UTC",
+   "40.0",
+   "0.0",
+   "7317.0",
+   "0.0",
+   null,
+   "0.0",
+   null,
+   "0.0",
+   null,
+   null,
+   "2023-07-23 04:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/ic_requirement_auction/2026/10/16/raw_20261016T203718Z_6a928369-bed3-445f-af8a-69cdb2cc5089_d1fc25d1.csv",
+   "2026-10-16 20:37:18.225890 UTC",
+   "2023-07-23 04:00:00 UTC",
+   "2026-10-16 20:37:18.225890 UTC",
+   "drain-88214d16-631d-4482-80f5-cde218f4bfff",
+   "1+e1"
+  ],
+  [
+   "2025_07_17-16_46-2",
+   "Buy",
+   "1500.0",
+   "IFA1/IFA2/BN/NEMO/EL/VKL",
+   "2025-07-17 19:00:00 UTC",
+   "2025-07-17 20:00:00 UTC",
+   "112.65",
+   "107.34",
+   "1500.0",
+   "",
+   "2025-07-17 16:20:34 UTC",
+   "2025_07_17-16_46",
+   "2025-07-17 16:15:00 UTC",
+   "85.0",
+   "104.25",
+   "4810.0",
+   "340.0",
+   "153.0",
+   "347.0",
+   "100.0",
+   "230.0",
+   "330.0",
+   null,
+   "2025-07-17 19:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/ic_requirement_auction/2026/10/16/raw_20261016T203718Z_6a928369-bed3-445f-af8a-69cdb2cc5089_d1fc25d1.csv",
+   "2026-10-16 20:37:18.225890 UTC",
+   "2025-07-17 19:00:00 UTC",
+   "2026-10-16 20:37:18.225890 UTC",
+   "drain-88214d16-631d-4482-80f5-cde218f4bfff",
+   "1+e1"
+  ],
+  [
+   "2025_08_02-00_47-4",
+   "Sell",
+   "650.0",
+   "EL/NEMO",
+   "2025-08-02 05:00:00 UTC",
+   "2025-08-02 06:00:00 UTC",
+   null,
+   null,
+   null,
+   "",
+   "2025-08-01 23:49:36 UTC",
+   "2025_08_02-00_47",
+   "2025-08-02 00:15:00 UTC",
+   "82.0",
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   "2025-08-02 05:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/ic_requirement_auction/2026/10/16/raw_20261016T203718Z_6a928369-bed3-445f-af8a-69cdb2cc5089_d1fc25d1.csv",
+   "2026-10-16 20:37:18.225890 UTC",
+   "2025-08-02 05:00:00 UTC",
+   "2026-10-16 20:37:18.225890 UTC",
+   "drain-88214d16-631d-4482-80f5-cde218f4bfff",
+   "1+e1"
+  ],
+  [
+   "2025_09_19-16_32-1",
+   "Sell",
+   "1040.0",
+   "EL",
+   "2025-09-19 18:00:00 UTC",
+   "2025-09-19 19:00:00 UTC",
+   "-803.61",
+   "-170.26",
+   "1040.0",
+   "",
+   "2025-09-19 16:05:14 UTC",
+   "2025_09_19-16_32",
+   "2025-09-19 16:00:00 UTC",
+   "145.0",
+   "18.59",
+   "1406.0",
+   null,
+   null,
+   null,
+   null,
+   "1040.0",
+   null,
+   null,
+   "2025-09-19 18:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/ic_requirement_auction/2026/10/16/raw_20261016T203718Z_6a928369-bed3-445f-af8a-69cdb2cc5089_d1fc25d1.csv",
+   "2026-10-16 20:37:18.225890 UTC",
+   "2025-09-19 18:00:00 UTC",
+   "2026-10-16 20:37:18.225890 UTC",
+   "drain-88214d16-631d-4482-80f5-cde218f4bfff",
+   "1+e1"
+  ],
+  [
+   "2026_09_07-19_42-2",
+   "Buy",
+   "600.0",
+   "IFA1/NEMO/IFA2/EL/VKL",
+   "2026-09-07 22:00:00 UTC",
+   "2026-09-06 23:00:00 UTC",
+   "155.5",
+   "151.64",
+   "600.0",
+   "",
+   "2026-09-07 19:21:05 UTC",
+   "2026_09_07-19_42",
+   "2026-09-07 19:15:00 UTC",
+   "113.0",
+   "147.05",
+   "4922.0",
+   "150.0",
+   null,
+   null,
+   "75.0",
+   "75.0",
+   "300.0",
+   "F",
+   "2026-09-07 22:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/ic_requirement_auction/2026/10/16/raw_20261016T203718Z_6a928369-bed3-445f-af8a-69cdb2cc5089_d1fc25d1.csv",
+   "2026-10-16 20:37:18.225890 UTC",
+   "2026-09-07 22:00:00 UTC",
+   "2026-10-16 20:37:18.225890 UTC",
+   "drain-88214d16-631d-4482-80f5-cde218f4bfff",
+   "1+e1"
+  ],
+  [
+   "2026_10_08-11_43-1",
+   "Sell",
+   "500.0",
+   "IFA1/BN/NEMO/IFA2/EL/VKL",
+   "2026-10-08 13:00:00 UTC",
+   "2026-10-08 14:00:00 UTC",
+   "62.05",
+   "67.71",
+   "500.0",
+   "",
+   "2026-10-08 11:20:10 UTC",
+   "2026_10_08-11_43",
+   "2026-10-08 11:15:00 UTC",
+   "160.0",
+   "76.96",
+   "5497.0",
+   "200.0",
+   null,
+   "300.0",
+   null,
+   null,
+   null,
+   "F",
+   "2026-10-08 13:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/ic_requirement_auction/2026/10/16/raw_20261016T203718Z_6a928369-bed3-445f-af8a-69cdb2cc5089_d1fc25d1.csv",
+   "2026-10-16 20:37:18.225890 UTC",
+   "2026-10-08 13:00:00 UTC",
+   "2026-10-16 20:37:18.225890 UTC",
+   "drain-88214d16-631d-4482-80f5-cde218f4bfff",
+   "1+e1"
+  ],
+  [
+   "2026_10_08-11_43-2",
+   "Sell",
+   "500.0",
+   "IFA1/BN/NEMO/IFA2/EL/VKL",
+   "2026-10-08 14:00:00 UTC",
+   "2026-10-08 15:00:00 UTC",
+   "88.4",
+   "89.18",
+   "500.0",
+   "",
+   "2026-10-08 11:20:10 UTC",
+   "2026_10_08-11_43",
+   "2026-10-08 11:15:00 UTC",
+   "160.0",
+   "90.53",
+   "6359.0",
+   null,
+   null,
+   "300.0",
+   null,
+   "200.0",
+   null,
+   "F",
+   "2026-10-08 14:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/ic_requirement_auction/2026/10/16/raw_20261016T203718Z_6a928369-bed3-445f-af8a-69cdb2cc5089_d1fc25d1.csv",
+   "2026-10-16 20:37:18.225890 UTC",
+   "2026-10-08 14:00:00 UTC",
+   "2026-10-16 20:37:18.225890 UTC",
+   "drain-88214d16-631d-4482-80f5-cde218f4bfff",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

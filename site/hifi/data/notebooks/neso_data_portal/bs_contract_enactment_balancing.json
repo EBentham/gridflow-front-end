@@ -1,0 +1,241 @@
+{
+ "dataset": "neso_data_portal/bs_contract_enactment_balancing",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "598b99947aa36635f8bf3e5a20d51df68943b17010dc4fb29bfb768fcdb62bb1",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.neso_data_portal.query(\"bs_contract_enactment_balancing\", \"2021-04-01\", \"2027-03-31\")\ndf[[\"id\", \"starttime\", \"endtime\", \"volume\", \"price\", \"cost\", \"reason\"]].tail()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "id",
+      "starttime",
+      "endtime",
+      "volume",
+      "price",
+      "cost",
+      "reason"
+     ],
+     "index": [
+      "78",
+      "79",
+      "80",
+      "81",
+      "82"
+     ],
+     "rows": [
+      [
+       "ES00284587",
+       "2024-03-18 14:00:00+00:00",
+       "2024-03-18 23:00:00+00:00",
+       "-11.5",
+       "124.00",
+       "-12811.68",
+       "B6_localised"
+      ],
+      [
+       "ES00284675",
+       "2024-03-18 23:00:00+00:00",
+       "2024-03-19 12:00:00+00:00",
+       "-4.8",
+       "124.00",
+       "-7753.72",
+       "B6_localised"
+      ],
+      [
+       "ES00339135",
+       "2025-07-04 13:00:00+01:00",
+       "2025-07-04 23:00:00+01:00",
+       "-17.6",
+       "-105.00",
+       "18480.00",
+       "B6_localised"
+      ],
+      [
+       "ES00378731",
+       "2026-09-30 13:00:00+01:00",
+       "2026-09-30 17:00:00+01:00",
+       "-13.5",
+       "137.64",
+       "-7432.56",
+       "B6_localised"
+      ],
+      [
+       "ES00378936",
+       "2026-09-30 17:00:00+01:00",
+       "2026-09-30 18:00:00+01:00",
+       "-10.9",
+       "137.64",
+       "-1507.16",
+       "B6_localised"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "moved = df[df.cost != 0].copy()\nmoved[\"hours\"] = (moved.endtime - moved.starttime).dt.total_seconds() / 3600\nmoved[[\"id\", \"hours\", \"volume\", \"price\", \"cost\"]]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "id",
+      "hours",
+      "volume",
+      "price",
+      "cost"
+     ],
+     "index": [
+      "73",
+      "74",
+      "75",
+      "76",
+      "77",
+      "78",
+      "79",
+      "80",
+      "81",
+      "82"
+     ],
+     "rows": [
+      [
+       "ES00227515",
+       "12.0",
+       "-4.9",
+       "124.00",
+       "-7291.20"
+      ],
+      [
+       "ES00236760",
+       "6.0",
+       "-10.8",
+       "124.00",
+       "-8050.08"
+      ],
+      [
+       "ES00273726",
+       "5.0",
+       "-15.0",
+       "124.00",
+       "-9300.00"
+      ],
+      [
+       "ES00281611",
+       "6.0",
+       "-9.0",
+       "124.00",
+       "-6696.00"
+      ],
+      [
+       "ES00282061",
+       "8.5",
+       "-3.0",
+       "124.00",
+       "-3140.92"
+      ],
+      [
+       "ES00284587",
+       "9.0",
+       "-11.5",
+       "124.00",
+       "-12811.68"
+      ],
+      [
+       "ES00284675",
+       "13.0",
+       "-4.8",
+       "124.00",
+       "-7753.72"
+      ],
+      [
+       "ES00339135",
+       "10.0",
+       "-17.6",
+       "-105.00",
+       "18480.00"
+      ],
+      [
+       "ES00378731",
+       "4.0",
+       "-13.5",
+       "137.64",
+       "-7432.56"
+      ],
+      [
+       "ES00378936",
+       "1.0",
+       "-10.9",
+       "137.64",
+       "-1507.16"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "df.groupby([\"reason\", \"asset_id\"], dropna=False).size()",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "reason        asset_id  \nB6_localised  Carscreugh     9\n              NORHW-1        1\nV_MERSEY      Runcorn       72\nNaN           Runcorn        1\ndtype: int64"
+    }
+   ]
+  }
+ ]
+}

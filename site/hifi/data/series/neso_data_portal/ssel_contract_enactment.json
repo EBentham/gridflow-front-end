@@ -1,0 +1,19 @@
+{
+  "dataset": "neso_data_portal/ssel_contract_enactment",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "977e1ff877ac37d9c1e31bbce94526d571057ed7ec2c28282a664e8d2590f108",
+  "type": "bar",
+  "unit": "enactments",
+  "caption": "",
+  "value_column": null,
+  "aggregation": "count",
+  "window": null,
+  "provenance": {"duplicates_dropped": 0, "files": 6, "rows_matched": 27, "rows_read": 27, "rows_used": 27, "silver": "neso_data_portal/ssel_contract_enactment"},
+  "spec": {"aggregation": "count", "dedup": {"on": ["resource_id", "id"], "order_by": "capture_written_at"}, "group": "resource_id", "group_map": {"34f185bc-087a-41b2-b514-305e31158e5a": "2022-23", "43078fd2-7583-4b0a-b398-e48de3817515": "2024-25", "817036a8-10af-442e-93d4-8f21ae038b52": "2023-24", "835d50b9-2d7c-4318-bd04-c7f94b149041": "2020-21", "8e7168fa-8617-4d83-9696-d6bf1f09c9c5": "2025-26", "bf9ca254-e9de-4aa2-841a-fb34566de38a": "2021-22"}, "silver": "neso_data_portal/ssel_contract_enactment", "sort": "label", "type": "bar", "unit": "enactments"},
+  "x_kind": "category",
+  "x": ["2020-21", "2021-22", "2022-23", "2023-24", "2024-25", "2025-26"],
+  "series": [
+    {"key": "count", "values": [20, 1, 2, 2, 1, 1]}
+  ]
+}

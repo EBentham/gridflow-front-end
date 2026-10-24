@@ -126,7 +126,14 @@
         "system-operating-plan-sop",
         "demand-flexibility-service",
         "demand-flexibility-service-live-events",
-        "demand-flexibility-service-test-events"
+        "demand-flexibility-service-test-events",
+        "day-ahead-power-exchange-prices-nordpool",
+        "balancing-services-contract-enactment",
+        "index-linked-contract-volume",
+        "super-stable-export-limit-contract-enactment",
+        "historic-gtma-grid-trade-master-agreement-trades-data",
+        "interconnector-requirement-and-auction-summary-data",
+        "upcoming-trades"
       ]
     }
   ],
@@ -419,6 +426,25 @@
         "dfs_test_events_service_update_industry",
         "dfs_test_events_service_requirement"
       ]
+    },
+    {
+      "slug": "balancing-services-contract-enactment",
+      "title": "Balancing services contract enactment",
+      "note": "balancing-services-contract-enactment",
+      "members": [
+        "bs_contract_enactment_balancing",
+        "bs_contract_enactment_balancing_service"
+      ]
+    },
+    {
+      "slug": "historic-gtma-grid-trade-master-agreement-trades-data",
+      "title": "Historic GTMA trades",
+      "note": "historic-gtma-grid-trade-master-agreement-trades-data",
+      "members": [
+        "gtma_trades_data",
+        "gtma_trades_data_pre",
+        "gtma_trades_fy"
+      ]
     }
   ],
   "names": {
@@ -462,7 +488,12 @@
     "stability-midterm-y-1-utilisation-report": "Stability mid-term Y-1 utilisation",
     "system-inertia": "System inertia",
     "system-inertia-cost": "System inertia cost",
-    "system-operating-plan-sop": "System operating plan"
+    "system-operating-plan-sop": "System operating plan",
+    "day-ahead-power-exchange-prices-nordpool": "Day-ahead power exchange prices (Nord Pool)",
+    "index-linked-contract-volume": "Index Linked Contracted Energy Volume",
+    "super-stable-export-limit-contract-enactment": "Super SEL contract enactment",
+    "interconnector-requirement-and-auction-summary-data": "Interconnector requirement and auction summary",
+    "upcoming-trades": "Upcoming trades"
   },
   "dropped": {},
   "package_tables": {
@@ -503,7 +534,12 @@
     "stability-midterm-y-1-utilisation-report": "stability_midterm_y1",
     "system-inertia": "system_inertia",
     "system-inertia-cost": "system_inertia_cost",
-    "system-operating-plan-sop": "system_operating_plan"
+    "system-operating-plan-sop": "system_operating_plan",
+    "day-ahead-power-exchange-prices-nordpool": "nordpool_da_prices",
+    "index-linked-contract-volume": "index_linked_contract_volume",
+    "super-stable-export-limit-contract-enactment": "ssel_contract_enactment",
+    "interconnector-requirement-and-auction-summary-data": "ic_requirement_auction",
+    "upcoming-trades": "upcoming_trades"
   },
   "catalogue": {
     "_about": "NESO's catalogue as the hub draws it: its data groups in portal order, each with NESO's description and its packages (NESO's titles and CKAN names). `page_packages` names the CKAN package of a page not named after it; a package is a link when a page in `groups` documents it. `plan` lays the groups out as plots: a slug is one plot, `row` sets its children side by side, `col` stacks them; `wide` from 1100 px, `narrow` below, and `tag_narrow` plots carry their name beneath them when narrow.",
