@@ -9,6 +9,18 @@ DFS carried up. Defect rows 20cl-20cr on `vault-neso-dpc` (pushed) plus BACKLOG 
 design). Helper: `<scratchpad>/seat/logdef.py <spec.json>` inserts a remediation row after `after_row` and a backlog
 line after `after_backlog` (next id 20cs, after "(20cr)").
 
+## Update ~18:25Z (seat context 92%, compaction next)
+
+In flight: CI1 checker a50d6c3658e06feeb; F1 checker a34861f355f97978d; F2 writer a52e0573a78ee0c3e; R1 checker
+a0829310d3f9bfefb (R1 pages: current BSUoS on bc, system frequency on sys; commit each on its own branch, then merge
+up the whole stack bc -> ... -> dpc). Stack merged through ci. On CI1 approval: commit on ci, gates, push, tell parent.
+On F1+F2 approval: merge ci into fes, commit, gates, push, tell parent. Then merge fes -> sep -> dpc, gates on dpc,
+push all. Then the other-vendor batch (set up one site branch off main and one vault branch off master in new
+worktrees `C:\gridflow-wte-other-held` / `vault-other-held`; ENTSOG notes come from `v5/p26-entsog-gas-held` /
+`docs/v5-p26-entsog-gas-held`). Usage at 18:25Z: 5-hour 64% (resets 20:20Z), weekly 64%. Next defect id 20cu.
+Writer/checker prompt pattern: see the launch prompts in this session's earlier batches (read files listed, lessons
+paragraph, package list with questions, report path `held-rows/<batch>-<slug>-author.md`, 8-line final message).
+
 ## Update ~17:50Z
 
 Network charges DONE (pushed, parent told, 20ct logged; next id 20cu after "(20ct)"). CI1 checker a50d6c3658e06feeb.

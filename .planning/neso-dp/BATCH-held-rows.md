@@ -128,7 +128,7 @@ repeat rows; on a table with no event time use `data.sql()`; the column guide ac
 | CI1 | ace01fca13556e033 | a50d6c3658e06feeb | written; in review (national and country rows show past values revised; regional chart of the file's last week) |
 | F1 | a34676c0e232141b9 | a34861f355f97978d | written; in review (ED1 caveat differs: NESO calls annual rows fiscal) |
 | F2 | a52e0573a78ee0c3e | | writing |
-| R1 | a2169fe0f64b6cf11 | | writing |
+| R1 | a2169fe0f64b6cf11 | a0829310d3f9bfefb | written; in review (2014 frequency table now a caveat, not held; BSUoS sample from the 16 Oct upload) |
 
 Pace raised 2026-10-24 ~13:25Z (Bobbo via the parent): 5 agents at once, aim about 50% of weekly usage over 36 hours;
 park at 98% weekly. After NESO: ruling 66 on the seven blank other-vendor pages (ENTSO-E balancing-energy bids, current
