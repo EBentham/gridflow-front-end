@@ -68,7 +68,22 @@
         "demand-flexibility",
         "eac-br-auction-results",
         "aggregated-bsad",
-        "constraint-breakdown"
+        "constraint-breakdown",
+        "balancing-reserve-auction-requirement-forecast",
+        "dynamic-containment-data",
+        "dynamic-moderation-requirements",
+        "dynamic-regulation-requirements",
+        "quick-reserve-auction-requirement-forecast",
+        "slow-reserve-requirement-forecast",
+        "static-firm-frequency-response-auction-results",
+        "static-firm-frequency-response-requirement",
+        "phase-2-ffr-auction-results-summary",
+        "firm-frequency-response-post-tender-reports",
+        "eac-auction-results",
+        "dynamic-containment-4-day-forecast",
+        "long-term-forecasts-for-dc-dm-dr-requirements",
+        "eac-mock-auction-results",
+        "eac-br-mock-auction-results"
       ]
     }
   ],
@@ -94,6 +109,120 @@
         "eac_br_results_buy_orders",
         "eac_br_results_sell_orders"
       ]
+    },
+    {
+      "slug": "balancing-reserve-auction-requirement-forecast",
+      "title": "Balancing Reserve requirement forecast",
+      "note": "balancing-reserve-auction-requirement-forecast",
+      "members": [
+        "br_auction_requirement_fc_da",
+        "br_auction_requirement_fc_da_archive",
+        "br_auction_requirement_fc_medium_term"
+      ]
+    },
+    {
+      "slug": "dynamic-containment-data",
+      "title": "Dynamic Containment auction data",
+      "note": "dynamic-containment-data",
+      "members": [
+        "dynamic_containment_dc_dr_dm_results",
+        "dynamic_containment_dc_dr_dm_block",
+        "dynamic_containment_masterdata",
+        "dynamic_containment_dc_dr_dm_results_sum",
+        "dynamic_containment_dc_dr_dm_linear"
+      ]
+    },
+    {
+      "slug": "static-firm-frequency-response-auction-results",
+      "title": "Static FFR auction results",
+      "note": "static-firm-frequency-response-auction-results",
+      "members": [
+        "sffr_auction_results_main",
+        "sffr_auction_results_buy_orders"
+      ]
+    },
+    {
+      "slug": "phase-2-ffr-auction-results-summary",
+      "title": "Phase 2 FFR auction results",
+      "note": "phase-2-ffr-auction-results-summary",
+      "members": [
+        "ffr_phase2_auction_phase_resultsbyunit",
+        "ffr_phase2_auction_phase_resultsum",
+        "ffr_phase2_auction_phase_blockorders",
+        "ffr_phase2_auction_phase_block_order",
+        "ffr_phase2_auction_phase_linearorders",
+        "ffr_phase2_auction_phase_linear_orders",
+        "ffr_phase2_auction_phase_results_sum",
+        "ffr_phase2_auction_phase_results_unit",
+        "ffr_phase2_result_summary_archive",
+        "ffr_phase2_results_by_unit_archive",
+        "ffr_phase2_blockorders_archive",
+        "ffr_phase2_linearorders_archive"
+      ]
+    },
+    {
+      "slug": "firm-frequency-response-post-tender-reports",
+      "title": "FFR post-tender reports",
+      "note": "firm-frequency-response-post-tender-reports",
+      "members": [
+        "ffr_post_tender_reports_csv_ext",
+        "ffr_post_tender_reports_workbook",
+        "ffr_post_tender_reports_csv",
+        "ffr_post_tender_reports_ext"
+      ]
+    },
+    {
+      "slug": "eac-auction-results",
+      "title": "EAC auction results",
+      "note": "eac-auction-results",
+      "members": [
+        "eac_results_summary",
+        "eac_results_summary_fy",
+        "eac_results_daily_summary",
+        "eac_results_by_unit",
+        "eac_results_by_unit_fy",
+        "eac_results_daily_by_unit",
+        "eac_results_buy_orders",
+        "eac_results_buy_orders_fy",
+        "eac_results_daily_buy_orders",
+        "eac_results_sell_orders",
+        "eac_results_daily_sell_orders"
+      ]
+    },
+    {
+      "slug": "dynamic-containment-4-day-forecast",
+      "title": "Dynamic Containment 4 day forecast",
+      "note": "dynamic-containment-4-day-forecast",
+      "members": [
+        "dc_forecast_4d",
+        "dc_forecast_4d_history"
+      ]
+    },
+    {
+      "slug": "eac-mock-auction-results",
+      "title": "EAC mock auction results",
+      "note": "eac-mock-auction-results",
+      "members": [
+        "eac_mock_results_summary",
+        "eac_mock_results_by_unit",
+        "eac_mock_results_buy_orders",
+        "eac_mock_results_sell_orders",
+        "eac_mock_results_daily_summary",
+        "eac_mock_results_daily_by_unit",
+        "eac_mock_results_daily_buy_orders",
+        "eac_mock_results_daily_sell_orders"
+      ]
+    },
+    {
+      "slug": "eac-br-mock-auction-results",
+      "title": "Balancing Reserve mock auction results",
+      "note": "eac-br-mock-auction-results",
+      "members": [
+        "eac_br_mock_results_summary",
+        "eac_br_mock_results_by_unit",
+        "eac_br_mock_results_buy_orders",
+        "eac_br_mock_results_sell_orders"
+      ]
     }
   ],
   "names": {
@@ -101,12 +230,24 @@
     "embedded_wind_solar_forecast": "Embedded wind and solar forecast",
     "daily_wind_availability": "Daily wind availability",
     "aggregated-bsad": "Aggregated BSAD",
-    "constraint-breakdown": "Constraint breakdown"
+    "constraint-breakdown": "Constraint breakdown",
+    "dynamic-moderation-requirements": "Dynamic Moderation requirements",
+    "dynamic-regulation-requirements": "Dynamic Regulation requirements",
+    "quick-reserve-auction-requirement-forecast": "Quick Reserve requirement forecast",
+    "slow-reserve-requirement-forecast": "Slow Reserve requirement forecast",
+    "static-firm-frequency-response-requirement": "Static FFR requirement",
+    "long-term-forecasts-for-dc-dm-dr-requirements": "DC, DM and DR long-term forecasts"
   },
   "dropped": {},
   "package_tables": {
     "aggregated-bsad": "aggregated_bsad",
-    "constraint-breakdown": "constraint_breakdown"
+    "constraint-breakdown": "constraint_breakdown",
+    "dynamic-moderation-requirements": "dm_requirements",
+    "dynamic-regulation-requirements": "dr_requirements",
+    "quick-reserve-auction-requirement-forecast": "qr_auction_requirement_fc",
+    "slow-reserve-requirement-forecast": "slow_reserve_requirement_fc",
+    "static-firm-frequency-response-requirement": "sffr_requirement",
+    "long-term-forecasts-for-dc-dm-dr-requirements": "dc_dm_dr_long_term_fc"
   },
   "catalogue": {
     "_about": "NESO's catalogue as the hub draws it: its data groups in portal order, each with NESO's description and its packages (NESO's titles and CKAN names). `page_packages` names the CKAN package of a page not named after it; a package is a link when a page in `groups` documents it. `plan` lays the groups out as plots: a slug is one plot, `row` sets its children side by side, `col` stacks them; `wide` from 1100 px, `narrow` below, and `tag_narrow` plots carry their name beneath them when narrow.",

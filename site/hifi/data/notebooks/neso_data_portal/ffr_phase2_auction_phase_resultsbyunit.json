@@ -1,0 +1,275 @@
+{
+ "dataset": "neso_data_portal/ffr_phase2_auction_phase_resultsbyunit",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "1b94b48eb88ec90a19dab32e56c9abd6f9132100eb257cf87c98d7cacc7eeb20",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.neso_data_portal.query(\"ffr_phase2_auction_phase_resultsbyunit\", \"2021-07-24\", \"2021-07-30\")\ndf = df.sort_values([\"efa_date\", \"efa\", \"service\", \"unit_name\"])\ndf[[\"efa_date\", \"efa\", \"service\", \"unit_name\", \"cleared_volume\", \"clearing_price\", \"cancelled\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "efa_date",
+      "efa",
+      "service",
+      "unit_name",
+      "cleared_volume",
+      "clearing_price",
+      "cancelled"
+     ],
+     "index": [
+      "50",
+      "21",
+      "41",
+      "42",
+      "43"
+     ],
+     "rows": [
+      [
+       "2021-07-24",
+       "1",
+       "DLH",
+       "SOC10-FFR",
+       "1.0",
+       "7.58",
+       "NaN"
+      ],
+      [
+       "2021-07-24",
+       "1",
+       "LFS",
+       "UF_GBD02",
+       "6.0",
+       "5.40",
+       "NaN"
+      ],
+      [
+       "2021-07-24",
+       "1",
+       "LFS",
+       "UF_GBD03",
+       "7.0",
+       "5.40",
+       "NaN"
+      ],
+      [
+       "2021-07-24",
+       "1",
+       "LFS",
+       "UF_GBD05",
+       "9.0",
+       "5.40",
+       "NaN"
+      ],
+      [
+       "2021-07-24",
+       "1",
+       "LFS",
+       "UF_GBD06",
+       "13.0",
+       "5.40",
+       "NaN"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "blocks = (df.groupby([\"efa_date\", \"efa\", \"service\"], as_index=False)\n            .agg(units=(\"unit_name\", \"nunique\"), cleared_mw=(\"cleared_volume\", \"sum\"),\n                 prices=(\"clearing_price\", \"nunique\"), clearing_price=(\"clearing_price\", \"first\")))\nblocks[blocks.efa_date == \"2021-07-24\"]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "efa_date",
+      "efa",
+      "service",
+      "units",
+      "cleared_mw",
+      "prices",
+      "clearing_price"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10"
+     ],
+     "rows": [
+      [
+       "2021-07-24",
+       "1",
+       "DLH",
+       "1",
+       "1.0",
+       "1",
+       "7.58"
+      ],
+      [
+       "2021-07-24",
+       "1",
+       "LFS",
+       "9",
+       "98.0",
+       "1",
+       "5.40"
+      ],
+      [
+       "2021-07-24",
+       "2",
+       "DLH",
+       "1",
+       "1.0",
+       "1",
+       "6.35"
+      ],
+      [
+       "2021-07-24",
+       "2",
+       "LFS",
+       "10",
+       "98.0",
+       "1",
+       "5.40"
+      ],
+      [
+       "2021-07-24",
+       "3",
+       "DLH",
+       "1",
+       "1.0",
+       "1",
+       "7.13"
+      ],
+      [
+       "2021-07-24",
+       "3",
+       "LFS",
+       "7",
+       "77.0",
+       "1",
+       "3.40"
+      ],
+      [
+       "2021-07-24",
+       "4",
+       "DLH",
+       "1",
+       "1.0",
+       "1",
+       "6.70"
+      ],
+      [
+       "2021-07-24",
+       "4",
+       "LFS",
+       "7",
+       "78.0",
+       "1",
+       "3.40"
+      ],
+      [
+       "2021-07-24",
+       "5",
+       "DLH",
+       "2",
+       "2.0",
+       "1",
+       "7.50"
+      ],
+      [
+       "2021-07-24",
+       "5",
+       "LFS",
+       "7",
+       "84.0",
+       "1",
+       "3.40"
+      ],
+      [
+       "2021-07-24",
+       "6",
+       "LFS",
+       "7",
+       "85.0",
+       "1",
+       "3.40"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "week = blocks.pivot(index=[\"efa_date\", \"efa\"], columns=\"service\", values=\"clearing_price\")\nweek[[\"DLH\", \"LFS\"]].droplevel(\"efa_date\").plot(drawstyle=\"steps-post\", color=[\"#155A6E\", \"#C77E3C\"], figsize=(8, 3.5),\n        xlabel=\"EFA block of the week, 1 to 42, EFA dates 24 to 30 July 2021\",\n        ylabel=\"clearing price, £/MW/h\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "ffr_phase2_auction_phase_resultsbyunit-5.png",
+     "width": 690,
+     "height": 337
+    }
+   ]
+  }
+ ]
+}
