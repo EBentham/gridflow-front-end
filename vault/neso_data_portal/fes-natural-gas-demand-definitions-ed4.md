@@ -4,9 +4,92 @@ package: "fes-natural-gas-demand-definitions-ed4"
 dataset_key: "fes_ed4_gas_demand_defs"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-15
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: FES natural gas demand definitions
+  summary: >-
+    NESO's definitions of the gas items in FES ED3 summary tables, titled Natural Gas Demand
+    Summary from 2025; one CSV per edition.
+  facts:
+    vendor: "NESO Data Portal: four CSVs, one per edition"
+    cadence: "Ad hoc (NESO); editions 2023 to 2026, as at 6 October 2026"
+    grain: "One row per item per edition; items 1 to 10, plus 11 from 2025"
+    history: "NESO created the package on 7 July 2023"
+  landscape: gas
+  what_it_is: >-
+    NESO's package notes say these files define "an agreed set of data tables" of GB FES natural
+    gas and residential heat demand; the 2025 and 2026 file descriptions say natural gas only.
+    Each edition defines its gas demand items. The 2026 item 5 text (file of 16 September 2026)
+    names the earlier forecast "FES 2026", then "FES25".
+  how_used:
+    - "Read what an ED3 gas demand line covers, in the same edition's words"
+    - "Check whether an item's scope changed before comparing it across editions"
+    - "Rebuild NESO's total line from its item-number formula, edition by edition"
+  chart:
+    type: none
+    reason: Ten or eleven text definitions per edition and no measure; a count of items would only restate the rows.
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then four CSVs, each downloaded whole unless its
+      `last_modified` is unchanged. Shown: 2023, 2025 and 2026; edition comes from the file name.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=fes-natural-gas-demand-definitions-ed4"
+      - "GET https://api.neso.energy/dataset/af30ab4c-eb46-487c-80bd-84a57d7d5f18/resource/60a8299f-9ba1-4663-9ece-8005a8a42fa2/download/fes2023_ed4_v001.csv"
+      - "GET https://api.neso.energy/dataset/af30ab4c-eb46-487c-80bd-84a57d7d5f18/resource/74485527-6c09-4c1a-bf8c-8569810eb918/download/fes2025_ed4_v006.csv"
+      - "GET https://api.neso.energy/dataset/af30ab4c-eb46-487c-80bd-84a57d7d5f18/resource/b5ae9932-2ce9-42f0-a820-15a13f0eedd0/download/10yo2026_ed4_v001.csv"
+    commands:
+      - {run: gridflow ingest neso_data_portal fes_ed4_gas_demand_defs --last 24h, comment: "changed files only; whole CSVs"}
+      - {run: gridflow transform neso_data_portal fes_ed4_gas_demand_defs --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: item_no, op: in, value: [2, 3, 5, 11]}
+        - {column: edition, op: in, value: [2025, 2026]}
+      dedup: {"on": [resource_id, item_no], order_by: capture_written_at}
+      order_by: [item_no, edition]
+      columns: [item_no, edition, description, definition, published_at, resource_id, timestamp_utc]
+    key: [item_no, edition, resource_id]
+    caption: "2025 and 2026: the 2026 total omits item 3, whose networked CNG is in item 2."
+    fields:
+      item_no: "NESO's \"Unique Key\" within each file; item 11's formula sums these numbers"
+      edition: "FES edition, from the file name; 2026 is NESO's Ten-Year Outlook file"
+      resource_id: "CKAN id of the edition's file; with edition and item number, the entity key"
+      description: "NESO's name for the ED3 item; items 7 and 8 keep a trailing space"
+      definition: "NESO's text, verbatim and edition-specific; item 11's is a formula over item numbers"
+      published_at: "NESO's last-modified time for the edition's file, read as UTC"
+      timestamp_utc: "When gridflow captured the file, UTC; the table has no event time"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      `query()` filters on `timestamp_utc`, here the capture time, so these cells use `data.sql()`
+      on the `_latest` view, show item 11's formulas and print the three longest definitions whole,
+      NESO's typos included.
+    cells:
+      - |
+        defs = data.sql("""
+            SELECT edition, item_no, description, definition
+            FROM silver_neso_data_portal_fes_ed4_gas_demand_defs_latest
+            ORDER BY edition, item_no
+        """)
+        defs.groupby("edition").item_no.agg(["count", "max"])
+      - |
+        wide = defs.pivot(index="item_no", columns="edition", values="definition")
+        (wide[2025] != wide[2026]).rename("text_differs_2025_to_2026")
+      - defs[defs.item_no == 11][["edition", "item_no", "definition"]]
+      - |
+        for r in defs.loc[defs.definition.str.len().nlargest(3).index].itertuples():
+            print(f"Item {r.item_no} ({r.edition}): {r.definition}\n")
+    needs: NESO's four FES natural gas demand definitions files
+    plot_alt: >-
+      No plot: the cells count the items in each edition, flag which item texts differ between 2025
+      and 2026, show item 11's two formulas, and print the three longest definitions whole.
+  related:
+    - {dataset: neso_data_portal/fes-natural-gas-residential-and-non-domestic-i-c-heat-demand-summary-data-table-ed3, note: "The ED3 table these items define; read both from one edition"}
+    - {dataset: neso_data_portal/fes-whole-system-gas-supply-data-table-ws1, note: "NESO's FES gas supply table, alongside these gas demand items"}
+    - {dataset: neso_data_portal/fes-road-transport-notes-data-table-ed6, note: "Does for road transport table ED5 what this page does for ED3"}
 ---
 
 # FES: Pathways to Net Zero – Natural Gas demand definitions Data table (ED4)
@@ -161,7 +244,9 @@ that is the only description label that differs across editions.
   non-networked LNG and networked CNG, so it must not be added to the other components to get
   total networked gas demand, because the networked part is counted inside commercial demand
   (item 2). The 2026 item 11 formula omits item 3 while the 2025 formula includes it, which is
-  consistent with that definition. Do not carry the 2025 formula over to a 2026 table.
+  consistent with that definition. Do not carry the 2025 formula over to a 2026 table. The
+  2026 item 2 definition says the same from the other side: commercial demand "includes
+  networked CNG used for transport" (the 2025 item 2 text does not).
 - **Item 5, electricity generation, 2026.** The 2026 definition says the outlook now
   includes additional gas demand for gas-fired power generation that is likely to arise from
   electricity-network constraints, that the earlier (2025) ten-year forecast did not include
