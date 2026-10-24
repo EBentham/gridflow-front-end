@@ -1,0 +1,261 @@
+{
+ "dataset": "neso_data_portal/transmission_losses_main",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "c311e2e51589ec2f7ba56cc136dd5cbdacd04df2ba0877681f166a7d03e55da9",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "months = data.sql(\"\"\"\n    SELECT financial_year, month_vendor, nget, spt, shetl, gb_totals\n    FROM silver_neso_data_portal_transmission_losses_main_latest\n    ORDER BY strptime(month_vendor, '%b-%y')\n\"\"\")\nmonths.tail()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "financial_year",
+      "month_vendor",
+      "nget",
+      "spt",
+      "shetl",
+      "gb_totals"
+     ],
+     "index": [
+      "156",
+      "157",
+      "158",
+      "159",
+      "160"
+     ],
+     "rows": [
+      [
+       "2026-27",
+       "Apr-26",
+       "0.4065",
+       "0.0577",
+       "0.0345",
+       "0.4988"
+      ],
+      [
+       "2026-27",
+       "May-26",
+       "0.3518",
+       "0.0505",
+       "0.0339",
+       "0.4362"
+      ],
+      [
+       "2026-27",
+       "Jun-26",
+       "0.2972",
+       "0.0413",
+       "0.0235",
+       "0.3620"
+      ],
+      [
+       "2026-27",
+       "Jul-26",
+       "0.4329",
+       "0.0529",
+       "0.0362",
+       "0.5221"
+      ],
+      [
+       "2026-27",
+       "Aug-26",
+       "0.1162",
+       "0.0153",
+       "0.0096",
+       "0.1412"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "years = data.sql(\"\"\"\n    SELECT financial_year, sum_of_nget, sum_of_spt, sum_of_shetl, sum_of_gb_totals\n    FROM silver_neso_data_portal_transmission_losses_financial_year_latest\n    ORDER BY financial_year\n\"\"\")\nyears",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "financial_year",
+      "sum_of_nget",
+      "sum_of_spt",
+      "sum_of_shetl",
+      "sum_of_gb_totals"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12"
+     ],
+     "rows": [
+      [
+       "2013-14",
+       "4.556393",
+       "0.544060",
+       "0.325972",
+       "5.426425"
+      ],
+      [
+       "2014-15",
+       "4.577865",
+       "0.688095",
+       "0.370513",
+       "5.636473"
+      ],
+      [
+       "2015-16",
+       "4.598267",
+       "0.502708",
+       "0.270689",
+       "5.371663"
+      ],
+      [
+       "2016-17",
+       "4.033267",
+       "0.530273",
+       "0.286770",
+       "4.850311"
+      ],
+      [
+       "2017-18",
+       "4.422121",
+       "0.537615",
+       "0.273051",
+       "5.232787"
+      ],
+      [
+       "2018-19",
+       "4.576551",
+       "0.704262",
+       "0.370423",
+       "5.651236"
+      ],
+      [
+       "2019-20",
+       "5.675309",
+       "0.760173",
+       "0.436218",
+       "6.871700"
+      ],
+      [
+       "2020-21",
+       "5.385933",
+       "0.701456",
+       "0.470735",
+       "6.558124"
+      ],
+      [
+       "2021-22",
+       "5.429284",
+       "0.637141",
+       "0.439106",
+       "6.505530"
+      ],
+      [
+       "2022-23",
+       "6.719072",
+       "0.869475",
+       "0.586976",
+       "8.175523"
+      ],
+      [
+       "2023-24",
+       "5.924000",
+       "0.728000",
+       "0.499000",
+       "7.147000"
+      ],
+      [
+       "2024-25",
+       "6.247800",
+       "0.768500",
+       "0.524400",
+       "7.540900"
+      ],
+      [
+       "2025-26",
+       "5.678800",
+       "0.690000",
+       "0.476900",
+       "6.845600"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "ax = years.plot.bar(x=\"financial_year\", y=\"sum_of_gb_totals\", legend=False,\n                    color=\"#155A6E\", figsize=(8, 3.5), xlabel=\"financial year\",\n                    ylabel=\"NESO's GB total, TWh\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "transmission_losses_main-5.png",
+     "width": 682,
+     "height": 379
+    }
+   ]
+  }
+ ]
+}
