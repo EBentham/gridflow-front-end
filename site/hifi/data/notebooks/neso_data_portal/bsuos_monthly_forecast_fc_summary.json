@@ -1,0 +1,122 @@
+{
+ "dataset": "neso_data_portal/bsuos_monthly_forecast_fc_summary",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "0024e8def6631833a5f72808a2e2c9c759f55809dfaa61e09cb3476421d668ad",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "import pandas as pd\ndf = data.sql(\"\"\"\n    SELECT edition, month_vendor, published_at, balancing_costs_central_gbp_m\n    FROM silver_neso_data_portal_bsuos_monthly_forecast_fc_summary_latest\n\"\"\")\ntarget = pd.to_datetime(df.month_vendor, format=\"%b-%y\", errors=\"coerce\")\ndf[\"target_month\"] = target.fillna(pd.to_datetime(df.month_vendor, format=\"%d/%m/%Y\", errors=\"coerce\")).dt.to_period(\"M\")\ndf[\"file_changed_utc\"] = df.published_at.dt.tz_convert(\"UTC\")\ndf.groupby(\"edition\").agg(first_target=(\"target_month\", \"min\"), last_target=(\"target_month\", \"max\"), file_changed_utc=(\"file_changed_utc\", \"first\")).tail()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "first_target",
+      "last_target",
+      "file_changed_utc",
+      "edition",
+      "",
+      "",
+      ""
+     ],
+     "index": [
+      "202606",
+      "202607",
+      "202608",
+      "202609",
+      "202610"
+     ],
+     "rows": [
+      [
+       "2026-05",
+       "2028-04",
+       "2026-05-15 15:03:02.281768+00:00"
+      ],
+      [
+       "2026-06",
+       "2028-05",
+       "2026-06-15 14:29:40.083222+00:00"
+      ],
+      [
+       "2026-07",
+       "2028-06",
+       "2026-07-15 14:59:34.517538+00:00"
+      ],
+      [
+       "2026-08",
+       "2028-07",
+       "2026-08-14 15:24:11.487001+00:00"
+      ],
+      [
+       "2026-09",
+       "2028-08",
+       "2026-09-21 10:38:16.472405+00:00"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "march = df[df.target_month == pd.Period(\"2026-03\", \"M\")].sort_values(\"edition\")\nax = march.plot(x=\"edition\", y=\"balancing_costs_central_gbp_m\", kind=\"bar\", figsize=(8, 3.5), color=\"#155A6E\", legend=False,\n                xlabel=\"edition (the month in NESO's file name)\", ylabel=\"central cost for March 2026, £m\")",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "bsuos_monthly_forecast_fc_summary-4.png",
+     "width": 699,
+     "height": 374
+    }
+   ]
+  }
+ ]
+}

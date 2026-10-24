@@ -1,0 +1,235 @@
+{
+ "dataset": "neso_data_portal/stability_pathfinder_utilisation_report",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "19a8aebd682e7354985978dac8c7b47148dd91eecd4d75d75b532519926ea4f7",
+ "silver": "neso_data_portal/stability_pathfinder_utilisation_report",
+ "columns": [
+  {
+   "name": "unit",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "settlement_period_start_date_time",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "instruction_code",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "instruction_issue_time",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "actual_service_start_or_cease_time",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "inertia",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "settlement_period_end_date_time",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "resource_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "KILLSC-2",
+   "2026-06-25T05:30:00+00:00",
+   "No",
+   null,
+   null,
+   "0",
+   "2026-06-25T06:00:00+00:00",
+   "75996c0a-70fb-4ddb-a345-bb1e8d39de35",
+   "2026-10-16 20:46:39.678293 UTC",
+   "2026-10-09 11:59:11.232115 UTC",
+   "bronze/neso_data_portal/stability_pathfinder_utilisation_report/2026/10/16/raw_20261016T204639Z_75996c0a-70fb-4ddb-a345-bb1e8d39de35_17e4ffc7.csv",
+   "2026-10-16 20:46:39.678293 UTC",
+   "2026-10-16 20:46:39.678293 UTC",
+   "2026-10-09 11:59:11.232115 UTC",
+   "drain-1086f562-02be-4d9d-b073-b7042031ed33",
+   "1+e1"
+  ],
+  [
+   "KILLSC-2",
+   "2026-06-25T06:00:00+00:00",
+   "No",
+   null,
+   null,
+   "0",
+   "2026-06-25T06:30:00+00:00",
+   "75996c0a-70fb-4ddb-a345-bb1e8d39de35",
+   "2026-10-16 20:46:39.678293 UTC",
+   "2026-10-09 11:59:11.232115 UTC",
+   "bronze/neso_data_portal/stability_pathfinder_utilisation_report/2026/10/16/raw_20261016T204639Z_75996c0a-70fb-4ddb-a345-bb1e8d39de35_17e4ffc7.csv",
+   "2026-10-16 20:46:39.678293 UTC",
+   "2026-10-16 20:46:39.678293 UTC",
+   "2026-10-09 11:59:11.232115 UTC",
+   "drain-1086f562-02be-4d9d-b073-b7042031ed33",
+   "1+e1"
+  ],
+  [
+   "KILLSC-2",
+   "2026-06-25T06:30:00+00:00",
+   "No",
+   null,
+   null,
+   "0",
+   "2026-06-25T07:00:00+00:00",
+   "75996c0a-70fb-4ddb-a345-bb1e8d39de35",
+   "2026-10-16 20:46:39.678293 UTC",
+   "2026-10-09 11:59:11.232115 UTC",
+   "bronze/neso_data_portal/stability_pathfinder_utilisation_report/2026/10/16/raw_20261016T204639Z_75996c0a-70fb-4ddb-a345-bb1e8d39de35_17e4ffc7.csv",
+   "2026-10-16 20:46:39.678293 UTC",
+   "2026-10-16 20:46:39.678293 UTC",
+   "2026-10-09 11:59:11.232115 UTC",
+   "drain-1086f562-02be-4d9d-b073-b7042031ed33",
+   "1+e1"
+  ],
+  [
+   "KILLSC-2",
+   "2026-06-25T07:00:00+00:00",
+   "Service Start",
+   "2026-06-25T07:15:00+00:00",
+   "2026-06-25T07:00:00+00:00",
+   "0",
+   "2026-06-25T07:30:00+00:00",
+   "75996c0a-70fb-4ddb-a345-bb1e8d39de35",
+   "2026-10-16 20:46:39.678293 UTC",
+   "2026-10-09 11:59:11.232115 UTC",
+   "bronze/neso_data_portal/stability_pathfinder_utilisation_report/2026/10/16/raw_20261016T204639Z_75996c0a-70fb-4ddb-a345-bb1e8d39de35_17e4ffc7.csv",
+   "2026-10-16 20:46:39.678293 UTC",
+   "2026-10-16 20:46:39.678293 UTC",
+   "2026-10-09 11:59:11.232115 UTC",
+   "drain-1086f562-02be-4d9d-b073-b7042031ed33",
+   "1+e1"
+  ],
+  [
+   "KILLSC-2",
+   "2026-06-25T07:00:00+00:00",
+   "Service Cease",
+   "2026-06-25T07:17:00+00:00",
+   "2026-06-25T07:19:00+00:00",
+   "0",
+   "2026-06-25T07:30:00+00:00",
+   "75996c0a-70fb-4ddb-a345-bb1e8d39de35",
+   "2026-10-16 20:46:39.678293 UTC",
+   "2026-10-09 11:59:11.232115 UTC",
+   "bronze/neso_data_portal/stability_pathfinder_utilisation_report/2026/10/16/raw_20261016T204639Z_75996c0a-70fb-4ddb-a345-bb1e8d39de35_17e4ffc7.csv",
+   "2026-10-16 20:46:39.678293 UTC",
+   "2026-10-16 20:46:39.678293 UTC",
+   "2026-10-09 11:59:11.232115 UTC",
+   "drain-1086f562-02be-4d9d-b073-b7042031ed33",
+   "1+e1"
+  ],
+  [
+   "KILLSC-2",
+   "2026-06-25T07:30:00+00:00",
+   "Service Start",
+   "2026-06-25T07:18:00+00:00",
+   "2026-06-25T07:33:00+00:00",
+   "1430",
+   "2026-06-25T08:00:00+00:00",
+   "75996c0a-70fb-4ddb-a345-bb1e8d39de35",
+   "2026-10-16 20:46:39.678293 UTC",
+   "2026-10-09 11:59:11.232115 UTC",
+   "bronze/neso_data_portal/stability_pathfinder_utilisation_report/2026/10/16/raw_20261016T204639Z_75996c0a-70fb-4ddb-a345-bb1e8d39de35_17e4ffc7.csv",
+   "2026-10-16 20:46:39.678293 UTC",
+   "2026-10-16 20:46:39.678293 UTC",
+   "2026-10-09 11:59:11.232115 UTC",
+   "drain-1086f562-02be-4d9d-b073-b7042031ed33",
+   "1+e1"
+  ],
+  [
+   "KILLSC-2",
+   "2026-06-25T08:00:00+00:00",
+   "No",
+   null,
+   null,
+   "1430",
+   "2026-06-25T08:30:00+00:00",
+   "75996c0a-70fb-4ddb-a345-bb1e8d39de35",
+   "2026-10-16 20:46:39.678293 UTC",
+   "2026-10-09 11:59:11.232115 UTC",
+   "bronze/neso_data_portal/stability_pathfinder_utilisation_report/2026/10/16/raw_20261016T204639Z_75996c0a-70fb-4ddb-a345-bb1e8d39de35_17e4ffc7.csv",
+   "2026-10-16 20:46:39.678293 UTC",
+   "2026-10-16 20:46:39.678293 UTC",
+   "2026-10-09 11:59:11.232115 UTC",
+   "drain-1086f562-02be-4d9d-b073-b7042031ed33",
+   "1+e1"
+  ],
+  [
+   "KILLSC-2",
+   "2026-06-25T08:30:00+00:00",
+   "No",
+   null,
+   null,
+   "1430",
+   "2026-06-25T09:00:00+00:00",
+   "75996c0a-70fb-4ddb-a345-bb1e8d39de35",
+   "2026-10-16 20:46:39.678293 UTC",
+   "2026-10-09 11:59:11.232115 UTC",
+   "bronze/neso_data_portal/stability_pathfinder_utilisation_report/2026/10/16/raw_20261016T204639Z_75996c0a-70fb-4ddb-a345-bb1e8d39de35_17e4ffc7.csv",
+   "2026-10-16 20:46:39.678293 UTC",
+   "2026-10-16 20:46:39.678293 UTC",
+   "2026-10-09 11:59:11.232115 UTC",
+   "drain-1086f562-02be-4d9d-b073-b7042031ed33",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

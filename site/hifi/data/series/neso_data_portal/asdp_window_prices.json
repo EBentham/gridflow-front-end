@@ -1,0 +1,21 @@
+{
+  "dataset": "neso_data_portal/asdp_window_prices",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "dc786035f5dbf8ea29f027628f9fe14e46c6841ddabd614b8f8834c75ce50da2",
+  "type": "line",
+  "unit": "WindowPrice, no unit stated",
+  "caption": "",
+  "value_column": "window_price",
+  "aggregation": "mean",
+  "window": {"end": "2026-02-28", "rule": "fixed", "start": "2026-02-01"},
+  "provenance": {"files": 2, "null_values_dropped": 0, "rows_matched": 39239, "rows_read": 39242, "rows_used": 3266, "silver": "neso_data_portal/asdp_window_prices", "silver_first": "2025-01-28T16:00:00Z", "silver_last": "2026-04-17T20:00:00Z", "time_bucket": "1 day"},
+  "spec": {"aggregation": "mean", "filter": [{"column": "service_type", "op": "eq", "value": "Non-BM Fast Reserve"}], "group": "party_id", "group_map": {"ENWL": "enwl", "HABITAT ENERGY LIMITED": "habitat", "UKPR": "ukpr"}, "series_order": ["ukpr", "habitat", "enwl"], "silver": "neso_data_portal/asdp_window_prices", "time": "sp_start_date_time", "time_bucket": "1d", "time_text": {"format": "%Y-%m-%dT%H:%M:%S"}, "type": "line", "unit": "WindowPrice, no unit stated", "value": "window_price", "window": {"end": "2026-02-28", "start": "2026-02-01"}},
+  "x_kind": "time",
+  "x": ["2026-02-01T00:00:00Z", "2026-02-02T00:00:00Z", "2026-02-03T00:00:00Z", "2026-02-04T00:00:00Z", "2026-02-05T00:00:00Z", "2026-02-06T00:00:00Z", "2026-02-07T00:00:00Z", "2026-02-08T00:00:00Z", "2026-02-09T00:00:00Z", "2026-02-10T00:00:00Z", "2026-02-11T00:00:00Z", "2026-02-12T00:00:00Z", "2026-02-13T00:00:00Z", "2026-02-14T00:00:00Z", "2026-02-15T00:00:00Z", "2026-02-16T00:00:00Z", "2026-02-17T00:00:00Z", "2026-02-18T00:00:00Z", "2026-02-19T00:00:00Z", "2026-02-20T00:00:00Z", "2026-02-21T00:00:00Z", "2026-02-22T00:00:00Z", "2026-02-23T00:00:00Z", "2026-02-24T00:00:00Z", "2026-02-25T00:00:00Z", "2026-02-26T00:00:00Z", "2026-02-27T00:00:00Z", "2026-02-28T00:00:00Z"],
+  "series": [
+    {"key": "ukpr", "values": [null, 126.938, 138.016, null, 126.774, 129.0, 120.9, 124.771, 115.533, 117.769, 115.56, 103.0, 106.0, 114.696, null, 106.95, 112.577, 104.934, 116.93, 102.0, 101.5, 120.237, null, 113.119, 113.333, 91.0, 98.938, 98.3]},
+    {"key": "habitat", "values": [128.0, 115.862, 112.885, 108.591, 107.722, 109.738, 107.726, 110.797, 108.578, 106.451, 105.477, 100.733, 107.345, 104.794, 99.061, 100.92, 99.103, 97.556, 99.971, 94.92, 96.076, 93.153, 98.83, 110.262, 100.425, 91.788, 102.595, 107.273]},
+    {"key": "enwl", "values": [114.855, 109.249, 109.388, 108.27, 102.05, 110.579, 99.888, 96.611, 101.74, 98.479, 98.657, 86.96, 99.707, 95.286, 90.655, 93.297, 92.067, 90.537, 97.111, 92.252, 92.154, 87.888, 90.002, 101.932, 96.583, 85.684, 89.486, 87.448]}
+  ]
+}

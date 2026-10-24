@@ -1,0 +1,19 @@
+{
+  "dataset": "neso_data_portal/upcoming_trades",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "043a0bc037b430d30840c5d6b542d839f9ebc51a90690230743ba9aaade71cbc",
+  "type": "bar",
+  "unit": "£/MWh",
+  "caption": "",
+  "value_column": "price",
+  "aggregation": "mean",
+  "window": null,
+  "provenance": {"duplicates_dropped": 0, "files": 2, "null_values_dropped": 0, "rows_matched": 76, "rows_read": 76, "rows_used": 76, "silver": "neso_data_portal/upcoming_trades"},
+  "spec": {"aggregation": "mean", "dedup": {"on": ["id", "date", "sp"], "order_by": "capture_written_at"}, "group": "id", "silver": "neso_data_portal/upcoming_trades", "sort": "label", "type": "bar", "unit": "£/MWh", "value": "price"},
+  "x_kind": "category",
+  "x": ["ES00380892", "ES00380893", "ES00380894", "ES00380895", "ES00380896", "ES00380897", "ES00380898", "ES00380899", "ES00380900", "ES00380901", "ES00380902", "ES00380903", "ES00380904", "ES00380905", "ES00382991", "ES00382992", "ES00382993"],
+  "series": [
+    {"key": "price", "values": [76.96, 72.82, 72.0, 71.23, 69.52, 69.41, 62.1, 62.05, 90.53, 90.21, 89.25, 89.05, 88.59, 88.4, 218.0, 265.0, 270.0]}
+  ]
+}

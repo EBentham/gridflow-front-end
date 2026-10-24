@@ -1,0 +1,207 @@
+{
+ "dataset": "neso_data_portal/voltage_requirement",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "42984bc1763d2e73ffe7cbe2f94599bc7439ac669a8af2a1165af2785ae40731",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.neso_data_portal.query(\"voltage_requirement\", \"2025-10-01\", \"2026-10-23\")\nplans = df.pivot_table(index=\"start_date\", columns=\"group\", values=\"units\", aggfunc=\"sum\")\nplans.tail(6).rename_axis(columns=None).reset_index()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "start_date",
+      "V_Mersey",
+      "V_Midlands",
+      "V_North",
+      "V_NorthLondon",
+      "V_SWPen",
+      "V_Scotland",
+      "V_SouthCentral",
+      "V_SouthEast",
+      "V_SouthWales"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5"
+     ],
+     "rows": [
+      [
+       "2026-10-03",
+       "1",
+       "1",
+       "6",
+       "2",
+       "0",
+       "4",
+       "2",
+       "0",
+       "2"
+      ],
+      [
+       "2026-10-06",
+       "1",
+       "2",
+       "5",
+       "2",
+       "0",
+       "3",
+       "2",
+       "0",
+       "2"
+      ],
+      [
+       "2026-10-10",
+       "1",
+       "2",
+       "5",
+       "2",
+       "0",
+       "3",
+       "2",
+       "0",
+       "2"
+      ],
+      [
+       "2026-10-13",
+       "1",
+       "2",
+       "5",
+       "2",
+       "0",
+       "3",
+       "2",
+       "0",
+       "1"
+      ],
+      [
+       "2026-10-17",
+       "1",
+       "1",
+       "5",
+       "2",
+       "0",
+       "4",
+       "2",
+       "0",
+       "1"
+      ],
+      [
+       "2026-10-20",
+       "1",
+       "1",
+       "5",
+       "2",
+       "0",
+       "4",
+       "2",
+       "0",
+       "1"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "data.sql(\"\"\"\n    SELECT start_date, end_date, count(*) AS groups, sum(units) AS units\n    FROM silver_neso_data_portal_voltage_requirement_latest\n    WHERE end_date < start_date\n    GROUP BY ALL ORDER BY start_date\"\"\")",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "start_date",
+      "end_date",
+      "groups",
+      "units"
+     ],
+     "index": [
+      "0",
+      "1"
+     ],
+     "rows": [
+      [
+       "2025-08-23",
+       "2025-08-18",
+       "9",
+       "19"
+      ],
+      [
+       "2025-08-26",
+       "2025-08-22",
+       "8",
+       "14"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "total = df.groupby(\"start_date\").units.sum()\ntotal.plot(figsize=(8, 3.5), color=\"#155A6E\", marker=\".\", ylim=(0, None),\n           xlabel=\"Start Date of each range, as written\", ylabel=\"units, nine groups summed\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "voltage_requirement-5.png",
+     "width": 690,
+     "height": 332
+    }
+   ]
+  }
+ ]
+}
