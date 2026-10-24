@@ -206,3 +206,27 @@ supersedes the artefact paths and lead-key notes above.
   the sample has a line, and no line names a column outside it.
 - **Count bar:** kept, per the seat.
 - **Main member:** still prints "Rows not shown: ..." with the same held line.
+
+## Fixes after review round 1 (APPROVE, 5 nits)
+
+1. **`record.fields.technology`:** now reads "NESO's text; 2025 file (modified 14 July 2025) fills `Dem_` rows with
+   `Offshore-Wind (off-Grid)`" (14 words). It names the file by its `last_modified` (2025-07-14T04:48:17Z) and scopes
+   the fill-down to the `Dem_` rows.
+2. **`record.fields.alignment_with_ofgem_core_scenario_key_drivers`:** now reads "NESO's matching Ofgem driver; 13
+   blocks filled 2021 to 2024, every block in 2025". The counts are silver non-null counts: 13 in each of 2021 to
+   2024, 66 in 2025.
+3. **`notebook.cells[1]`:** the dropped-ids cell now selects `building_block_id_number, technology` only. The longest
+   cell is "Hydrogen fuelled generation", so nothing truncates. The notebook reran with 5 cells, 0 errors and no "..."
+   in that output.
+4. **`chart_view.caption`:** now reads "Silver `fes_building_blocks_block_definitions`: block ids in each edition's
+   definitions file, not projections; NESO's 2022 and 2023 files flag 50 of the 66 as included in ESO data. An id can
+   change meaning between editions, so read each with its own edition." It is exactly 40 words; "one member of this
+   family" was dropped, since the table is now the lead. No re-distil was needed (the words live in `chart_view`).
+5. **`facts.vendor`:** now reads "NESO Data Portal: 13 CSVs, six editions of two tables, one 2024 mapping".
+   - `raw_feed.note` repeated "one per table and edition", so I removed it there too: "... then 13 CSVs, each
+     downloaded whole unless its `last_modified` is unchanged. Shown: first and latest, plus the 2021 definitions."
+   - On the optional point, `how_used[0]` now reads "Check how FES aligns with DNOs' own regional scenarios, NESO's
+     stated purpose", closer to NESO's "clarity ... on alignment of FES and DFES".
+
+Gates: the build `--only neso_data_portal/fes_building_blocks_block_definitions` has no errors. Detector `[]`, 0 em
+dashes. The note keeps CRLF (840 of 840 lines), and the mirror is identical (`cmp`).

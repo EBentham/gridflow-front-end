@@ -47,8 +47,9 @@ shows one edition and one pathway only, so it never mixes editions or reads as h
 NESO defines `DemandPk` as "expected demand at the specified location at the time of the highest total demand for the
 nation". It is coincident with the national peak, so it adds across locations, and the eight types are components of a
 location's demand. 2024 has no blank `DemandPk` cells (the 2021 to 2023 blanks would have made a sum incomplete). It
-does contain small negative residential values (678 rows in 2024, the smallest -0.603 MW at label 50), which the sum
-includes as published.
+does contain one small negative residential `DemandPk` value per bar (`KIIN_P`, -0.085 to -0.133 MW), which the sum
+includes as published. (Corrected in round 2: `DemandPk` is negative on residential rows only, 146 rows in 2024,
+minimum -0.625 MW.)
 
 Why `HT` and its name: the 2024 file carries `EE`, `HE` and `HT`, and this package's dictionary does not decode them
 (see defects). The page names it "Holistic Transition" on two pieces of NESO evidence. First, NESO's FES 2024
@@ -172,8 +173,11 @@ every row of both editions; the pre-2023 tables are single or old editions. No r
 - **NESO regional demand 2021 to 2023 (vendor data):** `DemandPk` is blank on every row of 114 direct-connect (`T`)
   locations in each of the 2021, 2022 and 2023 files (14,136, 13,680 and 13,224 cells), while `DemandAM` and `DemandPM`
   are filled. 2024 has none. Any cross-edition peak sum is incomplete for 2021 to 2023 unless it says so.
-- **NESO regional demand (vendor sign):** residential (`R`) values are negative in 678 to 1,877 rows per edition, and
-  in 2021 also commercial (248) and industrial (6,417). NESO's dictionary gives no sign convention for demand.
+- **NESO regional demand (vendor sign), corrected in round 2:** NESO's dictionary gives no sign convention for demand,
+  yet values are negative. `DemandPk` is negative on residential (`R`) rows only: 868 / 210 / 87 / 146 rows (2021 to
+  2024), minimum -0.625 MW (2024). `DemandAM` is negative in 2021 on C 248, I 3,934 and R 916 rows, then on R only at
+  1,312 / 924 / 174 (2022 to 2024). `DemandPM` is negative in 2021 on I 6,231 rows (minimum -757.855 MW) and R 1,021,
+  then on R only at 1,312 / 924 / 678 (2022 to 2024). Rows with any measure negative: 8,542 / 1,312 / 1,011 / 678.
 - **Vault note (fixed here):** scenario and type codes were marked `TODO: verify` although NESO's field info decodes
   them. Corrected in the lead and DSR sections. The storage sections keep their scenario `TODO`s; the same field info
   settles `CF`, `CT`, `FS`, `LW` and `ST` there.
