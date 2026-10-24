@@ -4,9 +4,48 @@ package: "fes-electricity-demand-summary-data-table-ed1"
 dataset_key: "fes_ed1_electricity_demand"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-10
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: "NESO's 2023 to 2025 files call annual data fiscal, but not which year a label names."
+  title: FES electricity demand summary
+  summary: >-
+    NESO's GB electricity demand table (ED1) from its Future Energy Scenarios (FES) and 2026
+    Ten-Year Outlook, one file per edition.
+  facts:
+    vendor: "NESO Data Portal: four CSVs, one per edition, and three definitions PDFs"
+    cadence: "Ad hoc (NESO); editions 2023 to 2026, as at 6 October 2026"
+    grain: "One value per item, level, scenario, measure and year label, per edition"
+    history: "NESO created the package on 7 July 2023"
+  landscape: power
+  what_it_is: >-
+    NESO's GB electricity demand by item and aggregation level, per scenario or pathway, as peak,
+    minimum or annual demand, in GW or GWh. Files for 2023 to 2025 are FES editions, each with a
+    definitions PDF (ED2); the 2026 file is NESO's Ten-Year Outlook, with none. NESO does not say
+    what a blank cell means.
+  how_used:
+    - "GB electricity demand by component under each FES scenario or pathway"
+    - "Peak demand beside FES supply and flexibility from the same edition"
+    - "Each item read with the same edition's ED2 definitions"
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: `package_show`, then four CSVs and three ED2 PDFs, each downloaded
+      whole unless its `last_modified` is unchanged. Shown: first and latest CSV, latest PDF.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=fes-electricity-demand-summary-data-table-ed1"
+      - "GET https://api.neso.energy/dataset/2c15c755-d8fe-4229-9169-3b6dd7c88fec/resource/de41fa7f-5bd6-4da4-aff1-aede85d7b651/download/fes2023_ed1_v001.csv"
+      - "GET https://api.neso.energy/dataset/2c15c755-d8fe-4229-9169-3b6dd7c88fec/resource/2769bcac-e2ae-45b9-a9d6-0e2c3e6312c7/download/10yo2026_ed1_v001.csv"
+      - "GET https://api.neso.energy/dataset/2c15c755-d8fe-4229-9169-3b6dd7c88fec/resource/93761974-17f5-43da-a690-71faaab610a5/download/fes2025_ed2_v004.pdf"
+    commands:
+      - {run: gridflow ingest neso_data_portal fes_ed1_electricity_demand --last 24h, comment: "changed CSVs to bronze"}
+      - {run: gridflow transform neso_data_portal fes_ed1_electricity_demand --last 24h, comment: "the capture's date to silver"}
+      - {run: gridflow ingest neso_data_portal fes_ed1_electricity_demand_files --last 24h, comment: "the ED2 PDFs, bronze only"}
+  related:
+    - {dataset: neso_data_portal/future-energy-scenario-electricity-supply-data-table-es1, note: "NESO's FES electricity supply table, the counterpart to this demand table"}
+    - {dataset: neso_data_portal/fes-flexibility-data-table-data-table-flx1, note: "NESO's FES flexibility table: storage, demand side response, interconnectors"}
+    - {dataset: neso_data_portal/future-energy-scenario-fes-building-block-data, note: "FES split to Grid Supply Points in common building blocks"}
+    - {dataset: neso_data_portal/regional-breakdown-of-fes-data-electricity, note: "NESO's regional breakdown of FES electricity data, by Grid Supply Point"}
 ---
 
 # FES: Pathways to Net Zero – Electricity Demand Summary Data table (ED1)
@@ -293,7 +332,14 @@ governs the silver output. The hold has three parts:
 1. **What a year header denotes.** `projection_year` is the vendor's header label as an
    integer. The period it denotes, and whether the label is the start or the end of that
    period, is not stated in the CSVs, for any variable or edition (the hold question asks
-   this per variable and per edition). `TODO: verify` in the ED2 PDFs or with NESO.
+   this per variable and per edition). `TODO: verify` with NESO whether each label is the
+   start or the end of its period, and the 2026 file's period. Checked 2026-10-24 against bronze: the 2023, 2024 and 2025 CSVs label their annual rows
+   `Annual [Fiscal]` in `Peak/ Annual/ Minimum` (the 2026 file says `Annual Demand`), and all
+   three ED2 PDFs (`pdftotext`) define the annual measure as "Annual Data, usually Fiscal Year"
+   and the peak as the winter 5pm-6pm period (the 2025 PDF: "Traditionally in the winter at
+   5-6pm"). Neither says which fiscal year or winter a
+   header integer names (start or end), so the hold stands; the registry question's "NESO
+   states none of these in the CSVs" is too strong for the annual measure.
 2. **Which ED2 definition applies.** The CSVs carry labels, not definitions. The same-edition
    ED2 PDF defines each `Data item`, aggregation level and measure. No ED2 resource exists for
    the 2026 file (named `10yo2026`; the hold question calls it the Ten Year Outlook, and the

@@ -4,9 +4,47 @@ package: "fes-european-electricity-supply-data-table-es2"
 dataset_key: "fes_es2_european_supply"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-14
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: "NESO states no period for the year labels, or what blanks mean."
+  title: FES European electricity supply
+  summary: >-
+    NESO's European electricity supply table (ES2) from its Future Energy Scenarios (FES) and
+    2026 Ten-Year Outlook, one file per edition.
+  facts:
+    vendor: "NESO Data Portal: four CSVs, one per edition, 2023 to 2026"
+    cadence: "Ad hoc (NESO); editions 2023 to 2026, as at 6 October 2026"
+    grain: "One value per country, EU scenario, variable, technology and year label, per edition"
+    history: "NESO created the package on 7 July 2023"
+  landscape: power
+  what_it_is: >-
+    Electricity supply in European countries, by EU scenario and an alignment to FES scenarios or
+    pathways. Rows are `Capacity (MW)` or `Demand (TWh)` by category and technology; the unit
+    sits in the `Variable` label. Countries are NESO's names, not codes. ES1 is the GB table. The
+    package has no definitions file.
+  how_used:
+    - "Capacity by technology in European countries, under each EU scenario"
+    - "European demand beside GB supply from the same FES edition"
+    - "Neighbouring countries' capacity set beside GB interconnector flows in ES1"
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: `package_show`, then four CSVs, downloaded whole when
+      `last_modified` changes. On 9 October 2026 NESO replaced its 2026 notes with a supply table.
+      Shown: 2023, 2025, 2026.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=fes-european-electricity-supply-data-table-es2"
+      - "GET https://api.neso.energy/dataset/bd83ce0b-7b1e-4ff2-89e8-12d524c34d99/resource/6563801b-6da4-46e7-b147-3d81c0237779/download/fes2023_es2_v001.csv"
+      - "GET https://api.neso.energy/dataset/bd83ce0b-7b1e-4ff2-89e8-12d524c34d99/resource/fbfdc6c6-52b6-4e3a-96b9-f4e7941f61ec/download/fes2025_es2_v006.csv"
+      - "GET https://api.neso.energy/dataset/bd83ce0b-7b1e-4ff2-89e8-12d524c34d99/resource/e8ed65c6-6785-4e2b-84a5-696057f103c9/download/10yo2026_es2_v001.csv"
+    commands:
+      - {run: gridflow ingest neso_data_portal fes_es2_european_supply --last 24h, comment: "changed CSVs to bronze"}
+      - {run: gridflow transform neso_data_portal fes_es2_european_supply --last 24h, comment: "the capture's date to silver"}
+  related:
+    - {dataset: neso_data_portal/future-energy-scenario-electricity-supply-data-table-es1, note: "The GB counterpart: NESO's FES electricity supply table"}
+    - {dataset: neso_data_portal/interconnector-register, note: "NESO's register of GB interconnectors, many to countries listed here"}
+    - {dataset: neso_data_portal/fes-electricity-demand-summary-data-table-ed1, note: "NESO's FES GB electricity demand table"}
 ---
 
 # FES: Pathways to Net Zero – European Electricity Supply Data Table (ES2)
@@ -14,7 +52,8 @@ eligibility: "eligible"
 This package is NESO's **Future Energy Scenarios (FES)** European electricity supply data table
 (ES2). The package notes say one FES output is "an agreed set of data tables containing the
 European electricity supply values". Each CSV is one **edition** of the FES (2023, 2024, 2025;
-a fourth, 2026, resource exists but is a notes file, see below). A row is one (country, EU
+a fourth, 2026, resource was a notes file until NESO replaced it with a supply table on
+2026-10-09, see below). A row is one (country, EU
 scenario, FES scenario or pathway alignment, variable, category, type, sub-type[, sub-sub-type])
 combination with one value per year column. It is the European counterpart of the GB supply
 table @./future-energy-scenario-electricity-supply-data-table-es1.md (ES1): ES1 describes GB
@@ -32,7 +71,9 @@ gridflow reshapes each wide body into **long rows**: one row per (dimension tupl
 Silver holds **67,968 rows from 3 resources** (2023: 22,997 · 2024: 24,640 · 2025: 20,331), of
 which **2,608** have a blank (null) `value`. The silver output is **held** (unit E-SEM; see
 Holds). **The 2026 resource is held at resource level and has no silver at all**: its body is an
-11-row notes table, not the supply table (see Resource detail). This page therefore gives schema,
+11-row notes table, not the supply table (see Resource detail). On 2026-10-09 NESO replaced that
+body with a supply table under the same resource id and file name; gridflow captured it on
+2026-10-16, and it stays held at resource level (see "Second 2026 capture"). This page therefore gives schema,
 row counts, clocks and missingness only, never data values, samples or ranges of values.
 
 Edition is a dimension: **never sum or combine editions.** Each edition is a separate vintage of
@@ -66,7 +107,7 @@ Supported by National Energy SO Open Data
 
 | Resource | Format | Capture | Id | Reason (unit) |
 |---|---|---|---|---|
-| European Electricity Supply Data Table (ES2) 2026 | CSV | upload | `e8ed65c6-6785-4e2b-84a5-696057f103c9` | the 2026 body is an 11-row `Notes`, `Description` notes table, not the European electricity supply table: it has no projection-year columns and no values, so it cannot be an epoch of the unpivot record (V-18); re-disposition only after NESO confirms the resource's intent (DOC or a reference family) or uploads a quantitative ES2 2026 table (a new last_modified) (E-SEM) |
+| European Electricity Supply Data Table (ES2) 2026 | CSV | upload | `e8ed65c6-6785-4e2b-84a5-696057f103c9` | the 2026 body is an 11-row `Notes`, `Description` notes table, not the European electricity supply table: it has no projection-year columns and no values, so it cannot be an epoch of the unpivot record (V-18); re-disposition only after NESO confirms the resource's intent (DOC or a reference family) or uploads a quantitative ES2 2026 table (a new last_modified) (E-SEM); registry reason, describing the 2026-10-08 capture |
 
 ### Resource detail
 
@@ -98,7 +139,7 @@ catalogue; gridflow keeps the registry name as captured.
   held 2026 resource has no edition entry and is expected by no completion check. The version
   tokens (`v001`, `v006`) show NESO re-uploads within an edition under the same resource slot;
   gridflow keys the edition on the file name, not on the token.
-- **Why 2026 is held.** The 2026 body is an 11-row table with columns `Notes` and
+- **Why 2026 is held.** The 2026 body, as captured 2026-10-08, is an 11-row table with columns `Notes` and
   `Description`: it has no projection-year columns and no values, so it cannot be an epoch of the
   unpivot record (ADR-042 V-18, which requires every epoch to output `projection_year` and
   `value`). Inventing those columns would misrepresent the source. Yet the catalogue's resource
@@ -112,6 +153,21 @@ catalogue; gridflow keeps the registry name as captured.
   reproduced here. Re-disposition is possible as DOC or as a separate reference family if NESO
   confirms the intent, or as an epoch if NESO uploads a quantitative table (a new
   `last_modified`). Ruling 822: held at resource level, no engine change.
+- **Second 2026 capture (checked 2026-10-24 against bronze).** The 2026-10-16 capture
+  (`raw_20261016T203342Z_e8ed65c6-…_9558b894.csv`, 32,362 bytes) carries CKAN `last_modified`
+  `2026-10-09T09:33:06.347834`: NESO replaced the notes body with a quantitative supply table,
+  the condition the hold names. Header: `Country`, `EU Scenario`, `FES Scenario Alignment`,
+  `Variable`, `Category`, `Type`, `SubType`, then `2024` to `2050` (27 year columns); 199 data
+  rows, 17 countries, one EU scenario label (`EU Central`), `FES Scenario Alignment` blank on
+  every row, `Capacity (MW)` 182 rows and `Demand (TWh)` 17. Non-blank cells sit only under
+  `2025` to `2036`; every one is a plain number (2,388), and 2,985 cells are blank. No BOM; CRLF.
+  The header matches none of the three recorded epochs (epoch 1 has `SubSubType` and starts at
+  2022; epochs 2 and 3 have `FES Pathway Alignment`), and two dimension tuples repeat with
+  different values (`France` and `Italy`, `Capacity (MW)` / `Other` / `Other` / `Other`), so the
+  current duplicate guard would also reject it. The registry disposition and reason still
+  describe the notes body; the resource stays `HOLD` and untransformed. `TODO: verify`
+  re-disposition (a new epoch, and NESO's word on the repeated tuples) at the next registry edit.
+  The replaced notes body is kept in the 2026-10-08 bronze capture.
 - All four CSVs were probed in full against the captured bronze bodies (FACTS SCN-2). Every body
   decodes strictly as UTF-8; the 2024 file carries a UTF-8 BOM that the reader handles. Every
   body parses with no ragged rows, and no repair of source bytes is applied.
@@ -290,7 +346,9 @@ part of the hold question).
   - Update frequency: Ad hoc
 
 One CSV per annual FES edition, so a new resource appears about once a year (editions in the
-snapshot: 2023 to 2026). Each resource was captured once, on 2026-10-08. Package
+snapshot: 2023 to 2026). Each resource was captured on 2026-10-08; the 2026 resource was
+captured again on 2026-10-16 after NESO replaced its body on 2026-10-09 (see Resource detail),
+the only second capture in this package so far. Package
 `metadata_modified` in the 2026-10-06 snapshot is 2026-09-16T14:33:44.601325. The version tokens
 in the file names show NESO re-uploads files within an edition; the vendor does not publish a
 revision policy. `TODO: verify` whether a published edition file is revised in place. Only a
@@ -330,7 +388,10 @@ silver output. The hold has three parts:
    was the European electricity supply table replaced by an incorrect upload? NESO is asked to
    identify or republish the quantitative European supply resource for this edition. If the
    notes are intentional, NESO is asked for their scope and their relationship to the earlier ES2
-   tables. The resource is held at resource level (no silver) until then.
+   tables. The resource is held at resource level (no silver) until then. NESO replaced the
+   notes with a supply table on 2026-10-09 (captured 2026-10-16,
+   see Resource detail); the resource stays held until gridflow re-dispositions it, and the
+   replacement repeats two dimension tuples with different values.
 
 Settles it: a NESO statement of the period each year label covers per edition (and the
 observation date of a capacity value), a meaning for a blank cell, and either a quantitative

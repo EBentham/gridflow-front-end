@@ -4,9 +4,48 @@ package: "future-energy-scenario-electricity-supply-data-table-es1"
 dataset_key: "fes_es1_electricity_supply"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-10
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: "NESO states no period for the year labels; 2020 to 2022 numbers carry commas or spaces."
+  title: FES electricity supply
+  summary: >-
+    NESO's GB electricity supply table (ES1) from its Future Energy Scenarios (FES) and 2026
+    Ten-Year Outlook, one file per edition.
+  facts:
+    vendor: "NESO Data Portal: seven CSVs, one per edition, 2020 to 2026"
+    cadence: "Ad hoc (NESO); editions 2020 to 2026, as at 6 October 2026"
+    grain: "One value per connection, scenario, variable, technology and year label, per edition"
+    history: "NESO created the package on 3 December 2020"
+  landscape: power
+  what_it_is: >-
+    NESO says the files cover capacity, generation and interconnector flows. Rows run by
+    connection, scenario or pathway and technology. The unit sits in each row's `Variable` label, such as
+    `Capacity (MW)` or `Generation (TWh)`, so one column mixes units. NESO's 2021 and 2022 files
+    open with notes above the table. The package has no definitions file.
+  how_used:
+    - "GB capacity and generation by technology under each FES scenario or pathway"
+    - "Interconnector imports, exports and net flows in each scenario or pathway"
+    - "Supply beside FES demand and flexibility from the same edition"
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: `package_show`, then seven CSVs, each downloaded whole unless its
+      `last_modified` is unchanged. NESO's 2020 file writes `N/A` in some number cells. Shown:
+      2020, 2023, 2026.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=future-energy-scenario-electricity-supply-data-table-es1"
+      - "GET https://api.neso.energy/dataset/549b0667-b533-4748-95bd-f6e13933a47d/resource/40f40b39-5eba-4479-94b1-328ea9b8eefe/download/fes_es1.csv"
+      - "GET https://api.neso.energy/dataset/549b0667-b533-4748-95bd-f6e13933a47d/resource/86812136-3f52-43e5-8f7c-7e4f6d5f95fc/download/fes2023_es1_v002.csv"
+      - "GET https://api.neso.energy/dataset/549b0667-b533-4748-95bd-f6e13933a47d/resource/b3bf8ac0-d27a-447c-975c-208ae92c0fa5/download/10yo2026_es1_v001.csv"
+    commands:
+      - {run: gridflow ingest neso_data_portal fes_es1_electricity_supply --last 24h, comment: "changed CSVs to bronze"}
+      - {run: gridflow transform neso_data_portal fes_es1_electricity_supply --last 24h, comment: "the capture's date to silver"}
+  related:
+    - {dataset: neso_data_portal/fes-electricity-demand-summary-data-table-ed1, note: "NESO's FES electricity demand table, the counterpart to this supply table"}
+    - {dataset: neso_data_portal/fes-european-electricity-supply-data-table-es2, note: "The European counterpart: NESO's FES supply table for European countries"}
+    - {dataset: neso_data_portal/fes-flexibility-data-table-data-table-flx1, note: "NESO's FES flexibility table: storage, demand side response, interconnectors"}
+    - {dataset: neso_data_portal/resource-adequacy-in-2030s, note: "NESO's separate study of GB resource adequacy in the 2030s"}
 ---
 
 # FES: Pathways to Net Zero – Electricity Supply Data Table (ES1)
