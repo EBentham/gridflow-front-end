@@ -121,7 +121,7 @@ repeat rows; on a table with no event time use `data.sql()`; the column guide ac
 | T1 | abf6b4cf3ba85c1a5 | a335a0dc2e2350249 | APPROVED x6 (round 2); committed (site e3a1ca9); pushed; 20cq logged |
 | D1 | ac29ae2189289eb20 | a1587b1603e0092f5 | APPROVED x4 (round 2); committed (site bb1ee8d); demand pushed, parent told; 20cr logged |
 | D2 | a6529fae660c4ff74 | aaa229431fb8d7d45 | APPROVED x3 (round 2); committed on dem |
-| G1 | af234cffef25e4fa7 | adaa14b1da19ee956 | APPROVED x5 with 7 nits; nits with writer |
+| G1 | af234cffef25e4fa7 | adaa14b1da19ee956 | APPROVED x5, nits fixed; committed (site 5ed280c); pushed; parent told |
 | I1 | a475c72bb4c6ca14f | a1fdee2150037abad | written; in joint review with I2 (IFA, IFA2 draw Intraday 1; BritNed no chart; NESO upload gaps 11 and 12 Oct) |
 | I2 | a85a78f0c3de4f450 | a1fdee2150037abad | written; seat ruled its chart rule (Day Ahead as fetched, rows uploaded before their hour) for all seven pages; Viking lead reordered (b79c573), regenerated; one checker will review I1 and I2 together |
 | N1 | a0ac37967725c0a93 | | writing |
