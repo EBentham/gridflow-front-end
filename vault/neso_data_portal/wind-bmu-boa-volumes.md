@@ -8,7 +8,6 @@ updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: "All years stay out: NESO never says why rows repeat, and 2026/27 has positive volumes."
   title: Wind bid-offer acceptance volumes
   summary: >-
     NESO's volumes of bid-offer acceptances (BOAs) on wind balancing mechanism (BM) units, in MW,
@@ -27,6 +26,40 @@ page:
   how_used:
     - "Wind curtailment per BM unit and half hour through the Balancing Mechanism"
     - "Accepted wind reductions set against wind forecasts and metered wind output"
+  chart:
+    type: bar
+    silver: neso_data_portal/wind_bmu_boa_volumes
+    group: resource_id
+    group_map:
+      "b8670a89-36cd-4a19-b00d-2129ab15d3b2": fy2020
+      "094ad551-630a-4302-b259-800a27122cfb": fy2021
+      "62da8915-4b87-4d77-a8f5-89084de1830d": fy2022
+      "1edaa5fe-86fe-41b4-95b9-55e9ec45fab0": fy2023
+      "7bf83942-3590-4fe5-9980-49a9546e30a9": fy2025
+      "45598dcd-ea9c-4911-95f2-7946c5f3b034": fy2026
+    dedup: {"on": [resource_id, date, settlement_period, generator_name], order_by: published_at}
+    aggregation: count
+    sort: label
+    unit: unit half-hours
+  chart_view:
+    title: Wind unit half-hours with a BOA volume, by yearly file
+    caption: >-
+      Silver `wind_bmu_boa_volumes`: BM unit half-hours with at least one row, per yearly file; a unit
+      and half-hour listed twice counts once. 2018/19, 2019/20 and 2024/25 repeat whole rows, so have
+      no rows here.
+    alt: >-
+      Horizontal bar chart from neso_data_portal/wind_bmu_boa_volumes counting wind BM unit
+      half-hours with a BOA volume in each yearly file: 113,023 in 2020/21, 90,561 in 2021/22,
+      106,617 in 2022/23, 171,867 in 2023/24, 276,413 in 2025/26 and 160,485 in the part-year
+      2026/27 file, to 16 October 2026. There are no 2018/19, 2019/20 or 2024/25 bars.
+    key:
+      - {series: fy2020, label: 2020/21 file, paint: petrol}
+      - {series: fy2021, label: 2021/22 file, paint: petrol}
+      - {series: fy2022, label: 2022/23 file, paint: petrol}
+      - {series: fy2023, label: 2023/24 file, paint: petrol}
+      - {series: fy2025, label: 2025/26 file, paint: petrol, note: "NESO's file runs to 29 March 2026"}
+      - {series: fy2026, label: 2026/27 file, paint: hatch-lines,
+         note: "Part year: NESO's file of 16 October 2026, with its positive volumes"}
   raw_feed:
     note: >-
       From NESO's CKAN portal: `package_show`, then nine yearly CSVs, downloaded whole unless
@@ -39,7 +72,58 @@ page:
       - "GET https://api.neso.energy/dataset/102638b9-6214-4db6-9115-86b5e879d1ce/resource/45598dcd-ea9c-4911-95f2-7946c5f3b034/download/boa_data_2026_27.csv"
     commands:
       - {run: gridflow ingest neso_data_portal wind_bmu_boa_volumes --last 24h, comment: "each changed yearly file to bronze"}
-      - {run: gridflow transform neso_data_portal wind_bmu_boa_volumes --last 24h, comment: "the capture's date to silver"}
+      - {run: gridflow transform neso_data_portal wind_bmu_boa_volumes --last 24h, comment: "the clean yearly files to silver"}
+  record:
+    select:
+      filter:
+        - {column: generator_name, op: eq, value: NNGAO-1}
+        - {column: date, op: eq, value: "2025-04-04"}
+        - {column: settlement_period, op: ge, value: 4}
+        - {column: settlement_period, op: le, value: 8}
+      order_by: [settlement_period, boa_volume]
+      columns: [date, settlement_period, generator_name, boa_volume, generator_full_name, resource_id]
+    key: [resource_id, date, settlement_period, generator_name, boa_volume]
+    caption: "One unit on 4 April 2025: periods 5 to 7 each listed twice, with different volumes."
+    fields:
+      resource_id: NESO's id for the yearly file the row came from
+      date: The UK settlement date
+      settlement_period: "Half-hour of the UK settlement day, from 1"
+      generator_name: The wind BM unit, as NESO writes it
+      boa_volume: "NESO's `BOA_Volume`, MW: generation a BOA curtailed, negative, its dictionary says"
+      generator_full_name: The wind farm's name, as NESO writes it
+      published_at: "NESO's last-modified time for the yearly file, read as UTC"
+      timestamp_utc: "Start of the settlement period, UTC, from `date` and `settlement_period`"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  caveat: "NESO does not explain rows repeating a unit and half-hour, or 2026/27's positive volumes."
+  notebook:
+    lead: >-
+      `query()` filters `date` on the `_latest` view, the newest capture of each yearly file, lineage
+      columns dropped. The second cell counts each file's rows, positive volumes and repeated unit
+      half-hours.
+    cells:
+      - |
+        import pandas as pd
+        df = data.neso_data_portal.query("wind_bmu_boa_volumes", "2025-04-01", "2026-10-16")
+        df = df.sort_values(["date", "settlement_period", "generator_name"], ignore_index=True)
+        df[["date", "settlement_period", "generator_name", "boa_volume", "resource_id"]].head()
+      - |
+        key = ["date", "settlement_period", "generator_name"]
+        files = df.groupby("resource_id").agg(first=("date", "min"), last=("date", "max"),
+                                              rows=("boa_volume", "size"),
+                                              positive=("boa_volume", lambda v: int((v > 0).sum())))
+        files["repeats"] = df[df.duplicated(key)].groupby("resource_id").size()
+        files.fillna({"repeats": 0}).astype({"repeats": int})
+      - |
+        per_day = df.drop_duplicates(key).groupby("date").size()
+        per_day.index = pd.to_datetime(per_day.index)
+        ax = per_day.asfreq("D").plot(color="#155A6E", figsize=(8, 3.5), xlabel="settlement date",
+                                      ylabel="unit half-hours with a volume");
+    needs: NESO's 2025/26 and 2026/27 wind BOA volume files
+    plot_alt: >-
+      Line plot of wind BM unit half-hours with a BOA volume per settlement date, 1 April 2025 to
+      16 October 2026, each unit and half-hour counted once: from 1 to 3,590 a day, median 546,
+      highest on 14 October 2026; 41 dates with no rows break the line.
   related:
     - {dataset: elexon/boal, note: "Elexon's record of each accepted bid and offer, by BM unit"}
     - {dataset: neso_data_portal/monthly-operational-metered-wind-output, note: "NESO's metered wind output by half hour, beside the curtailed volumes"}
@@ -52,7 +136,7 @@ page:
 
 NESO publishes, per BMU, the volume of Balancing Mechanism bid-offer acceptances (BOAs) taken on the wind farms whose BM units feed NESO's wind incentive forecasts. The catalogue describes each resource as "the volume of all BOAs taken on the BMU wind farms used in our wind incentive forecasts" for one April-to-March financial year. Each row is a BMU, a settlement date, a settlement period and one `BOA_Volume`. In market terms it is the record of when and by how much NESO instructed wind farms to change output through the Balancing Mechanism, which makes it a source for wind curtailment, constraint-driven output loss, and the gap between a wind forecast and what the system actually accepted.
 
-The package is **eligible** at the package level (all nine resources are routed to silver) but its single family is **held**. NESO does not explain what a repeated identical row means, so the identity of a row (one acceptance, one contribution to a period total, or a duplicate) is unknown; the 2026/27 file also carries positive volumes against the vendor dictionary's description of the field as curtailed (negative) generation. gridflow therefore loads the six archives that pass its duplicate guard, keeps the three that fail as unloaded failed captures with committed adjudications, and publishes no output from this family until NESO answers the hold question below (see Holds). Nothing in this page states data values from the family.
+The package is **eligible** at the package level (all nine resources are routed to silver) but its single family is **held**. NESO does not explain what a repeated identical row means, so the identity of a row (one acceptance, one contribution to a period total, or a duplicate) is unknown; the 2026/27 file also carries positive volumes against the vendor dictionary's description of the field as curtailed (negative) generation. gridflow therefore loads the six archives that pass its duplicate guard, keeps the three that fail as unloaded failed captures with committed adjudications, and keeps the family out of point-in-time model use until NESO answers the hold question below (see Holds). Under ruling 66 (2026-10-24) the site page shows the loaded rows, a count chart and a notebook, with the question as a caveat.
 
 - Publisher group: Generation
 - Registry group: generation · archetype: SER
@@ -170,7 +254,7 @@ Vintage. The data is as-of the CKAN modification time, not the time the underlyi
 - **Hold unit: E-SEM** (an open data-semantics question for the vendor). Two questions, both for NESO:
   1. **Row grain (`B-ROW-GRAIN`).** What does a repeated identical BOA row mean: separate acceptances, separate contributions to a period total, or duplication? Can NESO publish an acceptance identifier or a corrected unique export?
   2. **Positive values (`B-POSITIVE-SEMANTICS`).** What do positive `BOA_Volume` values in the current-year file mean (offers, corrections, or another quantity) given the dictionary's negative-curtailment definition? (The registry's 1,044 is the 2026-10-08 capture; the 2026-10-16 capture has 1,125, the earlier 1,044 unchanged.)
-- **Held means no published output.** No gold view, model feature, published chart or sample row is derived from this family and none of its data values appear on this page. Row counts and the schema are the only facts shown.
+- **Held means no model use.** No gold view or model feature is derived from this family. Under ruling 66 (2026-10-24) the site page shows eight loaded rows, a chart counting unit half-hours per yearly file (a unit and half-hour listed twice counts once, so no BMU-period total is taken) and a notebook, with the question as a caveat.
 - **Why no lossless key exists.** No combination of vendor columns identifies every historical row uniquely. The profiler's every-column identity still has repeats, adding `Generator_Full_Name` does not separate them, and a resource id cannot resolve repeats inside one resource. The registry key therefore carries `boa_volume`, which is value-based identity chosen to load the clean archives, not a statement that the volume identifies the row. gridflow does not sum, drop duplicates, pick the last row or invent an occurrence index.
 - **Repeats also exist in the loaded archives.** The excess-row counts on (`Date`, `Settlement_Period`, `Generator_Name`) are 44, 290 and 789 in the three failed archives (B01, B02, B07) and 244, 9, 3, 85 and 932 in B03, B04, B05, B06 and B08 respectively; B09 has none. The loaded archives pass the guard only because their repeats differ in `BOA_Volume`. A consumer must therefore not assume one row per BMU, date and period even in loaded silver, and must not take a BMU-period total without the vendor answer to the grain question.
 - **Cross-resource overlap**: the nine archives share no (`Date`, `Settlement_Period`, `Generator_Name`) key across resources, so partitioned `whole_capture` retention by `resource_id` is safe for year coverage.

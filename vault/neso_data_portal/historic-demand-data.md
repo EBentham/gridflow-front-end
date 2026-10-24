@@ -4,11 +4,10 @@ package: "historic-demand-data"
 dataset_key: "historic_demand"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-23
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: "All years stay out: the 2001 to 2008 files write `NA`, which NESO does not define."
   title: Historic demand data
   summary: >-
     NESO's half-hourly GB demand outturn from 2001, one file a year, with embedded wind and solar,
@@ -27,6 +26,56 @@ page:
   how_used:
     - A long half-hourly history of GB demand, back to 2001
     - Embedded wind and solar output over many years, as NESO estimates it
+  chart:
+    type: bar
+    silver: neso_data_portal/historic_demand
+    dedup: {"on": [resource_id, settlement_date, settlement_period], order_by: published_at}
+    group: resource_id
+    group_map:
+      "e8608e9a-f56c-457f-b9e7-bfffcfd19731": "2001"
+      "4daaac31-ae56-461e-8efe-6b33e147225a": "2002"
+      "30650247-acbf-414d-8ae2-2aa4aac57537": "2003"
+      "5f5c076c-d3a3-4f33-a137-501cc3d2ca9b": "2004"
+      "42a41acd-53b6-450d-af1b-4a92a352895c": "2005"
+      "949bb4a4-8374-4730-89ef-302d82428d2c": "2006"
+      "c0da767c-447d-48d1-93fd-ca3955d078ae": "2007"
+      "ec63adc8-e8a1-45cc-a593-5953b1ede7b1": "2008"
+      "ed8a37cb-65ac-4581-8dbc-a3130780da3a": "2009"
+      "b3eae4a5-8c3c-4df1-b9de-7db243ac3a09": "2010"
+      "01522076-2691-4140-bfb8-c62284752efd": "2011"
+      "4bf713a2-ea0c-44d3-a09a-63fc6a634b00": "2012"
+      "2ff7aaff-8b42-4c1b-b234-9446573a1e27": "2013"
+      "b9005225-49d3-40d1-921c-03ee2d83a2ff": "2014"
+      "cc505e45-65ae-4819-9b90-1fbb06880293": "2015"
+      "3bb75a28-ab44-4a0b-9b1c-9be9715d3c44": "2016"
+      "2f0f75b8-39c5-46ff-a914-ae38088ed022": "2017"
+      "fcb12133-0db0-4f27-a4a5-1669fd9f6d33": "2018"
+      "dd9de980-d724-415a-b344-d8ae11321432": "2019"
+      "33ba6857-2a55-479f-9308-e5c4c53d4381": "2020"
+      "18c69c42-f20d-46f0-84e9-e279045befc6": "2021"
+      "bb44a1b5-75b1-4db2-8491-257f23385006": "2022"
+      "bf5ab335-9b40-4ea4-b93a-ab4af7bce003": "2023"
+      "f6d02c0f-957b-48cb-82ee-09003f2ba759": "2024"
+      "b2bde559-3455-4021-b179-dfe60c0337b0": "2025"
+      "8a4a771c-3929-4e56-93ad-cdf13219dea5": "2026, to 25 Sep"
+    value: nd
+    aggregation: max
+    sort: label
+    unit: MW
+  chart_view:
+    title: Highest half-hour national demand in each yearly file
+    caption: >-
+      Silver `historic_demand`, MW: the highest half-hour national demand in each of NESO's yearly
+      files, 2001 to 2026; NESO's 2026 file of 16 October 2026 runs to 25 September. National demand
+      has no `NA` in any year.
+    alt: >-
+      Horizontal bar chart from neso_data_portal/historic_demand: the highest half-hour national
+      demand, MW, in each of NESO's yearly files, 2001 to 2026. It is 57,147 in 2001 and highest at
+      60,333 in 2002, stays between 57,619 and 59,969 to 2010, then falls to 51,208 in 2014, 47,081 in
+      2019 and a low of 44,109 in 2023. It is 45,202 in 2024 and 45,924 in 2025; the 2026 file, to 25
+      September, reaches 47,382.
+    key:
+      - {series: nd, label: Highest national demand, paint: petrol}
   raw_feed:
     note: >-
       From NESO's CKAN portal: one `package_show`, then each yearly file and the FAQ, downloaded
@@ -40,6 +89,77 @@ page:
       - {run: gridflow ingest neso_data_portal historic_demand --last 24h, comment: "each changed yearly file to bronze"}
       - {run: gridflow transform neso_data_portal historic_demand --last 24h, comment: "the capture's date to silver"}
       - {run: gridflow ingest neso_data_portal historic_demand_files --last 24h, comment: "the FAQ, bronze only"}
+  record:
+    select:
+      filter:
+        - {column: timestamp_utc, op: ge, value: "2008-12-31T22:00:00"}
+        - {column: timestamp_utc, op: lt, value: "2009-01-01T02:00:00"}
+      order_by: [timestamp_utc]
+      columns: [settlement_date, settlement_period, nd, tsd, embedded_wind_generation,
+                embedded_solar_generation, ifa_flow, ifa2_flow, britned_flow, moyle_flow, east_west_flow,
+                nemo_flow, nsl_flow, scottish_transfer, resource_id, published_at]
+    key: [resource_id, settlement_date, settlement_period]
+    caption: "NESO's 2008 file writes `NA`; its 2009 file writes 0 or omits the column."
+    fields:
+      settlement_date: "The settlement day, UK time; NESO's files write the date in three formats"
+      settlement_period: "Half hour of the day; period 1 runs from 00:00 UK time"
+      nd: "National demand, MW, excluding station load, pumping and exports"
+      tsd: "Transmission system demand, MW, as text; `NA` 2001 to 2004"
+      england_wales_demand: "National demand on an England and Wales basis, MW"
+      embedded_wind_generation: "NESO's estimate of embedded wind output, MW, as text; `NA` 2001 to 2006"
+      embedded_wind_capacity: "NESO's best view of embedded wind capacity, MW, as text; `NA` 2001 to 2006"
+      embedded_solar_generation: "NESO's estimate of embedded solar output, MW, as text; `NA` 2001 to 2008"
+      embedded_solar_capacity: "NESO's best view of embedded solar capacity, MW, as text; `NA` 2001 to 2008"
+      non_bm_stor: "Short-term operating reserve outside the Balancing Mechanism, MW"
+      pump_storage_pumping: "Pumped storage pumping, MW, as NESO writes it"
+      ifa_flow: "IFA interconnector flow, MW; positive into GB, negative out"
+      ifa2_flow: "IFA2 flow, MW, as text; `NA` 2001 to 2008"
+      britned_flow: "BritNed flow, MW, as text; `NA` 2001 to 2008"
+      moyle_flow: "Moyle flow, MW, as text; `NA` 2001 to 2004"
+      east_west_flow: "East West flow, MW, as text; `NA` 2001 to 2008"
+      nemo_flow: "Nemo Link flow, MW, as text; `NA` 2001 to 2008"
+      nsl_flow: "North Sea Link flow, MW, text; `NA` 2001 to 2008, absent 2009 to 2018"
+      eleclink_flow: "ElecLink flow, MW, text; `NA` 2001 to 2008, absent 2009 to 2018"
+      viking_flow: "Viking Link flow, MW, text; `NA` 2001 to 2008, absent 2009 to 2018"
+      greenlink_flow: "Greenlink flow, MW, text; `NA` 2001 to 2008, absent 2009 to 2018"
+      scottish_transfer: "Scottish transfer, MW, text; `NA` 2001 to 2008, absent 2009 to 2022"
+      forecast_actual_indicator: "`A` for outturn, only in the 2026 file; older files lack the column"
+      resource_id: "NESO's id for the yearly file the row came from, added by gridflow"
+      timestamp_utc: "Start of the settlement period, UTC"
+      published_at: "NESO's last-modified time for the yearly file, read as UTC"
+      bronze_capture_id: "The bronze file the row was read from; one per capture"
+      capture_written_at: "When gridflow wrote the capture to bronze, UTC"
+  caveat: "The 2001 to 2008 files write `NA` in some columns, and NESO never defines it."
+  notebook:
+    lead: >-
+      `data.sql` reads the `_latest` view, the newest copy of each yearly file. The first cell counts
+      `NA` by year; the others use national demand, which has none.
+    cells:
+      - |
+        na = data.sql("""
+            SELECT year(settlement_date) AS year, count(*) AS rows,
+                   count(*) FILTER (WHERE tsd = 'NA') AS tsd_na,
+                   count(*) FILTER (WHERE embedded_wind_generation = 'NA') AS wind_na,
+                   count(*) FILTER (WHERE embedded_solar_generation = 'NA') AS solar_na,
+                   count(*) FILTER (WHERE nemo_flow = 'NA') AS nemo_na
+            FROM silver_neso_data_portal_historic_demand_latest
+            GROUP BY 1 ORDER BY 1""")
+        na.head(10)
+      - |
+        yearly = data.sql("""
+            SELECT year(settlement_date) AS year, avg(nd) AS mean_nd, max(nd) AS peak_nd
+            FROM silver_neso_data_portal_historic_demand_latest
+            GROUP BY 1 ORDER BY 1""").set_index("year")
+        yearly.round(0).tail(6).reset_index()
+      - |
+        ax = yearly.loc[:2025].plot(figsize=(8, 3.5), color=["#155A6E", "#C77E3C"], xlabel="year",
+                                    ylabel="national demand, MW")
+        ax.legend(["yearly mean", "highest half hour of the year"]);
+    needs: "NESO's 26 yearly historic demand files"
+    plot_alt: >-
+      Line plot of national demand by year, MW, 2001 to 2025: the yearly mean (petrol) and the
+      highest half hour of the year (clay). The mean is highest at 39,104 in 2005 and lowest at 26,052
+      in 2023; the highest half hour falls from 60,333 in 2002 to 44,109 in 2023.
   related:
     - {dataset: neso_data_portal/daily-demand-update, note: "The 2026 columns, updated daily, plus seven days of embedded forecasts"}
     - {dataset: elexon/indo, note: "Elexon's initial national demand outturn, which NESO calls ND's equivalent"}
@@ -543,8 +663,9 @@ where these MW columns would hold a number. The vendor never says whether `NA` m
 missing", "not applicable" (for example before an interconnector existed) or zero.
 Declaring it a null token, reading it as zero, or dropping the rows would each invent a
 missing-value rule. So the token is kept as delivered, and every affected column stays text
-in every year, including the years with no `NA` (ADR-039 C-3; RESEARCH U5). This page
-therefore gives schema, row counts, clocks and missingness only, not data values or ranges.
+in every year, including the years with no `NA` (ADR-039 C-3; RESEARCH U5). This note gives
+schema, row counts, clocks and missingness; the site page shows the rows, a chart of national
+demand (which has no `NA`) and a notebook, with one line naming the `NA` question.
 
 The registry's hold question names the 2001–2008 bodies (gridflow
 `src/gridflow/connectors/neso_data_portal/registry/historic-demand-data.json`). Measured on

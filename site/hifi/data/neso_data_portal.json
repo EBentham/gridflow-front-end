@@ -383,8 +383,8 @@
       "title": "Monthly BSUoS forecast",
       "note": "bsuos-monthly-forecast",
       "members": [
-        "bsuos_monthly_forecast_actual_sum",
         "bsuos_monthly_forecast_fc_summary",
+        "bsuos_monthly_forecast_actual_sum",
         "bsuos_monthly_forecast_fc_summary_pct",
         "bsuos_monthly_forecast_impact_on_due",
         "bsuos_monthly_forecast_including_new",
@@ -398,6 +398,7 @@
       "title": "Skip rates",
       "note": "skip-rates",
       "members": [
+        "skip_rates_summary",
         "skip_rates_behind_constraints_bmu",
         "skip_rates_behind_constraints_cons",
         "skip_rates_exclusion_reasons",
@@ -407,8 +408,7 @@
         "skip_rates_stage5_dsf_technology",
         "skip_rates_stage5_psa_technology",
         "skip_rates_stage6_acceptance",
-        "skip_rates_stage6_psa",
-        "skip_rates_summary"
+        "skip_rates_stage6_psa"
       ]
     },
     {
@@ -434,8 +434,8 @@
       "title": "Stability pathfinder service information",
       "note": "stability-pathfinder-service-information",
       "members": [
-        "stability_pathfinder_availability_report",
-        "stability_pathfinder_utilisation_report"
+        "stability_pathfinder_utilisation_report",
+        "stability_pathfinder_availability_report"
       ]
     },
     {
@@ -648,8 +648,8 @@
       "title": "Viking Link",
       "note": "viking",
       "members": [
-        "viking_ntc",
-        "viking_link_ntc"
+        "viking_link_ntc",
+        "viking_ntc"
       ]
     },
     {

@@ -1,0 +1,188 @@
+{
+ "dataset": "neso_data_portal/gtma_trades_data",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "ddad02912e5179ea0638db6f2723cb28b847d21101ffbceb8caffe8e366bb028",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.neso_data_portal.query(\"gtma_trades_data\", \"2015-04-01\", \"2020-03-31\")\ndf[[\"trade_id\", \"start_time\", \"end_time\", \"volume\", \"price\", \"cost\", \"so_flag\"]].tail()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "trade_id",
+      "start_time",
+      "end_time",
+      "volume",
+      "price",
+      "cost",
+      "so_flag"
+     ],
+     "index": [
+      "51225",
+      "51226",
+      "51227",
+      "51228",
+      "51229"
+     ],
+     "rows": [
+      [
+       "ES00053430",
+       "2020-03-31 23:00:00+01:00",
+       "2020-04-01 00:00:00+01:00",
+       "-110.0",
+       "18.34",
+       "-2017.4",
+       "T"
+      ],
+      [
+       "ES00053437",
+       "2020-03-31 23:00:00+01:00",
+       "2020-04-01 00:00:00+01:00",
+       "-50.0",
+       "17.97",
+       "-898.5",
+       "T"
+      ],
+      [
+       "ES00053424",
+       "2020-04-01 00:00:00+01:00",
+       "2020-04-01 01:00:00+01:00",
+       "-200.0",
+       "16.70",
+       "-3340.0",
+       "T"
+      ],
+      [
+       "ES00053438",
+       "2020-04-01 00:00:00+01:00",
+       "2020-04-01 01:00:00+01:00",
+       "-100.0",
+       "16.20",
+       "-1620.0",
+       "T"
+      ],
+      [
+       "ES00053431",
+       "2020-04-01 00:00:00+01:00",
+       "2020-04-01 01:00:00+01:00",
+       "-160.0",
+       "16.58",
+       "-2652.8",
+       "T"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "start = df.start_time.dt.tz_convert(\"UTC\")\nyear = (start.dt.year - (start.dt.month < 4)).rename(\"april_year\")\n(df.groupby([year, \"so_flag\"]).cost.sum() / 1e6).unstack().round(1)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "so_flag",
+      "F",
+      "T",
+      "april_year",
+      "",
+      ""
+     ],
+     "index": [
+      "2015",
+      "2016",
+      "2017",
+      "2018",
+      "2019"
+     ],
+     "rows": [
+      [
+       "30.6",
+       "39.0"
+      ],
+      [
+       "15.3",
+       "124.6"
+      ],
+      [
+       "1.2",
+       "50.5"
+      ],
+      [
+       "17.7",
+       "82.4"
+      ],
+      [
+       "17.6",
+       "84.8"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "monthly = df.groupby([start.dt.strftime(\"%Y-%m\"), \"so_flag\"]).size().unstack()\nax = monthly.plot(color=[\"#C77E3C\", \"#155A6E\"], figsize=(8, 3.5),\n                  xlabel=\"month of delivery start, UTC\", ylabel=\"trades\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "gtma_trades_data-5.png",
+     "width": 707,
+     "height": 337
+    }
+   ]
+  }
+ ]
+}

@@ -8,7 +8,6 @@ updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: "No row says when NESO first published it, or whether times mark half-hour starts or ends."
   title: Carbon intensity of balancing actions
   summary: >-
     NESO's half-hourly GB carbon intensity in gCO2/kWh before and after Balancing Mechanism (BM)
@@ -23,11 +22,39 @@ page:
     `FPN` is the intensity had every BM unit followed its Final Physical Notice; `BOA` applies
     NESO's accepted bids and offers; `Difference` is positive when `BOA` is higher. NESO's April
     2021 methodology says it tracks intensity change, not emissions, and omits interconnectors and
-    small units. NESO's 16 October 2026 file changed values its 8 October file gave for past half
+    small units. NESO's 16 October 2026 file changed values its 7 October file gave for past half
     hours.
   how_used:
     - "How much accepted bids and offers raised or lowered GB intensity, per half hour"
     - "Finding half hours when constraint actions, like wind bid down, raised intensity"
+  chart:
+    type: line
+    silver: neso_data_portal/ci_balancing_actions
+    time: datetime
+    time_text: {format: "%Y-%m-%dT%H:%M:%S"}
+    filter:
+      - {column: published_at, op: eq, value: "2026-10-16T11:44:41.199607"}
+    values:
+      - {column: boa, series: boa}
+      - {column: fpn, series: fpn}
+    aggregation: last
+    window: {start: "2026-10-09", end: "2026-10-15"}
+    unit: gCO2/kWh
+  chart_view:
+    title: FPN and BOA intensity, 9 to 15 October 2026
+    caption: >-
+      Silver `ci_balancing_actions`, gCO2/kWh: `BOA` and `FPN` per half hour in NESO's file of 16
+      October 2026. Points sit at `DATETIME` as written, in UTC; NESO does not say whether it starts
+      or ends its half hour.
+    alt: >-
+      Line chart from neso_data_portal/ci_balancing_actions of BOA and FPN intensity in gCO2/kWh per
+      half hour, 9 to 15 October 2026, in NESO's file of 16 October. The two move together, FPN from
+      8.4 at 13:00 on 9 October to 240.5 at 15:00 on 11 October. BOA sits above FPN except on 11 and
+      12 October, furthest at 07:30 on 14 October, where NESO's Difference is 75.1.
+    x_label: "DATETIME as NESO writes it, UTC"
+    key:
+      - {series: boa, label: BOA, codes: BOA, paint: clay, note: "Intensity with NESO's accepted bids and offers applied"}
+      - {series: fpn, label: FPN, codes: FPN, paint: petrol, note: "Intensity had every BM unit followed its Final Physical Notice"}
   raw_feed:
     note: >-
       From NESO's CKAN portal: one `package_show`, then the CSV and methodology PDF, each downloaded
@@ -40,6 +67,46 @@ page:
       - {run: gridflow ingest neso_data_portal ci_balancing_actions --last 24h, comment: "the CSV to bronze"}
       - {run: gridflow transform neso_data_portal ci_balancing_actions --last 24h, comment: "the capture's date to silver"}
       - {run: gridflow ingest neso_data_portal ci_balancing_actions_files --last 24h, comment: "the methodology PDF, bronze only"}
+  record:
+    select:
+      filter:
+        - {column: datetime, op: in, value: ["2026-10-06T00:00:00", "2026-10-06T00:30:00", "2026-10-07T00:00:00", "2026-10-07T00:30:00"]}
+      order_by: [datetime, published_at]
+      columns: [datetime, fpn, boa, difference, published_at]
+    key: [datetime, published_at]
+    caption: "The four half hours whose `BOA` changed between NESO's 7 and 16 October 2026 files."
+    fields:
+      datetime: "`DATETIME`, UTC, kept as text; start or end of its half hour unstated"
+      fpn: "Intensity had every BM unit followed its Final Physical Notice, gCO2/kWh"
+      boa: "Intensity with NESO's accepted bids and offers applied, gCO2/kWh"
+      difference: "NESO's `FPN BOA Difference`, gCO2/kWh: positive when `BOA` is higher"
+      published_at: "NESO's last-modified time for the file, read as UTC; one per file"
+      timestamp_utc: "When gridflow fetched the file, not the half hour the row describes"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote the capture to bronze, UTC
+  caveat: NESO does not say whether times start or end their half hour, and rewrites past values.
+  notebook:
+    lead: >-
+      `query()` filters this table on fetch time, so the cells read the `_latest` view, NESO's 16
+      October 2026 file, with `data.sql()`. `DATETIME` is text, read here as UTC.
+    cells:
+      - |
+        df = data.sql("""
+            SELECT datetime, fpn, boa, difference
+            FROM silver_neso_data_portal_ci_balancing_actions_latest
+            WHERE datetime >= '2026-10-09' AND datetime < '2026-10-16'
+            ORDER BY datetime""")
+        df.head()
+      - |
+        s = df.set_index(df.datetime.astype("datetime64[ns]"))["difference"]
+        ax = s.plot(figsize=(8, 3.5), color="#C77E3C",
+                    xlabel="DATETIME as NESO writes it, UTC", ylabel="Difference, gCO2/kWh")
+        ax.axhline(0, color="#155A6E", linewidth=0.8);
+    needs: NESO's 16 October 2026 file
+    plot_alt: >-
+      Line plot of NESO's Difference in gCO2/kWh per half hour, 9 to 15 October 2026, from its file
+      of 16 October, with a line at zero. It is positive except on 28 half hours of 11 and 12
+      October, lowest at -15.7 at 12:00 on 11 October, and highest at 75.1 at 07:30 on 14 October.
   related:
     - {dataset: elexon/boal, note: "Elexon's accepted bids and offers per BM unit, the actions `BOA` applies"}
     - {dataset: neso_data_portal/wind-bmu-boa-volumes, note: "Wind curtailed by accepted bids, a case NESO says can raise `BOA`"}
@@ -69,9 +136,10 @@ The data comes from a CKAN upload-file package on the NESO Open Data Portal
 @../../neso/README.md); the methodology cites that API, but the repo has no API counterpart
 for this series (LIVE-PROBE).
 
-> **Status: held.** The silver output is built but held from publication: it is not yet
-> known whether `DATETIME` marks the start or the end of the half-hour (unit E-SEM,
-> RULINGS 521). Row counts and schema appear on this page; data values do not.
+> **Status: held in gridflow.** The silver output is built but held from point-in-time use:
+> it is not yet known whether `DATETIME` marks the start or the end of the half-hour (unit
+> E-SEM, RULINGS 521). The site page shows the rows, a chart at `DATETIME` as written and a
+> notebook, with one line naming that question and the measured revisions (ruling 66, 2026-10-24).
 
 - Publisher group: Carbon intensity
 - Registry group: carbon-intensity1 · archetype: SER
@@ -214,7 +282,8 @@ in each capture (multiplicity `{1: 96163}`, then `{1: 96595}`).
 - TODO: verify why the Datastore's `datastore_search` total (96,211 at
   2026-10-08T12:01Z) differs from the uploaded CSV body captured at 09:14Z (96,163 rows).
   A later Datastore refresh is plausible but has not been measured.
-- Coverage span: not published while the family is held.
+- Coverage span: the 2026-10-16 body runs from `2021-03-31T00:00:00` to `2026-10-16T00:30:00`
+  (labels as written, UTC), with the gaps listed under Cadence.
 
 ### `ci_balancing_actions_files`
 
@@ -266,7 +335,9 @@ methodology predates the NESO rename.
 Detail:
 - **What is held.** The `ci_balancing_actions` silver output. The package-level eligibility
   is `eligible`, but the record-level hold wins (ADR-036 P-8), so
-  `docs/neso_data_portal/eligibility.md` lists this family as held.
+  `docs/neso_data_portal/eligibility.md` lists this family as held. The hold keeps the table
+  out of point-in-time use; under ruling 66 (2026-10-24) the site page still shows its rows,
+  with one line naming the open question.
 - **Hold question.** Does `DATETIME` mark the start or the end of the settlement half-hour?
 - **Unit.** E-SEM.
 - **Ruling.** RULINGS 521 (PROXY-SOURCED seat, 2026-10-09). Regional and balancing-actions

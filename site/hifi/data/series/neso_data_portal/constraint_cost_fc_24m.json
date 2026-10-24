@@ -1,0 +1,20 @@
+{
+  "dataset": "neso_data_portal/constraint_cost_fc_24m",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "becaffa38bc1428a6614dd5a9d4d993e985ce910425fe929d1d4630c696d86de",
+  "type": "line",
+  "unit": "Constraint Cost, no unit in the file",
+  "caption": "",
+  "value_column": "constraint_cost",
+  "aggregation": "last",
+  "window": {"end": "2028-10-01", "rule": "fixed", "start": "2026-10-01"},
+  "provenance": {"files": 2, "null_values_dropped": 0, "rows_matched": 48, "rows_read": 48, "rows_used": 48, "silver": "neso_data_portal/constraint_cost_fc_24m", "silver_first": "2026-10-01", "silver_last": "2028-10-01"},
+  "spec": {"aggregation": "last", "group": "bronze_capture_id", "group_map": {"bronze/neso_data_portal/constraint_cost_fc_24m/2026/10/08/raw_20261008T091541Z_28b85d3f-a1cc-4bb9-80af-600f2cca266a_c56921b4.csv": "sep", "bronze/neso_data_portal/constraint_cost_fc_24m/2026/10/16/raw_20261016T192117Z_28b85d3f-a1cc-4bb9-80af-600f2cca266a_c46bbd3e.csv": "oct"}, "series_order": ["oct", "sep"], "silver": "neso_data_portal/constraint_cost_fc_24m", "time": "forecast_month", "type": "line", "unit": "Constraint Cost, no unit in the file", "value": "constraint_cost", "window": {"end": "2028-10-01", "start": "2026-10-01"}},
+  "x_kind": "time",
+  "x": ["2026-10-01", "2026-11-01", "2026-12-01", "2027-01-01", "2027-02-01", "2027-03-01", "2027-04-01", "2027-05-01", "2027-06-01", "2027-07-01", "2027-08-01", "2027-09-01", "2027-10-01", "2027-11-01", "2027-12-01", "2028-01-01", "2028-02-01", "2028-03-01", "2028-04-01", "2028-05-01", "2028-06-01", "2028-07-01", "2028-08-01", "2028-09-01", "2028-10-01"],
+  "series": [
+    {"key": "oct", "values": [null, 520.4, 448.1, 347.9, 370.7, 323.0, 306.5, 203.8, 309.8, 190.6, 182.7, 252.2, 491.6, 480.8, 401.2, 369.9, 363.2, 319.6, 302.6, 192.6, 285.7, 172.5, 183.8, 237.4, 474.3]},
+    {"key": "sep", "values": [606.2, 551.4, 450.6, 406.7, 469.8, 343.7, 285.6, 178.7, 275.6, 155.7, 163.1, 195.1, 443.7, 420.2, 377.2, 382.4, 392.5, 367.1, 352.0, 202.6, 295.2, 204.9, 211.6, 236.5, null]}
+  ]
+}

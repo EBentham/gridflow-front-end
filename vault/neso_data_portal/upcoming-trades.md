@@ -4,11 +4,10 @@ package: "upcoming-trades"
 dataset_key: "upcoming_trades"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-23
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: "NESO's cost note multiplies `Volume`, labelled MWh, by duration, and `Last_Updated` has no clock."
   title: Upcoming trades
   summary: >-
     NESO's list of its upcoming trades, due to be delivered: one row per trade and settlement
@@ -27,6 +26,28 @@ page:
   how_used:
     - Which trades NESO has lined up for settlement periods ahead, and why
     - Price and cost of each trade per period, before delivery
+  chart:
+    type: bar
+    silver: neso_data_portal/upcoming_trades
+    group: id
+    dedup: {"on": [id, date, sp], order_by: capture_written_at}
+    value: price
+    aggregation: mean
+    sort: label
+    unit: £/MWh
+  chart_view:
+    title: Price of each trade in two fetches of the list
+    caption: >-
+      Silver `neso_data_portal/upcoming_trades`, fetched on 8 and 16 October 2026: each trade's
+      `Price` in £/MWh. The 14 trades for 8 October are `Downward Reg`; the three spanning 16 and 17
+      October carry `V_MIDLANDS` or `V_SWPEN`. Volume is not drawn.
+    alt: >-
+      Horizontal bar chart from neso_data_portal/upcoming_trades of each trade's price in £/MWh: the
+      14 trades for 8 October run from 62.05 to 90.53, and the three for 16 and 17 October are 218,
+      265 and 270.
+    key:
+      - {series: price, label: Price, paint: petrol}
+  caveat: "NESO's cost note multiplies `Volume`, labelled MWh, by duration, and `Last_Updated` names no time zone."
   raw_feed:
     note: >-
       From NESO's CKAN portal: one `package_show`, then the table's dump, kept if its body changed.
@@ -37,6 +58,43 @@ page:
     commands:
       - {run: gridflow ingest neso_data_portal upcoming_trades --last 24h, comment: "the table's dump to bronze"}
       - {run: gridflow transform neso_data_portal upcoming_trades --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: id, op: in, value: [ES00380899, ES00380905, ES00382991, ES00382992, ES00382993]}
+        - {column: sp, op: in, value: [29, 31, 47, 1]}
+      dedup: {"on": [id, date, sp], order_by: capture_written_at}
+      order_by: [timestamp_utc, id]
+      columns: [id, date, sp, volume, price, cost, so_flag, reason, note, last_updated]
+    key: [id, date, sp]
+    caption: "Two downward regulation trades on 8 October; three voltage trades across midnight on 16 October."
+    fields:
+      id: "NESO's GTMA trade id; one trade spans several periods"
+      date: Settlement date of delivery
+      sp: "Settlement period of delivery, from 1"
+      volume: "Average volume, labelled MWh; positive raises generation or cuts demand, NESO says"
+      price: "Price of the trade, £/MWh"
+      cost: "NESO's cost of the trade, £"
+      so_flag: "`T` for system security, `F` for balancing, NESO says"
+      reason: "NESO's trade reason, such as `Downward Reg` or `V_MIDLANDS`"
+      note: "NESO's free-text note; blank in every row of both fetches"
+      last_updated: "When NESO last updated the row; kept as text, no time zone"
+      timestamp_utc: "Start of the settlement period, UTC; gridflow's event time"
+      published_at: "Null: the table carries no publication time"
+      bronze_capture_id: The bronze file the row was read from
+      capture_written_at: When gridflow wrote the capture to bronze, UTC
+  notebook:
+    lead: >-
+      Returns a pandas DataFrame from the view `silver_neso_data_portal_upcoming_trades_latest`,
+      which keeps only the newest fetch of the list, filtered on the settlement date with both ends
+      included.
+    cells:
+      - |
+        df = data.neso_data_portal.query("upcoming_trades", "2026-10-16", "2026-10-17")
+        df[["id", "date", "sp", "volume", "price", "cost", "so_flag", "reason"]].head()
+      - |
+        df.groupby(["id", "reason"]).agg(periods=("sp", "size"), price=("price", "first"))
+    needs: the upcoming trades table
   related:
     - {dataset: neso_data_portal/historic-gtma-grid-trade-master-agreement-trades-data, note: "Past GTMA trades; this table lists those still to come"}
     - {dataset: neso_data_portal/balancing-services-contract-enactment, note: "Contract enactments, which NESO's trading team weighs against trades"}
@@ -64,11 +122,11 @@ table: MWh labelled "Average Volume"; see Holds), not one table split in time.
 These are **trading events, not settlement accounting runs**. `SO_Flag` and `Reason` are not a `run_type`;
 no `run_type` is fabricated and none applies (RULINGS 707).
 
-**The silver output is HELD.** It exists on disk (28 rows from the 2026-10-08 capture and 48 from the
-2026-10-16 capture) but may not be published or
-used for point-in-time work until the volume quantity and the `Last_Updated` clock are settled (see Holds).
-**No data values are given on this page.** Row counts and the schema are the only facts stated about the
-captured rows.
+**The silver output is held from the models.** It exists on disk (28 rows from the 2026-10-08 capture and
+48 from the 2026-10-16 capture) and may not be used for point-in-time work until the volume quantity and
+the `Last_Updated` clock are settled (see Holds); gridflow's models do not consume it. The site page shows
+the rows (ruling 66): a chart of each trade's price, eight sample rows and a notebook, with the two
+questions as a caveat. No volume is drawn.
 
 - Publisher group: Trading
 - Registry group: trade-data · archetype: REG
@@ -79,8 +137,9 @@ captured rows.
 ## Files by disposition
 
 The package has **one resource**, a CKAN datastore table served as a CSV dump: **1 SILVER, 0 DOC, 0 HOLD**.
-SILVER here means the file is a candidate data file for its family; because the family's hold is set at
-record level, the silver table exists but is not publishable. There are **no DOC files, so there are no
+SILVER here means the file is a candidate data file for its family; the family's hold is set at record
+level, so the models may not use the silver table, while the site page shows its rows with a caveat
+(ruling 66). There are **no DOC files, so there are no
 document downloads**. The resource is fetched from the datastore dump endpoint:
 
 - [Upcoming Trades (datastore dump)](https://api.neso.energy/datastore/dump/0b7e84ec-eded-4458-b111-d29ba4508e85)
@@ -208,7 +267,8 @@ capture time: 28 of 28 on 2026-10-08, and 48 of 48 on 2026-10-16 (starts `2026-1
 there and passes the forward-target check (RULINGS 529) without treating the update column as
 issuance. That is a measurement of two captures and must not be generalised.
 
-**Held.** The silver output exists on disk and is held. The questions are in Holds. Because the held
+**Held from the models.** The silver output exists on disk; the models may not use it, and the site page
+shows it with a caveat (ruling 66). The questions are in Holds. Because the held
 question concerns what `Volume` measures, do not read `volume` as MWh or MW, and do not recompute or
 reinterpret `cost` from `volume`, `price` or a period length.
 
@@ -268,10 +328,11 @@ conditions at `https://trades.nationalgrid.co.uk/terms-and-conditions`.
 
 - `upcoming_trades`: held: TODO: UPCOMING-VOLUME-FORMULA — `Volume` is labelled MWh but described as average with duration in the cost formula; MW or MWh? Also `Last_Updated` clock undocumented. (unit v0.22-K-TRD)
 
-The silver output exists on disk and is **held**. It may not be published, nor used for point-in-time
-models, until the unit that settles the semantics questions (E-SEM) answers the questions below. The
+The silver output exists on disk and is **held** from the models: it may not be used for point-in-time
+models until the unit that settles the semantics questions (E-SEM) answers the questions below. The
 registry records the hold against the unit that created it (`v0.22-K-TRD`); the eligibility report agrees
-with the registry (the package is `eligible` as a package; the hold is on the family output).
+with the registry (the package is `eligible` as a package; the hold is on the family output). The site
+page shows the rows with both questions as a caveat (ruling 66) and draws price only.
 
 **The hold questions, in plain terms.**
 

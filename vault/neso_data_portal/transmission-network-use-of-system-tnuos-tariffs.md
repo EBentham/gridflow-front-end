@@ -8,7 +8,6 @@ updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: true
   title: TNUoS tariffs
   summary: >-
     NESO's Transmission Network Use of System (TNUoS) tariffs for generation and demand, by zone,
@@ -27,6 +26,31 @@ page:
   how_used:
     - Compare zonal generation and demand tariffs across Great Britain, year by year
     - Follow NESO's forecasts for one charging year from release to final tariff
+  chart:
+    type: bar
+    silver: neso_data_portal/tnuos_tariffs_half_hourly_hh_demand
+    filter:
+      - {column: publication, op: eq, value: Final}
+      - {column: year_fy, op: eq, value: 2027}
+    dedup: {"on": [publication, year_fy, published_date, zone_no], order_by: published_at}
+    group: zone_name
+    value: hh_tariff_floored_gbp_per_kw
+    aggregation: last
+    sort: value_desc
+    unit: "£/kW"
+  chart_view:
+    title: Final half-hourly demand tariff by zone, 2026/27
+    caption: >-
+      Silver `tnuos_tariffs_half_hourly_hh_demand`, £/kW: NESO's final overall
+      half-hourly demand tariff for 2026/27 (`year_fy` 2027), floored at £0/kW, one bar per demand
+      zone. Final rows of this one member only; published dates are not drawn.
+    alt: >-
+      Horizontal bar chart from neso_data_portal/tnuos_tariffs_half_hourly_hh_demand: NESO's final
+      half-hourly demand tariff for 2026/27 in £/kW by demand zone, largest first. South Western
+      14.13, Southern 7.354, London 6.453, South Wales 5.97, South East 4.368, Midlands 2.634 and
+      Eastern 0.063. The other seven zones, from Northern Scotland to East Midlands, are at 0.
+    key:
+      - {series: hh_tariff_floored_gbp_per_kw, label: Half-hourly demand tariff, paint: petrol}
   raw_feed:
     note: >-
       From NESO's CKAN portal: one `package_show` per table, then its file downloaded whole unless
@@ -34,41 +58,94 @@ page:
     commands:
       - {run: gridflow ingest neso_data_portal tnuos_tariffs_half_hourly_hh_demand --last 24h, comment: "whole file; swap in any key"}
       - {run: gridflow transform neso_data_portal tnuos_tariffs_half_hourly_hh_demand --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: zone_no, op: eq, value: 14}
+        - {column: year_fy, op: in, value: [2027, 2031]}
+      dedup: {"on": [publication, year_fy, published_date, zone_no], order_by: published_at}
+      order_by: [year_fy, published_date]
+      columns: [publication, year_fy, published_date, zone_no, zone_name, hh_tariff_floored_gbp_per_kw, peak_gbp_per_kw, year_round_gbp_per_kw, hh_sgd_adjustment_gbp_per_kw, published_at, timestamp_utc]
+    key: [publication, year_fy, published_date, zone_no]
+    caption: "South Western zone: every stage NESO published for 2026/27, and its one 2030/31 forecast."
+    fields:
+      publication: "The stage, Forecast, Draft or Final (NESO); part of the key"
+      year_fy: "Tariff year, April to March, named by its ending year; part of the key"
+      published_date: "NESO's date of tariff publication, with no time; part of the key"
+      zone_no: "Demand zone number, 1 to 14 (NESO); part of the key"
+      zone_name: "Demand zone name as NESO writes it; zone 1 is Northern Scotland"
+      hh_tariff_floored_gbp_per_kw: "Overall half-hourly demand tariff, £/kW, floored at £0/kW (NESO)"
+      peak_gbp_per_kw: "Peak security zonal tariff, unfloored, £/kW; an element of the overall tariff"
+      year_round_gbp_per_kw: "Year-round zonal tariff, unfloored, £/kW; an element of the overall tariff"
+      hh_sgd_adjustment_gbp_per_kw: "Small generator discount adjustment, £/kW; an element of the overall tariff"
+      published_at: "NESO's last-modified time for the whole file, read as UTC; one per capture"
+      timestamp_utc: "When gridflow wrote the capture, UTC; not a tariff or publication date"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote the capture to bronze, UTC
+  notebook:
+    lead: >-
+      Reads the half-hourly demand table with `data.sql` from the `_latest` view, the newest captured
+      file, because `query()` filters on capture time. Then each year's publications by stage, and
+      final tariffs for four zones.
+    cells:
+      - |
+        df = data.sql("""
+            SELECT publication, year_fy, published_date, zone_no, zone_name,
+                   hh_tariff_floored_gbp_per_kw
+            FROM silver_neso_data_portal_tnuos_tariffs_half_hourly_hh_demand_latest
+            ORDER BY year_fy, published_date, zone_no""")
+        df.head()
+      - |
+        stages = df.groupby(["year_fy", "publication"]).published_date.nunique()
+        stages.unstack(fill_value=0)[["Forecast", "Draft", "Final"]].rename_axis(index=None, columns=None)
+      - |
+        final = df[df.publication == "Final"].pivot(index="year_fy", columns="zone_name",
+                                                    values="hh_tariff_floored_gbp_per_kw")
+        zones = ["South Western", "London", "Midlands", "Northern Scotland"]
+        final[zones].plot(color=["#155A6E", "#C77E3C", "#66793B", "#3E8C97"], marker="o",
+                          figsize=(8, 3.5), xlabel="financial year, by its ending year",
+                          ylabel="final HH demand tariff, £/kW");
+    needs: the half-hourly demand tariffs file
+    plot_alt: >-
+      Line plot of the final half-hourly demand tariff, £/kW, by financial year 2021 to 2027, four
+      zones. South Western 57.02, 61.68 and 63.75 for 2021 to 2023, then 7.65, 8.20, 10.12 and
+      14.13. London 59.19 to 63.69, then 4.37 to 7.41. Midlands 52.65 to 57.19, then 2.37 to 3.05.
+      Northern Scotland 21.13, 20.38 and 27.45, then 0 from 2024.
   family:
     slug: transmission-network-use-of-system-tnuos-tariffs
     members:
       - dataset: tnuos_tariffs_half_hourly_hh_demand
         differs: "Half-hourly demand by zone 1 to 14: peak, year-round and floored tariffs, £/kW"
         request: "GET https://api.neso.energy/dataset/eaef4708-1100-4ad9-98d5-d892f3c9a56c/resource/6abe8416-149c-4c78-b65b-059eea19957a/download/tnuos_demand_hh.csv"
-        held: NESO dates each publication but not when each row appeared, nor whether old rows change.
+        caveat: "Stages are dated, not timed; NESO does not promise unchanged rows."
       - dataset: tnuos_tariffs_non_half_hourly_nhh_demand
         differs: "Non-half-hourly demand by zone 1 to 14: zonal and floored tariffs, in p/kWh"
         request: "GET https://api.neso.energy/dataset/eaef4708-1100-4ad9-98d5-d892f3c9a56c/resource/4e8dd130-5283-4f22-8c05-84e4d3280eb3/download/tnuos_demand_nhh.csv"
-        held: NESO dates each publication but not when each row appeared, nor whether old rows change.
+        caveat: "Stages are dated, not timed; NESO does not promise unchanged rows."
       - dataset: tnuos_tariffs_embedded_export
         differs: "Embedded export by demand zone: locational, avoided GSP infrastructure and floored tariffs, £/kW"
         request: "GET https://api.neso.energy/dataset/eaef4708-1100-4ad9-98d5-d892f3c9a56c/resource/af4501a0-6b96-4088-926c-7c7b0c499b08/download/tnuos_embeddedexport.csv"
-        held: NESO dates each publication but not when each row appeared, nor whether old rows change.
+        caveat: "Stages are dated, not timed; NESO does not promise unchanged rows."
       - dataset: tnuos_tariffs_transmission_demand
         differs: "Transmission Demand Residual tariffs by band, £ per site per day except unmetered supplies"
         request: "GET https://api.neso.energy/dataset/eaef4708-1100-4ad9-98d5-d892f3c9a56c/resource/dcca94fd-343e-4d4e-8c5d-66009dec4ad3/download/tnuos_tdr-tariffs.csv"
-        held: "NESO dates each publication but not when each row appeared; the unmetered band's units conflict."
+        caveat: "Stages are dated, not timed; NESO does not promise unchanged rows; the unmetered band's unit conflicts."
       - dataset: tnuos_tariffs_onshore_generator
         differs: "Onshore generation by zone 1 to 27: peak, year-round, residual and small-generator discount, £/kW"
         request: "GET https://api.neso.energy/dataset/eaef4708-1100-4ad9-98d5-d892f3c9a56c/resource/ffc0adb8-5426-474e-94a3-a5f3f01a0cdb/download/tnuos_generation_onshore.csv"
-        held: NESO dates each publication but not when each row appeared, nor whether old rows change.
+        caveat: "Stages are dated, not timed; NESO does not promise unchanged rows."
       - dataset: tnuos_tariffs_local_offshore_generator
         differs: "Each offshore generator's local substation, circuit and embedded transmission tariffs, £/kW"
         request: "GET https://api.neso.energy/dataset/eaef4708-1100-4ad9-98d5-d892f3c9a56c/resource/98569a29-940d-4bb7-8dc4-01e46187039a/download/tnuos_generation_offshore.csv"
-        held: NESO dates each publication but not when each row appeared, nor whether old rows change.
+        caveat: "Stages are dated, not timed; NESO does not promise unchanged rows."
       - dataset: tnuos_tariffs_local_substation_tariff
         differs: "Generators' local substation tariff by voltage, substation capacity and redundancy, £/kW"
         request: "GET https://api.neso.energy/dataset/eaef4708-1100-4ad9-98d5-d892f3c9a56c/resource/e697e9be-c068-482d-ae35-01f60bcb6700/download/local-substation-tnuos-tariff.csv"
-        held: NESO dates each publication but not when each row appeared, nor whether old rows change.
+        caveat: "Stages are dated, not timed; NESO does not promise unchanged rows."
       - dataset: tnuos_tariffs_onshore_local_circuit
         differs: "Onshore local circuit tariff by named substation, £/kW"
         request: "GET https://api.neso.energy/dataset/eaef4708-1100-4ad9-98d5-d892f3c9a56c/resource/01f36b32-4ad3-47fa-a645-7f7a47f1b0ae/download/tnuos_onshore_local_circuit.csv"
-        held: "NESO dates each publication but not when each row appeared; some substation names end in whitespace."
+        caveat: "Stages are dated, not timed; NESO does not promise unchanged rows; some names end in whitespace."
   related:
     - {dataset: neso_data_portal/gis-boundaries-for-gb-generation-charging-zones, note: "Approximate boundaries of the TNUoS generation zones, as GIS files"}
     - {dataset: neso_data_portal/gis-boundaries-for-gb-dno-license-areas, note: "Licence areas NESO points to for TNUoS demand zone maps"}
@@ -100,9 +177,9 @@ use, to be read alongside the balancing charge (BSUoS) pages
 silver output for each of the 8 families (captured 2026-10-08, transformed 2026-10-12). **All 8 outputs are
 held** (hold TARIFF-ISSUE-AVAILABILITY): each body mixes `Forecast`, `Draft` and `Final` rows,
 and no row carries a publication instant, so the evidence does not establish when each row
-became available. Nothing in silver may be published or used for point-in-time models until
-the hold is ruled. This page therefore gives schema, row counts, clocks and missingness only,
-with **no data values** (no sample rows, no minima, maxima or value statistics). The
+became available. No silver output may be used for point-in-time models until the hold is
+ruled. The site page shows the half-hourly demand rows and a chart, with a caveat on every
+family naming this question (ruling 66). The
 front-matter `eligibility: "eligible"` is the package-level registry status, not a statement
 about the outputs.
 
@@ -605,8 +682,8 @@ gridflow outputs derived from this package carry the attribution line above.
 
 All 8 silver outputs exist on disk (activated 2026-10-12, captures dated 2026-10-08, ruled in RULINGS 702, reconcile
 `--all --cutoff 2026-10-12` exit 0 with 0 gaps over 141 families, RULINGS 703) but are **held**.
-They may not be published or used for point-in-time models until unit v0.22-K-BAL-2c's
-questions are answered. The holds sit in the records (RULINGS 692 set them when the batch was
+They may not be used for point-in-time models until unit v0.22-K-BAL-2c's questions are
+answered; the site shows their rows with a caveat (ruling 66). The holds sit in the records (RULINGS 692 set them when the batch was
 ruled; PR #110 merged triple-green, RULINGS 701).
 
 **Why the usual shortcut fails.** Where every row of a forecast-style file targets a period after
@@ -628,5 +705,4 @@ guarantee.
 publication) was available, or an approved conservative publication-date availability recipe
 together with an authorised treatment of mixed Forecast, Draft and Final rows. Either is a
 record edit once ruled. The two family-specific questions, the padded substation names and the
-unmetered TDR unit, need a vendor clarification tied to the specific CSV column. Until then, row
-counts, schema, clocks and missingness are all this page asserts.
+unmetered TDR unit, need a vendor clarification tied to the specific CSV column.

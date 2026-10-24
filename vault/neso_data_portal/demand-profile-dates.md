@@ -4,11 +4,11 @@ package: "demand-profile-dates"
 dataset_key: "demand_profile_dates"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-23
+updated: 2026-10-24
 layer_coverage: "bronze"
 eligibility: "eligible"
 page:
-  held: "NESO repeats some rows exactly and does not say why, so gridflow builds no table."
+  held: "NESO repeats some rows exactly, so no key tells rows apart; gridflow keeps the raw file."
   title: Demand profile dates
   summary: >-
     For each forecast day, the past day NESO picked to turn its cardinal-point demand forecast into
@@ -37,6 +37,9 @@ page:
       - "GET https://api.neso.energy/dataset/11a2a8d3-3d65-4545-af02-be85e54db078/resource/48862d1a-f285-4709-a48c-1c0e8e7b37c3/download/profile_dates.csv"
     commands:
       - {run: gridflow ingest neso_data_portal demand_profile_dates --last 24h, comment: "whole CSV, bronze only"}
+    sample:
+      file: profile_dates.csv
+      caveat: "In this 16 October 2026 file, eight later dates repeat in full; nothing tells copies apart."
   related:
     - {dataset: neso_data_portal/1-day-ahead-demand-forecast, note: "NESO's day-ahead cardinal-point forecast, which these dates turn into half hours"}
     - {dataset: neso_data_portal/2-14-days-ahead-national-demand-forecast, note: "Cardinal points 2 to 14 days ahead, the reach of these dates"}
@@ -66,7 +69,8 @@ rows hold only 3,216 distinct `(FORECAST_DATE, PROFILE_DATE)` pairs. The engine'
 duplicate-key guard rejects a capture with repeated keys, and no column set avoids the
 repeats, because the repeated rows are identical in full. gridflow forbids silent
 deduplication, so the family stays ingest-only (class 3) until the blocker is settled (see
-Identity).
+Identity). The site page shows the header and first eight lines of NESO's 16 October 2026 file,
+as fetched, and no table.
 
 - Publisher group: Demand
 - Registry group: demand · archetype: FC

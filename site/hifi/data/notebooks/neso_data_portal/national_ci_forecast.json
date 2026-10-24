@@ -1,0 +1,134 @@
+{
+ "dataset": "neso_data_portal/national_ci_forecast",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "3b46aa1f6a701f224eeea5936f32d79f3ad44f8110c10ed1379bed11012b027b",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.neso_data_portal.query(\"national_ci_forecast\", \"2026-10-09\", \"2026-10-15\")\ndf = df.sort_values(\"timestamp_utc\").assign(datetime=lambda d: d.datetime.dt.tz_convert(\"UTC\"))\ndf[[\"datetime\", \"forecast\", \"actual\", \"index\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "datetime",
+      "forecast",
+      "actual",
+      "index"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2026-10-09 00:00:00+00:00",
+       "43.0",
+       "46.0",
+       "low"
+      ],
+      [
+       "2026-10-09 00:30:00+00:00",
+       "39.0",
+       "42.0",
+       "low"
+      ],
+      [
+       "2026-10-09 01:00:00+00:00",
+       "42.0",
+       "44.0",
+       "low"
+      ],
+      [
+       "2026-10-09 01:30:00+00:00",
+       "40.0",
+       "45.0",
+       "low"
+      ],
+      [
+       "2026-10-09 02:00:00+00:00",
+       "40.0",
+       "44.0",
+       "low"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "ax = df.set_index(\"datetime\")[\"actual\"].plot(\n    figsize=(8, 3.5), color=\"#155A6E\", ylim=(0, 250),\n    xlabel=\"Half-hour start, UTC\", ylabel=\"actual, gCO2/kWh\")",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "national_ci_forecast-4.png",
+     "width": 699,
+     "height": 375
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "df[\"index\"].value_counts()",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "index\nlow         188\nmoderate    130\nhigh         18\nName: count, dtype: int64"
+    }
+   ]
+  }
+ ]
+}

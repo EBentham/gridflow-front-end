@@ -1,0 +1,19 @@
+{
+  "dataset": "neso_data_portal/weekly_wind_availability",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "b9b029a80d3527113f65669776e0f76be29886c92e14b5b134ec151be566ddfc",
+  "type": "bar",
+  "unit": "MW",
+  "caption": "",
+  "value_column": "mw",
+  "aggregation": "last",
+  "window": null,
+  "provenance": {"categories_total": 281, "files": 2, "null_values_dropped": 0, "rows_matched": 281, "rows_read": 87110, "rows_used": 281, "silver": "neso_data_portal/weekly_wind_availability"},
+  "spec": {"aggregation": "last", "filter": [{"column": "published_at", "op": "ge", "value": "2026-10-16T00:00:00Z"}, {"column": "week_number", "op": "eq", "value": "44W26"}], "group": "bmu_id", "limit": 12, "silver": "neso_data_portal/weekly_wind_availability", "sort": "value_desc", "type": "bar", "unit": "MW", "value": "mw"},
+  "x_kind": "category",
+  "x": ["HOWBO-1", "HOWBO-2", "HOWBO-3", "TKNEW-1", "HOWAO-2", "HOWAO-1", "HOWAO-3", "TKNWW-1", "SGRWO-6", "EAAO-1", "EAAO-2", "WLNYO-3"],
+  "series": [
+    {"key": "mw", "values": [440.0, 440.0, 440.0, 412.0, 401.0, 400.0, 400.0, 390.0, 361.0, 340.0, 340.0, 330.0]}
+  ]
+}

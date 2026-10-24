@@ -1,0 +1,19 @@
+{
+  "dataset": "neso_data_portal/bs_contract_enactment_balancing",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "ed2fda35c299c996a8e9c138698493f485e1c1b5985d802984cbd83ef9f61c71",
+  "type": "bar",
+  "unit": "enactments",
+  "caption": "",
+  "value_column": null,
+  "aggregation": "count",
+  "window": null,
+  "provenance": {"duplicates_dropped": 0, "files": 5, "rows_matched": 83, "rows_read": 83, "rows_used": 83, "silver": "neso_data_portal/bs_contract_enactment_balancing"},
+  "spec": {"aggregation": "count", "dedup": {"on": ["resource_id", "id"], "order_by": "capture_written_at"}, "group": "resource_id", "group_map": {"183ecdfb-56e0-487d-8262-468ce1c78ed4": "2026-27", "3ca7b6d5-d211-479f-8d5f-4bca92add3c9": "2023-24", "84837a48-8f5d-40d8-bc9f-53dd5e519447": "2021-22", "b13cfa5e-53e3-41de-ace6-a5d3997b532c": "2025-26", "ed753a4b-1b8c-4b07-9997-b5c0e09da041": "2022-23"}, "silver": "neso_data_portal/bs_contract_enactment_balancing", "sort": "label", "type": "bar", "unit": "enactments"},
+  "x_kind": "category",
+  "x": ["2021-22", "2022-23", "2023-24", "2025-26", "2026-27"],
+  "series": [
+    {"key": "count", "values": [72, 3, 5, 1, 2]}
+  ]
+}

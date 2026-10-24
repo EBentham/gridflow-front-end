@@ -1,0 +1,220 @@
+{
+ "dataset": "neso_data_portal/aahedc_tariffs",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "027b08fba45a2bd29a057cc5b9a64ebff363330402e8e4358d73cc4adbfced1f",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.sql(\"\"\"\n    SELECT publication_type, year_fy, published_date,\n           total_scheme_tariff_p_per_kwh, shetland_tariff_p_per_kwh,\n           tariff_excluding_shetland_assistance_amount_p_per_kwh\n    FROM silver_neso_data_portal_aahedc_tariffs_latest\n    ORDER BY year_fy, published_date\"\"\")\ndf",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "publication_type",
+      "year_fy",
+      "published_date",
+      "total_scheme_tariff_p_per_kwh",
+      "shetland_tariff_p_per_kwh",
+      "tariff_excluding_shetland_assistance_amount_p_per_kwh"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8"
+     ],
+     "rows": [
+      [
+       "Final",
+       "2022",
+       "2021-07-15",
+       "0.040427",
+       "0.012049",
+       "0.028378"
+      ],
+      [
+       "Final",
+       "2023",
+       "2022-07-15",
+       "0.040670",
+       "0.012077",
+       "0.028593"
+      ],
+      [
+       "Final",
+       "2024",
+       "2023-07-15",
+       "0.042038",
+       "0.011503",
+       "0.030535"
+      ],
+      [
+       "Draft",
+       "2025",
+       "2024-03-31",
+       "0.042288",
+       "0.012344",
+       "0.029944"
+      ],
+      [
+       "Final",
+       "2025",
+       "2024-07-15",
+       "0.042145",
+       "0.012344",
+       "0.029801"
+      ],
+      [
+       "Draft",
+       "2026",
+       "2025-03-27",
+       "0.041099",
+       "0.012247",
+       "0.028852"
+      ],
+      [
+       "Final",
+       "2026",
+       "2025-07-15",
+       "0.040984",
+       "0.012247",
+       "0.028737"
+      ],
+      [
+       "Draft",
+       "2027",
+       "2026-03-27",
+       "0.044201",
+       "0.012766",
+       "0.031435"
+      ],
+      [
+       "Final",
+       "2027",
+       "2026-07-15",
+       "0.044269",
+       "0.031503",
+       "0.012766"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "total = df.pivot(index=\"year_fy\", columns=\"publication_type\",\n                 values=\"total_scheme_tariff_p_per_kwh\")[[\"Draft\", \"Final\"]]\ntotal = total.rename_axis(index=None, columns=None)\ntotal",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "Draft",
+      "Final"
+     ],
+     "index": [
+      "2022",
+      "2023",
+      "2024",
+      "2025",
+      "2026",
+      "2027"
+     ],
+     "rows": [
+      [
+       "NaN",
+       "0.040427"
+      ],
+      [
+       "NaN",
+       "0.040670"
+      ],
+      [
+       "NaN",
+       "0.042038"
+      ],
+      [
+       "0.042288",
+       "0.042145"
+      ],
+      [
+       "0.041099",
+       "0.040984"
+      ],
+      [
+       "0.044201",
+       "0.044269"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "ax = total.plot.bar(color=[\"#C77E3C\", \"#155A6E\"], rot=0, figsize=(8, 3.5),\n                    xlabel=\"financial year, by its ending year\",\n                    ylabel=\"total scheme tariff, p/kWh\")\nax.legend(loc=\"upper left\", bbox_to_anchor=(1, 1));",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "aahedc_tariffs-5.png",
+     "width": 799,
+     "height": 337
+    }
+   ]
+  }
+ ]
+}

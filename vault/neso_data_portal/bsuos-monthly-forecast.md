@@ -8,7 +8,6 @@ updated: 2026-10-12
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: true
   title: Monthly BSUoS forecast
   summary: >-
     NESO's monthly forecast of balancing costs for each of the next 24 months, in £m, with older
@@ -28,6 +27,39 @@ page:
   how_used:
     - How NESO's expected balancing cost for a month moved from edition to edition
     - Expected costs beside the settled BSUoS charges and fixed tariffs
+  chart:
+    type: line
+    silver: neso_data_portal/bsuos_monthly_forecast_fc_summary
+    time: month_vendor
+    time_text: {format: "%d/%m/%Y"}
+    filter:
+      - {column: edition, op: in, value: [202510, 202604, 202610]}
+    value: balancing_costs_central_gbp_m
+    group: edition
+    group_map: {"202510": oct2025, "202604": apr2026, "202610": oct2026}
+    series_order: [oct2025, apr2026, oct2026]
+    dedup: {"on": [edition, month_vendor], order_by: published_at}
+    aggregation: last
+    window: {start: "2025-09-01", end: "2028-08-31"}
+    max_points: 40
+    unit: "£m"
+  chart_view:
+    title: Central balancing cost forecast, three editions
+    caption: >-
+      Silver `bsuos_monthly_forecast_fc_summary`, NESO's Balancing Costs (Central) column, £m per
+      target month, in three editions six months apart: October 2025, April 2026 and October 2026.
+      Editions are named by file; NESO gives no issue time or target-month clock.
+    alt: >-
+      Line chart from neso_data_portal/bsuos_monthly_forecast_fc_summary in £m, one point per
+      target month from September 2025 to August 2028, one line per edition. Where editions
+      overlap, the later one is higher: for December 2026 the October 2025 edition gives 237.6,
+      April 2026 286.6 and October 2026 353.7. The October 2026 edition peaks at 390.9 for
+      November 2026; the October 2025 edition's lowest is 168.7, for April 2027.
+    x_label: target month, as NESO labels each row
+    key:
+      - {series: oct2025, label: October 2025 edition, codes: "bsuos-forecast-october-2025.csv", paint: olive, note: "File last changed 15 September 2025 (NESO's last_modified)"}
+      - {series: apr2026, label: April 2026 edition, codes: "bsuos-forecast-april-2026.csv", paint: horizon, note: "File last changed 13 March 2026"}
+      - {series: oct2026, label: October 2026 edition, codes: "bsuos-forecast-october-2026.csv", paint: petrol, note: "File last changed 21 September 2026"}
   raw_feed:
     note: >-
       NESO's `package_show`, then each file whole unless `last_modified` is unchanged (a few
@@ -35,24 +67,92 @@ page:
       is bronze only.
     commands:
       - {run: gridflow ingest neso_data_portal bsuos_monthly_forecast_fc_summary --last 24h, comment: "whole files; swap in any key"}
-      - {run: gridflow transform neso_data_portal bsuos_monthly_forecast_fc_summary --last 24h, comment: "forecast summary only; rows not shown"}
+      - {run: gridflow transform neso_data_portal bsuos_monthly_forecast_fc_summary --last 24h, comment: "forecast summary only; the rows below"}
       - {run: gridflow ingest neso_data_portal bsuos_monthly_forecast_files --last 24h, comment: the archive and PDF}
+  record:
+    select:
+      filter:
+        - {column: month_vendor, op: in, value: ["01/06/2024", "Jun-24"]}
+        - {column: edition, op: ge, value: 202312}
+        - {column: edition, op: le, value: 202407}
+      dedup: {"on": [edition, month_vendor], order_by: published_at}
+      order_by: [edition]
+      columns: [month_vendor, edition, published_at, balancing_costs_central_gbp_m, constraints_gbp_m, winter_security_of_supply_cost_gbp_m, under_recovered_costs_21_22_gbp_m, estimated_bsuos_volume_twh]
+    key: [resource_id, edition, month_vendor]
+    caption: "June 2024 in eight editions, December 2023 to July 2024; March to May write a dash."
+    fields:
+      resource_id: "NESO's CKAN resource id for the file; part of the key"
+      edition: "The edition: the year and month in NESO's file name, as YYYYMM"
+      month_vendor: "NESO's target-month label as text: `Jun-24` in some editions, `01/06/2024` in others"
+      published_at: "NESO's last-modified time for the file, read as UTC; not an issue time"
+      balancing_costs_central_gbp_m: "NESO's central balancing cost, £m; the seven category columns add up to it here"
+      constraints_gbp_m: "Constraint costs, £m"
+      winter_security_of_supply_cost_gbp_m: "Winter security of supply cost, £m; null where NESO wrote a dash or nothing"
+      under_recovered_costs_21_22_gbp_m: "2021-22 under-recovered costs, £m; null where NESO wrote a dash or nothing"
+      estimated_bsuos_volume_twh: "Estimated BSUoS volume, TWh, as NESO's header and dictionary give it"
+      energy_imbalance_gbp_m: "Energy imbalance cost, £m"
+      positive_reserve_gbp_m: "Positive reserve cost, £m"
+      negative_reserve_gbp_m: "Negative reserve cost, £m"
+      frequency_control_gbp_m: "Frequency control cost, £m"
+      other_gbp_m: "Other balancing costs, £m"
+      restoration_gbp_m: "Restoration cost, £m; not in every edition's header"
+      estimated_internal_bsuos_eso_incentive_gbp_m: "Estimated internal BSUoS cost and ESO incentive, £m"
+      bsuos_cost_recovery_gbp_m: "NESO's `BSUoS Cost Recovery £m`; its dictionary gives no unit"
+      alomcp_gbp_m: "NESO's `ALoMCP £m` column; its dictionary gives no unit"
+      cmp345_350_deferred_costs_gbp_m: "NESO's `CMP345/350 Deferred Costs £m`; its dictionary gives no unit"
+      cmp381_deferred_costs_gbp_m: "NESO's `CMP381 Deferred Costs £m`; its dictionary gives no unit"
+      unnamed_16: "A column NESO left without a header in early 2022 editions; blank"
+      unnamed_15: "A column NESO left without a header in the March 2022 edition; blank"
+      winter_contingency_cost_central_gbp_m: "Winter contingency cost (central); header says £m, dictionary gives no unit"
+      volume: "The bare `Volume` column of the July 2023 edition; NESO states no unit"
+      cmp398_412_claim_costs_gbp_m: "CMP398/412 claim costs, £m in NESO's dictionary"
+      interest_repayment_gbp_m: "Interest repayment, £m in NESO's dictionary"
+      additional_neso_framework_costs: "Header says £m but NESO's dictionary says TWh; stored as delivered"
+      timestamp_utc: "When gridflow captured the file, UTC; not a time NESO gives"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote the capture to bronze, UTC
+  notebook:
+    lead: >-
+      `query()` filters on `timestamp_utc`, which on this table is gridflow's capture time, so the
+      cells read the `_latest` view (the newest capture of each file) with `data.sql` and parse
+      both spellings of the target month.
+    cells:
+      - |
+        import pandas as pd
+        df = data.sql("""
+            SELECT edition, month_vendor, published_at, balancing_costs_central_gbp_m
+            FROM silver_neso_data_portal_bsuos_monthly_forecast_fc_summary_latest
+        """)
+        target = pd.to_datetime(df.month_vendor, format="%b-%y", errors="coerce")
+        df["target_month"] = target.fillna(pd.to_datetime(df.month_vendor, format="%d/%m/%Y", errors="coerce")).dt.to_period("M")
+        df["file_changed_utc"] = df.published_at.dt.tz_convert("UTC")
+        df.groupby("edition").agg(first_target=("target_month", "min"), last_target=("target_month", "max"), file_changed_utc=("file_changed_utc", "first")).tail()
+      - |
+        march = df[df.target_month == pd.Period("2026-03", "M")].sort_values("edition")
+        ax = march.plot(x="edition", y="balancing_costs_central_gbp_m", kind="bar", figsize=(8, 3.5), color="#155A6E", legend=False,
+                        xlabel="edition (the month in NESO's file name)", ylabel="central cost for March 2026, £m")
+    needs: every monthly forecast summary file
+    plot_alt: >-
+      Bar plot of NESO's central balancing cost forecast for March 2026, £m, in the 24 editions
+      that include it, May 2024 to April 2026. It rises from 171.5 (May 2024 edition) to 266.0
+      (July 2025), then stays between 243.8 and 263.8; the March and April 2026 editions both give
+      261.3.
   family:
     slug: bsuos-monthly-forecast
     members:
-      - dataset: bsuos_monthly_forecast_actual_sum
-        differs: "Outturn for the previous 12 months; monthly files, March 2020 to December 2021"
-        request:
-          - "GET https://api.neso.energy/api/3/action/package_show?id=bsuos-monthly-forecast"
-          - "GET https://api.neso.energy/dataset/c0376ed7-3205-4fe2-9496-28496f1f287a/resource/fdd43811-b1ff-490e-8ad2-98d67822931e/download/monthly-bsuos-actual-summary-mar_20.csv"
-          - "GET https://api.neso.energy/dataset/c0376ed7-3205-4fe2-9496-28496f1f287a/resource/1f8b0d9a-a98b-4cf4-9496-16a5c9db551f/download/monthly-bsuos-actual-summary-14122021.csv"
-        held: "The header's £ is not valid UTF-8, so gridflow keeps these files in bronze only."
       - dataset: bsuos_monthly_forecast_fc_summary
         differs: "The 24-month forecast, one file per monthly edition, from March 2020"
         request:
+          - "GET https://api.neso.energy/api/3/action/package_show?id=bsuos-monthly-forecast"
           - "GET https://api.neso.energy/dataset/c0376ed7-3205-4fe2-9496-28496f1f287a/resource/ef004890-679a-4d28-ac00-427ff6e7260d/download/monthly-bsuos-forecast-summary-mar_20.csv"
           - "GET https://api.neso.energy/dataset/c0376ed7-3205-4fe2-9496-28496f1f287a/resource/b458c4e5-ab80-43e5-907e-6c7069350390/download/bsuos-forecast-october-2026.csv"
-        held: NESO does not say when each monthly edition was issued, only when its file last changed.
+        caveat: "NESO gives no edition issue time or month clock; some units and the dash are unexplained."
+      - dataset: bsuos_monthly_forecast_actual_sum
+        differs: "Outturn for the previous 12 months; monthly files, March 2020 to December 2021"
+        request:
+          - "GET https://api.neso.energy/dataset/c0376ed7-3205-4fe2-9496-28496f1f287a/resource/fdd43811-b1ff-490e-8ad2-98d67822931e/download/monthly-bsuos-actual-summary-mar_20.csv"
+          - "GET https://api.neso.energy/dataset/c0376ed7-3205-4fe2-9496-28496f1f287a/resource/1f8b0d9a-a98b-4cf4-9496-16a5c9db551f/download/monthly-bsuos-actual-summary-14122021.csv"
+        held: "The header's £ is not valid UTF-8, so gridflow keeps these files in bronze only."
       - dataset: bsuos_monthly_forecast_fc_summary_pct
         differs: "The forecast under COVID demand cuts of 5, 10 and 15 percent"
         request:
@@ -114,9 +214,9 @@ workbook archive. They fall into **eight tabular families** that gridflow captur
 **held**: the vendor gives no issue time for any edition, so no edition can yet be placed on a
 point-in-time clock (see Holds). **The other seven tabular families are ingest-only**: their
 bodies are not valid UTF-8 (a `0xA3` pound byte) and gridflow has no record for them
-(RULINGS 667). The workbook archive is held and the PDF is a document. Because the one silver
-family is held, **this page gives schema, row counts, clocks and missingness only, with no
-data values**.
+(RULINGS 667). The workbook archive is held and the PDF is a document. The front-end page
+shows the silver family's rows with a caveat (ruling 66, 2026-10-24); the other seven families
+have no silver table, so it shows no rows for them.
 
 - Publisher group: Balancing costs
 - Registry group: balancing · archetype: FC
@@ -988,8 +1088,8 @@ estimations that may not match later tariffs.
 
 - `bsuos_monthly_forecast_fc_summary`: held: TODO: the issue instant and availability of each monthly edition (filename month is an edition label, not an issue time); all 53 UTF-8 editions load, and March-May 2024 load the accounting token as null (RULINGS 678); the loaded editions include targets on or before their upload (RULINGS 529 forward-target rule fails); the target-month clock (BSUOS-MONTH-CLOCK); the units of bare `Volume` (July 2023) and `Additional NESO Framework Costs (£m)` (dictionary says TWh); and whether `' - '` in a cost column means zero (the January and February 2024 editions read `0` for the same target months) or not-available; a zero ruling re-transforms March-May 2024 from bronze. (unit v0.22-K-BAL-2a)
 
-The silver output exists on disk and is **held**. It may not be published or used for
-point-in-time models until the unit that settles the semantics question (E-SEM) answers the
+The silver output exists on disk and is **held**. It may not be used for point-in-time models
+until the unit that settles the semantics question (E-SEM) answers the
 question above. The registry records the hold against the unit that created it
 (`v0.22-K-BAL-2a`); the hold sits in the record. Adding the dash-to-null load (RULINGS 678, 680,
 686, 687) deliberately did not settle the dash question, so the family stayed held: the record
@@ -1015,9 +1115,10 @@ registry.
 **Other outputs held or without a record.** Only this family has silver. The other seven
 tabular families have no record (RULINGS 667; encoding unresolved), the daily forecast package
 has no record, the workbook archive is HOLD (`TODO: WORKBOOK-CHILD-RECORDS`), and no gold view
-reads anything in this package. Consumers must not treat the silver rows as a published
+reads anything in this package. Consumers must not treat the silver rows as a point-in-time
 forecast history.
 
-**Never publish the values.** This page shows schema, row counts, clocks and missingness only,
-and no export of this family's values should be published until the hold is lifted.
+**Rows on the site (ruling 66, 2026-10-24).** The front-end page shows this family's rows, chart
+and notebook with a caveat naming the open questions; the hold still bars point-in-time and model
+use. The other seven tabular families have no silver table, so the page shows no rows for them.
 

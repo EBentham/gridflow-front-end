@@ -4,11 +4,10 @@ package: "balancing-services-contract-enactment"
 dataset_keys: ["bs_contract_enactment_balancing", "bs_contract_enactment_balancing_service"]
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-23
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: true
   title: Balancing services contract enactment
   summary: >-
     NESO's log of balancing service contracts its trading team enacted, days to hours before
@@ -27,6 +26,32 @@ page:
   how_used:
     - Which units and counterparties NESO enacted contracts with, when, and for what reason
     - "Average MW and £/MWh of each enactment, beside NESO's constraint costs"
+  chart:
+    type: bar
+    silver: neso_data_portal/bs_contract_enactment_balancing
+    group: resource_id
+    group_map:
+      "84837a48-8f5d-40d8-bc9f-53dd5e519447": "2021-22"
+      "ed753a4b-1b8c-4b07-9997-b5c0e09da041": "2022-23"
+      "3ca7b6d5-d211-479f-8d5f-4bca92add3c9": "2023-24"
+      "b13cfa5e-53e3-41de-ace6-a5d3997b532c": "2025-26"
+      "183ecdfb-56e0-487d-8262-468ce1c78ed4": "2026-27"
+    dedup: {"on": [resource_id, id], order_by: capture_written_at}
+    aggregation: count
+    sort: label
+    unit: enactments
+  chart_view:
+    title: Enactments in each yearly table, 2021-22 to 2026-27
+    caption: >-
+      Silver `neso_data_portal/bs_contract_enactment_balancing`, the yearly tables (the older table
+      is not drawn): rows per financial-year table. NESO lists no 2024-25 table. Every 2021-22 row is
+      a reactive power contract at Runcorn, at zero volume and price.
+    alt: >-
+      Horizontal bar chart counting the rows of each yearly table in
+      neso_data_portal/bs_contract_enactment_balancing: 72 in 2021-22, 3 in 2022-23, 5 in 2023-24,
+      1 in 2025-26 and 2 in 2026-27. There is no 2024-25 bar.
+    key:
+      - {series: count, label: Enactments, paint: petrol}
   raw_feed:
     note: >-
       From NESO's CKAN portal: one `package_show`, then each table's dump, kept if its body changed.
@@ -35,6 +60,50 @@ page:
       - {run: gridflow ingest neso_data_portal bs_contract_enactment_balancing --last 24h, comment: "yearly dumps; swap in either key"}
       - {run: gridflow transform neso_data_portal bs_contract_enactment_balancing --last 24h, comment: "the capture's date to silver"}
       - {run: gridflow ingest neso_data_portal bs_contract_enactment_files --last 24h, comment: "the ZIP's own key, bronze only"}
+  record:
+    select:
+      filter:
+        - {column: id, op: in, value: [ES00151371, ES00151373, ES00168599, ES00227515, ES00273726, ES00339135, ES00378731, ES00378936]}
+      dedup: {"on": [resource_id, id], order_by: capture_written_at}
+      order_by: [starttime]
+      columns: [id, starttime, endtime, volume, price, cost, so_flag, reason, asset_id, cp_name, area, note, last_updated, resource_id]
+    key: [resource_id, id]
+    caption: "Eight enactments: Runcorn reactive contracts at zero, and later ones with volume and cost."
+    fields:
+      id: "NESO's identifier of the enactment action"
+      starttime: "Start of the delivery window, UTC as NESO states"
+      endtime: "End of the window, UTC; NESO does not say whether it is included"
+      volume: "Average volume, MW; positive raises generation or cuts demand, NESO says"
+      price: "Average price, £/MWh"
+      cost: "NESO's cost of the action: labelled £/h, described as a total"
+      so_flag: "`T` mainly for system security, `F` mainly for balancing, NESO says"
+      reason: "NESO's reason for the action, such as `V_MERSEY` or `B6_localised`"
+      asset_id: "The asset: a BM unit name, or a name for the contract"
+      cp_name: "The contract counterparty, which may differ from the asset owner"
+      area: "The asset's delivery area, as NESO writes it"
+      note: "NESO's free-text note"
+      last_updated: "When NESO last updated the row, UTC; not its first publication"
+      resource_id: "The yearly table the row comes from (CKAN resource id)"
+      timestamp_utc: "Equals `starttime`; gridflow's event time"
+      published_at: "Null: these dumps carry no usable publication time"
+      bronze_capture_id: The bronze file the row was read from
+      capture_written_at: When gridflow wrote the capture to bronze, UTC
+  notebook:
+    lead: >-
+      Returns a pandas DataFrame from the view
+      `silver_neso_data_portal_bs_contract_enactment_balancing_latest`, filtered on the delivery start
+      with both ends included; times come back in Europe/London.
+    cells:
+      - |
+        df = data.neso_data_portal.query("bs_contract_enactment_balancing", "2021-04-01", "2027-03-31")
+        df[["id", "starttime", "endtime", "volume", "price", "cost", "reason"]].tail()
+      - |
+        moved = df[df.cost != 0].copy()
+        moved["hours"] = (moved.endtime - moved.starttime).dt.total_seconds() / 3600
+        moved[["id", "hours", "volume", "price", "cost"]]
+      - |
+        df.groupby(["reason", "asset_id"], dropna=False).size()
+    needs: the yearly enactment tables
   family:
     slug: balancing-services-contract-enactment
     members:
@@ -44,14 +113,14 @@ page:
           - "GET https://api.neso.energy/api/3/action/package_show?id=balancing-services-contract-enactment"
           - "GET https://api.neso.energy/datastore/dump/84837a48-8f5d-40d8-bc9f-53dd5e519447"
           - "GET https://api.neso.energy/datastore/dump/183ecdfb-56e0-487d-8262-468ce1c78ed4"
-        held: "`Cost` is labelled £/h, but NESO describes it as a total: volume times price times duration."
+        caveat: "`Cost` is labelled £/h, but NESO describes it as a total: volume times price times duration."
       - dataset: bs_contract_enactment_balancing_service
         differs: "Older table; its name, Pre June 2021, is not an end date"
         request:
           - "GET https://api.neso.energy/api/3/action/package_show?id=balancing-services-contract-enactment"
           - "GET https://api.neso.energy/datastore/dump/f75a1dcb-de6e-4c20-8407-e37d5e67cf79"
           - "GET https://api.neso.energy/dataset/1a03230c-94c6-4816-bb93-e4450f31aa17/resource/46ec41f3-1307-4faa-90e0-4b05a7710681/download/archived-balancing-services-contract-enactment.zip"
-        held: Start times are dates only, and NESO gives no clock for the end and update times.
+        caveat: Start times are dates only, and the end and update times name no time zone.
   related:
     - {dataset: neso_data_portal/index-linked-contract-volume, note: "Index-linked contract enactments for voltage, in the same columns"}
     - {dataset: neso_data_portal/super-stable-export-limit-contract-enactment, note: "Super SEL enactments, in the same columns from 2021-22"}
@@ -90,9 +159,9 @@ There are two families, from two vendor tables with different shapes:
 Both have a gridflow silver output, and **both are held**: the modern one on a cost-dimension
 question, the legacy one on a clock question (see Holds). The package-level status in the front
 matter is generated from the registry and reads `eligible`, but the family-level eligibility of
-both is **held**. The silver exists on disk, yet nothing in it may be published or used for
-point-in-time models yet. This page therefore gives schema, row counts, clocks and missingness
-only, with **no data values**. A third family, `bs_contract_enactment_files`, is a catalogue-only
+both is **held**: gridflow's models do not consume either until its question is answered. The
+site page shows a chart and eight sample rows of the modern table, and names each table's
+question as a caveat (ruling 66); the frame shows no legacy rows. A third family, `bs_contract_enactment_files`, is a catalogue-only
 ZIP of archived files and is on HOLD.
 
 - Publisher group: Trading
@@ -453,8 +522,9 @@ gridflow outputs derived from this package carry the attribution line above.
 - `bs_contract_enactment_balancing`: held: TODO: COST-DIMENSION — the dictionary labels `Cost` £/h but describes it as total cost (price × volume × duration); which is published? (unit v0.22-K-TRD)
 - `bs_contract_enactment_balancing_service`: held: TODO: LEGACY-BS-CLOCK — start times truncated to dates, end/update clocks undocumented; what instants were published? (unit v0.22-K-TRD)
 
-Both silver outputs exist on disk but are **held**. They may not be published or used for
-point-in-time models until the questions are answered. The hold sits in the record. The seat
+Both silver outputs exist on disk but are **held**. They may not be used for point-in-time models
+until the questions are answered; the site page shows the modern table's rows and names each
+question as a caveat (ruling 66). The hold sits in the record. The seat
 specified and approved the batch (RULINGS 707), and PR #111 merged triple-green at master
 `374a7be` (RULINGS 714). Activation and the reconcile followed (RULINGS 715 and 716, below). The
 records' own unit tag is v0.22-K-TRD; no resolving unit is named yet
@@ -472,6 +542,12 @@ records' own unit tag is v0.22-K-TRD; no resolving unit is named yet
 - *What is established.* The column casts cleanly, has no nulls in silver, and `Volume` (MW) and
   `Price` (£/MWh) carry no such conflict. The hold is on consuming `Cost`; it covers the whole
   family output because the record is the publishing unit.
+- *What the rows show (silver, checked 2026-10-24).* Of the 10 rows with a non-zero `Cost`, 5
+  equal `Volume` × `Price` × the window's hours exactly, and 4 more do when `Volume` is read before
+  NESO's rounding to one decimal place (the implied volume is within 0.05 MW). The tenth,
+  `ES00378936`, implies -10.95 MW against a published -10.9. That is how a total in £ behaves, not
+  a rate; the rows support NESO's description, not its label, but the hold stands until NESO says
+  which it publishes.
 - *What settles it.* A corrected or clarified NESO data dictionary for `Cost`. The same
   question is held on three sibling families (GTMA financial-year trades, index-linked contract
   volume and the modern super stable export limit enactment table).

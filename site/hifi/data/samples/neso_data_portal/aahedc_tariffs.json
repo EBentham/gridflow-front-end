@@ -1,0 +1,209 @@
+{
+ "dataset": "neso_data_portal/aahedc_tariffs",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "4b89fd558cce7a626acc98c4154b95081915df890f90c7ea8c0a1f1844d8062a",
+ "silver": "neso_data_portal/aahedc_tariffs",
+ "columns": [
+  {
+   "name": "publication_type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "year_fy",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "published_date",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "total_scheme_tariff_p_per_kwh",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "shetland_tariff_p_per_kwh",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "tariff_excluding_shetland_assistance_amount_p_per_kwh",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "Final",
+   "2023",
+   "2022-07-15",
+   "0.04067",
+   "0.012077",
+   "0.028593",
+   "2026-07-15 09:16:36.703704 UTC",
+   "2026-10-08 08:13:00.098981 UTC",
+   "bronze/neso_data_portal/aahedc_tariffs/2026/10/08/raw_20261008T081300Z_ffd29cc8-3c55-4e83-aa0e-73212d4fedba_2ebbf27d.csv",
+   "2026-10-08 08:13:00.098981 UTC",
+   "2026-10-08 08:13:00.098981 UTC",
+   "2026-07-15 09:16:36.703704 UTC",
+   "e38e8ac2-4006-4f0e-81c8-a8f8dc904fec",
+   "1+e1"
+  ],
+  [
+   "Final",
+   "2024",
+   "2023-07-15",
+   "0.042038",
+   "0.011503",
+   "0.030535",
+   "2026-07-15 09:16:36.703704 UTC",
+   "2026-10-08 08:13:00.098981 UTC",
+   "bronze/neso_data_portal/aahedc_tariffs/2026/10/08/raw_20261008T081300Z_ffd29cc8-3c55-4e83-aa0e-73212d4fedba_2ebbf27d.csv",
+   "2026-10-08 08:13:00.098981 UTC",
+   "2026-10-08 08:13:00.098981 UTC",
+   "2026-07-15 09:16:36.703704 UTC",
+   "e38e8ac2-4006-4f0e-81c8-a8f8dc904fec",
+   "1+e1"
+  ],
+  [
+   "Draft",
+   "2025",
+   "2024-03-31",
+   "0.042288",
+   "0.012344",
+   "0.029944",
+   "2026-07-15 09:16:36.703704 UTC",
+   "2026-10-08 08:13:00.098981 UTC",
+   "bronze/neso_data_portal/aahedc_tariffs/2026/10/08/raw_20261008T081300Z_ffd29cc8-3c55-4e83-aa0e-73212d4fedba_2ebbf27d.csv",
+   "2026-10-08 08:13:00.098981 UTC",
+   "2026-10-08 08:13:00.098981 UTC",
+   "2026-07-15 09:16:36.703704 UTC",
+   "e38e8ac2-4006-4f0e-81c8-a8f8dc904fec",
+   "1+e1"
+  ],
+  [
+   "Final",
+   "2025",
+   "2024-07-15",
+   "0.042145",
+   "0.012344",
+   "0.029801",
+   "2026-07-15 09:16:36.703704 UTC",
+   "2026-10-08 08:13:00.098981 UTC",
+   "bronze/neso_data_portal/aahedc_tariffs/2026/10/08/raw_20261008T081300Z_ffd29cc8-3c55-4e83-aa0e-73212d4fedba_2ebbf27d.csv",
+   "2026-10-08 08:13:00.098981 UTC",
+   "2026-10-08 08:13:00.098981 UTC",
+   "2026-07-15 09:16:36.703704 UTC",
+   "e38e8ac2-4006-4f0e-81c8-a8f8dc904fec",
+   "1+e1"
+  ],
+  [
+   "Draft",
+   "2026",
+   "2025-03-27",
+   "0.041099",
+   "0.012247",
+   "0.028852",
+   "2026-07-15 09:16:36.703704 UTC",
+   "2026-10-08 08:13:00.098981 UTC",
+   "bronze/neso_data_portal/aahedc_tariffs/2026/10/08/raw_20261008T081300Z_ffd29cc8-3c55-4e83-aa0e-73212d4fedba_2ebbf27d.csv",
+   "2026-10-08 08:13:00.098981 UTC",
+   "2026-10-08 08:13:00.098981 UTC",
+   "2026-07-15 09:16:36.703704 UTC",
+   "e38e8ac2-4006-4f0e-81c8-a8f8dc904fec",
+   "1+e1"
+  ],
+  [
+   "Final",
+   "2026",
+   "2025-07-15",
+   "0.040984",
+   "0.012247",
+   "0.028737",
+   "2026-07-15 09:16:36.703704 UTC",
+   "2026-10-08 08:13:00.098981 UTC",
+   "bronze/neso_data_portal/aahedc_tariffs/2026/10/08/raw_20261008T081300Z_ffd29cc8-3c55-4e83-aa0e-73212d4fedba_2ebbf27d.csv",
+   "2026-10-08 08:13:00.098981 UTC",
+   "2026-10-08 08:13:00.098981 UTC",
+   "2026-07-15 09:16:36.703704 UTC",
+   "e38e8ac2-4006-4f0e-81c8-a8f8dc904fec",
+   "1+e1"
+  ],
+  [
+   "Draft",
+   "2027",
+   "2026-03-27",
+   "0.044201",
+   "0.012766",
+   "0.031435",
+   "2026-07-15 09:16:36.703704 UTC",
+   "2026-10-08 08:13:00.098981 UTC",
+   "bronze/neso_data_portal/aahedc_tariffs/2026/10/08/raw_20261008T081300Z_ffd29cc8-3c55-4e83-aa0e-73212d4fedba_2ebbf27d.csv",
+   "2026-10-08 08:13:00.098981 UTC",
+   "2026-10-08 08:13:00.098981 UTC",
+   "2026-07-15 09:16:36.703704 UTC",
+   "e38e8ac2-4006-4f0e-81c8-a8f8dc904fec",
+   "1+e1"
+  ],
+  [
+   "Final",
+   "2027",
+   "2026-07-15",
+   "0.044269",
+   "0.031503",
+   "0.012766",
+   "2026-07-15 09:16:36.703704 UTC",
+   "2026-10-08 08:13:00.098981 UTC",
+   "bronze/neso_data_portal/aahedc_tariffs/2026/10/08/raw_20261008T081300Z_ffd29cc8-3c55-4e83-aa0e-73212d4fedba_2ebbf27d.csv",
+   "2026-10-08 08:13:00.098981 UTC",
+   "2026-10-08 08:13:00.098981 UTC",
+   "2026-07-15 09:16:36.703704 UTC",
+   "e38e8ac2-4006-4f0e-81c8-a8f8dc904fec",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}
