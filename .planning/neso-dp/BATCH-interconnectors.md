@@ -50,5 +50,5 @@ note-body statements (for example "only one capture") yourself when the data pro
 
 | # | Writer | Checker | State |
 |---|---|---|---|
-| H1 | a62fc78e8e26ffa05 | a21506c7e680b4a33 | checking; 20bv logged |
+| H1 | a62fc78e8e26ffa05 | a21506c7e680b4a33 | revising (REVISE x4: restriction claim); 20bv logged |
 | H2 | acef9b7cce5ed5f19 | a64b820b2fb288aa4 | checking |
