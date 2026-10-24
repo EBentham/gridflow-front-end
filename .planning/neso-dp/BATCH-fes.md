@@ -78,4 +78,4 @@ captures repeat rows (or as a guard). On a table with no event time, `query()` f
 | 4 | acad0fb61bef04ef6 | a8f5eefb9b797b81c | APPROVED (round 2 fixes seat-verified); committed; no chart; 20cf logged; folded-text template item added |
 | 5 | a3d393bb8f451101a | ad4effc3d413bfdeb | APPROVED (round 2, nit-only; frame file URL not listed under the four-request limit, a template item); committed; no chart; 20cg logged |
 | H1 | a52a6a2f2e6d644da | a415e4312cd06fbfa | APPROVED (4 with nits, FLX1 clean), 8 of 9 nits fixed (one skipped: would add a claim; seat-verified); committed; 20ch logged; ED1 hold line departs from the shared wording (writer: shared line would be false) |
-| H2 | abb3fef4553450b53 | af53fc2261e34135e | checking; 20cj logged; no-silver heading added to template follow-ups |
+| H2 | abb3fef4553450b53 | af53fc2261e34135e | WS2 REVISE (1 major: units claim contradicted by the 2026 file), ED5 APPROVE, 4 APPROVE with nits; round 2 writing; 20cj logged; no-silver heading added to template follow-ups |
