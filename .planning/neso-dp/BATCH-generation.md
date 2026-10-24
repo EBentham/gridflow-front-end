@@ -72,6 +72,6 @@ the lead table's columns; describe a second table's columns in its member line.
 | 2 | a48d8b9e47c223da5 | ae27861460680e250 | APPROVED, nits fixed (seat-verified); committed |
 | 3 | ab264ea28a0b271b2 | a41945f902dcee342 | APPROVED (round 2 fixes seat-verified); committed; 20br logged |
 | 4 | a433a0c274e3774e4 | ad0238aea64f407ad | APPROVED, nits fixed (seat-verified); committed; 20bp logged (overlap is 1 to 5 April 2026, not Aug-Sep) |
-| 5 | ab173f966d65b4fd9 | a67e6d17a5e3a9388 | checking; 20bs logged |
+| 5 | ab173f966d65b4fd9 | a67e6d17a5e3a9388 | revising (REVISE: 1 major, 4 nits); 20bs logged |
 | H1 | a22cf5e9dd0c422d9 | ab22cceb41929f51c | checking; 20bt logged |
 | H2 | a6f81f03fb4bef599 | | writing |
