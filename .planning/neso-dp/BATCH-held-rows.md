@@ -136,3 +136,12 @@ NONBM: the connector sent parameters Elexon ignores (fixed); silver 741 distinct
 2026); Elexon stopped publishing after 1 Apr 2026 10:04 UTC (SP22); each day's file holds what was published that UTC
 day, so it starts with the previous day's last half-hour; most periods 0 (17, 28, 11 MW on 15 Jan 2026 SP25-27).
 Verify all of this against silver before writing.
+GIE `unavailability` (parent, ~15:45Z): fixed in gridflow PR #133 (unmerged; local silver re-transformed): typed, keyed,
+one row per outage notice per calendar day, new `outage_date` column; 1-5 Aug went from 1,705 rows to 76. Write it
+without the defect caveat; remaining caveats: timestamps carry no time zone (GIE's reporters mix UTC and local), units
+unstated, an outage running 06:00 to 06:00 appears on two calendar days, the August capture has 13 of 16 pages.
+
+**Fixed in gridflow PR #134 (unmerged; local silver re-transformed):** current BSUoS day-first files (remediation 20y)
+and system frequency 2014 (20ao: 12 of 12 files, the repeated October hour told apart by `dtm_occurrence`). Their
+pages' defect caveats and notes come off in a small follow-up batch. The DC 4-day forecast's month-first 2022 issue is
+still misread: keep that caveat.
