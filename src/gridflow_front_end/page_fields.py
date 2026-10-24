@@ -29,6 +29,10 @@ one key (v5 decision D2). The fields follow the locked page anatomy
         caption: ...                             # 40 words or fewer; chart-reading caveats go here
         alt: ...                                 # the chart described for a screen reader
         x_label: settlement date; each starts at 23:00 UTC
+        y_min: -2000000                          # optional: the y axis floor, at or below every
+                                                 # value drawn (the build checks); a floor a
+                                                 # little below zero lifts a line that sits at
+                                                 # zero off the axis, so its gaps read as gaps
         key:
           - {series: wind, label: Wind, codes: WIND}
           - {series: ps, label: Pumped storage, codes: PS, note: ..., paint: hatch-cross}
@@ -54,17 +58,41 @@ one key (v5 decision D2). The fields follow the locked page anatomy
       notebook:
         lead: ...                                # 35 words or fewer
         cells: ['df = data.elexon.query("fuelhh", "2026-09-20", "2026-09-26")', ...]
-        needs: 20 to 26 September 2026           # "... with <needs> ingested."
+        needs: 20 to 26 September 2026           # a noun phrase: the page prints "Needs gridflow
+                                                 # and gridflow-models installed, with <needs>
+                                                 # ingested." No clause, verb, ';' or full stop
         plot_alt: ...
       # 6. foot
       related:
-        - {dataset: elexon/fuelinst, note: ...}  # up to 4, 12 words or fewer each
+        - {dataset: elexon/fuelinst, note: ...}  # up to 4, 12 words or fewer each; a table key, or
+                                                 # a page slug (neso_data_portal/aggregated-bsad);
+                                                 # either must be in the page set
       # a family page (v5 D5) adds its variants; the note is the family's lead member
       family:
         slug: demand-outturn
         members:
           - {dataset: indo, differs: ..., request: "GET https://..."}
+          # a member with several files (a current and an archive file) lists each:
+          - {dataset: requirement, differs: ..., request: ["GET https://...", "GET https://..."]}
+          # a member whose rows the page cannot show says why (16 words or fewer); the raw
+          # feed prints it under the member as "Rows not shown: <held>"
+          - {dataset: archive, differs: ..., request: "GET https://...", held: ...}
     ---
+
+A held page (ruling 6) documents a package none of whose rows can be published: the full
+anatomy minus rows. It keeps the hero and facts (no Key line, which comes from ``record``),
+what it is and how it is used, the raw feed with each table's files, and a silver section
+that lists each table with one plain line on why its rows are not shown; it has no chart,
+no sample frame, no column guide and no notebook, so ``chart``, ``chart_view``,
+``locations``, ``record`` and ``notebook`` are rejected. Mark it on the lead note::
+
+    page:
+      held: true                                 # a family page: every member gives `held`
+      family:
+        members:
+          - {dataset: dc_forecast_4d, differs: ..., request: ..., held: ...}
+    page:
+      held: The date column's day and month order is not settled.   # a one-table page: the reason
 
 Why front matter and not a fenced block in the body: every vault tool already
 ``yaml.safe_load``s the front matter (``gridflow_drift_check.py``,
@@ -107,6 +135,7 @@ RECORD = "record"
 NOTEBOOK = "notebook"
 RELATED = "related"
 FAMILY = "family"
+HELD = "held"
 LOCATIONS = "locations"
 
 FIELDS = (
@@ -124,6 +153,7 @@ FIELDS = (
     NOTEBOOK,
     RELATED,
     FAMILY,
+    HELD,
 )
 REQUIRED = (
     TITLE,
@@ -164,6 +194,7 @@ BUDGET = {
     "plot_alt": 60,
     "related_note": 12,
     "differs": 14,
+    "held": 16,
     "locations_title": 10,
     "locations_caption": 40,
 }
@@ -173,6 +204,7 @@ RELATED_MAX = 4
 CELLS_COUNT = (2, 4)
 REQUESTS_COUNT = (1, 4)
 COMMANDS_COUNT = (1, 3)
+MEMBER_REQUESTS_MAX = 4  # a member's files: current and archive, or a few yearly files
 FAMILY_MEMBERS = (2, 18)  # regional carbon intensity reaches one region by 18 routes
 
 # Chart paints: the scenery palette (DESIGN.md "Colour"), plus unpainted
@@ -202,10 +234,22 @@ DEFAULT_PAINT = {
     "other": "khaki",
 }
 
-_DATASET_RE = re.compile(r"^[a-z0-9_]+/[a-z0-9_]+$")
+# a related entry names a table key (``elexon/fuelhh``) or a page slug (``neso_data_portal/aggregated-bsad``)
+_RELATED_RE = re.compile(r"^[a-z0-9_]+/(?:[a-z0-9_]+|[a-z0-9]+(?:-[a-z0-9]+)+)$")
 _SLUG_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 _COLUMN_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 _FENCE = "---"
+
+# ``notebook.needs`` is printed inside "with <needs> ingested.", so it must be a noun phrase. These
+# catch the clauses writers have put there: a verb to start it, or a word that makes it a sentence.
+NEEDS_LEADING_VERBS = frozenset(
+    {"ingest", "install", "run", "download", "fetch", "load", "use", "read", "get", "pull", "call"}
+    | {"need", "needs", "require", "requires", "have", "has", "is", "are"}
+)
+NEEDS_CLAUSE_WORDS = frozenset(
+    {"will", "would", "can", "cannot", "can't", "won't", "must", "should", "fail", "fails"}
+    | {"failed", "is", "are", "was", "were", "isn't", "aren't", "does", "doesn't", "don't"}
+)
 
 
 def words(text: str) -> int:
@@ -234,6 +278,7 @@ class ChartView:
     alt: str = ""
     x_label: str = ""
     key: tuple[KeyEntry, ...] = ()
+    y_min: float | None = None
 
 
 @dataclass(frozen=True)
@@ -293,11 +338,12 @@ class Related:
 
 @dataclass(frozen=True)
 class FamilyMember:
-    """One variant listed on a family page."""
+    """One variant listed on a family page, with the raw request of each of its files."""
 
     dataset: str
     differs: str
-    request: str = ""
+    requests: tuple[str, ...] = ()
+    held: str = ""
 
 
 @dataclass(frozen=True)
@@ -337,6 +383,8 @@ class PageFields:
     notebook: Notebook = field(default_factory=Notebook)
     related: tuple[Related, ...] = ()
     family: Family | None = None
+    held: bool = False
+    held_reason: str = ""
     declared: frozenset[str] = frozenset()
 
     @property
@@ -422,6 +470,14 @@ def _prose(text: str) -> str:
     return " ".join(text.split())
 
 
+def _requests(r: _Reader, path: str, value: object) -> tuple[str, ...]:
+    """A member's ``request``: one raw request, or a list of them (a current and an archive file)."""
+    if isinstance(value, list):
+        return tuple(r.text(f"{path}[{i}]", v) for i, v in enumerate(value))
+    text = r.text(path, value)
+    return (text,) if text else ()
+
+
 def _read(page: Mapping[str, Any]) -> tuple[PageFields, list[str]]:
     r = _Reader()
     p = f"{PAGE_KEY}"
@@ -437,7 +493,11 @@ def _read(page: Mapping[str, Any]) -> tuple[PageFields, list[str]]:
     )
 
     view_m = r.mapping(f"{p}.{CHART_VIEW}", page.get(CHART_VIEW))
-    r.unknown(f"{p}.{CHART_VIEW}", view_m, ("title", "caption", "alt", "x_label", "key"))
+    r.unknown(f"{p}.{CHART_VIEW}", view_m, ("title", "caption", "alt", "x_label", "key", "y_min"))
+    y_min = view_m.get("y_min")
+    if y_min is not None and (not isinstance(y_min, (int, float)) or isinstance(y_min, bool)):
+        r.errors.append(f"{p}.chart_view.y_min: must be a number (the y axis floor)")
+        y_min = None
     key_entries: list[KeyEntry] = []
     for i, entry in enumerate(r.seq(f"{p}.chart_view.key", view_m.get("key"))):
         where = f"{p}.chart_view.key[{i}]"
@@ -459,6 +519,7 @@ def _read(page: Mapping[str, Any]) -> tuple[PageFields, list[str]]:
         alt=_prose(r.text(f"{p}.chart_view.alt", view_m.get("alt"))),
         x_label=r.text(f"{p}.chart_view.x_label", view_m.get("x_label")),
         key=tuple(key_entries),
+        y_min=float(y_min) if y_min is not None else None,
     )
 
     locations: Locations | None = None
@@ -542,12 +603,13 @@ def _read(page: Mapping[str, Any]) -> tuple[PageFields, list[str]]:
         for i, mem in enumerate(r.seq(f"{p}.family.members", fm.get("members"))):
             where = f"{p}.family.members[{i}]"
             mm = r.mapping(where, mem)
-            r.unknown(where, mm, ("dataset", "differs", "request"))
+            r.unknown(where, mm, ("dataset", "differs", "request", "held"))
             members.append(
                 FamilyMember(
                     dataset=r.text(f"{where}.dataset", mm.get("dataset"), required=True),
                     differs=_prose(r.text(f"{where}.differs", mm.get("differs"), required=True)),
-                    request=r.text(f"{where}.request", mm.get("request")),
+                    requests=_requests(r, f"{where}.request", mm.get("request")),
+                    held=_prose(r.text(f"{where}.held", mm.get("held"))),
                 )
             )
         family = Family(
@@ -567,6 +629,14 @@ def _read(page: Mapping[str, Any]) -> tuple[PageFields, list[str]]:
     summary = _prose(r.text(f"{p}.{SUMMARY}", page.get(SUMMARY)))
     what = _prose(r.text(f"{p}.{WHAT_IT_IS}", page.get(WHAT_IT_IS)))
     landscape = r.text(f"{p}.{LANDSCAPE}", page.get(LANDSCAPE))
+    held_value = page.get(HELD)
+    held, held_reason = False, ""
+    if held_value is True:
+        held = True
+    elif isinstance(held_value, str):
+        held, held_reason = True, _prose(r.text(f"{p}.{HELD}", held_value))
+    elif held_value not in (None, False):
+        r.errors.append(f"{p}.{HELD}: must be true (a family page) or the reason (a one-table page)")
 
     fields = PageFields(
         present=True,
@@ -584,6 +654,8 @@ def _read(page: Mapping[str, Any]) -> tuple[PageFields, list[str]]:
         notebook=notebook,
         related=tuple(related),
         family=family,
+        held=held,
+        held_reason=held_reason,
         declared=frozenset(str(k) for k in page),
     )
     return fields, r.errors
@@ -637,6 +709,59 @@ def _count(errors: list[str], path: str, n: int, bounds: tuple[int, int]) -> Non
         errors.append(f"{path}: {n} entries; needs {lo} to {hi}")
 
 
+# The sections a held page does not have: it shows no rows, so it has no chart, frame or notebook.
+HELD_DROPS = (CHART, CHART_VIEW, LOCATIONS, RECORD, NOTEBOOK)
+
+
+def _held_errors(fields: PageFields) -> list[str]:
+    """A held page carries no row sections, and says why each of its tables shows no rows."""
+    p = PAGE_KEY
+    e = [
+        f"{p}.{name}: a held page shows no rows, so it has no {name}; drop it"
+        for name in HELD_DROPS
+        if name in fields.declared
+    ]
+    if fields.family is None:
+        if not fields.held_reason:
+            e.append(f"{p}.{HELD}: a one-table held page gives the reason its rows are not shown")
+        else:
+            _budget(e, f"{p}.{HELD}", fields.held_reason, "held")
+        return e
+    if fields.held_reason:
+        e.append(
+            f"{p}.{HELD}: a held family page takes `held: true`; each member gives its own reason"
+        )
+    for i, mem in enumerate(fields.family.members):
+        if not mem.held:
+            e.append(
+                f"{p}.family.members[{i}].held: missing (a held page says why each table "
+                "shows no rows)"
+            )
+    return e
+
+
+def needs_problem(needs: str) -> str | None:
+    """Why a ``notebook.needs`` value would not read inside "with <needs> ingested.", or None.
+
+    Args:
+        needs: The note's ``notebook.needs``.
+    """
+    text = needs.strip()
+    tokens = [w.strip(",.:()`'\"").lower() for w in text.split()]
+    if ";" in text:
+        return "it holds a ';' (two clauses)"
+    if text.endswith("."):
+        return "it ends with a full stop (the template ends the sentence)"
+    if "ingest" in text.lower():
+        return "it says 'ingest' (the template already does)"
+    if tokens and tokens[0] in NEEDS_LEADING_VERBS:
+        return f"it starts with the verb {tokens[0]!r}"
+    clause = next((w for w in tokens if w in NEEDS_CLAUSE_WORDS), None)
+    if clause:
+        return f"it holds {clause!r}, which makes it a clause"
+    return None
+
+
 def anatomy_errors(fields: PageFields) -> list[str]:
     """Required fields and word budgets for a note on the new template.
 
@@ -650,9 +775,12 @@ def anatomy_errors(fields: PageFields) -> list[str]:
     """
     e: list[str] = []
     p = PAGE_KEY
-    for name in REQUIRED:
+    required = [n for n in REQUIRED if not (fields.held and n in HELD_DROPS)]
+    for name in required:
         if name not in fields.declared:
             e.append(f"{p}.{name}: missing (required on the dataset page template)")
+    if fields.held:
+        e.extend(_held_errors(fields))
     if fields.title:
         _budget(e, f"{p}.title", fields.title, "title")
     if fields.summary:
@@ -769,6 +897,15 @@ def anatomy_errors(fields: PageFields) -> list[str]:
             e.append(f"{p}.notebook.needs: missing")
         else:
             _budget(e, f"{p}.notebook.needs", nb.needs, "needs")
+            problem = needs_problem(nb.needs)
+            if problem:
+                e.append(
+                    f"{p}.notebook.needs: {problem}. The page prints 'Needs gridflow and "
+                    "gridflow-models installed, with <needs> ingested.', so write a short noun "
+                    "phrase naming what to ingest, such as '20 to 26 September 2026' or 'the "
+                    "summary and report tables for 11 September 2026'; a loss or caveat belongs "
+                    "in what_it_is or the chart caption"
+                )
         if nb.plot_alt:
             _budget(e, f"{p}.notebook.plot_alt", nb.plot_alt, "plot_alt")
         for i, cell in enumerate(nb.cells):
@@ -779,8 +916,11 @@ def anatomy_errors(fields: PageFields) -> list[str]:
         if not 1 <= len(fields.related) <= RELATED_MAX:
             e.append(f"{p}.related: {len(fields.related)} entries; needs 1 to {RELATED_MAX}")
         for i, rel in enumerate(fields.related):
-            if not _DATASET_RE.match(rel.dataset):
-                e.append(f"{p}.related[{i}].dataset: must be <vendor>/<dataset>")
+            if not _RELATED_RE.match(rel.dataset):
+                e.append(
+                    f"{p}.related[{i}].dataset: must be <vendor>/<table key> or "
+                    "<vendor>/<page-slug>"
+                )
             _budget(e, f"{p}.related[{i}].note", rel.note, "related_note")
 
     if fields.family is not None:
@@ -790,8 +930,14 @@ def anatomy_errors(fields: PageFields) -> list[str]:
         _count(e, f"{p}.family.members", len(fam.members), FAMILY_MEMBERS)
         for i, mem in enumerate(fam.members):
             _budget(e, f"{p}.family.members[{i}].differs", mem.differs, "differs")
-            if not mem.request:
-                e.append(f"{p}.family.members[{i}].request: missing (the variant's raw URL)")
-            elif not re.match(r"^(GET|POST) https://", mem.request):
-                e.append(f"{p}.family.members[{i}].request: must start 'GET https://'")
+            if mem.held:
+                _budget(e, f"{p}.family.members[{i}].held", mem.held, "held")
+            where = f"{p}.family.members[{i}].request"
+            if not mem.requests:
+                e.append(f"{where}: missing (the variant's raw URL)")
+            elif len(mem.requests) > MEMBER_REQUESTS_MAX:
+                e.append(f"{where}: {len(mem.requests)} requests; at most {MEMBER_REQUESTS_MAX}")
+            for req in mem.requests:
+                if not re.match(r"^(GET|POST) https://", req):
+                    e.append(f"{where}: must start 'GET https://'")
     return e

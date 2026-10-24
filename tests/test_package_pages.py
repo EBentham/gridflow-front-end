@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import copy
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -179,3 +180,124 @@ def test_a_package_notes_chart_spec_is_distilled_under_the_lead(
     sources, errors, _ = distil.discover_specs(site, vault)
     assert errors == []
     assert [(s.vendor, s.dataset) for s in sources] == [(VENDOR, "t_a")]
+
+
+_HELD_COMMON = """\
+  title: Package held
+  summary: A package whose tables are all held.
+  facts: {vendor: NESO Data Portal, cadence: Daily file, grain: One row per date and code}
+  what_it_is: Two files of a forecast.
+  how_used: [A look-ahead feature for procurement., A cross-check on the auction files.]
+  related: [{dataset: elexon/fuelhh, note: Generation on the same days}]
+"""
+DUMP = "GET https://api.neso.energy/datastore/dump/1b85a3f3-80f0-49cf-9b0e-49648fa0cae6"
+
+
+def _held_family(held_b: str = "held: The history file has no publication instant.") -> str:
+    return (
+        "page:\n  held: true\n"
+        + _HELD_COMMON
+        + "  raw_feed:\n    note: Each table's files downloaded whole.\n"
+        + "    commands: [{run: gridflow ingest neso_data_portal t_a --last 24h}]\n"
+        + "  family:\n    slug: pkg-two\n    members:\n"
+        + f'      - {{dataset: t_a, differs: The current file, request: ["{DUMP}", "{DUMP}"],'
+        + " held: Its date column's day and month order is not settled.}\n"
+        + f'      - {{dataset: t_b, differs: The history file, request: "{DUMP}", {held_b}}}\n'
+    )
+
+
+def _held_single(reason: str = "Its date column's day and month order is not settled.") -> str:
+    return (
+        f"page:\n  held: {reason}\n"
+        + _HELD_COMMON
+        + f'  raw_feed:\n    note: The file downloaded whole.\n    requests: ["{DUMP}"]\n'
+        + "    commands: [{run: gridflow ingest neso_data_portal t_c --last 24h}]\n"
+    )
+
+
+def test_a_held_package_page_shows_no_rows_and_says_why(vault: Path, tmp_path: Path) -> None:
+    notes = vault / VENDOR
+    (notes / "pkg-two.md").write_text(
+        _note("pkg-two", ["t_a", "t_b"], page=_held_family()), encoding="utf-8"
+    )
+    (notes / "pkg-one.md").write_text(
+        _note("pkg-one", ["t_c"], page=_held_single()), encoding="utf-8"
+    )
+    out_root = tmp_path / "site"
+    datasets, pages, charts = build.build_vendor(build.make_env(), VENDOR, vault, out_root)
+    assert (datasets, pages, charts) == (3, 2, 0)
+    out = out_root / "data-sources" / VENDOR
+    two = (out / "pkg-two.html").read_text(encoding="utf-8")
+    # the full anatomy minus rows: no chart, frame, guide or notebook, and no gold stratum
+    assert re.findall(r'<section class="stratum stratum--(\w+)', two) == [
+        "sky",
+        "topsoil",
+        "bronze",
+        "silver",
+        "deep",
+    ]
+    for absent in (
+        "chart--wide",
+        'class="pl"',
+        "Column guide",
+        "Open the demo notebook",
+        "<dt>Key</dt>",
+    ):
+        assert absent not in two, absent
+    assert '<p class="g-h" id="gh">Rows not shown</p>' in two
+    assert '<h2 class="h-fig" id="sv-h">The silver tables</h2>' in two
+    assert re.search(
+        r"<dt>neso_<wbr>data_<wbr>portal/<wbr>t_<wbr>a</dt><dd>Its date column\S{1,8}s day and month",
+        two,
+    )
+    assert "The history file has no publication instant." in two
+    # the raw feed lists each table's files; the reasons are not repeated there
+    assert two.count('<span class="ln">GET ') == 3 and "Rows not shown:" not in two
+    one = (out / "pkg-one.html").read_text(encoding="utf-8")
+    assert "<dt>neso_<wbr>data_<wbr>portal/<wbr>t_<wbr>c</dt>" in one and "Rows not shown" in one
+    # the hub links held pages like any other
+    hub = (out_root / "data-sources" / f"{VENDOR}.html").read_text(encoding="utf-8")
+    assert f'href="{VENDOR}/pkg-two.html"' in hub and f'href="{VENDOR}/pkg-one.html"' in hub
+
+
+def test_a_held_page_takes_no_row_sections_and_a_reason_for_each_table(vault: Path) -> None:
+    from gridflow_front_end.page_fields import anatomy_errors, parse_page_fields
+
+    fields, errors = parse_page_fields(_note("pkg-two", ["t_a", "t_b"], page=_held_family()))
+    assert errors == [] and fields.held and anatomy_errors(fields) == []
+    fields, _ = parse_page_fields(_note("pkg-one", ["t_c"], page=_held_single()))
+    assert fields.held_reason.startswith("Its date column") and anatomy_errors(fields) == []
+    page = _held_family(held_b="held: ''").replace("held: ''", "x: 1")
+    fields, errors = parse_page_fields(_note("pkg-two", ["t_a", "t_b"], page=page))
+    assert any("members[1]" in e and "unknown key" in e for e in errors)
+    fields, _ = parse_page_fields(
+        _note("pkg-two", ["t_a", "t_b"], page=_held_family(held_b="x: 1").replace(", x: 1", ""))
+    )
+    assert any("members[1].held: missing" in e for e in anatomy_errors(fields))
+    with_rows = _held_single() + "  chart: {type: none, reason: x}\n  record: {key: [date]}\n"
+    fields, _ = parse_page_fields(_note("pkg-one", ["t_c"], page=with_rows))
+    errors = anatomy_errors(fields)
+    assert any("page.chart: a held page shows no rows" in e for e in errors)
+    assert any("page.record: a held page shows no rows" in e for e in errors)
+    long = " ".join(["word"] * 17)
+    fields, _ = parse_page_fields(_note("pkg-one", ["t_c"], page=_held_single(long)))
+    assert any("page.held: 17 words, over its budget of 16" in e for e in anatomy_errors(fields))
+    fields, errors = parse_page_fields(_note("pkg-one", ["t_c"], page="page:\n  held: 3\n"))
+    assert any("page.held: must be true" in e for e in errors)
+
+
+def test_a_held_page_with_a_leftover_artefact_fails(
+    vault: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    site = tmp_path / "site-dir"
+    monkeypatch.setattr(build, "SITE_DIR", site)
+    (vault / VENDOR / "pkg-one.md").write_text(
+        _note("pkg-one", ["t_c"], page=_held_single()), encoding="utf-8"
+    )
+    doc = build.read_note(build.note_path(vault, VENDOR, "t_c"), "t_c", VENDOR, "NESO Data Portal")
+    assert build.check_artefacts(doc)[1] == []
+    sample = artefacts.sample_path(site, VENDOR, "t_c")
+    sample.parent.mkdir(parents=True)
+    sample.write_text("{}", encoding="utf-8")
+    [error] = build.check_artefacts(doc)[1]
+    assert "a held page shows no rows; delete its" in error and sample.name in error

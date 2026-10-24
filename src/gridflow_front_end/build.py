@@ -321,6 +321,24 @@ def _all_manifest_slugs() -> dict[str, set[str]]:
     return _MANIFEST_SLUGS_CACHE
 
 
+def _related_targets() -> dict[str, set[str]]:
+    """What a page's related entry may name, per vendor: a table key or a page slug of the page set.
+
+    A table key links to ``<key>.html`` (its page, or the pointer to its family page); a page slug
+    (a package page such as ``aggregated-bsad``, or a family page) links to that page itself.
+    """
+    out: dict[str, set[str]] = {}
+    for vendor_id in REAL_VENDORS:
+        try:
+            manifest = load_manifest(vendor_id)
+        except FileNotFoundError:
+            out[vendor_id] = set()
+            continue
+        pages = {page for group in manifest["groups"] for page in group["pages"]}
+        out[vendor_id] = set(manifest_datasets(manifest)) | pages
+    return out
+
+
 _MD_LINK_TARGET_RE = re.compile(r"^(?P<path>[^#]*\.md)(?P<anchor>#.*)?$")
 
 
@@ -1069,11 +1087,39 @@ def _nw(text: str) -> str:
     return f'<span class="nw">{text}</span>'
 
 
+# A command argument or URL segment longer than this (a 38-character table key, a 36-character file
+# id) does not fit one row of a well at phone width, so it may break after its underscores (and a
+# URL segment after its hyphens) there; theme.css releases ``.nw-cut`` below 768 px only, so a
+# wider well keeps every argument and segment whole.
+LONG_ARGUMENT = 30
+# A URL segment longer than this (a CKAN download's 90-character file name) fits no well at any
+# width, so its break points are live everywhere.
+LONG_SEGMENT = 60
+_KEY_TOKEN = re.compile(r"[a-z0-9]+(?:_[a-z0-9]+)+")
+
+
+def _argument(escaped: str) -> str:
+    if len(escaped) > LONG_ARGUMENT and _KEY_TOKEN.fullmatch(escaped):
+        return f'<span class="nw nw-cut">{escaped.replace("_", "_<wbr>")}</span>'
+    return _nw(escaped)
+
+
+def _url_segment(escaped: str) -> str:
+    """A path segment kept whole, except that a phone may break a long one after a hyphen."""
+    if len(escaped) > LONG_ARGUMENT and re.search(r"[-_].", escaped):
+        cut = re.sub(r"([-_])(?=.)", lambda m: m.group(1) + "<wbr>", escaped)
+        if len(escaped) > LONG_SEGMENT:
+            return f'<span class="nw-long">{cut}</span>'
+        return f'<span class="nw nw-cut">{cut}</span>'
+    return _nw(escaped)
+
+
 def command_row(run: str) -> Markup:
     """A CLI command whose row may wrap only between arguments, never inside one.
 
     A browser may break after any hyphen, which would split ``--end`` or a date; each flag is
-    kept with its value, and every other argument whole.
+    kept with its value, and every other argument whole. A table key too long for a phone's well
+    may break after an underscore there, and only there (``LONG_ARGUMENT``).
     """
     tokens = run.split(" ")
     parts: list[str] = []
@@ -1083,19 +1129,23 @@ def command_row(run: str) -> Markup:
         if tok.startswith("-") and i + 1 < len(tokens) and not tokens[i + 1].startswith("-"):
             tok = f"{tok} {tokens[i + 1]}"
             i += 1
-        parts.append(_nw(html_escape(tok, quote=False)))
+        parts.append(_argument(html_escape(tok, quote=False)))
         i += 1
     return Markup(" ".join(parts))
 
 
 def _url_row(line: str) -> str:
-    """An escaped request line whose URL may wrap only after a slash, never at a hyphen."""
+    """An escaped request line whose URL may wrap only after a slash, never at a hyphen.
+
+    The exception is a segment too long for a phone's well (``LONG_ARGUMENT``), which may break
+    after a hyphen below 768 px.
+    """
     m = re.match(r"(.*?)(https?://[^/]+/)(.*)$", line)
     if not m:
         return line
     lead, host, path = m.groups()
-    segments = [host, *re.findall(r"[^/]*/|[^/]+$", path)]
-    return lead + "<wbr>".join(_nw(s) for s in segments if s)
+    segments = [_url_segment(s) for s in re.findall(r"[^/]*/|[^/]+$", path) if s]
+    return lead + "<wbr>".join([_nw(host), *segments])
 
 
 def request_lines(request: str) -> Markup:
@@ -1112,11 +1162,28 @@ def request_lines(request: str) -> Markup:
 
 
 def check_artefacts(doc: DatasetDoc) -> tuple[PageArtefacts, list[str]]:
-    """Load a new-template page's sample and notebook files and check their digests."""
+    """Load a new-template page's sample and notebook files and check their digests.
+
+    A held page shows no rows, so it has no artefacts, and a leftover one fails the build.
+    """
     key = f"{doc.vendor_id}/{doc.slug}"
     errors: list[str] = []
     fields = doc.page
     arts = PageArtefacts()
+    if fields.held:
+        leftovers = [
+            path.name
+            for path in (
+                artefacts.sample_path(SITE_DIR, doc.vendor_id, doc.slug),
+                artefacts.notebook_path(SITE_DIR, doc.vendor_id, doc.slug),
+                artefacts.locations_path(SITE_DIR, doc.vendor_id, doc.slug),
+                chart_spec.series_path(SITE_DIR, doc.vendor_id, doc.slug),
+            )
+            if path.is_file()
+        ]
+        if leftovers:
+            errors.append(f"{key}: a held page shows no rows; delete its {leftovers}")
+        return arts, errors
     silver = artefacts.sample_silver(doc.vendor_id, doc.slug, fields.record.select, fields.chart)
     try:
         sample = artefacts.load_json(artefacts.sample_path(SITE_DIR, doc.vendor_id, doc.slug))
@@ -1427,8 +1494,11 @@ def page_view(
         ("Vendor", Markup(_markdown_inline(p.facts.vendor, doc.vendor_id))),
         ("Cadence", Markup(_markdown_inline(p.facts.cadence, doc.vendor_id))),
         ("Grain", Markup(_markdown_inline(p.facts.grain, doc.vendor_id))),
-        ("Key", Markup(", ".join(f"<code>{html_escape(k)}</code>" for k in p.record.key))),
     ]
+    if not p.held:  # the key comes from record, which a held page has none of
+        facts.append(
+            ("Key", Markup(", ".join(f"<code>{html_escape(k)}</code>" for k in p.record.key)))
+        )
     if p.facts.history:
         facts.append(("History", Markup(_markdown_inline(p.facts.history, doc.vendor_id))))
 
@@ -1468,7 +1538,7 @@ def page_view(
         errors.extend(rec_errors)
 
     related = []
-    slugs = _all_manifest_slugs()
+    slugs = _related_targets()
     for rel in p.related:
         vendor, _, slug = rel.dataset.partition("/")
         if slug not in slugs.get(vendor, set()):
@@ -1490,9 +1560,22 @@ def page_view(
                     "key": f"{doc.vendor_id}/{mem.dataset}",
                     "code": "" if code == mem.dataset.upper() else code,
                     "differs": mem.differs,
-                    "request": request_lines(mem.request),
+                    # each file's request as rows of the member's one well
+                    "request": Markup("").join(request_lines(r) for r in mem.requests),
+                    # a held page lists the reasons in its silver section instead
+                    "held": "" if p.held else mem.held,
                 }
             )
+
+    held = []
+    if p.held:
+        if p.family is not None:
+            held = [
+                {"key": _breakable(f"{doc.vendor_id}/{m.dataset}"), "reason": m.held}
+                for m in p.family.members
+            ]
+        else:
+            held = [{"key": _breakable(key), "reason": p.held_reason}]
 
     view = {
         "vendor_id": doc.vendor_id,
@@ -1519,6 +1602,7 @@ def page_view(
             ],
         },
         "variants": variants,
+        "held": held,
         "record": record_v,
         "notebook": _notebook_view(doc, arts.notebook) if arts.notebook else {},
         "related": related,
