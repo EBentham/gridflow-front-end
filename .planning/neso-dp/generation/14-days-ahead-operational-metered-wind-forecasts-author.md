@@ -200,3 +200,25 @@ counts identical to it), front matter `updated:` (precedent left it).
 - **NESO, publication schedule (vendor):** "Update frequency: Daily", but issues are seen at 09:52
   UTC (8 Oct) and 19:52 UTC (16 Oct) and CKAN stamps at 10:16, 19:16 and 20:16 UTC; NESO states no
   time or count per day. Captures may miss issues. Question for NESO.
+
+## Round 2 (review nits, 2026-10-24)
+
+All five nits applied in the canonical note (CRLF kept, 506 of 506 lines), mirrored, `cmp` clean.
+
+1. `related[embedded_wind_solar_forecast].note`: now "NESO's embedded wind forecast, outside this
+   transmission-connected one" (the sibling's wording; the limit is put on the capacity, NESO's words).
+2. `chart_view.alt`: "climbs to a high of 17,573 on 23 October" (UTC 23 October runs 16,429 to
+   17,573; 16,055 is the 23:00Z half-hour on 22 October and is dropped).
+3. `record.fields.issue_time`: "Equals `forecast_datetime`; half-hours also forecast in the 8 October
+   issue have two rows" (14 words). The count 266 is left out: it is a count over our captures,
+   not visible on the page; the note body keeps it.
+4. Notebook cell 2: the line now prints "most periods in one settlement day of this capture: 50".
+   Notebook rerun with `run_notebooks.py` (5 cells, no errors, outputs otherwise unchanged).
+5. `chart_view.caption`: "produced, NESO says, at 19:52 UTC on 16 October 2026" (39 words). Not
+   "read as UTC": NESO's dictionary gives `ForecastDatetime` in UTC and the value carries `Z`; "read
+   as UTC" is the wording for CKAN's offset-less `last_modified` (`published_at`).
+
+Gates: `gridflow-build --only neso_data_portal/metered_wind_forecast_14d` wrote the page, no error;
+detector `[]`; 0 em dashes. Chart spec and sample selection unchanged, so the series and sample did
+not need regenerating (the build's digest check passed). No new screenshots: the changes are short
+text in fields already checked at all four widths (the longer `issue_time` line wraps in the guide).
