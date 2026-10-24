@@ -1,0 +1,154 @@
+{
+ "dataset": "entsoe/current_balancing_state",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "6cd4e0e548b095969bcedd9376b186a731d9f59d502843f92c3d9e13803b4ef5",
+ "kernel": "gridflow_models",
+ "source": "entsoe",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.entsoe",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.entsoe.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.entsoe.query(\"current_balancing_state\", \"2026-08-01\", \"2026-08-01\")\ndf[\"timestamp_utc\"] = df[\"timestamp_utc\"].dt.tz_convert(\"UTC\")\ndf = df.sort_values([\"area_code\", \"timestamp_utc\"])",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df[[\"timestamp_utc\", \"area_code\", \"direction\", \"quantity_mw\"]].head(8)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "area_code",
+      "direction",
+      "quantity_mw"
+     ],
+     "index": [
+      "0",
+      "3",
+      "6",
+      "9",
+      "12",
+      "15",
+      "18",
+      "21"
+     ],
+     "rows": [
+      [
+       "2026-08-01 00:00:00+00:00",
+       "10YBE----------2",
+       "A02",
+       "56.303"
+      ],
+      [
+       "2026-08-01 00:01:00+00:00",
+       "10YBE----------2",
+       "A02",
+       "103.273"
+      ],
+      [
+       "2026-08-01 00:02:00+00:00",
+       "10YBE----------2",
+       "A02",
+       "132.413"
+      ],
+      [
+       "2026-08-01 00:03:00+00:00",
+       "10YBE----------2",
+       "A02",
+       "156.713"
+      ],
+      [
+       "2026-08-01 00:04:00+00:00",
+       "10YBE----------2",
+       "A02",
+       "154.388"
+      ],
+      [
+       "2026-08-01 00:05:00+00:00",
+       "10YBE----------2",
+       "A02",
+       "148.601"
+      ],
+      [
+       "2026-08-01 00:06:00+00:00",
+       "10YBE----------2",
+       "A02",
+       "152.867"
+      ],
+      [
+       "2026-08-01 00:07:00+00:00",
+       "10YBE----------2",
+       "A02",
+       "148.774"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "be = df[df[\"area_code\"].str.startswith(\"10YBE\")]\nby_direction = be.pivot(index=\"timestamp_utc\", columns=\"direction\", values=\"quantity_mw\")\nby_direction.between_time(\"12:00\", \"17:59\")[[\"A01\", \"A02\"]].plot(ylabel=\"MW\", color=[\"#155A6E\", \"#C77E3C\"], figsize=(8, 3.5))",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: xlabel='timestamp_utc', ylabel='MW'>"
+    },
+    {
+     "kind": "image",
+     "src": "current_balancing_state-5.png",
+     "width": 699,
+     "height": 337
+    }
+   ]
+  }
+ ]
+}
