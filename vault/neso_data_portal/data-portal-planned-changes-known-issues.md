@@ -4,10 +4,135 @@ package: "data-portal-planned-changes-known-issues"
 dataset_key: "portal_known_issues"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-09
+updated: 2026-10-24
 last_verified: 2026-10-09
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: Data Portal changes and known issues
+  summary: >-
+    NESO's log of changes to its Data Portal: maintenance windows, column renames and known issues,
+    one numbered item each, edited in place.
+  facts:
+    vendor: "NESO Data Portal: one CSV, the Planned Changes and Issues Log"
+    cadence: "Ad hoc (NESO); gridflow checks daily"
+    grain: "Each row: one numbered item, as it reads in one NESO file"
+    history: "NESO created the package on 19 November 2020"
+  landscape: market
+  what_it_is: >-
+    NESO's register of "upcoming changes to the NESO Data Portal along with any known issues". Items
+    give a title, description, affected datasets and files, a status, a change window and a
+    last-updated time. NESO edits items in place: items 239 and 240 are Planned in gridflow's capture
+    of NESO's 8 October 2026 file, Deployed in NESO's 16 October file.
+  how_used:
+    - "See which NESO files will have column IDs renamed, and on what date"
+    - "Explain a missing or failed capture by a maintenance window NESO logged"
+    - "Compare gridflow's captures item by item; NESO does not say numbers are permanent"
+  chart:
+    type: bar
+    silver: neso_data_portal/portal_known_issues
+    filter:
+      - {column: published_at, op: ge, value: "2026-10-16"}
+      - {column: published_at, op: lt, value: "2026-10-17"}
+    dedup: {"on": [po], order_by: published_at}
+    group: status
+    group_map:
+      Deployed: deployed
+      Cancelled: cancelled
+      Planned: planned
+      Postponed: postponed
+      Deployed on the test link provided: test_link
+    aggregation: count
+    sort: value_desc
+    unit: items
+  chart_view:
+    title: "Items by status, NESO's 16 October 2026 file"
+    caption: >-
+      Silver `portal_known_issues`, NESO's file last modified 16 October 2026: every item counted by
+      its `status` as written in that file. NESO edits statuses in place and publishes only its
+      current file, so gridflow's captures of other files may count differently.
+    alt: >-
+      Horizontal bar chart counting items by status in neso_data_portal/portal_known_issues, NESO's
+      file last modified 16 October 2026, 246 items in all: Deployed 214, Cancelled 25, Planned 4,
+      Postponed 2, and Deployed on the test link provided 1.
+    key:
+      - {series: deployed, label: Deployed, codes: Deployed, paint: petrol, note: "NESO's status for most items, issue items included, such as item 31"}
+      - {series: cancelled, label: Cancelled, codes: Cancelled, paint: petrol}
+      - {series: planned, label: Planned, codes: Planned, paint: petrol, note: "Items 189, 241, 255 and 256; item 189's start time is 9 January 2026"}
+      - {series: postponed, label: Postponed, codes: Postponed, paint: petrol, note: "Items 14 and 48, with windows in April 2021 and January 2022"}
+      - {series: test_link, label: Test link, codes: Deployed on the test link provided, paint: petrol, note: "Item 72, a prototype test from January 2022"}
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: `package_show`, then the log's one CSV, its file name dated (shown: 16
+      October 2026). gridflow downloads it again when CKAN's `last_modified` changes.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=data-portal-planned-changes-known-issues"
+      - "GET https://api.neso.energy/dataset/a10cb561-1be2-4567-880d-5bbac1ee9f4f/resource/23021dfa-a3b8-4f62-93bc-b60186c53fa4/download/23021dfa-a3b8-4f62-93bc-b60186c53fa4_16.10.2026.csv"
+    commands:
+      - {run: gridflow ingest neso_data_portal portal_known_issues --last 24h, comment: "the current file to bronze"}
+      - {run: gridflow transform neso_data_portal portal_known_issues --last 24h, comment: "each new capture to silver"}
+  record:
+    select:
+      filter:
+        - {column: published_at, op: ge, value: "2026-10-16"}
+        - {column: published_at, op: lt, value: "2026-10-17"}
+        - {column: po, op: in, value: [239, 240, 241, 242, 243, 244, 255, 256]}
+      dedup: {"on": [po], order_by: published_at}
+      order_by: [po]
+      columns: [po, status, change_issue_title, change_datetime_from, change_datetime_to, last_updated, notes,
+                dataset_specific, file_specific, description, published_at, timestamp_utc]
+    key: [po, published_at]
+    caption: "The eight highest-numbered items in NESO's 16 October 2026 file; it skips 245 to 254."
+    fields:
+      po: "NESO's item number; unique in each file, permanence not stated by NESO"
+      published_at: "CKAN's last-modified time of the file the row came from, read as UTC"
+      status: "NESO's status as written in that file: Planned, Deployed, Cancelled and others"
+      change_issue_title: "NESO's title for the item, free text"
+      change_datetime_from: "When NESO says the change or issue starts, UTC per NESO's dictionary"
+      change_datetime_to: "When NESO expects it to end or be fixed, UTC; often blank"
+      last_updated: "When NESO last edited the item, UTC; it moves when NESO edits"
+      notes: "NESO's note: item 241's moves it to 19 October; its description says 15 October"
+      dataset_specific: "Datasets the item touches, as NESO writes them: titles, slugs, No or N/A"
+      file_specific: "Files the item touches, as NESO names them; also No, Yes or N/A"
+      description: "NESO's text of the change or issue; the frame cuts it at 1,000 characters"
+      timestamp_utc: "When gridflow captured the file, UTC; the table has no event time"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      `query()` filters on `timestamp_utc`, here the capture time, so these cells use `data.sql()` on
+      the `_latest` view: NESO's newest captured file, whole (here, 16 October 2026). Times print in
+      UK time.
+    cells:
+      - |
+        items = data.sql("""
+            SELECT po, status, change_issue_title, change_datetime_from,
+                   change_datetime_to, last_updated, notes, published_at
+            FROM silver_neso_data_portal_portal_known_issues_latest
+            ORDER BY po
+        """)
+        items.status.value_counts()
+      - |
+        items[items.status.isin(["Planned", "Postponed"])][
+            ["po", "status", "change_issue_title", "change_datetime_from", "notes"]]
+      - |
+        sorted(set(range(1, items.po.max() + 1)) - set(items.po))
+      - |
+        start = items.change_datetime_from.dt.tz_convert("UTC")
+        start_year = start.dt.year.astype("Int64").rename("start_year")
+        items.groupby(start_year).size().plot.bar(
+            color="#155A6E", figsize=(8, 3.5),
+            xlabel="year the change window starts, UTC", ylabel="items");
+    needs: a capture of the Data Portal changes log
+    plot_alt: >-
+      Bar plot of the items in NESO's 16 October 2026 file by the year their change window starts,
+      UTC: 5 in 2020, 36 in 2021, 26 in 2022, 33 in 2023, 44 in 2024, 38 in 2025 and 59 in 2026. Five
+      items have no start and are not drawn.
+  related:
+    - {dataset: neso_data_portal/constraint-management-intertrip-service-information-cmis, note: "Items 239 and 243, both Deployed, renamed its arming files' column IDs"}
+    - {dataset: neso_data_portal/aahedc-tariffs, note: "Item 241 (Planned) announces column ID renames, moved to 19 October"}
+    - {dataset: neso_data_portal/transmission-network-use-of-system-tnuos-tariffs, note: "Item 256 (Planned) announces column ID renames in seven tariff files"}
+    - {dataset: neso_data_portal/stability-midterm-y-1-utilisation-report, note: "Item 255 (Planned) announces two column ID renames in its 2025/26 report"}
 ---
 
 # Data Portal: Planned Changes & Known Issues
@@ -103,8 +228,9 @@ NESO's own spelling (a zero, not the letter O) and is copied verbatim.
 **The two clocks.**
 
 - **Vintage (`ckan_last_modified`).** `published_at` = `available_at` = the CKAN
-  `last_modified` of the captured file. For the one capture held, that is
-  2026-10-08T09:43:34.968862Z. The capture was fetched at 2026-10-08T11:16:49Z.
+  `last_modified` of the captured file. For the two captures held, that is
+  2026-10-08T09:43:34.968862Z (fetched 2026-10-08T11:16:49Z) and 2026-10-16T13:34:40.735778Z
+  (fetched 2026-10-16T20:43:02Z).
 - **Event time (recipe `none`).** The record has no temporal column. `timestamp_utc`
   (and `event_time`, which copies it) is the **gridflow capture time**: the sidecar
   `written_at`, 2026-10-08T11:16:49.367455Z. It is not taken from any value in the file.
@@ -115,7 +241,7 @@ NESO's own spelling (a zero, not the letter O) and is copied verbatim.
   immutable publication instant, so the epoch's issue recipe is `none` (g2). Do not use it
   for point-in-time filtering. Use `available_at`.
 
-**Key.** `po` is a **capture uniqueness guard**. The capture has 241 non-null, distinct,
+**Key.** `po` is a **capture uniqueness guard**. The 2026-10-08 capture has 241 non-null, distinct,
 integral item numbers, `1..241` (K-CI-FACTS C1/C3, remeasured on silver). NESO does not
 say whether an item number can be reassigned or reused.
 `TODO: verify` item-number permanence (K-CI-FACTS §2.5 T06, §3.4). That is why `_latest`
@@ -238,7 +364,7 @@ alias `silver_portal_known_issues`. Each returns 241 rows from 1 capture as of 2
 
 | Field | Python type | Nullable | Source field | Notes |
 |-------|-------------|----------|--------------|-------|
-| `po` | `int` | Yes (0 null) | `po` | Item number. Capture uniqueness guard. Range `1..241` in this capture |
+| `po` | `int` | Yes (0 null) | `po` | Item number. Capture uniqueness guard. Range `1..241` in the 2026-10-08 capture |
 | `change_issue_title` | `str` | Yes (0 null) | `Change_Issue_Title` | |
 | `description` | `str` | Yes (0 null) | `Description` | Free text, can span several lines |
 | `dataset_specific` | `str` | Yes (1 null) | `Dataset_Specific` | Mixes `No`, `N/A`, a CKAN slug (e.g. `dynamic-containment-data`), a dataset title, or several titles separated by newlines |
@@ -346,13 +472,22 @@ None implemented.
 - **Datastore `_id`.** The Datastore field list has an `_id` column that is not in the
   CSV. gridflow does not carry it.
 - **Download URL changes on every upload** (see Files by disposition).
+- **Edited in place, numbers not contiguous (2026-10-16 capture).** NESO's file last
+  modified 2026-10-16T13:34:40Z has 246 rows: items 1..244, 255 and 256; there are no items
+  245..254. Against the 2026-10-08 file, items 1..238 are unchanged; 239 and 240 moved from
+  `Planned` to `Deployed`; 241 moved to 19 October 2026 with the note "Has been rescheduled
+  for 19/10/2026" while its `description` still says 15th October. Statuses in that file:
+  Deployed 214, Cancelled 25, Planned 4, Postponed 2, Deployed on the test link provided 1.
+- **Mojibake in NESO's text (item 256, 2026-10-16 capture).** The raw CSV reads
+  `TDR Tariff in Â£/(Site Day)` (bytes `C3 82 C2 A3`): a pound sign double-encoded by NESO.
+  gridflow keeps it byte for byte.
 
 ---
 
 ## Implementation delta
 
 - **Ingest schedule**: the registry and vendor cadence are `adhoc` ("Update Frequency:
-  Ad hoc"), but `config/sources.yaml:1021` registers `portal_known_issues` with
+  Ad hoc"), but `config/sources.yaml:1025` registers `portal_known_issues` with
   `schedule: "daily"`. That is the poll cadence of the ingest config, not a vendor claim.
   Recorded, not assessed further.
 - **Timestamp text**: the dictionary examples show a trailing `Z`

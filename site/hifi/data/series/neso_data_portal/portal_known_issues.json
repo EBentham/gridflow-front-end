@@ -1,0 +1,19 @@
+{
+  "dataset": "neso_data_portal/portal_known_issues",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "d55f44965379b85e4bfcbc1e3b292cb4fd7eead23ac77f9cbfa7b5148ebdfd65",
+  "type": "bar",
+  "unit": "items",
+  "caption": "",
+  "value_column": null,
+  "aggregation": "count",
+  "window": null,
+  "provenance": {"duplicates_dropped": 0, "files": 2, "rows_matched": 246, "rows_read": 487, "rows_used": 246, "silver": "neso_data_portal/portal_known_issues"},
+  "spec": {"aggregation": "count", "dedup": {"on": ["po"], "order_by": "published_at"}, "filter": [{"column": "published_at", "op": "ge", "value": "2026-10-16"}, {"column": "published_at", "op": "lt", "value": "2026-10-17"}], "group": "status", "group_map": {"Cancelled": "cancelled", "Deployed": "deployed", "Deployed on the test link provided": "test_link", "Planned": "planned", "Postponed": "postponed"}, "silver": "neso_data_portal/portal_known_issues", "sort": "value_desc", "type": "bar", "unit": "items"},
+  "x_kind": "category",
+  "x": ["deployed", "cancelled", "planned", "postponed", "test_link"],
+  "series": [
+    {"key": "count", "values": [214, 25, 4, 2, 1]}
+  ]
+}
