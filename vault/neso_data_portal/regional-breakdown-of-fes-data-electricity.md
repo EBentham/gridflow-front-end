@@ -4,9 +4,191 @@ package: "regional-breakdown-of-fes-data-electricity"
 dataset_keys: ["fes_regional_demand_active_power", "fes_regional_dg_gt_1mw", "fes_regional_dg_lt_1mw", "fes_regional_dsr", "fes_regional_gsp_info", "fes_regional_storage_gt_1mw", "fes_regional_storage_gt_1mw_pre2023", "fes_regional_storage_lt_1mw", "fes_regional_storage_lt_1mw_pre2023"]
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-10
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: Regional FES electricity projections
+  summary: >-
+    NESO's Future Energy Scenarios (FES) by grid supply point: projected demand, demand side
+    response, generation and storage, editions 2021 to 2024.
+  facts:
+    vendor: "NESO Data Portal: 27 CSV files, nine tables, FES editions 2021 to 2024"
+    cadence: "Ad hoc (NESO); no edition after 2024 listed, as at 6 October 2026"
+    grain: "One row per scenario, location, demand type and year label: three MW values"
+    history: "The package was created on 6 July 2021"
+  landscape: power
+  what_it_is: >-
+    NESO calls it long-term electricity forecasts per region, a region being a grid supply point
+    (GSP) or a large site connected directly to the transmission system. Each edition is one FES
+    publication year with its own scenarios; every value is a projection for a scenario and a
+    two-digit year label, never an outturn.
+  how_used:
+    - "Long-horizon scenario inputs for regional demand, by GSP and demand type"
+    - "See where heat pump, EV and electrolyser demand lands on the network"
+    - "Compare a location's projected peak across FES editions and scenarios"
+  chart:
+    type: bar
+    silver: neso_data_portal/fes_regional_demand_active_power
+    value: demand_pk
+    filter:
+      - {column: edition, op: eq, value: 2024}
+      - {column: scenario, op: eq, value: HT}
+      - {column: year_label, op: in, value: [25, 30, 35, 40, 45, 50]}
+    dedup: {"on": [resource_id, edition, scenario, gsp, type, year_label], order_by: capture_written_at}
+    group: year_label
+    group_map: {"25": "2025/26", "30": "2030/31", "35": "2035/36", "40": "2040/41", "45": "2045/46", "50": "2050/51"}
+    aggregation: sum
+    sort: label
+    unit: MW
+  chart_view:
+    title: Summed peak demand projected, FES 2024 HT, 2025/26 to 2050/51
+    caption: >-
+      Silver `fes_regional_demand_active_power`, FES 2024 (NESO's file of 15 July 2024), pathway
+      `HT`: `DemandPk` MW at the national winter peak, gridflow's sum over every location and type,
+      every fifth financial year, one tiny negative residential value per bar included.
+    alt: >-
+      Horizontal bar chart of projected demand at the national winter peak, FES 2024 edition,
+      pathway HT (read as Holistic Transition), in MW, gridflow's sum over every grid supply point,
+      direct-connect site and demand type, one bar every fifth financial year: 2025/26 57,981; 2030/31 62,830;
+      2035/36 74,639; 2040/41 90,100; 2045/46 100,259; 2050/51 104,054. The projection rises by
+      about four fifths, fastest between 2035/36 and 2040/41.
+    key:
+      - {series: demand_pk, label: Summed peak demand, codes: DemandPk, paint: petrol, note: "`HT`, read as Holistic Transition from NESO's FES 2024 pathway names (2 August 2024); not decoded here"}
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show` per table, then each of its edition files
+      downloaded whole, unless its `last_modified` is unchanged. Dates select nothing; silver keeps
+      every capture.
+    commands:
+      - {run: gridflow ingest neso_data_portal fes_regional_demand_active_power --last 24h, comment: "four files; window must end recently"}
+      - {run: gridflow transform neso_data_portal fes_regional_demand_active_power --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: edition, op: eq, value: 2024}
+        - {column: scenario, op: eq, value: HT}
+        - {column: year_label, op: eq, value: 50}
+        - {column: gsp, op: in, value: [ABHA1, B_EXTRA_35]}
+      dedup: {"on": [resource_id, edition, scenario, gsp, type, year_label], order_by: capture_written_at}
+      order_by: [gsp, type]
+      columns: [gsp, type, scenario, year_label, demand_pk, demand_am, demand_pm, edition,
+                resource_id, published_at, timestamp_utc]
+    key: [resource_id, edition, scenario, gsp, type, year_label]
+    caption: "GSP `ABHA1`'s seven types and direct connect `B_EXTRA_35` (`T`); `Z` is electrolysers; 2024 `HT`, label 50."
+    fields:
+      gsp: "Location: a GSP code as registered with Elexon, or a direct-connect site (NESO)"
+      type: "`C` commercial, `E` EVs, `I` industrial, `R` residential, `H` heat pumps, `D` district heat"
+      scenario: "Scenario code; NESO's dictionary here decodes only 2021's `LW`, `CT`, `ST`, `SP`"
+      year_label: "NESO's two-digit financial year: `25` is 2025/26, April to March"
+      demand_pk: "MW at national winter peak; 114 direct connects blank in 2021 to 2023 files"
+      demand_am: "MW at the summer morning national minimum, 05:00 to 06:00, typically a Sunday"
+      demand_pm: "MW at the summer afternoon national minimum, 13:00 to 14:00, typically a Sunday"
+      edition: "FES publication year, from the file name; not the century of `year_label`"
+      resource_id: "CKAN file id, one per edition; first column of the entity key"
+      published_at: "NESO's last-modified time for the edition's file, read as UTC"
+      timestamp_utc: "When gridflow captured the file, UTC; the table has no event time"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      `query()` filters on `timestamp_utc`, which here is the capture time, so these cells use
+      `data.sql()` on the `_latest` view, which keeps every edition's file, and pick the 2024
+      edition by name.
+    cells:
+      - |
+        peak = data.sql("""
+            SELECT scenario, year_label, SUM(demand_pk) AS peak_mw
+            FROM silver_neso_data_portal_fes_regional_demand_active_power_latest
+            WHERE edition = 2024
+            GROUP BY scenario, year_label
+        """)
+        wide = peak.pivot(index="year_label", columns="scenario", values="peak_mw").rename_axis(columns=None)
+        wide.loc[[23, 25, 30, 35, 40, 45, 50]].round(0)
+      - |
+        ax = wide.plot(figsize=(8, 3.5), color=["#155A6E", "#8A9A2B", "#B5651D"],
+                       xlabel="year label (25 is 2025/26)", ylabel="peak demand, MW, all locations");
+      - |
+        mix = data.sql("""
+            SELECT type, SUM(demand_pk) AS peak_mw, SUM(demand_am) AS summer_am_mw,
+                   SUM(demand_pm) AS summer_pm_mw
+            FROM silver_neso_data_portal_fes_regional_demand_active_power_latest
+            WHERE edition = 2024 AND scenario = 'HT' AND year_label = 50
+            GROUP BY type
+            ORDER BY peak_mw DESC
+        """).set_index("type")
+        mix.round(0)
+    needs: NESO's four regional FES demand files
+    plot_alt: >-
+      Line plot of projected demand at the national winter peak, FES 2024 edition, MW summed over
+      every location and demand type, year labels 23 to 50, one line per pathway code. All three
+      start near 57,300 to 57,600 MW at label 23; EE ends highest at 118,551, HE at 105,854 and HT
+      at 104,054 at label 50.
+  related:
+    - {dataset: neso_data_portal/future-energy-scenario-fes-building-block-data, note: "FES building-block values per GSP, editions 2023 to 2025; names the pathways"}
+    - {dataset: neso_data_portal/tresp-demand-pathways, note: "NESO's 2026 regional demand pathways, tRESP versions of the FES pathways"}
+    - {dataset: neso_data_portal/gis-boundaries-for-gb-grid-supply-points, note: "NESO's GSP boundaries, for mapping these locations; codes not compared"}
+  family:
+    slug: regional-breakdown-of-fes-data-electricity
+    members:
+      - dataset: fes_regional_demand_active_power
+        differs: "By demand type: residential, EVs, commercial, industrial, heat pumps, district heat, direct connects, electrolysers"
+        request:
+          - "GET https://api.neso.energy/dataset/963525d6-5d83-4448-a99c-663f1c76330a/resource/3360c832-acc3-4656-8a38-f0bdf57bde88/download/fes2021_regional_breakdown_active_power.csv"
+          - "GET https://api.neso.energy/dataset/963525d6-5d83-4448-a99c-663f1c76330a/resource/6a1d99c2-a3c5-4ae0-b66a-21e4c15a9ae6/download/fes2022_regional_breakdown_active_power.csv"
+          - "GET https://api.neso.energy/dataset/963525d6-5d83-4448-a99c-663f1c76330a/resource/66d309b9-0202-48ad-a7dc-eeafd9f53a65/download/fes2023_regional_breakdown_active_power.csv"
+          - "GET https://api.neso.energy/dataset/963525d6-5d83-4448-a99c-663f1c76330a/resource/7bd643c0-6aad-41ac-aa59-92b68992d9a4/download/fes2024_regional_breakdown_active_power.csv"
+      - dataset: fes_regional_dg_gt_1mw
+        differs: "Distributed generation above 1 MW, by technology and location; editions 2021 to 2024"
+        request:
+          - "GET https://api.neso.energy/dataset/963525d6-5d83-4448-a99c-663f1c76330a/resource/fc6e9d6e-0995-447a-8819-2099c845ad7e/download/fes2021_regional_breakdown_distributed_generation.csv"
+          - "GET https://api.neso.energy/dataset/963525d6-5d83-4448-a99c-663f1c76330a/resource/162bdb05-1d05-46f8-b3cd-55a86ef65b8e/download/fes2022_regional_breakdown_distributed_generation.csv"
+          - "GET https://api.neso.energy/dataset/963525d6-5d83-4448-a99c-663f1c76330a/resource/922a4355-ec87-4744-95ef-bdba58610f06/download/fes2023_regional_breakdown_distributed_generation.csv"
+          - "GET https://api.neso.energy/dataset/963525d6-5d83-4448-a99c-663f1c76330a/resource/c50eb94e-2e6a-43c6-b72a-ed9ae590b88b/download/fes2024_regional_breakdown_distributed_generation.csv"
+        held: "NESO's capacity description says below 1 MW, against the file's title of above 1 MW"
+      - dataset: fes_regional_dg_lt_1mw
+        differs: "Distributed generation below 1 MW, by technology and location; editions 2021 to 2024"
+        request:
+          - "GET https://api.neso.energy/dataset/963525d6-5d83-4448-a99c-663f1c76330a/resource/e05c34ec-1a0b-496c-b098-e35d4f998dc9/download/fes2021_regional_breakdown_sub1mw_generation.csv"
+          - "GET https://api.neso.energy/dataset/963525d6-5d83-4448-a99c-663f1c76330a/resource/8cd8a80a-9c36-436c-9014-8666c77e95d7/download/fes2022_regional_breakdown_sub1mw_generation.csv"
+          - "GET https://api.neso.energy/dataset/963525d6-5d83-4448-a99c-663f1c76330a/resource/4b4ec273-69b0-4bcd-bd50-b777af6f1052/download/fes2023_regional_breakdown_sub1mw_generation.csv"
+          - "GET https://api.neso.energy/dataset/963525d6-5d83-4448-a99c-663f1c76330a/resource/31ad4fd0-f67e-47f6-89bc-1bebda19eb25/download/fes2024_regional_breakdown_sub1mw_generation.csv"
+        held: "NESO's 2024 dictionary describes storage, not small generation, and the year label's period is unstated"
+      - dataset: fes_regional_dsr
+        differs: "Demand side response at winter peak, MW per GSP; editions 2021 to 2023 only"
+        request:
+          - "GET https://api.neso.energy/dataset/963525d6-5d83-4448-a99c-663f1c76330a/resource/180d9908-7c4a-4db7-b6f1-92067209854c/download/fes2021_regional_breakdown_demand_side_response.csv"
+          - "GET https://api.neso.energy/dataset/963525d6-5d83-4448-a99c-663f1c76330a/resource/3b32009a-55cb-4493-9dd0-a1fdd61d5d28/download/fes2022_regional_breakdown_demand_side_response.csv"
+          - "GET https://api.neso.energy/dataset/963525d6-5d83-4448-a99c-663f1c76330a/resource/a6138c38-d173-4040-b853-de659c660e38/download/fes2023_regional_breakdown_demand_side_response.csv"
+      - dataset: fes_regional_gsp_info
+        differs: "Reference list: GSP id, group, name and approximate position; no year or measure"
+        request:
+          - "GET https://api.neso.energy/dataset/963525d6-5d83-4448-a99c-663f1c76330a/resource/41fb4ca1-7b59-4fce-b480-b46682f346c9/download/fes2021_regional_breakdown_gsp_info.csv"
+          - "GET https://api.neso.energy/dataset/963525d6-5d83-4448-a99c-663f1c76330a/resource/000d08b9-12d9-4396-95f8-6b3677664836/download/fes2022_regional_breakdown_gsp_info.csv"
+          - "GET https://api.neso.energy/dataset/963525d6-5d83-4448-a99c-663f1c76330a/resource/805e20e4-6a8b-4113-9d2d-09efa0a4bbb9/download/fes2023_regional_breakdown_gsp_info.csv"
+          - "GET https://api.neso.energy/dataset/963525d6-5d83-4448-a99c-663f1c76330a/resource/21c2b09c-24ff-4837-a3b1-b6aea88f8124/download/fes2024_regional_breakdown_gsp_info.csv"
+        held: "NESO states no unit or datum for the positions; its 2022 file is not valid UTF-8"
+      - dataset: fes_regional_storage_gt_1mw
+        differs: "Storage of 1 MW or more by technology: charge rate and demand; 2023, 2024"
+        request:
+          - "GET https://api.neso.energy/dataset/963525d6-5d83-4448-a99c-663f1c76330a/resource/0465e5a3-ff3a-4e95-ac66-f59afd54cfe3/download/fes2023_regional_breakdown_dxstorage_gt1mw.csv"
+          - "GET https://api.neso.energy/dataset/963525d6-5d83-4448-a99c-663f1c76330a/resource/eba5fd0a-ea22-4c00-84c2-35260e328736/download/fes2024_regional_breakdown_dxstorage_gt1mw.csv"
+      - dataset: fes_regional_storage_gt_1mw_pre2023
+        differs: "Same columns, 2022 only; the 2021 file, with a preamble, is not read"
+        request:
+          - "GET https://api.neso.energy/dataset/963525d6-5d83-4448-a99c-663f1c76330a/resource/b954c63f-c108-4e71-9b43-b249d0d92a1b/download/fes2021_regional_breakdown_dxstorage_gt1mw.csv"
+          - "GET https://api.neso.energy/dataset/963525d6-5d83-4448-a99c-663f1c76330a/resource/ae5e3faf-b264-478e-82a5-fe0eb3101bba/download/fes2022_regional_breakdown_dxstorage_gt1mw.csv"
+      - dataset: fes_regional_storage_lt_1mw
+        differs: "Storage below 1 MW by location, 2023 and 2024; `tech` added in 2024"
+        request:
+          - "GET https://api.neso.energy/dataset/963525d6-5d83-4448-a99c-663f1c76330a/resource/86f90e3f-2a48-4bfc-80a9-9ff65c353d6e/download/fes2023_regional_breakdown_dxstorage_sub1mw.csv"
+          - "GET https://api.neso.energy/dataset/963525d6-5d83-4448-a99c-663f1c76330a/resource/0a1fce9e-8711-4017-bdef-867c0ab040a1/download/fes2024_regional_breakdown_dxstorage_sub1mw.csv"
+        held: "NESO's 2023 and 2024 dictionaries call some measures generation, not storage; sign unsettled"
+      - dataset: fes_regional_storage_lt_1mw_pre2023
+        differs: "Storage below 1 MW, 2021 and 2022; NESO's later dictionaries differ, so kept apart"
+        request:
+          - "GET https://api.neso.energy/dataset/963525d6-5d83-4448-a99c-663f1c76330a/resource/f0db3dc8-4e8f-40e0-9def-58e0bca11e47/download/fes2021_regional_breakdown_dxstorage_sub1mw.csv"
+          - "GET https://api.neso.energy/dataset/963525d6-5d83-4448-a99c-663f1c76330a/resource/08f1f7f3-0448-4e80-aeb6-0ef082d86e8f/download/fes2022_regional_breakdown_dxstorage_sub1mw.csv"
 ---
 
 # Regional breakdown of FES data (Electricity)
@@ -34,7 +216,8 @@ measurement and not a forecast issued on a date.
    schema, row counts, clocks and key facts, and **never data values, ranges or example rows**.
    The five eligible families are described with their values.
 2. **`year_label` is a two-digit label, and its meaning depends on the family.** It is not a
-   calendar year and the page never converts it to one (FACTS g1; see "The year label" below).
+   calendar year and the page never converts it to one; the site chart shows NESO's own
+   financial-year reading (`25` = 2025/26, the demand dictionary) (FACTS g1; see "The year label" below).
 3. **No temporal recipe.** `timestamp_utc` is gridflow's capture time (2026-10-08), not a
    projection date. The vintage is the CKAN `last_modified` of each edition's file, which is
    `available_at`.
@@ -161,7 +344,8 @@ Licence id `ESO`, "NESO Open Data Licence".
 *The year label (FACTS g1, vendor dictionaries).* Every projection table has a column `year`,
 stored as `year_label` (int64). Its values are two-digit labels (they are not four-digit
 years, and gridflow does not add the century: the record model has no arithmetic label
-mapping for an ordinary column, FACTS "Year representation"; RULINGS 607). The meaning depends
+mapping for an ordinary column, FACTS "Year representation"; RULINGS 607; the site chart labels
+bars with NESO's own financial-year reading, such as 2025/26, not a converted year). The meaning depends
 on the family and is stated per family below:
 
 | Family | Meaning of `year_label` (vendor dictionary, cited in FACTS) |
@@ -299,15 +483,25 @@ Both clocks as stated above: `timestamp_utc` carries no information about the ye
 the vintage differs per edition. Measured on silver (2026-10-10): label values run from 20 to 50
 (edition 2021), 21 to 50 (2022), 22 to 50 (2023) and 23 to 50 (2024). `scenario` has 4 distinct
 codes in editions 2021 to 2023 and 3 in 2024; the codes seen across the family are `CT`, `EE`,
-`FS`, `HE`, `HT`, `LW`, `SP`, `ST` (`TODO: verify` the vendor's meaning of each, which neither the
-registry nor FACTS records). `type` has 8 distinct codes (`C`, `D`, `E`, `H`, `I`, `R`, `T`,
-`Z`; `TODO: verify` their meaning). `gsp` has 639 distinct codes in each of editions 2021 to
+`FS`, `HE`, `HT`, `LW`, `SP`, `ST`. NESO's dictionary for this table (field info of the 2024
+resource, snapshot `20261008T114228Z`) decodes only `LW` Leading the Way, `CT` Consumer
+Transformation, `ST` System Transformation and `SP` Steady Progression (the 2021 set); `FS` is
+"Falling Short" in the storage pre-2023 dictionaries. The 2024 codes `EE`, `HE` and `HT` are not
+decoded in this package; NESO's FES 2024 building-block file (last modified 2024-08-02) names its
+pathways Holistic Transition, Electric Engagement, Hydrogen Evolution and Counterfactual (full
+names, no codes), and NESO's tRESP dictionaries (files last modified 2026-01-30, tRESP pathways,
+not a FES edition) write "Holistic Transition (HT)". So `HT` is read here as Holistic Transition
+by its initials; NESO does not decode it for this package (checked 2026-10-24). `type` has 8
+distinct codes, decoded by the dictionary as `R` Residential, `E` Electric Vehicles, `C`
+Commercial, `I` Industrial, `H` Heat pumps, `D` District heat, `T` Transmission direct connects
+and `Z` Electrolysers; `T` rows sit at their own locations (272 in 2021 to 2023, 481 in 2024),
+which carry no other type (checked 2026-10-24). `gsp` has 639 distinct codes in each of editions 2021 to
 2023 and 851 in 2024; against the same-edition GSP lookup, 367 match and 272 do not
 (2021 to 2023) and 370 match and 481 do not (2024) (FACTS). Unmatched examples include extra and
 direct-connect identifiers (for example `B_EXTRA_1`); keep them.
 
 *Blanks and zeros.* Only `DemandPk` has blank cells: 14,136 (2021), 13,680 (2022) and 13,224
-(2023) cells, none in 2024; `DemandAM` and `DemandPM` have none. Blanks are null, not zero (the
+(2023) cells, all on type `T` rows (114 locations each edition, checked 2026-10-24), none in 2024; `DemandAM` and `DemandPM` have none. Blanks are null, not zero (the
 silver null counts agree). Zero counts and the longest consecutive run in physical table
 order (FACTS, "Regional zero counts and runs"):
 
@@ -476,7 +670,8 @@ resource.
 
 Measured on silver: label values run from 20 to 50 (2021), 21 to 50 (2022) and 22 to 50 (2023).
 `scenario` has 4 distinct codes per edition and 5 across the family (`CT`, `FS`, `LW`, `SP`, `ST`;
-`TODO: verify` their meaning). `gsp` has 366 distinct codes in each edition, all of them present in
+the DSR dictionary, field info of the 2023 resource, decodes `LW`, `CT`, `ST` and `SP` as the
+demand table's does, and `FS` is "Falling Short" in the storage pre-2023 dictionaries). `gsp` has 366 distinct codes in each edition, all of them present in
 the same-edition GSP lookup. *Blanks:* none; no sentinel tokens; all casts succeed. *Zeros* (zero
 count / longest run in physical order): 1,984 / 124 (2021), 2,400 / 120 (2022), 2,320 / 4 (2023);
 preserve them, they are not missing values.
