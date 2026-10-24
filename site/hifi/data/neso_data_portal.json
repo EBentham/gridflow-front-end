@@ -123,7 +123,10 @@
         "system-frequency-data",
         "system-inertia",
         "system-inertia-cost",
-        "system-operating-plan-sop"
+        "system-operating-plan-sop",
+        "demand-flexibility-service",
+        "demand-flexibility-service-live-events",
+        "demand-flexibility-service-test-events"
       ]
     }
   ],
@@ -382,6 +385,39 @@
         "system_frequency_gmt_zip",
         "system_frequency_offset_csv",
         "system_frequency_offset_zip"
+      ]
+    },
+    {
+      "slug": "demand-flexibility-service",
+      "title": "Demand Flexibility Service 2023/24",
+      "note": "demand-flexibility-service",
+      "members": [
+        "dfs_utilisation_report_sum",
+        "dfs_utilisation_report",
+        "dfs_industry_notification",
+        "dfs_service_requirements"
+      ]
+    },
+    {
+      "slug": "demand-flexibility-service-live-events",
+      "title": "Demand Flexibility Service 2022/23 live events",
+      "note": "demand-flexibility-service-live-events",
+      "members": [
+        "dfs_live_events_utilisation_report_sum",
+        "dfs_live_events_utilisation_report",
+        "dfs_live_events_service_update_industry",
+        "dfs_live_events_service_requirement"
+      ]
+    },
+    {
+      "slug": "demand-flexibility-service-test-events",
+      "title": "Demand Flexibility Service 2022/23 test events",
+      "note": "demand-flexibility-service-test-events",
+      "members": [
+        "dfs_test_events_utilisation_report_sum",
+        "dfs_test_events_utilisation_report",
+        "dfs_test_events_service_update_industry",
+        "dfs_test_events_service_requirement"
       ]
     }
   ],

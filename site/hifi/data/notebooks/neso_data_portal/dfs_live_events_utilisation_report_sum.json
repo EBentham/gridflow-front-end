@@ -1,0 +1,194 @@
+{
+ "dataset": "neso_data_portal/dfs_live_events_utilisation_report_sum",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "dbc421cde6cd489caef0376cd67a09f441f2453745ce0947ba70e85361f5295f",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "s = data.neso_data_portal.query(\"dfs_live_events_utilisation_report_sum\", \"2023-01-23\", \"2023-01-24\")\ns[\"published_at\"] = s[\"published_at\"].dt.tz_convert(\"UTC\")\ns = s.sort_values([\"date\", \"window_from\"]).reset_index(drop=True)\ns[[\"date\", \"window_from\", \"dfs_required\", \"dfs_procured\", \"d0_dfs_procured\", \"settled_volume\", \"settled_cost\", \"published_at\"]]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "date",
+      "window_from",
+      "dfs_required",
+      "dfs_procured",
+      "d0_dfs_procured",
+      "settled_volume",
+      "settled_cost",
+      "published_at"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2023-01-23",
+       "17:00",
+       "323.0",
+       "323.81",
+       "224.66",
+       "271.73",
+       "539476.0",
+       "2026-07-27 13:22:45.267471+00:00"
+      ],
+      [
+       "2023-01-23",
+       "17:30",
+       "336.0",
+       "336.89",
+       "232.98",
+       "294.61",
+       "591748.0",
+       "2026-07-27 13:22:45.267471+00:00"
+      ],
+      [
+       "2023-01-24",
+       "16:30",
+       "274.0",
+       "288.62",
+       "289.41",
+       "233.12",
+       "567466.0",
+       "2026-07-27 13:22:45.267471+00:00"
+      ],
+      [
+       "2023-01-24",
+       "17:00",
+       "330.0",
+       "314.19",
+       "316.17",
+       "273.54",
+       "663532.0",
+       "2026-07-27 13:22:45.267471+00:00"
+      ],
+      [
+       "2023-01-24",
+       "17:30",
+       "341.0",
+       "327.18",
+       "330.27",
+       "286.93",
+       "700049.0",
+       "2026-07-27 13:22:45.267471+00:00"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "r = data.neso_data_portal.query(\"dfs_live_events_utilisation_report\", \"2023-01-23\", \"2023-01-23\")\nw = r[(r.window_from == \"17:30\") & (r.status == \"Accepted\")]\nw.groupby(\"dfs_provider\")[[\"dfs_volume\", \"d0_total\"]].sum().sort_values(\"dfs_volume\", ascending=False).head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "dfs_volume",
+      "d0_total",
+      "dfs_provider",
+      "",
+      ""
+     ],
+     "index": [
+      "OctopusEnergyLimited",
+      "GridbeyondLimited",
+      "DraxEnergySolutionsLimited",
+      "EONNextEnergyLimited",
+      "BritishGasTradingLimited"
+     ],
+     "rows": [
+      [
+       "191.029",
+       "106.61"
+      ],
+      [
+       "25.538",
+       "25.54"
+      ],
+      [
+       "23.000",
+       "23.00"
+      ],
+      [
+       "18.000",
+       "18.00"
+      ],
+      [
+       "12.000",
+       "12.00"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "mw = s.set_index(s[\"date\"].astype(str) + \"\\n\" + s[\"window_from\"])\nmw = mw[[\"dfs_required\", \"dfs_procured\", \"d0_dfs_procured\", \"settled_volume\"]].set_axis(\n    [\"requirement\", \"D-1 procured\", \"D0 procured\", \"settled\"], axis=1)\nax = mw.plot.bar(\n    rot=0, ylabel=\"MW\", xlabel=\"window start, GMT\", ylim=(0, 450), figsize=(8, 3.5),\n    color=[\"#66793B\", \"#155A6E\", \"#3E8C97\", \"#C77E3C\"])\nax.legend(ncol=4, loc=\"upper left\", fontsize=8);",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "dfs_live_events_utilisation_report_sum-5.png",
+     "width": 699,
+     "height": 353
+    }
+   ]
+  }
+ ]
+}

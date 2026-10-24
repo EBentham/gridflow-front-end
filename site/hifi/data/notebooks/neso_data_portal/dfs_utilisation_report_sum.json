@@ -1,0 +1,225 @@
+{
+ "dataset": "neso_data_portal/dfs_utilisation_report_sum",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "17e5dfe29ef346a9e51fd436e07ab5200c492c6c7514e35fa72d1fcf25805a8a",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "s = data.neso_data_portal.query(\"dfs_utilisation_report_sum\", \"2023-11-16\", \"2024-03-21\")\nr = data.neso_data_portal.query(\"dfs_utilisation_report\", \"2023-11-16\", \"2024-03-21\")\nfor df in (s, r):\n    df[\"timestamp_utc\"] = df.timestamp_utc.dt.tz_convert(\"UTC\")\ns = s.sort_values([\"delivery_date\", \"window_from\"], ignore_index=True)\ns[[\"delivery_date\", \"window_from\", \"window_to\", \"timestamp_utc\", \"service_requirement_type\"]].head(4)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "delivery_date",
+      "window_from",
+      "window_to",
+      "timestamp_utc",
+      "service_requirement_type"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3"
+     ],
+     "rows": [
+      [
+       "2023-11-16",
+       "17:00",
+       "17:30",
+       "2023-11-16 00:00:00+00:00",
+       "Test"
+      ],
+      [
+       "2023-11-16",
+       "17:30",
+       "18:00",
+       "2023-11-16 00:00:00+00:00",
+       "Test"
+      ],
+      [
+       "2023-11-16",
+       "18:00",
+       "18:30",
+       "2023-11-16 00:00:00+00:00",
+       "Test"
+      ],
+      [
+       "2023-11-29",
+       "17:00",
+       "17:30",
+       "2023-11-29 00:00:00+00:00",
+       "Live"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "key = [\"delivery_date\", \"window_from\"]\naccepted = (r[r.status == \"Accepted\"].groupby(key, as_index=False).dfs_volume_mw.sum()\n            .rename(columns={\"dfs_volume_mw\": \"accepted_bids_mw\"}))\nw = s[key + [\"service_requirement_type\", \"dfs_required_mw\", \"dfs_procured_mw\",\n             \"settled_volume_mw\"]].merge(accepted, on=key)\nw.head(8)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "delivery_date",
+      "window_from",
+      "service_requirement_type",
+      "dfs_required_mw",
+      "dfs_procured_mw",
+      "settled_volume_mw",
+      "accepted_bids_mw"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7"
+     ],
+     "rows": [
+      [
+       "2023-11-16",
+       "17:00",
+       "Test",
+       "250.0",
+       "210.0",
+       "130.0",
+       "210.0"
+      ],
+      [
+       "2023-11-16",
+       "17:30",
+       "Test",
+       "500.0",
+       "395.0",
+       "207.0",
+       "395.0"
+      ],
+      [
+       "2023-11-16",
+       "18:00",
+       "Test",
+       "250.0",
+       "186.0",
+       "72.0",
+       "186.0"
+      ],
+      [
+       "2023-11-29",
+       "17:00",
+       "Live",
+       "550.0",
+       "449.0",
+       "332.0",
+       "449.0"
+      ],
+      [
+       "2023-11-29",
+       "17:30",
+       "Live",
+       "550.0",
+       "458.0",
+       "358.0",
+       "458.0"
+      ],
+      [
+       "2023-11-29",
+       "18:00",
+       "Live",
+       "550.0",
+       "459.0",
+       "340.0",
+       "459.0"
+      ],
+      [
+       "2023-12-01",
+       "16:30",
+       "Live",
+       "550.0",
+       "452.0",
+       "299.0",
+       "452.0"
+      ],
+      [
+       "2023-12-01",
+       "17:00",
+       "Live",
+       "550.0",
+       "487.0",
+       "340.0",
+       "487.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "colour = w.service_requirement_type.map({\"Live\": \"#C77E3C\", \"Test\": \"#155A6E\"}).tolist()\nax = w.plot.scatter(x=\"dfs_procured_mw\", y=\"settled_volume_mw\", c=colour, figsize=(5, 4),\n                    xlabel=\"accepted MW\", ylabel=\"settled MW\")\nax.axline((0, 0), slope=1, color=\"grey\", lw=0.8);",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "dfs_utilisation_report_sum-5.png",
+     "width": 466,
+     "height": 375
+    }
+   ]
+  }
+ ]
+}
