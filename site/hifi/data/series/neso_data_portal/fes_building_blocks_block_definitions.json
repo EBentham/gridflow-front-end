@@ -1,0 +1,19 @@
+{
+  "dataset": "neso_data_portal/fes_building_blocks_block_definitions",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "85e6c9a829b442276349780c063fe5c0816e49668cd9b7d5a5fd85d6cc556194",
+  "type": "bar",
+  "unit": "building blocks",
+  "caption": "",
+  "value_column": null,
+  "aggregation": "count",
+  "window": null,
+  "provenance": {"duplicates_dropped": 0, "files": 6, "rows_matched": 377, "rows_read": 377, "rows_used": 377, "silver": "neso_data_portal/fes_building_blocks_block_definitions"},
+  "spec": {"aggregation": "count", "dedup": {"on": ["resource_id", "building_block_id_number"], "order_by": "capture_written_at"}, "group": "edition", "group_map": {"2020": "FES 2020", "2021": "FES 2021", "2022": "FES 2022", "2023": "FES 2023", "2024": "FES 2024", "2025": "FES 2025"}, "silver": "neso_data_portal/fes_building_blocks_block_definitions", "sort": "label", "type": "bar", "unit": "building blocks"},
+  "x_kind": "category",
+  "x": ["FES 2020", "FES 2021", "FES 2022", "FES 2023", "FES 2024", "FES 2025"],
+  "series": [
+    {"key": "count", "values": [49, 64, 66, 66, 66, 66]}
+  ]
+}

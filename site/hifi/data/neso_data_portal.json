@@ -174,7 +174,23 @@
         "carbon-intensity-of-balancing-actions",
         "country-carbon-intensity-forecast",
         "national-carbon-intensity-forecast",
-        "regional-carbon-intensity-forecast"
+        "regional-carbon-intensity-forecast",
+        "building-heat-model",
+        "future-energy-scenario-fes-building-block-data",
+        "fes-electricity-demand-summary-data-table-ed1",
+        "future-energy-scenario-electricity-supply-data-table-es1",
+        "fes-european-electricity-supply-data-table-es2",
+        "fes-flexibility-data-table-data-table-flx1",
+        "fes-natural-gas-demand-definitions-ed4",
+        "fes-natural-gas-residential-and-non-domestic-i-c-heat-demand-summary-data-table-ed3",
+        "fes-road-transport-notes-data-table-ed6",
+        "fes-road-transport-summary-data-table-ed5",
+        "fes-whole-system-gas-supply-emissions-data-table-ws2",
+        "fes-whole-system-gas-supply-data-table-ws1",
+        "levelised-cost-of-green-hydrogen",
+        "local-authority-level-spatial-heat-model-outputs-fes",
+        "regional-breakdown-of-fes-data-electricity",
+        "resource-adequacy-in-2030s"
       ]
     }
   ],
@@ -665,6 +681,80 @@
         "capacity_market_component_history_pre",
         "capacity_market_de_rating_factors"
       ]
+    },
+    {
+      "slug": "building-heat-model",
+      "title": "Building Heat Model",
+      "note": "building-heat-model",
+      "members": [
+        "building_heat_model_example_output_half",
+        "building_heat_model_list_input"
+      ]
+    },
+    {
+      "slug": "future-energy-scenario-fes-building-block-data",
+      "title": "FES: Pathways to Net Zero Building Block Data",
+      "note": "future-energy-scenario-fes-building-block-data",
+      "members": [
+        "fes_building_blocks_block_definitions",
+        "fes_building_blocks_block_licence_area",
+        "fes_building_blocks_main"
+      ]
+    },
+    {
+      "slug": "fes-natural-gas-residential-and-non-domestic-i-c-heat-demand-summary-data-table-ed3",
+      "title": "FES: Pathways to Net Zero – Natural Gas, Residential and non-domestic (I&C) Heat Demand Summary Data table (ED3)",
+      "note": "fes-natural-gas-residential-and-non-domestic-i-c-heat-demand-summary-data-table-ed3",
+      "members": [
+        "fes_ed3_heat_demand_natural_gas",
+        "fes_ed3_heat_demand_natural_gas_sum_ed",
+        "fes_ed3_heat_demand_sum_ed"
+      ]
+    },
+    {
+      "slug": "levelised-cost-of-green-hydrogen",
+      "title": "Levelised cost of green hydrogen",
+      "note": "levelised-cost-of-green-hydrogen",
+      "members": [
+        "lcoh_capex_opex_input_assumptions_pem",
+        "lcoh_levelised_cost_blue_hydrogen",
+        "lcoh_levelised_cost_green_hydrogen"
+      ]
+    },
+    {
+      "slug": "local-authority-level-spatial-heat-model-outputs-fes",
+      "title": "Local Authority Level Spatial Heat Model Outputs (FES)",
+      "note": "local-authority-level-spatial-heat-model-outputs-fes",
+      "members": [
+        "fes_la_heat_model_domestic",
+        "fes_la_heat_model_residential"
+      ]
+    },
+    {
+      "slug": "regional-breakdown-of-fes-data-electricity",
+      "title": "Regional breakdown of FES data (Electricity)",
+      "note": "regional-breakdown-of-fes-data-electricity",
+      "members": [
+        "fes_regional_demand_active_power",
+        "fes_regional_dg_gt_1mw",
+        "fes_regional_dg_lt_1mw",
+        "fes_regional_dsr",
+        "fes_regional_gsp_info",
+        "fes_regional_storage_gt_1mw",
+        "fes_regional_storage_gt_1mw_pre2023",
+        "fes_regional_storage_lt_1mw",
+        "fes_regional_storage_lt_1mw_pre2023"
+      ]
+    },
+    {
+      "slug": "resource-adequacy-in-2030s",
+      "title": "Resource Adequacy in the 2030s",
+      "note": "resource-adequacy-in-2030s",
+      "members": [
+        "resource_adequacy_2030s_results",
+        "resource_adequacy_2030s_peak_demand",
+        "resource_adequacy_2030s_portfolio"
+      ]
     }
   ],
   "names": {
@@ -737,7 +827,16 @@
     "carbon-intensity-of-balancing-actions": "Carbon Intensity of Balancing Actions",
     "country-carbon-intensity-forecast": "Country Carbon Intensity Forecast",
     "national-carbon-intensity-forecast": "National Carbon Intensity Forecast",
-    "regional-carbon-intensity-forecast": "Regional Carbon Intensity Forecast"
+    "regional-carbon-intensity-forecast": "Regional Carbon Intensity Forecast",
+    "fes-electricity-demand-summary-data-table-ed1": "FES: Pathways to Net Zero – Electricity Demand Summary Data table (ED1)",
+    "future-energy-scenario-electricity-supply-data-table-es1": "FES: Pathways to Net Zero – Electricity Supply Data Table (ES1)",
+    "fes-european-electricity-supply-data-table-es2": "FES: Pathways to Net Zero – European Electricity Supply Data Table (ES2)",
+    "fes-flexibility-data-table-data-table-flx1": "FES: Pathways to Net Zero – Flexibility Data table (FLX1)",
+    "fes-natural-gas-demand-definitions-ed4": "FES: Pathways to Net Zero – Natural Gas demand definitions Data table (ED4)",
+    "fes-road-transport-notes-data-table-ed6": "FES: Pathways to Net Zero – Road Transport Notes Data Table (ED6)",
+    "fes-road-transport-summary-data-table-ed5": "FES: Pathways to Net Zero – Road Transport Summary Data table (ED5)",
+    "fes-whole-system-gas-supply-emissions-data-table-ws2": "FES: Pathways to Net Zero – Whole System & Gas Supply - Emissions Data table (WS2)",
+    "fes-whole-system-gas-supply-data-table-ws1": "FES: Pathways to Net Zero – Whole System & Gas Supply Data table (WS1)"
   },
   "dropped": {},
   "package_tables": {
@@ -807,7 +906,16 @@
     "carbon-intensity-of-balancing-actions": "ci_balancing_actions",
     "country-carbon-intensity-forecast": "country_ci_forecast",
     "national-carbon-intensity-forecast": "national_ci_forecast",
-    "regional-carbon-intensity-forecast": "regional_ci_forecast"
+    "regional-carbon-intensity-forecast": "regional_ci_forecast",
+    "fes-electricity-demand-summary-data-table-ed1": "fes_ed1_electricity_demand",
+    "future-energy-scenario-electricity-supply-data-table-es1": "fes_es1_electricity_supply",
+    "fes-european-electricity-supply-data-table-es2": "fes_es2_european_supply",
+    "fes-flexibility-data-table-data-table-flx1": "fes_flx1_flexibility",
+    "fes-natural-gas-demand-definitions-ed4": "fes_ed4_gas_demand_defs",
+    "fes-road-transport-notes-data-table-ed6": "fes_ed6_road_transport_notes",
+    "fes-road-transport-summary-data-table-ed5": "fes_ed5_road_transport",
+    "fes-whole-system-gas-supply-emissions-data-table-ws2": "fes_ws2_gas_emissions",
+    "fes-whole-system-gas-supply-data-table-ws1": "fes_ws1_gas_supply"
   },
   "catalogue": {
     "_about": "NESO's catalogue as the hub draws it: its data groups in portal order, each with NESO's description and its packages (NESO's titles and CKAN names). `page_packages` names the CKAN package of a page not named after it; a package is a link when a page in `groups` documents it. `plan` lays the groups out as plots: a slug is one plot, `row` sets its children side by side, `col` stacks them; `wide` from 1100 px, `narrow` below, and `tag_narrow` plots carry their name beneath them when narrow.",

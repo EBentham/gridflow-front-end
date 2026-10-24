@@ -1,0 +1,19 @@
+{
+  "dataset": "neso_data_portal/resource_adequacy_2030s_results",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "84d58c832a707053a0cef7171f56cee5083351db474adf854772b1767b321acf",
+  "type": "bar",
+  "unit": "hours/year",
+  "caption": "",
+  "value_column": "weather_conditional_lole_h_year",
+  "aggregation": "max",
+  "window": null,
+  "provenance": {"duplicates_dropped": 0, "files": 1, "null_values_dropped": 0, "rows_matched": 34, "rows_read": 1462, "rows_used": 34, "silver": "neso_data_portal/resource_adequacy_2030s_results"},
+  "spec": {"aggregation": "max", "dedup": {"on": ["resource_id", "simulation_name", "spotlight_year", "historical_weather_year"], "order_by": "capture_written_at"}, "filter": [{"column": "simulation_name", "op": "eq", "value": "Portfolio 1"}, {"column": "spotlight_year", "op": "eq", "value": "2035/36"}], "group": "historical_weather_year", "silver": "neso_data_portal/resource_adequacy_2030s_results", "sort": "label", "type": "bar", "unit": "hours/year", "value": "weather_conditional_lole_h_year"},
+  "x_kind": "category",
+  "x": ["1984/85", "1985/86", "1986/87", "1987/88", "1988/89", "1989/90", "1990/91", "1991/92", "1992/93", "1993/94", "1994/95", "1995/96", "1996/97", "1997/98", "1998/99", "1999/2000", "2000/01", "2001/02", "2002/03", "2003/04", "2004/05", "2005/06", "2006/07", "2007/08", "2008/09", "2009/10", "2010/11", "2011/12", "2012/13", "2013/14", "2014/15", "2015/16", "2016/17", "2017/18"],
+  "series": [
+    {"key": "weather_conditional_lole_h_year", "values": [1.52, 6.23, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}
+  ]
+}

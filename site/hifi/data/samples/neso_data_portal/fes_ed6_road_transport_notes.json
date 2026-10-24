@@ -1,0 +1,196 @@
+{
+ "dataset": "neso_data_portal/fes_ed6_road_transport_notes",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "59b661c94af94257253f9557f4207cf5007ae59b5757cf9378aafc1ead5e6b1d",
+ "silver": "neso_data_portal/fes_ed6_road_transport_notes",
+ "columns": [
+  {
+   "name": "column_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "category",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "edition",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "resource_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "description",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "Data Item",
+   "V2G Maximum Capacity",
+   "2024",
+   "2024-07-15 06:41:16.480938 UTC",
+   "7fe93ddc-7a88-478b-8f60-4531c15bd538",
+   "Total V2G theoretical export capacity (of all residential vehicles which participate in V2G). Capacity available at any given time of day depends on an availability profile",
+   "2026-10-08 10:54:46.048424 UTC",
+   "bronze/neso_data_portal/fes_ed6_road_transport_notes/2026/10/08/raw_20261008T105446Z_7fe93ddc-7a88-478b-8f60-4531c15bd538_ea44b94e.csv",
+   "2026-10-08 10:54:46.048424 UTC",
+   "2026-10-08 10:54:46.048424 UTC",
+   "2024-07-15 06:41:16.480938 UTC",
+   "2556cc4b-38bb-4a61-ace7-2afca896b06e",
+   "1+e1"
+  ],
+  [
+   "Data Item",
+   "V2G Maximum Capacity",
+   "2025",
+   "2025-12-10 17:02:44.975794 UTC",
+   "43add83b-bf94-493b-8f5d-de7fdbefc5bb",
+   "Total V2G theoretical export capacity (of all vehicles which participate in V2G - including a percentage of  residentially charged cars & vans, and depot charged HGV's and buses). Capacity available at any given time of day depends on an availability profile",
+   "2026-10-08 10:54:48.733314 UTC",
+   "bronze/neso_data_portal/fes_ed6_road_transport_notes/2026/10/08/raw_20261008T105448Z_43add83b-bf94-493b-8f5d-de7fdbefc5bb_b2008380.csv",
+   "2026-10-08 10:54:48.733314 UTC",
+   "2026-10-08 10:54:48.733314 UTC",
+   "2025-12-10 17:02:44.975794 UTC",
+   "2556cc4b-38bb-4a61-ace7-2afca896b06e",
+   "1+e1"
+  ],
+  [
+   "Data Item",
+   "V2G Maximum Capacity available at Peak",
+   "2024",
+   "2024-07-15 06:41:16.480938 UTC",
+   "7fe93ddc-7a88-478b-8f60-4531c15bd538",
+   "Theoretical vehicle-to-grid (V2G) capacity available at time of winter transmission system peak, 5pm-6pm (all engaged vehicles parked residentially at this time). Capacity actually dispatched depends on market conditions",
+   "2026-10-08 10:54:46.048424 UTC",
+   "bronze/neso_data_portal/fes_ed6_road_transport_notes/2026/10/08/raw_20261008T105446Z_7fe93ddc-7a88-478b-8f60-4531c15bd538_ea44b94e.csv",
+   "2026-10-08 10:54:46.048424 UTC",
+   "2026-10-08 10:54:46.048424 UTC",
+   "2024-07-15 06:41:16.480938 UTC",
+   "2556cc4b-38bb-4a61-ace7-2afca896b06e",
+   "1+e1"
+  ],
+  [
+   "Data Item",
+   "V2G Maximum Capacity available at Peak",
+   "2025",
+   "2025-12-10 17:02:44.975794 UTC",
+   "43add83b-bf94-493b-8f5d-de7fdbefc5bb",
+   "Theoretical vehicle-to-grid (V2G) capacity available at time of winter transmission system peak, 5pm-6pm (all engaged cars & vans are parked residentially at this time, and all engaged HGV's and buses are parked at the depot at this time). Capacity actually dispatched depends on market conditions",
+   "2026-10-08 10:54:48.733314 UTC",
+   "bronze/neso_data_portal/fes_ed6_road_transport_notes/2026/10/08/raw_20261008T105448Z_43add83b-bf94-493b-8f5d-de7fdbefc5bb_b2008380.csv",
+   "2026-10-08 10:54:48.733314 UTC",
+   "2026-10-08 10:54:48.733314 UTC",
+   "2025-12-10 17:02:44.975794 UTC",
+   "2556cc4b-38bb-4a61-ace7-2afca896b06e",
+   "1+e1"
+  ],
+  [
+   "Peak/Annual/Minimum",
+   "# Vehicles",
+   "2024",
+   "2024-07-15 06:41:16.480938 UTC",
+   "7fe93ddc-7a88-478b-8f60-4531c15bd538",
+   "Number of vehicles on the road in that year",
+   "2026-10-08 10:54:46.048424 UTC",
+   "bronze/neso_data_portal/fes_ed6_road_transport_notes/2026/10/08/raw_20261008T105446Z_7fe93ddc-7a88-478b-8f60-4531c15bd538_ea44b94e.csv",
+   "2026-10-08 10:54:46.048424 UTC",
+   "2026-10-08 10:54:46.048424 UTC",
+   "2024-07-15 06:41:16.480938 UTC",
+   "2556cc4b-38bb-4a61-ace7-2afca896b06e",
+   "1+e1"
+  ],
+  [
+   "Peak/Annual/Minimum",
+   "Annual",
+   "2025",
+   "2025-12-10 17:02:44.975794 UTC",
+   "43add83b-bf94-493b-8f5d-de7fdbefc5bb",
+   "Data representing annual demand, number of vehicles on the road for a given year or the capacity of the number of vehicles engaged in V2G in a given year.",
+   "2026-10-08 10:54:48.733314 UTC",
+   "bronze/neso_data_portal/fes_ed6_road_transport_notes/2026/10/08/raw_20261008T105448Z_43add83b-bf94-493b-8f5d-de7fdbefc5bb_b2008380.csv",
+   "2026-10-08 10:54:48.733314 UTC",
+   "2026-10-08 10:54:48.733314 UTC",
+   "2025-12-10 17:02:44.975794 UTC",
+   "2556cc4b-38bb-4a61-ace7-2afca896b06e",
+   "1+e1"
+  ],
+  [
+   "Peak/Annual/Minimum",
+   "Peak",
+   "2024",
+   "2024-07-15 06:41:16.480938 UTC",
+   "7fe93ddc-7a88-478b-8f60-4531c15bd538",
+   "Demand at the current winter transmission system peak (5pm-6pm)",
+   "2026-10-08 10:54:46.048424 UTC",
+   "bronze/neso_data_portal/fes_ed6_road_transport_notes/2026/10/08/raw_20261008T105446Z_7fe93ddc-7a88-478b-8f60-4531c15bd538_ea44b94e.csv",
+   "2026-10-08 10:54:46.048424 UTC",
+   "2026-10-08 10:54:46.048424 UTC",
+   "2024-07-15 06:41:16.480938 UTC",
+   "2556cc4b-38bb-4a61-ace7-2afca896b06e",
+   "1+e1"
+  ],
+  [
+   "Peak/Annual/Minimum",
+   "Peak",
+   "2025",
+   "2025-12-10 17:02:44.975794 UTC",
+   "43add83b-bf94-493b-8f5d-de7fdbefc5bb",
+   "Data representing demand or available capacity, applicable at the time of transmission system peak (5pm-6pm)",
+   "2026-10-08 10:54:48.733314 UTC",
+   "bronze/neso_data_portal/fes_ed6_road_transport_notes/2026/10/08/raw_20261008T105448Z_43add83b-bf94-493b-8f5d-de7fdbefc5bb_b2008380.csv",
+   "2026-10-08 10:54:48.733314 UTC",
+   "2026-10-08 10:54:48.733314 UTC",
+   "2025-12-10 17:02:44.975794 UTC",
+   "2556cc4b-38bb-4a61-ace7-2afca896b06e",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}
