@@ -80,5 +80,5 @@ ENTSO-E paragraphs). Verify every one against local silver before writing it.
 | `outages` | ae36f09ef6e0639ad | | writing |
 | `capacity-by-indicator` | ac0bdc96719e22118 | af2898390ac84e5aa | written; in review (seat: caveat on "available through" members where ENTSOG sends a 472 kWh/d record and a no-capacity sentence) |
 | `cmp` | ad9551166d4bfee02 | | writing |
-| `netbsad` | a00f12902b3632a4d | a3862abe8d47e4491 | written; in review (BPA chart 15 Jan 2026; history wording rests on PR #128 live sweep) |
+| `netbsad` | a00f12902b3632a4d | a3862abe8d47e4491 | REVISE round 1 (history as a dated check of Elexon replies; add unit caveat); writer revising |
 | `nonbm` | ac0848f63e8af4f35 | a1500352d7d87526a | written; in review (end-date evidence from endpoints.py probe; NESO STOR end juxtaposed) |
