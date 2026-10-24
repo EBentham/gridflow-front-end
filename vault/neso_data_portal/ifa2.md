@@ -4,9 +4,59 @@ package: "ifa2"
 dataset_keys: ["ifa2_ifa_da_id_weekly_itls", "ifa2_ifa_itl"]
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-09
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: true
+  title: IFA2 transfer limits
+  summary: >-
+    NESO's hourly limits on flow each way over the IFA2 interconnector, in MW, with reasons.
+  facts:
+    vendor: "NESO Data Portal, package `ifa2`: a current datastore table and an archive CSV"
+    cadence: "Ad hoc, NESO says"
+    grain: "Each row: one hour's import and export limits; current rows add upload and auction"
+    history: "NESO's files label hours from 13 October 2022: archive, then the current table"
+  landscape: power
+  what_it_is: >-
+    NESO says it submits these to interconnector capacity calculations, capping GB imports and
+    exports, in hourly MW; final capacity can be lower. It says it publishes only restrictions,
+    but its October 2026 archive lists whole days, and many current rows say No Restriction.
+    NESO calls them Intraday Transfer Limit (ITL) and, in the archive, Network Transfer Capacity
+    (NTC) restrictions.
+  how_used:
+    - Which hours NESO restricted the link, by direction, from the stated reason
+    - "A feature for flow and price models: when NESO restricted the link"
+    - Set beside the final capacity the link's trading facilitator publishes
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: `package_show`, the current table's dump and the archive CSV. Fetched
+      16 October 2026, the table kept every row fetched 8 October unchanged, plus new ones.
+    commands:
+      - {run: gridflow pipeline neso_data_portal ifa2_ifa_itl --last 24h,
+         comment: "current table to bronze, then silver"}
+      - {run: gridflow pipeline neso_data_portal ifa2_ifa_da_id_weekly_itls --last 24h,
+         comment: "archive to bronze, then silver"}
+  family:
+    slug: ifa2
+    members:
+      - dataset: ifa2_ifa_itl
+        differs: "Current table from December 2024: upload time, auction and hour start in GMT"
+        request:
+          - "GET https://api.neso.energy/api/3/action/package_show?id=ifa2"
+          - "GET https://api.neso.energy/datastore/dump/f9ff9381-6eb1-40cd-903b-ca7282b9f2a9"
+        held: "Nearly every hour is already past, and NESO does not say rows are unchanged since upload."
+      - dataset: ifa2_ifa_da_id_weekly_itls
+        differs: "Archive to December 2024: hours by operational date and GMT/BST range; no upload time"
+        request:
+          - "GET https://api.neso.energy/api/3/action/package_show?id=ifa2"
+          - "GET https://api.neso.energy/dataset/860c8221-c656-4af3-800a-281b9e500489/resource/19725dae-1d69-423e-8d5b-0f4dc8220b6b/download/archived_ifa2.csv"
+        held: "Hour labels have no defined day or clock, and no row says when NESO issued it."
+  related:
+    - {dataset: neso_data_portal/ifa, note: "The same NESO limits on IFA, another GB interconnector"}
+    - {dataset: neso_data_portal/eleclink, note: "NESO's limits on ElecLink, another GB interconnector"}
+    - {dataset: entsoe/net_transfer_capacity, note: "ENTSO-E's forecast capacity across each GB border, all links together"}
+    - {dataset: neso_data_portal/historic-demand-data, note: "IFA2's half-hourly flow, in NESO's historic demand files"}
 ---
 
 # IFA2 - NESO's Intraday Transfer Limit
@@ -14,13 +64,17 @@ eligibility: "eligible"
 These are NESO's **transfer limits on the IFA2 interconnector** between GB and France, in MW per
 hourly period and per direction. The package notes say they are "the values submitted by NESO to
 the interconnector capacity calculation processes which restrict the maximum GB import and
-export interconnector flows". Each row is a NESO restriction submitted to a day-ahead or intraday
+export interconnector flows". Each row is a NESO limit submitted to a day-ahead or intraday
 capacity auction. It is not a measured flow and not the link's final traded capacity. The notes
 add that the final capacity is calculated from these NESO values, the connected system operator's
 values and the interconnector's capability, so the final figure may be lower. The trading
-facilitator publishes it, not NESO. NESO publishes a value **only where it applied a
-restriction**. An hour with no row means NESO applied no restriction. It does not mean zero
-capacity, and gridflow does not fill such hours.
+facilitator publishes it, not NESO. The package notes say NESO publishes a value **only where it
+applied a restriction**, so an hour with no row means NESO applied no restriction. It does not
+mean zero capacity, and gridflow does not fill such hours. The files do not follow the notes
+literally (bronze read 2026-10-24): the archive lists every hour of each labelled day (7,680 rows
+over 320 days of 24), with the reason blank on 2,822 rows and `System Security` on the rest, and
+the 2026-10-16 current table gives the reason `No Restriction` for flow to GB on 7,477 of 7,920
+rows, from GB on 3,903, and in both directions on 3,682.
 
 Direction convention (K-IC-1-FACTS IC1-1): **To GB = import** (France to GB) and **From GB =
 export** (GB to France). Each column is a separate directional maximum in MW. Neither is a signed
@@ -169,7 +223,7 @@ a hypothetical rule that moves `22:00`/`23:00` labels to the previous day, none 
 relationship between the archive and the dump is therefore unresolved until the rollover is
 documented (FACTS IC1-4). gridflow does not join or splice the two families.
 
-**Activation (2026-10-09, master `6cccc4e`).** Cutoff 2026-10-08, one capture: **7,680 rows**,
+**Activation (2026-10-09, master `6cccc4e`).** Cutoff 2026-10-08, one capture at activation: **7,680 rows**,
 equal to the planned count. No prior silver existed, so nothing was overwritten. The family holds
 one Parquet file under `year=2026/month=10`. A full `reconcile --all` run with cutoff 2026-10-08
 exited 0 over 69 families with 0 gaps (gridflow `@.planning/v0.22-RESULTS.md` section IC-1;
@@ -219,10 +273,11 @@ Schema, epoch 1:
    vendor defines this column as the start of a **one-hour** operational period in GMT: a value
    of `2022-10-20T22:00:00` covers 22:00 to 23:00. gridflow parses it as UTC (FACTS T02). The
    target hours in this capture run from `2024-12-19 23:00` to `2026-10-08 21:00` UTC
-   (7,176 distinct hours).
+   (7,176 distinct hours), and to `2026-10-16 21:00` in the 2026-10-16 capture.
 
 **Hold question.** The dump returns past targets: 7,742 of 7,752 rows target an hour before the
-capture. In 676 rows the target hour is even earlier than the row's own `Data Upload Time GMT`.
+capture. In 676 rows the target hour is even earlier than the row's own `Data Upload Time GMT`
+(2026-10-08 capture; 7,919 of 7,920 and again 676 in the 2026-10-16 capture).
 NESO does not state that a returned row is unchanged since its upload time, so the dump cannot
 show what limit was in force at an earlier issue. The issued history is therefore not evidenced.
 `TODO: verify` with NESO whether the dump retains every upload unchanged, or whether rows can be
@@ -255,10 +310,23 @@ has too few targets on clock-change days to confirm it independently, unlike the
 interconnector dumps (FACTS IC1-3). `TODO: verify` the vendor's key. No primary key is declared
 in the catalogue, so the entity key is a capture guard and `_latest` is `whole_capture`.
 
-**Activation (2026-10-09, master `6cccc4e`).** Cutoff 2026-10-08, one capture: **7,752 rows**,
+**Activation (2026-10-09, master `6cccc4e`).** Cutoff 2026-10-08, one capture at activation: **7,752 rows**,
 equal to the planned count. No prior silver existed. The family holds one Parquet file under
 `year=2026/month=10`. A full `reconcile --all` run exited 0 with 0 gaps (gridflow
 `@.planning/v0.22-RESULTS.md` section IC-1; RULINGS 566, 567).
+
+**Second capture (2026-10-16, bronze and silver read 2026-10-24).**
+`raw_20261016T203747Z_f9ff9381-6eb1-40cd-903b-ca7282b9f2a9_c415be4f.csv`, 733,375 bytes,
+7,920 rows, the same post-rename header, CKAN `last_modified` still `2026-09-17T08:49:23.299201`.
+Every row of the 2026-10-08 body is present unchanged (full-row comparison: 0 missing, and 0 rows
+with the same `(Data Upload Time GMT, Auction Type, Operational Period Start)` but different
+values). 168 rows are new, uploaded `2026-10-08T17:45:08` to `2026-10-15T17:45:05`, for target
+hours `2026-10-08 22:00` to `2026-10-16 21:00`; none carries an upload time before the first
+capture. 330 distinct upload instants; auctions still `Intraday 1` to `Intraday 4` only. So
+between these two captures NESO only appended; this does not show that rows are never revised, and
+the hold stands. Silver holds a second Parquet file of 7,920 rows (`available_at`
+`2026-10-16T20:37:47.957284Z`), which `_latest` takes as the whole family. The archive has no
+second capture.
 
 Silver columns beyond the vendor columns, for both families: `timestamp_utc`, `published_at`,
 `bronze_capture_id`, `capture_written_at`, `event_time`, `available_at`, `source_run_id` and
@@ -271,7 +339,7 @@ Silver columns beyond the vendor columns, for both families: `timestamp_utc`, `p
 - Vendor metadata (snapshot extras, verbatim):
   - Update frequency: Ad hoc
 
-"Ad hoc" is the vendor's only statement of cadence. The dump has 323 distinct upload timestamps,
+"Ad hoc" is the vendor's only statement of cadence. The dump has 323 distinct upload timestamps (330 on 2026-10-16),
 but `TODO: verify` the publication schedule for each auction. Each
 daily gridflow refresh captures one state of the dump. Because the vintage is the capture time,
 the dated silver captures record what the dump returned on each capture day. They do not

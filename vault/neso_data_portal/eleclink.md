@@ -4,9 +4,45 @@ package: "eleclink"
 dataset_key: "eleclink"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-09
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: "NESO does not say rows are unchanged since upload, and archive days and versions are undefined."
+  title: ElecLink transfer limits
+  summary: >-
+    NESO's hourly limits on flow each way over the ElecLink interconnector, in MW, with reasons.
+  facts:
+    vendor: "NESO Data Portal, package `eleclink`: a current datastore table and an archive CSV"
+    cadence: "Daily, NESO says"
+    grain: "Each row: one hour's import and export limits for one auction"
+    history: "NESO's files label hours from 7 November 2022: archive, then the current table"
+  landscape: power
+  what_it_is: >-
+    NESO says it submits these to interconnector capacity calculations, capping GB imports and
+    exports, in hourly MW; final capacity can be lower. It says it publishes only restrictions,
+    but its October 2026 files hold many No Restriction rows. NESO calls them Net Transfer
+    Capacity (NTC) restrictions. Archive rows add an operational date and version.
+  how_used:
+    - Which hours NESO restricted the link, by direction, from the stated reason
+    - "A feature for flow and price models: when NESO restricted the link"
+    - Set beside the final capacity the link's trading facilitator publishes
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: `package_show`, the current table's dump and the archive CSV. Fetched
+      16 October 2026, the table kept every row fetched 8 October unchanged, plus new ones.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=eleclink"
+      - "GET https://api.neso.energy/datastore/dump/1f748d48-1daf-4f1a-a5f1-d581e86a2190"
+      - "GET https://api.neso.energy/dataset/46daeb44-95a7-4032-8a22-914c896ed261/resource/991a79f8-2e8c-4f42-b308-e3fb0346700d/download/archived_eleclink_link_ntc_data.csv"
+    commands:
+      - {run: gridflow ingest neso_data_portal eleclink --last 24h, comment: "the dump and archive to bronze"}
+      - {run: gridflow transform neso_data_portal eleclink --last 24h, comment: "the capture's date to silver"}
+  related:
+    - {dataset: neso_data_portal/ifa, note: "NESO's limits on IFA, another GB interconnector"}
+    - {dataset: neso_data_portal/ifa2, note: "NESO's limits on IFA2, another GB interconnector"}
+    - {dataset: entsoe/net_transfer_capacity, note: "ENTSO-E's forecast capacity across each GB border, all links together"}
+    - {dataset: neso_data_portal/historic-demand-data, note: "ElecLink's half-hourly flow, in NESO's historic demand files"}
 ---
 
 # ElecLink - NESO's Net Transfer Capacity
@@ -18,9 +54,13 @@ and export flows. The resource description adds that they are submitted to the D
 Intraday auctions. They are **limit submissions, not measured flows and not final capacity**:
 the vendor notes that the final interconnector capacity also uses the connected system
 operator's values and the interconnector capability, so it "may be lower than the NESO values
-shown here". NESO publishes a value only where it has applied a restriction. A missing row means
-NESO applied no restriction. It does not mean zero capacity, so a consumer must never fill a gap
-with zero or a nameplate figure (K-IC-1-FACTS g5, IC1-6).
+shown here". The package notes say NESO publishes a value only where it has applied a
+restriction, so a missing row means NESO applied no restriction. It does not mean zero capacity,
+so a consumer must never fill a gap with zero or a nameplate figure (K-IC-1-FACTS g5, IC1-6). The
+files do not follow the notes literally (bronze read 2026-10-24): the archive lists 24 hours for
+each operational date, auction and version, and gives the reason `No Restriction` on 3,120 of
+8,472 rows; the 2026-10-16 current table gives `No Restriction` for flow to GB on 23,354 of 24,599
+rows, from GB on 18,822, and in both directions on 18,429.
 
 **Direction.** `To GB` is the foreign-to-GB **import** limit and `From GB` is the GB-to-foreign
 **export** limit. Each is a separate directional MW maximum, not one signed net-flow series. Both
@@ -169,7 +209,7 @@ distinct issue instants. Archive rows have no issue column, so `issue_time` is n
 
 **Hold question.** The current dump returns past targets as well as future ones. 1,292 of its
 24,359 rows have a target before their own `Data Upload Time GMT`, and 24,337 have a target
-before the capture. NESO does not state that a row returned today is unchanged since its upload
+before the capture (2026-10-08 capture; 1,292 and 24,574 of 24,599 in the 2026-10-16 capture). NESO does not state that a row returned today is unchanged since its upload
 time, so the dump does not evidence the limits as they were historically issued (FACTS g2,
 IC1-6). The archive has no issue column, and every target label precedes its vintage, so the
 forward-target rule (RULINGS 529) cannot release it. Its Operational Date calendar and rollover
@@ -188,7 +228,7 @@ Measured coverage, as literal labels. These are coverage bounds, not data values
 | Resource | Target coverage |
 |---|---|
 | Archive | Operational Date + hour labels `2022-11-07 00:00` to `2024-09-24 23:00` |
-| Current dump | `operational_period_start_gmt` `2024-09-25T22:00Z` to `2026-10-08T21:00Z` |
+| Current dump | `operational_period_start_gmt` `2024-09-25T22:00Z` to `2026-10-08T21:00Z` (to `2026-10-17T21:00Z` in the 2026-10-16 capture) |
 
 The two resources share no target key, either literally or under a hypothetical previous-day
 rollover of the `22:00`/`23:00` ranges. Canonical overlap stays `TODO: verify` until the archive
@@ -242,6 +282,20 @@ nothing was overwritten. `eleclink` transformed **32,831 rows**, equal to the pl
 24,359 + 8,472 (peak working set 568.3 MiB). The family holds two Parquet files under
 `year=2026/month=10`, one per resource. `reconcile --all --cutoff 2026-10-08` exited 0 over 69
 families with 0 gaps (gridflow `@.planning/v0.22-RESULTS.md` section IC-1; RULINGS 566, 567).
+
+**Second capture of the dump (2026-10-16, bronze and silver read 2026-10-24).**
+`raw_20261016T201759Z_1f748d48-1daf-4f1a-a5f1-d581e86a2190_cfed84ef.csv`, 2,239,019 bytes,
+24,599 rows, the same M header, CKAN `last_modified` still `2026-09-17T08:45:57.592028`. Every
+row of the 2026-10-08 dump is present unchanged (full-row comparison: 0 missing, and 0 rows with
+the same `(Data Upload Time GMT, Auction Type, Operational Period Start)` but different values).
+240 rows are new, uploaded `2026-10-08T14:30:05` to `2026-10-16T14:30:05`, for target hours
+`2026-10-08 22:00` to `2026-10-17 21:00`; none carries an upload time before the first capture.
+1,025 distinct upload instants; auctions still `Day Ahead` and `Intraday 1` to `Intraday 3`. So
+between these two captures NESO only appended; this does not show that rows are never revised, and
+the hold stands. The 2026-10-16 run downloaded no archive body: the client skips an upload whose
+newest capture carries the live `last_modified`, so the archive's stamp had not moved. Silver now
+holds three Parquet files; `_latest` per `resource_id` takes the 2026-10-16 dump (24,599 rows) and
+the 2026-10-08 archive (8,472 rows).
 
 Silver columns beyond the vendor columns: `issue_time`, `resource_id`, `timestamp_utc`,
 `published_at`, `bronze_capture_id`, `capture_written_at`, `event_time`, `available_at`,

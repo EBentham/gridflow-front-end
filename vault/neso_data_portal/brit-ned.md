@@ -4,9 +4,48 @@ package: "brit-ned"
 dataset_key: "brit_ned"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-09
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: "Hour labels have no defined day or clock, and no row says when NESO issued it."
+  title: BritNed transfer limits
+  summary: >-
+    NESO's hourly limits on flow each way over the BritNed interconnector, in MW, with reasons.
+  facts:
+    vendor: "NESO Data Portal, package `brit-ned`: 187 weekly CSV files (6 October 2026)"
+    cadence: "Ad hoc, NESO says; files usually appear seven days after their named date"
+    grain: "Each row: one hour's import and export limits, in one weekly file"
+    history: "Files named 12 October 2022 to 23 September 2026, from NESO's list"
+  landscape: power
+  what_it_is: >-
+    NESO says it submits these to interconnector capacity calculations, capping GB imports and
+    exports, in hourly MW; final capacity can be lower. It says it publishes only restrictions,
+    but its files list every hour of nearly every day they cover; many reasons are blank. NESO
+    calls them Intraday Transfer Limit (ITL) restrictions. Each file labels hours by operational
+    date.
+  how_used:
+    - Which hours NESO restricted the link, by direction, from the stated reason
+    - "A feature for flow and price models: when NESO restricted the link"
+    - Set beside the final capacity the link's trading facilitator publishes
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: `package_show`, then each changed weekly CSV. Shown: 20221012 (first),
+      20241016, 20260923 (newest). 20221012 gives one hour two values; 20241016 is not UTF-8; gridflow
+      loads neither.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=brit-ned"
+      - "GET https://api.neso.energy/dataset/1a9fa49a-dea1-4468-9a8c-7800db9d3ff4/resource/10432bfd-2102-4eda-8c6d-bed2a4df676b/download/britned-da-id-weekly-itls-20221012.csv"
+      - "GET https://api.neso.energy/dataset/1a9fa49a-dea1-4468-9a8c-7800db9d3ff4/resource/811bec71-f099-4474-ba5e-2f9932b39cc2/download/britned-da-id-weekly-itls-20241016.csv"
+      - "GET https://api.neso.energy/dataset/1a9fa49a-dea1-4468-9a8c-7800db9d3ff4/resource/27f2e375-5a0b-484e-938f-4d4c0206d9c0/download/britned-da-id-weekly-itls-20260923.csv"
+    commands:
+      - {run: gridflow ingest neso_data_portal brit_ned --last 24h, comment: "each changed weekly file to bronze"}
+      - {run: gridflow transform neso_data_portal brit_ned --last 24h, comment: "the capture's date to silver"}
+  related:
+    - {dataset: entsoe/dc_link_intraday_transfer_limits, note: "ENTSO-E's intraday limits on GB's DC links, one direction per series"}
+    - {dataset: neso_data_portal/historic-demand-data, note: "BritNed's half-hourly flow, in NESO's historic demand files"}
+    - {dataset: neso_data_portal/system-operating-plan-sop, note: "NESO's control-room plans, with expected BritNed flows at each peak or trough"}
+    - {dataset: neso_data_portal/ifa, note: "NESO's IFA limits; its current table has an upload time per row"}
 ---
 
 # BritNed - NESO's Intraday Trading Limit
@@ -20,8 +59,11 @@ flows", submitted "in MW per hourly time period". They are **limits NESO submits
 flows and not the final capacity**. Final capacity is calculated from NESO's values, the
 connected system operator's values and the interconnector's own capability, so it "may be
 lower than the NESO values shown here". The final figures are on the interconnector's trading
-facilitator's website. Values are published only where NESO applied a restriction: "If there
-are no values, NESO has not applied a restriction." Resource descriptions call them
+facilitator's website. The package notes say values are published only where NESO applied a
+restriction: "If there are no values, NESO has not applied a restriction." The files do not
+follow that literally (bronze read 2026-10-24): a file gives 24 rows for 792 of the 797 days it
+labels (25 on 3, 23 on 2), and the reason is `System Security` on 10,663 of the 19,129 rows across the 187 bodies and
+blank on the other 8,466. Resource descriptions call them
 "Intraday Transfer Limit restrictions submitted to Day-ahead and Intraday auctions", and the
 package title says "Intraday Trading Limit"; both expand ITL. Use this package to see when and
 why the GB side constrained BritNed, for example as a feature for GB–Netherlands flow or price
@@ -36,7 +78,7 @@ Unlike its IC-1 siblings, BritNed has no datastore dump. It is **187 separate we
 uploads** (2022-10 to 2026-09), all in one family, `brit_ned`, with five header epochs.
 Silver holds **18,817 rows from 185 resources**. Two captures failed and are **not loaded**:
 the oldest upload (a key collision, adjudicated) and one upload with invalid UTF-8 bytes
-(still an open reconcile gap). Both directional flows are kept as **raw strings**
+(an open reconcile gap at activation, adjudicated since IC-2H on 2026-10-10, RULINGS 585). Both directional flows are kept as **raw strings**
 (`flow_to_gb_mw_raw`, `flow_from_gb_mw_raw`) because some cells carry thousands separators
 and decimals. The silver output is **held** (unit E-SEM; see Holds), so this page gives
 schema, row counts, clocks and missingness only, never data values or ranges of values.
@@ -350,7 +392,7 @@ measured row count per `resource_id` in silver on 2026-10-09.
 | BritNed DA & ID Weekly ITLs 20240925 | [download](https://api.neso.energy/dataset/1a9fa49a-dea1-4468-9a8c-7800db9d3ff4/resource/91df114c-6c0a-4217-a963-8608f0ec619e/download/britned-da-id-weekly-itls-20240925.csv) | 4 | 6,367 | 144 | 2024-10-02T11:20:45.013711 | 144 |
 | BritNed DA & ID Weekly ITLs 20241002 | [download](https://api.neso.energy/dataset/1a9fa49a-dea1-4468-9a8c-7800db9d3ff4/resource/037acebf-f343-4dce-b9da-1a537c15555f/download/britned-da-id-weekly-itls-20241002.csv) | 4 | 6,336 | 144 | 2024-10-09T07:22:24.451435 | 144 |
 | BritNed DA & ID Weekly ITLs 20241009 | [download](https://api.neso.energy/dataset/1a9fa49a-dea1-4468-9a8c-7800db9d3ff4/resource/d721fb6d-616c-4339-83be-dc8eb50ad286/download/britned-da-id-weekly-itls-20241009.csv) | 4 | 5,490 | 144 | 2024-10-16T09:34:16.270520 | 144 |
-| BritNed DA & ID Weekly ITLs 20241016 | [download](https://api.neso.energy/dataset/1a9fa49a-dea1-4468-9a8c-7800db9d3ff4/resource/811bec71-f099-4474-ba5e-2f9932b39cc2/download/britned-da-id-weekly-itls-20241016.csv) | 4 (not UTF-8) | 6,085 | 144 | 2024-10-23T08:37:35.939132 | 0 — failed, open gap (`ComputeError`; IC-2H) |
+| BritNed DA & ID Weekly ITLs 20241016 | [download](https://api.neso.energy/dataset/1a9fa49a-dea1-4468-9a8c-7800db9d3ff4/resource/811bec71-f099-4474-ba5e-2f9932b39cc2/download/britned-da-id-weekly-itls-20241016.csv) | 4 (not UTF-8) | 6,085 | 144 | 2024-10-23T08:37:35.939132 | 0 — failed, adjudicated (`UnicodeDecodeError` since IC-2H) |
 | BritNed DA & ID Weekly ITLs 20241023 | [download](https://api.neso.energy/dataset/1a9fa49a-dea1-4468-9a8c-7800db9d3ff4/resource/7ac2608d-9878-46f2-a075-0b40a87e0a63/download/britned-da-id-weekly-itls-20241023.csv) | 4 | 6,711 | 169 | 2024-10-30T10:13:58.278979 | 169 |
 | BritNed DA & ID Weekly ITLs 20241030 | [download](https://api.neso.energy/dataset/1a9fa49a-dea1-4468-9a8c-7800db9d3ff4/resource/7c80487f-dc26-430b-abbf-8c2823ed3dcc/download/britned-da-id-weekly-itls-20241030.csv) | 4 | 5,558 | 144 | 2024-11-06T09:22:55.819781 | 144 |
 | BritNed DA & ID Weekly ITLs 20241106 | [download](https://api.neso.energy/dataset/1a9fa49a-dea1-4468-9a8c-7800db9d3ff4/resource/f3371462-fd35-426e-8652-dd0a5ad69d3b/download/britned-da-id-weekly-itls-20241106.csv) | 4 | 5,695 | 144 | 2024-11-13T09:33:42.951384 | 144 |
@@ -455,17 +497,21 @@ individual resources:
   open question asks which of the two rows is the published limit, and whether the
   repeated label is a publication defect. Reconcile reports it **adjudicated**, not an open
   gap. Because this is the only page-epoch-1 body, epoch 1 has no silver rows.
-- **20241016 (`811bec71…`, FACTS alias B-ENC): failed, open gap.** Physical lines 72–73
+- **20241016 (`811bec71…`, FACTS alias B-ENC): failed, adjudicated (open gap until IC-2H).** Physical lines 72–73
   (labels `20241018 21:00-22:00` and `20241018 22:00-23:00`) each carry a standalone `0xA0`
   byte in the export cell. That is a cp1252/Latin-1 non-breaking space, which is invalid
   UTF-8. CP1252 and Latin-1 decode it identically, so the bytes do not identify the
   producer's charset. The record reads `utf-8`, so the engine fails the capture at header
-  pre-parse with a polars `ComputeError: invalid utf-8 sequence`. That cause is outside the
-  ADR-040 allowlist, so the capture has **no ledger entry** and reconcile reports it as
-  **brit_ned's one open gap**. Unit **IC-2H** retires it: strict UTF-8 detection before
-  pre-parse, an allowlist entry and a ledger entry (RULINGS 575, 576). The gap is pinned by
-  the test `test_the_0xa0_capture_is_the_one_open_reconcile_gap`. Bronze is never re-encoded
-  or repaired.
+  pre-parse with a polars `ComputeError: invalid utf-8 sequence`. At activation that cause was
+  outside the ADR-040 allowlist, so the capture had **no ledger entry** and reconcile reported it
+  as **brit_ned's one open gap**. **IC-2H** (merged 2026-10-10, master `6085571`, RULINGS 584,
+  585) added strict UTF-8 detection before pre-parse and `UnicodeDecodeError` to the allowlist,
+  re-recorded the failure as `UnicodeDecodeError` and added a `failed` ledger entry (ruling 575)
+  whose question asks NESO which encoding the file uses and whether it can republish it as UTF-8.
+  Reconcile `--all --cutoff 2026-10-08` then exited 0 with 0 open gaps and 10 adjudicated
+  (gridflow `@.planning/v0.22-RESULTS.md` §IC-2H). The test is now
+  `test_the_0xa0_capture_is_adjudicated`. Its 144 rows stay unloaded. Bronze is never
+  re-encoded or repaired.
 - **Four UTF-8-BOM bodies** (20221116, 20221123, 20221221, 20221228) load normally. The
   reader strips the BOM before header matching. 182 other bodies are BOM-less UTF-8.
 - **20251229 and 20251231 (`f43260c8…`, `3e546d9e…`, FACTS B-O1/B-O2): overlap,
@@ -669,7 +715,8 @@ The transform exits 1 by design (two failed captures). Reconcile `--all --cutoff
 exited 1 with **1 open gap** (the 20241016 B-ENC capture, `ComputeError`, to be retired by
 IC-2H), **9 adjudicated** (6 prior, plus this family's B-OLD failure and B-O1/B-O2
 overlap) and 0 stale. Every other family had 0 gaps (gridflow `@.planning/v0.22-RESULTS.md`
-§IC-2).
+§IC-2). After IC-2H (2026-10-10) the same reconcile exited 0: 0 open gaps, 10 adjudicated,
+`brit_ned` silver and completions still 185 (§IC-2H, RULINGS 585).
 
 Silver layout: 185 Parquet files, one per loaded capture, under
 `C:/gridflow-data/silver/neso_data_portal/brit_ned/year=2026/month=10/`. The
@@ -756,8 +803,8 @@ governs the silver output. The hold has three parts:
 Settles it: a NESO statement of the label calendar per epoch (date attachment, rollover,
 GMT vs BST, the meaning of `(a)`/`(b)`) and of when each limit was issued. Separately
 from the hold, the 20221012 capture stays out of silver until NESO answers its
-adjudication question, and the 20241016 capture stays out until IC-2H. Lifting the hold
-would load neither.
+adjudication question, and the 20241016 capture stays out until NESO answers its encoding
+question (adjudicated by IC-2H). Lifting the hold would load neither.
 
 References: gridflow `@.planning/phases/v0.22-K-IC-2/K-IC-2-FACTS.md` (§1, §2, IC2-1,
 g2–g5, T01–T10), `@.planning/phases/v0.22-K-IC-2/K-IC-2-SPEC.md` (§1),
