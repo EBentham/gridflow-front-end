@@ -1564,6 +1564,7 @@ def page_view(
                     "request": Markup("").join(request_lines(r) for r in mem.requests),
                     # a held page lists the reasons in its silver section instead
                     "held": "" if p.held else mem.held,
+                    "caveat": "" if p.held else mem.caveat,
                 }
             )
 
@@ -1579,6 +1580,7 @@ def page_view(
 
     view = {
         "vendor_id": doc.vendor_id,
+        "caveat": _frame_caveat(doc) if record_v else "",
         "vendor_label": doc.vendor_label,
         "key": key,
         "blank": False,
@@ -1608,6 +1610,15 @@ def page_view(
         "related": related,
     }
     return view, errors
+
+
+def _frame_caveat(doc: DatasetDoc) -> str:
+    """The caveat printed with the frame: the page's, or on a family page the shown member's."""
+    p = doc.page
+    if p.family is None:
+        return p.caveat
+    shown = artefacts.sample_silver(doc.vendor_id, doc.slug, p.record.select, p.chart)
+    return next((m.caveat for m in p.family.members if f"{doc.vendor_id}/{m.dataset}" == shown), "")
 
 
 _DEFAULT_LANDSCAPE = {"entsog": "gas", "gie": "gas"}

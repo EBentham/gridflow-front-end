@@ -301,3 +301,87 @@ def test_a_held_page_with_a_leftover_artefact_fails(
     sample.write_text("{}", encoding="utf-8")
     [error] = build.check_artefacts(doc)[1]
     assert "a held page shows no rows; delete its" in error and sample.name in error
+
+
+@pytest.mark.parametrize(
+    "path_of",
+    [
+        lambda site: artefacts.sample_path(site, VENDOR, "t_c"),
+        lambda site: artefacts.notebook_path(site, VENDOR, "t_c"),
+        lambda site: artefacts.locations_path(site, VENDOR, "t_c"),
+    ],
+    ids=["sample", "notebook", "locations"],
+)
+def test_a_held_page_with_any_row_artefact_still_fails(
+    vault: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, path_of: Any
+) -> None:
+    """Ruling 66 keeps page-level `held` for packages with no silver rows: no frame, no notebook."""
+    site = tmp_path / "site-dir"
+    monkeypatch.setattr(build, "SITE_DIR", site)
+    (vault / VENDOR / "pkg-one.md").write_text(
+        _note("pkg-one", ["t_c"], page=_held_single()), encoding="utf-8"
+    )
+    doc = build.read_note(build.note_path(vault, VENDOR, "t_c"), "t_c", VENDOR, "NESO Data Portal")
+    leftover = path_of(site)
+    leftover.parent.mkdir(parents=True)
+    leftover.write_text("{}", encoding="utf-8")
+    [error] = build.check_artefacts(doc)[1]
+    assert "a held page shows no rows; delete its" in error and leftover.name in error
+
+
+def _errors(page: str, tables: list[str] | None = None) -> list[str]:
+    from gridflow_front_end.page_fields import anatomy_errors, parse_page_fields
+
+    fields, errors = parse_page_fields(_note("pkg", tables or ["t_c"], page=page))
+    return errors + anatomy_errors(fields)
+
+
+def test_a_caveat_takes_the_held_budget_and_stands_only_beside_rows() -> None:
+    from gridflow_front_end.page_fields import parse_page_fields
+
+    sixteen = " ".join(["word"] * 16)
+    one_table = "page:\n  caveat: " + sixteen + "\n"
+    fields, errors = parse_page_fields(_note("pkg-one", ["t_c"], page=one_table))
+    assert errors == [] and fields.caveat == sixteen and not fields.held
+    assert not [e for e in _errors(one_table) if "caveat" in e]
+    assert "page.caveat: 17 words, over its budget of 16" in _errors(one_table[:-1] + " word\n")
+    # a held page has no silver rows; its `held` already says why
+    held = _held_single() + "  caveat: The rows are the latest file.\n"
+    assert any(e.startswith("page.caveat: a held page shows no silver rows") for e in _errors(held))
+    # a family page gives each member its own caveat
+    family = _held_family().replace("page:\n  held: true\n", "page:\n  caveat: Latest file.\n")
+    assert "page.caveat: a family page gives each member its own caveat" in _errors(
+        family, ["t_a", "t_b"]
+    )
+
+
+def _family(member_b: str) -> str:
+    """A two-table family page with rows (not held); ``member_b`` is t_b's extra keys."""
+    page = _held_family().replace("page:\n  held: true\n", "page:\n")
+    page = page.replace(" held: Its date column's day and month order is not settled.", "")
+    head = page.rsplit("      - {dataset: t_b", 1)[0]
+    return (
+        head + f'      - {{dataset: t_b, differs: The history file, request: "{DUMP}"{member_b}}}\n'
+    )
+
+
+def test_a_family_members_caveat_is_for_a_member_whose_rows_are_shown() -> None:
+    from gridflow_front_end.page_fields import parse_page_fields
+
+    tables = ["t_a", "t_b"]
+    ok = _family(", caveat: The rows are the latest file.")
+    fields, errors = parse_page_fields(_note("pkg-two", tables, page=ok))
+    assert errors == [] and fields.family is not None
+    assert fields.family.members[1].caveat == "The rows are the latest file."
+    assert not [e for e in _errors(ok, tables) if "caveat" in e]
+    long = _family(", caveat: " + " ".join(["word"] * 17))
+    assert "page.family.members[1].caveat: 17 words, over its budget of 16" in _errors(long, tables)
+    both = _family(", caveat: Latest file., held: No rows.")
+    assert any(
+        "members[1].caveat: a member either shows its rows" in e for e in _errors(both, tables)
+    )
+    on_held = _held_family(held_b="held: The history file has no instant., caveat: Latest file.")
+    assert "page.family.members[1].caveat: a held page shows no silver rows; drop it" in _errors(
+        on_held, tables
+    )
+

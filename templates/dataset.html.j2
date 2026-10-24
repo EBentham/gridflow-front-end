@@ -5,8 +5,10 @@
     `v` is the view model built by build.page_view(); every word on the page comes from the vault note's
     `page:` block or from the fixed template copy below. A page whose note has no `page:` block yet is
     blank (`v.blank`, from build.blank_view()): the hero's breadcrumb, name and id, nothing else.
-    A held page (`v.held`, ruling 6) shows no rows: its silver stratum lists each table with the reason
-    its rows are not shown, and it has no chart, frame, column guide or notebook (no gold stratum). -#}
+    A held page (`v.held`, ruling 6) has no silver rows: its silver stratum lists each table with the
+    reason its rows are not shown, and it has no chart, frame, column guide or notebook (no gold stratum).
+    A page whose rows carry an open question (ruling 66) prints its caveat (`v.caveat`) just above the
+    frame; a family member's caveat (`m.caveat`) sits under the member in the raw feed. -#}
 <!doctype html>
 <html lang="en">
 <head>
@@ -139,7 +141,7 @@
             {%- for m in v.variants %}
             <li id="{{ m.slug }}">
               <p class="ds-variants__h"><code>{{ m.key | breakable }}</code>{% if m.code %} <span>{{ m.code }}</span>{% endif %}</p>
-              <p class="ds-variants__d">{{ m.differs | md_inline | safe }}</p>{% if m.held %}<p class="ds-variants__d">Rows not shown: {{ m.held | md_inline | safe }}</p>{% endif %}
+              <p class="ds-variants__d">{{ m.differs | md_inline | safe }}</p>{% if m.held %}<p class="ds-variants__d">Rows not shown: {{ m.held | md_inline | safe }}</p>{% endif %}{% if m.caveat %}<p class="ds-variants__d">{{ m.caveat | md_inline | safe }}</p>{% endif %}
               <pre class="ds-well">{{ m.request | safe }}</pre>
             </li>
             {%- endfor %}
@@ -180,6 +182,9 @@
         <h2 class="h-fig" id="sv-h">Schema and sample rows</h2>
         <div class="spec">
           <p class="spec__cap"><code class="spec__shape">shape: {{ r.shape }}</code> <span>{{ r.caption | md_inline | safe }}</span></p>
+          {%- if v.caveat %}
+          <p class="spec__cap">{{ v.caveat | md_inline | safe }}</p>
+          {%- endif %}
           <div class="fw" role="region" tabindex="0" aria-label="{{ r.aria }}">
             <table class="pl">
               <thead>
