@@ -72,7 +72,7 @@ captures repeat rows (or as a guard). On a table with no event time, `query()` f
 
 | # | Writer | Checker | State |
 |---|---|---|---|
-| 1 | a0c28a65bd96ca1f4 | ad2d312da0c3c01c9 | REVISE (2 majors: HT name is our reading, report counts wrong; 6 nits), round 2 writing; 20cc logged (counts corrected) |
+| 1 | a0c28a65bd96ca1f4 | ad2d312da0c3c01c9 | APPROVED (round 2 fixes seat-verified); committed; 20cc logged (counts corrected) |
 | 2 | a7d6f785b85eb39ff | a7baf4ea258c6e697 | APPROVED, 5 nits fixed (seat-verified); committed; rebuilt under the definitions lead; 20cd logged |
 | 3 | a12902a5b35eeed53 | afcecf730f8b967bd | checking; 20ce logged |
 | 4 | acad0fb61bef04ef6 | | writing |

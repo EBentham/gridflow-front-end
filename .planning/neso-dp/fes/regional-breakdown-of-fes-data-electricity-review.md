@@ -38,3 +38,16 @@ Page `neso_data_portal/regional-breakdown-of-fes-data-electricity`, lead `fes_re
 ## Defects section
 
 The writer's pasteable "Defects" section is usable apart from finding 2. Confirmed: the 2024 demand resource dictionary (`7bd643c0-...`, snapshot `20261008T114228Z`) decodes `scenario` as LW, CT, ST and SP only, so `EE`, `HE` and `HT` are undecoded; `DemandPk` is blank on 114 `T` locations in 2021 to 2023; the `_pre2023` split follows from the unreadable 2021 file, not a different header.
+
+## Round 2
+
+**Verdict: APPROVE** (0 blockers, 0 majors, 0 nits). Rebuild `--only neso_data_portal/fes_regional_demand_active_power`: exit 0 (only the known 37-line caveat warning). Detector `[]`. Mirror `cmp` clean. No em or en dashes on the built page. Built-page text checked; layout not re-screenshotted (the longer title, caption and key note are plain text that wraps, and the writer reports a clean 1440 and 390 check).
+
+1. `HT` name (was major): **resolved.** Checked against silver: the FES 2024 building-block file (`published_at` 2024-08-02 10:37:06 UTC) is real and dated, and it names only the pathway, not the code. No string column in the 2024 rows holds `HT`, `EE`, `HE` or `CF`, and `fes_pathway` holds the full names. The page no longer claims otherwise: the key note reads "`HT`, read as Holistic Transition from NESO's FES 2024 pathway names (2 August 2024); not decoded here", and the alt says "read as". The scenario guide now says the dictionary "decodes only 2021's LW, CT, ST, SP". The note body says the building-block file has full names and no codes, that tRESP (2026-01-30, "not a FES edition") writes "(HT)", and that `HT` is read by its initials. Honest and sourced.
+2. Negative counts (was major): **resolved.** Re-run on silver: `DemandPk` negative on R only at 868 / 210 / 87 / 146 (2021 to 2024); `DemandAM` 2021 C 248, I 3,934, R 916, then R 1,312 / 924 / 174; `DemandPM` 2021 I 6,231, R 1,021, then R 1,312 / 924 / 678; any measure 8,542 / 1,312 / 1,011 / 678. All match the author-2 report and the corrected defects section. One negative R row per bar (`KIIN_P`, -0.085 to -0.133 MW) confirmed.
+3. "Summed" wording (nit 3): resolved. Title and key label say "Summed peak demand"; caption says "gridflow's sum over every location and type".
+4. Negatives on the page (nit 4): resolved, caption ends "one tiny negative residential value per bar included".
+5. Blank peaks (nit 5): resolved, "114 direct connects blank in 2021 to 2023 files" (matches my count of 114 `T` locations).
+6. Type codes (nit 6): resolved. The eight are decoded beside the frame: guide has C, E, I, R, H, D; caption has `T` as direct connect and `Z` as electrolysers.
+7. Year-label body wording (nit 7): resolved in "Six things to know" item 2 and "The year label".
+8. History line (nit 8): resolved, "The package was created on 6 July 2021".
