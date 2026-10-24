@@ -4,7 +4,7 @@ package: "system-frequency-data"
 dataset_keys: ["system_frequency", "system_frequency_dmy_csv", "system_frequency_gmt_csv", "system_frequency_gmt_zip", "system_frequency_offset_csv", "system_frequency_offset_zip"]
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-16
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
@@ -127,11 +127,11 @@ page:
         differs: "Bronze only, no table: every monthly file lands here for the five tables below"
         request: "GET https://api.neso.energy/api/3/action/package_show?id=system-frequency-data"
       - dataset: system_frequency_dmy_csv
-        differs: "2014: day-first times such as `31/01/2014 23:59:59`, with no zone"
+        differs: "2014: October's repeated hour is kept as two blocks, numbered in file order"
         request:
           - "GET https://api.neso.energy/dataset/cb1cc925-ecd8-4406-b021-3a3f368196e1/resource/0cd6ff2e-62ca-4fbf-8417-18b3539530e6/download/f-2014-1.csv"
           - "GET https://api.neso.energy/dataset/cb1cc925-ecd8-4406-b021-3a3f368196e1/resource/c46f588c-0067-46fb-9b82-1e0cb71c920e/download/f-2014-12.csv"
-        held: "NESO's descriptions give no 2014 zone, and October repeats an hour, so it is not loaded."
+        caveat: "NESO states no zone for 2014, so `dtm` is its day-first label, not UTC."
       - dataset: system_frequency_gmt_csv
         differs: "April 2022 on, plain CSV, GMT as UTC; August 2026 midnights are bare dates"
         request:
@@ -397,14 +397,15 @@ shares the parent's family.
 
 | Family | Rendering | Body / reader | Resources | Rows | Status |
 |---|---|---|---:|---:|---|
-| `system_frequency_dmy_csv` | R1: day-first, naive (2014) | CSV / `csv` | 12 | 28,857,600 (11 members served) | **held** (zone unstated); October 2014 fails its key |
+| `system_frequency_dmy_csv` | R1: day-first, naive (2014) | CSV / `csv` | 12 | 31,536,000 (12 members) | **held** (zone unstated); October's repeated hour keyed by `dtm_occurrence` |
 | `system_frequency_offset_csv` | R2: ISO + `%z` offset (2015-01 to 2018-12) | CSV / `csv` | 48 | 126,230,400 | eligible |
 | `system_frequency_offset_zip` | R2 (2019-01 to 2019-12) | ZIP / `zip_member`, inner `f 2019 M.csv` | 12 | 31,536,000 | eligible |
 | `system_frequency_gmt_zip` | R3: ISO, GMT-stated (2020-01 to 2022-03) | ZIP / `zip_member`, inner `fNew YYYY M.csv` | 27 | 70,934,400 | eligible |
 | `system_frequency_gmt_csv` | R3 (2022-04 to 2026-08) | CSV / `csv` | 53 | 139,449,600 | eligible |
 
-Silver rows total **397,008,000**: the nominal 399,686,400 less October 2014's 2,678,400,
-which is not served (see Holds). The 152 bodies are 9.38 GB on disk (113 CSV bodies,
+Silver rows total **399,686,400**, the nominal count: since gridflow PR #134 October 2014
+(2,678,400 rows) is served with the other eleven 2014 months (checked 2026-10-24), and the
+2014 family stays held for its zone (see Holds). The 152 bodies are 9.38 GB on disk (113 CSV bodies,
 9,038,109,955 bytes; 39 ZIP bodies, 343,551,845 bytes, 3,045,943,575 bytes uncompressed),
 about 12.1 GB of CSV text. The largest member is December 2019 (`f 2019 12.csv`,
 90,757,307 bytes).
@@ -462,19 +463,23 @@ Schema, epoch 1:
 | dtm | `dtm` | string | — | no | — | — |
 | f | `f` | float64 | — | yes | — | — |
 
-- Entity key: `resource_id`, `dtm`
+- Entity key: `resource_id`, `dtm`, `dtm_occurrence`
 - Latest: `whole_capture` per `resource_id`
 - Temporal recipe: none: `timestamp_utc` is the capture time
+- Record version 2 (gridflow PR #134): `occurrence_column: dtm_occurrence`
 
 | Clock | Meaning |
 |---|---|
 | `published_at` | CKAN `last_modified` of the captured file (ADR-030) |
 | `available_at` | = `published_at` |
 
-**R1, day-first and naive. HELD.** 12 resources (January to December 2014); 11 members are
-served, with **28,857,600** rows. October 2014 (2,678,400 nominal rows) fails its key and is
-not served. `dtm` is kept as the **raw vendor string** (dtype `string`), not as a timestamp.
-Silver columns (11): `dtm`, `f`, `resource_id`, then `timestamp_utc`, `published_at`, `bronze_capture_id`, `capture_written_at`, `event_time`, `available_at`, `source_run_id` and `dataset_version`. `f` is `float64`, nullable, with no bounds. The data values of this
+**R1, day-first and naive. HELD.** 12 resources (January to December 2014); all 12 members
+are served, with **31,536,000** rows (checked 2026-10-24). October 2014 (2,678,400 rows) loads
+since gridflow PR #134, which keys the family on `dtm_occurrence` as well as `dtm`. `dtm` is
+kept as the **raw vendor string** (dtype `string`), not as a timestamp. `dtm_occurrence`
+(int64) is each row's 1-based occurrence, in body order, of its `resource_id` and `dtm`: 1 on
+every row except the second block of October's repeated hour, where it is 2 (3,600 rows).
+Silver columns (12): `dtm`, `f`, `resource_id`, `dtm_occurrence`, then `timestamp_utc`, `published_at`, `bronze_capture_id`, `capture_written_at`, `event_time`, `available_at`, `source_run_id` and `dataset_version`. `f` is `float64`, nullable, with no bounds. The data values of this
 family are **not published on this page**: it gives schema, row counts, clocks and label
 shapes only. The 2014 resource descriptions specify a date-and-time layout with no zone, and
 the captured bytes are day-first, so even the layout statement does not match the data.
@@ -501,12 +506,16 @@ wall clock, but that is an inference from the label shapes and not a vendor stat
   (March ends `01/04/2014 00:59:59`, and April starts `01/04/2014 01:00:00`).
 - The labels `30/03/2014 01:00:00` to `01:59:59` are **absent** (3,600 labels).
 - October starts `01/10/2014 01:00:00`, and the labels `26/10/2014 01:00:00` to `01:59:59`
-  **occur twice** (3,600 excess rows; 7,200 rows take part in duplicate groups).
+  **occur twice** (3,600 excess rows; 7,200 rows take part in duplicate groups). The two
+  blocks are consecutive in the file and are not copies: 3,573 of the 3,600 labels carry a
+  different reading in each block (checked 2026-10-24).
 
 gridflow does not infer a zone from these shapes (`local_instant` is forbidden until
-evidenced) and never resolves the repeated hour by file order. The family's selection and
-key are the same as the other four (see Identity, selection and revisions), and the held
-relation never joins the typed ones.
+evidenced). It keeps both blocks of the repeated hour and numbers them by body order
+(`dtm_occurrence` 1, then 2), but it never decides which block is the summer-time hour: the
+occurrence is file order, not a clock. The family's selection is the same as the other four,
+its key adds `dtm_occurrence` (see Identity, selection and revisions), and the held relation
+never joins the typed ones.
 
 ### `system_frequency_gmt_csv`
 
@@ -738,7 +747,8 @@ one inner CSV named `f 2019 M.csv` (see the `↳` rows above), read through `zip
 
 ## Identity, selection and revisions
 
-- **Entity key**: `(resource_id, dtm)` in every family. `resource_id` is **not a vendor
+- **Entity key**: `(resource_id, dtm)` in the four typed families and
+  `(resource_id, dtm, dtm_occurrence)` in R1 (record version 2, gridflow PR #134). `resource_id` is **not a vendor
   column**: the engine stamps it from the capture's sidecar (ADR-039 P-2). For R2 and R3 `dtm`
   is the typed UTC instant, and for R1 it is the raw label string. A repeated key inside one
   member raises `DuplicateEntityKeyError` and fails the capture loudly; nothing is merged
@@ -801,6 +811,9 @@ captures (RULINGS 866, 867; gridflow `@.planning/v0.22-RESULTS.md` section H).
 | `system_frequency_gmt_csv` | 139,449,600 | 1,330.8 MB | 109 s | 1,563.1 MiB |
 
 - Total 397,008,000 rows, equal to the plan; silver 3.55 GB.
+- Re-transform under R1 record version 2 (gridflow PR #134): October 2014 now loads, so
+  `system_frequency_dmy_csv` holds 31,536,000 rows in 12 members and the five families
+  399,686,400 (checked 2026-10-24). The October 2014 adjudication (ruling 861) is retired.
 - Coverage CLEAN (1,385 captured, 0 missing). `reconcile --all --cutoff 2026-10-13 --drain`
   exited 0 over 261 families with 0 gaps and `overlap` 0; adjudicated 62 (one new, October
   2014), stale 0.
@@ -865,7 +878,7 @@ gridflow outputs derived from this package carry the attribution line above.
 
 ## Holds
 
-- `system_frequency_dmy_csv`: held: TODO: dtm: the zone, period start/end and clock of these datetimes are undocumented (local_instant is forbidden until evidenced). The 2014 day-first labels carry no offset and NESO's GMT statement starts January 2020; the labels 26/10/2014 01:00:00-01:59:59 repeat, so October 2014 fails its duplicate key (adjudicated, ADR-040), and the December 2014 to January 2015 edge cannot be overlap-checked until the zone is documented. (unit H-R1)
+- `system_frequency_dmy_csv`: held: TODO: dtm: the zone, period start/end and clock of these datetimes are undocumented (local_instant is forbidden until evidenced). The 2014 day-first labels carry no offset and NESO's GMT statement starts January 2020; the labels 26/10/2014 01:00:00-01:59:59 repeat with different readings and are told apart only by dtm_occurrence (body order), and the December 2014 to January 2015 edge cannot be overlap-checked until the zone is documented. (unit H-R1)
 
 The silver output of `system_frequency_dmy_csv` exists on disk, but it is **held**: it is not
 eligible for publication or for point-in-time model use until the question above is
@@ -879,11 +892,11 @@ clocks are described above, and this page does not publish its data values.
 - **What settles it.** A NESO statement of the 2014 zone and of the rule for the repeated
   October hour. If NESO is silent, the family stays held and is labelled "undocumented by
   NESO"; an assumed zone is never substituted.
-- **October 2014 is adjudicated `failed`** (ADR-040, ruling 861), independently of the hold.
-  Its labels `26/10/2014 01:00:00` to `01:59:59` each occur twice, so the member fails
-  `(resource_id, dtm)` with `DuplicateEntityKeyError` and is not served. The adjudication's
-  question to NESO: which of the two October 2014 rows of each repeated 01:00-01:59 label is
-  the first (BST) hour? No file-order or `ambiguous=` resolution is applied.
+- **October 2014 is served** (gridflow PR #134; the ruling 861 `failed` adjudication is
+  retired). Its labels `26/10/2014 01:00:00` to `01:59:59` each occur twice with different
+  readings, and the key `(resource_id, dtm, dtm_occurrence)` keeps both blocks. The open
+  question to NESO is unchanged: which of the two blocks is the first (BST) hour?
+  `dtm_occurrence` is body order only; no `ambiguous=` or zone resolution is applied.
 - **Consequence for the series.** The served typed series begins 2015-01-01T00:00:00Z. The
   December 2014 to January 2015 edge cannot be overlap-checked, so the R1 to R2 boundary
   stays unproven.
