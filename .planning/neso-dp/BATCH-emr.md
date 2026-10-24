@@ -57,4 +57,6 @@ captures repeat rows (or as a guard). The column guide accepts only the lead tab
 
 | # | Writer | Checker | State |
 |---|---|---|---|
-| 1 | ab7eef35f60c4efae | a65e1ecf6ab01097f | REVISE (1 major: summed awarded MW worded as a NESO total; 8 nits; privacy clean), round 2 writing; 20ca logged (CMU change log carries contact data); bar-label rounding added to template follow-ups |
+| 1 | ab7eef35f60c4efae | a65e1ecf6ab01097f | APPROVED (round 2, plot-alt nit fixed; seat-verified, privacy grep clean); committed; 20ca logged (CMU change log carries contact data); bar-label rounding added to template follow-ups |
+
+Group closed 2026-10-24: gates green (pytest 206, build check 179 pages, htmlhint 0, lychee 0, detector clean); site PR EBentham/gridflow-front-end#73, vault PR EBentham/quant-vault#76, both waiting for Bobbo.

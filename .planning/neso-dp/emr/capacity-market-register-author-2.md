@@ -55,3 +55,9 @@ by `scripts/run_notebooks.py`, because the plot's y label changed; it gave 5 cel
 ## Unchanged
 
 The chart, frame, sample and series artefacts did not change: the chart spec and record select were untouched.
+
+## Post-approval fix
+
+- `notebook.plot_alt`: "mostly T-4" is dropped, because it was wrong for 2017/2018 (T-1) and 2022/2023 (T-3). The
+  range now reads "Each delivery year from 2017/2018 to 2029/2030 sums to between 54,746 and 62,325 MW". Build is
+  clean, the detector returns `[]`, the mirror `cmp`s identical and the note is still CRLF.
