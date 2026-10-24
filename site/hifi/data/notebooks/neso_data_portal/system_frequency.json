@@ -1,0 +1,150 @@
+{
+ "dataset": "neso_data_portal/system_frequency",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "1de9655e9a32c3990690d8d1c690b5a8ffeed5fefac1c8a8091ae8371473c7f6",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "import pandas as pd\ndf = data.neso_data_portal.query(\"system_frequency_gmt_csv\", \"2023-12-22\", \"2023-12-22\")\ndf[\"dtm\"] = df.dtm.dt.tz_convert(\"UTC\")\ndf = df.sort_values(\"dtm\", ignore_index=True)\nlow = df.f.idxmin()\ndf.loc[low - 3 : low + 3, [\"dtm\", \"f\", \"resource_id\"]]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "dtm",
+      "f",
+      "resource_id"
+     ],
+     "index": [
+      "47408",
+      "47409",
+      "47410",
+      "47411",
+      "47412",
+      "47413",
+      "47414"
+     ],
+     "rows": [
+      [
+       "2023-12-22 13:10:08+00:00",
+       "49.287",
+       "146e3d50-6e53-48d9-a831-d7c25304d102"
+      ],
+      [
+       "2023-12-22 13:10:09+00:00",
+       "49.304",
+       "146e3d50-6e53-48d9-a831-d7c25304d102"
+      ],
+      [
+       "2023-12-22 13:10:10+00:00",
+       "49.278",
+       "146e3d50-6e53-48d9-a831-d7c25304d102"
+      ],
+      [
+       "2023-12-22 13:10:11+00:00",
+       "49.275",
+       "146e3d50-6e53-48d9-a831-d7c25304d102"
+      ],
+      [
+       "2023-12-22 13:10:12+00:00",
+       "49.291",
+       "146e3d50-6e53-48d9-a831-d7c25304d102"
+      ],
+      [
+       "2023-12-22 13:10:13+00:00",
+       "49.326",
+       "146e3d50-6e53-48d9-a831-d7c25304d102"
+      ],
+      [
+       "2023-12-22 13:10:14+00:00",
+       "49.301",
+       "146e3d50-6e53-48d9-a831-d7c25304d102"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "below = df[df.f < 49.5]\npd.Series({\"rows\": len(df), \"seconds below 49.5 Hz\": len(below),\n           \"first\": below.dtm.min(), \"last\": below.dtm.max()})",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "rows                                         86400\nseconds below 49.5 Hz                           60\nfirst                    2023-12-22 13:10:03+00:00\nlast                     2023-12-22 13:11:02+00:00\ndtype: object"
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "days = {\"system_frequency_offset_csv\": \"2018-03-25\", \"system_frequency_offset_zip\": \"2019-10-27\",\n        \"system_frequency_gmt_zip\": \"2021-03-28\", \"system_frequency_gmt_csv\": \"2025-10-26\"}\npd.Series({f\"{t} {d}\": len(data.neso_data_portal.query(t, d, d)) for t, d in days.items()},\n          name=\"rows on a clock-change day\")",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "system_frequency_offset_csv 2018-03-25    86400\nsystem_frequency_offset_zip 2019-10-27    86400\nsystem_frequency_gmt_zip 2021-03-28       86400\nsystem_frequency_gmt_csv 2025-10-26       86400\nName: rows on a clock-change day, dtype: int64"
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "source": "t0 = pd.Timestamp(\"2023-12-22 13:00\", tz=\"UTC\")\nwin = df[(df.dtm >= t0) & (df.dtm < t0 + pd.Timedelta(minutes=30))]\nax = win.plot(x=\"dtm\", y=\"f\", figsize=(8, 3), legend=False, color=\"#155A6E\", lw=0.8,\n              xlabel=\"22 December 2023, UTC\", ylabel=\"Hz\")\nax.axhline(49.5, color=\"#C77E3C\", lw=0.8, ls=\"--\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "system_frequency-6.png",
+     "width": 703,
+     "height": 298
+    }
+   ]
+  }
+ ]
+}

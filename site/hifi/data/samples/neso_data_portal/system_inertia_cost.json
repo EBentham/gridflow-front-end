@@ -1,0 +1,170 @@
+{
+ "dataset": "neso_data_portal/system_inertia_cost",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "771ab2ae97c0a4a943f9dc777f709196ff7355ffcb6040c320047d21839f7f43",
+ "silver": "neso_data_portal/system_inertia_cost",
+ "columns": [
+  {
+   "name": "settlement_date",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "cost_gbp_per_gvas",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "resource_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2025-03-27",
+   "4824",
+   "2025-03-27 00:00:00 UTC",
+   "91947c0c-bbbf-4d55-a29d-dc610d91d075",
+   "2025-09-04 13:30:48.701007 UTC",
+   "bronze/neso_data_portal/system_inertia_cost/2026/10/08/raw_20261008T113811Z_91947c0c-bbbf-4d55-a29d-dc610d91d075_fb49c31e.csv",
+   "2026-10-08 11:38:11.406081 UTC",
+   "2025-03-27 00:00:00 UTC",
+   "2025-09-04 13:30:48.701007 UTC",
+   "6b8011ac-bc98-4557-9abc-784b8f75e941",
+   "1+e1"
+  ],
+  [
+   "2025-03-28",
+   "3601",
+   "2025-03-28 00:00:00 UTC",
+   "91947c0c-bbbf-4d55-a29d-dc610d91d075",
+   "2025-09-04 13:30:48.701007 UTC",
+   "bronze/neso_data_portal/system_inertia_cost/2026/10/08/raw_20261008T113811Z_91947c0c-bbbf-4d55-a29d-dc610d91d075_fb49c31e.csv",
+   "2026-10-08 11:38:11.406081 UTC",
+   "2025-03-28 00:00:00 UTC",
+   "2025-09-04 13:30:48.701007 UTC",
+   "6b8011ac-bc98-4557-9abc-784b8f75e941",
+   "1+e1"
+  ],
+  [
+   "2025-03-29",
+   "4256",
+   "2025-03-29 00:00:00 UTC",
+   "91947c0c-bbbf-4d55-a29d-dc610d91d075",
+   "2025-09-04 13:30:48.701007 UTC",
+   "bronze/neso_data_portal/system_inertia_cost/2026/10/08/raw_20261008T113811Z_91947c0c-bbbf-4d55-a29d-dc610d91d075_fb49c31e.csv",
+   "2026-10-08 11:38:11.406081 UTC",
+   "2025-03-29 00:00:00 UTC",
+   "2025-09-04 13:30:48.701007 UTC",
+   "6b8011ac-bc98-4557-9abc-784b8f75e941",
+   "1+e1"
+  ],
+  [
+   "2025-03-30",
+   "3361",
+   "2025-03-30 00:00:00 UTC",
+   "91947c0c-bbbf-4d55-a29d-dc610d91d075",
+   "2025-09-04 13:30:48.701007 UTC",
+   "bronze/neso_data_portal/system_inertia_cost/2026/10/08/raw_20261008T113811Z_91947c0c-bbbf-4d55-a29d-dc610d91d075_fb49c31e.csv",
+   "2026-10-08 11:38:11.406081 UTC",
+   "2025-03-30 00:00:00 UTC",
+   "2025-09-04 13:30:48.701007 UTC",
+   "6b8011ac-bc98-4557-9abc-784b8f75e941",
+   "1+e1"
+  ],
+  [
+   "2025-03-31",
+   "0",
+   "2025-03-30 23:00:00 UTC",
+   "91947c0c-bbbf-4d55-a29d-dc610d91d075",
+   "2025-09-04 13:30:48.701007 UTC",
+   "bronze/neso_data_portal/system_inertia_cost/2026/10/08/raw_20261008T113811Z_91947c0c-bbbf-4d55-a29d-dc610d91d075_fb49c31e.csv",
+   "2026-10-08 11:38:11.406081 UTC",
+   "2025-03-30 23:00:00 UTC",
+   "2025-09-04 13:30:48.701007 UTC",
+   "6b8011ac-bc98-4557-9abc-784b8f75e941",
+   "1+e1"
+  ],
+  [
+   "2025-04-01",
+   "1791",
+   "2025-03-31 23:00:00 UTC",
+   "a6a52241-1774-48d8-935f-2bef0d843e18",
+   "2026-04-10 09:06:09.725049 UTC",
+   "bronze/neso_data_portal/system_inertia_cost/2026/10/08/raw_20261008T113813Z_a6a52241-1774-48d8-935f-2bef0d843e18_fc8d03c7.csv",
+   "2026-10-08 11:38:13.868127 UTC",
+   "2025-03-31 23:00:00 UTC",
+   "2026-04-10 09:06:09.725049 UTC",
+   "6b8011ac-bc98-4557-9abc-784b8f75e941",
+   "1+e1"
+  ],
+  [
+   "2025-04-02",
+   "1640",
+   "2025-04-01 23:00:00 UTC",
+   "a6a52241-1774-48d8-935f-2bef0d843e18",
+   "2026-04-10 09:06:09.725049 UTC",
+   "bronze/neso_data_portal/system_inertia_cost/2026/10/08/raw_20261008T113813Z_a6a52241-1774-48d8-935f-2bef0d843e18_fc8d03c7.csv",
+   "2026-10-08 11:38:13.868127 UTC",
+   "2025-04-01 23:00:00 UTC",
+   "2026-04-10 09:06:09.725049 UTC",
+   "6b8011ac-bc98-4557-9abc-784b8f75e941",
+   "1+e1"
+  ],
+  [
+   "2025-04-03",
+   "2365",
+   "2025-04-02 23:00:00 UTC",
+   "a6a52241-1774-48d8-935f-2bef0d843e18",
+   "2026-04-10 09:06:09.725049 UTC",
+   "bronze/neso_data_portal/system_inertia_cost/2026/10/08/raw_20261008T113813Z_a6a52241-1774-48d8-935f-2bef0d843e18_fc8d03c7.csv",
+   "2026-10-08 11:38:13.868127 UTC",
+   "2025-04-02 23:00:00 UTC",
+   "2026-04-10 09:06:09.725049 UTC",
+   "6b8011ac-bc98-4557-9abc-784b8f75e941",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

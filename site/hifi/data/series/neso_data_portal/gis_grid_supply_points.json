@@ -1,0 +1,19 @@
+{
+  "dataset": "neso_data_portal/gis_grid_supply_points",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "6c9b830c7200ba5f82b6b9e116ce6cbbda97272e9a6e0b51f7135dfcf9896ab6",
+  "type": "bar",
+  "unit": "grid supply points",
+  "caption": "",
+  "value_column": null,
+  "aggregation": "count",
+  "window": null,
+  "provenance": {"duplicates_dropped": 22, "files": 1, "rows_matched": 360, "rows_read": 380, "rows_used": 338, "silver": "neso_data_portal/gis_grid_supply_points"},
+  "spec": {"aggregation": "count", "dedup": {"on": ["gsp_id"], "order_by": "ggd_id"}, "filter": [{"column": "gsp_id", "op": "not_null"}], "group": "pes_name", "group_map": {"_A": "Eastern", "_B": "East Midlands", "_C": "London", "_D": "Merseyside, N Wales", "_E": "Midlands", "_F": "Northern", "_G": "North Western", "_H": "Southern", "_J": "South Eastern", "_K": "South Wales", "_L": "South Western", "_M": "Yorkshire", "_N": "South Scotland", "_P": "North Scotland"}, "silver": "neso_data_portal/gis_grid_supply_points", "sort": "value_desc", "type": "bar", "unit": "grid supply points"},
+  "x_kind": "category",
+  "x": ["South Scotland", "North Scotland", "Southern", "Yorkshire", "Eastern", "Northern", "North Western", "London", "Midlands", "East Midlands", "Merseyside, N Wales", "South Eastern", "South Wales", "South Western"],
+  "series": [
+    {"key": "count", "values": [80, 63, 21, 21, 20, 20, 19, 18, 16, 14, 13, 12, 11, 10]}
+  ]
+}
