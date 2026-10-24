@@ -4,11 +4,10 @@ package: "school-holiday-percentages"
 dataset_key: "school_holiday_percentages"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-09
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: "All rows stay out: NESO never states whether `Total` rows are out of 1 or 100."
   title: School holiday percentages
   summary: >-
     NESO's daily calendar of public school holidays in GB, by local authority, with a
@@ -27,6 +26,32 @@ page:
   how_used:
     - Which parts of GB are on school holiday on a given date
     - A calendar input to demand models, as NESO uses it
+  chart:
+    type: line
+    silver: neso_data_portal/school_holiday_percentages
+    time: date
+    value: school_holiday
+    filter:
+      - {column: local_authority, op: eq, value: Total}
+    dedup: {"on": [resource_id, local_authority, date], order_by: capture_written_at}
+    aggregation: last
+    window: {start: "2025-06-25", end: "2026-06-07"}
+    unit: "School_Holiday, scale not stated"
+  chart_view:
+    title: "NESO's Total row for each date, school year 2025/26"
+    caption: >-
+      Silver `neso_data_portal/school_holiday_percentages`, the `Total` row of each date in NESO's
+      2025/26 file, 25 June 2025 to 7 June 2026, drawn as written. NESO calls it a percentage and
+      states no scale.
+    alt: >-
+      Line chart of NESO's `Total` row per date, 25 June 2025 to 7 June 2026. It stays below 0.2
+      until 21 July 2025, then reaches 1.0 in the summer (from 30 July), at Christmas and at Easter.
+      The October, February and May half terms peak at 0.939, 0.954 and 0.938. Between holidays
+      it is mostly at or near 0.
+    x_label: NESO's date; no day boundary or zone stated
+    y_min: -0.05
+    key:
+      - {series: school_holiday, label: "Total row", paint: petrol, note: "NESO's population-weighted figure for GB"}
   raw_feed:
     note: >-
       From NESO's CKAN portal: one `package_show`, then each of six yearly files, downloaded whole
@@ -39,6 +64,60 @@ page:
     commands:
       - {run: gridflow ingest neso_data_portal school_holiday_percentages --last 24h, comment: "each changed yearly file to bronze"}
       - {run: gridflow transform neso_data_portal school_holiday_percentages --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: date, op: eq, value: "2025-07-02"}
+        - {column: local_authority, op: in, value: [Birmingham, Cardiff, Edinburgh, Essex, Glasgow, Kent, North Lanarkshire, Total]}
+      dedup: {"on": [resource_id, local_authority, date], order_by: capture_written_at}
+      order_by: [local_authority]
+      columns: [local_authority, date, school_holiday, multiplier, resource_id, published_at, timestamp_utc]
+    key: [resource_id, local_authority, date]
+    caption: "2 July 2025: three Scottish authorities on holiday, four English and Welsh not, and `Total`."
+    fields:
+      resource_id: "NESO's file the row came from, one per school year"
+      local_authority: "NESO's authority name, or `Total` for its GB row; names, not codes"
+      date: "The date, as NESO writes it; no day boundary or zone stated"
+      school_holiday: "1 or 0 per authority, NESO says; on `Total`, what NESO calls a percentage"
+      multiplier: "NESO's population weight, used to turn the flags into a GB total"
+      published_at: "NESO's last-modified time for the file, read as UTC; one per file"
+      timestamp_utc: "When gridflow captured the file, UTC; not the date the row describes"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  caveat: "NESO calls the `Total` rows a percentage but states no scale; they run 0 to 1."
+  notebook:
+    lead: >-
+      `query()` filters on `timestamp_utc`, the capture time here, so these cells use `data.sql()`
+      on the `_latest` view: the `Total` rows, the local authorities' values, then `Total` across
+      all six files.
+    cells:
+      - |
+        total = data.sql("""
+            SELECT date, school_holiday
+            FROM silver_neso_data_portal_school_holiday_percentages_latest
+            WHERE local_authority = 'Total'
+            ORDER BY date
+        """)
+        total.school_holiday.agg(["count", "min", "max"]).to_frame().T
+      - |
+        data.sql("""
+            SELECT school_holiday, count(*) AS rows, count(DISTINCT local_authority) AS authorities
+            FROM silver_neso_data_portal_school_holiday_percentages_latest
+            WHERE local_authority <> 'Total'
+            GROUP BY school_holiday
+            ORDER BY school_holiday
+        """)
+      - |
+        import pandas as pd
+        daily = total.assign(date=pd.to_datetime(total.date)).set_index("date").school_holiday.asfreq("D")
+        ax = daily.plot(color="#155A6E", figsize=(9, 3.5), xlabel="NESO's date",
+                        ylabel="Total row, as written");
+    needs: NESO's six school holiday files
+    plot_alt: >-
+      Line of NESO's `Total` row per date across all six files, June 2021 to June 2027.
+      Each school year repeats one pattern: 1.0 (Easter 2023 0.998) in the summer, at
+      Christmas and at Easter, half-term peaks of 0.89 to 0.99, and mostly 0 or near it between holidays.
+      The line breaks for 11 to 17 days each June between files.
   related:
     - {dataset: neso_data_portal/demand-profile-dates, note: "Past days NESO matches to forecast days, partly by calendar activities"}
     - {dataset: neso_data_portal/historic-demand-data, note: "GB demand by half hour, to set against holiday dates"}
@@ -65,7 +144,8 @@ GB (per local authority, population-weighted). The newest file (2026/27) has CKA
 lead time; no vendor source states one.
 
 gridflow has a silver output for all six years, but it is **held**: NESO has not stated the
-numeric scale of the `Total` rows (see Holds).
+numeric scale of the `Total` rows (see Holds). The site page shows the rows with one line
+naming that question (ruling 66, 2026-10-24).
 
 - Publisher group: Demand
 - Registry group: demand · archetype: SER
@@ -284,14 +364,15 @@ gridflow outputs derived from this package carry the attribution line above.
 
 - `school_holiday_percentages`: held: TODO: the numeric scale of the Total rows: the vendor calls the aggregate a percentage, but the values measure as a fraction equal to the sum of (multiplier x local indicator) within 0.0005; NESO has not stated the encoding (unit E-SEM)
 
-The silver output exists on disk but is **held**. It may not be published or used for
-point-in-time models until unit E-SEM answers the question above. The record carries the hold,
+The silver output exists on disk but is **held**. gridflow's models may not use it for
+point-in-time work until unit E-SEM answers the question above. The record carries the hold,
 and RULINGS 538 set it when the batch was ruled. The local-authority rows are clear: the
 dictionary documents them as 1/0 holiday flags. The `Total` rows are not. NESO calls them a
 percentage, but their scale (0–1 or 0–100) is not stated. The measured values match a
 population-weighted fraction, but a measurement does not settle the encoding. So the values
-are kept exactly as delivered, and none is rescaled. This page therefore gives schema, row
-counts, clocks and missingness only, with no data values or ranges.
+are kept exactly as delivered, and none is rescaled. This note gives schema, row counts, clocks
+and missingness only; under ruling 66 (2026-10-24) the site page shows the rows, a chart of the
+`Total` row as written and a notebook, with one line naming the scale question.
 
 What settles it: NESO states the numeric encoding of the `Total` aggregate, and ideally its
 rounding. If the vendor confirms the values as delivered, clearing the hold is a record edit

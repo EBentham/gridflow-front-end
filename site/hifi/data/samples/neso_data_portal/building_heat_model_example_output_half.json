@@ -1,0 +1,352 @@
+{
+ "dataset": "neso_data_portal/building_heat_model_example_output_half",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "a863f28625b4c3a271408349af01b1a262a91d94241e8e6fe6e30d4efd084b3c",
+ "silver": "neso_data_portal/building_heat_model_example_output_half",
+ "columns": [
+  {
+   "name": "run_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "start_of_hh_period",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "hh_period",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "total_heater_output",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "total_gas",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "total_electricity",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "avg_cop_space_heat",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "avg_cop_dhw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "resource_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "building_archetype",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "month_vendor",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "heater_output_space_heat",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "gas_space_heat",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "electricity_space_heat",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "heater_output_dhw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "gas_dhw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "electricity_dhw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "run_1",
+   "06:00",
+   "13",
+   "8.154941",
+   "9.0610452",
+   "0.0",
+   null,
+   null,
+   "27522340-008d-4c82-97c1-17eeb7ed1b6a",
+   "2026-07-30 15:36:52.510328 UTC",
+   "2026-10-08 09:14:01.292897 UTC",
+   "semi detached – medium",
+   "jan",
+   "7.857124",
+   "8.730137",
+   null,
+   "0.297817",
+   "0.330908",
+   "0.0",
+   "bronze/neso_data_portal/building_heat_model_example_output_half/2026/10/08/raw_20261008T091401Z_27522340-008d-4c82-97c1-17eeb7ed1b6a_8cc7d9aa.csv",
+   "2026-10-08 09:14:01.292897 UTC",
+   "2026-10-08 09:14:01.292897 UTC",
+   "2026-07-30 15:36:52.510328 UTC",
+   "873cdb98-c21a-44a3-a139-0d4bfd7159bd",
+   "1+e1"
+  ],
+  [
+   "run_1",
+   "08:30",
+   "18",
+   "3.795231",
+   "4.216924",
+   "0.0",
+   null,
+   null,
+   "27522340-008d-4c82-97c1-17eeb7ed1b6a",
+   "2026-07-30 15:36:52.510328 UTC",
+   "2026-10-08 09:14:01.292897 UTC",
+   "semi detached – medium",
+   "jan",
+   "3.475211",
+   "3.861345",
+   null,
+   "0.32002",
+   "0.355578",
+   "0.0",
+   "bronze/neso_data_portal/building_heat_model_example_output_half/2026/10/08/raw_20261008T091401Z_27522340-008d-4c82-97c1-17eeb7ed1b6a_8cc7d9aa.csv",
+   "2026-10-08 09:14:01.292897 UTC",
+   "2026-10-08 09:14:01.292897 UTC",
+   "2026-07-30 15:36:52.510328 UTC",
+   "873cdb98-c21a-44a3-a139-0d4bfd7159bd",
+   "1+e1"
+  ],
+  [
+   "run_1",
+   "09:00",
+   "19",
+   "0.271999",
+   "0.302221",
+   "0.0",
+   null,
+   null,
+   "27522340-008d-4c82-97c1-17eeb7ed1b6a",
+   "2026-07-30 15:36:52.510328 UTC",
+   "2026-10-08 09:14:01.292897 UTC",
+   "semi detached – medium",
+   "jan",
+   "0.0",
+   "0.0",
+   null,
+   "0.271999",
+   "0.302221",
+   "0.0",
+   "bronze/neso_data_portal/building_heat_model_example_output_half/2026/10/08/raw_20261008T091401Z_27522340-008d-4c82-97c1-17eeb7ed1b6a_8cc7d9aa.csv",
+   "2026-10-08 09:14:01.292897 UTC",
+   "2026-10-08 09:14:01.292897 UTC",
+   "2026-07-30 15:36:52.510328 UTC",
+   "873cdb98-c21a-44a3-a139-0d4bfd7159bd",
+   "1+e1"
+  ],
+  [
+   "run_1",
+   "14:00",
+   "29",
+   "0.105914",
+   "0.117683",
+   "0.0",
+   null,
+   null,
+   "27522340-008d-4c82-97c1-17eeb7ed1b6a",
+   "2026-07-30 15:36:52.510328 UTC",
+   "2026-10-08 09:14:01.292897 UTC",
+   "semi detached – medium",
+   "jan",
+   "0.0",
+   "0.0",
+   null,
+   "0.105914",
+   "0.117683",
+   "0.0",
+   "bronze/neso_data_portal/building_heat_model_example_output_half/2026/10/08/raw_20261008T091401Z_27522340-008d-4c82-97c1-17eeb7ed1b6a_8cc7d9aa.csv",
+   "2026-10-08 09:14:01.292897 UTC",
+   "2026-10-08 09:14:01.292897 UTC",
+   "2026-07-30 15:36:52.510328 UTC",
+   "873cdb98-c21a-44a3-a139-0d4bfd7159bd",
+   "1+e1"
+  ],
+  [
+   "run_2",
+   "06:00",
+   "13",
+   "2.268423",
+   null,
+   "0.675984",
+   "3.355737",
+   null,
+   "27522340-008d-4c82-97c1-17eeb7ed1b6a",
+   "2026-07-30 15:36:52.510328 UTC",
+   "2026-10-08 09:14:01.292897 UTC",
+   "semi detached – medium",
+   "jan",
+   "2.268423",
+   null,
+   "0.675984",
+   "0.0",
+   null,
+   "0.0",
+   "bronze/neso_data_portal/building_heat_model_example_output_half/2026/10/08/raw_20261008T091401Z_27522340-008d-4c82-97c1-17eeb7ed1b6a_8cc7d9aa.csv",
+   "2026-10-08 09:14:01.292897 UTC",
+   "2026-10-08 09:14:01.292897 UTC",
+   "2026-07-30 15:36:52.510328 UTC",
+   "873cdb98-c21a-44a3-a139-0d4bfd7159bd",
+   "1+e1"
+  ],
+  [
+   "run_2",
+   "08:30",
+   "18",
+   "1.583186",
+   null,
+   "0.435722",
+   "3.633478",
+   null,
+   "27522340-008d-4c82-97c1-17eeb7ed1b6a",
+   "2026-07-30 15:36:52.510328 UTC",
+   "2026-10-08 09:14:01.292897 UTC",
+   "semi detached – medium",
+   "jan",
+   "1.583186",
+   null,
+   "0.435722",
+   "0.0",
+   null,
+   "0.0",
+   "bronze/neso_data_portal/building_heat_model_example_output_half/2026/10/08/raw_20261008T091401Z_27522340-008d-4c82-97c1-17eeb7ed1b6a_8cc7d9aa.csv",
+   "2026-10-08 09:14:01.292897 UTC",
+   "2026-10-08 09:14:01.292897 UTC",
+   "2026-07-30 15:36:52.510328 UTC",
+   "873cdb98-c21a-44a3-a139-0d4bfd7159bd",
+   "1+e1"
+  ],
+  [
+   "run_2",
+   "09:00",
+   "19",
+   "0.0",
+   null,
+   "0.0",
+   null,
+   null,
+   "27522340-008d-4c82-97c1-17eeb7ed1b6a",
+   "2026-07-30 15:36:52.510328 UTC",
+   "2026-10-08 09:14:01.292897 UTC",
+   "semi detached – medium",
+   "jan",
+   "0.0",
+   null,
+   "0.0",
+   "0.0",
+   null,
+   "0.0",
+   "bronze/neso_data_portal/building_heat_model_example_output_half/2026/10/08/raw_20261008T091401Z_27522340-008d-4c82-97c1-17eeb7ed1b6a_8cc7d9aa.csv",
+   "2026-10-08 09:14:01.292897 UTC",
+   "2026-10-08 09:14:01.292897 UTC",
+   "2026-07-30 15:36:52.510328 UTC",
+   "873cdb98-c21a-44a3-a139-0d4bfd7159bd",
+   "1+e1"
+  ],
+  [
+   "run_2",
+   "14:00",
+   "29",
+   "2.430375",
+   null,
+   "0.694164",
+   null,
+   "3.501153",
+   "27522340-008d-4c82-97c1-17eeb7ed1b6a",
+   "2026-07-30 15:36:52.510328 UTC",
+   "2026-10-08 09:14:01.292897 UTC",
+   "semi detached – medium",
+   "jan",
+   "0.0",
+   null,
+   "0.0",
+   "2.430375",
+   null,
+   "0.694164",
+   "bronze/neso_data_portal/building_heat_model_example_output_half/2026/10/08/raw_20261008T091401Z_27522340-008d-4c82-97c1-17eeb7ed1b6a_8cc7d9aa.csv",
+   "2026-10-08 09:14:01.292897 UTC",
+   "2026-10-08 09:14:01.292897 UTC",
+   "2026-07-30 15:36:52.510328 UTC",
+   "873cdb98-c21a-44a3-a139-0d4bfd7159bd",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

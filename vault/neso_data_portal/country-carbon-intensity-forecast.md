@@ -8,7 +8,6 @@ updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: "No row says when NESO first published it, and NESO changes values for past half hours."
   title: Carbon intensity forecast by country
   summary: >-
     NESO's forecast carbon intensity of electricity per half hour for Scotland, England and Wales,
@@ -27,6 +26,38 @@ page:
   how_used:
     - "Scotland, England and Wales intensity side by side, per half hour"
     - "Timing flexible demand in one country to its lower-intensity half hours"
+  chart:
+    type: line
+    silver: neso_data_portal/country_ci_forecast
+    time: datetime
+    filter:
+      - {column: published_at, op: eq, value: "2026-10-08T09:10:31.323607"}
+      - {column: datetime, op: gt, value: "2026-10-08T09:10:31"}
+    values:
+      - {column: wales, series: wales}
+      - {column: england, series: england}
+      - {column: scotland, series: scotland}
+    aggregation: last
+    window: {start: "2026-10-08", end: "2026-10-10"}
+    unit: gCO2/kWh
+  chart_view:
+    title: Country forecasts in NESO's 8 October 2026 file
+    caption: >-
+      Silver `country_ci_forecast`, gCO2/kWh: NESO's 8 October file for half hours after it last
+      changed, to 11:30 on 10 October; Scotland reads 0. Not drawn: the 16 October file, where
+      Wales reads 0 on 17 of 22 half hours from 18:30.
+    alt: >-
+      Line chart from neso_data_portal/country_ci_forecast of NESO's forecasts in gCO2/kWh for
+      Wales, England and Scotland in its file of 8 October 2026, for the 101 half hours from 09:30
+      that day to 11:30 on 10 October. Wales peaks at 238 at 16:30 on 8 October and falls to 23 at
+      13:00 on 9 October. England runs from 164 on the evening of 8 October to 35 at 09:00 on 10
+      October. Scotland is 0 throughout, just above the axis floor.
+    x_label: "Half-hour start, UTC"
+    y_min: -10
+    key:
+      - {series: wales, label: Wales, codes: Wales, paint: clay}
+      - {series: england, label: England, codes: England, paint: petrol}
+      - {series: scotland, label: Scotland, codes: Scotland, paint: horizon}
   raw_feed:
     note: >-
       From NESO's CKAN portal: one `package_show`, then the CSV, downloaded whole unless its
@@ -37,6 +68,55 @@ page:
     commands:
       - {run: gridflow ingest neso_data_portal country_ci_forecast --last 24h, comment: "the CSV to bronze"}
       - {run: gridflow transform neso_data_portal country_ci_forecast --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: published_at, op: eq, value: "2026-10-16T19:10:24.514761"}
+        - {column: datetime, op: ge, value: "2026-10-16T18:00:00"}
+        - {column: datetime, op: le, value: "2026-10-16T21:30:00"}
+      order_by: [datetime]
+      columns: [datetime, scotland, england, wales, published_at]
+    key: [datetime]
+    caption: "NESO's 16 October 2026 file, 18:00 to 21:30 that day: Wales reads 0 six times."
+    fields:
+      datetime: "Half-hour start, UTC; gridflow matched it to NESO's API, the file does not say"
+      scotland: "NESO's forecast for Scotland, gCO2/kWh; NESO does not say what 0 means"
+      england: "NESO's forecast for England, gCO2/kWh"
+      wales: "NESO's forecast for Wales, gCO2/kWh; NESO does not say what 0 means"
+      published_at: "NESO's last-modified time for the file, read as UTC; one per file"
+      timestamp_utc: "Equal to `datetime`: the half-hour start, UTC"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote the capture to bronze, UTC
+  caveat: No row says when its forecast was made, and NESO rewrites values for past half hours.
+  notebook:
+    lead: >-
+      `query()` reads the `_latest` view, NESO's 16 October 2026 file, filtering half-hour starts,
+      both ends included. `data.sql()` then sets Wales in NESO's 8 and 16 October files side by side.
+    cells:
+      - |
+        df = data.neso_data_portal.query("country_ci_forecast", "2026-10-08", "2026-10-10")
+        df = df.sort_values("timestamp_utc").assign(datetime=lambda d: d.datetime.dt.tz_convert("UTC"))
+        df[["datetime", "scotland", "england", "wales"]].head()
+      - |
+        both = data.sql("""
+            SELECT datetime, published_at, wales
+            FROM silver_neso_data_portal_country_ci_forecast
+            WHERE datetime > TIMESTAMPTZ '2026-10-08 09:10:31+00'
+              AND datetime <= TIMESTAMPTZ '2026-10-10 11:30:00+00'
+            ORDER BY datetime, published_at""")
+        w = both.pivot(index="datetime", columns="published_at", values="wales")
+        w.columns = ["8 October file", "16 October file"]
+        w.index = w.index.tz_convert("UTC")
+        w.rename_axis(columns=None).reset_index().head()
+      - |
+        ax = w.plot(figsize=(8, 3.5), color=["#C77E3C", "#155A6E"], ylim=(0, 250),
+                    xlabel="Half-hour start, UTC", ylabel="Wales, gCO2/kWh")
+    needs: the 8 and 16 October 2026 files
+    plot_alt: >-
+      Line plot of Wales in gCO2/kWh for 09:30 on 8 October to 11:30 on 10 October 2026, as NESO's 8
+      October file forecast it and as its 16 October file holds it. The 8 October file peaks at 238
+      at 16:30 on 8 October; the 16 October file gives 169 at 16:00 and is lower on most of that
+      evening.
   related:
     - {dataset: neso_data_portal/national-carbon-intensity-forecast, note: "NESO's GB-wide forecast, with an estimated actual beside it"}
     - {dataset: neso_data_portal/regional-carbon-intensity-forecast, note: "NESO's forecast for 14 GB regions, in the same unit"}
@@ -59,9 +139,10 @@ national series (@./national-carbon-intensity-forecast.md) and the 14-region ser
 
 **Read this first.** The silver output is **held** (see Holds). The file has no
 forecast-issue column, so a value at a past half-hour cannot be tied to the forecast
-that produced it. It is not known whether values are revised after the period. The
+that produced it, and NESO does rewrite values after their half-hour (see Identity). The
 rows are parsed, timed and stored, but they are not handed off as a point-in-time
-forecast series.
+forecast series. Under ruling 66 (2026-10-24) the site page shows them, with one line
+naming the question.
 
 - Publisher group: Carbon intensity
 - Registry group: carbon-intensity1 · archetype: FC
@@ -156,6 +237,15 @@ unit.
 - **Zeros are preserved as values.** Numeric zeros occur in the Scotland and Wales
   columns. They are stored as `0.0` and are not converted to null. TODO: verify with
   NESO whether a zero is a real modelled intensity or a missing-data marker.
+- **Zeros** (silver, the 2026-10-16 capture, read 2026-10-24). Scotland's zeros run up to
+  124 a month before March 2026 (133 that month), then cover most half-hours: 668 of 1,440
+  in April 2026 and 1,280 of 1,440 in September 2026, and every target after the 2026-10-16
+  file's stamp. In the 2026-10-16 file, Wales reads 0 on 17 of the 22 half-hours from
+  2026-10-16T18:30 to 2026-10-17T05:00 (19:30, 01:30, 02:00, 03:30 and 04:00 are not zero),
+  and England reads 14 to 31 on those 17; NESO's national forecast for the same targets is
+  69 to 135, apart from 16 at 18:30. The 2026-10-08 file's forward targets have no Wales
+  zero. TODO: verify with NESO. The site's chart uses the 2026-10-08 file's forward targets
+  for this reason, and its caption says so; its frame shows six of the 2026-10-16 zeros.
 - The file is **not time-sorted**: it does not open on its earliest target. Sort by
   `timestamp_utc`, and never read file-order runs as chronological durations.
 - The research census (FACTS §2.3 g5) records only blanks and zeros for this family.
@@ -229,9 +319,11 @@ output must carry the attribution line above verbatim.
 - `country_ci_forecast`: held: TODO: no issue column; which forecast issue a past target's value reflects, and whether values are revised after the period, is undocumented (unit E-SEM)
 
 The hold was ruled in RULINGS 521, following the embedded-forecast precedent. Silver is
-written and registered, but this output is **not** handed off to the front end or
-models as a forecast series. Its values, ranges and samples are deliberately left
-off this page. The question goes to unit **E-SEM**. It is settled by vendor
+written and registered, but this output is **not** handed off to models as a
+point-in-time forecast series. Under ruling 66 (2026-10-24) the site page shows the
+rows with one line naming the question; its chart draws only the forecasts the 8
+October 2026 file gave for half-hours after it last changed, and its notebook sets the
+two files' values side by side. The question goes to unit **E-SEM**. It is settled by vendor
 documentation of a real issue clock and of revision behaviour, or by enough repeated
 captures to measure how the file changes. The hold covers the forecast semantics
 only. The period position (UTC start) is settled.

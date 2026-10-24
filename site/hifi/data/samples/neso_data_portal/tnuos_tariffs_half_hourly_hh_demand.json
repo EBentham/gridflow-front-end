@@ -1,0 +1,248 @@
+{
+ "dataset": "neso_data_portal/tnuos_tariffs_half_hourly_hh_demand",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "890582f8a3e7885c1d0fa8fd0394174f11edde149cf05fb3bf766ad29d29f70f",
+ "silver": "neso_data_portal/tnuos_tariffs_half_hourly_hh_demand",
+ "columns": [
+  {
+   "name": "publication",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "year_fy",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "published_date",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "zone_no",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "zone_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "hh_tariff_floored_gbp_per_kw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "peak_gbp_per_kw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "year_round_gbp_per_kw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "hh_sgd_adjustment_gbp_per_kw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "Forecast",
+   "2027",
+   "2021-04-30",
+   "14",
+   "South Western",
+   "11.400354",
+   "1.696724",
+   "9.703631",
+   "0.0",
+   "2026-05-12 13:12:39.529022 UTC",
+   "2026-10-08 11:39:07.650463 UTC",
+   "bronze/neso_data_portal/tnuos_tariffs_half_hourly_hh_demand/2026/10/08/raw_20261008T113907Z_6abe8416-149c-4c78-b65b-059eea19957a_b11b3c76.csv",
+   "2026-10-08 11:39:07.650463 UTC",
+   "2026-10-08 11:39:07.650463 UTC",
+   "2026-05-12 13:12:39.529022 UTC",
+   "f678d684-113f-4f00-b437-c98f2f7d73af",
+   "1+e1"
+  ],
+  [
+   "Forecast",
+   "2027",
+   "2022-04-07",
+   "14",
+   "South Western",
+   "10.305393",
+   "0.249834",
+   "10.055559",
+   "0.0",
+   "2026-05-12 13:12:39.529022 UTC",
+   "2026-10-08 11:39:07.650463 UTC",
+   "bronze/neso_data_portal/tnuos_tariffs_half_hourly_hh_demand/2026/10/08/raw_20261008T113907Z_6abe8416-149c-4c78-b65b-059eea19957a_b11b3c76.csv",
+   "2026-10-08 11:39:07.650463 UTC",
+   "2026-10-08 11:39:07.650463 UTC",
+   "2026-05-12 13:12:39.529022 UTC",
+   "f678d684-113f-4f00-b437-c98f2f7d73af",
+   "1+e1"
+  ],
+  [
+   "Forecast",
+   "2027",
+   "2024-06-20",
+   "14",
+   "South Western",
+   "11.652336",
+   "0.848585",
+   "10.803751",
+   "0.0",
+   "2026-05-12 13:12:39.529022 UTC",
+   "2026-10-08 11:39:07.650463 UTC",
+   "bronze/neso_data_portal/tnuos_tariffs_half_hourly_hh_demand/2026/10/08/raw_20261008T113907Z_6abe8416-149c-4c78-b65b-059eea19957a_b11b3c76.csv",
+   "2026-10-08 11:39:07.650463 UTC",
+   "2026-10-08 11:39:07.650463 UTC",
+   "2026-05-12 13:12:39.529022 UTC",
+   "f678d684-113f-4f00-b437-c98f2f7d73af",
+   "1+e1"
+  ],
+  [
+   "Forecast",
+   "2027",
+   "2025-04-30",
+   "14",
+   "South Western",
+   "15.566653",
+   "3.60003",
+   "11.966623",
+   "0.0",
+   "2026-05-12 13:12:39.529022 UTC",
+   "2026-10-08 11:39:07.650463 UTC",
+   "bronze/neso_data_portal/tnuos_tariffs_half_hourly_hh_demand/2026/10/08/raw_20261008T113907Z_6abe8416-149c-4c78-b65b-059eea19957a_b11b3c76.csv",
+   "2026-10-08 11:39:07.650463 UTC",
+   "2026-10-08 11:39:07.650463 UTC",
+   "2026-05-12 13:12:39.529022 UTC",
+   "f678d684-113f-4f00-b437-c98f2f7d73af",
+   "1+e1"
+  ],
+  [
+   "Forecast",
+   "2027",
+   "2025-09-12",
+   "14",
+   "South Western",
+   "13.919102",
+   "2.079893",
+   "11.83921",
+   "0.0",
+   "2026-05-12 13:12:39.529022 UTC",
+   "2026-10-08 11:39:07.650463 UTC",
+   "bronze/neso_data_portal/tnuos_tariffs_half_hourly_hh_demand/2026/10/08/raw_20261008T113907Z_6abe8416-149c-4c78-b65b-059eea19957a_b11b3c76.csv",
+   "2026-10-08 11:39:07.650463 UTC",
+   "2026-10-08 11:39:07.650463 UTC",
+   "2026-05-12 13:12:39.529022 UTC",
+   "f678d684-113f-4f00-b437-c98f2f7d73af",
+   "1+e1"
+  ],
+  [
+   "Draft",
+   "2027",
+   "2025-12-19",
+   "14",
+   "South Western",
+   "14.178337",
+   "2.994385",
+   "11.183952",
+   "0.0",
+   "2026-05-12 13:12:39.529022 UTC",
+   "2026-10-08 11:39:07.650463 UTC",
+   "bronze/neso_data_portal/tnuos_tariffs_half_hourly_hh_demand/2026/10/08/raw_20261008T113907Z_6abe8416-149c-4c78-b65b-059eea19957a_b11b3c76.csv",
+   "2026-10-08 11:39:07.650463 UTC",
+   "2026-10-08 11:39:07.650463 UTC",
+   "2026-05-12 13:12:39.529022 UTC",
+   "f678d684-113f-4f00-b437-c98f2f7d73af",
+   "1+e1"
+  ],
+  [
+   "Final",
+   "2027",
+   "2026-01-30",
+   "14",
+   "South Western",
+   "14.130209",
+   "2.993167",
+   "11.137042",
+   "0.0",
+   "2026-05-12 13:12:39.529022 UTC",
+   "2026-10-08 11:39:07.650463 UTC",
+   "bronze/neso_data_portal/tnuos_tariffs_half_hourly_hh_demand/2026/10/08/raw_20261008T113907Z_6abe8416-149c-4c78-b65b-059eea19957a_b11b3c76.csv",
+   "2026-10-08 11:39:07.650463 UTC",
+   "2026-10-08 11:39:07.650463 UTC",
+   "2026-05-12 13:12:39.529022 UTC",
+   "f678d684-113f-4f00-b437-c98f2f7d73af",
+   "1+e1"
+  ],
+  [
+   "Forecast",
+   "2031",
+   "2025-09-12",
+   "14",
+   "South Western",
+   "8.958708",
+   "-2.257515",
+   "11.216223",
+   "0.0",
+   "2026-05-12 13:12:39.529022 UTC",
+   "2026-10-08 11:39:07.650463 UTC",
+   "bronze/neso_data_portal/tnuos_tariffs_half_hourly_hh_demand/2026/10/08/raw_20261008T113907Z_6abe8416-149c-4c78-b65b-059eea19957a_b11b3c76.csv",
+   "2026-10-08 11:39:07.650463 UTC",
+   "2026-10-08 11:39:07.650463 UTC",
+   "2026-05-12 13:12:39.529022 UTC",
+   "f678d684-113f-4f00-b437-c98f2f7d73af",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

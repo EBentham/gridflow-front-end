@@ -1,0 +1,165 @@
+{
+ "dataset": "neso_data_portal/constraint_cost_fc_24m",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "410a4ef1eeccc70c6043d2359977d338244e98c488fb3017d69776c39cd1172d",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.sql(\"\"\"\n    SELECT forecast_month, published_at, constraint_cost\n    FROM silver_neso_data_portal_constraint_cost_fc_24m\n    ORDER BY forecast_month, published_at\"\"\")\ndf[\"published_at\"] = df.published_at.dt.tz_convert(\"UTC\")\ndf.groupby(\"published_at\").forecast_month.agg([\"min\", \"max\", \"count\"]).reset_index()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "published_at",
+      "min",
+      "max",
+      "count"
+     ],
+     "index": [
+      "0",
+      "1"
+     ],
+     "rows": [
+      [
+       "2026-09-10 09:38:53.501869+00:00",
+       "2026-10-01",
+       "2028-09-01",
+       "24"
+      ],
+      [
+       "2026-10-09 09:30:58.440053+00:00",
+       "2026-11-01",
+       "2028-10-01",
+       "24"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "wide = df.pivot(index=\"forecast_month\", columns=\"published_at\", values=\"constraint_cost\")\nwide.columns = [\"September upload\", \"October upload\"]\nchange = wide.assign(change=wide[\"October upload\"] - wide[\"September upload\"]).dropna()\nchange.head(6).round(1).reset_index()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "forecast_month",
+      "September upload",
+      "October upload",
+      "change"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5"
+     ],
+     "rows": [
+      [
+       "2026-11-01",
+       "551.4",
+       "520.4",
+       "-31.0"
+      ],
+      [
+       "2026-12-01",
+       "450.6",
+       "448.1",
+       "-2.5"
+      ],
+      [
+       "2027-01-01",
+       "406.7",
+       "347.9",
+       "-58.8"
+      ],
+      [
+       "2027-02-01",
+       "469.8",
+       "370.7",
+       "-99.1"
+      ],
+      [
+       "2027-03-01",
+       "343.7",
+       "323.0",
+       "-20.7"
+      ],
+      [
+       "2027-04-01",
+       "285.6",
+       "306.5",
+       "20.9"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "ax = wide.plot(figsize=(8, 3.5), color=[\"#C77E3C\", \"#155A6E\"], xlabel=\"forecast month\",\n               ylabel=\"Constraint Cost (no unit in the file)\")\nax.legend([\"September 2026 upload\", \"October 2026 upload\"]);",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "constraint_cost_fc_24m-5.png",
+     "width": 711,
+     "height": 353
+    }
+   ]
+  }
+ ]
+}

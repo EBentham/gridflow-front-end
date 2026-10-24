@@ -8,7 +8,6 @@ updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: true
   title: Local authority heat model outputs
   summary: >-
     NESO's spatial heat model results for its Future Energy Scenarios (FES): buildings on each
@@ -28,13 +27,114 @@ page:
   how_used:
     - "Heat pump and gas boiler numbers by local authority, under each scenario or pathway"
     - "Map the heating technology mix across GB local authorities, edition by edition"
+  chart:
+    type: bar
+    silver: neso_data_portal/fes_la_heat_model_residential
+    value: stock_ashp
+    filter:
+      - {column: edition, op: eq, value: 2025}
+      - {column: pathway, op: eq, value: Holistic Transition}
+    dedup: {"on": [resource_id, edition, la_code, projection_year, pathway, sector], order_by: capture_written_at}
+    group: projection_year
+    aggregation: sum
+    sort: label
+    unit: dwellings or buildings
+  chart_view:
+    title: Air-source heat pumps, FES 2025, Holistic Transition
+    caption: >-
+      Silver `fes_la_heat_model_residential`, the residential table, FES 2025 (NESO's files of 25
+      November 2025), pathway Holistic Transition: `stock_ashp`, gridflow's sum over 371 local
+      authorities, one bar per modelled year as NESO's `Year` gives it. A projection.
+    alt: >-
+      Horizontal bar chart of NESO's projected dwellings or buildings using an air-source heat pump,
+      FES 2025 edition, pathway Holistic Transition, gridflow's sum over 371 local authorities, one
+      bar per modelled year: 2025 359,178; 2030 2,070,328; 2035 6,341,010; 2040 9,162,201; 2045
+      11,571,185; 2050 13,209,035. The count rises about 37-fold.
+    key:
+      - {series: stock_ashp, label: Air-source heat pumps, codes: stock ASHP, paint: petrol, note: "NESO's residential dictionary: number of homes or buildings using the technology"}
   raw_feed:
     note: >-
       From NESO's CKAN portal: one `package_show` per table, then its files, each downloaded whole
       unless its `last_modified` is unchanged. Shown: each edition's first and last year.
     commands:
-      - {run: gridflow ingest neso_data_portal fes_la_heat_model_domestic --last 24h, comment: "whole CSVs; swap in either key"}
-      - {run: gridflow transform neso_data_portal fes_la_heat_model_domestic --last 24h, comment: "the capture's date to silver"}
+      - {run: gridflow ingest neso_data_portal fes_la_heat_model_residential --last 24h, comment: "whole CSVs; swap in either key"}
+      - {run: gridflow transform neso_data_portal fes_la_heat_model_residential --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      silver: neso_data_portal/fes_la_heat_model_residential
+      filter:
+        - {column: edition, op: eq, value: 2025}
+        - {column: la_code, op: eq, value: E08000035}
+        - {column: projection_year, op: in, value: [2025, 2050]}
+      dedup: {"on": [resource_id, edition, la_code, projection_year, pathway, sector], order_by: capture_written_at}
+      order_by: [projection_year, pathway]
+      columns: [la_code, local_authority, projection_year, pathway, stock_ashp, stock_gas_boiler,
+                stock_hydrogen_boiler, stock_gshp, sector, edition, resource_id, published_at,
+                timestamp_utc]
+    key: [resource_id, edition, la_code, projection_year, pathway, sector]
+    caption: "The residential table, FES 2025: Leeds in its 2025 and 2050 files, four pathways."
+    fields:
+      la_code: "Local authority code; NESO's dictionary says December 2019 districts"
+      local_authority: "Local authority name, as NESO spells it"
+      projection_year: "NESO's `Year`: one modelled year per file; NESO states no count date"
+      pathway: "NESO's FES pathway; four per edition, not the same four in 2024 and 2025"
+      stock_ashp: "Dwellings or buildings using an air-source heat pump, per NESO's dictionary"
+      stock_gas_boiler: "Dwellings or buildings using a gas boiler"
+      stock_hydrogen_boiler: "Dwellings or buildings using a hydrogen boiler"
+      stock_gshp: "Dwellings or buildings using a ground-source heat pump"
+      sector: "NESO's sector: `Residential` in every row of the files shown"
+      stock_biofuel_boiler: "FES 2024 only: a biofuel boiler; null in FES 2025 rows"
+      stock_biomass_boiler: "Dwellings or buildings using a biomass boiler"
+      stock_community: "FES 2024 only: `Community`, fossil-fuel heat networks per NESO's dictionary"
+      stock_dh: "FES 2024 only: `DH`, low-carbon district heat networks per NESO's dictionary"
+      stock_electric_resistive: "Dwellings or buildings using electric resistive heating"
+      stock_electric_storage: "Dwellings or buildings using electric storage heating"
+      stock_hybrid_ashp_biofuel_boiler: "FES 2024 only: an air-source heat pump with a biofuel boiler"
+      stock_hybrid_ashp_electric_resistive: "An air-source heat pump with electric resistive heating, as one hybrid"
+      stock_hybrid_ashp_hydrogen_boiler: "An air-source heat pump with a hydrogen boiler, as one hybrid"
+      stock_oil_boiler: "Dwellings or buildings using an oil boiler"
+      stock_biolpg_boiler: "FES 2025 only: a BioLPG boiler; NESO does not say it is 2024's biofuel"
+      stock_fossil_fuel_communal_heating: "FES 2025 only: fossil fuel communal heating"
+      stock_hybrid_ashp_biolpg_boiler: "FES 2025 only: an air-source heat pump with a BioLPG boiler"
+      stock_low_carbon_district_heating: "FES 2025 only: low carbon district heating"
+      edition: "FES edition, from the file name: 2024 or 2025"
+      resource_id: "CKAN file id, one per edition and modelled year; first key column"
+      published_at: "NESO's last-modified time for the file, read as UTC"
+      timestamp_utc: "When gridflow captured the file, UTC; the table has no event time"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      `query()` filters on `timestamp_utc`, the capture time here, so these cells use `data.sql()`
+      on the residential table's `_latest` view. The domestic FES 2022 table is never stacked or
+      joined with it. The sums are gridflow's.
+    cells:
+      - |
+        hp = data.sql("""
+            SELECT pathway, projection_year, SUM(stock_ashp) AS ashp
+            FROM silver_neso_data_portal_fes_la_heat_model_residential_latest
+            WHERE edition = 2025
+            GROUP BY pathway, projection_year
+        """)
+        wide = hp.pivot(index="projection_year", columns="pathway", values="ashp").rename_axis(index=None, columns=None)
+        wide.round(-3)
+      - |
+        ax = wide.plot(figsize=(8, 3.5), style="o-", xlabel="NESO's modelled year",
+                       ylabel="air-source heat pumps, all authorities");
+      - |
+        data.sql("""
+            SELECT la_code, local_authority, stock_ashp, stock_gas_boiler, stock_hydrogen_boiler
+            FROM silver_neso_data_portal_fes_la_heat_model_residential_latest
+            WHERE edition = 2025 AND pathway = 'Holistic Transition' AND projection_year = 2050
+            ORDER BY stock_ashp DESC
+            LIMIT 5
+        """).round(0)
+    needs: NESO's FES 2025 local authority residential files
+    plot_alt: >-
+      Line plot of NESO's projected dwellings or buildings with an air-source heat pump, FES 2025
+      edition, summed over 371 local authorities, modelled years 2025 to 2050, one line per pathway.
+      All start near 359,000; Holistic Transition ends highest at about 13.2 million and Falling
+      Behind lowest at about 7.7 million.
   family:
     slug: local-authority-level-spatial-heat-model-outputs-fes
     members:
@@ -44,7 +144,7 @@ page:
           - "GET https://api.neso.energy/api/3/action/package_show?id=local-authority-level-spatial-heat-model-outputs-fes"
           - "GET https://api.neso.energy/dataset/bfa95333-542e-4625-b5d0-17ced50a89ed/resource/c3dd66ab-cb07-4e4d-bbab-d79074ea1713/download/fes22_la_level_outputs_2020_domestic_all_scenarios.csv"
           - "GET https://api.neso.energy/dataset/bfa95333-542e-4625-b5d0-17ced50a89ed/resource/3a9451a1-9e79-4fda-a570-79544b30f44e/download/fes22_la_level_outputs_2050_domestic_all_scenarios.csv"
-        held: "NESO states no count date for each year's stock, oil boiler's basis, or hydrogen blanks."
+        caveat: "NESO states no count date, calls oil boiler stock a proportion, and leaves hydrogen blanks unexplained."
       - dataset: fes_la_heat_model_residential
         differs: "FES 2024 and 2025 residential: dwellings or buildings per heating technology, five-yearly"
         request:
@@ -52,7 +152,7 @@ page:
           - "GET https://api.neso.energy/dataset/bfa95333-542e-4625-b5d0-17ced50a89ed/resource/010d5cb3-2907-4ccd-949f-a3ec726b5109/download/fes24_la_level_outputs_2050_residential_all_scenarios.csv"
           - "GET https://api.neso.energy/dataset/bfa95333-542e-4625-b5d0-17ced50a89ed/resource/e2215328-bd74-47c2-a22f-3878bb0fbbd5/download/fes25_la_level_outputs_2025_residential_all_scenarios.csv"
           - "GET https://api.neso.energy/dataset/bfa95333-542e-4625-b5d0-17ced50a89ed/resource/593f1c8c-b278-4405-9164-21dfacd70a6d/download/fes25_la_level_outputs_2050_residential_all_scenarios.csv"
-        held: "NESO states no count date for each year's stock."
+        caveat: "NESO states no count date for each year's stock."
   related:
     - {dataset: neso_data_portal/building-heat-model, note: "NESO's tool modelling one home's half-hourly heat demand"}
     - {dataset: neso_data_portal/fes-natural-gas-residential-and-non-domestic-i-c-heat-demand-summary-data-table-ed3, note: "NESO's FES heat demand by technology, for GB as a whole"}
@@ -92,10 +192,11 @@ model (@building-heat-model.md) and the FES heat-demand table
 (@fes-natural-gas-residential-and-non-domestic-i-c-heat-demand-summary-data-table-ed3.md), and
 the vendor README is @../README.md.
 
-**The silver output of both families is held (unit E-SEM).** It exists on disk, and this page
-gives its schema, row counts and structure. It publishes no data values from it: no sample rows
-and no minimum, maximum or other value statistics. The meaning of the `Year` column (the stock
-assessment date) is not established for either table (see Holds). The package-level
+**The silver output of both families is held in gridflow (unit E-SEM).** This note gives its
+schema, row counts and structure. Under ruling 66 the site page shows rows, with one caveat line
+per table naming its open question; its chart, eight sample rows and notebook come from the
+residential table alone, never stacked or joined with the domestic one. The meaning of the `Year`
+column (the stock assessment date) is not established for either table (see Holds). The package-level
 `eligibility: eligible` in the front matter is the package registry entry. The hold is per
 family.
 
@@ -635,10 +736,13 @@ gridflow outputs derived from this package carry the attribution line above.
 - `fes_la_heat_model_domestic`: held: TODO: What stock assessment date does `Year` denote in the FES 2022 domestic outputs, and is it a start- or end-of-year snapshot? Is `stock Oil boiler` a number of buildings or a proportion, as the dictionary states? What does a blank hydrogen or hybrid-hydrogen cell in the 2030-2050 slices mean? (unit E-SEM)
 - `fes_la_heat_model_residential`: held: TODO: What exact stock assessment date does `Year` represent in the FES 2024 and FES 2025 residential outputs, and is it a start- or end-of-year convention? (unit E-SEM)
 
-Both families are held by the SCN-3 batch records (RULINGS 838, 839, 842 and 844). Their silver
-output stays on disk. No gold view or model feed is planned for either while the hold stands,
-and this page publishes no data values from them: no sample rows and no minimum, maximum or
-other value statistics. Unit E-SEM must answer the questions below before the holds can lift.
+Both families are held by the SCN-3 batch records (RULINGS 838, 839, 842 and 844). No gold view
+or model feed is planned for either while the hold stands. Under ruling 66 the site page shows
+rows with one caveat per table: "NESO states no count date for each year's stock, oil boiler's
+basis, or hydrogen blanks." on the domestic table and "NESO states no count date for each year's
+stock." on the residential one. Its chart is gridflow's sum of one residential stock column over
+the 371 authorities of one FES 2025 pathway, one bar per modelled year. Unit E-SEM must answer the
+questions below before the holds can lift.
 
 **`fes_la_heat_model_domestic` (FES 2022):**
 
@@ -667,7 +771,8 @@ What the vendor text does establish, and what it does not (FACTS §4, §6.3 and 
 
 Until the holds lift:
 
-- Do not publish LA heat values, or join either table to an observed series by `projection_year`.
+- Do not join either table to an observed series by `projection_year`, or read `Year` as a dated
+  count.
 - Do not use either table point-in-time beyond its CKAN `last_modified` vintage, which is a
   conservative proxy and nothing finer. The FES 2024 and FES 2025 resources share one vintage
   date.

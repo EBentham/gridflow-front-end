@@ -1,0 +1,170 @@
+{
+ "dataset": "neso_data_portal/weekly_wind_availability",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "07bca1183cd7a6cbb263bfeb09f298e18a31d16569860f2405f057c49993c044",
+ "silver": "neso_data_portal/weekly_wind_availability",
+ "columns": [
+  {
+   "name": "bmu_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "week_number",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "mw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "ARCHW-1",
+   "50W26",
+   "114.0",
+   "2026-10-16 20:20:25.674628 UTC",
+   "2026-10-16 20:48:17.320713 UTC",
+   "bronze/neso_data_portal/weekly_wind_availability/2026/10/16/raw_20261016T204817Z_bb375594-dd0b-462b-9063-51e93c607e41_b4901dfb.csv",
+   "2026-10-16 20:48:17.320713 UTC",
+   "2026-10-16 20:48:17.320713 UTC",
+   "2026-10-16 20:20:25.674628 UTC",
+   "drain-a106333c-76ee-45c5-bfac-5c6a190c8235",
+   "1+e1"
+  ],
+  [
+   "ARCHW-1",
+   "51W26",
+   "0.0",
+   "2026-10-16 20:20:25.674628 UTC",
+   "2026-10-16 20:48:17.320713 UTC",
+   "bronze/neso_data_portal/weekly_wind_availability/2026/10/16/raw_20261016T204817Z_bb375594-dd0b-462b-9063-51e93c607e41_b4901dfb.csv",
+   "2026-10-16 20:48:17.320713 UTC",
+   "2026-10-16 20:48:17.320713 UTC",
+   "2026-10-16 20:20:25.674628 UTC",
+   "drain-a106333c-76ee-45c5-bfac-5c6a190c8235",
+   "1+e1"
+  ],
+  [
+   "ARCHW-1",
+   "52W26",
+   "114.0",
+   "2026-10-16 20:20:25.674628 UTC",
+   "2026-10-16 20:48:17.320713 UTC",
+   "bronze/neso_data_portal/weekly_wind_availability/2026/10/16/raw_20261016T204817Z_bb375594-dd0b-462b-9063-51e93c607e41_b4901dfb.csv",
+   "2026-10-16 20:48:17.320713 UTC",
+   "2026-10-16 20:48:17.320713 UTC",
+   "2026-10-16 20:20:25.674628 UTC",
+   "drain-a106333c-76ee-45c5-bfac-5c6a190c8235",
+   "1+e1"
+  ],
+  [
+   "ARCHW-1",
+   "53W26",
+   "114.0",
+   "2026-10-16 20:20:25.674628 UTC",
+   "2026-10-16 20:48:17.320713 UTC",
+   "bronze/neso_data_portal/weekly_wind_availability/2026/10/16/raw_20261016T204817Z_bb375594-dd0b-462b-9063-51e93c607e41_b4901dfb.csv",
+   "2026-10-16 20:48:17.320713 UTC",
+   "2026-10-16 20:48:17.320713 UTC",
+   "2026-10-16 20:20:25.674628 UTC",
+   "drain-a106333c-76ee-45c5-bfac-5c6a190c8235",
+   "1+e1"
+  ],
+  [
+   "GNAPW-1",
+   "50W26",
+   "22.0",
+   "2026-10-16 20:20:25.674628 UTC",
+   "2026-10-16 20:48:17.320713 UTC",
+   "bronze/neso_data_portal/weekly_wind_availability/2026/10/16/raw_20261016T204817Z_bb375594-dd0b-462b-9063-51e93c607e41_b4901dfb.csv",
+   "2026-10-16 20:48:17.320713 UTC",
+   "2026-10-16 20:48:17.320713 UTC",
+   "2026-10-16 20:20:25.674628 UTC",
+   "drain-a106333c-76ee-45c5-bfac-5c6a190c8235",
+   "1+e1"
+  ],
+  [
+   "GNAPW-1",
+   "51W26",
+   "0.0",
+   "2026-10-16 20:20:25.674628 UTC",
+   "2026-10-16 20:48:17.320713 UTC",
+   "bronze/neso_data_portal/weekly_wind_availability/2026/10/16/raw_20261016T204817Z_bb375594-dd0b-462b-9063-51e93c607e41_b4901dfb.csv",
+   "2026-10-16 20:48:17.320713 UTC",
+   "2026-10-16 20:48:17.320713 UTC",
+   "2026-10-16 20:20:25.674628 UTC",
+   "drain-a106333c-76ee-45c5-bfac-5c6a190c8235",
+   "1+e1"
+  ],
+  [
+   "GNAPW-1",
+   "52W26",
+   "22.0",
+   "2026-10-16 20:20:25.674628 UTC",
+   "2026-10-16 20:48:17.320713 UTC",
+   "bronze/neso_data_portal/weekly_wind_availability/2026/10/16/raw_20261016T204817Z_bb375594-dd0b-462b-9063-51e93c607e41_b4901dfb.csv",
+   "2026-10-16 20:48:17.320713 UTC",
+   "2026-10-16 20:48:17.320713 UTC",
+   "2026-10-16 20:20:25.674628 UTC",
+   "drain-a106333c-76ee-45c5-bfac-5c6a190c8235",
+   "1+e1"
+  ],
+  [
+   "GNAPW-1",
+   "53W26",
+   "22.0",
+   "2026-10-16 20:20:25.674628 UTC",
+   "2026-10-16 20:48:17.320713 UTC",
+   "bronze/neso_data_portal/weekly_wind_availability/2026/10/16/raw_20261016T204817Z_bb375594-dd0b-462b-9063-51e93c607e41_b4901dfb.csv",
+   "2026-10-16 20:48:17.320713 UTC",
+   "2026-10-16 20:48:17.320713 UTC",
+   "2026-10-16 20:20:25.674628 UTC",
+   "drain-a106333c-76ee-45c5-bfac-5c6a190c8235",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

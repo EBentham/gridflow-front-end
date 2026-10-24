@@ -1,0 +1,21 @@
+{
+  "dataset": "neso_data_portal/bsuos_fixed_tariffs",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "71837276d777ebd92fe47717aaf56e09c248fb779eef3e902816231ff4473392",
+  "type": "line",
+  "unit": "£/MWh",
+  "caption": "",
+  "value_column": "fixed_tariff_gbp_per_mwh",
+  "aggregation": "last",
+  "window": {"end": "2027-10-01", "rule": "fixed", "start": "2023-04-01"},
+  "provenance": {"duplicates_dropped": 0, "files": 1, "null_values_dropped": 0, "rows_matched": 17, "rows_read": 17, "rows_used": 17, "silver": "neso_data_portal/bsuos_fixed_tariffs", "silver_first": "2023-04-01", "silver_last": "2027-10-01"},
+  "spec": {"aggregation": "last", "dedup": {"on": ["publication", "fixed_tariff_title", "published_date"], "order_by": "published_at"}, "group": "publication", "group_map": {"Draft": "draft", "Final": "final", "Initial Forecast": "initial"}, "series_order": ["final", "draft", "initial"], "silver": "neso_data_portal/bsuos_fixed_tariffs", "time": "fixed_tariff_start_date", "type": "line", "unit": "£/MWh", "value": "fixed_tariff_gbp_per_mwh", "window": {"end": "2027-10-01", "start": "2023-04-01"}},
+  "x_kind": "time",
+  "x": ["2023-04-01", "2023-10-01", "2024-04-01", "2024-10-01", "2025-04-01", "2025-10-01", "2026-04-01", "2026-10-01", "2027-04-01", "2027-10-01"],
+  "series": [
+    {"key": "final", "values": [13.41, 14.03, 7.63, 12.17, 10.74, 15.69, 13.74, 12.49, null, null]},
+    {"key": "draft", "values": [null, null, null, 7.6, 12.48, 11.99, 14.21, 11.93, 21.67, 18.42]},
+    {"key": "initial", "values": [null, null, null, null, null, null, 14.55, 11.03, null, null]}
+  ]
+}

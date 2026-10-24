@@ -1,0 +1,79 @@
+{
+ "dataset": "neso_data_portal/regional_ci_forecast",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "9b5d529c15bf498eafa4d16692c666660a42a89f1ac9cf9c3cf2edf6b4142992",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.sql(\"\"\"\n    SELECT * FROM silver_neso_data_portal_regional_ci_forecast_latest ORDER BY datetime\"\"\")\nregions = list(df.columns[1:15])\n(df[regions] < 0).sum()",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "north_scotland                  0\nsouth_scotland                  0\nnorth_west_england              0\nnorth_east_england              0\nyorkshire                       0\nnorth_wales_and_merseyside      0\nsouth_wales                     0\nwest_midlands                   6\neast_midlands                   0\neast_england                    0\nsouth_west_england              0\nsouth_england                   0\nlondon                        329\nsouth_east_england              0\ndtype: int64"
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "week = df[df.datetime >= \"2026-07-17\"][regions].mean().round(0).sort_values()\nax = week.plot.barh(figsize=(8, 4.5), color=\"#155A6E\",\n                    xlabel=\"mean forecast, 17 to 24 July 2026, gCO2/kWh\")",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "regional_ci_forecast-4.png",
+     "width": 856,
+     "height": 414
+    }
+   ]
+  }
+ ]
+}

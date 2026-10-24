@@ -8,7 +8,6 @@ updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: "NESO's 2023 to 2025 files call annual data fiscal, but not which year a label names."
   title: FES electricity demand summary
   summary: >-
     NESO's GB electricity demand table (ED1) from its Future Energy Scenarios (FES) and 2026
@@ -28,6 +27,33 @@ page:
     - "GB electricity demand by component under each FES scenario or pathway"
     - "Peak demand beside FES supply and flexibility from the same edition"
     - "Each item read with the same edition's ED2 definitions"
+  chart:
+    type: bar
+    silver: neso_data_portal/fes_ed1_electricity_demand
+    value: value
+    filter:
+      - {column: edition, op: eq, value: 2025}
+      - {column: data_item, op: eq, value: "GBFES System Demand: Total"}
+      - {column: pathway, op: eq, value: Holistic Transition}
+      - {column: projection_year, op: in, value: [2030, 2035, 2040, 2045, 2050]}
+    dedup: {"on": [resource_id, edition, data_item, unit, pathway, peak_annual_minimum, projection_year], order_by: capture_written_at}
+    group: projection_year
+    aggregation: max
+    sort: label
+    unit: GWh
+  chart_view:
+    title: Total system demand, FES 2025, Holistic Transition
+    caption: >-
+      Silver `fes_ed1_electricity_demand`, FES 2025 edition (NESO's file last modified 10 December
+      2025), pathway Holistic Transition: `GBFES System Demand: Total`, `Annual [Fiscal]`, in GWh,
+      one row per fifth year label, as written. NESO names no start or end year.
+    alt: >-
+      Horizontal bar chart of NESO's annual total system demand in the FES 2025 edition, pathway
+      Holistic Transition, in GWh, one bar per year label: 2030 339,295; 2035 433,422; 2040
+      563,928; 2045 654,296; 2050 705,223. Each label is higher than the one before.
+    key:
+      - {series: value, label: Total system demand, codes: Holistic Transition, paint: petrol,
+         note: "NESO's year labels as written; the 2025 ED2 calls annual data usually a fiscal year"}
   raw_feed:
     note: >-
       From NESO's CKAN portal: `package_show`, then four CSVs and three ED2 PDFs, each downloaded
@@ -41,6 +67,69 @@ page:
       - {run: gridflow ingest neso_data_portal fes_ed1_electricity_demand --last 24h, comment: "changed CSVs to bronze"}
       - {run: gridflow transform neso_data_portal fes_ed1_electricity_demand --last 24h, comment: "the capture's date to silver"}
       - {run: gridflow ingest neso_data_portal fes_ed1_electricity_demand_files --last 24h, comment: "the ED2 PDFs, bronze only"}
+  record:
+    select:
+      filter:
+        - {column: edition, op: eq, value: 2025}
+        - {column: data_item, op: eq, value: "GBFES System Demand: Total"}
+        - {column: pathway, op: in, value: [Electric Engagement, Holistic Transition, Hydrogen Evolution, Ten Year Forecast]}
+        - {column: projection_year, op: in, value: [2035, 2036]}
+      dedup: {"on": [resource_id, edition, data_item, unit, pathway, peak_annual_minimum, projection_year], order_by: capture_written_at}
+      order_by: [projection_year, pathway]
+      columns: [data_item, pathway, peak_annual_minimum, unit, projection_year, value, edition, aggregation_level,
+                resource_id, published_at, timestamp_utc]
+    key: [resource_id, edition, aggregation_level, level, data_item, unit, scenario, pathway, fuel,
+          peak_annual_minimum, projection_year]
+    caption: "FES 2025 total system demand, labels 2035 and 2036; Ten Year Forecast is blank at 2036."
+    fields:
+      data_item: "NESO's demand item, as written; the edition's ED2 PDF defines it"
+      pathway: "NESO's pathway name in the 2024 and 2025 files; blank in 2023 and 2026"
+      peak_annual_minimum: "NESO's measure: peak, annual or minimum; its wording changes by edition"
+      unit: "NESO's unit for the row, GW or GWh; one item can appear in both"
+      projection_year: "NESO's year header as an integer; start or end of its period not stated"
+      value: "NESO's value for that year label, in the row's unit; a blank stays blank"
+      edition: "The FES edition, from the file name; 2026 is the Ten-Year Outlook"
+      aggregation_level: "NESO's aggregation level, 1 to 5, in the 2023 to 2025 files"
+      scenario: "NESO's scenario name in the 2023 and 2026 files; blank in 2024 and 2025"
+      fuel: "NESO's fuel label; `Electricity` on every row"
+      level: "NESO's level label in the 2026 file only, which has no aggregation level"
+      resource_id: "CKAN file id, one per edition; first column of the entity key"
+      published_at: "NESO's last-modified time for the edition's file, read as UTC"
+      timestamp_utc: "When gridflow captured the file, UTC; the table has no event time"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  caveat: "NESO does not say if year labels start or end their period, or what blanks mean."
+  notebook:
+    lead: >-
+      `query()` filters on `timestamp_utc`, the capture time here, so these cells use `data.sql()`
+      on the `_latest` view, which keeps every edition's file, and pick FES 2025 by `edition`.
+    cells:
+      - |
+        ed1 = data.sql("""
+            SELECT pathway, projection_year, value
+            FROM silver_neso_data_portal_fes_ed1_electricity_demand_latest
+            WHERE edition = 2025 AND data_item = 'GBFES System Demand: Total'
+        """)
+        wide = ed1.pivot(index="projection_year", columns="pathway", values="value").rename_axis(index=None, columns=None)
+        wide.loc[[2030, 2035, 2040, 2045, 2050]]
+      - |
+        ax = wide.plot(figsize=(9, 3.5), color=["#155A6E", "#8A9A2B", "#B5651D", "#6E4A7E", "#5A6B70"],
+                       xlabel="NESO's year label, as written", ylabel="total system demand, GWh");
+      - |
+        data.sql("""
+            SELECT pathway, count(*) AS cells, count(*) FILTER (WHERE value IS NULL) AS blank,
+                   min(projection_year) FILTER (WHERE value IS NULL) AS first_blank_label
+            FROM silver_neso_data_portal_fes_ed1_electricity_demand_latest
+            WHERE edition = 2025
+            GROUP BY pathway
+            ORDER BY pathway
+        """)
+    needs: NESO's four FES electricity demand files
+    plot_alt: >-
+      Line plot of NESO's annual total system demand in the FES 2025 edition, GWh, by year label
+      2023 to 2050, one line per pathway. All five start at 286,780 at label 2023. At 2050
+      Hydrogen Evolution is highest at 797,120, then Electric Engagement 784,736, Holistic
+      Transition 705,223 and Falling Behind 558,750. Ten Year Forecast is blank after 2035.
   related:
     - {dataset: neso_data_portal/future-energy-scenario-electricity-supply-data-table-es1, note: "NESO's FES electricity supply table, the counterpart to this demand table"}
     - {dataset: neso_data_portal/fes-flexibility-data-table-data-table-flx1, note: "NESO's FES flexibility table: storage, demand side response, interconnectors"}
@@ -68,9 +157,10 @@ gridflow reshapes each wide body into **long rows**: one row per (dimension tupl
 `projection_year`) with a `value`, and it stamps an `edition` from the file name (ADR-042;
 this is the SC pilot of the scenario mechanism). Silver holds **45,985 rows from 4 resources**
 (2023: 21,730 · 2024: 16,275 · 2025: 7,000 · 2026: 980), of which **5,971** have a blank
-(null) `value`. The silver output is **held** (unit E-SEM; see Holds). This page therefore
-gives schema, row counts, clocks and missingness only, never data values, samples or ranges
-of values. The three ED2 definition PDFs are catalogue-only documents (DOC).
+(null) `value`. The silver output is **held** in gridflow (unit E-SEM; see Holds). This note
+gives schema, row counts, clocks and missingness; the site page shows the rows, a chart of one
+FES 2025 row and a notebook, with one line naming the hold question (ruling 66, 2026-10-24).
+The three ED2 definition PDFs are catalogue-only documents (DOC).
 
 Sibling scenario packages in this vault: @./tresp-demand-pathways.md and
 @./tresp-generation-pathways.md (tRESP, which is already long-shaped).
@@ -323,8 +413,8 @@ gridflow outputs derived from this package carry the attribution line above.
 
 - `fes_ed1_electricity_demand`: held: TODO: For every ED1 variable and edition 2023–2026, what period does a year header denote, and does its integer label denote the starting or ending year? Which same-edition ED2 definition applies to each ED1 Data item, aggregation level and measure, including the 2026 Ten Year Outlook? What does a blank projection cell mean (not modelled, not applicable or zero)? NESO states none of these in the CSVs; projection_year is the vendor's header label and blank cells are kept as null. (unit E-SEM)
 
-The silver output exists on disk (45,985 rows) but is **held**: it is not eligible for
-publication or for point-in-time model use until unit E-SEM answers the question above
+The silver output exists on disk (45,985 rows) but is **held**: gridflow's models may not use
+it for point-in-time work until unit E-SEM answers the question above
 (held at activation, RULINGS 600). The registry carries `eligible` at package level and
 `held` at family level (gridflow `@docs/neso_data_portal/eligibility.md`); the family status
 governs the silver output. The hold has three parts:
@@ -350,9 +440,10 @@ governs the silver output. The hold has three parts:
 
 Settles it: a NESO statement (or ED2 definitions) of the period each year label covers, the
 mapping from each ED1 `Data item` to its same-edition definition (including the 2026 file),
-and the meaning of an empty projection cell. Until then the page shows no values, samples or
-statistics of values, and gridflow gold does not read this family (RULINGS 611: no gold view
-or gridflow_models consumer for this package).
+and the meaning of an empty projection cell. Until then gridflow gold does not read this
+family (RULINGS 611: no gold view or gridflow_models consumer for this package). The site page
+shows the rows, read through the `_latest` silver view, with one line naming this question
+(ruling 66, 2026-10-24).
 
 ## Links
 

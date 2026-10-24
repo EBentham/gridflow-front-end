@@ -1,0 +1,443 @@
+{
+ "dataset": "neso_data_portal/historic_demand",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "b8fa49be4a84e0e8248d4cc66d762f8509a6e86b0a2547bd251aa5966ac63f50",
+ "silver": "neso_data_portal/historic_demand",
+ "columns": [
+  {
+   "name": "settlement_date",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "settlement_period",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "nd",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "tsd",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "embedded_wind_generation",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "embedded_solar_generation",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "ifa_flow",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "ifa2_flow",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "britned_flow",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "moyle_flow",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "east_west_flow",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "nemo_flow",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "nsl_flow",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "scottish_transfer",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "resource_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "england_wales_demand",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "embedded_wind_capacity",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "embedded_solar_capacity",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "non_bm_stor",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "pump_storage_pumping",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "eleclink_flow",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "viking_flow",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "greenlink_flow",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "forecast_actual_indicator",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2008-12-31",
+   "45",
+   "36951.0",
+   "37726",
+   "43",
+   "NA",
+   "1158.0",
+   "NA",
+   "NA",
+   "-160",
+   "NA",
+   "NA",
+   "NA",
+   "NA",
+   "ec63adc8-e8a1-45cc-a593-5953b1ede7b1",
+   "2025-06-20 08:38:21.660130 UTC",
+   "32947.0",
+   "1384",
+   "NA",
+   "0.0",
+   "15.0",
+   "NA",
+   "NA",
+   "NA",
+   null,
+   "2008-12-31 22:00:00 UTC",
+   "bronze/neso_data_portal/historic_demand/2026/10/08/raw_20261008T110841Z_ec63adc8-e8a1-45cc-a593-5953b1ede7b1_f65b8cfe.csv",
+   "2026-10-08 11:08:41.501850 UTC",
+   "2008-12-31 22:00:00 UTC",
+   "2025-06-20 08:38:21.660130 UTC",
+   "b4b77af5-2e41-473d-9caf-6d21e922d381",
+   "1+e1"
+  ],
+  [
+   "2008-12-31",
+   "46",
+   "36837.0",
+   "38220",
+   "45",
+   "NA",
+   "1157.0",
+   "NA",
+   "NA",
+   "-160",
+   "NA",
+   "NA",
+   "NA",
+   "NA",
+   "ec63adc8-e8a1-45cc-a593-5953b1ede7b1",
+   "2025-06-20 08:38:21.660130 UTC",
+   "32736.0",
+   "1384",
+   "NA",
+   "0.0",
+   "623.0",
+   "NA",
+   "NA",
+   "NA",
+   null,
+   "2008-12-31 22:30:00 UTC",
+   "bronze/neso_data_portal/historic_demand/2026/10/08/raw_20261008T110841Z_ec63adc8-e8a1-45cc-a593-5953b1ede7b1_f65b8cfe.csv",
+   "2026-10-08 11:08:41.501850 UTC",
+   "2008-12-31 22:30:00 UTC",
+   "2025-06-20 08:38:21.660130 UTC",
+   "b4b77af5-2e41-473d-9caf-6d21e922d381",
+   "1+e1"
+  ],
+  [
+   "2008-12-31",
+   "47",
+   "36444.0",
+   "38087",
+   "45",
+   "NA",
+   "1750.0",
+   "NA",
+   "NA",
+   "-160",
+   "NA",
+   "NA",
+   "NA",
+   "NA",
+   "ec63adc8-e8a1-45cc-a593-5953b1ede7b1",
+   "2025-06-20 08:38:21.660130 UTC",
+   "32455.0",
+   "1384",
+   "NA",
+   "0.0",
+   "883.0",
+   "NA",
+   "NA",
+   "NA",
+   null,
+   "2008-12-31 23:00:00 UTC",
+   "bronze/neso_data_portal/historic_demand/2026/10/08/raw_20261008T110841Z_ec63adc8-e8a1-45cc-a593-5953b1ede7b1_f65b8cfe.csv",
+   "2026-10-08 11:08:41.501850 UTC",
+   "2008-12-31 23:00:00 UTC",
+   "2025-06-20 08:38:21.660130 UTC",
+   "b4b77af5-2e41-473d-9caf-6d21e922d381",
+   "1+e1"
+  ],
+  [
+   "2008-12-31",
+   "48",
+   "36532.0",
+   "37807",
+   "54",
+   "NA",
+   "1769.0",
+   "NA",
+   "NA",
+   "-160",
+   "NA",
+   "NA",
+   "NA",
+   "NA",
+   "ec63adc8-e8a1-45cc-a593-5953b1ede7b1",
+   "2025-06-20 08:38:21.660130 UTC",
+   "32614.0",
+   "1384",
+   "NA",
+   "0.0",
+   "515.0",
+   "NA",
+   "NA",
+   "NA",
+   null,
+   "2008-12-31 23:30:00 UTC",
+   "bronze/neso_data_portal/historic_demand/2026/10/08/raw_20261008T110841Z_ec63adc8-e8a1-45cc-a593-5953b1ede7b1_f65b8cfe.csv",
+   "2026-10-08 11:08:41.501850 UTC",
+   "2008-12-31 23:30:00 UTC",
+   "2025-06-20 08:38:21.660130 UTC",
+   "b4b77af5-2e41-473d-9caf-6d21e922d381",
+   "1+e1"
+  ],
+  [
+   "2009-01-01",
+   "1",
+   "37910.0",
+   "38704",
+   "54",
+   "0",
+   "2002.0",
+   "0",
+   "0",
+   "-161",
+   "0",
+   "0",
+   null,
+   null,
+   "ed8a37cb-65ac-4581-8dbc-a3130780da3a",
+   "2023-07-24 12:16:55.273828 UTC",
+   "33939.0",
+   "1403",
+   "0",
+   "0.0",
+   "33.0",
+   null,
+   null,
+   null,
+   null,
+   "2009-01-01 00:00:00 UTC",
+   "bronze/neso_data_portal/historic_demand/2026/10/08/raw_20261008T110732Z_ed8a37cb-65ac-4581-8dbc-a3130780da3a_a9db20de.csv",
+   "2026-10-08 11:07:32.200543 UTC",
+   "2009-01-01 00:00:00 UTC",
+   "2023-07-24 12:16:55.273828 UTC",
+   "b4b77af5-2e41-473d-9caf-6d21e922d381",
+   "1+e1"
+  ],
+  [
+   "2009-01-01",
+   "2",
+   "38047.0",
+   "38964",
+   "53",
+   "0",
+   "2002.0",
+   "0",
+   "0",
+   "-160",
+   "0",
+   "0",
+   null,
+   null,
+   "ed8a37cb-65ac-4581-8dbc-a3130780da3a",
+   "2023-07-24 12:16:55.273828 UTC",
+   "34072.0",
+   "1403",
+   "0",
+   "0.0",
+   "157.0",
+   null,
+   null,
+   null,
+   null,
+   "2009-01-01 00:30:00 UTC",
+   "bronze/neso_data_portal/historic_demand/2026/10/08/raw_20261008T110732Z_ed8a37cb-65ac-4581-8dbc-a3130780da3a_a9db20de.csv",
+   "2026-10-08 11:07:32.200543 UTC",
+   "2009-01-01 00:30:00 UTC",
+   "2023-07-24 12:16:55.273828 UTC",
+   "b4b77af5-2e41-473d-9caf-6d21e922d381",
+   "1+e1"
+  ],
+  [
+   "2009-01-01",
+   "3",
+   "37380.0",
+   "38651",
+   "53",
+   "0",
+   "2002.0",
+   "0",
+   "0",
+   "-160",
+   "0",
+   "0",
+   null,
+   null,
+   "ed8a37cb-65ac-4581-8dbc-a3130780da3a",
+   "2023-07-24 12:16:55.273828 UTC",
+   "33615.0",
+   "1403",
+   "0",
+   "0.0",
+   "511.0",
+   null,
+   null,
+   null,
+   null,
+   "2009-01-01 01:00:00 UTC",
+   "bronze/neso_data_portal/historic_demand/2026/10/08/raw_20261008T110732Z_ed8a37cb-65ac-4581-8dbc-a3130780da3a_a9db20de.csv",
+   "2026-10-08 11:07:32.200543 UTC",
+   "2009-01-01 01:00:00 UTC",
+   "2023-07-24 12:16:55.273828 UTC",
+   "b4b77af5-2e41-473d-9caf-6d21e922d381",
+   "1+e1"
+  ],
+  [
+   "2009-01-01",
+   "4",
+   "36426.0",
+   "37775",
+   "50",
+   "0",
+   "1772.0",
+   "0",
+   "0",
+   "-160",
+   "0",
+   "0",
+   null,
+   null,
+   "ed8a37cb-65ac-4581-8dbc-a3130780da3a",
+   "2023-07-24 12:16:55.273828 UTC",
+   "32526.0",
+   "1403",
+   "0",
+   "0.0",
+   "589.0",
+   null,
+   null,
+   null,
+   null,
+   "2009-01-01 01:30:00 UTC",
+   "bronze/neso_data_portal/historic_demand/2026/10/08/raw_20261008T110732Z_ed8a37cb-65ac-4581-8dbc-a3130780da3a_a9db20de.csv",
+   "2026-10-08 11:07:32.200543 UTC",
+   "2009-01-01 01:30:00 UTC",
+   "2023-07-24 12:16:55.273828 UTC",
+   "b4b77af5-2e41-473d-9caf-6d21e922d381",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

@@ -8,7 +8,6 @@ updated: 2026-10-13
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: true
   title: Dynamic Containment 4 day forecast
   summary: >-
     NESO's Dynamic Containment requirement forecast for the next four days, in MW per EFA block,
@@ -26,14 +25,101 @@ page:
   how_used:
     - A look-ahead on NESO's Dynamic Containment requirement, block by block
     - Read beside the other ancillary-service requirement forecasts
+    - "How the requirement has moved since 2022, from NESO's archive of forecasts"
+  chart:
+    type: line
+    silver: neso_data_portal/dc_forecast_4d_history
+    filter:
+      - {column: forecast_created, op: ne, value: "09/08/2022"}
+    time: forecast_target_date
+    value: efa_5
+    dedup: {on: [forecast_created, forecast_target_date, service_type], order_by: capture_written_at}
+    group: service_type
+    group_map: {DC-H: dch, DC-L: dcl}
+    series_order: [dch, dcl]
+    aggregation: mean
+    window: {start: "2022-04-21", end: "2026-10-20"}
+    unit: MW
+  chart_view:
+    title: "Dynamic Containment requirement, EFA block 5, 2022 to 2026"
+    caption: >-
+      Silver `neso_data_portal/dc_forecast_4d_history`, MW, EFA block 5 (15:00 to 19:00 UK time):
+      each target date's mean over NESO's archived forecasts, leaving out the 9 August 2022 issue,
+      whose targets are partly month first. Not what was known on any day.
+    alt: >-
+      Line chart from neso_data_portal/dc_forecast_4d_history of the Dynamic Containment requirement
+      in MW for EFA block 5, each target date's mean over NESO's archived forecasts, 21 April 2022 to
+      20 October 2026. DC-H (petrol) has a 2022 median of about 460, lowest 247 on 5 December 2022,
+      then about 1,060 in 2023, 1,210 in 2024. DC-L (clay) rises from about 730 in 2022 to 1,310
+      in 2025. Both peak on 4 July 2026, 1,675 and 1,517, and hold 1,495 almost every day from 11
+      July 2026; 22 August 2026 is a gap.
+    x_label: target date
+    key:
+      - {series: dch, label: DC-H, paint: petrol}
+      - {series: dcl, label: DC-L, paint: clay}
   raw_feed:
     note: >-
       From NESO's CKAN portal: `package_show` gives each file's address, which changes with each
-      upload; the file is downloaded whole unless its `last_modified` is unchanged. Swap in either
-      table's key.
+      upload; the file is downloaded unless its `last_modified` is unchanged. Swap in
+      `dc_forecast_4d` for the current file.
     commands:
-      - {run: gridflow ingest neso_data_portal dc_forecast_4d --last 24h, comment: "whole file to bronze"}
-      - {run: gridflow transform neso_data_portal dc_forecast_4d --last 24h, comment: "the capture's date to silver"}
+      - {run: gridflow ingest neso_data_portal dc_forecast_4d_history --last 24h, comment: "whole archive file to bronze"}
+      - {run: gridflow transform neso_data_portal dc_forecast_4d_history --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      silver: neso_data_portal/dc_forecast_4d_history
+      filter:
+        - {column: forecast_target_date, op: eq, value: "2026-06-10"}
+      dedup: {on: [forecast_created, forecast_target_date, service_type], order_by: capture_written_at}
+      order_by: [service_type, forecast_created]
+      columns: [forecast_target_date, forecast_created, service_type, efa_1, efa_2, efa_3, efa_4, efa_5, efa_6]
+    key: [forecast_created, forecast_target_date, service_type]
+    caption: "NESO's four archived forecasts for 10 June 2026, labelled created 6 to 9 June, both codes."
+    fields:
+      forecast_target_date: "Target date, read day first; NESO wrote a few month first"
+      forecast_created: "NESO's creation date, text in two formats (day first, ISO); not a publish time"
+      service_type: "`DC-H` or `DC-L`; NESO's dictionary does not define the two codes"
+      efa_1: "MW for EFA block 1, 23:00 to 03:00 UK time; NESO spells it MWs"
+      efa_2: MW for EFA block 2, 03:00 to 07:00 UK time
+      efa_3: MW for EFA block 3, 07:00 to 11:00 UK time
+      efa_4: MW for EFA block 4, 11:00 to 15:00 UK time
+      efa_5: MW for EFA block 5, 15:00 to 19:00 UK time
+      efa_6: MW for EFA block 6, 19:00 to 23:00 UK time
+      timestamp_utc: "UK midnight opening the target date, as UTC; not an issue time"
+      published_at: "When NESO last changed the archive file (CKAN, read as UTC); not per forecast"
+      bronze_capture_id: Path of the bronze capture the row was read from
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      Reads each file's `_latest` view (its newest capture) with `data.sql`. The archive cells drop
+      the issue created 9 August 2022, its target dates partly month first. The plot averages six
+      blocks by month.
+    cells:
+      - |
+        data.sql("""
+            SELECT date, service_type, efa_1, efa_6, published_at AT TIME ZONE 'UTC' AS published_utc
+            FROM silver_neso_data_portal_dc_forecast_4d_latest ORDER BY service_type, date""")
+      - |
+        hist = data.sql("""
+            SELECT forecast_created, forecast_target_date, service_type,
+                   efa_1, efa_2, efa_3, efa_4, efa_5, efa_6
+            FROM silver_neso_data_portal_dc_forecast_4d_history_latest
+            WHERE forecast_created <> '09/08/2022'""")
+        spread = (hist.groupby(["forecast_target_date", "service_type"]).efa_5
+                  .agg(issues="count", low="min", high="max").reset_index())
+        spread[spread.high - spread.low >= 100].tail(6)
+      - |
+        blocks = [f"efa_{i}" for i in range(1, 7)]
+        month = hist.forecast_target_date.dt.to_period("M")
+        monthly = hist[blocks].mean(axis=1).groupby([month, hist.service_type]).mean().unstack()
+        monthly.plot(figsize=(8, 3.5), color=["#155A6E", "#C77E3C"], xlabel="target month",
+                     ylabel="mean of six EFA blocks, MW");
+    needs: a capture of both files
+    plot_alt: >-
+      Line plot of the mean of the six EFA blocks in MW by target month, April 2022 to October 2026.
+      DC-H (petrol) rises from 454 to 1,027 in April 2023, 1,351
+      in June 2024, falls to 914 in January 2026, then climbs. DC-L (clay) peaks before 2026 at
+      1,312 in June 2025. Both hold 1,495 from August 2026.
   family:
     slug: dynamic-containment-4-day-forecast
     members:
@@ -42,13 +128,13 @@ page:
         request:
           - "GET https://api.neso.energy/api/3/action/package_show?id=dynamic-containment-4-day-forecast"
           - "GET https://api.neso.energy/dataset/c8cd1e99-bc7e-454c-8ac1-ebd9264f4d0f/resource/1b85a3f3-80f0-49cf-9b0e-49648fa0cae6/download/465d3c6096e24ed49d796f6a7ffdaebd_dcrequirements_1b85a3f3-80f0-49cf-9b0e-49648fa0cae6_patch.csv"
-        held: NESO does not say whether the slash dates in `Date` are day first or month first.
+        caveat: NESO does not say whether the slash dates in `Date` are day first or month first.
       - dataset: dc_forecast_4d_history
         differs: "NESO's archive of earlier forecasts, each labelled with its creation and target date"
         request:
           - "GET https://api.neso.energy/api/3/action/package_show?id=dynamic-containment-4-day-forecast"
           - "GET https://api.neso.energy/dataset/c8cd1e99-bc7e-454c-8ac1-ebd9264f4d0f/resource/d5c3b48a-a0a9-4d57-a02a-ac0af09a6298/download/da8aac209e4d4a71b4000538d9575241_dcrequirementshistorical1_d5c3b48a-a0a9-4d57-a02a-ac0af09a6298_.csv"
-        held: NESO does not say when each archived forecast was first published.
+        caveat: NESO does not say when forecasts were published; a few target dates are month first.
   related:
     - {dataset: neso_data_portal/dynamic-containment-data, note: Auction results for the service this file forecasts}
     - {dataset: neso_data_portal/eac-auction-results, note: "EAC auctions that buy Dynamic Containment, as products `DCH` and `DCL`"}
@@ -73,9 +159,10 @@ file name and dictionary: `TODO: verify` the vendor's definition of the requirem
 
 **Both silver outputs are held** (unit v0.22-K-AS-1). The current file's `Date` column is
 published in a slash format whose day/month order the dictionary does not settle. The history
-file has no established publication instant for its creation-labelled issues. This page gives
-schema, row counts and structure only, and publishes **no data values** from either family
-(see Holds).
+file has no established publication instant for its creation-labelled issues (see Holds).
+The site page shows rows from both families, each with a caveat naming its open question
+(front-end ruling 66): the chart, frame and notebook read the history file, and never as what was
+known at the time.
 
 - Publisher group: Ancillary services
 - Registry group: ancillary-services · archetype: FC
@@ -137,8 +224,8 @@ Schema, epoch 1:
 | `published_at` | CKAN `last_modified` of the captured file (ADR-030) |
 | `available_at` | = `published_at` |
 
-**Held (unit v0.22-K-AS-1).** The silver output exists but is not eligible for publication or
-point-in-time use. This page gives schema, row counts and structure only.
+**Held (unit v0.22-K-AS-1).** The silver output exists but is not eligible for point-in-time use
+in gridflow. Under front-end ruling 66 the site page shows these rows, with a caveat naming the open question.
 
 **The two clocks for this family:**
 
@@ -160,7 +247,8 @@ consecutive dates from the capture day onward, written as slash dates (`08/10/20
 `11/10/2026`, as captured). Every one of them is ambiguous between day-first and month-first,
 and the current dictionary documents the column as ISO 8601, which the values are not. A
 day-first reading is strongly favoured by the vendor's "next four days" description and by the
-history file's unambiguous day-first examples, but no resource-specific statement settles it
+history file's day-first examples (one archived issue writes its target dates month first), but
+no resource-specific statement settles it
 (FACTS §4.4 T01). Under day-first, all 8 target dates fall after the vintage. Under
 month-first, 4 of the 8 would fall on or before it. No unconditional forward-target claim is
 made while the order is open.
@@ -239,9 +327,8 @@ Schema, epoch 1:
 | `published_at` | CKAN `last_modified` of the captured file (ADR-030) |
 | `available_at` | = `published_at` |
 
-**Held (unit v0.22-K-AS-1).** The silver output exists but is not eligible for publication or
-point-in-time use. This page gives schema, row counts and structural counts only. It gives no
-EFA values, value ranges or sample rows.
+**Held (unit v0.22-K-AS-1).** The silver output exists but is not eligible for point-in-time use
+in gridflow. Under front-end ruling 66 the site page shows these rows, with a caveat naming the open question.
 
 **The two clocks for this family:**
 
@@ -267,6 +354,12 @@ issue clock, for these reasons:
   faithfully with no validation failures, so this is not an unreadable-resource failure.
 - It is a date, with no time and no zone. It does not say when during the day the issue was
   published.
+- `Forecast_Target_Date` is not day first throughout. In the 2026-10-16 archive (lines 890 to
+  897) the issue created `09/08/2022` lists `08/10/2022`, `08/11/2022`, `08/12/2022` (month
+  first: 10 to 12 August) then `13/08/2022`. Silver reads `%d/%m/%Y`, so six rows (three
+  targets, both codes) sit on 8 October, 8 November and 8 December 2022. No other row targets
+  a date outside 0 to 5 days after its creation date (checked 2026-10-24). The site page's
+  chart and notebook leave this issue out.
 - Eight rows carry the creation date `2026-10-08`, which is **later than the archive's own
   CKAN `last_modified` date** (`2026-10-07`); they are the last 8 physical lines of the CSV
   (lines 12,926 to 12,933). The production label and the upload vintage therefore cannot be
@@ -351,8 +444,8 @@ gridflow outputs derived from this package carry the attribution line above.
 - `dc_forecast_4d_history`: held: TODO: DC-HISTORY-ISSUE — when was each creation-labelled issue published? 8 rows are created after the upload's last-modified date and 15 creation dates are missing from the archive. (unit v0.22-K-AS-1)
 
 Both holds were set by the AS-1 unit and activated unchanged (RULINGS 718, 720, 723, 725).
-Silver output for both exists on disk, but neither family may be published or used
-point-in-time. This page publishes no data values from either.
+Silver output for both exists on disk; neither family may be used point-in-time. The site page
+shows both families' rows, each with a caveat naming its question (front-end ruling 66).
 
 `dc_forecast_4d` lifts when NESO states the slash-date order for this resource (or an
 unambiguous current-format date is captured) and the rolling-horizon contract corroborates it

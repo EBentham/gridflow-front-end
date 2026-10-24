@@ -1,0 +1,261 @@
+{
+ "dataset": "neso_data_portal/upcoming_trades",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "1d628092b2742cc3a6ec26104eb6ddb62a2af337a2b2ca831170d5aecd20da59",
+ "silver": "neso_data_portal/upcoming_trades",
+ "columns": [
+  {
+   "name": "id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "date",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "sp",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "volume",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "price",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "cost",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "so_flag",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "reason",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "note",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "last_updated",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "ES00380899",
+   "2026-10-08",
+   "29",
+   "-75.0",
+   "62.05",
+   "-4653.75",
+   "F",
+   "Downward Reg",
+   null,
+   "2026-10-08T11:37:29",
+   "2026-10-08 13:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/upcoming_trades/2026/10/08/raw_20261008T114027Z_0b7e84ec-eded-4458-b111-d29ba4508e85_7441677b.csv",
+   "2026-10-08 11:40:28.001597 UTC",
+   "2026-10-08 13:00:00 UTC",
+   "2026-10-08 11:40:28.001597 UTC",
+   "46021d43-df16-45c8-88e6-3d581ea55bbd",
+   "1+e1"
+  ],
+  [
+   "ES00380905",
+   "2026-10-08",
+   "31",
+   "-100.0",
+   "88.4",
+   "-8840.0",
+   "F",
+   "Downward Reg",
+   null,
+   "2026-10-08T11:37:28",
+   "2026-10-08 14:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/upcoming_trades/2026/10/08/raw_20261008T114027Z_0b7e84ec-eded-4458-b111-d29ba4508e85_7441677b.csv",
+   "2026-10-08 11:40:28.001597 UTC",
+   "2026-10-08 14:00:00 UTC",
+   "2026-10-08 11:40:28.001597 UTC",
+   "46021d43-df16-45c8-88e6-3d581ea55bbd",
+   "1+e1"
+  ],
+  [
+   "ES00382991",
+   "2026-10-16",
+   "47",
+   "110.0",
+   "218.0",
+   "23980.0",
+   "T",
+   "V_MIDLANDS",
+   null,
+   "2026-10-16T16:13:40",
+   "2026-10-16 22:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/upcoming_trades/2026/10/16/raw_20261016T204733Z_0b7e84ec-eded-4458-b111-d29ba4508e85_5b30ad46.csv",
+   "2026-10-16 20:47:33.413007 UTC",
+   "2026-10-16 22:00:00 UTC",
+   "2026-10-16 20:47:33.413007 UTC",
+   "drain-e545b413-69c2-4e26-9cd6-c7841a55ef38",
+   "1+e1"
+  ],
+  [
+   "ES00382992",
+   "2026-10-16",
+   "47",
+   "117.5",
+   "265.0",
+   "31137.5",
+   "T",
+   "V_SWPEN",
+   null,
+   "2026-10-16T16:19:50",
+   "2026-10-16 22:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/upcoming_trades/2026/10/16/raw_20261016T204733Z_0b7e84ec-eded-4458-b111-d29ba4508e85_5b30ad46.csv",
+   "2026-10-16 20:47:33.413007 UTC",
+   "2026-10-16 22:00:00 UTC",
+   "2026-10-16 20:47:33.413007 UTC",
+   "drain-e545b413-69c2-4e26-9cd6-c7841a55ef38",
+   "1+e1"
+  ],
+  [
+   "ES00382993",
+   "2026-10-16",
+   "47",
+   "105.0",
+   "270.0",
+   "28350.0",
+   "T",
+   "V_MIDLANDS",
+   null,
+   "2026-10-16T16:28:23",
+   "2026-10-16 22:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/upcoming_trades/2026/10/16/raw_20261016T204733Z_0b7e84ec-eded-4458-b111-d29ba4508e85_5b30ad46.csv",
+   "2026-10-16 20:47:33.413007 UTC",
+   "2026-10-16 22:00:00 UTC",
+   "2026-10-16 20:47:33.413007 UTC",
+   "drain-e545b413-69c2-4e26-9cd6-c7841a55ef38",
+   "1+e1"
+  ],
+  [
+   "ES00382991",
+   "2026-10-17",
+   "1",
+   "110.0",
+   "218.0",
+   "23980.0",
+   "T",
+   "V_MIDLANDS",
+   null,
+   "2026-10-16T16:13:40",
+   "2026-10-16 23:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/upcoming_trades/2026/10/16/raw_20261016T204733Z_0b7e84ec-eded-4458-b111-d29ba4508e85_5b30ad46.csv",
+   "2026-10-16 20:47:33.413007 UTC",
+   "2026-10-16 23:00:00 UTC",
+   "2026-10-16 20:47:33.413007 UTC",
+   "drain-e545b413-69c2-4e26-9cd6-c7841a55ef38",
+   "1+e1"
+  ],
+  [
+   "ES00382992",
+   "2026-10-17",
+   "1",
+   "117.5",
+   "265.0",
+   "31137.5",
+   "T",
+   "V_SWPEN",
+   null,
+   "2026-10-16T16:19:50",
+   "2026-10-16 23:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/upcoming_trades/2026/10/16/raw_20261016T204733Z_0b7e84ec-eded-4458-b111-d29ba4508e85_5b30ad46.csv",
+   "2026-10-16 20:47:33.413007 UTC",
+   "2026-10-16 23:00:00 UTC",
+   "2026-10-16 20:47:33.413007 UTC",
+   "drain-e545b413-69c2-4e26-9cd6-c7841a55ef38",
+   "1+e1"
+  ],
+  [
+   "ES00382993",
+   "2026-10-17",
+   "1",
+   "105.0",
+   "270.0",
+   "28350.0",
+   "T",
+   "V_MIDLANDS",
+   null,
+   "2026-10-16T16:28:23",
+   "2026-10-16 23:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/upcoming_trades/2026/10/16/raw_20261016T204733Z_0b7e84ec-eded-4458-b111-d29ba4508e85_5b30ad46.csv",
+   "2026-10-16 20:47:33.413007 UTC",
+   "2026-10-16 23:00:00 UTC",
+   "2026-10-16 20:47:33.413007 UTC",
+   "drain-e545b413-69c2-4e26-9cd6-c7841a55ef38",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

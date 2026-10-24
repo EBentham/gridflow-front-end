@@ -41,15 +41,15 @@ page:
         request:
           - "GET https://api.neso.energy/api/3/action/package_show?id=levelised-cost-of-green-hydrogen"
           - "GET https://api.neso.energy/dataset/36f600ae-56cb-41b4-adee-6dbd05df6668/resource/88cfa584-db79-4573-a0c0-c14086257f8f/download/electrolysers_capex_and_opex_inputs.csv"
-        held: "The package cites third-party sources; NESO does not say it is authorised to license them."
+        held: "The package cites third-party sources NESO may not be able to license; files are only listed."
       - dataset: lcoh_levelised_cost_blue_hydrogen
         differs: "Blue hydrogen cost: autothermal reforming with carbon capture and storage, 2025 to 2050"
         request: "GET https://api.neso.energy/dataset/36f600ae-56cb-41b4-adee-6dbd05df6668/resource/3f3b1bf0-4664-494f-a501-a39adabecd0d/download/blue_h2_lcoh_modelled_results_2025_to_2050.csv"
-        held: "The package cites third-party sources; NESO does not say it is authorised to license them."
+        held: "The package cites third-party sources NESO may not be able to license; files are only listed."
       - dataset: lcoh_levelised_cost_green_hydrogen
         differs: "Green hydrogen cost across discount rate, capacity factor and electricity price, 2025 to 2050"
         request: "GET https://api.neso.energy/dataset/36f600ae-56cb-41b4-adee-6dbd05df6668/resource/cc2dad0c-393c-4ae0-ae67-a98703169ad4/download/green_h2_lcoh_modelled_results_2025_to_2050.csv"
-        held: "The package cites third-party sources; NESO does not say it is authorised to license them."
+        held: "The package cites third-party sources NESO may not be able to license; files are only listed."
   related:
     - {dataset: neso_data_portal/fes-whole-system-gas-supply-data-table-ws1, note: "NESO's FES hydrogen supply, demand and capacity, among other fuels"}
 ---

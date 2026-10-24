@@ -8,7 +8,6 @@ updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: "Hour labels have no defined day or clock, and no row says when NESO issued it."
   title: BritNed transfer limits
   summary: >-
     NESO's hourly limits on flow each way over the BritNed interconnector, in MW, with reasons.
@@ -28,6 +27,12 @@ page:
     - Which hours NESO restricted the link, by direction, from the stated reason
     - "A feature for flow and price models: when NESO restricted the link"
     - Set beside the final capacity the link's trading facilitator publishes
+  caveat: "NESO does not define the operational day's start or GMT/BST hours; rows carry no issue time."
+  chart:
+    type: none
+    reason: >-
+      NESO's hour labels have no defined day start or GMT/BST mapping, and the limits are kept as
+      NESO wrote them, as text, so nothing is drawn.
   raw_feed:
     note: >-
       From NESO's CKAN portal: `package_show`, then each changed weekly CSV. Shown: 20221012 (first),
@@ -41,6 +46,49 @@ page:
     commands:
       - {run: gridflow ingest neso_data_portal brit_ned --last 24h, comment: "each changed weekly file to bronze"}
       - {run: gridflow transform neso_data_portal brit_ned --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: resource_id, op: eq, value: 27f2e375-5a0b-484e-938f-4d4c0206d9c0}
+        - {column: operational_date_and_hour, op: in, value: ["20260923 20:00-21:00", "20260923 21:00-22:00",
+           "20260923 22:00-23:00", "20260924 23:00-00:00", "20260924 00:00-01:00", "20260924 01:00-02:00",
+           "20260924 02:00-03:00", "20260924 03:00-04:00"]}
+      columns: [operational_date_and_hour, flow_to_gb_mw_raw, flow_from_gb_mw_raw, reason_for_restriction,
+                published_at, resource_id]
+    key: [resource_id, operational_date_and_hour]
+    caption: "NESO's 20260923 file in file order: the day labelled 24 September opens with 23:00."
+    fields:
+      operational_date_and_hour: "NESO's label: operational date and hour range, as written; not converted to a time"
+      flow_to_gb_mw_raw: "Most power allowed into GB in the hour, MW, kept as NESO's text"
+      flow_from_gb_mw_raw: "Most power allowed out of GB, MW, as text; one file writes `1,056.00`"
+      reason_for_restriction: "NESO's reason, `System Security` or blank; NESO does not say what blank means"
+      published_at: "The weekly file's CKAN last-modified time, read as UTC; one per file"
+      resource_id: "The weekly file the row came from (CKAN resource id)"
+      timestamp_utc: "When gridflow fetched the file, UTC; not the hour the limits apply to"
+      bronze_capture_id: The bronze file the row was read from
+      capture_written_at: When gridflow wrote the capture to bronze, UTC
+  notebook:
+    lead: >-
+      `data.sql` reads `silver_neso_data_portal_brit_ned_latest`, every weekly file, because `query()`
+      would filter `timestamp_utc`, the capture time. Files are counted by the year NESO last changed
+      them; labels and limits stay as NESO's text.
+    cells:
+      - |
+        df = data.sql("""
+            SELECT resource_id, published_at, operational_date_and_hour,
+                   flow_to_gb_mw_raw, flow_from_gb_mw_raw, reason_for_restriction
+            FROM silver_neso_data_portal_brit_ned_latest""")
+        df["published_at"] = df.published_at.dt.tz_convert("UTC")
+        files = df.groupby("resource_id").agg(published=("published_at", "first"),
+                                              rows=("operational_date_and_hour", "size"))
+        year = files.published.dt.year.rename("year_last_changed")
+        files.groupby(year).agg(files=("rows", "size"), rows=("rows", "sum")).reset_index()
+      - |
+        df.reason_for_restriction.value_counts(dropna=False)
+      - |
+        plain = df.flow_from_gb_mw_raw.str.fullmatch(r"\d+")
+        df.loc[plain != True, "flow_from_gb_mw_raw"].value_counts(dropna=False)
+    needs: BritNed's weekly files
   related:
     - {dataset: entsoe/dc_link_intraday_transfer_limits, note: "ENTSO-E's intraday limits on GB's DC links, one direction per series"}
     - {dataset: neso_data_portal/historic-demand-data, note: "BritNed's half-hourly flow, in NESO's historic demand files"}
@@ -80,8 +128,9 @@ Silver holds **18,817 rows from 185 resources**. Two captures failed and are **n
 the oldest upload (a key collision, adjudicated) and one upload with invalid UTF-8 bytes
 (an open reconcile gap at activation, adjudicated since IC-2H on 2026-10-10, RULINGS 585). Both directional flows are kept as **raw strings**
 (`flow_to_gb_mw_raw`, `flow_from_gb_mw_raw`) because some cells carry thousands separators
-and decimals. The silver output is **held** (unit E-SEM; see Holds), so this page gives
-schema, row counts, clocks and missingness only, never data values or ranges of values.
+and decimals. The silver output is **held** (unit E-SEM; see Holds). This note gives schema,
+row counts, clocks and missingness; under ruling 66 (2026-10-24) the site page shows the rows,
+with one line naming the question, and draws no chart, because no label maps to a defined hour.
 
 - Publisher group: Interconnectors
 - Registry group: interconnectors · archetype: FC
@@ -772,9 +821,10 @@ gridflow outputs derived from this package carry the attribution line above.
 
 - `brit_ned`: held: TODO: NESO does not define the operational-date rollover, the GMT/BST mapping or the `(a)`/`(b)` fold markers of the hourly labels, and the bodies carry no issue time, so no label can be dated as an issued limit. (unit E-SEM)
 
-The silver output exists on disk, but it is **held**. It is not eligible for publication or
+The silver output exists on disk, but it is **held**. It is not eligible
 for point-in-time model use until unit E-SEM answers the question above (RULINGS 571; held
-at activation, RULINGS 580). The registry carries `eligible` at package level and `held`
+at activation, RULINGS 580). Under ruling 66 (2026-10-24) the site page shows its rows with
+one line naming the question. The registry carries `eligible` at package level and `held`
 at family level (gridflow `@docs/neso_data_portal/eligibility.md`). The family status
 governs the silver output. The hold has three parts:
 
