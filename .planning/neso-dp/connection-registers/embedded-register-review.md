@@ -98,3 +98,26 @@ dashes in the built page; mirror `cmp` identical to the canonical note; the four
 None new. The writer's NESO items stand as reproduced: the `NGET` row in a register NESO calls Scotland-only, 129
 past-dated rows and one undated 40 MW non-built row against the dictionary comment, and no capture of any file between
 8 and 16 October.
+
+## Round 2
+
+**Verdict: APPROVE.** All six findings are fixed on the rebuilt page and in the note; nothing new.
+
+Gates: `gridflow-build --only neso_data_portal/embedded_register` passes; detector `[]`; 0 em dashes in the built page;
+`cmp` of the canonical note and the front-end mirror identical.
+
+1. Sign (major): fixed. Guide "MW to connect or be removed (NESO); negative read by us as a removal"; caption "One
+   negative 5.5 MW entry is read as a removal (70 + (-5.5) = 64.5) and netted"; wind key "net of one negative 5.5 MW
+   entry (Paul's Hill), read as a removal"; frame caption "a negative entry". No line calls it a plain decrease and
+   "at a future date" is gone from the guide.
+2. Running total (major): fixed. The guide for `cumulative_total_capacity_mw` is "NESO: total across all stages; in
+   these rows, the running total to this stage", word for word the TEC page's phrase. How-used now reads "in these
+   rows the cumulative is a running total" (shorter than my suggestion, still scoped and not a flat rule).
+3. Dates (nit): fixed. Guide "Contracted date (NESO); 16 October file: 129 already past, one 40 MW row blank"
+   (reproduced: 129 past, `PRO-001297` blank at 40 MW).
+4. Stale counts (nit): fixed. Gotcha 5 scopes 215 / 2 to the 8 October capture and gives 216 / 1 for 16 October. I
+   reproduced the `PRO-000886` explanation: Built both times; 8 October 0.0 connected, 49.95 contracted, dated
+   2022-02-15; 16 October 49.95 connected, 0.0 contracted, date blank.
+5. Body sign (nit): fixed. The `MW Increase / Decrease` entry says NESO states no sign and cites the 70 + (-5.5) case;
+   gotcha 4 is headed "our reading".
+6. Mixed key (nit): fixed. "mostly storage with solar or wind, some with `Demand`".

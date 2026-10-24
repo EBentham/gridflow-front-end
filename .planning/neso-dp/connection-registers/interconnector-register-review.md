@@ -80,3 +80,39 @@ form as the approved FFR page; the connector treats the window as a screen, not 
 
 Whether other interconnector rows duplicate capacity (NESO also warns about technology types); the chart corrects Moyle only,
 and the page says only that. No evidence of any other overlap in the 35 rows.
+
+## Round 2 (2026-10-24)
+
+Verdict: **APPROVE with nits** (0 blockers, 0 majors, 1 new nit).
+
+Checks: rebuild `--only neso_data_portal/interconnector_register` exits 0; detector `[]`; mirror `cmp` identical; note is CRLF
+(421 CRLF, 0 bare LF). No server or screenshots this round: only wording changed (guide lines, caption, key note), I read the
+built page text, and the notebook JSON and plot were regenerated with unchanged output. No em dashes, no country names, no
+"live" or local-data words on the rebuilt page.
+
+Round 1 findings:
+1. Major (`mw_import_total` guide): fixed. Now "NESO: import contracted across all stages, firm TEC, MW; Moyle rows read 475,
+   500"; the export line reads "Moyle rows read 500, 500". Both match the frame and both captures. The wording is attributed
+   and the contradiction is gone.
+2. Nit (inference wording): fixed. `what_it_is` now says Moyle's stage rows "read as cumulative: never add them"; the caption
+   gives a basis (see the new claim below).
+3. Nit (import over export): fixed. Key note: "Import is NESO's firm TEC; export totals by status run higher". True: export
+   4,135 / 11,097 / 26,904 / 1,470 against import 4,000 / 10,791 / 26,830 / 1,400, each higher, shown in notebook cell 4.
+   `what_it_is` still does not define export (not required).
+4. Nit (Moyle's past dates): fixed. `mw_effective_from` guide: "Contracted effective date, future only per NESO; Moyle's 16
+   October rows show 2022". True (dictionary comment; frame rows 2022-04-01 and 2022-08-01).
+5. Nit (stale first-capture lines, hard-coded years): fixed. The "Silver as of 2026-10-16" section opens "First capture only
+   (the 5 October 2026 file)", the capture, effective-date and Gate bullets are each marked first capture with the 16 October
+   values (6 vs 9 Gate 1 rows plus 1 Gate 2; NeuConnect 2026-08-01 to 2027-07-07, both reproduced earlier). Notebook cell 5 now
+   uses `range(year.min(), year.max() + 1)`; output unchanged (2027 to 2037, 2034 at 0, image regenerated, digest passes).
+
+New caption claim, "Moyle counts once, by its stage 2 row: its 500 MW matches the TEC NESO gives Moyle":
+
+6. **Nit.** `page.chart_view.caption`. The claim is true and sourced to NESO's text: the package description says "Moyle holds
+   a total of 500MW TEC which is subject to operational restrictions" (catalogue snapshot 20261006T195819Z, `notes`), and stage
+   2's `mw_import_total` is 500. But the caption names no source and no date: a reader cannot tell it comes from the package
+   description rather than the file, and the page elsewhere dates every figure to a NESO file. The note body does name the
+   package note and its snapshot. Suggest "its 500 MW matches the TEC NESO's package description gives Moyle" (the `raw_feed`
+   or caption may date it to NESO's description of 6 October 2026 if the seat wants it dated). The "subject to operational
+   restrictions" qualifier is left out, which is harmless for a match of the number. I could not re-read the live package page
+   (no live API), so "matches" is checked against the 6 October snapshot only.

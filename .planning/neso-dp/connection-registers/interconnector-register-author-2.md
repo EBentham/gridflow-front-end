@@ -30,3 +30,9 @@ change, so the series and sample files did not change.
 
 No new screenshots this round. Only wording changed: the guide lines, the caption and the key note are wrapping text,
 and the chart, frame and notebook layout are as reviewed (nothing clipped at 1440, 1024, 768, 390 in round 1).
+
+## Round 2 nit (after approval)
+
+- `page.chart_view.caption`: the Moyle basis now names its source and date: "its 500 MW matches Moyle's TEC in
+  NESO's package description (captured 6 October 2026)" (catalogue snapshot 20261006T195819Z). Caption is 40 words, at
+  budget. Only the caption changed; mirror `cmp` identical, build clean, detector `[]`.
