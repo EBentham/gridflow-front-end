@@ -108,3 +108,35 @@ None new beyond the writer's list, which I reproduced:
 - NESO LA domestic dictionary `stock Oil boiler` "Proportion of Buildingswith oil boilers": confirmed in field info.
 - NESO ED5 2026 "Ten-Year Outlok": confirmed in the catalogue snapshot.
 - gridflow data: WS2 2026 `Category` labels carry `MtCO2e` while the 2026 dictionary has no unit (already in the WS2 note body; relevant to the major finding).
+
+---
+
+# Round 2 (2026-10-24)
+
+Writer report: `held-2-author-2.md`. All six pages rebuilt with `--only` (no errors). `cmp` vault note vs mirror identical on all six. Detector `[]` on all six. Built `<main>` text re-read for ED3, WS1, WS2, LA and hydrogen; ED5 unchanged. Scripted audit again clean (no dashes, planning words, local-data words). No server or screenshots needed: only prose changed, same fields, equal or shorter length.
+
+## Verdicts
+
+| Page | Round 2 verdict |
+|---|---|
+| ED3 | APPROVE |
+| ED5 | APPROVE |
+| WS1 | APPROVE |
+| WS2 | APPROVE (major closed) |
+| LA | APPROVE |
+| Hydrogen | APPROVE |
+
+No open findings.
+
+## The three asks
+
+1. **WS2 major: closed.** Rechecked against all four bronze files (2026-10-08 captures).
+   - 2023 (`5f8f7293`), 2024 (`31188b9d`) and 2025 (`a80a94cc`): header `Scenario` or `Pathway`, `Sector`, then years 2021 to 2050; no unit text anywhere in the body (searched for CO2, Mt, MT, kt, tonne, unit). "2023, 2024 lack units" is true of the files.
+   - 2026 (`3aba22fd`): adds `Category`; its two values read `Emissions (MtCO2e)` (11 rows) and `Carbon Captured (MtCO2e)` (7 rows). The page now says exactly this ("adds two category labels that read MtCO2e", file dated September 2026, Ten-Year Outlook output).
+   - Dictionary sources: the page says "NESO's dictionaries, as read in October 2026, give MTCO2e for 2025 and N/A for 2023 and 2024". Matches the note's units table. Not reproducible from local data (only the 2026 field info is held, and it carries no units); it rests on the note's earlier research, as in round 1. The hold line is 16 words and is true for the files whichever way the dictionaries read. The 2026 edition is deliberately not in the line, and its unit source is named in `what_it_is`. Fine.
+2. **ED3 exception: closed.** "except total GB peak" names NESO's ED4 item 10 ("Total GB Peak 1-in-20 Demand", the only item in ED4 silver with a gas-year statement, all four editions). It excludes the combined table's 775 heat `Peak 1in20` rows with fuel gas in `GW` that I raised. Still on the two gas tables only; ED7 keeps the plain clause plus `uptake`. The new facts are right: ED4 puts the item in October-start gas years; the files label it `GWh` in 2023 and `GWh/day` from 2024 (silver: 155 rows `GWh` in 2023, 155 `GWh/day` in 2024, 140 and 28 `GWh/day` in 2025 and 2026). The combined member's "number and uptake have no stated scale" matches the note body (scale and denominator undocumented). Dropping the "Ten-Year Outlook" sentence from ED3 `what_it_is` loses nothing the other pages depend on.
+3. **WS1 2025 repeated rows left out of the hold line: acceptable.** The line's job is to say why rows are not shown in one short sentence; the page text directly under "What it is" states the four repeated pairs with their date, and the held line now reads cleanly ("what blanks and `N/A` mean"). The omission leaves no false or misleading statement and nothing is hidden from a reader of the page. If the seat wants the line to cover every ledger question later, a template note on hold-line budget is the fix, not this page.
+
+## Other nits from round 1
+
+All fixed, checked in the built text or the note: 3 (WS1 grammar), 5 (oil in the WS1 summary), 6 (WS1 transform comment now "the capture's date to silver"), 7 (LA "never stacked or joined"), 8 (LA domestic line names the oil boiler basis and hydrogen blanks), 9 (LA second use no longer claims a modelling use), 10 (hydrogen capex member: "Three-scenario capital cost benchmarks, plus operating costs"), 11 (hydrogen note body line corrected). Nits 1 and 2 covered under ask 2.
