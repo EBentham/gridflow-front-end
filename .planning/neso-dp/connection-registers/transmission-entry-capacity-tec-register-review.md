@@ -95,3 +95,29 @@ the 16 October failure reproduce. The one major is wording: the page does not sa
   October transform fails). Finding 1 asks only that the statement be easy to see.
 - The writer's defect text (accept both date formats; `alt_formats` only handled on the datetime path) matches
   `casting.py`: line 268 is a single strict format for dates.
+
+## Round 2
+
+**Verdict: APPROVE.** Rebuilt `--only neso_data_portal/tec_register`: exit 0. Detector `[]`. Mirror `cmp` identical.
+Em dashes 0. Checked on the built page text and the note; layout unchanged, so no new screenshots.
+
+1. **Major, newer-file gap: fixed.** `what_it_is` now ends "This page stops at NESO's 5 October 2026 file: gridflow
+   cannot read the dates in its 16 October file." True (bronze 16 October: 1,858 of 1,858 dates year first; the
+   record's strict `%d/%m/%Y` cast fails) and it states the consequence. The raw feed note still carries the detail.
+2. **Past effective dates: fixed, honest.** Caption: "Contracted increases, not built capacity; some effective
+   dates are already past." Alt: "contracted TEC increases in MW, some with effective dates already past". Re-derived:
+   96 rows in the summed file have `mw_effective_from` on or before 2026-10-06 (17,056.76 MW), so "some" is true; no
+   number is claimed, so nothing undated or unverifiable is on the page. The chart title, caption and alt name NESO's
+   5 October file, and past dates stay past as time passes, so the wording cannot go stale. Accepted as worded.
+3. **TEC definition: fixed.** The "MW a customer is contracted to inject" sentence is gone. The opening now reads
+   "NESO's list of projects holding Transmission Entry Capacity contracts" (hero summary identical), against NESO's
+   package notes "A list of projects that hold contracts for Transmission Entry Capacity (TEC) with us" (snapshot
+   20261006T195819Z). A close paraphrase that claims nothing beyond NESO's text. "MW due to change" matches the
+   dictionary's "increase or decrease". The duplicate-entries sentence matches NESO's note 1.
+4. **`plant_type` guide: fixed.** Now "several are joined by semicolons".
+5. **Notebook `needs`: fixed.** "Needs gridflow and gridflow-models installed, with NESO's TEC register file of 5
+   October 2026 ingested." Consistent with the lead and the `what_it_is` sentence.
+
+**Running-total wording across pages:** this page's guide line and the embedded register's
+(`vault/neso_data_portal/embedded-register.md:112`) are the same string: "NESO: total across all stages; in these
+rows, the running total to this stage". No findings remain.

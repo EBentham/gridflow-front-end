@@ -59,3 +59,5 @@ captures repeat rows (or as a guard). On a table with no event time, `query()` f
 | 1 | a1111bee79407f06f | a31a821522a5f04b0 | REVISE (1 major: say plainly the page stops at the 5 Oct file; 4 nits), round 2 writing; 20bx logged; ships with the 16 Oct file gap stated (seat, PROXY-SOURCED, metered-wind precedent) |
 | 2 | aef85fb4eda55cf26 | aa419d8314d16ce62 | APPROVED (round 2 fixes seat-verified); committed; 20by logged |
 | 3 | a9bfd403eeb22aae1 | aa193752879207a90 | APPROVED, caption nit fixed (seat-verified); committed; 20bw logged; related links: seat kept the writer's four (TEC, embedded, IFA, BritNed) |
+
+Group closed 2026-10-24: gates green (pytest 206, build check 175 pages, htmlhint 0, lychee 0, detector clean); site PR EBentham/gridflow-front-end#71, vault PR EBentham/quant-vault#74, both waiting for Bobbo.
