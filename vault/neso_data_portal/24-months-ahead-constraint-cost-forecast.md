@@ -4,11 +4,10 @@ package: "24-months-ahead-constraint-cost-forecast"
 dataset_key: "constraint_cost_fc_24m"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-23
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: "NESO dropped £m from the column name, and the dictionary's £m is unconfirmed."
   title: 24-month constraint cost forecast
   summary: >-
     NESO's forecast of what managing transmission constraints will cost in each of the next 24
@@ -26,6 +25,35 @@ page:
   how_used:
     - A forward view of NESO's constraint spend over the next two years
     - How NESO's outlook for a month shifts from one monthly upload to the next
+  chart:
+    type: line
+    silver: neso_data_portal/constraint_cost_fc_24m
+    time: forecast_month
+    value: constraint_cost
+    group: bronze_capture_id
+    group_map:
+      "bronze/neso_data_portal/constraint_cost_fc_24m/2026/10/08/raw_20261008T091541Z_28b85d3f-a1cc-4bb9-80af-600f2cca266a_c56921b4.csv": sep
+      "bronze/neso_data_portal/constraint_cost_fc_24m/2026/10/16/raw_20261016T192117Z_28b85d3f-a1cc-4bb9-80af-600f2cca266a_c46bbd3e.csv": oct
+    series_order: [oct, sep]
+    aggregation: last
+    window: {start: "2026-10-01", end: "2028-10-01"}
+    unit: "Constraint Cost, no unit in the file"
+  chart_view:
+    title: Constraint Cost by month, in two uploads
+    caption: >-
+      Silver `constraint_cost_fc_24m`: NESO's `Constraint Cost` for each forecast month, as its
+      September and October 2026 uploads give it, October 2026 to October 2028. The file states no
+      unit; NESO's dictionary gives £m.
+    alt: >-
+      Line chart from neso_data_portal/constraint_cost_fc_24m of NESO's Constraint Cost per forecast
+      month, no unit in the file, in two uploads. The September 2026 upload runs from 606.2 in
+      October 2026 down to 155.7 in July 2027, up to 443.7 in October 2027 and ends at 236.5 in
+      September 2028. The October 2026 upload starts at 520.4 in November 2026, reaches 491.6 in
+      October 2027 and ends at 474.3 in October 2028.
+    x_label: forecast month, as NESO labels it
+    key:
+      - {series: oct, label: October 2026 upload, paint: petrol, note: "File `oct26`, last modified 9 October 2026: November 2026 to October 2028."}
+      - {series: sep, label: September 2026 upload, paint: clay, note: "File `sept26`, last modified 10 September 2026: October 2026 to September 2028."}
   raw_feed:
     note: >-
       From NESO's CKAN portal: `package_show`, then the file downloaded whole unless its
@@ -36,6 +64,50 @@ page:
     commands:
       - {run: gridflow ingest neso_data_portal constraint_cost_fc_24m --last 24h, comment: whole file to bronze}
       - {run: gridflow transform neso_data_portal constraint_cost_fc_24m --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: forecast_month, op: in, value: ["2027-01-01", "2027-02-01", "2027-09-01", "2027-10-01"]}
+      order_by: [forecast_month, published_at]
+      columns: [forecast_month, published_at, constraint_cost, timestamp_utc, bronze_capture_id, capture_written_at]
+    key: [forecast_month, published_at]
+    caption: "Four forecast months, each as NESO's September and October 2026 uploads give it."
+    fields:
+      forecast_month: "NESO's `Month` label (`MMM-YY`), stored as the month's first day"
+      published_at: "NESO's last-modified time for the file, read as UTC; one per upload"
+      constraint_cost: "NESO's modelled cost for the month; the file gives no unit, its dictionary £m"
+      timestamp_utc: "gridflow's capture time, UTC; not the forecast month"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote the capture to bronze, UTC
+  caveat: Since 9 September 2026 NESO's file names no unit; only its dictionary gives £m.
+  notebook:
+    lead: >-
+      `data.sql` reads every upload from the table's base view, because `query()` would filter
+      `timestamp_utc`, the capture time. Each upload re-forecasts the months it shares with the one
+      before. Values stay unitless, as in the file.
+    cells:
+      - |
+        df = data.sql("""
+            SELECT forecast_month, published_at, constraint_cost
+            FROM silver_neso_data_portal_constraint_cost_fc_24m
+            ORDER BY forecast_month, published_at""")
+        df["published_at"] = df.published_at.dt.tz_convert("UTC")
+        df.groupby("published_at").forecast_month.agg(["min", "max", "count"]).reset_index()
+      - |
+        wide = df.pivot(index="forecast_month", columns="published_at", values="constraint_cost")
+        wide.columns = ["September upload", "October upload"]
+        change = wide.assign(change=wide["October upload"] - wide["September upload"]).dropna()
+        change.head(6).round(1).reset_index()
+      - |
+        ax = wide.plot(figsize=(8, 3.5), color=["#C77E3C", "#155A6E"], xlabel="forecast month",
+                       ylabel="Constraint Cost (no unit in the file)")
+        ax.legend(["September 2026 upload", "October 2026 upload"]);
+    needs: the September and October 2026 uploads
+    plot_alt: >-
+      Line plot of NESO's Constraint Cost per forecast month, no unit in the file, in the September
+      (clay) and October (petrol) 2026 uploads, October 2026 to October 2028. Both fall to a summer
+      low and rise each October. The October upload is lower for February 2027 (370.7 against 469.8)
+      and higher for October 2027 (491.6 against 443.7).
   related:
     - {dataset: neso_data_portal/constraint-breakdown, note: "NESO's daily outturn constraint costs, split by reason"}
     - {dataset: neso_data_portal/thermal-constraint-costs, note: "Outturn thermal constraint costs at six named boundaries"}
@@ -69,10 +141,10 @@ The package carries one resource. Each monthly publication **replaces** the file
 same resource id listed `..._aug26.csv`. The 2026-10-16 capture fetched `..._oct26.csv` from the
 same resource id. The stable handle is the resource id, not the URL.
 
-**This family is held.** The silver output exists and is reconciled, but its publication is held
-on one open question: the currency unit of the cost column (see Holds). This page therefore gives
-schema, row counts, structure and clocks only. It publishes **no cost values, ranges or
-statistics**.
+**This family is held in gridflow.** The silver output exists and is reconciled, but gridflow
+holds it on one open question: the currency unit of the cost column (see Holds). Under ruling 66
+(2026-10-24) the site page shows the rows, a chart and a notebook, with one line naming that
+question; this note still gives schema, row counts, structure and clocks only.
 
 - Publisher group: Constraint management
 - Registry group: constraint-management · archetype: FC
@@ -179,7 +251,7 @@ ones. Because each monthly upload re-forecasts overlapping months, successive ca
 different figures for the same `forecast_month`. Point-in-time use must therefore select on
 `published_at` / `available_at`, not on `forecast_month`. The two captures confirm it: they share
 23 months (November 2026 to September 2028), and the figure differs on all 23 (checked on bronze,
-2026-10-23; no values stated here while the hold stands). Whether NESO ever back-fills or
+2026-10-23). Whether NESO ever back-fills or
 restates an issued file, rather than issuing a new one, is `TODO: verify`.
 
 **Activation (2026-10-08, pilot batch E).** Transformed at cutoff 2026-10-08 (one capture,
@@ -212,7 +284,8 @@ or lifting its hold. The later rulings the batch brief lists (591 and 596 for th
 pairing, 879 for the close gaps) do not touch it, and the activation receipt records the family as
 "silver exists, publication held". Consequences while held:
 
-- The family's output is not published, and no cost figure appears on this page or in any sample.
+- The site page shows the rows with a line naming the unit question (ruling 66, 2026-10-24);
+  this note itself states no cost figure.
 - Silver rows remain readable for engineering checks (row counts, schema, month coverage), but
   must not be used as a published or point-in-time input until E-SEM answers the unit question.
   Modelling use is not endorsed while the hold stands.

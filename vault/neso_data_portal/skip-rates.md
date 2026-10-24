@@ -8,7 +8,6 @@ updated: 2026-10-12
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: true
   title: Skip rates
   summary: >-
     NESO's measure of better-priced Balancing Mechanism volume it passed over, stage by stage, by
@@ -28,44 +27,129 @@ page:
   how_used:
     - How often NESO dispatched out of price order, by half hour and stage
     - Which units and technologies were skipped, and why units were excluded
+  chart:
+    type: line
+    silver: neso_data_portal/skip_rates_summary
+    time: settlement_period_start
+    filter:
+      - {column: stage, op: eq, value: 5}
+    values:
+      - {column: bm_total_volume_skipped_offers_mwh, series: offers}
+      - {column: bm_total_volume_skipped_bids_mwh, series: bids}
+    dedup: {"on": [settlement_period_start, stage], order_by: published_at}
+    aggregation: sum
+    time_bucket: 1d
+    window: {start: "2026-07-01", end: "2026-09-30"}
+    max_points: 100
+    unit: MWh
+  chart_view:
+    title: Skipped volume at stage 5, July to September 2026
+    caption: >-
+      Silver `skip_rates_summary` at stage 5, the table's last stage, All Balancing Mechanism
+      basis: skipped offer and bid volume summed per UTC day, MWh, 1 July to 30 September 2026.
+      Blank half hours add nothing; 1 August 2026 has no rows.
+    alt: >-
+      Line chart from neso_data_portal/skip_rates_summary in MWh, stage 5, one point per UTC day,
+      1 July to 30 September 2026. Skipped offers have a daily median of 2,171.6, from 114.1 on 23
+      August to 16,884.8 on 2 July. Skipped bids have a median of 3,808.8, from 65.9 on 2 July to
+      12,285.6 on 26 July. Bids run higher in July and August, offers in September (medians
+      4,583.3 against 2,653.3). Both lines break at 1 August.
+    x_label: UTC day, from each half hour's start
+    key:
+      - {series: offers, label: Skipped offers, codes: "bm_total_volume_skipped_offers_MWh", paint: petrol, note: "Cheaper offer volume passed over, stage 5, summed per day"}
+      - {series: bids, label: Skipped bids, codes: "bm_total_volume_skipped_bids_MWh", paint: clay, note: "Better-priced bid volume passed over, stage 5, summed per day"}
   raw_feed:
     note: >-
       From NESO's CKAN portal: `package_show`, then each file whole unless `last_modified` is
       unchanged (a few shown). The two Demand Side Flexibility tables are bronze only.
     commands:
-      - {run: gridflow ingest neso_data_portal skip_rates_behind_constraints_bmu --last 24h, comment: "whole files; swap in any key"}
-      - {run: gridflow transform neso_data_portal skip_rates_behind_constraints_bmu --last 24h, comment: "the capture's date to silver"}
+      - {run: gridflow ingest neso_data_portal skip_rates_summary --last 24h, comment: "whole files; swap in any key"}
+      - {run: gridflow transform neso_data_portal skip_rates_summary --last 24h, comment: "the summary: chart and rows below"}
+  record:
+    select:
+      filter:
+        - {column: settlement_period_start, op: in, value: ["2026-07-07T09:30:00Z", "2026-07-07T10:00:00Z", "2026-07-07T11:30:00Z", "2026-07-07T12:00:00Z"]}
+        - {column: stage, op: in, value: [0, 5]}
+      dedup: {"on": [settlement_period_start, stage], order_by: published_at}
+      order_by: [settlement_period_start, stage]
+      columns: [settlement_period_start, stage, bm_skip_rate_offers_percent, post_system_action_skip_rate_offers_percent, bm_total_volume_skipped_offers_mwh, post_system_action_total_volume_skipped_offers_mwh, bm_skip_rate_bids_percent, post_system_action_skip_rate_bids_percent, bm_total_volume_skipped_bids_mwh, post_system_action_total_volume_skipped_bids_mwh]
+    key: [settlement_period_start, stage]
+    caption: "Stages 0 and 5 of four half hours on 7 July 2026; NESO left 10:00 blank."
+    fields:
+      settlement_period_start: "Start of the half hour, UTC, as NESO's dictionary and guide state"
+      stage: "Exclusion stage, 0 to 5: successive stages of NESO's method"
+      bm_skip_rate_offers_percent: "Skip rate on offers, percent, on NESO's All Balancing Mechanism basis"
+      post_system_action_skip_rate_offers_percent: "The same offer skip rate on NESO's Post System Action basis, percent"
+      bm_total_volume_skipped_offers_mwh: "Offer volume skipped, MWh, All Balancing Mechanism basis"
+      post_system_action_total_volume_skipped_offers_mwh: "Offer volume skipped, MWh, Post System Action basis; equal to All BM here"
+      bm_skip_rate_bids_percent: "Skip rate on bids, percent, on NESO's All Balancing Mechanism basis"
+      post_system_action_skip_rate_bids_percent: "The same bid skip rate on the Post System Action basis, percent"
+      bm_total_volume_skipped_bids_mwh: "Bid volume skipped, MWh, All Balancing Mechanism basis"
+      post_system_action_total_volume_skipped_bids_mwh: "Bid volume skipped, MWh, Post System Action basis; equal to All BM here"
+      timestamp_utc: "Equals the half hour's start; gridflow's time anchor"
+      published_at: "NESO's last-modified time for the whole file, read as UTC; one per capture"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote the capture to bronze, UTC
+  notebook:
+    lead: >-
+      `query()` reads the `_latest` view, the newest capture of the summary, filtering
+      `timestamp_utc` (each half hour's start) with both ends included; times come back in UK time,
+      so the first cell converts to UTC.
+    cells:
+      - |
+        df = data.neso_data_portal.query("skip_rates_summary", "2026-07-01", "2026-07-31")
+        df["start_utc"] = df.timestamp_utc.dt.tz_convert("UTC")
+        df = df.sort_values(["start_utc", "stage"], ignore_index=True)
+        df[["start_utc", "stage", "bm_skip_rate_offers_percent", "bm_total_volume_skipped_offers_mwh", "bm_total_volume_skipped_bids_mwh"]].head(6)
+      - |
+        vol = ["bm_total_volume_skipped_offers_mwh", "bm_total_volume_skipped_bids_mwh"]
+        df.groupby("stage")[vol].sum().round().astype(int)
+      - |
+        day = df[df.stage.isin([0, 5])].assign(day=lambda x: x.start_utc.dt.day)
+        daily = day.pivot_table(index="day", columns="stage", values="bm_total_volume_skipped_offers_mwh", aggfunc="sum")
+        ax = daily.plot(figsize=(8, 3.5), color=["#C77E3C", "#155A6E"], xticks=range(1, 32, 5),
+                        xlabel="UTC day of July 2026", ylabel="skipped offer volume, MWh")
+        ax.legend(["stage 0", "stage 5"]);
+    needs: the skip rates summary file
+    plot_alt: >-
+      Line plot of skipped offer volume per UTC day in July 2026, MWh, All Balancing Mechanism
+      basis. At stage 0 the daily median is 32,274, high 59,026 on 2 July. At stage 5 the median
+      is 1,982, from 117.6 on 12 July to 16,884.8 on 2 July, 0.3 to 28.6 percent of stage 0.
   family:
     slug: skip-rates
     members:
+      - dataset: skip_rates_summary
+        differs: "Skip rate and skipped volume per half hour and stage, under both measures"
+        request:
+          - "GET https://api.neso.energy/api/3/action/package_show?id=skip-rates"
+          - "GET https://api.neso.energy/dataset/c7f21d91-4e93-4162-9caa-ad9165db9c5e/resource/e4129210-ea22-4a36-aa2f-ff7bd6147675/download/1_skip_rates_summary.csv"
       - dataset: skip_rates_behind_constraints_bmu
         differs: "Monthly skips behind thermal constraints, per BM unit, bid or offer"
         request:
-          - "GET https://api.neso.energy/api/3/action/package_show?id=skip-rates"
           - "GET https://api.neso.energy/dataset/c7f21d91-4e93-4162-9caa-ad9165db9c5e/resource/26f3a3de-e5fd-43e5-9d8a-d89a9c786812/download/skips_behind_constraints_in_merit_bmu_level.csv"
-        held: NESO's dictionary and methodology slides disagree on what the skip rate is a percentage of.
+        caveat: NESO's dictionary and slides disagree on what the rate is a percentage of.
       - dataset: skip_rates_behind_constraints_cons
         differs: "The same monthly measure, per constraint"
         request: "GET https://api.neso.energy/dataset/c7f21d91-4e93-4162-9caa-ad9165db9c5e/resource/a88adc4c-d3a6-440d-946b-4e5a3e7ea1c5/download/skips_behind_constraints_in_merit_constraint_level.csv"
-        held: NESO's dictionary and methodology slides disagree on what the skip rate is a percentage of.
+        caveat: NESO's dictionary and slides disagree on what the rate is a percentage of.
       - dataset: skip_rates_exclusion_reasons
         differs: "Units excluded from the merit stack, with stage and reason; monthly files"
         request:
           - "GET https://api.neso.energy/dataset/c7f21d91-4e93-4162-9caa-ad9165db9c5e/resource/c20e81a0-1c82-4e03-913e-9e73d6daca6b/download/4_exclusions_12_2024.csv"
           - "GET https://api.neso.energy/dataset/c7f21d91-4e93-4162-9caa-ad9165db9c5e/resource/f8110eb8-f4ad-4288-87d5-37ab434b55b5/download/4_exclusions_10_2026.csv"
-        held: NESO does not say whether each five-minute time marks the start or end of its slice.
+        caveat: NESO does not say whether each five-minute time marks the start or end of its slice.
       - dataset: skip_rates_in_merit_all_bm
         differs: "Measured against all Balancing Mechanism actions: volumes per unit, five-minute, monthly files"
         request:
           - "GET https://api.neso.energy/dataset/c7f21d91-4e93-4162-9caa-ad9165db9c5e/resource/ec422c87-a316-47bf-95a2-4e0cd07114dc/download/2_in_merit_data_bm_skips_12_2024.csv"
           - "GET https://api.neso.energy/dataset/c7f21d91-4e93-4162-9caa-ad9165db9c5e/resource/fb15911f-ddda-4b87-8334-471430c0e70f/download/2_in_merit_data_bm_skips_10_2026.csv"
-        held: NESO does not say if times mark slice start or end; some monthly files are partial.
+        caveat: NESO does not say if times mark slice start or end; some monthly files are partial.
       - dataset: skip_rates_in_merit_psa
         differs: "Post System Action (PSA) basis: a more targeted measure, same columns, monthly files"
         request:
           - "GET https://api.neso.energy/dataset/c7f21d91-4e93-4162-9caa-ad9165db9c5e/resource/f8ec048d-7cd8-4eef-9323-f34311dd913c/download/3_in_merit_data_post_system_actions_skips_12_2024.csv"
           - "GET https://api.neso.energy/dataset/c7f21d91-4e93-4162-9caa-ad9165db9c5e/resource/b9806162-b605-4502-ac44-a419d2b010e5/download/3_in_merit_data_post_system_actions_skips_10_2026.csv"
-        held: NESO does not say if times mark slice start or end; some monthly files are partial.
+        caveat: NESO does not say if times mark slice start or end; some monthly files are partial.
       - dataset: skip_rates_in_merit_psa_dsf_unit
         differs: The PSA detail with Demand Side Flexibility units as their own technology
         request: "GET https://api.neso.energy/dataset/c7f21d91-4e93-4162-9caa-ad9165db9c5e/resource/d02ef4f9-b2cf-4d0c-b851-521ba6976d44/download/6_dsf_in_merit_data_psa_skips.csv"
@@ -77,19 +161,14 @@ page:
       - dataset: skip_rates_stage5_psa_technology
         differs: "Stage 5 skip rate by technology, per half hour, bid or offer"
         request: "GET https://api.neso.energy/dataset/c7f21d91-4e93-4162-9caa-ad9165db9c5e/resource/007c5786-bd34-4a09-8bdf-be5d63eda16a/download/5_fuel_type_skip_rate.csv"
-        held: NESO has reissued past rows; the files never say when each row was first published.
       - dataset: skip_rates_stage6_acceptance
         differs: "Accepted volumes and prices per unit at stage 6, five-minute"
         request: "GET https://api.neso.energy/dataset/c7f21d91-4e93-4162-9caa-ad9165db9c5e/resource/235e5cf1-745a-46e3-9e64-f7c8532abdc1/download/9_s6_acceptances.csv"
-        held: NESO does not say whether each five-minute time marks the start or end of its slice.
+        caveat: NESO does not say whether each five-minute time marks the start or end of its slice.
       - dataset: skip_rates_stage6_psa
         differs: "Units in merit at stage 6, PSA basis, five-minute; uploaded monthly"
         request: "GET https://api.neso.energy/dataset/c7f21d91-4e93-4162-9caa-ad9165db9c5e/resource/32072115-34bd-4838-92ab-96803e1b692d/download/8_in_merit_s6_data_post_system_actions_skips.csv"
-        held: NESO does not say whether each five-minute time marks the start or end of its slice.
-      - dataset: skip_rates_summary
-        differs: "Skip rate and skipped volume per half hour and stage, under both measures"
-        request: "GET https://api.neso.energy/dataset/c7f21d91-4e93-4162-9caa-ad9165db9c5e/resource/e4129210-ea22-4a36-aa2f-ff7bd6147675/download/1_skip_rates_summary.csv"
-        held: NESO has reissued past rows; the files never say when each row was first published.
+        caveat: NESO does not say whether each five-minute time marks the start or end of its slice.
   related:
     - {dataset: elexon/boal, note: "Elexon's accepted bids and offers: the actions taken instead of skipped volume"}
     - {dataset: neso_data_portal/constraint-breakdown, note: "NESO's daily constraint costs; two tables here count skips behind constraints"}
@@ -131,8 +210,7 @@ research, @.planning/phases/v0.22-K-BAL-2/K-BAL-2-FACTS.md section 5, in the gri
 **Where each family stands (2026-10-12).** The package has **77 resources, all CSV uploads**, in
 **eleven tabular families**. gridflow captured every resource on 2026-10-08, as immutable bronze
 bytes, and seven again on 2026-10-16 (see Cadence). Nine families have a record and a silver table (175,057,350 rows in all); two have no record. Only
-two silver families are eligible. **Seven are held**, so this page gives their schema, row counts, clocks
-and coverage only, **with no data values**.
+two silver families are eligible. **Seven are held** in gridflow; the front-end site shows their rows with a caveat naming the open question (ruling 66, 2026-10-24).
 
 | Family | Resources | Grain | Rows (bronze = silver) | Status |
 |---|---:|---|---:|---|
@@ -158,8 +236,8 @@ records: @src/gridflow/connectors/neso_data_portal/registry/skip-rates.json; eli
 
 **Gotchas.**
 
-- **Held means unpublished.** Seven silver tables exist on disk and are held. They may not be published
-  or used for point-in-time models until the questions in Holds are answered. No gold view reads anything
+- **Held means no model use.** Seven silver tables exist on disk and are held. They may not be used for
+  point-in-time models until the questions in Holds are answered; the site shows their rows with a caveat. No gold view reads anything
   in this package.
 - **The two DSF families have no record** because their bodies contain exact repeated rows, so no column
   key is unique (RULINGS 538: no record without a valid key; 7,830 excess repeated rows in the PSA DSF unit
@@ -355,7 +433,7 @@ rows; values are not part of the key). Coverage December 2024 to August 2026 (th
 The vendor month is a UTC month, and the current month recipe anchors on London midnight, so the raw
 `month_vendor` string is kept and `timestamp_utc` is the capture time.
 
-**Held.** The silver table exists on disk but may not be published or used for point-in-time work. No data values are given on this page. The hold is the rate denominator (`TODO: CONSTRAINT-RATE-DENOMINATOR`, see Holds). Because the
+**Held.** The silver table exists on disk but may not be used for point-in-time work; the site shows its rows with a caveat. The hold is the rate denominator (`TODO: CONSTRAINT-RATE-DENOMINATOR`, see Holds). Because the
 denominator is open, do not recompute or reinterpret `skip_rate`.
 
 ### `skip_rates_behind_constraints_cons`
@@ -391,7 +469,7 @@ supplied.
 **Clocks.** Vintage `ckan_last_modified` (capture value 2026-09-28T12:08:43.108251). Event time: `none`;
 raw `month_vendor` kept, `timestamp_utc` is the capture time.
 
-**Held.** The silver table exists on disk but may not be published or used for point-in-time work. No data values are given on this page. Same hold as the BMU file (`TODO: CONSTRAINT-RATE-DENOMINATOR`).
+**Held.** The silver table exists on disk but may not be used for point-in-time work; the site shows its rows with a caveat. Same hold as the BMU file (`TODO: CONSTRAINT-RATE-DENOMINATOR`).
 
 ### `skip_rates_exclusion_reasons`
 
@@ -433,7 +511,7 @@ to 5.
 
 **Clocks.** Vintage `ckan_last_modified`: `available_at` is the CKAN `last_modified` of the captured file (an upload stamp, not an issue time). Event time: `none`, so `timestamp_utc` is the **capture time**, not an observation time. The vendor's `date` is kept as the raw string `date_vendor`. The vendor dictionary says the column is UTC at five-minute resolution, but the support guide describes the stamp ambiguously as giving the start and end of the period, so whether it marks the slice start or end is open (`TODO: SKIP-DATE-ENDPOINT`). Observed spellings are naive or `Z`; no conflicting offset appears, so no clock correction applies.
 
-**Held.** The silver table exists on disk but may not be published or used for point-in-time work. No data values are given on this page. The hold is the five-minute endpoint (`TODO: SKIP-DATE-ENDPOINT`).
+**Held.** The silver table exists on disk but may not be used for point-in-time work; the site shows its rows with a caveat. The hold is the five-minute endpoint (`TODO: SKIP-DATE-ENDPOINT`).
 
 ### `skip_rates_in_merit_all_bm`
 
@@ -475,7 +553,7 @@ runs 0 to 5. There is **no rate column**; any rate derived from these volumes ne
 
 **Clocks.** Vintage `ckan_last_modified`: `available_at` is the CKAN `last_modified` of the captured file (an upload stamp, not an issue time). Event time: `none`, so `timestamp_utc` is the **capture time**, not an observation time. The vendor's `date` is kept as the raw string `date_vendor`. The vendor dictionary says the column is UTC at five-minute resolution, but the support guide describes the stamp ambiguously as giving the start and end of the period, so whether it marks the slice start or end is open (`TODO: SKIP-DATE-ENDPOINT`). Observed spellings are naive or `Z`; no conflicting offset appears, so no clock correction applies.
 
-**Held.** The silver table exists on disk but may not be published or used for point-in-time work. No data values are given on this page. Two questions: the endpoint (`TODO: SKIP-DATE-ENDPOINT`) and the September 2026 resource
+**Held.** The silver table exists on disk but may not be used for point-in-time work; the site shows its rows with a caveat. Two questions: the endpoint (`TODO: SKIP-DATE-ENDPOINT`) and the September 2026 resource
 `ca3587a2-ae0d-47db-b0a1-4d681af8bced`, which holds **30 September 2026 only** (00:00:00Z to 23:55:00Z,
 387,189 rows). Do not claim whole-month coverage for September 2026 (`TODO: ALL-BM-SEPTEMBER-COVERAGE`).
 Peak memory to transform this family was 4,769.9 MiB (RULINGS 695), the heaviest in the package.
@@ -518,7 +596,7 @@ grain: five-minute slice, BM unit, bid/offer, stage and pair. One resource per m
 
 **Clocks.** Vintage `ckan_last_modified`: `available_at` is the CKAN `last_modified` of the captured file (an upload stamp, not an issue time). Event time: `none`, so `timestamp_utc` is the **capture time**, not an observation time. The vendor's `date` is kept as the raw string `date_vendor`. The vendor dictionary says the column is UTC at five-minute resolution, but the support guide describes the stamp ambiguously as giving the start and end of the period, so whether it marks the slice start or end is open (`TODO: SKIP-DATE-ENDPOINT`). Observed spellings are naive or `Z`; no conflicting offset appears, so no clock correction applies.
 
-**Held.** The silver table exists on disk but may not be published or used for point-in-time work. No data values are given on this page. Two questions: the endpoint (`TODO: SKIP-DATE-ENDPOINT`) and two **coverage defects**:
+**Held.** The silver table exists on disk but may not be used for point-in-time work; the site shows its rows with a caveat. Two questions: the endpoint (`TODO: SKIP-DATE-ENDPOINT`) and two **coverage defects**:
 
 - The March 2026 resource `a04c4c6e-0526-42b4-99d0-eb114beba8a2` holds **exactly 3,200,000 rows** and
   stops at `2026-03-24T15:45:00`. The round row count does not prove the cause.
@@ -683,7 +761,7 @@ GBP per MWh.
 
 **Clocks.** Vintage `ckan_last_modified`: `available_at` is the CKAN `last_modified` of the captured file (an upload stamp, not an issue time). Event time: `none`, so `timestamp_utc` is the **capture time**, not an observation time. The vendor's `date` is kept as the raw string `date_vendor`. The vendor dictionary says the column is UTC at five-minute resolution, but the support guide describes the stamp ambiguously as giving the start and end of the period, so whether it marks the slice start or end is open (`TODO: SKIP-DATE-ENDPOINT`). Observed spellings are naive or `Z`; no conflicting offset appears, so no clock correction applies.
 
-**Held.** The silver table exists on disk but may not be published or used for point-in-time work. No data values are given on this page. The hold is the endpoint (`TODO: SKIP-DATE-ENDPOINT`).
+**Held.** The silver table exists on disk but may not be used for point-in-time work; the site shows its rows with a caveat. The hold is the endpoint (`TODO: SKIP-DATE-ENDPOINT`).
 
 ### `skip_rates_stage6_psa`
 
@@ -725,7 +803,7 @@ rows. The body carries a UTF-8 byte-order mark.
 
 **Clocks.** Vintage `ckan_last_modified`: `available_at` is the CKAN `last_modified` of the captured file (an upload stamp, not an issue time). Event time: `none`, so `timestamp_utc` is the **capture time**, not an observation time. The vendor's `date` is kept as the raw string `date_vendor`. The vendor dictionary says the column is UTC at five-minute resolution, but the support guide describes the stamp ambiguously as giving the start and end of the period, so whether it marks the slice start or end is open (`TODO: SKIP-DATE-ENDPOINT`). Observed spellings are naive or `Z`; no conflicting offset appears, so no clock correction applies.
 
-**Held.** The silver table exists on disk but may not be published or used for point-in-time work. No data values are given on this page. The hold is the endpoint (`TODO: SKIP-DATE-ENDPOINT`).
+**Held.** The silver table exists on disk but may not be used for point-in-time work; the site shows its rows with a caveat. The hold is the endpoint (`TODO: SKIP-DATE-ENDPOINT`).
 
 ### `skip_rates_summary`
 
@@ -871,8 +949,8 @@ CKAN notes.
 - `skip_rates_stage6_acceptance`: held: TODO: SKIP-DATE-ENDPOINT — does the five-minute `date` stamp mark the slice start or end? (unit v0.22-K-BAL-2b)
 - `skip_rates_stage6_psa`: held: TODO: SKIP-DATE-ENDPOINT — does the five-minute `date` stamp mark the slice start or end? (unit v0.22-K-BAL-2b)
 
-Seven silver outputs exist on disk and are **held**. They may not be published, nor used for
-point-in-time models, until the unit that settles the semantics questions (E-SEM) answers the questions
+Seven silver outputs exist on disk and are **held**. They may not be used for point-in-time
+models until the unit that settles the semantics questions (E-SEM) answers the questions
 below. The registry records each hold against the unit that created it (`v0.22-K-BAL-2b`); the
 eligibility report agrees with the registry.
 
@@ -898,10 +976,10 @@ eligibility report agrees with the registry.
 **Not held but without a record.** `skip_rates_in_merit_psa_dsf_unit` and `skip_rates_stage5_dsf_technology`
 carry repeated full rows and have no record or silver (RULINGS 538). They are ingest-only: bronze exists.
 
-**Never publish the values.** This page shows schema, row counts, clocks and coverage only for the seven
-held families. No export of their values (including minima, maxima, averages and sample rows) should be
-published until the holds are lifted. The two eligible families, the summary and the stage-5 PSA
-technology summary, are the only ones whose values appear here.
+**Rows on the site (ruling 66, 2026-10-24).** The front-end page shows rows for all nine silver tables:
+the seven held ones carry a caveat naming their question, the summary and the stage-5 PSA technology
+summary carry none. The two DSF tables have no silver table, so the page shows no rows for them. The
+holds still bar point-in-time and model use.
 
 **Activation receipt.** `gridflow transform --start/--end 2026-10-08` (RULINGS 695); no prior skip silver
 existed, so no snapshot was needed. The reconcile `--all --cutoff 2026-10-12` ended with exit 0, 132 families,

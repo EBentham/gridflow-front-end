@@ -1,0 +1,200 @@
+{
+ "dataset": "neso_data_portal/dc_dm_dr_long_term_fc",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "118369f48f441d28af7b982384d226ea3b04cc929c583ad0fd79ae0351d16a4e",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "fc = data.sql(\"\"\"\n    SELECT forecast_created, forecast_target_month, service_type, efa, interval, possibilities\n    FROM silver_neso_data_portal_dc_dm_dr_long_term_fc_latest\"\"\")\nfc.groupby(\"service_type\").agg(\n    months=(\"forecast_target_month\", \"nunique\"), created=(\"forecast_created\", \"max\")\n).reset_index()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "service_type",
+      "months",
+      "created"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5"
+     ],
+     "rows": [
+      [
+       "DC-H",
+       "13",
+       "2026-04-01"
+      ],
+      [
+       "DC-L",
+       "13",
+       "2026-04-01"
+      ],
+      [
+       "DM-H",
+       "13",
+       "2026-04-01"
+      ],
+      [
+       "DM-L",
+       "13",
+       "2026-04-01"
+      ],
+      [
+       "DR-H",
+       "13",
+       "2026-04-01"
+      ],
+      [
+       "DR_L",
+       "13",
+       "2026-04-01"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "top = fc[fc.efa == 5].sort_values(\"possibilities\", kind=\"stable\").groupby(\n    [\"service_type\", \"forecast_target_month\"]).tail(1)\nlikeliest = top.pivot(index=\"forecast_target_month\", columns=\"service_type\", values=\"interval\")\nlikeliest.rename_axis(index=None, columns=None).head(6)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "DC-H",
+      "DC-L",
+      "DM-H",
+      "DM-L",
+      "DR-H",
+      "DR_L"
+     ],
+     "index": [
+      "2026-04-01",
+      "2026-05-01",
+      "2026-06-01",
+      "2026-07-01",
+      "2026-08-01",
+      "2026-09-01"
+     ],
+     "rows": [
+      [
+       "1200-1400",
+       "1000-1200",
+       "400-600",
+       "400-600",
+       "400-600",
+       "400-600"
+      ],
+      [
+       "1200-1400",
+       "1000-1200",
+       "400-600",
+       "400-600",
+       "400-600",
+       "400-600"
+      ],
+      [
+       "1400-1600",
+       "1000-1200",
+       "400-600",
+       "400-600",
+       "400-600",
+       "400-600"
+      ],
+      [
+       "1400-1600",
+       "1000-1200",
+       "400-600",
+       "400-600",
+       "400-600",
+       "400-600"
+      ],
+      [
+       "1200-1400",
+       "1000-1200",
+       "400-600",
+       "400-600",
+       "400-600",
+       "400-600"
+      ],
+      [
+       "1200-1400",
+       "1000-1200",
+       "400-600",
+       "400-600",
+       "400-600",
+       "400-600"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "jul = fc[(fc.service_type == \"DC-H\") & (fc.forecast_target_month == \"2026-07-01\")]\nbands = [\"800-1000\", \"1000-1200\", \"1200-1400\", \"1400-1600\", \"1600-1800\"]\nax = jul.pivot(index=\"efa\", columns=\"interval\", values=\"possibilities\")[bands].plot.bar(\n    stacked=True, figsize=(8, 3.5), rot=0, xlabel=\"EFA block\", ylabel=\"Possibilities\",\n    color=[\"#9AA39A\", \"#155A6E\", \"#3E8C97\", \"#66793B\", \"#C77E3C\"])\nax.legend(ncol=5, loc=\"lower center\", bbox_to_anchor=(0.5, 1.0), frameon=False);",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "dc_dm_dr_long_term_fc-5.png",
+     "width": 737,
+     "height": 371
+    }
+   ]
+  }
+ ]
+}
