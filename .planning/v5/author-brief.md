@@ -145,7 +145,7 @@ cp <vault-worktree>/30-vendors/<vendor-dir>/datasets/<dataset>.md vault/<vendor>
 rm -f site/hifi/data/chart-specs/<vendor>/<dataset>.json authored-pages/<vendor>/<dataset>.html
 # artefacts, from real data (read only)
 uv run --system-certs --extra distil gridflow-distil --dataset <vendor>/<dataset>
-uv run --system-certs --extra distil gridflow-sample --dataset <vendor>/<dataset> [--dry-run]
+uv run --system-certs --extra distil gridflow-sample --dataset <vendor>/<dataset> [--dry-run]   # also a held page's raw sample
 C:\Users\Bobbo\OneDrive\Desktop\Python\gridflow_models\.venv\Scripts\python.exe scripts/run_notebooks.py --dataset <vendor>/<dataset>
 # the page
 uv run --system-certs --extra build gridflow-build --only <vendor>/<dataset>
@@ -168,34 +168,110 @@ stash or branch in either repo (the seat commits); edit any file that is not you
 template, CSS and Python are the seat's; report a template problem instead of working around it);
 kill processes.
 
-## Held pages (ruling 6)
+## Caveats and held pages (ruling 66)
 
-A package none of whose tables can be published is a held page: the full anatomy minus rows. Mark the
-lead note `page.held: true` on a family page (each member then gives its own `held:` reason, 16 words
-or fewer) or `page.held: <reason>` on a one-table page. Write the hero and facts (no Key line: it
-comes from `record`), `what_it_is`, `how_used`, the raw feed with each table's files, and `related`.
-Do not write `chart`, `chart_view`, `locations`, `record` or `notebook`, and commit no series, sample
-or notebook: the build fails on any of them. The page lists each table under "The silver tables" with
-its reason, and has no gold stratum. The hub links it like any other page.
+The site is a data catalogue: a table with silver rows shows them, even when a question about them is
+open. Ruling 66 supersedes ruling 6's "no rows for held tables".
+
+- **A table with silver rows and an open question** (the date order, the clock, a unit, when a row was
+  first published) gets a full page plus one plain caveat line: `caveat:`.
+- **A table with no silver rows** (gridflow keeps the raw files only: "no table: bronze only", "files
+  only") or a **licence carve-out** stays `held:`, with its reason.
+
+### Converting a held page that has silver rows
+
+1. Remove `page.held`, and remove `held:` from every family member that has a silver table.
+2. Add `chart` and `chart_view` (or `chart: {type: none, reason: ...}` where no chart fits), `record`
+   and `notebook`, exactly as for a full page, then make the artefacts (`gridflow-distil`,
+   `gridflow-sample`, `scripts/run_notebooks.py`). The Key line in the hero comes back with `record`.
+3. Add the caveat:
+   - on a one-table page, `page.caveat: <line>`;
+   - on a family page, `caveat: <line>` on each member whose rows have the question.
+
+   A member with no silver table keeps its member-level `held: <reason>`, and the page as a whole is no
+   longer held. A member may not carry both `held` and `caveat`, and a page-level `caveat` on a family
+   page fails the build.
+
+```yaml
+page:                                  # one-table page: full anatomy, plus
+  caveat: NESO's files carry no publication time, so these rows are the latest file.
+page:                                  # family page: per member
+  family:
+    members:
+      - {dataset: eac_mock_results_summary, differs: Each auction's summary, request: "GET https://...",
+         caveat: "Mock auction data, not real procurement; the timestamps' clock is not stated."}
+      - {dataset: eac_mock_results_daily_summary, differs: The daily summary, request: "GET https://...",
+         held: Mock auction data; NESO's daily files hold headers only.}
+```
+
+Inside a `{...}` member entry, quote a caveat that holds a comma, as above; unquoted, YAML splits it at
+the comma and the build fails on an unknown key. The caveat is one plain sentence of 16 words or
+fewer, the same budget as `held`. It names the open
+question and what it means for the rows a reader sees. Ruling 66's own example runs to 23 words, so
+trim it, for example to "NESO's files carry no publication time, so these rows are the latest file." (13
+words). Do not add a "Caveat:" label, a status word, "live" or a planning code: the page prints the line
+as you write it.
+
+**Where it prints.** A one-table page prints the caveat just above the frame, under its caption. A
+family member's caveat prints under the member in the raw feed, beside what differs. If the frame shows
+that member's table, the caveat also prints above the frame. The frame, chart and notebook show one
+table, the lead's or `record.select.silver`. Point the frame at the member whose rows say the most, and
+say in the chart caption if the chart shows one member.
+
+### Held pages (no silver rows)
+
+A package with no silver table at all is a held page: the full anatomy minus rows. Mark the lead note
+`page.held: true` on a family page, where each member gives its own `held:` reason (16 words or fewer).
+On a one-table page, write `page.held: <reason>`. Write the hero and facts (no Key line: it comes from
+`record`), `what_it_is`, `how_used`, the raw feed with each table's files, and `related`. Do not write
+`chart`, `chart_view`, `locations`, `record`, `notebook` or `caveat`. Commit no series, sample or
+notebook: the build fails on any of them. The page lists each table under "The silver tables" with its
+reason, and has no gold stratum. The hub links it like any other page.
 
 ```yaml
 page:
   held: true
   family:
-    slug: dynamic-containment-4-day-forecast
+    slug: eac-mock-auction-results
     members:
-      - {dataset: dc_forecast_4d, differs: The next four days, request: "GET https://...",
-         held: NESO does not say whether the slash dates are day first or month first.}
+      - {dataset: eac_mock_results_daily_summary, differs: The daily summary, request: "GET https://...",
+         held: Mock auction data; NESO's daily files hold headers only.}
 ```
+
+**A raw sample on a held page.** If the raw files may be shown (not a licence carve-out), a held page
+can show the header and first eight lines of one bronze file, exactly as NESO sent it, in the raw feed.
+Add a caveat that names the question keeping the table unpublished:
+
+```yaml
+page:
+  held: Rows repeat and there is no settlement-run column.
+  raw_feed:
+    note: ...
+    requests: ["GET https://..."]
+    commands: [...]
+    sample:
+      table: daily_balancing_costs       # optional: default the page's table (a family's lead)
+      file: q1_cost_fy2627.csv           # optional: NESO's file name; default the newest capture
+      caveat: Rows repeat with no run column, so revisions cannot be told apart.
+```
+
+Then run `uv run --system-certs --extra distil gridflow-sample --dataset <vendor>/<key> --dry-run` to
+see the lines, and run it again without `--dry-run` to write
+`site/hifi/data/raw-samples/<vendor>/<key>.json`. It reads `C:\gridflow-data\bronze` read only and
+writes nothing there. Name `file` whenever more than one file is kept. Files from one ingest share a
+capture time, so "newest" is arbitrary among them. Only CSV and text files can be sampled. Windows-1252
+files (the BSUoS forecasts) are read as such. A file with a header and no rows prints as "the file
+holds no rows". A raw sample is only for a held page. A page with silver rows shows its frame.
 
 ## Family pages (v5 D5)
 
 The family's lead member's note carries the page; `page.family` lists every member with what differs
 (14 words or fewer) and its raw request. A member with several files (a current and an archive file)
 gives `request` as a list of up to four; each prints as its own rows of the member's well:
-`request: ["GET https://.../dump/<current>", "GET https://.../dump/<archive>"]`. A member whose rows
-the page cannot show adds `held:` with the reason (16 words or fewer); the raw feed prints it under
-the member as "Rows not shown: <held>". Other members keep no `page:` block: their addresses become
+`request: ["GET https://.../dump/<current>", "GET https://.../dump/<archive>"]`. A member with no
+silver table adds `held:` with the reason (16 words or fewer); the raw feed prints it under the member
+as "Rows not shown: <held>". A member whose rows carry an open question adds `caveat:` instead (see
+"Caveats and held pages"). Other members keep no `page:` block: their addresses become
 pointers to `<family-slug>.html#<member>`. The chart, frame and notebook come from the lead's silver
 table; say so in the caption if the chart shows one member. The family's slug and members are fixed in
 `site/hifi/data/<vendor>.json` (the page set); `page.family` must name the same slug and members, and
