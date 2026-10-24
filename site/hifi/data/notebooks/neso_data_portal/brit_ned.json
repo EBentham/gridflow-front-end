@@ -1,0 +1,126 @@
+{
+ "dataset": "neso_data_portal/brit_ned",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "9115b90bda2267dc42701ac0752afb8b243be9cff4e5f7bc7a26fde88907efa0",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.sql(\"\"\"\n    SELECT resource_id, published_at, operational_date_and_hour,\n           flow_to_gb_mw_raw, flow_from_gb_mw_raw, reason_for_restriction\n    FROM silver_neso_data_portal_brit_ned_latest\"\"\")\ndf[\"published_at\"] = df.published_at.dt.tz_convert(\"UTC\")\nfiles = df.groupby(\"resource_id\").agg(published=(\"published_at\", \"first\"),\n                                      rows=(\"operational_date_and_hour\", \"size\"))\nyear = files.published.dt.year.rename(\"year_last_changed\")\nfiles.groupby(year).agg(files=(\"rows\", \"size\"), rows=(\"rows\", \"sum\")).reset_index()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "year_last_changed",
+      "files",
+      "rows"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2022",
+       "9",
+       "1296"
+      ],
+      [
+       "2023",
+       "52",
+       "5064"
+      ],
+      [
+       "2024",
+       "43",
+       "4489"
+      ],
+      [
+       "2025",
+       "44",
+       "4032"
+      ],
+      [
+       "2026",
+       "37",
+       "3936"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "df.reason_for_restriction.value_counts(dropna=False)",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "reason_for_restriction\nSystem Security    10435\nNaN                 8382\nName: count, dtype: int64"
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "plain = df.flow_from_gb_mw_raw.str.fullmatch(r\"\\d+\")\ndf.loc[plain != True, \"flow_from_gb_mw_raw\"].value_counts(dropna=False)",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "flow_from_gb_mw_raw\nNaN         434\n1,076.00      5\n1,016.00      5\n1,056.00      1\n1,013.00      1\nName: count, dtype: int64"
+    }
+   ]
+  }
+ ]
+}

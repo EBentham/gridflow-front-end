@@ -1,0 +1,313 @@
+{
+ "dataset": "neso_data_portal/bs_contract_enactment_balancing",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "9ce98bab01dd20a4a6a0c474da1487a72de82de452fc4b3c596eacbeb597150f",
+ "silver": "neso_data_portal/bs_contract_enactment_balancing",
+ "columns": [
+  {
+   "name": "id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "starttime",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "endtime",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "volume",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "price",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "cost",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "so_flag",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "reason",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "asset_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "cp_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "area",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "note",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "last_updated",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "resource_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "ES00151371",
+   "2021-10-08 22:00:00 UTC",
+   "2021-10-09 07:00:00 UTC",
+   "0.0",
+   "0.0",
+   "0.0",
+   "T",
+   "V_MERSEY",
+   "Runcorn",
+   "INOVYN CHLORVINYLS Ltd",
+   "England&Wales",
+   "Reactive contract, 62 MVAr ORPS Rate",
+   "2021-10-08 14:08:37 UTC",
+   "84837a48-8f5d-40d8-bc9f-53dd5e519447",
+   "2021-10-08 22:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/bs_contract_enactment_balancing/2026/10/08/raw_20261008T090107Z_84837a48-8f5d-40d8-bc9f-53dd5e519447_71c1c12f.csv",
+   "2026-10-08 09:01:07.347347 UTC",
+   "2021-10-08 22:00:00 UTC",
+   "2026-10-08 09:01:07.347347 UTC",
+   "621057da-5d6d-42bc-a831-ad9128a65d2c",
+   "1+e1"
+  ],
+  [
+   "ES00151373",
+   "2021-10-09 22:00:00 UTC",
+   "2021-10-10 07:00:00 UTC",
+   "0.0",
+   "0.0",
+   "0.0",
+   "T",
+   null,
+   "Runcorn",
+   "INOVYN CHLORVINYLS Ltd",
+   "England&Wales",
+   "62MVArs at ORPS Rate",
+   "2021-10-09 12:31:37 UTC",
+   "84837a48-8f5d-40d8-bc9f-53dd5e519447",
+   "2021-10-09 22:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/bs_contract_enactment_balancing/2026/10/08/raw_20261008T090107Z_84837a48-8f5d-40d8-bc9f-53dd5e519447_71c1c12f.csv",
+   "2026-10-08 09:01:07.347347 UTC",
+   "2021-10-09 22:00:00 UTC",
+   "2026-10-08 09:01:07.347347 UTC",
+   "621057da-5d6d-42bc-a831-ad9128a65d2c",
+   "1+e1"
+  ],
+  [
+   "ES00168599",
+   "2022-05-20 22:00:00 UTC",
+   "2022-05-21 07:00:00 UTC",
+   "0.0",
+   "0.0",
+   "0.0",
+   "T",
+   "V_MERSEY",
+   "Runcorn",
+   "INOVYN CHLORVINYLS Ltd",
+   "England&Wales",
+   "Reactive contract, 70MVAr - ORPS rate",
+   "2022-05-20 14:30:08 UTC",
+   "ed753a4b-1b8c-4b07-9997-b5c0e09da041",
+   "2022-05-20 22:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/bs_contract_enactment_balancing/2026/10/08/raw_20261008T090137Z_ed753a4b-1b8c-4b07-9997-b5c0e09da041_53eb3e34.csv",
+   "2026-10-08 09:01:37.339504 UTC",
+   "2022-05-20 22:00:00 UTC",
+   "2026-10-08 09:01:37.339504 UTC",
+   "621057da-5d6d-42bc-a831-ad9128a65d2c",
+   "1+e1"
+  ],
+  [
+   "ES00227515",
+   "2023-01-06 22:00:00 UTC",
+   "2023-01-07 10:00:00 UTC",
+   "-4.9",
+   "124.0",
+   "-7291.2",
+   "T",
+   "B6_localised",
+   "Carscreugh",
+   "Carscreugh Renewable Energy Park Limited",
+   "Scotland",
+   null,
+   "2023-01-06 21:28:56 UTC",
+   "ed753a4b-1b8c-4b07-9997-b5c0e09da041",
+   "2023-01-06 22:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/bs_contract_enactment_balancing/2026/10/08/raw_20261008T090137Z_ed753a4b-1b8c-4b07-9997-b5c0e09da041_53eb3e34.csv",
+   "2026-10-08 09:01:37.339504 UTC",
+   "2023-01-06 22:00:00 UTC",
+   "2026-10-08 09:01:37.339504 UTC",
+   "621057da-5d6d-42bc-a831-ad9128a65d2c",
+   "1+e1"
+  ],
+  [
+   "ES00273726",
+   "2023-12-21 06:00:00 UTC",
+   "2023-12-21 11:00:00 UTC",
+   "-15.0",
+   "124.0",
+   "-9300.0",
+   "T",
+   "B6_localised",
+   "Carscreugh",
+   "Carscreugh Renewable Energy Park Limited",
+   "Scotland",
+   null,
+   "2024-09-10 12:47:28 UTC",
+   "3ca7b6d5-d211-479f-8d5f-4bca92add3c9",
+   "2023-12-21 06:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/bs_contract_enactment_balancing/2026/10/08/raw_20261008T090207Z_3ca7b6d5-d211-479f-8d5f-4bca92add3c9_63dd2abb.csv",
+   "2026-10-08 09:02:07.396338 UTC",
+   "2023-12-21 06:00:00 UTC",
+   "2026-10-08 09:02:07.396338 UTC",
+   "621057da-5d6d-42bc-a831-ad9128a65d2c",
+   "1+e1"
+  ],
+  [
+   "ES00339135",
+   "2025-07-04 12:00:00 UTC",
+   "2025-07-04 22:00:00 UTC",
+   "-17.6",
+   "-105.0",
+   "18480.0",
+   "F",
+   "B6_localised",
+   "NORHW-1",
+   "North Rhine",
+   null,
+   null,
+   "2025-07-04 11:25:53 UTC",
+   "b13cfa5e-53e3-41de-ace6-a5d3997b532c",
+   "2025-07-04 12:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/bs_contract_enactment_balancing/2026/10/08/raw_20261008T090237Z_b13cfa5e-53e3-41de-ace6-a5d3997b532c_e8127d6c.csv",
+   "2026-10-08 09:02:37.433054 UTC",
+   "2025-07-04 12:00:00 UTC",
+   "2026-10-08 09:02:37.433054 UTC",
+   "621057da-5d6d-42bc-a831-ad9128a65d2c",
+   "1+e1"
+  ],
+  [
+   "ES00378731",
+   "2026-09-30 12:00:00 UTC",
+   "2026-09-30 16:00:00 UTC",
+   "-13.5",
+   "137.64",
+   "-7432.56",
+   "F",
+   "B6_localised",
+   "Carscreugh",
+   "Carscreugh Renewable Energy Park Limited",
+   "Scotland",
+   null,
+   "2026-09-30 12:19:19 UTC",
+   "183ecdfb-56e0-487d-8262-468ce1c78ed4",
+   "2026-09-30 12:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/bs_contract_enactment_balancing/2026/10/08/raw_20261008T090307Z_183ecdfb-56e0-487d-8262-468ce1c78ed4_19c6247a.csv",
+   "2026-10-08 09:03:07.421654 UTC",
+   "2026-09-30 12:00:00 UTC",
+   "2026-10-08 09:03:07.421654 UTC",
+   "621057da-5d6d-42bc-a831-ad9128a65d2c",
+   "1+e1"
+  ],
+  [
+   "ES00378936",
+   "2026-09-30 16:00:00 UTC",
+   "2026-09-30 17:00:00 UTC",
+   "-10.9",
+   "137.64",
+   "-1507.16",
+   "F",
+   "B6_localised",
+   "Carscreugh",
+   "Carscreugh Renewable Energy Park Limited",
+   "Scotland",
+   null,
+   "2026-09-30 15:31:39 UTC",
+   "183ecdfb-56e0-487d-8262-468ce1c78ed4",
+   "2026-09-30 16:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/bs_contract_enactment_balancing/2026/10/08/raw_20261008T090307Z_183ecdfb-56e0-487d-8262-468ce1c78ed4_19c6247a.csv",
+   "2026-10-08 09:03:07.421654 UTC",
+   "2026-09-30 16:00:00 UTC",
+   "2026-10-08 09:03:07.421654 UTC",
+   "621057da-5d6d-42bc-a831-ad9128a65d2c",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

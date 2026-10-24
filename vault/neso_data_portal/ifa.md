@@ -8,7 +8,6 @@ updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: true
   title: IFA transfer limits
   summary: >-
     NESO's hourly limits on flow each way over the IFA interconnector, in MW, with reasons.
@@ -28,6 +27,36 @@ page:
     - Which hours NESO restricted the link, by direction, from the stated reason
     - "A feature for flow and price models: when NESO restricted the link"
     - Set beside the final capacity the link's trading facilitator publishes
+  chart:
+    type: line
+    silver: neso_data_portal/ifa_itl
+    time: operational_period_start_gmt
+    filter:
+      - {column: auction_type, op: eq, value: Intraday 1}
+    dedup: {on: [operational_period_start_gmt], order_by: capture_written_at}
+    values:
+      - {column: flow_to_gb_mw, series: to_gb}
+      - {column: flow_from_gb_mw, series: from_gb}
+    aggregation: min
+    window: {start: "2026-10-09", end: "2026-10-15"}
+    unit: MW
+  chart_view:
+    title: Intraday 1 limits each way, 9 to 15 October 2026
+    caption: >-
+      Silver `ifa_itl`, `Intraday 1` rows (the table has no day-ahead rows), one per hour, as NESO's
+      file stood when fetched on 16 October 2026. Each upload precedes its hour, but NESO does not say
+      rows are unchanged since.
+    alt: >-
+      Line chart from neso_data_portal/ifa_itl of NESO's Intraday 1 limits each way over IFA, MW,
+      hourly, 9 to 15 October 2026. To GB is 2,000 MW in 160 of 168 hours, dipping to 1,480 at 04:00
+      UTC on 9 October and to 1,080 at midnight on 11 October. From GB is 2,000 in only 38 hours: it
+      is 0 from 07:00 to 21:00 on 9 October, 16:00 to 20:00 on 11 October and 08:00 to 15:00 on 12 and
+      15 October, and below 1,000 for most of 11 to 14 October.
+    x_label: hour start, UTC (NESO labels it GMT)
+    y_min: -40
+    key:
+      - {series: to_gb, label: To GB, note: "Import limit, NESO's `Flow in MW To GB`", paint: petrol}
+      - {series: from_gb, label: From GB, note: "Export limit, NESO's `Flow in MW From GB`", paint: clay}
   raw_feed:
     note: >-
       From NESO's CKAN portal: `package_show`, the current table's dump and the archive CSV. Fetched
@@ -37,6 +66,57 @@ page:
          comment: "current table to bronze, then silver"}
       - {run: gridflow pipeline neso_data_portal ifa_da_id_weekly_itls --last 24h,
          comment: "archive to bronze, then silver"}
+  record:
+    select:
+      filter:
+        - {column: bronze_capture_id, op: eq, value: "bronze/neso_data_portal/ifa_itl/2026/10/16/raw_20261016T203818Z_9e539e05-e09c-4983-91fd-c766f03d0339_9c7df8e4.csv"}
+        - {column: operational_period_start_gmt, op: ge, value: "2026-08-17T15:00:00Z"}
+        - {column: operational_period_start_gmt, op: le, value: "2026-08-17T18:00:00Z"}
+      order_by: [operational_period_start_gmt, auction_type]
+      columns: [operational_period_start_gmt, auction_type, data_upload_time_gmt, flow_to_gb_mw,
+                reason_for_restriction_to_gb, flow_from_gb_mw, reason_for_restriction_from_gb, issue_time]
+    key: [issue_time, auction_type, operational_period_start_gmt]
+    caption: "Four hours of 17 August 2026, two auctions each; from 16:00 `Intraday 2` allows no exports."
+    fields:
+      operational_period_start_gmt: "Start of the hour the limits apply to; header says GMT, read as UTC"
+      auction_type: "The auction the limits are for; this table lists `Intraday 1` to `Intraday 4`"
+      data_upload_time_gmt: "When NESO says the row was published; its header says GMT, read as UTC"
+      flow_to_gb_mw: "The most power that may flow into GB in the hour, MW"
+      reason_for_restriction_to_gb: "NESO's reason for the import limit, or `No Restriction`"
+      flow_from_gb_mw: "The most power that may flow out of GB in the hour, MW"
+      reason_for_restriction_from_gb: "NESO's reason for the export limit, or `No Restriction`"
+      issue_time: "A copy of the upload time; not taken as when the row first appeared"
+      timestamp_utc: "Equals `operational_period_start_gmt`; gridflow's event time"
+      published_at: "Null: gridflow takes no publication time from a datastore dump"
+      bronze_capture_id: The bronze file the row was read from
+      capture_written_at: When gridflow wrote the capture to bronze, UTC
+  notebook:
+    lead: >-
+      Returns a pandas DataFrame from `silver_neso_data_portal_ifa_itl_latest`, the newest capture,
+      filtered on the hour's start with both ends included; times come back in Europe/London and are converted to UTC.
+    cells:
+      - |
+        df = data.neso_data_portal.query("ifa_itl", "2026-10-09", "2026-10-15")
+        for c in ["operational_period_start_gmt", "data_upload_time_gmt"]:
+            df[c] = df[c].dt.tz_convert("UTC")
+        df = df.sort_values(["operational_period_start_gmt", "auction_type"], ignore_index=True)
+        df[["operational_period_start_gmt", "auction_type", "data_upload_time_gmt",
+            "flow_to_gb_mw", "flow_from_gb_mw", "reason_for_restriction_from_gb"]].head()
+      - |
+        reasons = df.groupby("auction_type").reason_for_restriction_from_gb.value_counts()
+        reasons.unstack(fill_value=0).rename_axis(columns=None).reset_index()
+      - |
+        wide = df.pivot(index="operational_period_start_gmt", columns="auction_type",
+                        values="flow_from_gb_mw").asfreq("h")
+        ax = wide.plot(drawstyle="steps-post", figsize=(8, 3.5), xlabel="hour start, UTC",
+                       ylabel="export limit, MW")
+        ax.legend(loc="lower left", bbox_to_anchor=(0, 1), ncols=4);
+    needs: IFA's current table
+    plot_alt: >-
+      Step plot, UTC, of NESO's IFA export limit by auction, 9 to 15 October 2026. Intraday 1
+      lists every hour: 0 MW in 46 of them, longest from 07:00 to 21:00 UTC on 9 October, and 2,000 at
+      times on most days. Intraday 2 lists only 12 October 22:00 to 13 October 21:00 UTC, from 370 to
+      2,000.
   family:
     slug: ifa
     members:
@@ -45,13 +125,13 @@ page:
         request:
           - "GET https://api.neso.energy/api/3/action/package_show?id=ifa"
           - "GET https://api.neso.energy/datastore/dump/9e539e05-e09c-4983-91fd-c766f03d0339"
-        held: "Nearly every hour is already past, and NESO does not say rows are unchanged since upload."
+        caveat: "NESO does not say rows stay as uploaded, so past limits may not be as issued."
       - dataset: ifa_da_id_weekly_itls
         differs: "Archive to December 2024: hours by operational date and GMT/BST range; no upload time"
         request:
           - "GET https://api.neso.energy/api/3/action/package_show?id=ifa"
           - "GET https://api.neso.energy/dataset/a95d222b-e390-4ad0-af17-09de957616ed/resource/2b38e754-a92e-4383-827d-5e6c10c882b0/download/archived_ifa-2.csv"
-        held: "Hour labels have no defined day or clock, and no row says when NESO issued it."
+        caveat: "NESO does not define the operational day or GMT/BST hours; each hour predates the file's upload."
   related:
     - {dataset: neso_data_portal/ifa2, note: "The same NESO limits on IFA2, another GB interconnector"}
     - {dataset: neso_data_portal/eleclink, note: "NESO's limits on ElecLink, another GB interconnector"}
@@ -89,9 +169,9 @@ The package has two resources, and gridflow keeps each as its own family:
 **Both outputs are held (unit E-SEM).** The current dump returns past targets and NESO does not
 say a row is unchanged since its upload time. The archive's operational-date rollover and
 GMT/BST labels are undocumented, and every target precedes the upload. See Holds. The outputs
-exist in silver, but they are not eligible for publication or point-in-time model use until
-E-SEM is answered (RULINGS 565, 567). **This page gives schema, clocks and row counts only, and
-no data values.**
+exist in silver, but they are not eligible for point-in-time model use until
+E-SEM is answered (RULINGS 565, 567). This note gives schema, clocks and row counts; under ruling
+66 (2026-10-24) the site page shows the rows, with one line per family naming its question.
 
 Related pages: the sister link @ifa2.md has the same two-resource shape. @eleclink.md is another
 GB–France link. Interconnector static facts are in @interconnector-register.md. ENTSO-E's
@@ -165,7 +245,7 @@ Schema, epoch 1:
 | `published_at` | CKAN `last_modified` of the captured file (ADR-030) |
 | `available_at` | = `published_at` |
 
-**Held (unit E-SEM). This page gives schema, clocks and counts only, and no data values.**
+**Held (unit E-SEM).** This note gives schema, clocks and counts; the site page shows the rows with a caveat line (ruling 66, 2026-10-24).
 
 **The two clocks for this family:**
 
@@ -257,7 +337,7 @@ Schema, epoch 1:
 | `published_at` | null |
 | `available_at` | gridflow capture time (sidecar `written_at`), labelled so |
 
-**Held (unit E-SEM). This page gives schema, clocks and counts only, and no data values.**
+**Held (unit E-SEM).** This note gives schema, clocks and counts; the site page shows the rows with a caveat line (ruling 66, 2026-10-24).
 
 **The two clocks for this family:**
 
@@ -367,8 +447,8 @@ gridflow outputs derived from this package carry the attribution line above. Pac
 - `ifa_da_id_weekly_itls`: held: TODO: the archive's operational-date rollover, GMT/BST interpretation and `(a)`/`(b)` repeated-hour labels are undocumented, and every target precedes the upload's last_modified, so the forward-target rule (RULINGS 529) cannot apply. (unit E-SEM)
 - `ifa_itl`: held: TODO: the dump returns past targets (rows before the capture) and NESO does not state that a row is unchanged since its `Data Upload Time GMT`, so historical issued limits are not evidenced. (unit E-SEM)
 
-Both held outputs exist in silver but are not eligible for publication or point-in-time model
-use until unit E-SEM answers its question (RULINGS 565, 567). This page publishes their schema,
-clocks and row counts only. No data value, sample row or value statistic for either family is
-published here. The holds apply to the captured bodies and to later captures unless NESO
+Both held outputs exist in silver but are not eligible for point-in-time model
+use until unit E-SEM answers its question (RULINGS 565, 567). Under ruling 66 (2026-10-24) the
+site page shows the rows of both, each family with one line naming its question, and draws the
+current table's limits only as the table stood when fetched, not as first issued. The holds apply to the captured bodies and to later captures unless NESO
 supplies the missing definitions.

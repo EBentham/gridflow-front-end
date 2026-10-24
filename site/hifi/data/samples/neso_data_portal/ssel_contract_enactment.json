@@ -1,0 +1,352 @@
+{
+ "dataset": "neso_data_portal/ssel_contract_enactment",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "8b29b6703f1656de87ece1f1bfc35f292b54062a5c1562f803910bfb873d0552",
+ "silver": "neso_data_portal/ssel_contract_enactment",
+ "columns": [
+  {
+   "name": "id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "unit",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "asset_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "starttime",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "endtime",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "reduction_mw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "price_mw_hr",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "volume",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "price",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "cost",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "reason",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "last_updated",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "so_flag",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "cp_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "area",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "note",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "resource_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "1",
+   "DRAXX-3",
+   null,
+   "2020-07-04 22:00:00 UTC",
+   "2020-07-05 07:00:00 UTC",
+   "100.0",
+   "58.0",
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   "835d50b9-2d7c-4318-bd04-c7f94b149041",
+   "2020-07-04 22:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/ssel_contract_enactment/2026/10/08/raw_20261008T112422Z_835d50b9-2d7c-4318-bd04-c7f94b149041_ab93d260.csv",
+   "2026-10-08 11:24:22.987921 UTC",
+   "2020-07-04 22:00:00 UTC",
+   "2026-10-08 11:24:22.987921 UTC",
+   "ea0348ce-d110-458d-a9fa-c921777764de",
+   "1+e1"
+  ],
+  [
+   "4",
+   "HUMR-1",
+   null,
+   "2020-08-21 06:00:00 UTC",
+   "2020-08-21 08:00:00 UTC",
+   "150.0",
+   "25.0",
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   "835d50b9-2d7c-4318-bd04-c7f94b149041",
+   "2020-08-21 06:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/ssel_contract_enactment/2026/10/08/raw_20261008T112422Z_835d50b9-2d7c-4318-bd04-c7f94b149041_ab93d260.csv",
+   "2026-10-08 11:24:22.987921 UTC",
+   "2020-08-21 06:00:00 UTC",
+   "2026-10-08 11:24:22.987921 UTC",
+   "ea0348ce-d110-458d-a9fa-c921777764de",
+   "1+e1"
+  ],
+  [
+   "8",
+   "SCCL-1",
+   null,
+   "2020-09-13 16:00:00 UTC",
+   "2020-09-13 22:00:00 UTC",
+   "95.0",
+   "63.16",
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   "835d50b9-2d7c-4318-bd04-c7f94b149041",
+   "2020-09-13 16:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/ssel_contract_enactment/2026/10/08/raw_20261008T112422Z_835d50b9-2d7c-4318-bd04-c7f94b149041_ab93d260.csv",
+   "2026-10-08 11:24:22.987921 UTC",
+   "2020-09-13 16:00:00 UTC",
+   "2026-10-08 11:24:22.987921 UTC",
+   "ea0348ce-d110-458d-a9fa-c921777764de",
+   "1+e1"
+  ],
+  [
+   "17",
+   "DRAXX-1",
+   null,
+   "2021-03-11 01:00:00 UTC",
+   "2021-03-11 06:00:00 UTC",
+   "95.0",
+   "58.0",
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   "835d50b9-2d7c-4318-bd04-c7f94b149041",
+   "2021-03-11 01:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/ssel_contract_enactment/2026/10/08/raw_20261008T112422Z_835d50b9-2d7c-4318-bd04-c7f94b149041_ab93d260.csv",
+   "2026-10-08 11:24:22.987921 UTC",
+   "2021-03-11 01:00:00 UTC",
+   "2026-10-08 11:24:22.987921 UTC",
+   "ea0348ce-d110-458d-a9fa-c921777764de",
+   "1+e1"
+  ],
+  [
+   "ES00159754",
+   null,
+   "DRAXX-3",
+   "2022-01-03 23:00:00 UTC",
+   "2022-01-04 07:00:00 UTC",
+   null,
+   null,
+   "100.0",
+   "58.0",
+   "46400.0",
+   "V_NORTH",
+   "2022-01-03 21:13:47 UTC",
+   "T",
+   "Drax Power Ltd",
+   null,
+   null,
+   "bf9ca254-e9de-4aa2-841a-fb34566de38a",
+   "2022-01-03 23:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/ssel_contract_enactment/2026/10/08/raw_20261008T112453Z_bf9ca254-e9de-4aa2-841a-fb34566de38a_3d0f6244.csv",
+   "2026-10-08 11:24:53.923042 UTC",
+   "2022-01-03 23:00:00 UTC",
+   "2026-10-08 11:24:53.923042 UTC",
+   "ea0348ce-d110-458d-a9fa-c921777764de",
+   "1+e1"
+  ],
+  [
+   "ES00232575",
+   null,
+   "DRAXX-3",
+   "2022-01-03 23:00:00 UTC",
+   "2022-01-04 07:00:00 UTC",
+   null,
+   null,
+   "-100.0",
+   "58.0",
+   "-46400.0",
+   "V_NORTH",
+   "2023-02-08 09:47:28 UTC",
+   "T",
+   "Drax Power Ltd",
+   null,
+   null,
+   "34f185bc-087a-41b2-b514-305e31158e5a",
+   "2022-01-03 23:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/ssel_contract_enactment/2026/10/08/raw_20261008T112523Z_34f185bc-087a-41b2-b514-305e31158e5a_3e4e6917.csv",
+   "2026-10-08 11:25:23.100777 UTC",
+   "2022-01-03 23:00:00 UTC",
+   "2026-10-08 11:25:23.100777 UTC",
+   "ea0348ce-d110-458d-a9fa-c921777764de",
+   "1+e1"
+  ],
+  [
+   "ES00299447",
+   null,
+   "GRAI-6",
+   "2024-06-13 11:00:00 UTC",
+   "2024-06-13 15:00:00 UTC",
+   null,
+   null,
+   "-95.0",
+   "29.6",
+   "-11248.0",
+   "Downward Reg",
+   "2024-06-17 12:39:44 UTC",
+   "T",
+   "Uniper Global Commodities SE",
+   null,
+   null,
+   "43078fd2-7583-4b0a-b398-e48de3817515",
+   "2024-06-13 11:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/ssel_contract_enactment/2026/10/08/raw_20261008T112623Z_43078fd2-7583-4b0a-b398-e48de3817515_8efaf3df.csv",
+   "2026-10-08 11:26:23.233088 UTC",
+   "2024-06-13 11:00:00 UTC",
+   "2026-10-08 11:26:23.233088 UTC",
+   "ea0348ce-d110-458d-a9fa-c921777764de",
+   "1+e1"
+  ],
+  [
+   "ES00326939",
+   null,
+   "DRAXX-3",
+   "2025-05-13 12:00:00 UTC",
+   "2025-05-13 14:00:00 UTC",
+   null,
+   null,
+   "-100.0",
+   "58.0",
+   "-11600.0",
+   "Downward Reg",
+   "2025-05-13 09:51:59 UTC",
+   "T",
+   "Drax Power Ltd",
+   null,
+   null,
+   "8e7168fa-8617-4d83-9696-d6bf1f09c9c5",
+   "2025-05-13 12:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/ssel_contract_enactment/2026/10/08/raw_20261008T112653Z_8e7168fa-8617-4d83-9696-d6bf1f09c9c5_43b83723.csv",
+   "2026-10-08 11:26:53.176175 UTC",
+   "2025-05-13 12:00:00 UTC",
+   "2026-10-08 11:26:53.176175 UTC",
+   "ea0348ce-d110-458d-a9fa-c921777764de",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

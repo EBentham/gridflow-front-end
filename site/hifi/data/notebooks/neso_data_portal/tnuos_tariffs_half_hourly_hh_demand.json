@@ -1,0 +1,221 @@
+{
+ "dataset": "neso_data_portal/tnuos_tariffs_half_hourly_hh_demand",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "f97c212c84049bd8423321c297b952d76b685b9a10fcfbe13fdd0a30235c8e79",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.sql(\"\"\"\n    SELECT publication, year_fy, published_date, zone_no, zone_name,\n           hh_tariff_floored_gbp_per_kw\n    FROM silver_neso_data_portal_tnuos_tariffs_half_hourly_hh_demand_latest\n    ORDER BY year_fy, published_date, zone_no\"\"\")\ndf.head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "publication",
+      "year_fy",
+      "published_date",
+      "zone_no",
+      "zone_name",
+      "hh_tariff_floored_gbp_per_kw"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "Final",
+       "2021",
+       "2020-01-31",
+       "1",
+       "Northern Scotland",
+       "21.126849"
+      ],
+      [
+       "Final",
+       "2021",
+       "2020-01-31",
+       "2",
+       "Southern Scotland",
+       "28.760295"
+      ],
+      [
+       "Final",
+       "2021",
+       "2020-01-31",
+       "3",
+       "Northern",
+       "40.022002"
+      ],
+      [
+       "Final",
+       "2021",
+       "2020-01-31",
+       "4",
+       "North West",
+       "46.674676"
+      ],
+      [
+       "Final",
+       "2021",
+       "2020-01-31",
+       "5",
+       "Yorkshire",
+       "47.834680"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "stages = df.groupby([\"year_fy\", \"publication\"]).published_date.nunique()\nstages.unstack(fill_value=0)[[\"Forecast\", \"Draft\", \"Final\"]].rename_axis(index=None, columns=None)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "Forecast",
+      "Draft",
+      "Final"
+     ],
+     "index": [
+      "2021",
+      "2022",
+      "2023",
+      "2024",
+      "2025",
+      "2026",
+      "2027",
+      "2028",
+      "2029",
+      "2030",
+      "2031"
+     ],
+     "rows": [
+      [
+       "0",
+       "0",
+       "1"
+      ],
+      [
+       "0",
+       "1",
+       "1"
+      ],
+      [
+       "3",
+       "1",
+       "1"
+      ],
+      [
+       "4",
+       "1",
+       "1"
+      ],
+      [
+       "4",
+       "1",
+       "1"
+      ],
+      [
+       "5",
+       "1",
+       "1"
+      ],
+      [
+       "5",
+       "1",
+       "1"
+      ],
+      [
+       "4",
+       "0",
+       "0"
+      ],
+      [
+       "2",
+       "0",
+       "0"
+      ],
+      [
+       "2",
+       "0",
+       "0"
+      ],
+      [
+       "1",
+       "0",
+       "0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "final = df[df.publication == \"Final\"].pivot(index=\"year_fy\", columns=\"zone_name\",\n                                            values=\"hh_tariff_floored_gbp_per_kw\")\nzones = [\"South Western\", \"London\", \"Midlands\", \"Northern Scotland\"]\nfinal[zones].plot(color=[\"#155A6E\", \"#C77E3C\", \"#66793B\", \"#3E8C97\"], marker=\"o\",\n                  figsize=(8, 3.5), xlabel=\"financial year, by its ending year\",\n                  ylabel=\"final HH demand tariff, £/kW\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "tnuos_tariffs_half_hourly_hh_demand-5.png",
+     "width": 690,
+     "height": 337
+    }
+   ]
+  }
+ ]
+}

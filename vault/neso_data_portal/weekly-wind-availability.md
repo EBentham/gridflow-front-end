@@ -8,7 +8,6 @@ updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: "NESO never defines its week labels, so no row can be tied to a calendar week."
   title: Weekly wind availability by BM unit
   summary: >-
     NESO's technical availability of each wind balancing mechanism (BM) unit in MW, by week; NESO
@@ -26,6 +25,32 @@ page:
   how_used:
     - "Wind availability per BM unit, further ahead than the daily file's 14 days"
     - "Capacity changes by unit, as a supply input to longer-range margin outlooks"
+  chart:
+    type: bar
+    silver: neso_data_portal/weekly_wind_availability
+    group: bmu_id
+    value: mw
+    filter:
+      - {column: published_at, op: ge, value: "2026-10-16T00:00:00Z"}
+      - {column: week_number, op: eq, value: 44W26}
+    aggregation: last
+    sort: value_desc
+    limit: 12
+    unit: MW
+  chart_view:
+    title: The 12 largest BM units in week label 44W26
+    caption: >-
+      Silver `weekly_wind_availability`, MW: NESO's `MW` for the 12 BM units with the most in label
+      `44W26`, the first label of NESO's file of 16 October 2026. One label only, so no week is
+      dated.
+    alt: >-
+      Horizontal bar chart from neso_data_portal/weekly_wind_availability of NESO's MW in week label
+      44W26 for the 12 largest wind BM units: HOWBO-1, HOWBO-2 and HOWBO-3 at 440 each, TKNEW-1 at
+      412, HOWAO-2 at 401, HOWAO-1 and HOWAO-3 at 400, TKNWW-1 at 390, SGRWO-6 at 361, EAAO-1 and
+      EAAO-2 at 340, and WLNYO-3 at 330.
+    key:
+      - {series: mw, label: "NESO's MW", codes: MW, paint: horizon,
+         note: "NESO's package calls it technical availability; its dictionary calls the column capacity"}
   raw_feed:
     note: >-
       From NESO's CKAN portal: one `package_show`, then the CSV, downloaded whole unless its
@@ -36,6 +61,42 @@ page:
     commands:
       - {run: gridflow ingest neso_data_portal weekly_wind_availability --last 24h, comment: "a changed file to bronze"}
       - {run: gridflow transform neso_data_portal weekly_wind_availability --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: published_at, op: ge, value: "2026-10-16T00:00:00Z"}
+        - {column: bmu_id, op: in, value: [ARCHW-1, GNAPW-1]}
+        - {column: week_number, op: in, value: [50W26, 51W26, 52W26, 53W26]}
+      order_by: [bmu_id, week_number]
+      columns: [bmu_id, week_number, mw, published_at]
+    key: [bmu_id, week_number]
+    caption: "Two units, labels `50W26` to `53W26`, 16 October 2026 file; both show 0 in `51W26`."
+    fields:
+      bmu_id: "The wind BM unit, as NESO writes it in `BMU_ID`"
+      week_number: "NESO's week label, as written; NESO ties it to no dates"
+      mw: "NESO's `MW`: technical availability per its package, capacity per its dictionary"
+      published_at: "NESO's last-modified time for the file, read as UTC"
+      timestamp_utc: "gridflow's capture time, UTC; not the target week"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  caveat: NESO does not define its week labels, so no row can be tied to calendar dates.
+  notebook:
+    lead: >-
+      `data.sql` reads the `_latest` view (the newest capture), because `query()` would filter
+      `timestamp_utc`, the capture time. Week labels stay as NESO writes them, never converted to
+      dates.
+    cells:
+      - |
+        df = data.sql("""
+            SELECT bmu_id, week_number, mw, published_at
+            FROM silver_neso_data_portal_weekly_wind_availability_latest""")
+        df["published_at"] = df.published_at.dt.tz_convert("UTC")
+        print("BM units:", df.bmu_id.nunique(), "| week labels:", df.week_number.nunique())
+        df.head()
+      - |
+        spread = df.groupby("bmu_id").mw.agg(["min", "max", "nunique"])
+        spread[spread["nunique"] > 1].sort_values("max", ascending=False).head(8)
+    needs: a recent capture of NESO's weekly wind availability file
   related:
     - {dataset: neso_data_portal/daily_wind_availability, note: "The same availability by day, 2 to 14 days ahead"}
     - {dataset: elexon/uou2t14d, note: "Elexon's available output per BM unit, 2 to 14 days ahead"}
@@ -59,8 +120,8 @@ each new upload replaces the previous one.
 **The output is held (unit E-SEM).** NESO does not define the `Week Number` calendar, so no row
 can be dated to a target week. The body also carries more week labels than the package's
 documented horizon. See Holds. The output exists in silver, but it is not eligible for
-publication or point-in-time model use until E-SEM is answered (RULINGS 547, 551). **This page
-gives schema, clocks and row counts only, and no data values.**
+point-in-time model use until E-SEM is answered (RULINGS 547, 551). Under ruling 66
+(2026-10-24) the site page shows its rows with the question as a caveat.
 
 Related reference: the BM unit identifiers match Elexon's National Grid BMU namespace for a
 subset. Of 281 distinct identifiers, 233 match `national_grid_bm_unit` in the local Elexon
@@ -120,7 +181,7 @@ Schema, epoch 1:
 | `published_at` | CKAN `last_modified` of the captured file (ADR-030) |
 | `available_at` | = `published_at` |
 
-**Held (unit E-SEM). This page gives schema, clocks and counts only, and no data values.**
+**Held (unit E-SEM) from point-in-time model use; the site page shows its rows with its question as a caveat (ruling 66, 2026-10-24).**
 
 **The two clocks for this family:**
 
@@ -231,8 +292,8 @@ gridflow outputs derived from this package carry the attribution line above.
 
 - `weekly_wind_availability`: held: TODO: NESO does not define the `Week Number` calendar (week system, year, start day, zone), so no target week can be dated; the body also carries 155 week labels against a documented 2-52-week horizon. (unit E-SEM)
 
-The held output exists in silver but is not eligible for publication or point-in-time model use
-until unit E-SEM answers its question (RULINGS 547, 551). This page publishes its schema, clocks
-and row counts only. No data value, sample row or value statistic for this family is published
-here. The hold applies to the captured body and to later captures unless NESO defines the
+The held output exists in silver but is not eligible for point-in-time model use until unit E-SEM
+answers its question (RULINGS 547, 551). Under ruling 66 (2026-10-24) the site page shows its
+rows, a chart of one week label and a notebook, with the question as a caveat; nothing on it
+dates a week label. The hold applies to the captured body and to later captures unless NESO defines the
 calendar.

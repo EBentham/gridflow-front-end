@@ -1,0 +1,20 @@
+{
+ "dataset": "neso_data_portal/disaggregated_bsad",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "2c92612026cd1c00656bef9054092a7359e22be608768194c82ccadec09a4fa0",
+ "table": "disaggregated_bsad",
+ "file": "bs_disbsd_01-04-2018_31-03-2019.csv",
+ "body_sha256": "3c7a9060deff3e743a12de9f2072287110689203b18a9bad68b697d72382f4b5",
+ "encoding": "utf-8",
+ "lines": [
+  "Date,Settlement Period,Disaggregated BSAD Volume (MWh),Disaggregated BSAD Cost (£),Trade Flag System (T) / Energy (F)",
+  "01/04/2018,1,120,8640,T",
+  "01/04/2018,2,120,8640,T",
+  "01/04/2018,2,0.067,3.36,F",
+  "01/04/2018,2,0.067,3.36,F",
+  "01/04/2018,2,0.067,3.36,F",
+  "01/04/2018,2,0.067,3.36,F",
+  "01/04/2018,2,0.067,3.36,F",
+  "01/04/2018,2,0.067,3.36,F"
+ ]
+}

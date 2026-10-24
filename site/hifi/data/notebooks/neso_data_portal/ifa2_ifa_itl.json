@@ -1,0 +1,161 @@
+{
+ "dataset": "neso_data_portal/ifa2_ifa_itl",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "b314bd03ac181088cec90bc87615fabe6de5de9a11f0bc0588a668e88c3b3979",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.neso_data_portal.query(\"ifa2_ifa_itl\", \"2026-10-09\", \"2026-10-15\")\nfor c in [\"operational_period_start_gmt\", \"data_upload_time_gmt\"]:\n    df[c] = df[c].dt.tz_convert(\"UTC\")\ndf = df.sort_values([\"operational_period_start_gmt\", \"auction_type\"], ignore_index=True)\ndf[[\"operational_period_start_gmt\", \"auction_type\", \"data_upload_time_gmt\",\n    \"flow_to_gb_mw\", \"flow_from_gb_mw\", \"reason_for_restriction_from_gb\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "operational_period_start_gmt",
+      "auction_type",
+      "data_upload_time_gmt",
+      "flow_to_gb_mw",
+      "flow_from_gb_mw",
+      "reason_for_restriction_from_gb"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2026-10-09 00:00:00+00:00",
+       "Intraday 1",
+       "2026-10-08 17:45:08+00:00",
+       "1014.0",
+       "190.0",
+       "Network Constraints"
+      ],
+      [
+       "2026-10-09 01:00:00+00:00",
+       "Intraday 1",
+       "2026-10-08 17:45:08+00:00",
+       "1014.0",
+       "150.0",
+       "Network Constraints"
+      ],
+      [
+       "2026-10-09 02:00:00+00:00",
+       "Intraday 1",
+       "2026-10-08 17:45:08+00:00",
+       "1014.0",
+       "550.0",
+       "Network Constraints"
+      ],
+      [
+       "2026-10-09 03:00:00+00:00",
+       "Intraday 1",
+       "2026-10-08 17:45:08+00:00",
+       "1014.0",
+       "500.0",
+       "Network Constraints"
+      ],
+      [
+       "2026-10-09 04:00:00+00:00",
+       "Intraday 1",
+       "2026-10-08 17:45:08+00:00",
+       "1014.0",
+       "600.0",
+       "Network Constraints"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "reasons = df.groupby(\"auction_type\").reason_for_restriction_from_gb.value_counts()\nreasons.unstack(fill_value=0).rename_axis(columns=None).reset_index()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "auction_type",
+      "Network Constraints",
+      "No Restriction"
+     ],
+     "index": [
+      "0"
+     ],
+     "rows": [
+      [
+       "Intraday 1",
+       "104",
+       "40"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "wide = df.pivot(index=\"operational_period_start_gmt\", columns=\"auction_type\",\n                values=\"flow_from_gb_mw\").asfreq(\"h\")\nax = wide.plot(drawstyle=\"steps-post\", figsize=(8, 3.5), xlabel=\"hour start, UTC\",\n               ylabel=\"export limit, MW\")\nax.legend(loc=\"lower left\", bbox_to_anchor=(0, 1), ncols=4);",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "ifa2_ifa_itl-5.png",
+     "width": 707,
+     "height": 403
+    }
+   ]
+  }
+ ]
+}
