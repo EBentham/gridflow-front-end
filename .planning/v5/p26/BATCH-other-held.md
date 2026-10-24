@@ -81,4 +81,4 @@ ENTSO-E paragraphs). Verify every one against local silver before writing it.
 | `capacity-by-indicator` | ac0bdc96719e22118 | | writing |
 | `cmp` | ad9551166d4bfee02 | | writing |
 | `netbsad` | a00f12902b3632a4d | a3862abe8d47e4491 | written; in review (BPA chart 15 Jan 2026; history wording rests on PR #128 live sweep) |
-| `nonbm` | ac0848f63e8af4f35 | | writing |
+| `nonbm` | ac0848f63e8af4f35 | a1500352d7d87526a | written; in review (end-date evidence from endpoints.py probe; NESO STOR end juxtaposed) |
