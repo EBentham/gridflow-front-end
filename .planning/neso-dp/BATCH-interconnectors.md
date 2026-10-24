@@ -31,7 +31,7 @@ Known risks:
   and the eligibility report `C:\Users\Bobbo\OneDrive\Desktop\Python\gridflow\docs\neso_data_portal\eligibility.md`).
   The seven pages share a shape (capacity limits: ITL, NTC, by direction and time frame): keep the shared wording the
   same where the questions agree.
-- **BritNed:** 185 resources; one failed capture was adjudicated in gridflow; read the note before stating coverage.
+- **BritNed:** 185 resources; both failed captures are settled in gridflow (the encoding fix landed 10 October 2026).
 - **NSL:** current file only; the archive capture was adjudicated failed.
 - **Held pages:** one plain line per table on why rows are not shown, covering the whole table, no codes, no
   local-data references (dated NESO facts only). Spell out ITL and NTC once.
@@ -50,5 +50,5 @@ note-body statements (for example "only one capture") yourself when the data pro
 
 | # | Writer | Checker | State |
 |---|---|---|---|
-| H1 | a62fc78e8e26ffa05 | | writing |
+| H1 | a62fc78e8e26ffa05 | a21506c7e680b4a33 | checking; 20bv logged |
 | H2 | acef9b7cce5ed5f19 | | writing |
