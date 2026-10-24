@@ -91,6 +91,7 @@ Silver: Y = a silver table exists locally (`C:\gridflow-data\silver\neso_data_po
 | CI1 | ci | `carbon-intensity-of-balancing-actions`; `country-carbon-intensity-forecast`; `national-carbon-intensity-forecast`; `regional-carbon-intensity-forecast`: all Y | 9994 | 9814 |
 | F1 | fes | `building-heat-model` (example output Y; list input -); `fes-electricity-demand-summary-data-table-ed1`; `future-energy-scenario-electricity-supply-data-table-es1`; `fes-european-electricity-supply-data-table-es2`; `fes-flexibility-data-table-data-table-flx1`: Y | 9995 | 9815 |
 | F2 | fes | `fes-natural-gas-residential-and-non-domestic-i-c-heat-demand-summary-data-table-ed3` (three Y); `fes-road-transport-summary-data-table-ed5`; `fes-whole-system-gas-supply-data-table-ws1`; `fes-whole-system-gas-supply-emissions-data-table-ws2`; `local-authority-level-spatial-heat-model-outputs-fes` (two Y): Y; `levelised-cost-of-green-hydrogen` (carve-out, reason only) | 9996 | 9816 |
+| R1 | bc, sys | Fixed defects (gridflow PR #134): `current-balancing-services-use-of-system-bsuos-data` (day-first files now read; branch bc) and `system-frequency-data` (2014: all 12 files, repeated October hour by `dtm_occurrence`; branch sys): take off the defect caveats and notes, refresh artefacts from the re-transformed silver | 9997 | 9817 |
 
 Not in scope: held packages that are document-only file groups (ETYS boundaries, GIS charging zones, SSEP shapefiles)
 keep their pages as they are.
