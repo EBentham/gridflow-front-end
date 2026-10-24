@@ -183,3 +183,26 @@ was never collected and no value was read.
   - Proposed order: `fes_building_blocks_block_definitions`, `fes_building_blocks_block_licence_area`,
     `fes_building_blocks_main`.
 - No gridflow code defect found.
+
+## Lead change (seat reorder, commit 6c47d2c on `feat/neso-dp-fes`)
+
+The page set now leads with `fes_building_blocks_block_definitions`, then `_block_licence_area`, then `_main`. This
+supersedes the artefact paths and lead-key notes above.
+
+- **Note:** `page.family.members` reordered to match. The `package_show` request moved from main to the new lead, so
+  definitions lists `package_show` plus its 2020, 2021 and 2025 files (four requests) and main lists its 2020 and
+  2025 files. No page words changed: the explicit `chart.silver` and `record.select.silver` already named the
+  definitions table. CRLF is kept (840 of 840 lines), and the mirror is identical (`cmp`).
+- **Artefacts regenerated under the new key:** `site/hifi/data/{series,samples,notebooks}/neso_data_portal/fes_building_blocks_block_definitions.json`.
+  - The series is the same: 49/64/66/66/66/66, 377 rows, 0 duplicates dropped.
+  - The sample has the same eight rows (the `Lct_BB001` to `_004` blocks in 2020 and 2021).
+  - The notebook reran with 5 cells, 0 errors and the same outputs.
+- **Old artefacts deleted:** the three untracked `fes_building_blocks_main.json` files under series, samples and
+  notebooks, each by exact path.
+- **Build:** `--only neso_data_portal/fes_building_blocks_block_definitions` has no errors. Detector `[]`, 0 em dashes.
+- **Notebook tab:** it now reads `fes_building_blocks_block_definitions.ipynb`, and the aria label says "cells on
+  neso_data_portal/fes_building_blocks_block_definitions". The template problem listed above is resolved.
+- **Column guide:** re-checked against the definitions table, which is now the lead. Every non-pipeline column in
+  the sample has a line, and no line names a column outside it.
+- **Count bar:** kept, per the seat.
+- **Main member:** still prints "Rows not shown: ..." with the same held line.
