@@ -1,0 +1,326 @@
+{
+ "dataset": "neso_data_portal/fes_building_blocks_block_definitions",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "038948556c88fe3388f355456485f948eed2c9a63a4bf4184bb851a347a9d1a1",
+ "silver": "neso_data_portal/fes_building_blocks_block_definitions",
+ "columns": [
+  {
+   "name": "building_block_id_number",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "edition",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "technology_detail",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "technology",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "units",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "detail",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "template",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "comments",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "alignment_with_ofgem_core_scenario_key_drivers",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "resource_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "eso_additional_notes",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "eso_comments",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "unnamed_8",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "unnamed_10",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "included_in_eso_data",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "Lct_BB001",
+   "2020",
+   "Pure Electric  (cars & motorbikes)",
+   "Electric Vehicles",
+   "Number of",
+   "Number of EVs registered in the specific geographical area",
+   "Demand Low Carbon Technologies",
+   "Cars and Motorbikes\nIncludes number of EVs in the specific geographical area",
+   null,
+   "9fb5211f-9689-4d6f-a73e-cf28f03c5885",
+   "2020-08-13 12:40:08.469499 UTC",
+   "2026-10-08 10:52:56.827482 UTC",
+   null,
+   null,
+   null,
+   null,
+   null,
+   "bronze/neso_data_portal/fes_building_blocks_block_definitions/2026/10/08/raw_20261008T105256Z_9fb5211f-9689-4d6f-a73e-cf28f03c5885_e582e544.csv",
+   "2026-10-08 10:52:56.827482 UTC",
+   "2026-10-08 10:52:56.827482 UTC",
+   "2020-08-13 12:40:08.469499 UTC",
+   "5cfaa5d5-befd-442e-a909-3b52e0ceee7f",
+   "1+e1"
+  ],
+  [
+   "Lct_BB001",
+   "2021",
+   "Pure Electric  (vans, cars & motorbikes)",
+   "Electric Vehicles",
+   "Number of",
+   "Number of EVs registered in the specific geographical area",
+   "Demand Low Carbon Technologies",
+   "Light Vans,Cars and Motorbikes\nIncludes number of EVs in the specific geographical area",
+   "Low carbon vehicles",
+   "0dce4330-7dfe-4db6-97c9-443e82246cbc",
+   "2026-09-16 13:33:00.286867 UTC",
+   "2026-10-08 10:52:59.591925 UTC",
+   null,
+   null,
+   null,
+   null,
+   null,
+   "bronze/neso_data_portal/fes_building_blocks_block_definitions/2026/10/08/raw_20261008T105259Z_0dce4330-7dfe-4db6-97c9-443e82246cbc_b507acef.csv",
+   "2026-10-08 10:52:59.591925 UTC",
+   "2026-10-08 10:52:59.591925 UTC",
+   "2026-09-16 13:33:00.286867 UTC",
+   "5cfaa5d5-befd-442e-a909-3b52e0ceee7f",
+   "1+e1"
+  ],
+  [
+   "Lct_BB002",
+   "2020",
+   "Plug-in-hybrid (cars and motorbikes)",
+   "Electric Vehicles",
+   "Number of",
+   "Number of EVs registered in the specific geographical area",
+   "Demand Low Carbon Technologies",
+   "Cars and Motorbikes\nIncludes number of EVs in the specific geographical area",
+   null,
+   "9fb5211f-9689-4d6f-a73e-cf28f03c5885",
+   "2020-08-13 12:40:08.469499 UTC",
+   "2026-10-08 10:52:56.827482 UTC",
+   null,
+   null,
+   null,
+   null,
+   null,
+   "bronze/neso_data_portal/fes_building_blocks_block_definitions/2026/10/08/raw_20261008T105256Z_9fb5211f-9689-4d6f-a73e-cf28f03c5885_e582e544.csv",
+   "2026-10-08 10:52:56.827482 UTC",
+   "2026-10-08 10:52:56.827482 UTC",
+   "2020-08-13 12:40:08.469499 UTC",
+   "5cfaa5d5-befd-442e-a909-3b52e0ceee7f",
+   "1+e1"
+  ],
+  [
+   "Lct_BB002",
+   "2021",
+   "Plug-in-hybrid (vans, cars and motorbikes)",
+   "Electric Vehicles",
+   "Number of",
+   "Number of EVs registered in the specific geographical area",
+   "Demand Low Carbon Technologies",
+   "Light Vans, Cars and Motorbikes\nIncludes number of EVs in the specific geographical area",
+   null,
+   "0dce4330-7dfe-4db6-97c9-443e82246cbc",
+   "2026-09-16 13:33:00.286867 UTC",
+   "2026-10-08 10:52:59.591925 UTC",
+   null,
+   null,
+   null,
+   null,
+   null,
+   "bronze/neso_data_portal/fes_building_blocks_block_definitions/2026/10/08/raw_20261008T105259Z_0dce4330-7dfe-4db6-97c9-443e82246cbc_b507acef.csv",
+   "2026-10-08 10:52:59.591925 UTC",
+   "2026-10-08 10:52:59.591925 UTC",
+   "2026-09-16 13:33:00.286867 UTC",
+   "5cfaa5d5-befd-442e-a909-3b52e0ceee7f",
+   "1+e1"
+  ],
+  [
+   "Lct_BB003",
+   "2020",
+   "Pure Electric (road vehicles other than cars and motorbikes)",
+   "Electric Vehicles",
+   "Number of",
+   "Number of EVs registered in the specific geographical area",
+   "Demand Low Carbon Technologies",
+   "Vans, HGVs, Buses\nIncludes number of EVs in the specific geographical area",
+   null,
+   "9fb5211f-9689-4d6f-a73e-cf28f03c5885",
+   "2020-08-13 12:40:08.469499 UTC",
+   "2026-10-08 10:52:56.827482 UTC",
+   null,
+   null,
+   null,
+   null,
+   null,
+   "bronze/neso_data_portal/fes_building_blocks_block_definitions/2026/10/08/raw_20261008T105256Z_9fb5211f-9689-4d6f-a73e-cf28f03c5885_e582e544.csv",
+   "2026-10-08 10:52:56.827482 UTC",
+   "2026-10-08 10:52:56.827482 UTC",
+   "2020-08-13 12:40:08.469499 UTC",
+   "5cfaa5d5-befd-442e-a909-3b52e0ceee7f",
+   "1+e1"
+  ],
+  [
+   "Lct_BB003",
+   "2021",
+   "Pure Electric (road vehicles other than vans, cars and motorbikes)",
+   "Electric Vehicles",
+   "Number of",
+   "Number of EVs registered in the specific geographical area",
+   "Demand Low Carbon Technologies",
+   "HGVs and Buses\nIncludes number of EVs in the specific geographical area",
+   null,
+   "0dce4330-7dfe-4db6-97c9-443e82246cbc",
+   "2026-09-16 13:33:00.286867 UTC",
+   "2026-10-08 10:52:59.591925 UTC",
+   null,
+   null,
+   null,
+   null,
+   null,
+   "bronze/neso_data_portal/fes_building_blocks_block_definitions/2026/10/08/raw_20261008T105259Z_0dce4330-7dfe-4db6-97c9-443e82246cbc_b507acef.csv",
+   "2026-10-08 10:52:59.591925 UTC",
+   "2026-10-08 10:52:59.591925 UTC",
+   "2026-09-16 13:33:00.286867 UTC",
+   "5cfaa5d5-befd-442e-a909-3b52e0ceee7f",
+   "1+e1"
+  ],
+  [
+   "Lct_BB004",
+   "2020",
+   "Plug-in-hybrid (road vehicles other than cars and motorbikes)",
+   "Electric Vehicles",
+   "Number of",
+   "Number of EVs registered in the specific geographical area",
+   "Demand Low Carbon Technologies",
+   "Vans, HGVs, Buses\nIncludes number of EVs in the specific geographical area",
+   null,
+   "9fb5211f-9689-4d6f-a73e-cf28f03c5885",
+   "2020-08-13 12:40:08.469499 UTC",
+   "2026-10-08 10:52:56.827482 UTC",
+   null,
+   null,
+   null,
+   null,
+   null,
+   "bronze/neso_data_portal/fes_building_blocks_block_definitions/2026/10/08/raw_20261008T105256Z_9fb5211f-9689-4d6f-a73e-cf28f03c5885_e582e544.csv",
+   "2026-10-08 10:52:56.827482 UTC",
+   "2026-10-08 10:52:56.827482 UTC",
+   "2020-08-13 12:40:08.469499 UTC",
+   "5cfaa5d5-befd-442e-a909-3b52e0ceee7f",
+   "1+e1"
+  ],
+  [
+   "Lct_BB004",
+   "2021",
+   "Plug-in-hybrid (road vehicles other than vans, cars and motorbikes)",
+   "Electric Vehicles",
+   "Number of",
+   "Number of EVs registered in the specific geographical area",
+   "Demand Low Carbon Technologies",
+   "HGVs and Buses\nIncludes number of EVs in the specific geographical area",
+   null,
+   "0dce4330-7dfe-4db6-97c9-443e82246cbc",
+   "2026-09-16 13:33:00.286867 UTC",
+   "2026-10-08 10:52:59.591925 UTC",
+   null,
+   null,
+   null,
+   null,
+   null,
+   "bronze/neso_data_portal/fes_building_blocks_block_definitions/2026/10/08/raw_20261008T105259Z_0dce4330-7dfe-4db6-97c9-443e82246cbc_b507acef.csv",
+   "2026-10-08 10:52:59.591925 UTC",
+   "2026-10-08 10:52:59.591925 UTC",
+   "2026-09-16 13:33:00.286867 UTC",
+   "5cfaa5d5-befd-442e-a909-3b52e0ceee7f",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

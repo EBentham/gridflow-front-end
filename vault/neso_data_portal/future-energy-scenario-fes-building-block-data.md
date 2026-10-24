@@ -4,9 +4,148 @@ package: "future-energy-scenario-fes-building-block-data"
 dataset_keys: ["fes_building_blocks_block_definitions", "fes_building_blocks_block_licence_area", "fes_building_blocks_main"]
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-10
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: FES building block data
+  summary: >-
+    NESO's Future Energy Scenarios (FES) split to Grid Supply Points in common building blocks,
+    with each edition's definitions and a licence-area mapping.
+  facts:
+    vendor: "NESO Data Portal: 13 CSVs, six editions of two tables, one 2024 mapping"
+    cadence: "Ad hoc (NESO); editions 2020 to 2025, as at 6 October 2026"
+    grain: "One row per building block per FES edition, as shown"
+    history: "NESO created the package on 13 August 2020"
+  landscape: power
+  what_it_is: >-
+    NESO calls the building blocks "a top-down breakdown of the national level FES pathway
+    results" to Grid Supply Points, in a template agreed through the Energy Networks Association
+    Open Networks project, and says they are not for building regional pathways. Each edition has
+    its own definitions. The page shows those; the projections table is held.
+  how_used:
+    - "Check how FES aligns with DNOs' own regional scenarios, NESO's stated purpose"
+    - "Decode a projection row's `building_block_id_number` with the same edition's definitions"
+    - "Map licence-area names to Elexon GSP groups, picking the name column by edition"
+  chart:
+    type: bar
+    silver: neso_data_portal/fes_building_blocks_block_definitions
+    dedup: {"on": [resource_id, building_block_id_number], order_by: capture_written_at}
+    group: edition
+    group_map: {"2020": FES 2020, "2021": FES 2021, "2022": FES 2022, "2023": FES 2023, "2024": FES 2024, "2025": FES 2025}
+    aggregation: count
+    sort: label
+    unit: building blocks
+  chart_view:
+    title: Building blocks NESO defines in each FES edition
+    caption: >-
+      Silver `fes_building_blocks_block_definitions`: block ids in each edition's definitions file,
+      not projections; NESO's 2022 and 2023 files flag 50 of the 66 as included in ESO data. An id
+      can change meaning between editions, so read each with its own edition.
+    alt: >-
+      Horizontal bar chart from neso_data_portal/fes_building_blocks_block_definitions: the number
+      of building blocks in each FES edition's definitions file. FES 2020 has 49, FES 2021 has 64,
+      and FES 2022, 2023, 2024 and 2025 have 66 each.
+    key:
+      - {series: count, label: Building blocks, paint: petrol, note: "Each bar is one NESO file; those for 2021, 2022 and 2023 were last modified in September 2026."}
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then 13 CSVs, each downloaded whole unless its
+      `last_modified` is unchanged. Shown: first and latest, plus the 2021 definitions.
+    commands:
+      - {run: gridflow ingest neso_data_portal fes_building_blocks_block_definitions --last 24h, comment: "changed files; swap in either key"}
+      - {run: gridflow transform neso_data_portal fes_building_blocks_block_definitions --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      silver: neso_data_portal/fes_building_blocks_block_definitions
+      filter:
+        - {column: building_block_id_number, op: in, value: [Lct_BB001, Lct_BB002, Lct_BB003, Lct_BB004]}
+        - {column: edition, op: in, value: [2020, 2021]}
+      dedup: {"on": [resource_id, building_block_id_number], order_by: capture_written_at}
+      order_by: [building_block_id_number, edition]
+      columns: [building_block_id_number, edition, technology_detail, technology, units, detail,
+                template, comments, alignment_with_ofgem_core_scenario_key_drivers, resource_id,
+                published_at, timestamp_utc]
+    key: [building_block_id_number, edition, resource_id]
+    caption: "The four electric vehicle blocks in FES 2020 and 2021: same ids, vans moved in 2021."
+    fields:
+      building_block_id_number: "NESO's block id, the projections table's join key; its meaning can change by edition"
+      edition: "FES edition, from the file name; join the projections on this and the id"
+      resource_id: "CKAN id of the edition's file; with edition and block id, the entity key"
+      technology_detail: "NESO's detail of the technology; null where NESO gives none"
+      technology: "NESO's text; 2025 file (modified 14 July 2025) fills `Dem_` rows with `Offshore-Wind (off-Grid)`"
+      units: "NESO's unit text, kept as spelt; the projections' own `unit` column governs their values"
+      detail: "What the block measures, in NESO's words, such as installed capacity"
+      template: "NESO's block group, such as `Generation`; the 2024 file leaves most blank"
+      comments: "NESO's comment on what the block covers; null where blank"
+      alignment_with_ofgem_core_scenario_key_drivers: "NESO's matching Ofgem driver; 13 blocks filled 2021 to 2024, every block in 2025"
+      eso_additional_notes: "2020 file only: NESO's additional notes on the block"
+      eso_comments: "2021 to 2023 files only: NESO's further comments on the block"
+      included_in_eso_data: "2022 and 2023 files only: `Y` or `N`; NESO does not define it"
+      unnamed_8: "An unnamed, empty column in NESO's 2022 file"
+      unnamed_10: "A second unnamed, empty column in NESO's 2022 file"
+      published_at: "NESO's last-modified time for the edition's file, read as UTC"
+      timestamp_utc: "When gridflow captured the file, UTC; the table has no event time"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      `query()` filters on `timestamp_utc`, here the capture time, so these cells use `data.sql()`
+      on the `_latest` views of the two reference tables. No cell reads the held projections table.
+    cells:
+      - |
+        blocks = data.sql("""
+            SELECT edition, count(*) AS blocks
+            FROM silver_neso_data_portal_fes_building_blocks_block_definitions_latest
+            GROUP BY edition ORDER BY edition
+        """)
+        blocks
+      - |
+        dropped = data.sql("""
+            SELECT building_block_id_number, technology
+            FROM silver_neso_data_portal_fes_building_blocks_block_definitions_latest
+            WHERE edition = 2020 AND building_block_id_number NOT IN (
+                SELECT building_block_id_number
+                FROM silver_neso_data_portal_fes_building_blocks_block_definitions_latest
+                WHERE edition = 2021)
+            ORDER BY building_block_id_number
+        """)
+        dropped
+      - |
+        areas = data.sql("""
+            SELECT area_type, fes23_bb_area_name, fes2024_area_name, elexon_gsp_group
+            FROM silver_neso_data_portal_fes_building_blocks_block_licence_area_latest
+            ORDER BY area_type, fes23_bb_area_name
+        """)
+        areas.head(8)
+    needs: NESO's FES building-block definitions and licence-area mapping
+    plot_alt: >-
+      No plot: the cells print the blocks per edition, the 2020 ids missing from 2021, and the first
+      eight licence-area rows.
+  related:
+    - {dataset: neso_data_portal/tresp-demand-pathways, note: "NESO structures tRESP like the FES 2025 building blocks"}
+    - {dataset: neso_data_portal/regional-breakdown-of-fes-data-electricity, note: "NESO's other regional cut of FES, by GSP and site codes"}
+    - {dataset: neso_data_portal/gis-boundaries-for-gb-dno-license-areas, note: "Boundaries of the DNO licence areas the mapping names"}
+    - {dataset: neso_data_portal/fes-electricity-demand-summary-data-table-ed1, note: "National FES demand; these files split FES results to GSPs"}
+  family:
+    slug: future-energy-scenario-fes-building-block-data
+    members:
+      - dataset: fes_building_blocks_block_definitions
+        differs: "What each block id means in one edition: technology, detail and unit"
+        request:
+          - "GET https://api.neso.energy/api/3/action/package_show?id=future-energy-scenario-fes-building-block-data"
+          - "GET https://api.neso.energy/dataset/30df2649-99cf-4f84-9128-6c58fc1ea72a/resource/9fb5211f-9689-4d6f-a73e-cf28f03c5885/download/building-block-definitions.csv"
+          - "GET https://api.neso.energy/dataset/30df2649-99cf-4f84-9128-6c58fc1ea72a/resource/0dce4330-7dfe-4db6-97c9-443e82246cbc/download/building-block-definitions-2021.csv"
+          - "GET https://api.neso.energy/dataset/30df2649-99cf-4f84-9128-6c58fc1ea72a/resource/cc3118da-cbbe-49e8-a8ee-9bdd89a8bf9c/download/fes2025_bb2_v001.csv"
+      - dataset: fes_building_blocks_block_licence_area
+        differs: "FES 2023 and 2024 area names against licence names and Elexon GSP groups"
+        request: "GET https://api.neso.energy/dataset/30df2649-99cf-4f84-9128-6c58fc1ea72a/resource/0ec29244-277e-41d1-bca7-17f12b71eb60/download/building-block-licence-area-name-mapping-2024.csv"
+      - dataset: fes_building_blocks_main
+        differs: "FES projections per block, licence area, GSP, scenario and year, one file per edition"
+        request:
+          - "GET https://api.neso.energy/dataset/30df2649-99cf-4f84-9128-6c58fc1ea72a/resource/bff7061d-fbd3-4d8a-a95b-876affc2033d/download/fes2020_building_blocks.csv"
+          - "GET https://api.neso.energy/dataset/30df2649-99cf-4f84-9128-6c58fc1ea72a/resource/73f69d8f-e9cb-4a2d-8538-baf03b5eadef/download/fes2025_bb1_v006.csv"
+        held: NESO states no period for the year labels; 2020 to 2022 repeat rows with different values.
 ---
 
 # FES: Pathways to Net Zero Building Block Data
@@ -319,16 +458,29 @@ blanks in 2020 including the four blank rows, 10 in each of 2021 to 2025) and `c
 2020 and 35 in each of 2021 to 2025); `detail` has 5 in 2020 and 2024 and 3 in each of 2021 to 2023
 and 2025 (all FACTS g5 raw counts; the 2020 figures include the four blank rows).
 
+*`Technology` in 2025.* The 2025 file writes `Offshore-Wind (off-Grid)` in `Technology` on all 12
+demand rows (`Dem_`), the value of the generation row above them (`Gen_BB024`); the 2024 file
+leaves those cells blank (bronze `raw_20261008T105310Z_cc3118da-...csv` lines 26 to 37, against
+`raw_20261008T105307Z_778a505c-...csv`). It looks like a fill-down in NESO's file; gridflow keeps
+it as published, so `technology` is not a reliable label for 2025 demand blocks (use
+`technology_detail`).
+
 *Building-block ids.* The ids carry a prefix family: `Gen_` (generation), `Srg_` (storage),
 `Dem_` (demand) and `Lct_` (low-carbon technology) with a `BB` number, and a letter suffix in some
 editions; the 2020 file also has four ids that follow no such prefix. Counts by prefix are 20 / 11 /
 5 / 9 in 2020 (+4 others), 24 / 11 / 10 / 19 in 2021, 24 / 11 / 12 / 19 in 2022 to 2025 (`Gen` /
 `Srg` / `Dem` / `Lct`). The prefix words are an observation of the ids, not a vendor definition
-(`TODO: verify` the vendor's name for each family of block).
+(`TODO: verify` the vendor's name for each family of block). An id is not stable across
+editions: `Lct_BB001` to `Lct_BB004` keep their ids but move vans from the "other road vehicles"
+blocks to the car and motorbike blocks in 2021 (`technology_detail`, `comments`), and 12 of the
+2020 ids (among them `Srg_BB006` to `Srg_BB011`, the DSR blocks, and the four unprefixed ids) are
+absent from 2021, which adds 27 (2026-10-08 captures). Read each id with its own edition.
 
 *Join to the main table.* In each of editions 2023, 2024 and 2025, every one of the 50
 building-block ids in the main table's silver exists in the same-edition definitions; the
-definitions have 16 further blocks that the main table does not use. The definitions file for
+definitions have 16 further blocks that the main table does not use. In the 2022 and 2023
+definitions, `Included in ESO Data` is `Y` on exactly those 50 ids and `N` on the 16 (measured;
+NESO does not define the flag). The definitions file for
 editions 2020 to 2022 can be read independently, but the corresponding main captures are not
 loaded.
 
