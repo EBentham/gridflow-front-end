@@ -211,3 +211,35 @@ left it), the WINDFOR cross-check paragraph.
   BMU dictionary calls `Generator_Name` "Anonymised" though the names are BM unit IDs. For the NESO
   question packet if not there.
 - No other gridflow code defect found.
+
+## Round 2 (review APPROVE with 5 nits), 2026-10-24
+
+1. **Related:** `elexon/agws` swapped for `neso_data_portal/embedded_wind_solar_forecast`, note
+   "NESO's embedded wind forecast, outside this transmission-connected one" (both live pages now
+   linked; `elexon/windfor` stays as the Elexon link).
+2. **First hold line:** "Forecast time stamps carry no zone, and many fall at or after the period
+   they forecast." (16 words).
+3. **Cadence:** `facts.cadence` now reads "Daily; NESO states 09:00 to 09:15 clock time, which file
+   stamps do not match" (14 words). True under either reading of the 08:40 stamp the caption shows
+   (08:40 UK time is before the window, 08:40 UTC is 09:40 BST, after it).
+4. **Capacity:** "total" dropped; it now follows NESO's current national dictionary ("connected to the
+   National Grid Transmission Network"): `capacity` field "Operational wind capacity on the
+   transmission network, MW; the same in every row"; `what_it_is` "beside operational wind capacity
+   on the transmission network"; lead `differs` "national forecast and operational wind capacity".
+   To keep `what_it_is` at 60 words: "the farms NESO builds its national forecast from" became "the
+   farms behind the national forecast", and "In NESO's files of 8 and 16 October 2026" became "In
+   NESO's 8 and 16 October 2026 files".
+5. **Note body, recent labels:** rewritten and reproduced. In the 2026-10-08 capture, 115 of the 118
+   target days from 13 June to 8 October 2026 (5,520 rows) carry only `<target day>T08:45:00`; 9 to
+   12 June carry `<target day>T09:25:00`; older labels vary; the 2026-10-16 capture has 123 such
+   days. The append-time reading is now marked "Inference, not shown". Following the reviewer, the
+   2025 BMU truncation paragraph and the Cadence line are also softened to "looks cut short
+   (inferred from two captures)" and "most likely reflects".
+
+Gates: note re-mirrored, `cmp` clean, LF kept (0 CRs); `gridflow-build --only
+neso_data_portal/da_wind_forecast_day_ahead` wrote the page with no error; detector `[]`; 0 em
+dashes. Chart spec, record select and notebook cells unchanged, so no artefact was regenerated
+(digest checks passed). No screenshots retaken: the changes are text, and the one new related slug
+wraps like `daily_wind_availability` beside it. The reviewer's vendor defect line (same-day 08:45
+labels from 13 June) supersedes my "a day late" wording in the Defects section above. Nothing added
+to git or committed.
