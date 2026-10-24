@@ -1,0 +1,19 @@
+{
+  "dataset": "neso_data_portal/tnuos_tariffs_half_hourly_hh_demand",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "627b11cf0f9d221f43093cf0676268a53f1b929986e92f78feb8e049bbd5be04",
+  "type": "bar",
+  "unit": "£/kW",
+  "caption": "",
+  "value_column": "hh_tariff_floored_gbp_per_kw",
+  "aggregation": "last",
+  "window": null,
+  "provenance": {"duplicates_dropped": 0, "files": 1, "null_values_dropped": 0, "rows_matched": 14, "rows_read": 602, "rows_used": 14, "silver": "neso_data_portal/tnuos_tariffs_half_hourly_hh_demand"},
+  "spec": {"aggregation": "last", "dedup": {"on": ["publication", "year_fy", "published_date", "zone_no"], "order_by": "published_at"}, "filter": [{"column": "publication", "op": "eq", "value": "Final"}, {"column": "year_fy", "op": "eq", "value": 2027}], "group": "zone_name", "silver": "neso_data_portal/tnuos_tariffs_half_hourly_hh_demand", "sort": "value_desc", "type": "bar", "unit": "£/kW", "value": "hh_tariff_floored_gbp_per_kw"},
+  "x_kind": "category",
+  "x": ["South Western", "Southern", "London", "South Wales", "South East", "Midlands", "Eastern", "East Midlands", "N Wales & Mersey", "North West", "Northern", "Northern Scotland", "Southern Scotland", "Yorkshire"],
+  "series": [
+    {"key": "hh_tariff_floored_gbp_per_kw", "values": [14.13, 7.354, 6.453, 5.97, 4.368, 2.634, 0.063, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}
+  ]
+}

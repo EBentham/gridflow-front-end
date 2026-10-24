@@ -166,7 +166,10 @@
         "viking",
         "embedded-register",
         "interconnector-register",
-        "transmission-entry-capacity-tec-register"
+        "transmission-entry-capacity-tec-register",
+        "aahedc-tariffs",
+        "gis-boundaries-for-gb-generation-charging-zones",
+        "transmission-network-use-of-system-tnuos-tariffs"
       ]
     }
   ],
@@ -627,6 +630,21 @@
         "viking_link_ntc",
         "viking_ntc"
       ]
+    },
+    {
+      "slug": "transmission-network-use-of-system-tnuos-tariffs",
+      "title": "Transmission Network Use of System (TNUoS) Tariffs",
+      "note": "transmission-network-use-of-system-tnuos-tariffs",
+      "members": [
+        "tnuos_tariffs_half_hourly_hh_demand",
+        "tnuos_tariffs_non_half_hourly_nhh_demand",
+        "tnuos_tariffs_embedded_export",
+        "tnuos_tariffs_transmission_demand",
+        "tnuos_tariffs_onshore_generator",
+        "tnuos_tariffs_local_offshore_generator",
+        "tnuos_tariffs_local_substation_tariff",
+        "tnuos_tariffs_onshore_local_circuit"
+      ]
     }
   ],
   "names": {
@@ -693,7 +711,9 @@
     "nsl": "North Sea Link",
     "embedded-register": "Embedded register",
     "interconnector-register": "Interconnector register",
-    "transmission-entry-capacity-tec-register": "Transmission Entry Capacity (TEC) register"
+    "transmission-entry-capacity-tec-register": "Transmission Entry Capacity (TEC) register",
+    "aahedc-tariffs": "Assistance for Areas of High Electricity Distribution Costs (AAHEDC) Tariffs",
+    "gis-boundaries-for-gb-generation-charging-zones": "GIS Boundaries for GB Generation Charging Zones"
   },
   "dropped": {},
   "package_tables": {
@@ -757,7 +777,9 @@
     "nsl": "nsl",
     "embedded-register": "embedded_register",
     "interconnector-register": "interconnector_register",
-    "transmission-entry-capacity-tec-register": "tec_register"
+    "transmission-entry-capacity-tec-register": "tec_register",
+    "aahedc-tariffs": "aahedc_tariffs",
+    "gis-boundaries-for-gb-generation-charging-zones": "gis_gen_charging_zones_files"
   },
   "catalogue": {
     "_about": "NESO's catalogue as the hub draws it: its data groups in portal order, each with NESO's description and its packages (NESO's titles and CKAN names). `page_packages` names the CKAN package of a page not named after it; a package is a link when a page in `groups` documents it. `plan` lays the groups out as plots: a slug is one plot, `row` sets its children side by side, `col` stacks them; `wide` from 1100 px, `narrow` below, and `tag_narrow` plots carry their name beneath them when narrow.",
