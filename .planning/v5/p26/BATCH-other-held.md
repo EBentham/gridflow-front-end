@@ -76,3 +76,4 @@ ENTSO-E paragraphs). Verify every one against local silver before writing it.
 | `current_balancing_state` | a4cb0fff7df521d95 | | writing |
 | `unavailability` (GIE) | aca4443f38f5d0077 | | writing |
 | `procured_balancing_capacity` | a304ded779c679e9e | | writing |
+| `balancing-energy-bids` | a77c0dcd4743a2675 | | writing |

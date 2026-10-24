@@ -128,7 +128,7 @@ repeat rows; on a table with no event time use `data.sql()`; the column guide ac
 | CI1 | ace01fca13556e033 | a50d6c3658e06feeb | DONE: approved after one revision (national alt, country caption); pushed 42b7cb7 / vault 172559a; 20cu-20cw logged |
 | F1 | a34676c0e232141b9 | a34861f355f97978d | all five APPROVE; nits fixed |
 | F2 | a52e0573a78ee0c3e | aa0ab3c0490d93fb0 | written; in review (seat reordered ED3 lead to `_sum_ed` and LA heat lead to residential, artefacts renamed) |
-| R1 | a2169fe0f64b6cf11 | a0829310d3f9bfefb | written; in review (2014 frequency table now a caveat, not held; BSUoS sample from the 16 Oct upload) |
+| R1 | a2169fe0f64b6cf11 | a0829310d3f9bfefb | DONE: approved after round 2; committed bc f4f4976 / vault 5f13ea5, sys 04196aa / vault d01f079; stack merged bc to ci |
 
 Pace raised 2026-10-24 ~13:25Z (Bobbo via the parent): 5 agents at once, aim about 50% of weekly usage over 36 hours;
 park at 98% weekly. After NESO: ruling 66 on the seven blank other-vendor pages (ENTSO-E balancing-energy bids, current
