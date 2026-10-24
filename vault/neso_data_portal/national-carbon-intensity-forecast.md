@@ -8,7 +8,6 @@ updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: "No row says when NESO first published it, and NESO changes values for past half hours."
   title: National carbon intensity forecast
   summary: >-
     NESO's forecast and estimated actual carbon intensity of GB electricity per half hour, in
@@ -25,9 +24,36 @@ page:
     2024 methodology opens with its Carbon Intensity API, forecasting 48 hours ahead. NESO's 16
     October 2026 file changed actuals its 8 October file gave for past half hours.
   how_used:
-    - "GB carbon intensity per half hour, forecast beside NESO's own estimate"
-    - "Comparing NESO's forecast with its estimated actual for the same half hour"
+    - "GB carbon intensity per half hour, as NESO estimates it from metered generation"
+    - "NESO's forecast for the two days after its latest file"
     - "Timing flexible demand to the lower-intensity half hours"
+  chart:
+    type: line
+    silver: neso_data_portal/national_ci_forecast
+    time: datetime
+    filter:
+      - {column: published_at, op: eq, value: "2026-10-16T20:10:47.063996"}
+      - {column: datetime, op: gt, value: "2026-10-16T20:10:47"}
+      - {column: forecast, op: not_null}
+    values:
+      - {column: forecast, series: forecast}
+    aggregation: last
+    window: {start: "2026-10-16", end: "2026-10-18"}
+    unit: gCO2/kWh
+  chart_view:
+    title: GB forecast after NESO's 16 October 2026 file
+    caption: >-
+      Silver `national_ci_forecast`, gCO2/kWh: the forecast in NESO's file of 16 October 2026 for
+      each half hour after the file last changed, 20:30 that day to 22:30 on 18 October. The file
+      has no actual for these half hours.
+    alt: >-
+      Line chart from neso_data_portal/national_ci_forecast of NESO's GB forecast in gCO2/kWh for
+      the 101 half hours after its file of 16 October 2026 last changed, 20:30 that day to 22:30 on
+      18 October. It falls from 101 to 63 at 11:00 on 17 October, rises to 135 that evening, dips to
+      85 at 11:30 on 18 October, peaks at 136 at 21:30 that evening and ends at 121.
+    x_label: "Half-hour start, UTC"
+    key:
+      - {series: forecast, label: Forecast, codes: forecast, paint: petrol, note: "NESO's forecast; the file gives no time it was made"}
   raw_feed:
     note: >-
       From NESO's CKAN portal: `package_show`, then the CSV and methodology PDF, downloaded whole
@@ -40,6 +66,44 @@ page:
       - {run: gridflow ingest neso_data_portal national_ci_forecast --last 24h, comment: "the CSV to bronze"}
       - {run: gridflow transform neso_data_portal national_ci_forecast --last 24h, comment: "the capture's date to silver"}
       - {run: gridflow ingest neso_data_portal national_ci_forecast_files --last 24h, comment: "the methodology PDF, bronze only"}
+  record:
+    select:
+      filter:
+        - {column: datetime, op: in, value: ["2026-10-07T19:30:00", "2026-10-07T20:00:00", "2026-10-07T20:30:00", "2026-10-07T21:00:00"]}
+      order_by: [datetime, published_at]
+      columns: [datetime, forecast, actual, index, published_at]
+    key: [datetime, published_at]
+    caption: "7 October 2026: four half hours whose actual changed between NESO's 8 and 16 October files."
+    fields:
+      datetime: "Half-hour start, UTC; gridflow matched it to NESO's API, the file does not say"
+      forecast: "NESO's forecast, gCO2/kWh; no column says when it was made"
+      actual: "Estimated from metered generation, gCO2/kWh, NESO says; a later file can change it"
+      index: "NESO's band for the intensity, such as `low`; its thresholds are unstated"
+      published_at: "NESO's last-modified time for the file, read as UTC; one per file"
+      timestamp_utc: "Equal to `datetime`: the half-hour start, UTC"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote the capture to bronze, UTC
+  caveat: No row says when its forecast was made, and NESO rewrites actuals for past half hours.
+  notebook:
+    lead: >-
+      `query()` reads the `_latest` view, NESO's 16 October 2026 file, filtering half-hour starts,
+      both ends included. Past forecasts carry no issue time, so the plot draws estimated actuals only.
+    cells:
+      - |
+        df = data.neso_data_portal.query("national_ci_forecast", "2026-10-09", "2026-10-15")
+        df = df.sort_values("timestamp_utc").assign(datetime=lambda d: d.datetime.dt.tz_convert("UTC"))
+        df[["datetime", "forecast", "actual", "index"]].head()
+      - |
+        ax = df.set_index("datetime")["actual"].plot(
+            figsize=(8, 3.5), color="#155A6E", ylim=(0, 250),
+            xlabel="Half-hour start, UTC", ylabel="actual, gCO2/kWh")
+      - |
+        df["index"].value_counts()
+    needs: NESO's 16 October 2026 file
+    plot_alt: >-
+      Line plot of NESO's estimated actual GB intensity in gCO2/kWh per half hour, 9 to 15 October
+      2026, from its file of 16 October. It runs from 31 at 12:00 on 10 October to 209 at 17:00 on 11
+      October, then peaks at 153 and 169 early on 12 and 14 October and 174 on the evening of 15 October.
   related:
     - {dataset: neso/carbon_intensity, note: "The Carbon Intensity API's national routes, which this package's methodology describes"}
     - {dataset: neso_data_portal/regional-carbon-intensity-forecast, note: "NESO's forecast for 14 GB regions, in the same unit"}
@@ -59,8 +123,8 @@ serve (gridflow ingests those under the `neso` source, @../../neso/datasets/carb
 its methodology PDF only opens with that API. gridflow's own probe of 2026-10-09
 (LIVE-PROBE) found forecast and actual equal on all 675 periods the two overlapped. Like the API, which sends no issue time either, the
 CSV has **no issue column**: each target half-hour holds exactly one forecast/actual pair, with
-no record of which forecast run produced it. The silver output is held because that issue clock
-is missing (FACTS CI-1, g2; see Holds).
+no record of which forecast run produced it. The silver output is held in gridflow because that
+issue clock is missing (FACTS CI-1, g2; see Holds); the site page shows its rows with that caveat.
 
 - Publisher group: Carbon intensity
 - Registry group: carbon-intensity1 · archetype: FC
@@ -245,13 +309,15 @@ gridflow outputs derived from this package carry the attribution line above.
 
 - `national_ci_forecast`: held: TODO: no issue column; which forecast issue a past target's value reflects, and whether values are revised after the period, is undocumented (unit E-SEM)
 
-The silver output exists on disk, but it is **held**: it is not eligible for publication or for
+The silver output exists on disk, but it is **held** in gridflow: it is not eligible for
 point-in-time model use until unit E-SEM answers the question above (RULINGS 521). The
 resource carries no forecast-issue clock. A past half-hour's `forecast` may come from any
 earlier forecast run, and the vendor does not say whether the stored value is replaced after the
 period closes. Without that, the CKAN vintage is the only availability clock. It bounds when
-the file existed, not when each value was known. This page therefore publishes schema, units
-and row counts only, not data values or ranges.
+the file existed, not when each value was known. This note gives schema, units and counts.
+Under ruling 66 (2026-10-24) the site page shows the rows, with one line naming the question:
+its chart draws only forecasts for half hours after the 16 October 2026 file last changed, and
+its notebook plots estimated actuals alone, so no past forecast is drawn as known beforehand.
 
 Partial evidence for E-SEM, recorded here without lifting the hold: the CKAN resource metadata
 shows `datastore_unique_keys: ["datetime"]` and `datastore_append_or_update: true`.

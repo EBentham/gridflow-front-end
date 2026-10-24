@@ -1,0 +1,173 @@
+{
+ "dataset": "neso_data_portal/country_ci_forecast",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "31bfe1fc795ba0d29feb83d455b1da826dfe420deaa18c0f372467ed1336a3f7",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.neso_data_portal.query(\"country_ci_forecast\", \"2026-10-08\", \"2026-10-10\")\ndf = df.sort_values(\"timestamp_utc\").assign(datetime=lambda d: d.datetime.dt.tz_convert(\"UTC\"))\ndf[[\"datetime\", \"scotland\", \"england\", \"wales\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "datetime",
+      "scotland",
+      "england",
+      "wales"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2026-10-08 00:00:00+00:00",
+       "0.0",
+       "48.0",
+       "33.0"
+      ],
+      [
+       "2026-10-08 00:30:00+00:00",
+       "0.0",
+       "48.0",
+       "41.0"
+      ],
+      [
+       "2026-10-08 01:00:00+00:00",
+       "0.0",
+       "47.0",
+       "43.0"
+      ],
+      [
+       "2026-10-08 01:30:00+00:00",
+       "0.0",
+       "46.0",
+       "43.0"
+      ],
+      [
+       "2026-10-08 02:00:00+00:00",
+       "0.0",
+       "46.0",
+       "46.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "both = data.sql(\"\"\"\n    SELECT datetime, published_at, wales\n    FROM silver_neso_data_portal_country_ci_forecast\n    WHERE datetime > TIMESTAMPTZ '2026-10-08 09:10:31+00'\n      AND datetime <= TIMESTAMPTZ '2026-10-10 11:30:00+00'\n    ORDER BY datetime, published_at\"\"\")\nw = both.pivot(index=\"datetime\", columns=\"published_at\", values=\"wales\")\nw.columns = [\"8 October file\", \"16 October file\"]\nw.index = w.index.tz_convert(\"UTC\")\nw.rename_axis(columns=None).reset_index().head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "datetime",
+      "8 October file",
+      "16 October file"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2026-10-08 09:30:00+00:00",
+       "84.0",
+       "70.0"
+      ],
+      [
+       "2026-10-08 10:00:00+00:00",
+       "86.0",
+       "79.0"
+      ],
+      [
+       "2026-10-08 10:30:00+00:00",
+       "86.0",
+       "72.0"
+      ],
+      [
+       "2026-10-08 11:00:00+00:00",
+       "82.0",
+       "69.0"
+      ],
+      [
+       "2026-10-08 11:30:00+00:00",
+       "87.0",
+       "66.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "ax = w.plot(figsize=(8, 3.5), color=[\"#C77E3C\", \"#155A6E\"], ylim=(0, 250),\n            xlabel=\"Half-hour start, UTC\", ylabel=\"Wales, gCO2/kWh\")",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "country_ci_forecast-5.png",
+     "width": 699,
+     "height": 375
+    }
+   ]
+  }
+ ]
+}
