@@ -80,5 +80,5 @@ ENTSO-E paragraphs). Verify every one against local silver before writing it.
 | `outages` | ae36f09ef6e0639ad | a63ec338ce292b296 | written; in review (seat: planned-only in prose, MW-meaning caveat per member) |
 | `capacity-by-indicator` | ac0bdc96719e22118 | af2898390ac84e5aa | written; in review (seat: caveat on "available through" members where ENTSOG sends a 472 kWh/d record and a no-capacity sentence) |
 | `cmp` | ad9551166d4bfee02 | abea4baf1a6c87ad7 | written; in review (template rounds bar labels under 10 to one decimal: 0.02 prints 0.0) |
-| `netbsad` | a00f12902b3632a4d | a3862abe8d47e4491 | REVISE round 1 (history as a dated check of Elexon replies; add unit caveat); writer revising |
-| `nonbm` | ac0848f63e8af4f35 | a1500352d7d87526a | written; in review (end-date evidence from endpoints.py probe; NESO STOR end juxtaposed) |
+| `netbsad` | a00f12902b3632a4d | a3862abe8d47e4491 | revised round 1; re-check running. Gridflow gap: PR #128 sweep has no committed script or result |
+| `nonbm` | ac0848f63e8af4f35 | a1500352d7d87526a | REVISE round 1 (NESO STOR end clause implies a cause; off the page); writer revising |
