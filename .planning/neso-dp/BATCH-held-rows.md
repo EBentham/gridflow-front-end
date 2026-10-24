@@ -124,8 +124,8 @@ repeat rows; on a table with no event time use `data.sql()`; the column guide ac
 | G1 | af234cffef25e4fa7 | adaa14b1da19ee956 | APPROVED x5, nits fixed; committed (site 5ed280c); pushed; parent told |
 | I1 | a475c72bb4c6ca14f | a1fdee2150037abad | APPROVED x4 (round 2); committed (site e9fbe4e) with I2; pushed; parent told; 20cs logged |
 | I2 | a85a78f0c3de4f450 | a1fdee2150037abad | APPROVED x3; committed with I1 |
-| N1 | a0ac37967725c0a93 | a24fb2d76dca812ba | round 1: TNUoS APPROVED with nits; AAHEDC REVISE (swap caption is an inference); round 2 with writer |
-| CI1 | ace01fca13556e033 | | writing |
+| N1 | a0ac37967725c0a93 | a24fb2d76dca812ba | APPROVED x2 (round 2); committed (site 4ae7dc4); pushed; parent told; 20ct logged |
+| CI1 | ace01fca13556e033 | a50d6c3658e06feeb | written; in review (national and country rows show past values revised; regional chart of the file's last week) |
 | F1 | a34676c0e232141b9 | | writing |
 | F2 | a52e0573a78ee0c3e | | writing |
 | R1 | a2169fe0f64b6cf11 | | writing |

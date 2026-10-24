@@ -9,6 +9,11 @@ DFS carried up. Defect rows 20cl-20cr on `vault-neso-dpc` (pushed) plus BACKLOG 
 design). Helper: `<scratchpad>/seat/logdef.py <spec.json>` inserts a remediation row after `after_row` and a backlog
 line after `after_backlog` (next id 20cs, after "(20cr)").
 
+## Update ~17:50Z
+
+Network charges DONE (pushed, parent told, 20ct logged; next id 20cu after "(20ct)"). CI1 checker a50d6c3658e06feeb.
+Next merges before committing CI1: nc into emr, emr into ci.
+
 ## Update ~17:20Z
 
 Generation and interconnectors DONE (pushed, parent told; 20cs logged; next defect id 20ct, after "(20cs)"). In
