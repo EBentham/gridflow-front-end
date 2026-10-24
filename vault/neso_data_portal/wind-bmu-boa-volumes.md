@@ -4,16 +4,53 @@ package: "wind-bmu-boa-volumes"
 dataset_key: "wind_bmu_boa_volumes"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-09
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: "All years stay out: NESO never says why rows repeat, and 2026/27 has positive volumes."
+  title: Wind bid-offer acceptance volumes
+  summary: >-
+    NESO's volumes of bid-offer acceptances (BOAs) on wind balancing mechanism (BM) units, in MW,
+    by settlement period and financial year.
+  facts:
+    vendor: "NESO Data Portal, package Wind BOA Volumes: nine yearly CSV files"
+    cadence: "Daily, NESO says"
+    grain: "Each row: a BM unit, date, settlement period and volume"
+    history: "Financial years 2018/19 to 2026/27, April to March, NESO lists"
+  landscape: market
+  what_it_is: >-
+    Each row gives a BM unit, date, settlement period and `BOA_Volume` in MW, which NESO defines as
+    generation a BOA curtailed, negative because it cuts the wind farm's output. NESO's wind
+    incentive forecasts use these units. As fetched on 8 and 16 October 2026, some yearly files
+    repeat rows, whole or by unit and period, and 2026/27 holds positive volumes.
+  how_used:
+    - "Wind curtailment per BM unit and half hour through the Balancing Mechanism"
+    - "Accepted wind reductions set against wind forecasts and metered wind output"
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: `package_show`, then nine yearly CSVs, downloaded whole unless
+      `last_modified` is unchanged. Shown: first, current and 2024/25. The transform rejects 2018/19,
+      2019/20 and 2024/25 (repeated rows).
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=wind-bmu-boa-volumes"
+      - "GET https://api.neso.energy/dataset/102638b9-6214-4db6-9115-86b5e879d1ce/resource/28183033-4464-4b3a-a0ff-0efdc5cd6c7a/download/boa_data_2018_19.csv"
+      - "GET https://api.neso.energy/dataset/102638b9-6214-4db6-9115-86b5e879d1ce/resource/d3fbf6c1-7688-4486-8716-b5af0c895a5a/download/boa_data_2024_25.csv"
+      - "GET https://api.neso.energy/dataset/102638b9-6214-4db6-9115-86b5e879d1ce/resource/45598dcd-ea9c-4911-95f2-7946c5f3b034/download/boa_data_2026_27.csv"
+    commands:
+      - {run: gridflow ingest neso_data_portal wind_bmu_boa_volumes --last 24h, comment: "each changed yearly file to bronze"}
+      - {run: gridflow transform neso_data_portal wind_bmu_boa_volumes --last 24h, comment: "the capture's date to silver"}
+  related:
+    - {dataset: elexon/boal, note: "Elexon's record of each accepted bid and offer, by BM unit"}
+    - {dataset: neso_data_portal/monthly-operational-metered-wind-output, note: "NESO's metered wind output by half hour, beside the curtailed volumes"}
+    - {dataset: elexon/bmunits_reference, note: "Elexon's unit register; most of these names match its National Grid IDs"}
 ---
 
 # Wind BOA Volumes
 
 ## Overview
 
-NESO publishes, per BMU, the volume of Balancing Mechanism Offer-Acceptances (BOAs) taken on the wind farms whose BM units feed NESO's wind incentive forecasts. The catalogue describes each resource as "the volume of all BOAs taken on the BMU wind farms used in our wind incentive forecasts" for one April-to-March financial year. Each row is a BMU, a settlement date, a settlement period and one `BOA_Volume`. In market terms it is the record of when and by how much NESO instructed wind farms to change output through the Balancing Mechanism, which makes it a source for wind curtailment, constraint-driven output loss, and the gap between a wind forecast and what the system actually accepted.
+NESO publishes, per BMU, the volume of Balancing Mechanism bid-offer acceptances (BOAs) taken on the wind farms whose BM units feed NESO's wind incentive forecasts. The catalogue describes each resource as "the volume of all BOAs taken on the BMU wind farms used in our wind incentive forecasts" for one April-to-March financial year. Each row is a BMU, a settlement date, a settlement period and one `BOA_Volume`. In market terms it is the record of when and by how much NESO instructed wind farms to change output through the Balancing Mechanism, which makes it a source for wind curtailment, constraint-driven output loss, and the gap between a wind forecast and what the system actually accepted.
 
 The package is **eligible** at the package level (all nine resources are routed to silver) but its single family is **held**. NESO does not explain what a repeated identical row means, so the identity of a row (one acceptance, one contribution to a period total, or a duplicate) is unknown; the 2026/27 file also carries positive volumes against the vendor dictionary's description of the field as curtailed (negative) generation. gridflow therefore loads the six archives that pass its duplicate guard, keeps the three that fail as unloaded failed captures with committed adjudications, and publishes no output from this family until NESO answers the hold question below (see Holds). Nothing in this page states data values from the family.
 
@@ -59,7 +96,9 @@ Download links are the CKAN snapshot URLs. The vintage is the CKAN `last_modifie
 
 Activation receipt (RESULTS `GEN-2H`, ruling 558, cutoff 2026-10-08, no prior silver): **904,240** silver rows over the **6 clean resources** (B03 to B06, B08, B09), matching the plan. The three failed resources wrote failure records and no completion marker, as designed; the dataset transform exits 1 for that reason, which is expected and adjudicated, not a fault to clear. The six loaded counts sum to 904,240.
 
-The newest local capture of each resource is the only capture available; the snapshot's `last_modified` for the 2026/27 file is earlier than the loaded vintage because the file is updated daily and the capture was taken later.
+The snapshot's `last_modified` for the 2026/27 file is earlier than the loaded vintage because the file is updated daily and the capture was taken later.
+
+**Second capture of 2026/27 (measured 2026-10-24).** A refresh on 2026-10-16 recaptured only the 2026/27 file (`raw_20261016T204821Z_45598dcd-..._e3f8bac0.csv`, `last_modified` `2026-10-16T09:00:18.236752`, 160,485 rows, dates 2026-04-01 to 2026-10-16); the eight other files carried an unchanged `last_modified` and were skipped. Its rows dated before 2026-10-08 are identical, as a multiset, to the first capture's 144,399 such rows, so between the two captures NESO only appended. It still has no whole-row or (`Date`, `Settlement_Period`, `Generator_Name`) repeats, and 1,125 positive volumes (dates 2026-04-01 to 2026-10-16, 34 identifiers) against 1,044 in the first. Silver holds both 2026/27 captures (144,486 and 160,485 rows); `_latest` per `resource_id` takes the 2026-10-16 one, so the clean resources now give 920,239 latest rows. The closed years each still have one capture.
 
 ## Families
 
@@ -114,7 +153,7 @@ Vintage. The data is as-of the CKAN modification time, not the time the underlyi
 - Registry refresh: daily
 - Vendor metadata (snapshot extras, verbatim):
   - Update frequency: Daily
-- Resources are split by financial year; only the current-year archive (2026/27) changes regularly. Closed years were last modified 2026-05-28 and 2026-08-10. Whether NESO revises closed years is `TODO: verify (no revision history observed; only one capture of each resource exists locally)`.
+- Resources are split by financial year; only the current-year archive (2026/27) changes regularly. Closed years were last modified 2026-05-28 and 2026-08-10. Whether NESO revises closed years is `TODO: verify (no revision history observed; only one capture of each closed year exists locally, and the 2026/27 file's two captures, 2026-10-08 and 2026-10-16, show appends only)`.
 - Historic depth: the 2018/19 file begins in April 2018.
 
 ## Licence and attribution
@@ -130,7 +169,7 @@ Vintage. The data is as-of the CKAN modification time, not the time the underlyi
 
 - **Hold unit: E-SEM** (an open data-semantics question for the vendor). Two questions, both for NESO:
   1. **Row grain (`B-ROW-GRAIN`).** What does a repeated identical BOA row mean: separate acceptances, separate contributions to a period total, or duplication? Can NESO publish an acceptance identifier or a corrected unique export?
-  2. **Positive values (`B-POSITIVE-SEMANTICS`).** What do positive `BOA_Volume` values in the current-year file mean (offers, corrections, or another quantity) given the dictionary's negative-curtailment definition?
+  2. **Positive values (`B-POSITIVE-SEMANTICS`).** What do positive `BOA_Volume` values in the current-year file mean (offers, corrections, or another quantity) given the dictionary's negative-curtailment definition? (The registry's 1,044 is the 2026-10-08 capture; the 2026-10-16 capture has 1,125, the earlier 1,044 unchanged.)
 - **Held means no published output.** No gold view, model feature, published chart or sample row is derived from this family and none of its data values appear on this page. Row counts and the schema are the only facts shown.
 - **Why no lossless key exists.** No combination of vendor columns identifies every historical row uniquely. The profiler's every-column identity still has repeats, adding `Generator_Full_Name` does not separate them, and a resource id cannot resolve repeats inside one resource. The registry key therefore carries `boa_volume`, which is value-based identity chosen to load the clean archives, not a statement that the volume identifies the row. gridflow does not sum, drop duplicates, pick the last row or invent an occurrence index.
 - **Repeats also exist in the loaded archives.** The excess-row counts on (`Date`, `Settlement_Period`, `Generator_Name`) are 44, 290 and 789 in the three failed archives (B01, B02, B07) and 244, 9, 3, 85 and 932 in B03, B04, B05, B06 and B08 respectively; B09 has none. The loaded archives pass the guard only because their repeats differ in `BOA_Volume`. A consumer must therefore not assume one row per BMU, date and period even in loaded silver, and must not take a BMU-period total without the vendor answer to the grain question.
