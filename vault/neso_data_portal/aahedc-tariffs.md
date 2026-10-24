@@ -4,9 +4,41 @@ package: "aahedc-tariffs"
 dataset_key: "aahedc_tariffs"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-12
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: NESO dates each publication but not when each row appeared, nor whether old rows change.
+  title: AAHEDC tariffs
+  summary: >-
+    NESO's tariffs for Assistance for Areas of High Electricity Distribution Costs (AAHEDC): draft
+    and final rates by financial year, in p/kWh.
+  facts:
+    vendor: "NESO Data Portal, package `aahedc-tariffs`: one CSV file"
+    cadence: Every 6 months, as NESO lists it; updated when tariffs are published
+    grain: "Each row: one financial year's tariffs at one stage, with its published date"
+  landscape: market
+  what_it_is: >-
+    Each row gives one financial year's AAHEDC tariffs at a draft or final stage, with the date NESO
+    published them: the total scheme tariff, the Shetland tariff and the tariff excluding the
+    Shetland assistance amount, in pence per kWh. A financial year runs April to March and is named
+    by its ending year. NESO's revenue team forecasts and sets them.
+  how_used:
+    - The AAHEDC rate NESO set for each financial year, in pence per kWh
+    - How far the final rate moved from its draft, financial years 2025 to 2027
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then the file downloaded whole unless its
+      `last_modified` is unchanged.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=aahedc-tariffs"
+      - "GET https://api.neso.energy/dataset/43d94335-c97f-4939-a8b9-607d2cfb3734/resource/ffd29cc8-3c55-4e83-aa0e-73212d4fedba/download/aahedc-tariffs-for-dataportal-2026-07.csv"
+    commands:
+      - {run: gridflow ingest neso_data_portal aahedc_tariffs --last 24h, comment: whole file to bronze}
+      - {run: gridflow transform neso_data_portal aahedc_tariffs --last 24h, comment: "the capture's date to silver"}
+  related:
+    - {dataset: neso_data_portal/transmission-network-use-of-system-tnuos-tariffs, note: "Transmission network charges, forecast and set by the same NESO team"}
+    - {dataset: neso_data_portal/bsuos-fixed-tariffs, note: "Fixed BSUoS rates, also published by stage with a publication date"}
 ---
 
 # Assistance for Areas of High Electricity Distribution Costs (AAHEDC) Tariffs

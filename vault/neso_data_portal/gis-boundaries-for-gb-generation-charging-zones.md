@@ -4,9 +4,43 @@ package: "gis-boundaries-for-gb-generation-charging-zones"
 dataset_keys: ["gis_gen_charging_zones_files"]
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-15
+updated: 2026-10-24
 layer_coverage: "bronze"
 eligibility: "eligible"
+page:
+  held: Two map files, kept whole; gridflow reads no rows from them and builds no silver table.
+  title: TNUoS generation charging zones
+  summary: >-
+    NESO's approximate boundaries of the generation zones in Transmission Network Use of System
+    (TNUoS) charging, as Shapefile and GeoJSON.
+  facts:
+    vendor: "NESO Data Portal, package `gis-boundaries-for-gb-generation-charging-zones`: two files"
+    cadence: Ad hoc, as NESO lists it; both files were last modified 16 May 2022
+    grain: "One layer of 28 features in each file, with `id`, `layer` and `path` attributes"
+  landscape: power
+  what_it_is: >-
+    NESO's notes, as read in October 2026, count 27 TNUoS generation zones, each with its own
+    tariffs; the count may change, and boundaries shift as substations are added. NESO
+    calls the boundaries indicative; its charging documents prevail where the two disagree. Both
+    files, last modified May 2022, contain 28 features and state WGS 84 coordinates in degrees.
+  how_used:
+    - Find a site's approximate TNUoS generation zone from its coordinates
+    - Map zonal generation tariffs across Great Britain
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then each of the two files whole unless its
+      `last_modified` is unchanged. Ingest only: gridflow builds no silver table.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=gis-boundaries-for-gb-generation-charging-zones"
+      - "GET https://api.neso.energy/dataset/f72029e7-3056-4021-9493-01c58a667d7a/resource/102b90d8-db66-42d1-a305-1108b3384e62/download/tnuosgenzones.zip"
+      - "GET https://api.neso.energy/dataset/f72029e7-3056-4021-9493-01c58a667d7a/resource/539a04ea-8bf3-4366-a277-49812c651cfb/download/tnuosgenzones_geojs.geojson"
+    commands:
+      - {run: gridflow ingest neso_data_portal gis_gen_charging_zones_files --last 24h, comment: "both files whole, bronze only"}
+  related:
+    - {dataset: neso_data_portal/transmission-network-use-of-system-tnuos-tariffs, note: "Onshore generator tariffs for each generation zone, by stage and year"}
+    - {dataset: neso_data_portal/gis-boundaries-for-gb-dno-license-areas, note: "Licence areas NESO points to for TNUoS demand zone maps"}
+    - {dataset: neso_data_portal/gis-boundaries-for-gb-grid-supply-points, note: "Grid supply point regions, another set of NESO GIS boundaries"}
+    - {dataset: neso_data_portal/etys-gb-transmission-system-boundaries, note: "NESO's study boundaries across the transmission system, as a shapefile"}
 ---
 
 # GIS Boundaries for GB Generation Charging Zones
@@ -21,7 +55,7 @@ This package is two downloadable map files from NESO: an ESRI Shapefile (zipped)
 ### What gridflow claims, and what it does not
 
 - The catalogue facts below (file format, layers, CRS, feature count, bounding box) were measured from the captured bytes by the existing GIS helper and agree with `docs/neso_data_portal/gis-facts.json`. They describe the files. They do not certify that the geography is correct.
-- **27 zones vs 28 features.** The vendor package text says there are 27 TNUoS generation zones, and that the number may change over time. Both captured files contain 28 features. gridflow records the measured feature count as published and establishes no equivalence between a feature and a charging zone. `TODO: verify` what the 28th feature is, from a vendor statement; none was found in the captured material.
+- **27 zones vs 28 features.** The vendor package text says there are 27 TNUoS generation zones, and that the number may change over time. Both captured files contain 28 features. gridflow records the measured feature count as published and establishes no equivalence between a feature and a charging zone. Measured on the 2026-10-08 captures (2026-10-24): in both files the **first feature has no geometry** (a GeoJSON `MultiPolygon` with no coordinates; a null shape, type 0, in the shapefile) and carries `id` 1 and `layer` `GZ1`. The other 27 features each have one polygon, with `id` 1 to 27 and `layer` `GZ1` to `GZ27`, so `id` 1 appears twice. `TODO: verify` from a vendor statement why the empty feature is there; none was found in the captured material. The site page states NESO's 27 and the files' 28 features in separate sentences, without linking them, and does not mention the empty feature.
 - The vendor text points to a separate package of GB DNO licence areas for the TNUoS demand zones. That package is held and unpublished (see Holds); its catalogue page (@30-vendors/neso-data-portal/datasets/gis-boundaries-for-gb-dno-license-areas.md) states the licence question and publishes no data.
 - Attribute columns inside the files are listed by name only. gridflow records no meaning, unit or key for them.
 
@@ -55,7 +89,7 @@ No resource in this package is a DOC, a CSV, a held resource or a silver nominat
 Notes on the facts:
 
 - Shapefile feature counts come from the `.shx` index, the shapefile bounding box from the `.shp` header, and the CRS from the `.prj`. GeoJSON counts and bounding box come from the JSON itself. The ZIP passed its integrity test and its `.cpg` member decodes to `UTF-8`.
-- The shapefile bounding box has a minimum y of `0.0`, which the GeoJSON bounding box does not (it has `49.946448656095164`). Both reproduce the committed facts exactly. gridflow records this as published and draws no conclusion from it.
+- The shapefile bounding box has a minimum y of `0.0`, which the GeoJSON bounding box does not (it has `49.946448656095164`). Both reproduce the committed facts exactly. The shapefile's first record is a null shape (see above), and a header box that counted it at `(0, 0)` would give this minimum y; its x range already spans 0. That is consistent, not proven: gridflow records the header as published.
 - gridflow records no units for coordinates or attributes; none are stated in the vendor material it has captured. `TODO: verify` any attribute meaning from a vendor data dictionary, if one exists; none is catalogued.
 - Sentinel and null-token handling does not apply: no file in this package is parsed into rows.
 
