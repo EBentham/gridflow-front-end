@@ -93,3 +93,18 @@ The lead and members in the page set match (one table each). No change suggested
   All confirmed.
 - gridflow (registry text, minor): the hold question gives "1,044 positive volumes" with no date, a count from one capture; the 16 Oct capture has 1,125. The question is in code, so I left it alone; the note now dates the count. Suggest dating it or dropping it at the next registry edit.
 - No gridflow code defect found.
+
+## Round 2 (2026-10-24): the seven nits from `held-2-review.md`
+
+All seven are applied within budget. Notes edited with the Edit tool (CRLF kept, 0 bare LF), mirrored, `cmp` clean on both. `gridflow-build --only` wrote both pages with no errors; detector `[]` on both. No artefacts.
+
+Weekly wind availability:
+1. `summary`: "... (BM) unit in MW, by week; NESO says it covers 2 to 52 weeks." (22 words; NESO's own "for 2-52 weeks ahead", with no claim about labels.)
+2. `facts.cadence`: "Weekly, NESO says; its modified stamps include 6, 8 and 16 October 2026" (14 words; the snapshot and both capture stamps).
+3. Note body, raw-feed paragraph: "Two observations" is now "Three observations".
+
+Wind BOA volumes:
+1. `held`: "All years stay out: NESO never says why rows repeat, and 2026/27 has positive volumes." (15 words.) This is true of the three years with whole-row repeats and the five with repeats on date, period and unit.
+2. `raw_feed.note` names the three shown ("Shown: first, current and 2024/25."), then lists the rejected three separately (30 words).
+3. `what_it_is`: "As fetched on 8 and 16 October 2026" replaces "As published on 16 October 2026". "NESO's wind incentive forecasts use these units" keeps it at 60 words.
+4. `related[2]`: "Elexon's unit register; most of these names match its National Grid IDs" (12 words).

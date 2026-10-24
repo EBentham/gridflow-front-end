@@ -1,0 +1,67 @@
+# Held Generation pages, part 2: checker review (2026-10-24)
+
+Checked against the batch file, standing instructions, the writer's report, both canonical note diffs against `origin/master` (vault worktree `C:\gridflow-wt\vault-neso-gen`), the mirrors, the built pages, the ledger rows and eligibility report, the registry records, the catalogue snapshot `20261006T195819Z` (package notes, resource descriptions, extras), the saved field info for both tables, gridflow `client.py` (`iter_members` upload branch), every bronze sidecar and body for both keys (read only, Polars), and the silver parquet row counts (read only, Polars).
+
+Gates, all rerun by me: `cmp` canonical note against mirror clean on both; build with `--only neso_data_portal/<lead>` wrote both pages, no errors; detector `[]` on both; no series, sample or notebook artefact exists for either key; rendered `<main>` text has no em or en dashes, arrows or middle dots and none of live, now, real-time, soon, pending, planned, shipped, coming, locally, ruling, ledger, TODO, held, yet, E-SEM; `<title>` and meta descriptions carry no local counts or planning words; viewport meta present; hold lines are 15 and 16 words (budget 16); all related hrefs resolve to built pages (`daily_wind_availability.html`, `14-days-ahead-wind-forecasts.html`, `../elexon/uou2t14d.html`, `monthly-operational-metered-wind-output.html`, `../elexon/boal.html`, `../elexon/bmunits_reference.html`). Screenshots at 1440 and 768 (both pages) and 390 through a 390 px iframe (both), on my port 9817, in `C:\Users\Bobbo\AppData\Local\Temp\claude\C--Users-Bobbo-OneDrive-Desktop-Python-gridflow-front-end\da30dd44-cdfe-4d81-8e01-4b4045e0ad6b\scratchpad\gen-h2-checker\shots\`; I read BOA 1440 and weekly 390: nothing clipped or overlapping, long URLs wrap. Dark mode not checked. Server stopped by its own PID (32516, command line matched); 9670 untouched.
+
+## Verdicts
+
+| Page | Verdict | blocker | major | nit |
+|---|---|---|---|---|
+| `weekly-wind-availability` | APPROVE | 0 | 0 | 3 |
+| `wind-bmu-boa-volumes` | APPROVE | 0 | 0 | 4 |
+
+## Reproduced
+
+| Claim | Result |
+|---|---|
+| Weekly: both bronze bodies (stamps `2026-10-08T11:20:20.163158`, `2026-10-16T20:20:25.674628`) have header `BMU_ID,Week Number,MW`, 43,556 records, 43,555 populated, 281 BM units, 155 labels, 281 units per label, no repeated row, one all-blank record; raw order `43W26` to `40W29` and `44W26` to `41W29` (one week later at both ends); sorted ends `01W27` and `53W26` | Reproduced. |
+| Weekly: NESO's stated horizon "2-52 weeks ahead" (package notes); "technical availability of the wind farms rather than what they are able to actually produce based on wind speed" (resource description); extras "Update Frequency: Weekly"; dictionary `Week Number` "Week number for the BMU's are available", example `13W20`; `MW` "Capacity of the BMU in megawatts" | Reproduced. |
+| Weekly: silver holds two parquet files of 43,555 rows (8 and 16 October) | Reproduced. |
+| BOA: nine yearly bodies in bronze; whole-row repeat excess 18 (2018/19), 1 (2019/20), 2 (2024/25), 0 in the other six (total 21); repeat excess on date, period and unit 44, 290, 244, 9, 3, 85, 789, 932 (2018/19 to 2025/26) and 0 for 2026/27 (total 2,396) | Reproduced. |
+| BOA: in the five closed years with no whole-row repeat (2020/21, 2021/22, 2022/23, 2023/24, 2025/26) every date, period and unit repeat carries a different volume; the full name never differs within a repeat | Reproduced (new detail, see finding 2.1). |
+| BOA 2026/27: second body (stamp `2026-10-16T09:00:18.236752`) has 160,485 rows to 2026-10-16; its rows before 2026-10-08 equal the first body's 144,399 as a multiset, and every first-body row is in the second (the 87 rows dated 8 October too), so NESO only appended; positive volumes 1,044 then 1,125 (34 identifiers, 2026-04-01 to 2026-10-16, largest 431); no other file has a positive volume | Reproduced. |
+| BOA: the 16 October ingest wrote only the 2026/27 body; the other eight sidecars carry unchanged stamps (seven 2026-08-10, one 2026-05-28) as in the snapshot; the client skips an upload whose newest capture carries the live `last_modified` | Reproduced. |
+| BOA: silver holds seven parquet files over six resources (171,952; 113,267; 90,570; 106,620; 277,345; two captures of 2026/27 at 144,486 and 160,485); none from 2018/19, 2019/20, 2024/25; latest rows 920,239 | Reproduced. |
+| BOA dictionary: `BOA_Volume` unit MW, "The volume of generation curtailed by the BOA", comment "negative to represent the fact that they reduce the output of the wind farm"; package and resource text "wind incentive forecasts"; extras "Update frequency: Daily"; resource names April to March from 2018/19 to 2026/27; the 2026/27 resource text is the placeholder "Upload Wind-BMU-BOA-Volumes" | Reproduced. |
+| Request lines | Weekly and the three BOA CSV URLs equal the sidecar `request_url`; `package_show` is the connector's form. |
+
+## Focus 1: the "Rows not shown" lines
+
+- **Weekly** ("NESO never defines its week labels, so no row can be tied to a calendar week."): accurate and plain, equal to the ledger and eligibility question (week system, year, start day and zone undefined; the 155 against 2 to 52 mismatch). It covers the whole table: one table, every row a BM unit and a week label. NESO's only wording is the one dictionary line, so "never defines" is fair. The mismatch is dated on the page. No codes, no local-data references.
+- **BOA** ("All years stay out: NESO never says what repeated rows mean, and 2026/27 has positive volumes."): covers all nine yearly files. "All years" takes in the three the transform rejects (2018/19, 2019/20, 2024/25), which are the only files with whole repeated rows (21 excess rows), and the six others: five closed years through repeats on date, period and unit, and 2026/27 through positive volumes. Both halves of the ledger and eligibility question are there. One looseness: for five of the nine files "repeated rows" is true only of repeats by date, period and unit, not of whole rows (finding 2.1). Plain, no codes, no local-data references.
+
+## 1. `weekly-wind-availability` (lead `weekly_wind_availability`) - APPROVE
+
+1. **nit** `page.summary` (also the meta description and hero): "by week, which NESO labels 2 to 52 weeks ahead". NESO's wording is that the publication is "for 2-52 weeks ahead"; it does not say it labels weeks that way, and the hold line further down says NESO never defines its labels. Say "which NESO says covers 2 to 52 weeks ahead" (check the summary budget).
+2. **nit** `page.facts.cadence`: "Weekly, NESO says" is attributed and true (extras and resource text), but the modified stamp moved on 6, 8 and 16 October 2026, three moves in ten days. Optional: "Weekly, NESO says; its modified stamp moved on 6, 8 and 16 October 2026" (check budget). The note already holds the three stamps.
+3. **nit** note body, Raw-feed paragraph: "Two observations do not establish a vendor policy" now follows a sentence listing three observations (6 October snapshot, 8 and 16 October captures). Write "Three observations".
+
+Checked and fine: `facts` (one CSV; grain 281 units x 155 labels = 43,555 exactly), `what_it_is` (example `13W20`; technical availability paraphrase; "describes the label only as the week the units are available" matches the dictionary; the 155 against 2 to 52 comparison is dated to the 8 and 16 October files, both reproduced), `how_used` (the daily file's horizon is 2 to 14 days; the second bullet is a use case, not a NESO claim, and reads as one), both requests, both commands (valid key), the three related links (the live `daily_wind_availability` page exists and says "2 to 14 days ahead"; `uou2t14d` says "2 to 14 days ahead"; the 14-day wind forecast page is about forecast output, so "not availability" is right). Note body corrections (all reproduced): second capture in "Captured", both stamps in clock 1, the 16 October label range, the new "Second capture" paragraph (second parquet file, 43,555 rows, `_latest` takes the later whole), three stamps in cadence. The ISO diagnostic the note keeps is consistent with the data (43W26 is two ISO weeks after 8 October 2026; 155 consecutive ISO weeks end at 40W29), which supports the writer's decision not to put the ISO reading on the page.
+
+## 2. `wind-bmu-boa-volumes` (lead `wind_bmu_boa_volumes`) - APPROVE
+
+1. **nit** `page.held`: "repeated rows" is literally true of three files. The five other closed years have no whole repeated row; they repeat a unit within a period with a different volume each time (85, 244, 9, 3 and 932 excess rows, reproduced). `what_it_is` says "whole or by unit and period", so the page as a whole is honest; only the line stands a little loose on its own. If the seat wants it exact within 16 words: "All years stay out: NESO never says why rows repeat, and 2026/27 has positive volumes." (15 words). Avoid the word "held".
+2. **nit** `page.raw_feed.note`: "Three shown; the transform rejects 2018/19, 2019/20 and 2024/25 (repeated rows)." says nothing about why these three are shown, and the next clause reads as if the three shown are the three rejected. They are not: 2019/20 is rejected and not shown, 2026/27 is shown and loads. Say what the three are, for example "Three of nine shown: the first year, a later year the transform rejects, and the current year. The transform rejects 2018/19, 2019/20 and 2024/25 (repeated rows)." (check the budget; the whole-download rule is the feed's fact and stays).
+3. **nit** `page.what_it_is`: "As published on 16 October 2026" is exact for 2026/27 (new body downloaded that day, 1,125 positive volumes). For the closed years the bodies were downloaded on 8 October and the 16 October refresh skipped them because NESO's modified stamp had not moved, so "as published" holds by that inference, not by a second download. Either "as fetched on 8 and 16 October 2026" or leave; the claim is sound.
+4. **nit** `page.related[2]` (`elexon/bmunits_reference`): "the project matched these to its National Grid IDs" overstates and uses an internal voice. The note's measurement is 208 of 209 distinct identifiers (`CAIRW-1` unmatched), against a local reference snapshot. Write "Elexon's unit register; most of these names match its National Grid IDs" (the live daily wind availability page uses the same "the project matched" wording; consistency is a seat call).
+
+Checked and fine: `facts` (nine yearly CSVs; April to March; "Daily, NESO says" is the extras value, though only 2026/27 changes), `summary` and the spelled-out terms (BOA as bid-offer acceptance is the Balancing and Settlement Code term and matches Elexon's own "Bid-offer acceptance levels" on the live `elexon/boal` page; BM unit as balancing mechanism unit; NESO's own text uses only "BOAs" and "BMUs", so the expansion is the page's, correctly in plain words), `what_it_is` (MW, "generation curtailed", negative because it reduces the farm's output, all NESO's wording; "NESO uses these units in its wind incentive forecasts" matches the package text), `how_used` (interpretation, in the note's own words), the three requests (equal to the sidecars), the commands (valid key; the transform exits non-zero because of the three rejected years, which the note records), the `elexon/boal` and monthly metered wind links (both pages say what the related lines say).
+
+Note body corrections (all reproduced): BOA expansion fixed from "Offer-Acceptances"; the removed "only capture available" sentence and the new dated "Second capture of 2026/27" paragraph (stamp, 160,485 rows, appends only as a multiset, no repeats, 1,125 positives, 34 identifiers, both captures in silver, 920,239 latest rows, the other eight files skipped); cadence TODO; hold question item 2 dating 1,044 against 1,125. Nothing stale left that the data now contradicts.
+
+## Focus 2: dated NESO facts (all reproduced from bronze, read only)
+
+- 155 week labels in the 8 and 16 October 2026 weekly files, against NESO's stated 2 to 52 weeks.
+- The 2026/27 BOA file only appended between the 8 and 16 October captures (rows before 8 October identical as a multiset; every first-capture row present in the second).
+- Positive volumes 1,044 (8 October) then 1,125 (16 October); none in the eight closed years.
+
+## Focus 3: terms, facts, raw feed, related
+
+Covered above. The raw feed shows three of nine BOA files without saying why (finding 2.2); the weekly feed is one CSV and shows it whole. Related links all resolve; every related line matches the linked page's own summary.
+
+## Defects to carry (writer's, confirmed)
+
+- NESO, Weekly Wind Availability: `Week Number` calendar undefined; both 8 and 16 October 2026 files carry 155 labels against the documented 2 to 52 weeks; `BMU_ID` carries the dictionary unit "MW"; the dictionary describes `MW` as "Capacity of the BMU in megawatts" while the publication text says availability. Confirmed (the capacity wording is already in the note).
+- NESO, Wind BOA Volumes: whole-row repeats in 2018/19, 2019/20, 2024/25 (21 excess rows); date, period and unit repeats in every closed year (2,396 excess rows); positive volumes in 2026/27 rising from 1,044 to 1,125 between 8 and 16 October; placeholder 2026/27 resource text ("Upload Wind-BMU-BOA-Volumes"). Confirmed.
+- gridflow (registry text, minor): the hold question gives "1,044 positive volumes" undated; the 16 October body has 1,125. Confirmed; date it or drop the count at the next registry edit. No gridflow code defect found.

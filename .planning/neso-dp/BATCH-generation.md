@@ -74,4 +74,6 @@ the lead table's columns; describe a second table's columns in its member line.
 | 4 | a433a0c274e3774e4 | ad0238aea64f407ad | APPROVED, nits fixed (seat-verified); committed; 20bp logged (overlap is 1 to 5 April 2026, not Aug-Sep) |
 | 5 | ab173f966d65b4fd9 | a67e6d17a5e3a9388 | APPROVED (round 2 fixes seat-verified); committed; 20bs logged |
 | H1 | a22cf5e9dd0c422d9 | ab22cceb41929f51c | APPROVED x3, nits fixed (seat-verified); committed; 20bt logged |
-| H2 | a6f81f03fb4bef599 | a4245ff5024048ff3 | checking; 20bu logged |
+| H2 | a6f81f03fb4bef599 | a4245ff5024048ff3 | APPROVED x2, nits fixed (seat-verified); committed; 20bu logged |
+
+Group closed 2026-10-24: gates green (pytest 204, build check 165 pages, htmlhint 0, lychee 0, detector clean); site PR EBentham/gridflow-front-end#69, vault PR EBentham/quant-vault#72, both waiting for Bobbo.
