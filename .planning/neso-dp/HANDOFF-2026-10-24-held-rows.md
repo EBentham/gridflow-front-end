@@ -9,6 +9,13 @@ DFS carried up. Defect rows 20cl-20cr on `vault-neso-dpc` (pushed) plus BACKLOG 
 design). Helper: `<scratchpad>/seat/logdef.py <spec.json>` inserts a remediation row after `after_row` and a backlog
 line after `after_backlog` (next id 20cs, after "(20cr)").
 
+## Update ~17:20Z
+
+Generation and interconnectors DONE (pushed, parent told; 20cs logged; next defect id 20ct, after "(20cs)"). In
+flight: N1 checker a24fb2d76dca812ba, CI1 writer ace01fca13556e033, F1 writer a34676c0e232141b9, F2 writer
+a52e0573a78ee0c3e, R1 writer a2169fe0f64b6cf11. Stack merged through ic; next merges ic into cr, cr into nc before
+committing N1.
+
 ## In flight (at hand-off)
 
 - G1 generation: DONE (pushed, parent told). F2 FES second batch writer a52e0573a78ee0c3e launched.

@@ -122,12 +122,13 @@ repeat rows; on a table with no event time use `data.sql()`; the column guide ac
 | D1 | ac29ae2189289eb20 | a1587b1603e0092f5 | APPROVED x4 (round 2); committed (site bb1ee8d); demand pushed, parent told; 20cr logged |
 | D2 | a6529fae660c4ff74 | aaa229431fb8d7d45 | APPROVED x3 (round 2); committed on dem |
 | G1 | af234cffef25e4fa7 | adaa14b1da19ee956 | APPROVED x5, nits fixed; committed (site 5ed280c); pushed; parent told |
-| I1 | a475c72bb4c6ca14f | a1fdee2150037abad | round 2 written (ElecLink alt 90 MW, shared archive line, UTC plots); joint re-check |
-| I2 | a85a78f0c3de4f450 | a1fdee2150037abad | APPROVED x3, nits fixed (archive line matches I1) |
+| I1 | a475c72bb4c6ca14f | a1fdee2150037abad | APPROVED x4 (round 2); committed (site e9fbe4e) with I2; pushed; parent told; 20cs logged |
+| I2 | a85a78f0c3de4f450 | a1fdee2150037abad | APPROVED x3; committed with I1 |
 | N1 | a0ac37967725c0a93 | a24fb2d76dca812ba | written; in review (AAHEDC no chart; Shetland-swap caption to check) |
 | CI1 | ace01fca13556e033 | | writing |
 | F1 | a34676c0e232141b9 | | writing |
 | F2 | a52e0573a78ee0c3e | | writing |
+| R1 | a2169fe0f64b6cf11 | | writing |
 
 Pace raised 2026-10-24 ~13:25Z (Bobbo via the parent): 5 agents at once, aim about 50% of weekly usage over 36 hours;
 park at 98% weekly. After NESO: ruling 66 on the seven blank other-vendor pages (ENTSO-E balancing-energy bids, current
