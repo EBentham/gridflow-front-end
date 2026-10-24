@@ -37,6 +37,10 @@ references; dated NESO facts only. Keep the wording the same across a batch wher
 example the interconnector limit tables, the TNUoS tariff tables). Family pages show one frame: give each member
 with rows its own caveat; the frame shows the lead or `record.select.silver`.
 
+**Old body lines (B1 review):** the held notes' bodies say "no data values are published" in several places. On a
+page that now shows rows, remove or correct every such line (a major finding otherwise). On a page that stays held
+with a raw sample, say it shows the file's first lines as fetched and no table.
+
 ## Where things are
 
 | Branch key | Front-end worktree | Vault worktree |
@@ -105,7 +109,7 @@ repeat rows; on a table with no event time use `data.sql()`; the column guide ac
 |---|---|---|---|
 | A1 | a012e047532732e92 | | writing |
 | A2 | a9f952220257ebd0a | af25be4d62dca5b4a | written; in review (ORPS frame shows the default-rate member; ASDP window ends before it starts on 29 Mar 2026, a defect) |
-| B1 | a12aa2a2d21abdba4 | aac52199c23c016ff | written; in review (writer: fixed-tariffs rows do carry Published Date, caveat follows the code; cost file restated 170 Sept rows between 8 and 16 Oct captures) |
+| B1 | a12aa2a2d21abdba4 | aac52199c23c016ff | round 1 REVISE x5 (stale "no data values" body lines; nits); fixed-tariffs caveat confirmed (rows carry Published Date); round 2 with writer |
 | B2 | a948627e0bfe2b68d | | writing |
 | C1 | ad75c58a68842e8b6 | | writing |
 
