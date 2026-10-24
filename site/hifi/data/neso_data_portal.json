@@ -146,7 +146,17 @@
         "historic-demand-data",
         "long-term-2-52-weeks-ahead-national-demand-forecast",
         "school-holiday-percentages",
-        "transmission-losses"
+        "transmission-losses",
+        "14-days-ahead-operational-metered-wind-forecasts",
+        "negative-reserve-active-power-margin-nrapm-forecast",
+        "day-ahead-wind-forecast",
+        "monthly-operational-metered-wind-output",
+        "tresp-generation-pathways",
+        "14-days-ahead-wind-forecasts",
+        "daily-opmr",
+        "weekly-opmr",
+        "weekly-wind-availability",
+        "wind-bmu-boa-volumes"
       ]
     }
   ],
@@ -518,6 +528,58 @@
         "transmission_losses_main",
         "transmission_losses_financial_year"
       ]
+    },
+    {
+      "slug": "14-days-ahead-operational-metered-wind-forecasts",
+      "title": "14 days ahead operational metered wind forecasts",
+      "note": "14-days-ahead-operational-metered-wind-forecasts",
+      "members": [
+        "metered_wind_forecast_14d",
+        "metered_wind_forecast_14d_windfarm"
+      ]
+    },
+    {
+      "slug": "negative-reserve-active-power-margin-nrapm-forecast",
+      "title": "Negative reserve active power margin (NRAPM) forecast",
+      "note": "negative-reserve-active-power-margin-nrapm-forecast",
+      "members": [
+        "nrapm_forecast_national_daily_days",
+        "nrapm_forecast_scotland_daily_days",
+        "nrapm_forecast_weekly_week_national",
+        "nrapm_forecast_weekly_week_scotland"
+      ]
+    },
+    {
+      "slug": "day-ahead-wind-forecast",
+      "title": "Day-ahead wind forecast",
+      "note": "day-ahead-wind-forecast",
+      "members": [
+        "da_wind_forecast_day_ahead",
+        "da_wind_forecast_day_ahead_bmu",
+        "da_wind_forecast_historic_day_ahead",
+        "da_wind_forecast_historic_day_ahead_bmu"
+      ]
+    },
+    {
+      "slug": "tresp-generation-pathways",
+      "title": "tRESP generation pathways",
+      "note": "tresp-generation-pathways",
+      "members": [
+        "tresp_generation_pathways_resp_region",
+        "tresp_generation_pathways_gsp",
+        "tresp_generation_pathways_la_england",
+        "tresp_generation_pathways_la_scotland",
+        "tresp_generation_pathways_la_wales"
+      ]
+    },
+    {
+      "slug": "14-days-ahead-wind-forecasts",
+      "title": "14 days ahead wind forecasts",
+      "note": "14-days-ahead-wind-forecasts",
+      "members": [
+        "wind_forecast_14d_days_ahead",
+        "wind_forecast_14d_day_ahead_bmu"
+      ]
     }
   ],
   "names": {
@@ -573,7 +635,12 @@
     "demand-profile-dates": "Demand profile dates",
     "historic-demand-data": "Historic demand data",
     "long-term-2-52-weeks-ahead-national-demand-forecast": "Long-term 2-52 weeks ahead national demand forecast",
-    "school-holiday-percentages": "School holiday percentages"
+    "school-holiday-percentages": "School holiday percentages",
+    "monthly-operational-metered-wind-output": "Monthly operational metered wind output",
+    "daily-opmr": "Daily OPMR",
+    "weekly-opmr": "Weekly OPMR",
+    "weekly-wind-availability": "Weekly wind availability",
+    "wind-bmu-boa-volumes": "Wind BMU BOA volumes"
   },
   "dropped": {},
   "package_tables": {
@@ -626,7 +693,12 @@
     "demand-profile-dates": "demand_profile_dates",
     "historic-demand-data": "historic_demand",
     "long-term-2-52-weeks-ahead-national-demand-forecast": "demand_forecast_2_52w",
-    "school-holiday-percentages": "school_holiday_percentages"
+    "school-holiday-percentages": "school_holiday_percentages",
+    "monthly-operational-metered-wind-output": "metered_wind_output_monthly",
+    "daily-opmr": "daily_opmr",
+    "weekly-opmr": "weekly_opmr",
+    "weekly-wind-availability": "weekly_wind_availability",
+    "wind-bmu-boa-volumes": "wind_bmu_boa_volumes"
   },
   "catalogue": {
     "_about": "NESO's catalogue as the hub draws it: its data groups in portal order, each with NESO's description and its packages (NESO's titles and CKAN names). `page_packages` names the CKAN package of a page not named after it; a package is a link when a page in `groups` documents it. `plan` lays the groups out as plots: a slug is one plot, `row` sets its children side by side, `col` stacks them; `wide` from 1100 px, `narrow` below, and `tag_narrow` plots carry their name beneath them when narrow.",

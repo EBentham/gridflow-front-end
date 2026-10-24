@@ -1,0 +1,19 @@
+{
+  "dataset": "neso_data_portal/tresp_generation_pathways_resp_region",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "b60936853b0e9946b71c396619f2365854030e1225ba700b21deea624d1758ed",
+  "type": "bar",
+  "unit": "MW",
+  "caption": "",
+  "value_column": "value",
+  "aggregation": "sum",
+  "window": null,
+  "provenance": {"duplicates_dropped": 0, "files": 1, "null_values_dropped": 0, "rows_matched": 66, "rows_read": 14674, "rows_used": 66, "silver": "neso_data_portal/tresp_generation_pathways_resp_region"},
+  "spec": {"aggregation": "sum", "dedup": {"on": ["resource_id", "building_block_id", "resp_region", "pathway", "projection_year"], "order_by": "capture_written_at"}, "filter": [{"column": "building_block_id", "op": "eq", "value": "Gen_BB012"}, {"column": "pathway", "op": "eq", "value": "tRESP - HT"}, {"column": "projection_year", "op": "in", "value": [2025, 2030, 2035, 2040, 2045, 2050]}], "group": "projection_year", "silver": "neso_data_portal/tresp_generation_pathways_resp_region", "sort": "label", "type": "bar", "unit": "MW", "value": "value"},
+  "x_kind": "category",
+  "x": ["2025", "2030", "2035", "2040", "2045", "2050"],
+  "series": [
+    {"key": "value", "values": [12777.64, 28738.381, 44345.047, 55088.78, 60904.578, 64451.081]}
+  ]
+}
