@@ -75,5 +75,5 @@ ENTSO-E paragraphs). Verify every one against local silver before writing it.
 |---|---|---|---|
 | `current_balancing_state` | a4cb0fff7df521d95 | a30c0bcff807fc21d | DONE: approved round 2, nits fixed; committed 12ca780 / vault a0d19bc (not pushed) |
 | `unavailability` (GIE) | aca4443f38f5d0077 | a62afd949e6ba56c1 | written; in review (seat: caveat keeps only "GIE states no time zone"; "13 of 16 pages" is a bronze file collision, no records missing) |
-| `procured_balancing_capacity` | a304ded779c679e9e | a2ff306455c8c2d69 | written; in review (price-unit caveat kept; 2-5 Aug need re-ingest; silver drops allocation decision time) |
+| `procured_balancing_capacity` | a304ded779c679e9e | a2ff306455c8c2d69 | REVISE round 1 (one row per offer stated as vendor fact); writer revising |
 | `balancing-energy-bids` | a77c0dcd4743a2675 | ac32d21fd7f56f7ab | written; in review (lowest upward bid price chart, 1 Aug; BE series numbers may collide across documents) |
