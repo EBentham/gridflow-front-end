@@ -1,0 +1,326 @@
+{
+ "dataset": "neso_data_portal/tec_register",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "fbca7a1c28e562d6b6fe1ef5c8625fb13f3f0a19862ef1f47f23863fb1947a98",
+ "silver": "neso_data_portal/tec_register",
+ "columns": [
+  {
+   "name": "project_number",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "project_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "stage",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "mw_connected",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "mw_increase_decrease",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "cumulative_total_capacity_mw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "mw_effective_from",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "project_status",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "gate",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "plant_type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "agreement_type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "host_to",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "customer_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "connection_site",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "project_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "PRO-001667",
+   "Almondell Lodge BESS & Solar Development",
+   null,
+   "0.0",
+   "50.0",
+   "50.0",
+   "2024-04-30",
+   "Built",
+   "2.0",
+   "Energy Storage System",
+   "Embedded",
+   "SPT",
+   "2026-10-06 10:47:29.757067 UTC",
+   "BROXBURN ENERGY STORAGE LIMITED",
+   "Broxburn 132/33kV",
+   "a0l4L0000005iTtQAI",
+   "2026-10-08 11:38:27.452947 UTC",
+   "bronze/neso_data_portal/tec_register/2026/10/08/raw_20261008T113827Z_17becbab-e3e8-473f-b303-3806f43a6a10_9f1a922c.csv",
+   "2026-10-08 11:38:27.452947 UTC",
+   "2026-10-08 11:38:27.452947 UTC",
+   "2026-10-06 10:47:29.757067 UTC",
+   "2ab5e1e2-81ae-4460-abb1-11f6a9db8168",
+   "1+e1"
+  ],
+  [
+   "PRO-000053",
+   "Immingham",
+   null,
+   "1268.0",
+   "0.0",
+   "1268.0",
+   null,
+   "Built",
+   null,
+   "Energy Storage System;Gas Reciprocating",
+   "Direct Connection",
+   "NGET",
+   "2026-10-06 10:47:29.757067 UTC",
+   "VPI IMMINGHAM LLP",
+   "Humber Refinery 400kV Substation",
+   "a0l4L0000005im7QAA",
+   "2026-10-08 11:38:27.452947 UTC",
+   "bronze/neso_data_portal/tec_register/2026/10/08/raw_20261008T113827Z_17becbab-e3e8-473f-b303-3806f43a6a10_9f1a922c.csv",
+   "2026-10-08 11:38:27.452947 UTC",
+   "2026-10-08 11:38:27.452947 UTC",
+   "2026-10-06 10:47:29.757067 UTC",
+   "2ab5e1e2-81ae-4460-abb1-11f6a9db8168",
+   "1+e1"
+  ],
+  [
+   "PRO-000053",
+   "Immingham",
+   null,
+   "0.0",
+   "50.0",
+   "1318.0",
+   "2027-07-01",
+   "Scoping",
+   "1.0",
+   "Energy Storage System;Gas Reciprocating",
+   "Direct Connection",
+   "NGET",
+   "2026-10-06 10:47:29.757067 UTC",
+   "VPI IMMINGHAM LLP",
+   "Humber Refinery 400kV Substation",
+   "a0l4L0000005im7QAA",
+   "2026-10-08 11:38:27.452947 UTC",
+   "bronze/neso_data_portal/tec_register/2026/10/08/raw_20261008T113827Z_17becbab-e3e8-473f-b303-3806f43a6a10_9f1a922c.csv",
+   "2026-10-08 11:38:27.452947 UTC",
+   "2026-10-08 11:38:27.452947 UTC",
+   "2026-10-06 10:47:29.757067 UTC",
+   "2ab5e1e2-81ae-4460-abb1-11f6a9db8168",
+   "1+e1"
+  ],
+  [
+   "PRO-001850-1",
+   "Springwell",
+   "1.0",
+   "0.0",
+   "400.0",
+   "400.0",
+   "2029-10-30",
+   "Scoping",
+   null,
+   "Energy Storage System;PV Array (Photo Voltaic/solar)",
+   "Direct Connection",
+   "NGET",
+   "2026-10-06 10:47:29.757067 UTC",
+   "SPRINGWELL ENERGYFARM LIMITED",
+   "Navenby 400kV Substation",
+   "a0l4L0000005iPHQAY",
+   "2026-10-08 11:38:27.452947 UTC",
+   "bronze/neso_data_portal/tec_register/2026/10/08/raw_20261008T113827Z_17becbab-e3e8-473f-b303-3806f43a6a10_9f1a922c.csv",
+   "2026-10-08 11:38:27.452947 UTC",
+   "2026-10-08 11:38:27.452947 UTC",
+   "2026-10-06 10:47:29.757067 UTC",
+   "2ab5e1e2-81ae-4460-abb1-11f6a9db8168",
+   "1+e1"
+  ],
+  [
+   "PRO-001850-2",
+   "Springwell",
+   "2.0",
+   "0.0",
+   "400.0",
+   "800.0",
+   "2030-10-30",
+   "Scoping",
+   null,
+   "Energy Storage System;PV Array (Photo Voltaic/solar)",
+   "Direct Connection",
+   "NGET",
+   "2026-10-06 10:47:29.757067 UTC",
+   "SPRINGWELL ENERGYFARM LIMITED",
+   "Navenby 400kV Substation",
+   "a0l4L0000005iPHQAY",
+   "2026-10-08 11:38:27.452947 UTC",
+   "bronze/neso_data_portal/tec_register/2026/10/08/raw_20261008T113827Z_17becbab-e3e8-473f-b303-3806f43a6a10_9f1a922c.csv",
+   "2026-10-08 11:38:27.452947 UTC",
+   "2026-10-08 11:38:27.452947 UTC",
+   "2026-10-06 10:47:29.757067 UTC",
+   "2ab5e1e2-81ae-4460-abb1-11f6a9db8168",
+   "1+e1"
+  ],
+  [
+   "PRO-001850-3",
+   "Springwell",
+   "3.0",
+   "0.0",
+   "800.0",
+   "1600.0",
+   "2033-06-01",
+   "Scoping",
+   null,
+   "Energy Storage System;PV Array (Photo Voltaic/solar)",
+   "Direct Connection",
+   "NGET",
+   "2026-10-06 10:47:29.757067 UTC",
+   "SPRINGWELL ENERGYFARM LIMITED",
+   "Navenby 400kV Substation",
+   "a0l4L0000005iPHQAY",
+   "2026-10-08 11:38:27.452947 UTC",
+   "bronze/neso_data_portal/tec_register/2026/10/08/raw_20261008T113827Z_17becbab-e3e8-473f-b303-3806f43a6a10_9f1a922c.csv",
+   "2026-10-08 11:38:27.452947 UTC",
+   "2026-10-08 11:38:27.452947 UTC",
+   "2026-10-06 10:47:29.757067 UTC",
+   "2ab5e1e2-81ae-4460-abb1-11f6a9db8168",
+   "1+e1"
+  ],
+  [
+   "PRO-001624-1",
+   "Zenobe Blackhillock 300 MW",
+   "1.0",
+   "200.0",
+   "0.0",
+   "200.0",
+   null,
+   "Built",
+   null,
+   "Energy Storage System",
+   "Direct Connection",
+   "SHET",
+   "2026-10-06 10:47:29.757067 UTC",
+   "ZENOBE BLACKHILLOCK LIMITED",
+   "Blackhillock 275kV Substation",
+   "a0l4L0000005iNTQAY",
+   "2026-10-08 11:38:27.452947 UTC",
+   "bronze/neso_data_portal/tec_register/2026/10/08/raw_20261008T113827Z_17becbab-e3e8-473f-b303-3806f43a6a10_9f1a922c.csv",
+   "2026-10-08 11:38:27.452947 UTC",
+   "2026-10-08 11:38:27.452947 UTC",
+   "2026-10-06 10:47:29.757067 UTC",
+   "2ab5e1e2-81ae-4460-abb1-11f6a9db8168",
+   "1+e1"
+  ],
+  [
+   "PRO-001624-2",
+   "Zenobe Blackhillock 300 MW",
+   "2.0",
+   "0.0",
+   "100.0",
+   "300.0",
+   "2026-04-01",
+   "Consents Approved",
+   null,
+   "Energy Storage System",
+   "Direct Connection",
+   "SHET",
+   "2026-10-06 10:47:29.757067 UTC",
+   "ZENOBE BLACKHILLOCK LIMITED",
+   "Blackhillock 275kV Substation",
+   "a0l4L0000005iNTQAY",
+   "2026-10-08 11:38:27.452947 UTC",
+   "bronze/neso_data_portal/tec_register/2026/10/08/raw_20261008T113827Z_17becbab-e3e8-473f-b303-3806f43a6a10_9f1a922c.csv",
+   "2026-10-08 11:38:27.452947 UTC",
+   "2026-10-08 11:38:27.452947 UTC",
+   "2026-10-06 10:47:29.757067 UTC",
+   "2ab5e1e2-81ae-4460-abb1-11f6a9db8168",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}
