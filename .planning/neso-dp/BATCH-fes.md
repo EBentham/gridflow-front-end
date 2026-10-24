@@ -74,7 +74,7 @@ captures repeat rows (or as a guard). On a table with no event time, `query()` f
 |---|---|---|---|
 | 1 | a0c28a65bd96ca1f4 | ad2d312da0c3c01c9 | APPROVED (round 2 fixes seat-verified); committed; 20cc logged (counts corrected) |
 | 2 | a7d6f785b85eb39ff | a7baf4ea258c6e697 | APPROVED, 5 nits fixed (seat-verified); committed; rebuilt under the definitions lead; 20cd logged |
-| 3 | a12902a5b35eeed53 | afcecf730f8b967bd | checking; 20ce logged |
+| 3 | a12902a5b35eeed53 | afcecf730f8b967bd | REVISE (2 majors: raw feed omits the portfolio file the notebook needs; ES1 related note overclaims; 6 nits), round 2 writing; 20ce logged |
 | 4 | acad0fb61bef04ef6 | | writing |
 | 5 | a3d393bb8f451101a | | writing |
 | H1 | | | |
