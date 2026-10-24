@@ -4,11 +4,10 @@ package: "daily-demand-update"
 dataset_key: "daily_demand_update"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-23
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: "Forecast rows carry zero national and transmission demand, and NESO does not say what zero means."
   title: Demand data update
   summary: >-
     NESO's daily file of half-hourly GB demand and interconnector flows, with embedded wind and
@@ -27,6 +26,37 @@ page:
   how_used:
     - Recent half-hourly GB demand, before NESO's yearly historic files are filled
     - Embedded wind and solar output, which NESO estimates because it cannot meter it
+  chart:
+    type: line
+    silver: neso_data_portal/daily_demand_update
+    filter:
+      - {column: bronze_capture_id, op: eq, value: "bronze/neso_data_portal/daily_demand_update/2026/10/16/raw_20261016T200140Z_177f6fa4-ae49-4182-81ea-0c6b35f26ca6_784eaeba.csv"}
+      - {column: forecast_actual_indicator, op: eq, value: A}
+    time: timestamp_utc
+    values:
+      - {column: nd, series: nd}
+      - {column: embedded_wind_generation, series: wind}
+      - {column: embedded_solar_generation, series: solar}
+    aggregation: last
+    window: {start: "2026-10-01", end: "2026-10-14"}
+    unit: MW
+  chart_view:
+    title: National demand and embedded output, 1 to 14 October 2026
+    caption: >-
+      Silver `daily_demand_update`, MW: the outturn (`A`) rows of NESO's file of 16 October 2026,
+      one point per half hour at its start in UTC. Embedded wind and solar are NESO's estimates.
+      Forecast rows are not drawn.
+    alt: >-
+      Line chart from neso_data_portal/daily_demand_update, MW, one point per half hour, 1 to 14
+      October 2026, from the outturn rows of NESO's 16 October 2026 file. National demand runs from
+      17,165 at 05:00 UTC on 4 October to 34,694 at 17:30 UTC on 12 October. Embedded solar is 0 at
+      night and highest at 11,648 on 1 October. Embedded wind runs from 221 on 11 October to 4,696 on
+      13 October.
+    x_label: half-hour start, UTC
+    key:
+      - {series: nd, label: National demand, paint: petrol}
+      - {series: wind, label: Embedded wind, paint: horizon}
+      - {series: solar, label: Embedded solar, paint: chartreuse}
   raw_feed:
     note: >-
       From NESO's CKAN portal: one `package_show`, then the CSV and the FAQ, each downloaded whole
@@ -39,6 +69,75 @@ page:
       - {run: gridflow ingest neso_data_portal daily_demand_update --last 24h, comment: "the CSV to bronze"}
       - {run: gridflow transform neso_data_portal daily_demand_update --last 24h, comment: "the capture's date to silver"}
       - {run: gridflow ingest neso_data_portal daily_demand_update_files --last 24h, comment: "the FAQ, bronze only"}
+  record:
+    select:
+      filter:
+        - {column: bronze_capture_id, op: eq, value: "bronze/neso_data_portal/daily_demand_update/2026/10/16/raw_20261016T200140Z_177f6fa4-ae49-4182-81ea-0c6b35f26ca6_784eaeba.csv"}
+        - {column: settlement_date, op: eq, value: "2026-10-16"}
+        - {column: settlement_period, op: ge, value: 14}
+        - {column: settlement_period, op: le, value: 21}
+      order_by: [settlement_period]
+      columns: [settlement_date, settlement_period, forecast_actual_indicator, nd, tsd, england_wales_demand,
+                embedded_wind_generation, embedded_solar_generation, embedded_wind_capacity,
+                embedded_solar_capacity, pump_storage_pumping, scottish_transfer, published_at]
+    key: [settlement_date, settlement_period, published_at]
+    caption: "16 October 2026 in NESO's file of that day: outturn to period 17, then forecast rows."
+    fields:
+      settlement_date: The settlement day; NESO's FAQ says all times are UK time
+      settlement_period: Half hour of the day; period 1 runs from 00:00 UK time
+      nd: National demand, MW, excluding station load, pumping and exports
+      forecast_actual_indicator: "`A` for outturn, `F` for forecast, as NESO marks each row"
+      tsd: "Transmission system demand: ND plus station load, pumping and exports, MW"
+      england_wales_demand: National demand on an England and Wales basis, MW
+      embedded_wind_generation: "NESO's estimate of embedded wind output, which it cannot meter, MW"
+      embedded_wind_capacity: "NESO's best view of embedded wind capacity, MW"
+      embedded_solar_generation: "NESO's estimate of embedded solar output, MW"
+      embedded_solar_capacity: "NESO's best view of embedded solar capacity, MW"
+      non_bm_stor: Short-term operating reserve outside the Balancing Mechanism, MW
+      pump_storage_pumping: Pumped storage pumping, MW, as NESO writes it
+      scottish_transfer: Flow between Scotland and England and Wales, MW
+      ifa_flow: "IFA interconnector flow, MW; positive into GB, negative out"
+      ifa2_flow: "IFA2 interconnector flow, MW; positive into GB, negative out"
+      britned_flow: "BritNed interconnector flow, MW; positive into GB, negative out"
+      moyle_flow: "Moyle interconnector flow, MW; positive into GB, negative out"
+      east_west_flow: "East West interconnector flow, MW; positive into GB, negative out"
+      nemo_flow: "Nemo Link interconnector flow, MW; positive into GB, negative out"
+      nsl_flow: "North Sea Link interconnector flow, MW; positive into GB, negative out"
+      eleclink_flow: "ElecLink interconnector flow, MW; positive into GB, negative out"
+      viking_flow: "Viking Link interconnector flow, MW; positive into GB, negative out"
+      greenlink_flow: "Greenlink interconnector flow; the dictionary gives no unit, NESO's FAQ MW"
+      timestamp_utc: Start of the settlement period, UTC
+      published_at: "NESO's last-modified time for the file, read as UTC; one per file"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote the capture to bronze, UTC
+  caveat: "Forecast rows carry zero demand and flows; NESO does not say whether zero means no forecast."
+  notebook:
+    lead: >-
+      `query()` reads NESO's newest file, filtered on each half hour's start; the first cell
+      converts times to UTC. The second sets outturn demand against forecast rows; the plot draws
+      outturn only.
+    cells:
+      - |
+        df = data.neso_data_portal.query("daily_demand_update", "2026-09-01", "2026-10-23")
+        for c in ["timestamp_utc", "published_at"]:
+            df[c] = df[c].dt.tz_convert("UTC")
+        df.groupby(["published_at", "forecast_actual_indicator"]).timestamp_utc.agg(["count", "min", "max"]).reset_index()
+      - |
+        cols = ["nd", "tsd", "scottish_transfer"]
+        spread = df.groupby("forecast_actual_indicator")[cols].agg(["min", "max"]).T
+        spread.rename_axis(["column", "statistic"]).reset_index()
+      - |
+        outturn = df[(df.forecast_actual_indicator == "A") & (df.settlement_date < "2026-10-16")]
+        daily = outturn.groupby("settlement_date").nd.agg(["min", "max"])
+        ax = daily.plot(figsize=(8, 3.5), color=["#C77E3C", "#155A6E"], xlabel="settlement date",
+                        ylabel="national demand, MW")
+        ax.legend(["lowest half hour", "highest half hour"]);
+    needs: "NESO's demand data update file of 16 October 2026"
+    plot_alt: >-
+      Line plot of the lowest and highest half-hour national demand of each day, MW, 1 September to
+      15 October 2026, from the outturn rows of NESO's 16 October 2026 file. The lowest half hour falls
+      to 14,180 on Sunday 20 September; the highest reaches 34,762 on 15 October. Both lines dip
+      lowest at weekends.
   related:
     - {dataset: neso_data_portal/historic-demand-data, note: "NESO's yearly demand files; the 2026 file has this file's columns"}
     - {dataset: elexon/indo, note: "Elexon's initial national demand outturn, which NESO calls ND's equivalent"}
@@ -301,8 +400,9 @@ forward section as embedded-generation forecasts. It does not say whether a zero
 is a genuine forecast of zero demand or a placeholder for "no demand forecast". Converting the
 zeros to null, publishing them as demand forecasts, and excluding them would each invent a
 missing-value rule, so the values and the `A`/`F` flag are kept exactly as delivered (FACTS
-§daily, g5). This page therefore gives schema, units and row counts only, not data values or
-ranges. A field-specific vendor missing-value definition would settle the question.
+§daily, g5). This note gives schema, units and row counts; the site page shows the rows, a chart
+of outturn rows only and a notebook, with one line naming the zero question. A field-specific
+vendor missing-value definition would settle the question.
 
 The forward-target rule (RULINGS 529) does not apply here. It made the four current
 cardinal-point demand forecasts eligible, because every target in those files falls after the

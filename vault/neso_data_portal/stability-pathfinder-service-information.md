@@ -4,12 +4,11 @@ package: "stability-pathfinder-service-information"
 dataset_keys: ["stability_pathfinder_availability_report", "stability_pathfinder_utilisation_report"]
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-23
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 eligibility_scope: "package-level only; both families are held (E-SEM, RULINGS 642), see Holds"
 page:
-  held: true
   title: Stability Pathfinder availability and utilisation
   summary: >-
     NESO's indicative record, by settlement period, of Stability Pathfinder units' availability and
@@ -27,24 +26,103 @@ page:
   how_used:
     - Which contracted units were available, or instructed, for stability in each settlement period
     - "Compare with NESO's Stability Y-1 utilisation report"
+  chart:
+    type: bar
+    silver: neso_data_portal/stability_pathfinder_utilisation_report
+    filter:
+      - {column: resource_id, op: eq, value: 75996c0a-70fb-4ddb-a345-bb1e8d39de35}
+      - {column: instruction_code, op: ne, value: "No"}
+    dedup: {"on": [resource_id, unit, settlement_period_start_date_time, settlement_period_end_date_time, instruction_code, instruction_issue_time, actual_service_start_or_cease_time, inertia], order_by: capture_written_at}
+    group: unit
+    aggregation: count
+    sort: value_desc
+    unit: instructions
+  chart_view:
+    title: Start and cease instructions by unit, April to October 2026
+    caption: >-
+      Silver `neso_data_portal/stability_pathfinder_utilisation_report`, NESO's 2026-2027 file last
+      modified 9 October 2026, periods to 4 October: rows with a start or cease instruction, per
+      unit. Four units had none. Files for 2024-2025 (one identical repeat) and 2025-2026 (3,964) have no table.
+    alt: >-
+      Horizontal bar chart from neso_data_portal/stability_pathfinder_utilisation_report of rows with
+      a start or cease instruction per unit in NESO's 2026-2027 file, 58 in all. KILLSC-2 and
+      PMBSC-61 have 15 each; KTHRS-1 has 6; LRDSC-1, LRDSC-2 and NLSSC-1 have 4 each; BEASC-1 has 3;
+      GRTSC-1, KTHRS-2 and THRSC-1 have 2 each; RTHSC-1 has 1.
+    key:
+      - {series: count, label: Instructions, paint: petrol}
   raw_feed:
     note: >-
       From NESO's CKAN portal: one `package_show`, then each financial-year file whole unless its
       `last_modified` is unchanged. Swap in either table's key.
     commands:
-      - {run: gridflow ingest neso_data_portal stability_pathfinder_availability_report --last 24h, comment: "whole files; swap in either key"}
+      - {run: gridflow ingest neso_data_portal stability_pathfinder_utilisation_report --last 24h, comment: "whole files; swap in either key"}
       - {run: gridflow transform neso_data_portal stability_pathfinder_utilisation_report --last 24h, comment: "to silver; availability builds none"}
+  record:
+    select:
+      filter:
+        - {column: resource_id, op: eq, value: 75996c0a-70fb-4ddb-a345-bb1e8d39de35}
+        - {column: unit, op: eq, value: KILLSC-2}
+        - column: settlement_period_start_date_time
+          op: in
+          value: ["2026-06-25T05:30:00+00:00", "2026-06-25T06:00:00+00:00", "2026-06-25T06:30:00+00:00",
+                  "2026-06-25T07:00:00+00:00", "2026-06-25T07:30:00+00:00", "2026-06-25T08:00:00+00:00",
+                  "2026-06-25T08:30:00+00:00"]
+      dedup: {"on": [resource_id, unit, settlement_period_start_date_time, settlement_period_end_date_time, instruction_code, instruction_issue_time, actual_service_start_or_cease_time, inertia], order_by: capture_written_at}
+      order_by: [settlement_period_start_date_time, instruction_issue_time]
+      columns: [unit, settlement_period_start_date_time, instruction_code, instruction_issue_time,
+                actual_service_start_or_cease_time, inertia, settlement_period_end_date_time]
+    key: [resource_id, unit, settlement_period_start_date_time, instruction_code, instruction_issue_time]
+    caption: "KILLSC-2 on 25 June 2026: two instructions share one period, and `Inertia` changes."
+    fields:
+      unit: "The contracted unit, as NESO writes it; a BM unit id where one exists"
+      settlement_period_start_date_time: "Period start as NESO writes it, text ending `+00:00`; NESO says local time"
+      instruction_code: "`No` (no instruction issued this period), `Service Start` or `Service Cease`"
+      instruction_issue_time: "When NESO issued the instruction, in the same text form; blank on `No` rows"
+      actual_service_start_or_cease_time: "When the service actually started or ceased, same text form; blank on `No` rows"
+      inertia: "NESO's `Inertia` figure, with no unit stated; blank in most 2023-2024 rows"
+      settlement_period_end_date_time: "Period end, 30 minutes after the start, in the same text form"
+      resource_id: "NESO's id for the financial-year file the row came from"
+      timestamp_utc: "gridflow's capture time, UTC; not the settlement period"
+      published_at: "When NESO last changed the file (CKAN `last_modified`), read as UTC"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      `data.sql` reads the `_latest` view, each file's newest capture. The time columns are NESO's
+      text and `timestamp_utc` is the capture time, so `query()` cannot pick periods.
+    cells:
+      - |
+        files = data.sql("""
+            SELECT min(settlement_period_start_date_time) AS first_start,
+                   max(settlement_period_start_date_time) AS last_start,
+                   count(*) AS rows, count(inertia) AS inertia_given,
+                   count(*) FILTER (WHERE instruction_code <> 'No') AS instructions
+            FROM silver_neso_data_portal_stability_pathfinder_utilisation_report_latest
+            GROUP BY resource_id ORDER BY first_start""")
+        files
+      - |
+        data.sql("""
+            SELECT right(settlement_period_start_date_time, 6) AS offset, count(*) AS rows
+            FROM silver_neso_data_portal_stability_pathfinder_utilisation_report_latest
+            GROUP BY 1""")
+      - |
+        ins = data.sql("""
+            SELECT unit, count(*) AS instructions,
+                   CASE WHEN resource_id = '52af0f68-e1c3-45dd-ae7f-54f68e32e0c6'
+                        THEN '2023-2024' ELSE '2026-2027' END AS file
+            FROM silver_neso_data_portal_stability_pathfinder_utilisation_report_latest
+            WHERE instruction_code <> 'No' GROUP BY ALL""")
+        ins.pivot_table(index="unit", columns="file", values="instructions", fill_value=0).plot.barh(
+            color=["#C77E3C", "#155A6E"], figsize=(8, 4),
+            xlabel="rows with a start or cease instruction", ylabel="unit");
+    needs: the 2023-2024 and 2026-2027 utilisation files
+    plot_alt: >-
+      Horizontal bar chart of rows with a start or cease instruction per unit, in the 2023-2024 and
+      2026-2027 files. CRUA-3 leads 2023-2024 with 38, then LRDSC-2 19 and LRDSC-1 15. In 2026-2027,
+      KILLSC-2 and PMBSC-61 lead with 15 each.
   family:
     slug: stability-pathfinder-service-information
     members:
-      - dataset: stability_pathfinder_availability_report
-        differs: "Each unit's declared availability by settlement period, with remarks on changes"
-        request:
-          - "GET https://api.neso.energy/dataset/ae59b12b-4cfe-40a0-844f-1d139c63d893/resource/a4fd8208-3e36-4f9c-bdc7-435c3734a2da/download/stability-pathfinder-availability-report-2023.csv"
-          - "GET https://api.neso.energy/dataset/ae59b12b-4cfe-40a0-844f-1d139c63d893/resource/bacc45e5-11ac-4bac-88ef-6872f499db97/download/stability-pathfinder-availability-report-2024.csv"
-          - "GET https://api.neso.energy/dataset/ae59b12b-4cfe-40a0-844f-1d139c63d893/resource/1264f36f-27ce-4ed9-aab1-393c7612d6bc/download/stability-pathfinder-availability-report-2025.csv"
-          - "GET https://api.neso.energy/dataset/ae59b12b-4cfe-40a0-844f-1d139c63d893/resource/690a9e42-20e2-4b0e-b74f-f3e37cac4bac/download/stability-pathfinder-availability-report-2026.csv"
-        held: "Times end `+00:00` though NESO says local time; identical rows repeat, and nothing tells them apart."
       - dataset: stability_pathfinder_utilisation_report
         differs: "Every unit and settlement period: instruction code, mostly `No`, start or cease times, `Inertia`"
         request:
@@ -52,7 +130,15 @@ page:
           - "GET https://api.neso.energy/dataset/ae59b12b-4cfe-40a0-844f-1d139c63d893/resource/f43f5d61-b51f-45f9-a7e7-66f2959d38b5/download/stability-pathfinder-utilisation-report-2024.csv"
           - "GET https://api.neso.energy/dataset/ae59b12b-4cfe-40a0-844f-1d139c63d893/resource/fc08cdba-1a86-460b-85c4-3d8c0d3d4e42/download/stability-pathfinder-utilisation-report-2025.csv"
           - "GET https://api.neso.energy/dataset/ae59b12b-4cfe-40a0-844f-1d139c63d893/resource/75996c0a-70fb-4ddb-a345-bb1e8d39de35/download/stability-pathfinder-utilisation-report-2026.csv"
-        held: "Times end `+00:00` though NESO says local time; `Inertia` has no stated unit; some rows repeat."
+        caveat: "Times end `+00:00` though NESO says local; `Inertia`'s unit, its blanks and row identity are unexplained."
+      - dataset: stability_pathfinder_availability_report
+        differs: "Each unit's declared availability by settlement period, with remarks on changes"
+        request:
+          - "GET https://api.neso.energy/dataset/ae59b12b-4cfe-40a0-844f-1d139c63d893/resource/a4fd8208-3e36-4f9c-bdc7-435c3734a2da/download/stability-pathfinder-availability-report-2023.csv"
+          - "GET https://api.neso.energy/dataset/ae59b12b-4cfe-40a0-844f-1d139c63d893/resource/bacc45e5-11ac-4bac-88ef-6872f499db97/download/stability-pathfinder-availability-report-2024.csv"
+          - "GET https://api.neso.energy/dataset/ae59b12b-4cfe-40a0-844f-1d139c63d893/resource/1264f36f-27ce-4ed9-aab1-393c7612d6bc/download/stability-pathfinder-availability-report-2025.csv"
+          - "GET https://api.neso.energy/dataset/ae59b12b-4cfe-40a0-844f-1d139c63d893/resource/690a9e42-20e2-4b0e-b74f-f3e37cac4bac/download/stability-pathfinder-availability-report-2026.csv"
+        held: "Every file repeats identical rows with nothing to tell them apart, so no table is built."
   related:
     - {dataset: neso_data_portal/system-inertia, note: "NESO's GB inertia estimate, in GVA.s; it leaves Pathfinder units out"}
     - {dataset: neso_data_portal/stability-midterm-y-1-utilisation-report, note: "Instructions under NESO's Stability Y-1 contracts, with contracted inertia"}
@@ -81,10 +167,12 @@ for stability purposes. The package is a delivered-state record, not a forecast.
 publication or instruction-availability column. Read it alongside the system inertia package
 (@system-inertia.md) and the mid-term utilisation report (@stability-midterm-y-1-utilisation-report.md).
 
-**Both silver families are held (unit E-SEM) and neither is eligible for publication or
-point-in-time use.** The front-matter `eligibility: eligible` is the registry's package-level
-status only. This page gives schema, row counts and structural counts. It publishes no data
-values, ranges or samples from either held family. Six of the first eight captures (2026-10-08) fail the transform
+**Both silver families are held (unit E-SEM): neither is eligible for point-in-time use, and
+gridflow's models do not consume them until the questions below are answered.** The front-matter
+`eligibility: eligible` is the registry's package-level status only. This note gives schema, row
+counts and structural counts. The site page shows the utilisation rows, a chart and a notebook,
+with a caveat naming the open questions (ruling 66); the availability family has no rows to
+show. Six of the first eight captures (2026-10-08) fail the transform
 (ADR-040, `DuplicateEntityKeyError`), so the availability family has **0 silver rows**.
 
 - Publisher group: System
@@ -331,10 +419,12 @@ carry an inertia figure. The full code vocabulary is not described in the captur
 
 - Blank cells are preserved as null. A blank `Inertia` is not turned into zero and its row is not
   excluded. What a blank means (especially in the 2023-2024 file, where it is widespread) is
-  undefined by the vendor. `TODO: verify` with NESO.
+  undefined by the vendor. `TODO: verify` with NESO. Measured on silver on 2026-10-24: in the
+  2023-2024 file every row with a period start from September 2023 to January 2024 is blank,
+  13,202 of 15,314 in February 2024 are, and none in March 2024.
 - Zero `Inertia` values occur in the bodies. They are vendor-supplied values and are preserved
-  as-is. The vendor does not define what a zero means. No value statistics are published for
-  this held family.
+  as-is. The vendor does not define what a zero means. This note gives no value statistics; the
+  site page shows the rows with a caveat that a blank is unexplained.
 - No literal `-1`, `N/A` or `NA` was found. No thousands separators, currency symbols or percent
   signs occur in numeric cells, and every nonblank `Inertia` passes the int64 cast.
 
@@ -366,8 +456,9 @@ Parquet file per successfully transformed capture under
 columns beyond the vendor columns: `resource_id`, `timestamp_utc`, `published_at`,
 `bronze_capture_id`, `capture_written_at`, `event_time`, `available_at`, `source_run_id`,
 `dataset_version` (timestamps tz-aware UTC; `dataset_version` reads `1+e1`, where `e1` is the
-engine version, not the header epoch). The silver exists but is not eligible for publication or
-point-in-time use. The availability family has no silver directory at all.
+engine version, not the header epoch). The silver is not eligible for point-in-time use; the
+site page shows its rows with a caveat (ruling 66). The availability family has no silver
+directory at all.
 
 ## Cadence
 
@@ -402,7 +493,7 @@ Both families are held by RULINGS 642 (seat ruling, PROXY-SOURCED). The section 
 in the availability question points into the SYS-1 spec (`K-SYS-1-SPEC.md`):
 in the spec, §3 is the utilisation-report section, whose timestamp-clock question the availability
 report shares. It is reproduced verbatim from the registry. The utilisation silver output (234,878 rows
-at activation, plus a third file of 129,027 rows from the 2026-10-16 capture) exists on disk but is not eligible for publication or point-in-time use. Unit E-SEM must answer these
+at activation, plus a third file of 129,027 rows from the 2026-10-16 capture) is not eligible for point-in-time use, and downstream models must not consume it; the site page shows its rows with a caveat naming these questions (ruling 66). Unit E-SEM must answer these
 before the holds can lift:
 
 1. Whether the boundary and instruction timestamps are GB local wall time with a mechanically

@@ -4,11 +4,10 @@ package: "interconnector-requirement-and-auction-summary-data"
 dataset_key: "ic_requirement_auction"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-23
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: "NESO updates a lot in place with its auction result; the file keeps no earlier state."
   title: Interconnector requirement and auction summary
   summary: >-
     NESO's interconnector trading auctions: each lot it asked to buy or sell, and what cleared on
@@ -26,6 +25,37 @@ page:
   how_used:
     - How much NESO asked to buy or sell across interconnectors, and when
     - "Clearing, best and average prices per lot, and volume cleared per interconnector"
+  chart:
+    type: line
+    silver: neso_data_portal/ic_requirement_auction
+    time: start_time
+    value: vwa_price
+    group: buy_sell
+    group_map: {Buy: buy, BUY: buy, Sell: sell}
+    series_order: [buy, sell]
+    filter:
+      - {column: cleared_volume, op: gt, value: 0}
+    dedup: {"on": [auction_lot_id], order_by: capture_written_at}
+    aggregation: mean
+    time_bucket: 1d
+    window: {start: "2025-07-01", end: "2025-07-31"}
+    unit: £/MWh
+  chart_view:
+    title: Mean VWA price of buy and sell lots, July 2025
+    caption: >-
+      Silver `neso_data_portal/ic_requirement_auction`, July 2025, lots with volume cleared: the
+      unweighted mean of each day's lot VWA prices, £/MWh, by UTC day of delivery start, as NESO's
+      latest file states them. Days with no such lot are gaps.
+    alt: >-
+      Line chart from neso_data_portal/ic_requirement_auction of the daily mean VWA price of
+      interconnector lots with volume cleared in July 2025, £/MWh. Buy lots run from 43.1 on 5 July
+      to 212.1 on 1 July, and sell lots from -14.0 on 7 July to 75.8 on 3 July. Buy sits above sell
+      on every day with both but 5 July. Each line has 24 points and breaks on seven days.
+    x_label: UTC day of each lot's delivery start
+    key:
+      - {series: buy, label: Buy lots, paint: clay, note: "Lots where NESO asked to buy"}
+      - {series: sell, label: Sell lots, paint: petrol, note: "Lots where NESO asked to sell"}
+  caveat: NESO overwrites a lot with its auction result, so these rows show only the latest state.
   raw_feed:
     note: >-
       From NESO's CKAN portal: one `package_show`, then the table's dump, kept if its body changed,
@@ -38,6 +68,59 @@ page:
       - {run: gridflow ingest neso_data_portal ic_requirement_auction --last 24h, comment: "the table's dump to bronze"}
       - {run: gridflow transform neso_data_portal ic_requirement_auction --last 24h, comment: "the capture's date to silver"}
       - {run: gridflow ingest neso_data_portal ic_requirement_auction_files --last 24h, comment: "the market notice, bronze only"}
+  record:
+    select:
+      filter:
+        - {column: auction_lot_id, op: in, value: [2021_03_10-15_57-4, 2023_07_22-22_42-5, 2025_07_17-16_46-2, 2025_08_02-00_47-4, 2025_09_19-16_32-1, 2026_09_07-19_42-2, 2026_10_08-11_43-1, 2026_10_08-11_43-2]}
+      dedup: {"on": [auction_lot_id], order_by: capture_written_at}
+      order_by: [start_time, auction_lot_id]
+      columns: [auction_lot_id, buy_sell, volume_required, qualified_ic, start_time, end_time, clearing_price, vwa_price, cleared_volume, notes]
+    key: [auction_lot_id]
+    caption: "Eight lots: a cancelled one, a blank result, a reversed window, two cleared on 8 October."
+    fields:
+      auction_lot_id: "NESO's lot identifier: the auction id plus a lot number"
+      buy_sell: "Whether NESO intends to buy or sell; a few rows write `BUY`"
+      volume_required: "The volume NESO asked for, MW"
+      qualified_ic: "The interconnectors the lot is open to, joined by `/`"
+      start_time: "Start of the lot's delivery window, UTC"
+      end_time: "End of the window, UTC; it can precede the start, as published"
+      clearing_price: "The clearing price, which NESO calls the worst price, £/MWh"
+      vwa_price: "The volume-weighted average price for the lot, £/MWh"
+      cleared_volume: "Total volume accepted, MW; blank where NESO gives no result"
+      notes: "NESO's notes, such as a cancellation; usually blank"
+      published_datetime: "When NESO last updated the lot, UTC; not its first publication"
+      auction_id: "NESO's auction identifier, typically from when the requirement was first sent"
+      bid_deadline: "The bidding deadline, UTC"
+      default_price: "Price that applies if the counterparty fails to deliver, £/MWh"
+      best_price: "The best accepted price for the lot, £/MWh"
+      total_bid_volume: "Total volume bid for the lot, MW"
+      ifa1_volume: "Volume cleared on IFA1, MW"
+      bn_volume: "Volume cleared on BritNed, MW"
+      nemo_volume: "Volume cleared on NEMO Link, MW"
+      ifa2_volume: "Volume cleared on IFA2, MW"
+      el_volume: "Volume cleared on ElecLink, MW"
+      vkl_volume: "Volume cleared on Viking Link, MW"
+      system_flag: "`T` or `F`, system or energy; NESO does not say which is which"
+      timestamp_utc: "Equals `start_time`; gridflow's event time"
+      published_at: "Null: the dump carries no usable publication time"
+      bronze_capture_id: The bronze file the row was read from
+      capture_written_at: When gridflow wrote the capture to bronze, UTC
+  notebook:
+    lead: >-
+      Returns a pandas DataFrame from the view `silver_neso_data_portal_ic_requirement_auction_latest`,
+      the newest capture, filtered on the delivery start with both ends included; times come back in
+      Europe/London. Unlike the chart, it keeps lots with nothing cleared.
+    cells:
+      - |
+        df = data.neso_data_portal.query("ic_requirement_auction", "2025-07-01", "2025-07-31")
+        df[["auction_lot_id", "buy_sell", "volume_required", "start_time", "clearing_price", "vwa_price"]].head()
+      - |
+        df.groupby(df.buy_sell.str.lower()).agg(
+            lots=("auction_lot_id", "size"),
+            no_result=("clearing_price", lambda s: s.isna().sum()),
+            median_clearing=("clearing_price", "median"),
+            median_vwa=("vwa_price", "median"))
+    needs: the auction summary table
   related:
     - {dataset: neso_data_portal/historic-gtma-grid-trade-master-agreement-trades-data, note: "NESO's GTMA trades; every bidder here must hold a GTMA"}
     - {dataset: elexon/soso, note: "Elexon's system operator to system operator interconnector trades"}
@@ -71,9 +154,10 @@ and when, but only once the availability question in Holds is settled.
 gridflow has a silver output for it, but the output is **held**: the body mixes mutable forward
 requirements with historical outcomes and carries no immutable issue time, so what was available
 when is not established (see Holds). The package-level status in the front matter is generated from
-the registry and reads `eligible`; the family-level eligibility is **held**. The silver exists on
-disk, yet nothing in it may be published or used for point-in-time models yet. This page therefore
-gives schema, row counts, clocks and missingness only, with **no data values**.
+the registry and reads `eligible`; the family-level eligibility is **held**: nothing in it may be
+used for point-in-time models until the question is answered. The site page shows the rows as NESO's
+latest file states them (ruling 66): a chart, eight sample rows and a notebook, with the overwrite
+named as a caveat.
 
 - Publisher group: Trading
 - Registry group: trade-data · archetype: EVT
@@ -308,8 +392,9 @@ gridflow outputs derived from this package carry the attribution line above.
 
 - `ic_requirement_auction`: held: TODO: IC-ISSUE-AVAILABILITY — lots are mutable forward requirements later overwritten with outcomes (28,326 targets on/before the capture, 2 after); what was available when? (unit v0.22-K-TRD)
 
-The silver output exists on disk but is **held**. It may not be published or used for point-in-time
-models until the question above is answered. The hold sits in the record, set when the trading batch
+The silver output exists on disk but is **held**. It may not be used for point-in-time models until
+the question above is answered; the site page shows the rows as the latest file states them, with
+the overwrite as a caveat (ruling 66). The hold sits in the record, set when the trading batch
 was specified (RULINGS 707) and merged under RULINGS 714. No resolving unit is named yet
 (`TODO: name the unit that will settle IC-ISSUE-AVAILABILITY`).
 
@@ -331,5 +416,6 @@ column name or from the timestamp embedded in the auction identifier, will not b
 **What settles it:** edition-specific publication or retention evidence from NESO that shows what was
 available at each time, or an explicit project decision establishing a separate **retrospective event
 table** contract for this body (a record of outcomes as of the capture, not a point-in-time series).
-Either is a record edit once ruled. Until then, row counts, schema and clocks are all this page
-asserts. Unit and sentinel decisions above are independent of the hold and stand.
+Either is a record edit once ruled. Until then, the rows shown on the site are outcomes as of the
+newest capture, never a record of what was known when. Unit and sentinel decisions above are
+independent of the hold and stand.

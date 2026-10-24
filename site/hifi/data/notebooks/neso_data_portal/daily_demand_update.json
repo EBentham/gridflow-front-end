@@ -1,0 +1,168 @@
+{
+ "dataset": "neso_data_portal/daily_demand_update",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "18b760355039aa6f396b9ec5c468bfbbc52bbdb17d41588f050cf8e364a4f075",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.neso_data_portal.query(\"daily_demand_update\", \"2026-09-01\", \"2026-10-23\")\nfor c in [\"timestamp_utc\", \"published_at\"]:\n    df[c] = df[c].dt.tz_convert(\"UTC\")\ndf.groupby([\"published_at\", \"forecast_actual_indicator\"]).timestamp_utc.agg([\"count\", \"min\", \"max\"]).reset_index()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "published_at",
+      "forecast_actual_indicator",
+      "count",
+      "min",
+      "max"
+     ],
+     "index": [
+      "0",
+      "1"
+     ],
+     "rows": [
+      [
+       "2026-10-16 08:20:10.800739+00:00",
+       "A",
+       "2175",
+       "2026-08-31 23:00:00+00:00",
+       "2026-10-16 07:00:00+00:00"
+      ],
+      [
+       "2026-10-16 08:20:10.800739+00:00",
+       "F",
+       "367",
+       "2026-10-16 07:30:00+00:00",
+       "2026-10-23 22:30:00+00:00"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "cols = [\"nd\", \"tsd\", \"scottish_transfer\"]\nspread = df.groupby(\"forecast_actual_indicator\")[cols].agg([\"min\", \"max\"]).T\nspread.rename_axis([\"column\", \"statistic\"]).reset_index()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "forecast_actual_indicator",
+      "column",
+      "statistic",
+      "A",
+      "F"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5"
+     ],
+     "rows": [
+      [
+       "nd",
+       "min",
+       "14180.0",
+       "0.0"
+      ],
+      [
+       "nd",
+       "max",
+       "34762.0",
+       "0.0"
+      ],
+      [
+       "tsd",
+       "min",
+       "14894.0",
+       "0.0"
+      ],
+      [
+       "tsd",
+       "max",
+       "38885.0",
+       "0.0"
+      ],
+      [
+       "scottish_transfer",
+       "min",
+       "-1736.0",
+       "0.0"
+      ],
+      [
+       "scottish_transfer",
+       "max",
+       "5789.0",
+       "0.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "outturn = df[(df.forecast_actual_indicator == \"A\") & (df.settlement_date < \"2026-10-16\")]\ndaily = outturn.groupby(\"settlement_date\").nd.agg([\"min\", \"max\"])\nax = daily.plot(figsize=(8, 3.5), color=[\"#C77E3C\", \"#155A6E\"], xlabel=\"settlement date\",\n                ylabel=\"national demand, MW\")\nax.legend([\"lowest half hour\", \"highest half hour\"]);",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "daily_demand_update-5.png",
+     "width": 716,
+     "height": 385
+    }
+   ]
+  }
+ ]
+}

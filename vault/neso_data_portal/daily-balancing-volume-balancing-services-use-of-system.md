@@ -8,7 +8,7 @@ updated: 2026-10-10
 layer_coverage: "bronze"
 eligibility: "eligible"
 page:
-  held: Rows are not labelled with a settlement run, so there is no silver table.
+  held: Each upload repeats and can restate earlier periods, with no run column to tell versions apart.
   title: Daily BSUoS volume data
   summary: >-
     NESO's balancing volume for each settlement period, in MWh, in eight columns, such as energy
@@ -41,6 +41,9 @@ page:
     commands:
       - {run: gridflow ingest neso_data_portal daily_balancing_volume --last 24h, comment: "every yearly file, bronze only"}
       - {run: gridflow ingest neso_data_portal daily_balancing_volume_files --last 24h, comment: the missing-periods workbook}
+    sample:
+      file: q1_vol_fy2627.csv
+      caveat: These rows are one upload; a later upload may restate them, with no run label.
   related:
     - {dataset: neso_data_portal/daily-balancing-costs-balancing-services-use-of-system, note: "The costs, in £, for the same settlement periods"}
     - {dataset: neso_data_portal/current-balancing-services-use-of-system-bsuos-data, note: "The BSUoS charges that recover these balancing costs, per settlement run"}
@@ -71,8 +74,8 @@ that lists settlement periods absent from the series.
 **no registry record**, so no transformer runs. There are no silver rows, no silver views and
 no `_latest` view. The reason is in RULINGS 653 (following the RULINGS 538 precedent): the body
 has no settlement-run column, and every other BSUoS settlement family in this vendor carries
-`run_type` in its key. See "Identity and the blocker" below. **No data values are published on
-this page.** Only the schema, counts and vendor definitions are.
+`run_type` in its key. See "Identity and the blocker" below. **The page shows the header and
+first eight lines of one file as fetched, and no silver table.**
 
 - Publisher group: Balancing costs
 - Registry group: balancing · archetype: SER
@@ -357,12 +360,12 @@ carry the attribution line above verbatim.
 
 - **Family hold (no record).** `daily_balancing_volume` has no silver output. The block is
   structural (the body has no run column, RULINGS 653), not an E-SEM semantics question, and it
-  is settled by one of the three routes under "Identity and the blocker". No data values are
-  published on this page.
+  is settled by one of the three routes under "Identity and the blocker". The page shows the
+  first lines of one file as fetched, and no table.
 - **File hold.** The missing-period workbook (`daily_balancing_volume_files`) is held until a
   child record exists. The hold question is how the exception list should be modelled
   (semantics, date recipe, identity, run scope, selection policy). Unit: BAL-1.
-- **Open semantics questions for NESO** (not holds on a published output, because nothing is
+- **Open semantics questions for NESO** (not holds on a published output, because no table is
   published): the meaning of `SETT_DATE` (settlement date or payment date), the settlement run
   of the volumes, the timezone of the date, and the blank-cell policy. Each appears above as a
   `TODO: verify`.

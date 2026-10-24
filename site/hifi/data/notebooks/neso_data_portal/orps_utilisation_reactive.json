@@ -1,0 +1,152 @@
+{
+ "dataset": "neso_data_portal/orps_utilisation_reactive",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "2d139aa4f95b05c01f9432308c4ecea408fdc9499743fa46be56af8a8c626609",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "rates = data.sql(\"\"\"\n    SELECT year_vendor, month_vendor, hpim, papim, ppim, x_1, x_0_2\n    FROM silver_neso_data_portal_orps_utilisation_reactive_default_latest\n    ORDER BY year_vendor, month_vendor\"\"\")\nrates.tail()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "year_vendor",
+      "month_vendor",
+      "hpim",
+      "papim",
+      "ppim",
+      "x_1",
+      "x_0_2"
+     ],
+     "index": [
+      "223",
+      "224",
+      "225",
+      "226",
+      "227"
+     ],
+     "rows": [
+      [
+       "2026",
+       "6",
+       "102.200",
+       "89.45",
+       "102.45",
+       "5.526365",
+       "1.105273"
+      ],
+      [
+       "2026",
+       "7",
+       "93.200",
+       "98.01",
+       "93.01",
+       "5.396977",
+       "1.079395"
+      ],
+      [
+       "2026",
+       "8",
+       "108.150",
+       "97.61",
+       "108.15",
+       "5.815947",
+       "1.163189"
+      ],
+      [
+       "2026",
+       "9",
+       "123.700",
+       "115.56",
+       "124.50",
+       "6.486649",
+       "1.297330"
+      ],
+      [
+       "2026",
+       "10",
+       "152.775",
+       "125.47",
+       "152.50",
+       "7.386861",
+       "1.477372"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "(rates.x_0_2 / rates.x_1).round(6).value_counts()",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "0.2    228\nName: count, dtype: int64"
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "import pandas as pd\nrates[\"month\"] = pd.to_datetime(dict(year=rates.year_vendor, month=rates.month_vendor, day=1))\nrates.plot(x=\"month\", y=[\"x_1\", \"x_0_2\"], color=[\"#155A6E\", \"#C77E3C\"], figsize=(8, 3.5),\n           xlabel=\"rate month, from NESO's Year and Month\",\n           ylabel=\"default rate, £/MVArh\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "orps_utilisation_reactive-5.png",
+     "width": 703,
+     "height": 338
+    }
+   ]
+  }
+ ]
+}

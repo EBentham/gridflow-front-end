@@ -1,0 +1,236 @@
+{
+ "dataset": "neso_data_portal/historic_demand",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "109bdaa749415c2da516e5fbc76379f62ecf4d045756a81c42ab9e40a2bdec07",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "na = data.sql(\"\"\"\n    SELECT year(settlement_date) AS year, count(*) AS rows,\n           count(*) FILTER (WHERE tsd = 'NA') AS tsd_na,\n           count(*) FILTER (WHERE embedded_wind_generation = 'NA') AS wind_na,\n           count(*) FILTER (WHERE embedded_solar_generation = 'NA') AS solar_na,\n           count(*) FILTER (WHERE nemo_flow = 'NA') AS nemo_na\n    FROM silver_neso_data_portal_historic_demand_latest\n    GROUP BY 1 ORDER BY 1\"\"\")\nna.head(10)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "year",
+      "rows",
+      "tsd_na",
+      "wind_na",
+      "solar_na",
+      "nemo_na"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9"
+     ],
+     "rows": [
+      [
+       "2001",
+       "17520",
+       "17520",
+       "17520",
+       "17520",
+       "17520"
+      ],
+      [
+       "2002",
+       "17520",
+       "17520",
+       "17520",
+       "17520",
+       "17520"
+      ],
+      [
+       "2003",
+       "17520",
+       "17520",
+       "17520",
+       "17520",
+       "17520"
+      ],
+      [
+       "2004",
+       "17568",
+       "17568",
+       "17568",
+       "17568",
+       "17568"
+      ],
+      [
+       "2005",
+       "17520",
+       "0",
+       "17520",
+       "17520",
+       "17520"
+      ],
+      [
+       "2006",
+       "17520",
+       "0",
+       "17520",
+       "17520",
+       "17520"
+      ],
+      [
+       "2007",
+       "17520",
+       "0",
+       "0",
+       "17520",
+       "17520"
+      ],
+      [
+       "2008",
+       "17568",
+       "0",
+       "0",
+       "17568",
+       "17568"
+      ],
+      [
+       "2009",
+       "17520",
+       "0",
+       "0",
+       "0",
+       "0"
+      ],
+      [
+       "2010",
+       "17520",
+       "0",
+       "0",
+       "0",
+       "0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "yearly = data.sql(\"\"\"\n    SELECT year(settlement_date) AS year, avg(nd) AS mean_nd, max(nd) AS peak_nd\n    FROM silver_neso_data_portal_historic_demand_latest\n    GROUP BY 1 ORDER BY 1\"\"\").set_index(\"year\")\nyearly.round(0).tail(6).reset_index()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "year",
+      "mean_nd",
+      "peak_nd"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5"
+     ],
+     "rows": [
+      [
+       "2021",
+       "28345.0",
+       "46433.0"
+      ],
+      [
+       "2022",
+       "26622.0",
+       "46147.0"
+      ],
+      [
+       "2023",
+       "26052.0",
+       "44109.0"
+      ],
+      [
+       "2024",
+       "26287.0",
+       "45202.0"
+      ],
+      [
+       "2025",
+       "26158.0",
+       "45924.0"
+      ],
+      [
+       "2026",
+       "25257.0",
+       "47382.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "ax = yearly.loc[:2025].plot(figsize=(8, 3.5), color=[\"#155A6E\", \"#C77E3C\"], xlabel=\"year\",\n                            ylabel=\"national demand, MW\")\nax.legend([\"yearly mean\", \"highest half hour of the year\"]);",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "historic_demand-5.png",
+     "width": 716,
+     "height": 337
+    }
+   ]
+  }
+ ]
+}

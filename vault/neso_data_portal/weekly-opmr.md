@@ -8,7 +8,6 @@ updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: "Rows name engineering weeks NESO does not map to dates, and give only a publication date."
   title: Weekly operational planning margin requirement
   summary: >-
     NESO's view, by engineering week, of the spare generation it needs above forecast demand, 2 to
@@ -28,6 +27,11 @@ page:
   how_used:
     - See NESO's expected margin over the weeks ahead, week by week
     - Track how NESO's view of one engineering week changes between publications
+  chart:
+    type: none
+    reason: >-
+      Rows carry NESO's engineering year and week, which NESO does not map to dates, so no time
+      axis is drawn.
   raw_feed:
     note: >-
       From NESO's CKAN portal: one `package_show`, then the CSV, downloaded whole unless
@@ -39,6 +43,61 @@ page:
     commands:
       - {run: gridflow ingest neso_data_portal weekly_opmr --last 24h, comment: "the CSV to bronze"}
       - {run: gridflow transform neso_data_portal weekly_opmr --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: publish_date, op: eq, value: "2026-10-16"}
+        - {column: eng_year, op: in, value: [2026, 2027, 2028]}
+        - {column: eng_week, op: in, value: [52, 53, 1, 2]}
+      order_by: [eng_year, eng_week]
+      columns: [eng_year, eng_week, publish_date, peak_demand_forecast, generator_availability,
+                generation_availability_margin, opmr_total, national_surplus]
+    key: [eng_year, eng_week, publish_date]
+    caption: "The last and first labels of three engineering years, in NESO's 16 October 2026 publication."
+    fields:
+      eng_year: "NESO's `ENG_Year`, as written; NESO does not map it to dates"
+      eng_week: "NESO's `ENG_Week`, \"Engineering Week ISO\" in its dictionary; no dates given"
+      publish_date: "NESO's `Publish Date`: the publication's date, with no time or zone"
+      peak_demand_forecast: Peak demand forecast for the engineering week, MW
+      generator_availability: Generator availability for the engineering week, MW
+      generation_availability_margin: "Available generation minus demand, MW, NESO's dictionary says"
+      opmr_total: "The generation required for the OPMR, MW, NESO's dictionary says"
+      national_surplus: "National surplus, MW; NESO's dictionary repeats the name and defines it no further"
+      maximum_ic_import: Maximum interconnector import limit into GB, MW
+      maximum_ic_export: Maximum interconnector export limit out of GB, MW
+      operating_reserve_provided_by_ics: Operating reserve provided by interconnectors, MW
+      constrained_plant: "Generation that network limits make unusable, MW, NESO's dictionary says"
+      minimum_demand_forecast: Lowest demand forecast for the engineering week, MW
+      high_freq_response_requirement: "Response needed within 10 seconds of an event, MW, NESO's dictionary says"
+      negative_reserve: The total negative reserve requirement, MW
+      published_at: "NESO's last-modified time for the file, read as UTC"
+      timestamp_utc: "gridflow's capture time, UTC; not the target week"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  caveat: "NESO does not say which dates each engineering week covers, and `Publish Date` has no time."
+  notebook:
+    lead: >-
+      `data.sql` reads the `_latest` view (the newest capture), because `query()` would filter
+      `timestamp_utc`, the capture time. Weeks stay NESO's engineering year and week, never converted
+      to dates.
+    cells:
+      - |
+        df = data.sql("""
+            SELECT publish_date, eng_year, eng_week, peak_demand_forecast, generator_availability,
+                   generation_availability_margin, opmr_total, national_surplus
+            FROM silver_neso_data_portal_weekly_opmr_latest
+            WHERE publish_date = (SELECT max(publish_date) FROM silver_neso_data_portal_weekly_opmr_latest)
+            ORDER BY eng_year, eng_week""")
+        df.head()
+      - |
+        df.groupby("eng_year").eng_week.agg(["min", "max", "count"])
+      - |
+        pubs = data.sql("""
+            SELECT publish_date, count(*) AS weeks
+            FROM silver_neso_data_portal_weekly_opmr_latest
+            GROUP BY publish_date""")
+        pubs.weeks.value_counts().rename_axis("weeks per publication").rename("publications")
+    needs: a recent capture of NESO's weekly OPMR file
   related:
     - {dataset: neso_data_portal/daily-opmr, note: "The same margin terms by target day, 2 to 14 days ahead"}
     - {dataset: neso_data_portal/long-term-2-52-weeks-ahead-national-demand-forecast, note: "NESO's national demand forecast, also labelled 2 to 52 weeks ahead"}
@@ -148,7 +207,7 @@ Schema, epoch 1:
 | `published_at` | CKAN `last_modified` of the captured file (ADR-030) |
 | `available_at` | = `published_at` |
 
-**Held (unit E-SEM). This page gives schema, clocks and counts only, and no data values.**
+**Held (unit E-SEM) from point-in-time model use; the site page shows its rows and a notebook with its question as a caveat, and no chart (ruling 66, 2026-10-24).**
 
 **The two clocks for this family:**
 
@@ -293,9 +352,10 @@ gridflow outputs derived from this package carry the attribution line above.
 
 - `weekly_opmr`: held: TODO: NESO's engineering year/week to target date mapping is undocumented; the body gives a publication date only (unit E-SEM)
 
-The held output exists in silver, but it is not eligible for publication or point-in-time
-model use until unit E-SEM answers its question (RULINGS 542). This page publishes its schema,
-clocks and row counts only.
+The held output exists in silver, but it is not eligible for point-in-time model use until unit
+E-SEM answers its question (RULINGS 542). Under ruling 66 (2026-10-24) the site page shows its
+rows and a notebook, with the question as a caveat; it draws no chart, since every row is keyed
+by an engineering week with no date.
 
 - **What would lift the hold:** a vendor definition of the engineering calendar (the week start
   day, the week-year rule, and ideally a published week → date table), so that each row can be

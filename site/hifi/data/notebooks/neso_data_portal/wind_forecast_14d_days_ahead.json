@@ -1,0 +1,156 @@
+{
+ "dataset": "neso_data_portal/wind_forecast_14d_days_ahead",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "a11d652bc5c873e5288a61ee9556c9cc761cc72c1198dce8c4de660d51bdc4ed",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "nat = data.neso_data_portal.tail(\"wind_forecast_14d_days_ahead\", 1_000)\nfor c in [\"timestamp_utc\", \"forecast_datetime\", \"published_at\"]:\n    nat[c] = nat[c].dt.tz_convert(\"UTC\")\nnat = nat.sort_values(\"timestamp_utc\", ignore_index=True)\nprint(\"half-hours at or before the stated forecast time:\",\n      (nat.timestamp_utc <= nat.forecast_datetime).sum())\ncols = [\"timestamp_utc\", \"date\", \"settlement_period\", \"wind_forecast\",\n        \"capacity\", \"forecast_datetime\", \"published_at\"]\nnat[cols].head()",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "half-hours at or before the stated forecast time: 3"
+    },
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "date",
+      "settlement_period",
+      "wind_forecast",
+      "capacity",
+      "forecast_datetime",
+      "published_at"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2026-10-16 19:30:00+00:00",
+       "2026-10-16",
+       "42",
+       "10435.0",
+       "25502.0",
+       "2026-10-16 20:30:00+00:00",
+       "2026-10-16 20:30:51.163278+00:00"
+      ],
+      [
+       "2026-10-16 20:00:00+00:00",
+       "2026-10-16",
+       "43",
+       "10856.0",
+       "25502.0",
+       "2026-10-16 20:30:00+00:00",
+       "2026-10-16 20:30:51.163278+00:00"
+      ],
+      [
+       "2026-10-16 20:30:00+00:00",
+       "2026-10-16",
+       "44",
+       "11242.0",
+       "25502.0",
+       "2026-10-16 20:30:00+00:00",
+       "2026-10-16 20:30:51.163278+00:00"
+      ],
+      [
+       "2026-10-16 21:00:00+00:00",
+       "2026-10-16",
+       "45",
+       "11323.0",
+       "25502.0",
+       "2026-10-16 20:30:00+00:00",
+       "2026-10-16 20:30:51.163278+00:00"
+      ],
+      [
+       "2026-10-16 21:30:00+00:00",
+       "2026-10-16",
+       "46",
+       "11138.0",
+       "25502.0",
+       "2026-10-16 20:30:00+00:00",
+       "2026-10-16 20:30:51.163278+00:00"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "bmu = data.neso_data_portal.tail(\"wind_forecast_14d_day_ahead_bmu\", 200_000)\nbmu.groupby(\"region\").generator_name.nunique().sort_values(ascending=False)",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "region\nNORTH SCOTLAND        87\nSOUTH SCOTLAND        71\nEAST ENGLAND          21\nYORKSHIRE & HUMBER    20\nNORTH WEST ENGLAND    11\nSOUTH EAST ENGLAND     8\nNORTH WALES            5\nNORTH EAST ENGLAND     4\nEAST MIDLANDS          3\nSOUTH WALES            1\nName: generator_name, dtype: int64"
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "ahead = nat[nat.timestamp_utc > nat.forecast_datetime]\nax = ahead.plot(x=\"timestamp_utc\", y=\"wind_forecast\", legend=False, color=\"#3E8C97\",\n                ylim=(0, ahead.wind_forecast.max() * 1.1), figsize=(8, 3.5),\n                xlabel=\"half-hour start, UTC\", ylabel=\"forecast wind output, MW\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "wind_forecast_14d_days_ahead-5.png",
+     "width": 716,
+     "height": 366
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,313 @@
+{
+ "dataset": "neso_data_portal/index_linked_contract_volume",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "8ad2ede0d5727900fbd097405fff825c4cc007373d24bd976a9dee45810b3101",
+ "silver": "neso_data_portal/index_linked_contract_volume",
+ "columns": [
+  {
+   "name": "id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "starttime",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "endtime",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "volume",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "price",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "cost",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "so_flag",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "reason",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "asset_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "cp_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "area",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "note",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "last_updated",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "resource_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "ES00151372",
+   "2021-10-08 22:00:00 UTC",
+   "2021-10-09 07:00:00 UTC",
+   "110.0",
+   "71.82",
+   "71101.8",
+   "T",
+   "V_MERSEY",
+   "ROCK-1",
+   "Coryton Energy Company Ltd",
+   "England&Wales",
+   null,
+   "2021-10-08 14:14:15 UTC",
+   "8f694d01-68a5-41b9-9542-dd27c42fdbbf",
+   "2021-10-08 22:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/index_linked_contract_volume/2026/10/08/raw_20261008T111020Z_8f694d01-68a5-41b9-9542-dd27c42fdbbf_5d65334d.csv",
+   "2026-10-08 11:10:20.129708 UTC",
+   "2021-10-08 22:00:00 UTC",
+   "2026-10-08 11:10:20.129708 UTC",
+   "0ad1b499-33c5-492d-8472-60e227930bf3",
+   "1+e1"
+  ],
+  [
+   "ES00151377",
+   "2021-10-10 22:00:00 UTC",
+   "2021-10-11 06:00:00 UTC",
+   "110.0",
+   "73.32",
+   "64521.6",
+   "T",
+   "V_MERSEY",
+   "ROCK-1",
+   "Coryton Energy Company Ltd",
+   "England&Wales",
+   null,
+   "2021-10-10 12:23:00 UTC",
+   "8f694d01-68a5-41b9-9542-dd27c42fdbbf",
+   "2021-10-10 22:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/index_linked_contract_volume/2026/10/08/raw_20261008T111020Z_8f694d01-68a5-41b9-9542-dd27c42fdbbf_5d65334d.csv",
+   "2026-10-08 11:10:20.129708 UTC",
+   "2021-10-10 22:00:00 UTC",
+   "2026-10-08 11:10:20.129708 UTC",
+   "0ad1b499-33c5-492d-8472-60e227930bf3",
+   "1+e1"
+  ],
+  [
+   "ES00152294",
+   "2021-10-23 22:00:00 UTC",
+   "2021-10-24 07:00:00 UTC",
+   "110.0",
+   "87.32",
+   "86446.8",
+   "F",
+   null,
+   "ROCK-1",
+   "Coryton Energy Company Ltd",
+   "England&Wales",
+   null,
+   "2021-10-23 12:07:32 UTC",
+   "8f694d01-68a5-41b9-9542-dd27c42fdbbf",
+   "2021-10-23 22:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/index_linked_contract_volume/2026/10/08/raw_20261008T111020Z_8f694d01-68a5-41b9-9542-dd27c42fdbbf_5d65334d.csv",
+   "2026-10-08 11:10:20.129708 UTC",
+   "2021-10-23 22:00:00 UTC",
+   "2026-10-08 11:10:20.129708 UTC",
+   "0ad1b499-33c5-492d-8472-60e227930bf3",
+   "1+e1"
+  ],
+  [
+   "ES00164522",
+   "2022-03-13 23:00:00 UTC",
+   "2022-03-14 07:00:00 UTC",
+   "210.0",
+   "48.65",
+   "81732.0",
+   "T",
+   "V_MERSEY",
+   "ROCK-1",
+   "Coryton Energy Company Ltd",
+   "England&Wales",
+   null,
+   "2022-03-13 15:07:56 UTC",
+   "8f694d01-68a5-41b9-9542-dd27c42fdbbf",
+   "2022-03-13 23:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/index_linked_contract_volume/2026/10/08/raw_20261008T111020Z_8f694d01-68a5-41b9-9542-dd27c42fdbbf_5d65334d.csv",
+   "2026-10-08 11:10:20.129708 UTC",
+   "2022-03-13 23:00:00 UTC",
+   "2026-10-08 11:10:20.129708 UTC",
+   "0ad1b499-33c5-492d-8472-60e227930bf3",
+   "1+e1"
+  ],
+  [
+   "ES00177627",
+   "2022-07-03 22:00:00 UTC",
+   "2022-07-04 06:00:00 UTC",
+   "230.0",
+   "31.5",
+   "57960.0",
+   "T",
+   "V_SOUTHEAST",
+   "GRAI-6",
+   "Uniper Global Commodities SE",
+   null,
+   null,
+   "2022-07-03 13:17:12 UTC",
+   "ff292de9-59aa-45cc-85ce-e21fed09f5ff",
+   "2022-07-03 22:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/index_linked_contract_volume/2026/10/08/raw_20261008T111050Z_ff292de9-59aa-45cc-85ce-e21fed09f5ff_07b45b68.csv",
+   "2026-10-08 11:10:50.188914 UTC",
+   "2022-07-03 22:00:00 UTC",
+   "2026-10-08 11:10:50.188914 UTC",
+   "0ad1b499-33c5-492d-8472-60e227930bf3",
+   "1+e1"
+  ],
+  [
+   "ES00239190",
+   "2023-03-31 22:00:00 UTC",
+   "2023-04-01 06:00:00 UTC",
+   "130.0",
+   "181.0",
+   "188240.0",
+   "T",
+   "V_LONBAR",
+   "RYHPS-1",
+   "Vitol SA",
+   "England&Wales",
+   null,
+   "2023-03-31 15:01:59 UTC",
+   "ff292de9-59aa-45cc-85ce-e21fed09f5ff",
+   "2023-03-31 22:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/index_linked_contract_volume/2026/10/08/raw_20261008T111050Z_ff292de9-59aa-45cc-85ce-e21fed09f5ff_07b45b68.csv",
+   "2026-10-08 11:10:50.188914 UTC",
+   "2023-03-31 22:00:00 UTC",
+   "2026-10-08 11:10:50.188914 UTC",
+   "0ad1b499-33c5-492d-8472-60e227930bf3",
+   "1+e1"
+  ],
+  [
+   "ES00241156",
+   "2023-05-07 22:00:00 UTC",
+   "2023-05-08 06:00:00 UTC",
+   "375.0",
+   "24.25",
+   "72750.0",
+   "F",
+   "V_LONBAR",
+   "LBAR-1",
+   "RWE Supply & Trading GmbH",
+   null,
+   null,
+   "2023-05-07 13:32:46 UTC",
+   "dff083d2-666b-4e23-9b46-9edd9298f0d3",
+   "2023-05-07 22:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/index_linked_contract_volume/2026/10/08/raw_20261008T111120Z_dff083d2-666b-4e23-9b46-9edd9298f0d3_f61cd01e.csv",
+   "2026-10-08 11:11:20.182592 UTC",
+   "2023-05-07 22:00:00 UTC",
+   "2026-10-08 11:11:20.182592 UTC",
+   "0ad1b499-33c5-492d-8472-60e227930bf3",
+   "1+e1"
+  ],
+  [
+   "ES00312361",
+   "2024-11-01 23:00:00 UTC",
+   "2024-11-02 08:00:00 UTC",
+   "270.0",
+   "99.75",
+   "242392.5",
+   "T",
+   "V_LONBAR",
+   "RYHPS-1",
+   "Vitol SA",
+   "England&Wales",
+   null,
+   "2024-11-01 15:09:37 UTC",
+   "9b72a2f5-db92-40ca-aa95-b9f1c56f7373",
+   "2024-11-01 23:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/index_linked_contract_volume/2026/10/08/raw_20261008T111150Z_9b72a2f5-db92-40ca-aa95-b9f1c56f7373_2df1a7d0.csv",
+   "2026-10-08 11:11:50.199636 UTC",
+   "2024-11-01 23:00:00 UTC",
+   "2026-10-08 11:11:50.199636 UTC",
+   "0ad1b499-33c5-492d-8472-60e227930bf3",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}
