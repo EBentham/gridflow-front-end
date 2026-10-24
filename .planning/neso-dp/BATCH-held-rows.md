@@ -126,7 +126,7 @@ repeat rows; on a table with no event time use `data.sql()`; the column guide ac
 | I2 | a85a78f0c3de4f450 | a1fdee2150037abad | APPROVED x3; committed with I1 |
 | N1 | a0ac37967725c0a93 | a24fb2d76dca812ba | APPROVED x2 (round 2); committed (site 4ae7dc4); pushed; parent told; 20ct logged |
 | CI1 | ace01fca13556e033 | a50d6c3658e06feeb | written; in review (national and country rows show past values revised; regional chart of the file's last week) |
-| F1 | a34676c0e232141b9 | | writing |
+| F1 | a34676c0e232141b9 | a34861f355f97978d | written; in review (ED1 caveat differs: NESO calls annual rows fiscal) |
 | F2 | a52e0573a78ee0c3e | | writing |
 | R1 | a2169fe0f64b6cf11 | | writing |
 
