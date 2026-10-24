@@ -52,3 +52,5 @@ note-body statements yourself when the data proves them wrong.
 | # | Writer | Checker | State |
 |---|---|---|---|
 | H | a057fdca986005d8a | a71f8c32a052eb729 | APPROVED with nits x4, nits fixed (seat-verified); committed; 20cb logged; held lines share the first clause, second halves follow each table's question (seat, PROXY-SOURCED) |
+
+Group closed 2026-10-24: gates green (pytest 206, build check 183 pages, htmlhint 0, lychee 0, detector clean); site PR EBentham/gridflow-front-end#74, vault PR EBentham/quant-vault#77, both waiting for Bobbo.
