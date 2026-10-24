@@ -4,9 +4,57 @@ package: "building-heat-model"
 dataset_keys: ["building_heat_model_example_output_half", "building_heat_model_list_input"]
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-15
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: true
+  title: Building heat model
+  summary: >-
+    NESO's Excel tool that models a home's heat demand, with example half-hourly profiles for a
+    gas boiler and a heat pump.
+  facts:
+    vendor: "NESO Data Portal: two CSVs, an Excel workbook and a user guide"
+    cadence: "Ad hoc, NESO says; all four files last modified 30 July 2026"
+    grain: "Example output: one half hour of one model run per row"
+    history: "NESO created the package on 30 July 2026"
+  landscape: power
+  what_it_is: >-
+    NESO built the tool with the Centre for Sustainable Energy. It simulates a building's heating
+    minute by minute over 24 hours, then sums to half hours. NESO's example is one average January
+    day, with no date: run 1 a gas combi boiler, run 2 an air-source heat pump (air to water).
+    NESO calls the profiles synthetic, not measured.
+  how_used:
+    - "Set a heat pump's half-hourly electricity beside a gas boiler's gas"
+    - "Run the workbook for other buildings and heating systems"
+    - "Synthetic heating profiles for energy system models, NESO's stated use"
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: `package_show`, then two CSVs, the macro-enabled workbook and the
+      user guide, each downloaded whole unless its `last_modified` is unchanged. The workbook and
+      guide stay as files.
+    commands:
+      - {run: gridflow pipeline neso_data_portal building_heat_model_example_output_half --last 24h, comment: "output CSV to bronze, then silver"}
+      - {run: gridflow ingest neso_data_portal building_heat_model_list_input --last 24h, comment: "input list, bronze only"}
+      - {run: gridflow ingest neso_data_portal building_heat_model_files --last 24h, comment: "workbook and guide, bronze only"}
+  related:
+    - {dataset: neso_data_portal/local-authority-level-spatial-heat-model-outputs-fes, note: "NESO's FES heat model outputs for each local authority"}
+    - {dataset: neso_data_portal/fes-natural-gas-residential-and-non-domestic-i-c-heat-demand-summary-data-table-ed3, note: "FES natural gas heat demand for homes and businesses"}
+    - {dataset: neso_data_portal/fes-electricity-demand-summary-data-table-ed1, note: "NESO's FES GB electricity demand table, by component"}
+    - {dataset: neso_data_portal/future-energy-scenario-fes-building-block-data, note: "FES split to Grid Supply Points in common building blocks"}
+  family:
+    slug: building-heat-model
+    members:
+      - dataset: building_heat_model_example_output_half
+        differs: "Per half hour: heat, gas, electricity and coefficient of performance (COP), two runs"
+        request:
+          - "GET https://api.neso.energy/api/3/action/package_show?id=building-heat-model"
+          - "GET https://api.neso.energy/dataset/14d99094-165e-4de1-9452-137c2835b102/resource/27522340-008d-4c82-97c1-17eeb7ed1b6a/download/example_profiles-output_data.csv"
+        held: "NESO states no unit or scale for the two COP columns, or what blanks mean."
+      - dataset: building_heat_model_list_input
+        differs: "The inputs behind both runs: one parameter per row, one column per run"
+        request: "GET https://api.neso.energy/dataset/14d99094-165e-4de1-9452-137c2835b102/resource/b809e59a-e681-4ecb-af07-80997abbbd6f/download/example_profiles-list_of_input_parameters.csv"
+        held: "One row appears twice and no column tells them apart, so there is no silver table."
 ---
 
 # Building Heat Model

@@ -4,9 +4,43 @@ package: "ssep-onshore-publication-zone-shapefile"
 dataset_keys: ["ssep_publication_zones_files"]
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-15
+updated: 2026-10-24
 layer_coverage: "bronze"
 eligibility: "eligible"
+page:
+  held: Three zipped shapefiles, kept whole; gridflow reads no rows from them and builds no silver table.
+  title: SSEP publication and economic zones
+  summary: >-
+    NESO's zone boundaries for the Strategic Spatial Energy Plan (SSEP): land and marine publication
+    zones and land economic zones, as shapefiles.
+  facts:
+    vendor: "NESO Data Portal, package `ssep-onshore-publication-zone-shapefile`: three ZIP files"
+    cadence: Ad hoc, as NESO lists it; last modified 11 February and 3 March 2026
+    grain: "One shapefile layer per ZIP: 19 onshore, 19 offshore and 17 economic features"
+  landscape: power
+  what_it_is: >-
+    NESO's file descriptions, as read in October 2026, list 19 land and 19 marine publication zones
+    for the draft and final SSEP, and 17 land economic zones for economic modelling. The files,
+    last modified February and March 2026, state British National Grid coordinates in metres. The package title names only the onshore file.
+  how_used:
+    - Draw NESO's land and marine publication zone files on a map
+    - Group land data with the economic zones file NESO describes for SSEP modelling
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then each of the three ZIPs whole unless its
+      `last_modified` is unchanged. Ingest only: gridflow builds no silver table.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=ssep-onshore-publication-zone-shapefile"
+      - "GET https://api.neso.energy/dataset/dc958942-c5bf-428d-974d-24d7d1d1f370/resource/aa824951-880f-44cc-ac5c-7b5569dd1423/download/onshore_publication_zones_v4_master_simplified.zip"
+      - "GET https://api.neso.energy/dataset/dc958942-c5bf-428d-974d-24d7d1d1f370/resource/6a9ce615-b791-46fd-8a8f-dd7b1c847c10/download/offshore_publication_zones_v5_clipped_to_coastline.zip"
+      - "GET https://api.neso.energy/dataset/dc958942-c5bf-428d-974d-24d7d1d1f370/resource/d5b5e32e-e605-4823-b29c-312ab12f37cd/download/ssep_economic_zones.zip"
+    commands:
+      - {run: gridflow ingest neso_data_portal ssep_publication_zones_files --last 24h, comment: "three ZIPs whole, bronze only"}
+  related:
+    - {dataset: neso_data_portal/gis-boundaries-for-gb-grid-supply-points, note: "Grid supply points; NESO's `20260209` version associates them with SSEP economic zones"}
+    - {dataset: neso_data_portal/gis-boundaries-for-gb-generation-charging-zones, note: "TNUoS generation charging zones, another set of NESO zone boundaries"}
+    - {dataset: neso_data_portal/etys-gb-transmission-system-boundaries, note: "NESO's study boundaries across the transmission system, as a shapefile"}
+    - {dataset: neso_data_portal/gis-boundaries-for-gb-dno-license-areas, note: "Licence areas of the 14 distribution network operators, as GIS files"}
 ---
 
 # Strategic Spatial Energy Plan (SSEP) Onshore Publication Zone Shapefile
@@ -119,10 +153,14 @@ zone, so it makes no feature-to-zone claim. The generation-charging-zone package
 caution is needed: its vendor text says 27 zones while both of its files hold 28 features
 (@gis-boundaries-for-gb-generation-charging-zones.md).
 
-**Units.** The vendor publishes no data dictionary for this package. No unit is stated for the
-coordinates, for `Shape_Leng`, `Shape_Area`, `CENTROID_X`, `CENTROID_Y` or for the area field
-`Zn_Area_Ha`. gridflow does not infer one from a column name or from the CRS name.
-`TODO: verify` the units from vendor documentation before any use.
+**Units.** The vendor publishes no data dictionary for this package. The coordinate unit is
+stated by the files: each `.prj` is `PROJCS["British_National_Grid", ...]` on `GCS_OSGB_1936`
+with linear unit `UNIT["Meter",1.0]` (measured on the 2026-10-08 bronze, 2026-10-24). No unit is
+stated for `Shape_Leng`, `CENTROID_X`, `CENTROID_Y` or the area field `Zn_Area_Ha`. Each
+`.shp.xml` gives Esri's default definition of `Shape_Area`, "Area of feature in internal units
+squared", and the economic file's processing history computes the area field (then named
+`Zone_Area_Ha`) as `!Shape_Area! / 10000`. gridflow does not infer a unit from a column name or
+from the CRS name. `TODO: verify` the attribute units from vendor documentation before any use.
 
 **Sentinels.** There is no tabular parse of these files, so no null-token or sentinel handling
 applies. Attribute values are not read.
@@ -135,8 +173,16 @@ applies. Attribute values are not read.
 | Offshore | `offshore_publication_zones_v5_clipped_to_coastline/marine_publication_zones_v5_clipped_to_coastline` + `{.cpg, .dbf, .prj, .sbn, .sbx, .shp, .shp.xml, .shx}` |
 | Economic | `ssep_economic_zones_MASTER/ssep_economic_zones_MASTER` + `{.cpg, .dbf, .prj, .sbn, .sbx, .shp, .shp.xml, .shx}` |
 
-The `.shp.xml` member is the shapefile's own metadata file. gridflow has not read it for this
-page. `TODO: verify` whether it documents field meanings or units.
+The `.shp.xml` member is the shapefile's own metadata file. Read on 2026-10-24 (2026-10-08
+bronze), it documents no NESO field meanings or units. The onshore and economic files' metadata
+hold ArcGIS processing history and Esri's default definitions of `FID`, `Shape` and `Shape_Area`
+only. The onshore history starts from a layer named `resp_boundaries_lad23_buc_4326`. The
+offshore file's metadata keeps the title, abstract, contact and use limitation of a source layer,
+"United Kingdom Continental Shelf (WGS84) - Juristictions" from The Crown Estate (published
+2023-05-25, use limitation "Internal use only"), and its processing history runs from that layer
+through Crown Estate marine regions to `marine_publication_zones_v5_clipped_to_coastline`
+(2026-02-23). These are file metadata, not a licence statement; see the third-party origin note
+under Known issues. The site page does not mention them.
 
 #### Bronze
 
@@ -159,9 +205,11 @@ page. `TODO: verify` whether it documents field meanings or units.
 - **Third-party origin note.** The portal's package `url` field reads "Office for National
   Statistics licensed under the Open Government Licence v.3.0". The registry marks this package
   `eligible`, so it is not held. `TODO: verify` which, if any, of the three files include
-  third-party geometry and what that means for reuse beyond the NESO Open Data Licence. (The
-  neighbouring DNO licence-area package is held for a third-party-origin carve-out, and has no
-  page: RULINGS 477.)
+  third-party geometry and what that means for reuse beyond the NESO Open Data Licence. The
+  offshore file's own metadata names a Crown Estate source layer with the use limitation
+  "Internal use only" (see ZIP members above); no NESO text addresses it. (The neighbouring DNO
+  licence-area package is held for a third-party-origin carve-out; its site page publishes no
+  data: RULINGS 477.)
 - **Ad hoc refresh.** The vendor update frequency is Ad-hoc. A refresh run captures whatever the
   portal serves at that time. A changed `ckan_last_modified` or SHA-256 means a new vintage.
 

@@ -4,9 +4,45 @@ package: "fes-whole-system-gas-supply-emissions-data-table-ws2"
 dataset_key: "fes_ws2_gas_emissions"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-15
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: "NESO states no period for the year labels, or what blanks mean; 2023, 2024 lack units."
+  title: FES whole system emissions
+  summary: >-
+    NESO's Future Energy Scenarios (FES) table of GB emissions from whole system and gas supply, by
+    sector, one file per edition.
+  facts:
+    vendor: "NESO Data Portal: four CSVs, one per edition, 2023 to 2026"
+    cadence: "Ad hoc (NESO); editions 2023 to 2026, as at 6 October 2026"
+    grain: "One value per sector, scenario or pathway and year label; 2026 adds a category"
+    history: "NESO created the package on 7 July 2023"
+  landscape: gas
+  what_it_is: >-
+    Each row is an emissions sector under one scenario or pathway, with a column per year from 2021
+    to 2050. There is no unit column. NESO's dictionaries, as read in October 2026, give `MTCO2e`
+    for 2025 and `N/A` for 2023 and 2024. The 2026 file, a Ten-Year Outlook output last modified
+    September 2026, adds two category labels that read `MtCO2e`.
+  how_used:
+    - "GB emissions by sector under each FES scenario or pathway"
+    - "Read beside WS1, the gas supply table these emissions accompany"
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: one `package_show`, then four CSVs, each downloaded whole unless its
+      `last_modified` is unchanged. Shown: 2023, 2025 and 2026; edition comes from the file name.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=fes-whole-system-gas-supply-emissions-data-table-ws2"
+      - "GET https://api.neso.energy/dataset/cd6e42b0-13de-4f2a-bd0d-08e31bdde67f/resource/5f8f7293-4894-40c5-8f5c-e096b19e8198/download/fes2023_ws2_v001.csv"
+      - "GET https://api.neso.energy/dataset/cd6e42b0-13de-4f2a-bd0d-08e31bdde67f/resource/a80a94cc-b349-412c-83a0-0f5f9eaf4e7e/download/fes2025_ws2_v006.csv"
+      - "GET https://api.neso.energy/dataset/cd6e42b0-13de-4f2a-bd0d-08e31bdde67f/resource/3aba22fd-1934-4654-a33a-f3273c973560/download/10yo2026_ws2_v001.csv"
+    commands:
+      - {run: gridflow ingest neso_data_portal fes_ws2_gas_emissions --last 24h, comment: "changed files only; whole CSVs"}
+      - {run: gridflow transform neso_data_portal fes_ws2_gas_emissions --last 24h, comment: "the capture's date to silver"}
+  related:
+    - {dataset: neso_data_portal/fes-whole-system-gas-supply-data-table-ws1, note: "NESO's FES whole system and gas supply table, its companion"}
+    - {dataset: neso_data_portal/fes-natural-gas-residential-and-non-domestic-i-c-heat-demand-summary-data-table-ed3, note: "NESO's FES gas and heat demand tables, from the same editions"}
+    - {dataset: neso_data_portal/fes-road-transport-summary-data-table-ed5, note: "NESO's FES road transport table, from the same editions"}
 ---
 
 # FES: Pathways to Net Zero – Whole System & Gas Supply - Emissions Data table (WS2)

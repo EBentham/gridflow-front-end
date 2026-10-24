@@ -4,9 +4,48 @@ package: "fes-flexibility-data-table-data-table-flx1"
 dataset_key: "fes_flx1_flexibility"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-14
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  held: "NESO states no period for the year labels, or what blanks mean; 2023 numbers carry spaces."
+  title: FES flexibility data
+  summary: >-
+    NESO's GB electricity system flexibility table (FLX1) from its Future Energy Scenarios (FES)
+    and 2026 Ten-Year Outlook, one file per edition.
+  facts:
+    vendor: "NESO Data Portal: four CSVs, one per edition, 2023 to 2026"
+    cadence: "Ad hoc (NESO); editions 2023 to 2026, as at 6 October 2026"
+    grain: "One value per item, detail, unit, scenario or pathway and year label, per edition"
+    history: "NESO created the package on 7 July 2023"
+  landscape: power
+  what_it_is: >-
+    NESO's GB flexibility on the supply and demand sides: storage capacity and energy,
+    dispatchable supply, demand side response, vehicle to grid, electrolysis and interconnectors.
+    Each row names its unit, GW, GWh or TWh; interconnectors use both GW and TWh. The `Detail`
+    column splits each item, for example storage by technology. The package has no definitions
+    file.
+  how_used:
+    - "GB storage, demand side response and vehicle to grid under each FES pathway"
+    - "Flexibility beside FES supply and demand from the same edition"
+    - "Interconnector capacity and annual flows in each scenario or pathway"
+  raw_feed:
+    note: >-
+      From NESO's CKAN portal: `package_show`, then four CSVs, each downloaded whole unless its
+      `last_modified` is unchanged. Shown: 2023, 2024, 2026.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=fes-flexibility-data-table-data-table-flx1"
+      - "GET https://api.neso.energy/dataset/2e3275e2-dd6a-4c2e-8cfb-eeb9b4320dcb/resource/e86745fd-1ef2-4112-a14c-84682a387b68/download/fes2023_flx1_v001.csv"
+      - "GET https://api.neso.energy/dataset/2e3275e2-dd6a-4c2e-8cfb-eeb9b4320dcb/resource/c7d7a19d-255f-4585-b53b-487891aeda54/download/fes2024_flx1_v003.csv"
+      - "GET https://api.neso.energy/dataset/2e3275e2-dd6a-4c2e-8cfb-eeb9b4320dcb/resource/0ff1a94f-224d-4863-8137-7d9a0d2cd7f8/download/10yo2026_flx1_v001.csv"
+    commands:
+      - {run: gridflow ingest neso_data_portal fes_flx1_flexibility --last 24h, comment: "changed CSVs to bronze"}
+      - {run: gridflow transform neso_data_portal fes_flx1_flexibility --last 24h, comment: "the capture's date to silver"}
+  related:
+    - {dataset: neso_data_portal/future-energy-scenario-electricity-supply-data-table-es1, note: "NESO's FES electricity supply table, including storage and interconnectors"}
+    - {dataset: neso_data_portal/fes-electricity-demand-summary-data-table-ed1, note: "NESO's FES electricity demand table, by component and scenario"}
+    - {dataset: neso_data_portal/regional-breakdown-of-fes-data-electricity, note: "FES by grid supply point, with demand side response and storage"}
+    - {dataset: neso_data_portal/demand-flexibility, note: "NESO's Demand Flexibility Service, demand side response it buys"}
 ---
 
 # FES: Pathways to Net Zero – Flexibility Data table (FLX1)
