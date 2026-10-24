@@ -68,7 +68,7 @@ the lead table's columns; describe a second table's columns in its member line.
 
 | # | Writer | Checker | State |
 |---|---|---|---|
-| 1 | ab701b35a12d38c04 | a9de29bfc06aafd5d | checking; 20bq logged |
+| 1 | ab701b35a12d38c04 | a9de29bfc06aafd5d | APPROVED, 5 nits being fixed; 20bq logged |
 | 2 | a48d8b9e47c223da5 | | writing |
 | 3 | ab264ea28a0b271b2 | a41945f902dcee342 | checking; 20br logged |
 | 4 | a433a0c274e3774e4 | ad0238aea64f407ad | APPROVED, nits fixed (seat-verified); committed; 20bp logged (overlap is 1 to 5 April 2026, not Aug-Sep) |
