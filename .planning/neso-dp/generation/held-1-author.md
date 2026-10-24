@@ -131,3 +131,25 @@ None found. (As on earlier held pages, the silver band title "silver, typed and 
 - NESO, 14 Days Ahead Wind Forecasts: the 16 October 2026 files again open with three half-hours at or before the file stamp (two before the stated `ForecastDateTime`), so the past targets are a pattern, not a one-off. Confirms the hold evidence.
 - Both OPMR files miss the same seven publication dates: 2022-04-24, 2024-02-23 to 25, 2024-03-09, 2024-07-30, 2026-08-23. New, minor.
 - No gridflow code defect found.
+
+## Round 2 (2026-10-24): checker nits applied
+
+All three pages were approved with nits. Applied wherever the budgets allowed:
+
+- **Wind, national hold line:** now the checker's wording, "All rows stay out: NESO's October 2026 files open with half-hours before their forecast time, unexplained." (16 words).
+- **Wind, BMU hold line:** now the checker's wording, "All rows stay out: NESO's files open with half-hours before publication, and carry no forecast time." (16 words). The date had to go to fit the budget; the national line beside it still dates the files to October 2026.
+- **Daily hold line:** now "Publications give a date, no time or zone, and nearly all rows forecast days already past." (16 words). "Most" was replaced because 26,821 of 26,937 rows (99.6%) are past.
+- **Daily and weekly `what_it_is`:** OPMR is now attributed: "NESO defines the operational planning margin requirement (OPMR) as the generation needed above its demand forecast ...".
+- **Daily and weekly raw-feed note:** now "The 8 October 2026 publication has different figures in NESO's 8 and 16 October files." (30 words in all; "its" dropped before `last_modified` to fit).
+- **Weekly hold line:** "never maps" changed to "does not map" (16 words).
+- **Weekly `what_it_is`:** "reaches 2029" is now "reaches engineering year 2029", so it uses NESO's own label and agrees with the hold line. Freed the budget by changing "to cover" to "for" and dropping one "the".
+- **Weekly `how_used`:** "the seasons ahead" is now "the weeks ahead"; "one winter week" is now "one engineering week".
+- **Note bodies:**
+  - Wind Activation: "one capture at activation".
+  - Daily Activation: "(one capture at the time)".
+  - Daily Implementation delta: "Both captures and the 2026-10-08 field info use the new names".
+  - Weekly filename paragraph: adds the 2026-10-16 capture.
+  - Weekly epoch, BOM and line-ending sentence: now covers each capture (both bodies checked: one trailing `\r\n` blank line, every other line `\n`).
+  - Weekly Activation: "one capture at activation".
+
+Gates: mirrors copied, `cmp` clean on all three (CRLF kept). `gridflow-build --only neso_data_portal/<lead>` writes each page with no errors. Detector `[]` on all three. The `<main>` scan is clean (the only hit is the approved "the capture's date to silver" comment), and "winter", "seasons" and "reaches 2029" no longer appear on the weekly page. Screenshots were not retaken: these are wording changes of the same length in sections that wrapped cleanly in round 1. Nothing staged or committed.
