@@ -67,3 +67,45 @@ Page `capacity-market-register`, lead `capacity_market_auction_static`, 8 member
 - Dark mode and 768 px.
 - The 1440 px sections below the chart (headless blank; checked in the pane at about 800 px and 390 px).
 - Why 2022-23 T-4, 2027-28 T-1 and 2030-31 T-4 carry no price. The page states no cause, which is right.
+
+# Round 2
+
+**Verdict: APPROVE.** 0 blockers, 0 majors, 2 new nits (both in the notebook plot alt, optional).
+
+Gates: rebuilt with `--only neso_data_portal/capacity_market_auction_static`, clean. Detector `[]`. Mirror `cmp` identical. Em dashes 0. No server needed; built page text and artefacts checked, and the notebook PNG was viewed.
+
+## The three extra points
+
+- **Which plot has the new y label.** It is the notebook's stacked bar plot (cell 5, `capacity_market_auction_static-5.png`), now labelled "MW awarded, summed over auctions". The clearing-price chart is untouched. Its series and sample JSON have their round-1 timestamps (05:28), so they are unchanged. The chart caption still states dataset, unit (£ per kW per year, NESO's heading) and the 9 September 2026 file. Its alt and the 24 values are as verified in round 1.
+- **Three unpriced auctions.** The caption reads "No price, so not drawn: 2022-23 T-4, 2027-28 T-1, 2030-31 T-4". These are exactly the three null-price rows in silver (checked in round 1 and unchanged).
+- **Privacy grep, rebuilt page and artefacts.**
+  - `@`: only CSS `@container` and the Google Fonts URL in the page; 0 in the series, sample and notebook JSON.
+  - No phone-like runs in the artefacts.
+  - Contact column names: no hits beyond the four "contact" sentences (the same ones as round 1 plus the notebook lead's "never names or contacts"). `applicant`, `post_code`, `telephone`, `email`, `registered` and `parent` return no hits.
+  - The notebook cells are unchanged except the y label, so they still cannot print contact rows.
+
+## Round 1 findings
+
+1. **Major, summed awarded MW: fixed.**
+   - `how_used[1]` reads "Our sum of NESO's per-auction MW awarded per delivery year; NESO gives no total".
+   - The alt reads "our sum ... NESO gives no per-year total", and "hold" is now "sums to".
+   - The y label reads "summed over auctions".
+2. **Unpriced auctions named: fixed.**
+3. **Base period: fixed.** "null here on T-1 and 2030-31 T-4" is true of the eight rows shown (2026-27 T-1, 2027-28 T-1, 2030-31 T-4). The writer's choice not to claim TR rows is fine.
+4. **Alt starts at 2016/2017: fixed** ("2016/2017 sums to 803 MW (TR only)"). See new nit A.
+5. **Related Elexon note: fixed.**
+6. **Stale body after the second capture: fixed.**
+   - Cadence TODO now reads "Two weekly captures".
+   - Second-capture silver lines match the bronze files: 7,488 rows / 1,220,265 bytes, 29,849 / 8,329,645, 18,200 / 8,762,629, and 72,282 / 10,951,069.
+   - Change-date spans match silver: Component History 2026-07-29 to 2026-10-14 with 12 distinct dates (first capture 11); CMU History to 2026-10-14 with 49 distinct (first capture 48).
+7. **Personal-data scope: fixed.** The paragraph now names the applicant, agent, holder, parent and security-interest names, plus `Location and Post Code` and `OS Grid Reference`.
+8. **`casting.py:620`: fixed.** It is the first `date_sp1` line.
+9. **Bar label rounding:** still a seat item. No change expected.
+
+## New nits (optional)
+
+- **A. `page.notebook.plot_alt`: "mostly T-4" is now loose.**
+  - Round 1's alt said T-1 in 2017/2018 and T-3 in 2022/2023.
+  - Now "2017/2018 to 2029/2030 to 54,746 to 62,325, mostly T-4" is true by year count (11 of 13) but wrong for 2017/2018 (T-1 is 54,434 of 54,746) and 2022/2023 (T-3 is the largest, 45,059 MW), and the plot shows both.
+  - Suggest "except 2017/2018 (T-1) and 2022/2023 (T-3)".
+- **B. Same alt, grammar.** "2017/2018 to 2029/2030 to 54,746 to 62,325" reads oddly. For example "2017/2018 to 2029/2030 each sum to between 54,746 and 62,325".

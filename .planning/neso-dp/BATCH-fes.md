@@ -73,7 +73,7 @@ captures repeat rows (or as a guard). On a table with no event time, `query()` f
 | # | Writer | Checker | State |
 |---|---|---|---|
 | 1 | a0c28a65bd96ca1f4 | | writing |
-| 2 | | | |
+| 2 | a7d6f785b85eb39ff | | writing |
 | 3 | | | |
 | 4 | | | |
 | 5 | | | |
