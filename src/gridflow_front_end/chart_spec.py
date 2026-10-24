@@ -31,6 +31,9 @@ Spec shape (every key is listed in ``_ALLOWED_KEYS``)::
                                        #   ``starts`` hours from midnight in ``zone`` (-1 is
                                        #   23:00 the evening before); x is that day's date
       "value": "generation_mw",        # measure column (optional for count)
+      "values": ["a_cost_gbp", {"column": "b_cost_gbp", "series": "b"}],
+                                       # instead of value (and group): several columns of
+                                       #   one row, each its own series (line, stacked-area)
       "filter": [{"column": "fuel_type", "op": "not_null"}],
       "dedup": {"on": ["timestamp_utc"], "order_by": "published_at"},
       "group": "fuel_type",            # series split (time) or category (bar)
@@ -47,6 +50,15 @@ Spec shape (every key is listed in ``_ALLOWED_KEYS``)::
       "unit": "MW",
       "caption": "What the chart shows, in one sentence."
     }
+
+``values`` unpivots a wide table: each listed column becomes one series, the
+same rows feeding all of them, and ``aggregation`` reduces each column on its
+own (a null cell is missing for that series only). An item is a column name,
+whose series key is the column name, or ``{"column": ..., "series": ...}`` to
+give it a shorter key. The page's ``chart_view.key`` names each series key
+once and carries its label. Series draw in the order listed (``series_order``
+may reorder them). ``values`` takes no ``value``, ``group`` or ``group_*`` key
+and no count aggregation, and is for time charts only.
 
 ``caption`` is optional: a page on the new dataset template keeps its caption
 in the note's ``page.chart_view`` (page words, not data), so editing the words
@@ -80,6 +92,7 @@ _ALLOWED_KEYS = frozenset(
         "time",
         "time_text",
         "value",
+        "values",
         "filter",
         "dedup",
         "group",
@@ -159,6 +172,54 @@ def _check_window(errors: list[str], window: object) -> None:
         errors.append('window: must have exactly "last", or exactly "start" and "end"')
 
 
+def value_columns(spec: Mapping[str, Any]) -> list[tuple[str, str]]:
+    """``(column, series key)`` for each ``values`` item of a valid spec, in listed order."""
+    out: list[tuple[str, str]] = []
+    for item in spec.get("values", []):
+        if isinstance(item, str):
+            out.append((item, item))
+        else:
+            out.append((item["column"], item["series"]))
+    return out
+
+
+def _check_values(errors: list[str], spec: Mapping[str, Any]) -> None:
+    items = spec["values"]
+    if not isinstance(items, list) or not items:
+        errors.append("values: must be a non-empty list of columns")
+        return
+    columns: list[str] = []
+    keys: list[str] = []
+    for i, item in enumerate(items):
+        where = f"values[{i}]"
+        if isinstance(item, str):
+            _check_column(errors, where, item)
+            columns.append(item)
+            keys.append(item)
+        elif isinstance(item, Mapping) and set(item) == {"column", "series"}:
+            _check_column(errors, f"{where}.column", item["column"])
+            series = item["series"]
+            if not isinstance(series, str) or not series.strip():
+                errors.append(f"{where}.series: must be a non-empty series key")
+            columns.append(str(item["column"]))
+            keys.append(str(series))
+        else:
+            errors.append(f'{where}: must be a column name or {{"column": ..., "series": ...}}')
+    if len(set(columns)) != len(columns):
+        errors.append("values: a column is listed twice")
+    if len(set(keys)) != len(keys):
+        errors.append("values: two columns share a series key")
+    if "value" in spec:
+        errors.append("values: takes no value (each listed column is a series)")
+    for key in ("group", "group_map", "group_default", "group_null"):
+        if key in spec:
+            errors.append(f"{key}: values already gives the series; drop {key}")
+    if spec.get("aggregation") == "count":
+        errors.append("values: a count has no value columns")
+    if spec.get("type") not in TIME_CHART_TYPES:
+        errors.append("values: only a line or stacked-area chart takes values")
+
+
 def _check_time_text(errors: list[str], value: object) -> None:
     if not isinstance(value, Mapping) or not set(value) <= {"format", "day"}:
         errors.append('time_text: must be {"format": ..., "day": {"zone": ..., "starts": ...}}')
@@ -217,7 +278,9 @@ def validate_spec(spec: object) -> list[str]:
     aggregation = spec.get("aggregation")
     if aggregation not in AGGREGATIONS:
         errors.append(f"aggregation: must be one of {sorted(AGGREGATIONS)}, got {aggregation!r}")
-    if "value" in spec:
+    if "values" in spec:
+        _check_values(errors, spec)
+    elif "value" in spec:
         _check_column(errors, "value", spec["value"])
     elif aggregation != "count":
         errors.append("value: required unless aggregation is 'count'")
@@ -246,7 +309,7 @@ def validate_spec(spec: object) -> list[str]:
     if "group" in spec:
         _check_column(errors, "group", spec["group"])
     for key in ("group_map", "group_default", "group_null", "series_order"):
-        if key in spec and "group" not in spec:
+        if key in spec and "group" not in spec and not (key == "series_order" and "values" in spec):
             errors.append(f"{key}: needs a group column")
     if "group_map" in spec:
         gmap = spec["group_map"]
