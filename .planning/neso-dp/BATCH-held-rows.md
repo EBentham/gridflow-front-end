@@ -119,13 +119,14 @@ repeat rows; on a table with no event time use `data.sql()`; the column guide ac
 | C1 | ad75c58a68842e8b6 | aa4a892ba7c0e0bd4 | APPROVED x6 (round 2); committed (site 43a7188); 20cp logged |
 | S1 | a7ab77ada40837869 | a0a8c6d80773615fa | APPROVED x3; committed (site 5a00070, 733b52c); Pathfinder lead reordered (7342b43) |
 | T1 | abf6b4cf3ba85c1a5 | a335a0dc2e2350249 | APPROVED x6 (round 2); committed (site e3a1ca9); pushed; 20cq logged |
-| D1 | ac29ae2189289eb20 | a1587b1603e0092f5 | round 1: three APPROVED with nits; performance REVISE (key wording, alt figure); round 2 with writer |
+| D1 | ac29ae2189289eb20 | a1587b1603e0092f5 | APPROVED x4 (round 2); committed (site bb1ee8d); demand pushed, parent told; 20cr logged |
 | D2 | a6529fae660c4ff74 | aaa229431fb8d7d45 | APPROVED x3 (round 2); committed on dem |
-| G1 | af234cffef25e4fa7 | adaa14b1da19ee956 | written; in review (weekly OPMR no chart; wind availability one week label) |
+| G1 | af234cffef25e4fa7 | adaa14b1da19ee956 | APPROVED x5 with 7 nits; nits with writer |
 | I1 | a475c72bb4c6ca14f | a1fdee2150037abad | written; in joint review with I2 (IFA, IFA2 draw Intraday 1; BritNed no chart; NESO upload gaps 11 and 12 Oct) |
 | I2 | a85a78f0c3de4f450 | a1fdee2150037abad | written; seat ruled its chart rule (Day Ahead as fetched, rows uploaded before their hour) for all seven pages; Viking lead reordered (b79c573), regenerated; one checker will review I1 and I2 together |
 | N1 | a0ac37967725c0a93 | | writing |
 | CI1 | ace01fca13556e033 | | writing |
+| F1 | a34676c0e232141b9 | | writing |
 
 Pace raised 2026-10-24 ~13:25Z (Bobbo via the parent): 5 agents at once, aim about 50% of weekly usage over 36 hours;
 park at 98% weekly. After NESO: ruling 66 on the seven blank other-vendor pages (ENTSO-E balancing-energy bids, current
