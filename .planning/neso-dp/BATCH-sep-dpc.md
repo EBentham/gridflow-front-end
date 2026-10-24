@@ -52,3 +52,5 @@ or commit (the seat commits). Do not end your turn until your report or review i
 | H | a0b72c16a49a0f95f | a53b1c14d6caaf419 | APPROVED with nits; file feature counts dropped beside NESO's zone counts (seat); committed; 20ck logged (kept off the page) |
 
 Strategic Energy Planning closed 2026-10-24: gates green (pytest 206, build check 200 pages, htmlhint 0, lychee 0, detector clean); site PR EBentham/gridflow-front-end#76, vault PR EBentham/quant-vault#79, both waiting for Bobbo.
+
+Data Portal changes closed 2026-10-24: gates green (pytest 206, build check 201 pages, htmlhint 0, lychee 0, detector clean on all 418 NESO HTML files); site PR EBentham/gridflow-front-end#77, vault PR EBentham/quant-vault#80, both waiting for Bobbo. Every one of the 131 NESO Data Portal packages now has a page.
