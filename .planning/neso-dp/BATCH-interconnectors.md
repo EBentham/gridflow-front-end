@@ -36,6 +36,10 @@ Known risks:
 - **Held pages:** one plain line per table on why rows are not shown, covering the whole table, no codes, no
   local-data references (dated NESO facts only). Spell out ITL and NTC once.
 
+Seat ruling (PROXY-SOURCED, 2026-10-24): name an interconnector's far-end country only where NESO's text or a source
+cited in the vault note states it; otherwise drop it. A row is a listed hour, not a restriction: NESO's files list
+unrestricted hours too ("No Restriction"), so pages never say a row marks a restricted hour.
+
 ## Rules
 
 **Processes (hard rule):** start a server only in a way that records its PID, and stop only that PID. Never kill
@@ -51,4 +55,4 @@ note-body statements (for example "only one capture") yourself when the data pro
 | # | Writer | Checker | State |
 |---|---|---|---|
 | H1 | a62fc78e8e26ffa05 | a21506c7e680b4a33 | revising (REVISE x4: restriction claim); 20bv logged |
-| H2 | acef9b7cce5ed5f19 | a64b820b2fb288aa4 | checking |
+| H2 | acef9b7cce5ed5f19 | a64b820b2fb288aa4 | revising (REVISE x3: restriction claim, country names, NSL hold line) |
