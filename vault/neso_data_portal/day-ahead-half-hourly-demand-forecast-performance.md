@@ -4,11 +4,10 @@ package: "day-ahead-half-hourly-demand-forecast-performance"
 dataset_key: "da_demand_fc_performance"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-23
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: "NESO says times follow clock changes, but they carry `Z`; it never says start or end."
   title: Day-ahead demand forecast performance
   summary: >-
     NESO's day-ahead forecast of national demand for each half hour, beside the outturn and the
@@ -27,6 +26,31 @@ page:
   how_used:
     - How far NESO's day-ahead demand forecast missed, half hour by half hour
     - A benchmark for a day-ahead national demand forecast of your own
+  chart:
+    type: line
+    silver: neso_data_portal/da_demand_fc_performance
+    filter:
+      - {column: bronze_capture_id, op: eq, value: "bronze/neso_data_portal/da_demand_fc_performance/2026/10/16/raw_20261016T192157Z_08e41551-80f8-4e28-a416-ea473a695db9_f0e93c7a.csv"}
+    time: outturn_date
+    value: absolute_error
+    aggregation: mean
+    window: {start: "2025-10-01", end: "2026-09-30"}
+    unit: MW
+  chart_view:
+    title: NESO's forecast error, daily mean, October 2025 to September 2026
+    caption: >-
+      Silver `da_demand_fc_performance`, MW: the mean of NESO's `Absolute_Error` column over each
+      `Date`, from its file of 16 October 2026. Dates as NESO writes them; the half-hour times are
+      not used.
+    alt: >-
+      Line chart from neso_data_portal/da_demand_fc_performance: the daily mean of NESO's absolute
+      error, MW, by outturn date, 1 October 2025 to 30 September 2026, from its 16 October 2026
+      file. The median day is 698, and half the days lie between 523 and 906. The lowest is 282 on
+      9 August 2026. The highest, 2,094, is 29 March 2026, a day of 46 half hours; next come
+      1,826 on 22 July 2026 and 1,644 on 27 December 2025.
+    x_label: outturn date, as NESO writes it
+    key:
+      - {series: absolute_error, label: "Mean absolute error", paint: petrol}
   raw_feed:
     note: >-
       From NESO's CKAN portal: one `package_show`, then the CSV downloaded whole unless its
@@ -37,6 +61,63 @@ page:
     commands:
       - {run: gridflow ingest neso_data_portal da_demand_fc_performance --last 24h, comment: "the CSV to bronze"}
       - {run: gridflow transform neso_data_portal da_demand_fc_performance --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: bronze_capture_id, op: eq, value: "bronze/neso_data_portal/da_demand_fc_performance/2026/10/16/raw_20261016T192157Z_08e41551-80f8-4e28-a416-ea473a695db9_f0e93c7a.csv"}
+        - {column: outturn_date, op: eq, value: "2021-10-31"}
+        - {column: settlement_period, op: le, value: 8}
+      order_by: [settlement_period, demand_forecast]
+      columns: [outturn_date, settlement_period, outturn_datetime, demand_forecast, demand_outturn,
+                absolute_error, ape, publish_datetime, triad_avoidance_estimate,
+                triad_avoidance_corrected_demand_outturn, month_name, published_at]
+    key: [outturn_date, settlement_period, demand_forecast, published_at]
+    caption: "31 October 2021, a clock-change day: no periods 2 or 3, and 4 and 5 twice."
+    fields:
+      month_name: "NESO's month label for the row, as text"
+      outturn_date: The outturn day, as NESO writes it
+      outturn_datetime: "NESO's `Datetime`, kept as text: it ends in `Z`, though NESO says GMT/BST"
+      settlement_period: "Settlement period number; NESO does not say whether `Datetime` starts or ends it"
+      demand_forecast: "NESO's day-ahead national demand forecast, MW; repeated periods differ in it"
+      demand_outturn: National demand outturn for the half hour, MW
+      triad_avoidance_estimate: "NESO's estimate of TRIAD avoidance, MW; 0 outside TRIAD season"
+      triad_avoidance_corrected_demand_outturn: "Outturn plus that estimate, MW; NESO may revise it"
+      ape: "NESO's absolute percentage error of the forecast, %; NESO gives no formula"
+      absolute_error: "NESO's absolute error of the forecast, MW"
+      publish_datetime: "NESO's time the forecast was made, as text; whether then published is unstated"
+      published_at: "NESO's last-modified time for the file, read as UTC; one per file"
+      timestamp_utc: "gridflow's capture time, UTC; not the half hour"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote the capture to bronze, UTC
+  caveat: "Times end in Z, though NESO says GMT/BST; it never says period start or end."
+  notebook:
+    lead: >-
+      `data.sql` reads NESO's newest file from the base view, because `query()` would filter
+      `timestamp_utc`, the capture time. The first cell counts rows and period labels per day; the
+      error columns are NESO's, averaged by month.
+    cells:
+      - |
+        df = data.sql("""
+            SELECT outturn_date, settlement_period, demand_forecast, demand_outturn,
+                   absolute_error, ape, publish_datetime, published_at
+            FROM silver_neso_data_portal_da_demand_fc_performance
+            WHERE published_at = (SELECT max(published_at)
+                                  FROM silver_neso_data_portal_da_demand_fc_performance)""")
+        days = df.groupby("outturn_date").settlement_period.agg(rows="count", labels="nunique")
+        days.value_counts().rename("days").reset_index()
+      - |
+        month = df.outturn_date.astype("datetime64[ns]").dt.to_period("M").rename("month")
+        monthly = df.groupby(month)[["absolute_error", "ape"]].mean().loc[:"2026-09"]
+        monthly.tail(6).round(1).reset_index()
+      - |
+        ax = monthly.absolute_error.plot(figsize=(8, 3.5), color="#155A6E",
+                                         xlabel="outturn month, as NESO dates it",
+                                         ylabel="mean of NESO's absolute error, MW");
+    needs: "NESO's forecast performance file of 16 October 2026"
+    plot_alt: >-
+      Line plot of the monthly mean of NESO's absolute error, MW, April 2021 to September 2026, from
+      its 16 October 2026 file. Most months lie between 500 and 800. The lowest is 409 in July 2021;
+      the highest are 976 in March 2026, 922 in June 2026 and 850 in March 2025.
   related:
     - {dataset: elexon/ndf, note: "BMRS demand forecasts; NESO says it scores the day-ahead one published there"}
     - {dataset: neso_data_portal/1-day-ahead-demand-forecast, note: "NESO's day-ahead demand forecast for the next day, at cardinal points"}
@@ -64,12 +145,12 @@ for a benchmark against Elexon NDF (@../../elexon/datasets/ndf.md). Background o
 forecasts matter for models:
 @../../../20-domain/modelling/renewable-and-demand-forecasting.md.
 
-**Status: silver exists, publication is held.** The time columns carry a literal `Z` while the
+**Status: silver exists; gridflow holds the family.** The time columns carry a literal `Z` while the
 vendor dictionary says they follow UK clock changes (GMT/BST). Which end of the half hour
 `Datetime` marks, how the autumn clock-change days are labelled, and whether `Publish_Datetime`
 is a publication instant are all undocumented. The hold is unit E-SEM (class 3, see Holds). This
-page gives schema, row counts and structural counts only. It gives no demand values, errors or
-ranges.
+note gives schema, row counts and structural counts. The site page shows the rows, a chart of
+NESO's error column by date and a notebook, with one line naming the time question.
 
 - Publisher group: Demand
 - Registry group: demand · archetype: SER
@@ -167,7 +248,11 @@ cardinal-point packages define it as ND (generation requirement excluding statio
 pumped-storage pumping and interconnector exports), see
 @1-day-ahead-demand-forecast.md. `TODO: verify` that this package uses the same ND definition.
 The dictionary does not give the APE formula, the denominator (forecast or outturn, TRIAD
-corrected or not) or its rounding. `TODO: verify` before recomputing it.
+corrected or not) or its rounding. `TODO: verify` before recomputing it. Measured on the
+2026-10-16 file: in the 313 rows with a non-zero TRIAD estimate (all in November to February),
+`absolute_error` equals the gap between the forecast and the TRIAD-corrected outturn, not
+`demand_outturn`; in every other row the two outturns are equal. The dictionary does not say
+which outturn the error uses, and the page shows NESO's column only.
 
 **Sentinels and missing values (FACTS g5).** The record declares no null token and no bounds
 beyond `settlement_period` 1..50.
@@ -189,8 +274,10 @@ dates. Settlement period spans 1..50 in the data.
 | 50 | 4 | autumn clock-change days (2021-10-31, 2023-10-29, 2024-10-27, 2025-10-26) |
 | 20 | 1 | the final date, partial (the capture's own day) |
 
-The autumn day of 2022-10-30 has **48** rows, not 50, and 46 distinct settlement-period labels.
-On the autumn day of 2021-10-31 there are 50 rows but only 48 distinct labels. The label pairs
+The autumn day of 2022-10-30 has **48** rows, not 50, and 46 distinct settlement-period labels
+(labels 21 and 22 are absent). On the autumn day of 2021-10-31 there are 50 rows but only 48
+distinct labels (labels 2 and 3 are absent). The 2023, 2024 and 2025 autumn days each carry 50
+distinct labels. The label pairs
 repeat as already named in the hold question: SP4/SP5 on 2021-10-31 and SP2/SP3 on 2022-10-30.
 `(outturn_date, settlement_period)` therefore occurs twice in 4 groups (the two repeated pairs).
 No two rows are identical on all 11 vendor columns. Do not dedup on `(outturn_date,
@@ -225,6 +312,10 @@ estimates are revised.
 guard with zero duplicates in the capture. The vendor does not document a row identity.
 `(outturn_date, settlement_period)` is unique except for the four repeated labels above, so it is
 not a safe key. `TODO: verify` the vendor's row identity once the label repeats are explained.
+The site page's frame key, `outturn_date`, `settlement_period`, `demand_forecast` and
+`published_at`, is a short set measured unique in both current files (96,786 of 96,786 and
+97,169 of 97,169 rows); the repeated periods differ in `demand_forecast`. It is not a vendor or
+code key: gridflow keys on all 11 vendor columns.
 
 **Activation (2026-10-08, master `29b563c`).** Transformed at cutoff 2026-10-08 (the first
 capture): `gridflow transform neso_data_portal da_demand_fc_performance --start 2026-10-08 --end
@@ -285,8 +376,8 @@ The hold is a class 3 call (the profiler pilot, RULINGS 504; carried by the elig
 gridflow `@docs/neso_data_portal/eligibility.md`). A held package holds every output of the
 package. Silver exists and stays on disk, but the family is **not eligible** for publication or
 point-in-time use. The package-level `eligibility: eligible` in the front matter is the
-registry's package entry. The hold sits on the family record. This page publishes no data values
-from the family.
+registry's package entry. The hold sits on the family record. This note publishes no data values
+from the family; the site page shows its rows with one line naming the time question.
 
 Unit E-SEM needs four answers from NESO before the hold can lift:
 
