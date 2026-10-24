@@ -8,7 +8,6 @@ updated: 2026-10-13
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: true
   title: ORPS reactive power utilisation
   summary: >-
     NESO's monthly record of how much reactive power each unit was asked to absorb or produce,
@@ -16,7 +15,7 @@ page:
   facts:
     vendor: "NESO Data Portal, ORPS package: four CSV files, a workbook and two PDFs"
     cadence: Monthly, as NESO lists it; updated mid-month with data to two months earlier
-    grain: "Utilisation: one row per unit, with lead, lag and total per month"
+    grain: "Utilisation: a row per unit, columns per month; rates: a row per month"
   landscape: market
   what_it_is: >-
     Grid Code generators must be able to absorb or produce reactive power, which NESO calls on to
@@ -27,6 +26,30 @@ page:
   how_used:
     - Which units NESO calls on for reactive power, month by month
     - "The two default rates NESO pays for reactive power, in £/MVArh, by month"
+  chart:
+    type: bar
+    silver: neso_data_portal/orps_utilisation_reactive_default
+    filter:
+      - {column: year_vendor, op: ge, value: 2008}
+      - {column: year_vendor, op: le, value: 2025}
+    group: year_vendor
+    value: x_1
+    aggregation: mean
+    sort: label
+    unit: £/MVArh
+  chart_view:
+    title: "Mean default rate at X = 1, 2008 to 2025"
+    caption: >-
+      Silver `orps_utilisation_reactive_default`, the third table here (the utilisation tables are too
+      wide to show): mean of NESO's twelve monthly `X = 1` default rates in each full calendar year,
+      2008 to 2025, £/MVArh as NESO's guidance labels it.
+    alt: >-
+      Horizontal bar chart from neso_data_portal/orps_utilisation_reactive_default of the mean monthly
+      default rate at X = 1 in each year, £/MVArh, 2008 to 2025. From 2009 to 2020 every year sits
+      between 2.417 (2010) and 3.355 (2018); 2008 is 3.783. The mean rises to 5.048 in 2021 and 11.883
+      in 2022, then falls to 6.837, 4.462 and 4.911.
+    key:
+      - {series: x_1, label: Rate at X=1, paint: petrol}
   raw_feed:
     note: >-
       From NESO's CKAN portal: `package_show`, then each file whole unless `last_modified` is
@@ -34,6 +57,54 @@ page:
     commands:
       - {run: gridflow ingest neso_data_portal orps_utilisation_reactive --last 24h, comment: "whole files; swap in any key"}
       - {run: gridflow transform neso_data_portal orps_utilisation_reactive --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      silver: neso_data_portal/orps_utilisation_reactive_default
+      filter:
+        - {column: year_vendor, op: eq, value: 2022}
+        - {column: month_vendor, op: ge, value: 5}
+      order_by: [month_vendor]
+      columns: [year_vendor, month_vendor, x_1, x_0_2, hpim, papim, ppim, frpim, im]
+    key: [year_vendor, month_vendor]
+    caption: "May to December 2022; the `X = 1` rate peaks at 16.97 £/MVArh in October."
+    fields:
+      year_vendor: "Calendar year of the rate, NESO's `Year`"
+      month_vendor: "Month of the year, 1 to 12, NESO's `Month`"
+      x_1: "Default payment rate at utilisation factor X = 1, £/MVArh (NESO's guidance)"
+      x_0_2: "Default payment rate at X = 0.2, £/MVArh (NESO's guidance)"
+      hpim: "Heren power-price input, NESO's `HPIm`; labelled only £"
+      papim: "Argus power-price input, NESO's `PAPIm`; labelled only £"
+      ppim: "Platts power-price input, NESO's `PPIm`; labelled only £"
+      frpim: "RPI index input, NESO's `FRPIm`: an index level, not pounds (NESO's guidance)"
+      im: "Indexation factor, NESO's `Im`: dimensionless (NESO's guidance)"
+      timestamp_utc: "gridflow's capture time, UTC; not the rate's month"
+      published_at: "When NESO last changed the file (CKAN `last_modified`), not first publication"
+      bronze_capture_id: Path of the bronze capture the row was read from
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      `data.sql` reads the `_latest` view of the default-rate table: it has no date column for
+      `query()`. In every month here, the rate at X = 0.2 is a fifth of that at X = 1.
+    cells:
+      - |
+        rates = data.sql("""
+            SELECT year_vendor, month_vendor, hpim, papim, ppim, x_1, x_0_2
+            FROM silver_neso_data_portal_orps_utilisation_reactive_default_latest
+            ORDER BY year_vendor, month_vendor""")
+        rates.tail()
+      - |
+        (rates.x_0_2 / rates.x_1).round(6).value_counts()
+      - |
+        import pandas as pd
+        rates["month"] = pd.to_datetime(dict(year=rates.year_vendor, month=rates.month_vendor, day=1))
+        rates.plot(x="month", y=["x_1", "x_0_2"], color=["#155A6E", "#C77E3C"], figsize=(8, 3.5),
+                   xlabel="rate month, from NESO's Year and Month",
+                   ylabel="default rate, £/MVArh");
+    needs: a capture of the default payment rate file
+    plot_alt: >-
+      Monthly default rates at X = 1 and X = 0.2, £/MVArh, November 2007 to October
+      2026. X = 1 stays between about 2 and 4 from 2009 to 2020, then climbs to 16.97 in October
+      2022, falls back to about 4 to 6 and ends at 7.39. X = 0.2 is a fifth of it in every month.
   family:
     slug: obligatory-reactive-power-service-orps-utilisation
     members:
@@ -43,19 +114,19 @@ page:
           - "GET https://api.neso.energy/api/3/action/package_show?id=obligatory-reactive-power-service-orps-utilisation"
           - "GET https://api.neso.energy/dataset/7e142b03-8650-4f46-8420-7ce1e84e1e5b/resource/a61c6c26-62ec-41e1-ae25-ed95f4562274/download/reactive-utilisation-data-apr-2020-dec-2024.csv"
           - "GET https://api.neso.energy/dataset/7e142b03-8650-4f46-8420-7ce1e84e1e5b/resource/528b03d2-4008-4b65-a732-a001cd835a3b/download/reactive-utilisation-data.csv"
-        held: "The long file alters some archive values, zeroes blanks; NESO does not say which to use."
+        caveat: "A blank may mean zero or not reported, and NESO's newer long file changes some values."
       - dataset: orps_utilisation_historic_reactive
         differs: "Lead, lag and total by month, October 2013 to March 2020"
         request:
           - "GET https://api.neso.energy/api/3/action/package_show?id=obligatory-reactive-power-service-orps-utilisation"
           - "GET https://api.neso.energy/dataset/7e142b03-8650-4f46-8420-7ce1e84e1e5b/resource/3ee65326-3729-421d-b667-b2164501e4a5/download/reactive-historical-data-apr-2013-to-mar-2020.csv"
-        held: "NESO does not say what a dash cell means; one unit appears twice, with different values."
+        caveat: "NESO does not say what a dash cell means; one unit appears twice, with different values."
       - dataset: orps_utilisation_reactive_default
         differs: "Monthly inputs to NESO's default payment rate, and the two rates in £/MVArh"
         request:
           - "GET https://api.neso.energy/api/3/action/package_show?id=obligatory-reactive-power-service-orps-utilisation"
           - "GET https://api.neso.energy/dataset/7e142b03-8650-4f46-8420-7ce1e84e1e5b/resource/b00df5b1-4179-44e3-b556-28a836ad619f/download/reactive-default-payment-rate-oct-2026.csv"
-        held: "NESO gives the three power-price inputs only a pound sign, with no denominator."
+        caveat: "NESO gives `HPIm`, `PAPIm` and `PPIm` only a pound sign, with no denominator."
   related:
     - {dataset: neso_data_portal/constraint-breakdown, note: "Daily voltage constraint costs, which NESO ties to reactive-power balance"}
 ---
@@ -79,11 +150,12 @@ it is voltage-management and cost context for the GB balancing mechanism
 (@../../../20-domain/markets/gb-balancing-mechanism.md), keyed on BM unit identifiers
 (@../../../20-domain/concepts/bm-units.md).
 
-**Every silver output from this package is held**, and gridflow's three silver families exist on
-disk only (gridflow `@.planning/v0.22-RESULTS.md` section AS-3b; RULINGS 738, 751, 752). This page
-records structure, row counts, clocks and the open vendor questions. It publishes **no data values**
-from the held families. The hold unit for the open questions is E-SEM (the registry froze the
-questions in unit v0.22-K-AS-3b).
+**gridflow's registry holds all three silver families** on open vendor questions, so no model consumes
+them (gridflow `@.planning/v0.22-RESULTS.md` section AS-3b; RULINGS 738, 751, 752). The site page still
+shows rows (ruling 66): each family carries its question as a caveat, and the chart, eight sample rows
+and notebook come from the default payment-rate table, whose two utilisation siblings are too wide for
+the page's column guide. This note records structure, row counts, clocks and the open questions. The
+hold unit for the open questions is E-SEM (the registry froze the questions in unit v0.22-K-AS-3b).
 
 - Vendor page: [ORPS utilisation](https://www.neso.energy/data-portal/obligatory-reactive-power-service-orps-utilisation)
 - Attribution: Supported by National Energy SO Open Data
@@ -128,7 +200,7 @@ questions in unit v0.22-K-AS-3b).
 
 | Resource | Format | Capture | Id | Reason (unit) |
 |---|---|---|---|---|
-| Reactive Utilisation Data | CSV | upload | `528b03d2-4008-4b65-a732-a001cd835a3b` | TODO: ORPS-REACTIVE-LONG-DUPLICATE — the current long table repeats one complete row twice (one complete row is repeated twice; identity withheld because the output is held), so no key passes the duplicate guard (RULINGS 538); publication defect or two distinct utilisations? Re-disposition only after a corrected NESO upload (a new last_modified) or a vendor identity column (v0.22-K-AS-3b) |
+| Reactive Utilisation Data | CSV | upload | `528b03d2-4008-4b65-a732-a001cd835a3b` | TODO: ORPS-REACTIVE-LONG-DUPLICATE — the current long table repeats one complete row twice (one complete row is repeated twice; identity not named, as the long table is bronze only), so no key passes the duplicate guard (RULINGS 538); publication defect or two distinct utilisations? Re-disposition only after a corrected NESO upload (a new last_modified) or a vendor identity column (v0.22-K-AS-3b) |
 | Reactive Utilisation-Nov-2021 | XLSX | upload | `d91e4fd2-1f27-4d0b-8473-b4b19af7f3dc` | TODO: ORPS-WORKBOOK-LAYOUT — merged monthly headers, notes and totals; the ADR-037 single-block XLSX reader cannot read a sheet faithfully; re-disposition only after a reader unit with per-sheet flattened headers and verified table boundaries (v0.22-K-AS-3b) |
 | ↳ Oct00-Mar05 | — | — | HOLD: TODO: ORPS-WORKBOOK-LAYOUT — merged monthly headers, notes and totals; the ADR-037 single-block XLSX reader cannot read a sheet faithfully; re-disposition only after a reader unit with per-sheet flattened headers and verified table boundaries (v0.22-K-AS-3b) | — |
 | ↳ Apr05-Sep06 | — | — | HOLD: TODO: ORPS-WORKBOOK-LAYOUT — merged monthly headers, notes and totals; the ADR-037 single-block XLSX reader cannot read a sheet faithfully; re-disposition only after a reader unit with per-sheet flattened headers and verified table boundaries (v0.22-K-AS-3b) | — |
@@ -436,8 +508,9 @@ Schema, epoch 1:
 | `published_at` | CKAN `last_modified` of the captured file (ADR-030) |
 | `available_at` | = `published_at` |
 
-**Status: held (E-SEM). 295 silver rows, 238 vendor columns plus the eight lineage columns below.
-No values are published.**
+**Status: held in gridflow (E-SEM). 295 silver rows, 238 vendor columns plus the eight lineage columns
+below. The site page names its question as a caveat; it shows no rows of this table, which is too wide
+for the column guide.**
 
 One CSV (`Historic Reactive Utilisation Data`), one row per balancing mechanism unit, wide: four
 identity columns (`Company`, `Unit`, `Default/Market`, `Location`) followed by **LEAD / LAG / TOTAL**
@@ -459,7 +532,7 @@ then read the columns as monthly accumulated utilisation (MVARh) only on the str
 text, never as instantaneous power.
 
 **Entity key.** The four natural identity columns repeat (one four-field identity appears at
-physical rows 181 and 277 with 234 differing value columns; identity withheld because the family is held), so the key above is **all 238 silver
+physical rows 181 and 277 with 234 differing value columns; identity not named in this note), so the key above is **all 238 silver
 columns**. That is a duplicate guard, not a vendor identity.
 
 **Sentinels.** None established. The padded `-` is **not** treated as zero, missing or not
@@ -675,8 +748,9 @@ Schema, epoch 1:
 | `published_at` | CKAN `last_modified` of the captured file (ADR-030) |
 | `available_at` | = `published_at` |
 
-**Status: held (E-SEM). 243 silver rows, 176 vendor columns plus the eight lineage columns. No values
-are published.**
+**Status: held in gridflow (E-SEM). 243 silver rows, 176 vendor columns plus the eight lineage columns.
+The site page names its question as a caveat; it shows no rows of this table, which is too wide for the
+column guide.**
 
 The record covers **only the wide archive** `Reactive Utilisation Data - Apr-2020 - Dec-2024` (one
 epoch, 176 columns): an opaque `id`, the four identity columns, then LEAD / LAG / TOTAL for 57 months,
@@ -720,7 +794,7 @@ is whether a blank means zero or not reported.
 2. **Event time (temporal recipe `none`).** The month is in the column header, so no event time is
    derived. `timestamp_utc` (and `event_time`) is the **capture time**, `2026-10-08T11:15:58.937852Z`.
    It carries no market meaning. A `month(Month-Year)` recipe (`%b-%y`) would be possible for the long
-   table alone, but that table is held.
+   table alone, but that table has no silver (bronze only).
 
 Silver carries the same eight lineage columns as the historic family (`dataset_version` `1+e1`).
 
@@ -751,8 +825,9 @@ Schema, epoch 1:
 | `published_at` | CKAN `last_modified` of the captured file (ADR-030) |
 | `available_at` | = `published_at` |
 
-**Status: held (E-SEM). 228 silver rows (one per payment-rate month), 9 vendor columns plus the eight
-lineage columns. No values are published.**
+**Status: held in gridflow (E-SEM). 228 silver rows (one per payment-rate month), 9 vendor columns plus
+the eight lineage columns. The site page shows this table: a chart of the yearly mean `X = 1` rate, eight
+sample rows and a notebook, with the price-input unit question as a caveat.**
 
 The monthly inputs and outputs of the ORPS default payment-rate calculation: `Year` and `Month`
 (stored as `year_vendor` and `month_vendor`, because `year` and `month` are reserved silver names),
@@ -801,7 +876,7 @@ Silver carries the same eight lineage columns as the other families (`dataset_ve
   schedule). The current long table's `last_modified` was 2026-09-04T15:21:37.532365 in the 2026-10-06
   catalogue snapshot and 2026-10-07T15:58:09.723806 at the 2026-10-08 capture; the actual refresh day
   is `TODO: verify`. gridflow's refresh is
-  monthly, so later republications of the long table are not published unless its hold lifts.
+  monthly; later republications of the long table reach bronze only, until its hold lifts.
 - The payment-rate CSV and PDF share a `last_modified` day (2026-09-17). How often NESO republishes
   them is `TODO: verify`.
 
@@ -819,11 +894,12 @@ gridflow outputs derived from this package carry the attribution line above.
 - `orps_utilisation_reactive`: held: TODO: ORPS-REACTIVE-ARCHIVE — the current long table restates every unit/month of this Apr-20 … Dec-24 archive but differs on 241 values and publishes 2,895 of its blanks as 0; is this archive superseded, and does a blank mean zero or not reported? (unit v0.22-K-AS-3b)
 - `orps_utilisation_reactive_default`: held: TODO: ORPS-PRICE-INPUT-UNITS — the dictionary labels HPIm, PAPIm and PPIm only "£" and NESO's default-payment guidance calls them power-price inputs without a denominator; what unit are they in this export? (FRPIm is a dimensionless RPI index, Im a dimensionless indexation factor, X = 1 / X = 0.2 are £/MVArh rates.) (unit v0.22-K-AS-3b)
 
-All three silver families are held (unit E-SEM). The package-level `eligibility: eligible` in the front
-matter is the package registry entry; the holds are per family and per resource. Silver files for the
-three families stay on disk (295, 243 and 228 rows); this page publishes **no data values** from them.
-The registry's hold text for the long table quotes the cells of the duplicated row. This page withholds
-those cell values.
+All three silver families are held in gridflow (unit E-SEM): no model consumes them. The package-level
+`eligibility: eligible` in the front matter is the package registry entry; the holds are per family and
+per resource. Silver holds 295, 243 and 228 rows. The site page shows rows anyway (ruling 66): each
+family's question is a caveat, and the chart, sample rows and notebook come from the default payment-rate
+table. The registry's hold text for the long table quotes the cells of the duplicated row; this note does
+not repeat those cell values.
 
 1. **`orps_utilisation_historic_reactive`.** Two vendor questions. (a) What does the padded `-` cell
    mean (zero, not reported, not applicable)? It occurs in 32 cells. (b) One four-field identity
@@ -839,7 +915,7 @@ those cell values.
 3. **`orps_utilisation_reactive_default`.** The dictionary labels `HPIm`, `PAPIm` and `PPIm` only "£"
    and NESO's guidance calls them power-price inputs without a denominator. What unit are they in
    this export? (`FRPIm` and `Im` are dimensionless; `X = 1` and `X = 0.2` are £/MVArh rates.) The raw
-   numeric values are kept in the held silver record.
+   numeric values are kept as published in the silver record.
 4. **`Reactive Utilisation-Nov-2021` workbook (HOLD, not a family).** Layout, not semantics: see the
    HOLD disposition above.
 
