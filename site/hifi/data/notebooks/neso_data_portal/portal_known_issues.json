@@ -1,0 +1,158 @@
+{
+ "dataset": "neso_data_portal/portal_known_issues",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "5977249a500f5317c1b7347e42bc6d8e665badf650734acd2098736470e29a2e",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "items = data.sql(\"\"\"\n    SELECT po, status, change_issue_title, change_datetime_from,\n           change_datetime_to, last_updated, notes, published_at\n    FROM silver_neso_data_portal_portal_known_issues_latest\n    ORDER BY po\n\"\"\")\nitems.status.value_counts()",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "status\nDeployed                              214\nCancelled                              25\nPlanned                                 4\nPostponed                               2\nDeployed on the test link provided      1\nName: count, dtype: int64"
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "items[items.status.isin([\"Planned\", \"Postponed\"])][\n    [\"po\", \"status\", \"change_issue_title\", \"change_datetime_from\", \"notes\"]]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "po",
+      "status",
+      "change_issue_title",
+      "change_datetime_from",
+      "notes"
+     ],
+     "index": [
+      "13",
+      "47",
+      "188",
+      "240",
+      "244",
+      "245"
+     ],
+     "rows": [
+      [
+       "14",
+       "Postponed",
+       "Reinstating 'I014' data on Demand Data Update ...",
+       "2021-04-16 13:00:00+01:00",
+       "NaN"
+      ],
+      [
+       "48",
+       "Postponed",
+       "Planned maintenance",
+       "2022-01-22 05:00:00+00:00",
+       "NaN"
+      ],
+      [
+       "189",
+       "Planned",
+       "Changes to Datasets",
+       "2026-01-09 11:00:00+00:00",
+       "NaN"
+      ],
+      [
+       "241",
+       "Planned",
+       "Changes to Datasets",
+       "2026-10-19 12:00:00+01:00",
+       "Has been rescheduled for 19/10/2026"
+      ],
+      [
+       "255",
+       "Planned",
+       "Changes to Datasets",
+       "2026-10-26 11:00:00+00:00",
+       "NaN"
+      ],
+      [
+       "256",
+       "Planned",
+       "Changes to Datasets",
+       "2026-10-19 12:00:00+01:00",
+       "NaN"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "sorted(set(range(1, items.po.max() + 1)) - set(items.po))",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "[245, 246, 247, 248, 249, 250, 251, 252, 253, 254]"
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "source": "start = items.change_datetime_from.dt.tz_convert(\"UTC\")\nstart_year = start.dt.year.astype(\"Int64\").rename(\"start_year\")\nitems.groupby(start_year).size().plot.bar(\n    color=\"#155A6E\", figsize=(8, 3.5),\n    xlabel=\"year the change window starts, UTC\", ylabel=\"items\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "portal_known_issues-6.png",
+     "width": 690,
+     "height": 357
+    }
+   ]
+  }
+ ]
+}
