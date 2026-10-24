@@ -4,9 +4,173 @@ package: "transmission-entry-capacity-tec-register"
 dataset_key: "tec_register"
 vendor: "NESO Open Data Portal"
 skeleton: false
-updated: 2026-10-16
+updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
+page:
+  title: Transmission Entry Capacity register
+  summary: >-
+    NESO's list of projects holding Transmission Entry Capacity contracts: MW connected and due,
+    status, plant type and connection site.
+  facts:
+    vendor: "NESO Data Portal, package `transmission-entry-capacity-tec-register`: one CSV file"
+    cadence: "Twice weekly, Tuesdays and Fridays (NESO); each file replaces the last"
+    grain: One row per project, or per stage of a staged project
+  landscape: units
+  what_it_is: >-
+    NESO's list of projects holding Transmission Entry Capacity contracts. Each row gives
+    connected MW, MW due to change from a contracted date, a cumulative total, status, plant type
+    and site. NESO warns aggregation across stages and technologies may duplicate entries. This
+    page stops at NESO's 5 October 2026 file: gridflow cannot read the dates in its 16 October file.
+  how_used:
+    - "The contracted connection queue by technology, maturity (`project_status`, `gate`) and owner (`host_to`)."
+    - "Point-in-time studies: each capture is one vintage, stamped with the file's `published_at`."
+  chart:
+    type: bar
+    silver: neso_data_portal/tec_register
+    value: mw_increase_decrease
+    filter:
+      - {column: published_at, op: eq, value: "2026-10-06T10:47:29.757067"}
+    dedup:
+      on: [project_name, customer_name, connection_site, stage, mw_connected, mw_increase_decrease,
+           cumulative_total_capacity_mw, mw_effective_from, project_status, agreement_type, host_to,
+           plant_type, project_id, project_number, gate]
+      order_by: capture_written_at
+    group: plant_type
+    group_map:
+      "Energy Storage System": storage
+      "Energy Storage System;PV Array (Photo Voltaic/solar)": solar_storage
+      "Wind Offshore": wind
+      "Wind Onshore": wind
+      "CCGT (Combined Cycle Gas Turbine)": gas
+      "OCGT (Open Cycle Gas Turbine)": gas
+      "Gas Reciprocating": gas
+      "Nuclear": nuclear
+      "PV Array (Photo Voltaic/solar)": solar
+      "Pump Storage": rest
+      "Biomass": rest
+      "Hydro": rest
+      "Tidal": rest
+      "Waste": rest
+      "CHP (Combined Heat and Power)": rest
+      "Thermal": rest
+      "Hydrogen": rest
+      "Reactive Compensation": rest
+      "Oil & AGT (Advanced Gas Turbine)": rest
+    group_default: mixed
+    aggregation: sum
+    sort: value_desc
+    unit: MW
+  chart_view:
+    title: TEC increases by plant type, file of 5 October 2026
+    caption: >-
+      Silver `tec_register`, MW: `mw_increase_decrease` summed by `plant_type` over every row of
+      NESO's file named for 5 October 2026 (uploaded 6 October). Contracted increases, not built
+      capacity; some effective dates are already past. No value is negative.
+    alt: >-
+      Bar chart of contracted TEC increases in MW, some with effective dates already past, in NESO's
+      TEC register file named for 5 October 2026, one bar per plant type group, largest first: storage alone 176,055; solar with storage 139,877;
+      other combinations 119,201; wind alone 106,795; gas alone 29,594; pumped storage and other
+      single types 10,720; nuclear alone 7,620; solar alone 6,939. The eight bars sum to 596,801 MW.
+    x_label: plant type group
+    key:
+      - {series: storage, label: Storage alone, codes: Energy Storage System, paint: hatch-dots}
+      - {series: solar_storage, label: Solar with storage, codes: "Energy Storage System;PV Array", paint: hatch-lines, note: "One `plant_type` naming both; NESO does not split the MW between them."}
+      - {series: mixed, label: Other combinations, codes: "every other ;-joined list", paint: hatch-cross, note: "Two or more types, some with Demand or Reactive Compensation; NESO presents their MW in aggregate."}
+      - {series: wind, label: Wind alone, codes: "Wind Offshore, Wind Onshore", note: "Offshore and onshore summed."}
+      - {series: gas, label: Gas alone, codes: "CCGT, OCGT, Gas Reciprocating"}
+      - {series: rest, label: Pumped and others, codes: "Pump Storage, Biomass, Hydro", paint: hatch-vertical, note: "Also Tidal, Waste, CHP, Thermal, Hydrogen, Reactive Compensation and Oil & AGT, each alone."}
+      - {series: nuclear, label: Nuclear alone, codes: Nuclear}
+      - {series: solar, label: Solar alone, codes: "PV Array (Photo Voltaic/solar)"}
+  raw_feed:
+    note: >-
+      One `package_show`, then the file downloaded whole unless its `last_modified` is unchanged.
+      NESO's 16 October 2026 file writes dates year first; gridflow's record parses day first, so its
+      transform fails.
+    requests:
+      - "GET https://api.neso.energy/api/3/action/package_show?id=transmission-entry-capacity-tec-register"
+      - "GET https://api.neso.energy/dataset/cbd45e54-e6e2-4a38-99f1-8de6fd96d7c1/resource/17becbab-e3e8-473f-b303-3806f43a6a10/download/tec-register-05-october-2026.csv"
+    commands:
+      - {run: gridflow ingest neso_data_portal tec_register --last 24h, comment: "whole file; window must end recently"}
+      - {run: gridflow transform neso_data_portal tec_register --last 24h, comment: "the capture's date to silver"}
+  record:
+    select:
+      filter:
+        - {column: published_at, op: eq, value: "2026-10-06T10:47:29.757067"}
+        - {column: project_number, op: in, value: [PRO-001624-1, PRO-001624-2, PRO-001850-1, PRO-001850-2, PRO-001850-3, PRO-000053, PRO-001667]}
+      dedup:
+        on: [project_name, customer_name, connection_site, stage, mw_connected, mw_increase_decrease,
+             cumulative_total_capacity_mw, mw_effective_from, project_status, agreement_type, host_to,
+             plant_type, project_id, project_number, gate]
+        order_by: capture_written_at
+      order_by: [project_name, stage, project_status]
+      columns: [project_number, project_name, stage, mw_connected, mw_increase_decrease,
+                cumulative_total_capacity_mw, mw_effective_from, project_status, gate, plant_type,
+                agreement_type, host_to, published_at]
+    key: [project_number]
+    caption: "NESO's 5 October 2026 file: two staged projects, Immingham's two unstaged lines, one Embedded row."
+    fields:
+      project_number: "NESO's unique project number; staged rows add `-<stage>`; Immingham's two lines share one"
+      project_name: Name of the generation project, as NESO writes it
+      stage: Stage number of a staged contract; null when the project is not staged
+      mw_connected: "MW connected at the file's date; 0 until built and connected (NESO)"
+      mw_increase_decrease: "MW contracted to connect or be removed from `mw_effective_from`; none negative here"
+      cumulative_total_capacity_mw: "NESO: total across all stages; in these rows, the running total to this stage"
+      mw_effective_from: "Contracted effective date; NESO keeps it until built, so past dates occur"
+      project_status: "Scoping to Built, 'as far as we are aware' (NESO): not authoritative"
+      gate: "Gate 1 or 2 under Connections Reform; blank until a contract is countersigned"
+      plant_type: "NESO's fuel types contracted to connect; several are joined by semicolons"
+      agreement_type: "`Direct Connection` or `Embedded` in the file; NESO's dictionary says Directly Connected"
+      host_to: "Transmission owner responsible for the connection: `NGET`, `SHET`, `SPT` or `OFTO`"
+      published_at: "NESO's last-modified time for the whole file, read as UTC"
+      customer_name: Name of the generator holding the contract (NESO)
+      connection_site: Name of the generation connection site (NESO)
+      project_id: "NESO's unique project identifier; case sensitive, never lower-case it"
+      timestamp_utc: "When gridflow wrote the capture to bronze, UTC: not a contract date"
+      bronze_capture_id: Path of the bronze capture the row was read from
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      `query()` filters `timestamp_utc`, here the capture time, so `data.sql` reads the `_latest`
+      view: every row of the newest capture, here NESO's file named for 5 October 2026.
+    cells:
+      - |
+        df = data.sql("""
+            SELECT project_number, stage, project_status, plant_type, mw_connected,
+                   mw_increase_decrease, cumulative_total_capacity_mw, mw_effective_from,
+                   published_at AT TIME ZONE 'UTC' AS published_utc
+            FROM silver_neso_data_portal_tec_register_latest""")
+        status = ["Built", "Under Construction/Commissioning", "Consents Approved",
+                  "Awaiting Consents", "Scoping"]
+        df.groupby("project_status")[["mw_connected", "mw_increase_decrease"]].sum().loc[status]
+      - |
+        staged = df[df.stage.notna()].sort_values(["project_number", "stage"])
+        project = staged.project_number.str.rsplit("-", n=1).str[0]
+        running = (staged.mw_connected + staged.mw_increase_decrease).groupby(project).cumsum()
+        gap = (staged.cumulative_total_capacity_mw - running).abs()
+        gap.agg(["count", "max"]).round(3)
+      - |
+        by_year = data.sql("""
+            SELECT year(mw_effective_from) AS year, project_status,
+                   sum(mw_increase_decrease) / 1000 AS gw
+            FROM silver_neso_data_portal_tec_register_latest
+            WHERE mw_effective_from IS NOT NULL
+            GROUP BY ALL""").pivot_table(index="year", columns="project_status", values="gw", fill_value=0)
+        ax = by_year[status].plot.bar(
+            stacked=True, figsize=(8, 3.5), rot=90, ylabel="GW due to be added",
+            xlabel="contracted effective year (a contract date, not history)",
+            color=["#155A6E", "#3E8C97", "#66793B", "#AFC64E", "#C77E3C"])
+        ax.legend(title="project_status", fontsize=8);
+    needs: "NESO's TEC register file of 5 October 2026"
+    plot_alt: >-
+      Stacked bar plot of the GW due to be added in each contracted effective year, 2020 to 2039
+      (no 2021 bar), split by project_status. Bars before 2026 are under 5 GW. Scoping makes up
+      most of every bar from 2028; the tallest are 2037 at about 90 GW and 2033 at about 84 GW.
+  related:
+    - {dataset: neso_data_portal/embedded-register, note: "Scotland's embedded projects, in the same columns without the agreement type"}
+    - {dataset: neso_data_portal/interconnector-register, note: "Interconnector projects, with contracted MW split into import and export"}
+    - {dataset: neso_data_portal/tresp-generation-pathways, note: "NESO's projected installed capacity by area, against contracted connections"}
+    - {dataset: elexon/bmunits_reference, note: "Elexon's registered BM units, with each unit's generation capacity"}
 ---
 
 # Transmission Entry Capacity (TEC) register
@@ -145,6 +309,13 @@ Units come only from the vendor field dictionary (Datastore field info, 2026-10-
 - `mw_effective_from`: the dictionary gives unit `yyyy-mm-dd`, but **all 1,831 populated
   bronze dates are `dd/mm/yyyy`** (the dictionary's own example is `31/10/2032`). The
   record parses `%d/%m/%Y`. The dictionary format is wrong for the file; the file wins.
+  That holds for the 2026-10-08 capture (file named for 5 October 2026). The 2026-10-16
+  capture (`tec-register-16-october-2026.csv`, same 15-column header, 2,226 rows) writes all
+  1,858 populated dates as `yyyy-mm-dd`, matching the dictionary, and MW and stage values
+  with two decimals. The record's strict `%d/%m/%Y` cast fails it, so it is not in silver
+  (`silver/neso_data_portal/casting.py:267-268`;
+  `.planning/phases/v0.22-close/refresh-20261016/DRIFT.md`, `tec_register` str→date cast;
+  bronze read with Polars 2026-10-24).
 - Text columns (`project_name` and the rest) carry unit `n/a`.
 
 Sentinels and blanks (no substitution is applied; the record declares none):
@@ -208,28 +379,38 @@ Categorical columns (observed values, counts):
   twice, 11 three times, 3 four times, 1 five times), 142 excess rows in all. In this
   capture every staged row has a stage-suffixed `project_number` (262 of 262), and no
   project has both staged and unstaged rows.
-- **The cumulative column is not a stage-repeated total.** For 120 of the 121 staged
-  projects `cumulative_total_capacity_mw` differs between the stage rows. The dictionary
-  says it is the "total amount of capacity contracted across all Stages", which this does
-  not obviously match. TODO: verify with the vendor how `Cumulative Total Capacity (MW)`
-  is built for staged rows.
-- **The columns are not an accounting identity.** `cumulative_total_capacity_mw` differs
-  from `mw_connected + mw_increase_decrease` in 135 rows (134 of them staged). The vendor
-  does not state that relation, so do not assume it.
-- **One unresolved duplicate key.** `project_number` is unique except for one pair,
+- **The cumulative column is a running total through the stages.** On every staged row,
+  `cumulative_total_capacity_mw` equals `mw_connected + mw_increase_decrease` summed over
+  stages 1 to that stage of the same project: 259 of 262 staged rows exactly, the other 3
+  within 0.01 MW (silver read with Polars, 2026-10-24; the page's notebook repeats the
+  check). The dictionary's "total amount of capacity contracted across all Stages" is
+  therefore the last stage's value. Each row's own contribution is
+  `mw_connected + mw_increase_decrease`; stage increments do not overlap. The vendor does not
+  state this rule; it is measured on the 2026-10-08 capture.
+- **Where the columns are not an identity.** `cumulative_total_capacity_mw` differs from
+  `mw_connected + mw_increase_decrease` in 135 rows: 134 staged rows, where it carries the
+  running total of earlier stages, and the Immingham Scoping row, whose 1,318 MW is the Built row's
+  1,268 MW plus its own 50 MW increase.
+- **One duplicate key, which NESO explains.** `project_number` is unique except for one pair,
   `PRO-000053` (Immingham): the same `project_id`, a blank stage and the same plant type,
   but different capacities, status, effective date and gate (one row Built with 1,268 MW
   connected and no date, one Scoping with a 50 MW increase from 2027-07-01 and gate 1).
   The rows are not identical duplicates, and the pair is the only reason no
   `(project_number)` or `(project_id, stage)` key is unique. Adding `plant_type` does not
   help. No column set in the file is a unique key: the declared entity key (all 15 vendor
-  columns) is unique in this capture only because no two rows are identical.
+  columns) is unique in this capture only because no two rows are identical. The resource
+  description (catalogue snapshot `20261006T195819Z`) says two lines without stage numbers
+  usually mean a built project adding generation for a later date, and that the second
+  line "will fall away" once built. In the 2026-10-16 capture NESO numbers the pair
+  `PRO-000053-1` (Built, 1,268 MW) and `PRO-000053-2` (Scoping, 50 MW from 2028-10-31), and
+  `Project Number` is unique in that file (bronze, Polars, 2026-10-24).
 - **`_latest` is `whole_capture`.** With no evidenced row identity, key-latest is not safe.
   The newest capture is the latest view and rows dropped from a later file disappear from
   it (the vendor says unstaged rows can later fold into the overall project). Base and
-  `_latest` both have 2,196 rows (RESULTS §E). TODO: verify cross-capture stability of
-  `project_id` and `project_number` once a second capture exists; only one capture has been
-  measured, so stability is unproven.
+  `_latest` both have 2,196 rows (RESULTS §E). Across the two bronze captures (2026-10-08 and
+  2026-10-16, read with Polars 2026-10-24) every `project_number` present in both (2,192)
+  keeps its `project_id`; 3 numbers and 1 id dropped out, 34 numbers and 29 ids were added.
+  Silver holds only the first capture, so stability across silver vintages is unmeasured.
 
 ## Cadence
 
@@ -237,9 +418,12 @@ Categorical columns (observed values, counts):
 - Vendor metadata (snapshot extras, verbatim):
   - Update Frequency: Twice weekly
 - The publisher group description says the registers show "the latest contracted position,
-  published twice weekly". Daily refresh is gridflow's polling cadence. TODO: verify the
-  skip rule for an unchanged file on this family (other families report "unchanged since
-  newest capture"). Only one capture (2026-10-08) existed at query time.
+  published twice weekly". The resource description adds that the file "will be updated
+  twice weekly on Tuesdays and Fridays". Daily refresh is gridflow's polling cadence. An
+  unchanged file is not downloaded again: an upload member whose newest bronze capture
+  carries the live CKAN `last_modified` is reported `unchanged`
+  (`connectors/neso_data_portal/client.py`, `iter_members`). Bronze holds two captures,
+  2026-10-08 and 2026-10-16; silver holds only the first (see Units and value rules).
 
 ## Licence and attribution
 
@@ -256,9 +440,11 @@ HOLD resources. The open items above are `TODO: verify` notes on semantics, not 
 
 ## Known issues and gotchas
 
-- **Dictionary date format is wrong.** The dictionary says `yyyy-mm-dd`; the file is
-  `dd/mm/yyyy` (1,831 of 1,831 populated values). A reader that trusts the dictionary
-  silently mis-parses days as months.
+- **The date format changed between files.** The dictionary says `yyyy-mm-dd`; the file
+  named for 5 October 2026 is `dd/mm/yyyy` (1,831 of 1,831 populated values) and the file of
+  16 October 2026 is `yyyy-mm-dd` (1,858 of 1,858). The record reads only `%d/%m/%Y`, so the
+  newer file fails the transform. A reader that assumes one format either mis-parses days
+  as months or fails.
 - **`Agreement Type` values differ from the dictionary.** The dictionary comment says
   "Directly Connected or Embedded"; the file carries `Direct Connection` and `Embedded`.
   Filter on the file's values.
@@ -272,8 +458,8 @@ HOLD resources. The open items above are `TODO: verify` notes on semantics, not 
   Summing MW by technology on the raw string double-counts or mis-buckets.
 - **Duplicates are by design.** The vendor says capacity across stages and technologies is
   "presented in aggregate", so a project can appear on several rows. Summing
-  `cumulative_total_capacity_mw` over all rows overstates it. Whether the stage rows
-  overlap is not established (TODO above).
+  `cumulative_total_capacity_mw` over all rows overstates it: on staged rows it is a running
+  total (above). Sum `mw_connected + mw_increase_decrease` instead.
 - **Status is not authoritative.** The dictionary says NESO holds no authority on the
   status classes: they are "as far as we are aware", from the customer or public sources.
 - **Case-sensitive IDs.** `Project ID` is case sensitive; do not lower-case or normalise it.
@@ -285,14 +471,16 @@ HOLD resources. The open items above are `TODO: verify` notes on semantics, not 
 ## Implementation delta
 
 - **`MW Effective From` format**: docs say `yyyy-mm-dd`, the record has `%d/%m/%Y` — the
-  record matches the file (all 1,831 populated values), so the record is right and the
-  dictionary is stale.
+  record matches the 2026-10-08 file (all 1,831 populated values). The 2026-10-16 file
+  switched to `yyyy-mm-dd`, matching the dictionary, and fails the record's cast (drift
+  record of 2026-10-16). The record needs a second accepted date format.
 - **`Agreement Type`**: docs say "Directly Connected or Embedded", the file has `Direct
   Connection` / `Embedded` — the file is the evidence. No code depends on the string.
 - **`Gate`**: present in the file and the record from the vendor's 21 November 2025
   change. The vendor says the column is added from that date, so a file from before it would lack
   `Gate`; the record has one header epoch, so such a file would not match it. TODO: verify whether older captures exist and need a
-  second epoch. The sweep found only the 2026-10-08 capture.
+  second epoch. Bronze holds captures of 2026-10-08 and 2026-10-16, both with the 15-column
+  header including `Gate`.
 - **Stage and gate dtype**: the vendor type is `number`, the record types them `float64`
   and not an integer type. Values are whole numbers; the choice is the record's, not a
   vendor statement.
@@ -307,8 +495,9 @@ No other discrepancies found between the dictionary, the registry record and the
   scenarios, the pipeline of storage versus wind versus gas, regional (`host_to`,
   `connection_site`) concentration and queue maturity (`project_status`, `gate`). It is not
   an operational or dispatch series.
-- **Point in time.** Filter with `WHERE available_at <= :as_of`. Only one capture exists
-  at present, so no history is available yet; history will grow with each new capture.
+- **Point in time.** Filter with `WHERE available_at <= :as_of`. Silver holds one
+  capture (2026-10-08); the 2026-10-16 capture fails the transform (date format), so silver
+  has one vintage until the record accepts both formats.
 - **Likely features.** `mw_connected` for the built base; `mw_increase_decrease` and
   `mw_effective_from` for the near-term pipeline; `plant_type` split on `;`; `project_status`
   as a maturity filter.
