@@ -1,0 +1,146 @@
+{
+ "dataset": "neso_data_portal/da_wind_forecast_day_ahead",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "6bc25769383351773782f3bf3e5b315c1eb183c1aca0abea58f101f684986e2a",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "nat = data.neso_data_portal.tail(\"da_wind_forecast_day_ahead\")\nfor c in [\"timestamp_utc\", \"published_at\"]:\n    nat[c] = nat[c].dt.tz_convert(\"UTC\")\nnat = nat.sort_values(\"timestamp_utc\", ignore_index=True)\nnat[[\"timestamp_utc\", \"date\", \"settlement_period\", \"incentive_forecast\", \"capacity\",\n     \"published_at\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "date",
+      "settlement_period",
+      "incentive_forecast",
+      "capacity",
+      "published_at"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2026-10-16 23:00:00+00:00",
+       "2026-10-17",
+       "1",
+       "11425.0",
+       "25501.0",
+       "2026-10-16 08:40:07.867477+00:00"
+      ],
+      [
+       "2026-10-16 23:30:00+00:00",
+       "2026-10-17",
+       "2",
+       "11215.0",
+       "25501.0",
+       "2026-10-16 08:40:07.867477+00:00"
+      ],
+      [
+       "2026-10-17 00:00:00+00:00",
+       "2026-10-17",
+       "3",
+       "10990.0",
+       "25501.0",
+       "2026-10-16 08:40:07.867477+00:00"
+      ],
+      [
+       "2026-10-17 00:30:00+00:00",
+       "2026-10-17",
+       "4",
+       "10767.0",
+       "25501.0",
+       "2026-10-16 08:40:07.867477+00:00"
+      ],
+      [
+       "2026-10-17 01:00:00+00:00",
+       "2026-10-17",
+       "5",
+       "10572.0",
+       "25501.0",
+       "2026-10-16 08:40:07.867477+00:00"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "bmu = data.neso_data_portal.tail(\"da_wind_forecast_day_ahead_bmu\", 20_000)\nbmu[\"timestamp_utc\"] = bmu[\"timestamp_utc\"].dt.tz_convert(\"UTC\")\nunits = bmu.groupby(\"timestamp_utc\").agg(units=(\"generator_name\", \"nunique\"),\n                                         unit_sum=(\"wind_forecast\", \"sum\"))\ncheck = nat.set_index(\"timestamp_utc\").join(units)\nprint(\"units per period:\", sorted(check.units.unique().tolist()))\nprint(\"largest national minus unit sum, MW:\",\n      round((check.incentive_forecast - check.unit_sum).abs().max(), 3))",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "units per period: [231]\nlargest national minus unit sum, MW: 0.497"
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "top = nat.incentive_forecast.max() * 1.1\nax = nat.plot(x=\"timestamp_utc\", y=\"incentive_forecast\", ylim=(0, top), legend=False,\n              color=\"#3E8C97\", figsize=(8, 3.5), xlabel=\"settlement period start, UTC\",\n              ylabel=\"forecast wind output, MW\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "da_wind_forecast_day_ahead-5.png",
+     "width": 716,
+     "height": 353
+    }
+   ]
+  }
+ ]
+}

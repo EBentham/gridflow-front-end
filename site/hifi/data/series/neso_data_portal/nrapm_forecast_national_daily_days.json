@@ -1,0 +1,20 @@
+{
+  "dataset": "neso_data_portal/nrapm_forecast_national_daily_days",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "ab419d2ec1e1118cf873a70a68e328283f050236251168e10b5512ca6d4b4659",
+  "type": "line",
+  "unit": "MW",
+  "caption": "",
+  "value_column": "mw_away_from_risk_of_system_level_nrapm_forecast_conditions",
+  "aggregation": "last",
+  "window": {"end": "2026-10-30", "rule": "fixed", "start": "2026-10-18"},
+  "provenance": {"duplicates_dropped": 0, "files": 2, "null_values_dropped": 0, "rows_matched": 26, "rows_read": 52, "rows_used": 26, "silver": "neso_data_portal/nrapm_forecast_national_daily_days", "silver_first": "2026-10-18", "silver_last": "2026-10-30"},
+  "spec": {"aggregation": "last", "dedup": {"on": ["date", "cp"], "order_by": "published_at"}, "filter": [{"column": "published_at", "op": "ge", "value": "2026-10-16T00:00:00+00:00"}], "group": "cp", "group_map": {"1B": "overnight", "3B": "daily"}, "series_order": ["daily", "overnight"], "silver": "neso_data_portal/nrapm_forecast_national_daily_days", "time": "date", "type": "line", "unit": "MW", "value": "mw_away_from_risk_of_system_level_nrapm_forecast_conditions", "window": {"end": "2026-10-30", "start": "2026-10-18"}},
+  "x_kind": "time",
+  "x": ["2026-10-18", "2026-10-19", "2026-10-20", "2026-10-21", "2026-10-22", "2026-10-23", "2026-10-24", "2026-10-25", "2026-10-26", "2026-10-27", "2026-10-28", "2026-10-29", "2026-10-30"],
+  "series": [
+    {"key": "daily", "values": [15819.0, 20104.0, 18289.0, 17880.0, 15723.0, 12167.0, 7914.0, 10967.0, 14738.0, 13969.0, 16992.0, 17677.0, 19204.0]},
+    {"key": "overnight", "values": [11670.0, 13067.0, 12143.0, 12303.0, 11041.0, 8293.0, 3363.0, 5075.0, 4185.0, 4258.0, 8391.0, 7336.0, 9777.0]}
+  ]
+}
