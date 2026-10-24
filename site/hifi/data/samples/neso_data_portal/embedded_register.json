@@ -1,0 +1,313 @@
+{
+ "dataset": "neso_data_portal/embedded_register",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "f179ea641962e1e579f0d93586ce015d79fa2b1cf60a3e027c2b1ab71740c66f",
+ "silver": "neso_data_portal/embedded_register",
+ "columns": [
+  {
+   "name": "project_number",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "project_status",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "mw_connected",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "mw_increase_decrease",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "cumulative_total_capacity_mw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "mw_effective_from",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "stage",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "gate",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "host_to",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "plant_type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "project_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "connection_site",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "customer_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "project_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "PRO-000815-1",
+   "Built",
+   "1.8",
+   "0.0",
+   "1.8",
+   null,
+   "1.0",
+   null,
+   "SPT",
+   "Wind Onshore",
+   "Strathaven South Wind Farm",
+   "Linnmill GSP",
+   "SP DISTRIBUTION PLC",
+   "a0l4L0000005iOAQAY",
+   "2026-10-16 18:05:22.024485 UTC",
+   "2026-10-16 20:18:02.197207 UTC",
+   "bronze/neso_data_portal/embedded_register/2026/10/16/raw_20261016T201802Z_68b6f3a1-e1bf-403b-9062-0269fc758d77_43190337.csv",
+   "2026-10-16 20:18:02.197207 UTC",
+   "2026-10-16 20:18:02.197207 UTC",
+   "2026-10-16 18:05:22.024485 UTC",
+   "drain-39166688-1c7a-4c51-9124-4bc391b08479",
+   "1+e1"
+  ],
+  [
+   "PRO-000815-2",
+   "Scoping",
+   "0.0",
+   "3.0",
+   "4.8",
+   "2024-10-30",
+   "2.0",
+   null,
+   "SPT",
+   "Wind Onshore",
+   "Strathaven South Wind Farm",
+   "Linnmill GSP",
+   "SP DISTRIBUTION PLC",
+   "a0l4L0000005iOAQAY",
+   "2026-10-16 18:05:22.024485 UTC",
+   "2026-10-16 20:18:02.197207 UTC",
+   "bronze/neso_data_portal/embedded_register/2026/10/16/raw_20261016T201802Z_68b6f3a1-e1bf-403b-9062-0269fc758d77_43190337.csv",
+   "2026-10-16 20:18:02.197207 UTC",
+   "2026-10-16 20:18:02.197207 UTC",
+   "2026-10-16 18:05:22.024485 UTC",
+   "drain-39166688-1c7a-4c51-9124-4bc391b08479",
+   "1+e1"
+  ],
+  [
+   "PRO-000902",
+   "Built",
+   "70.0",
+   "-5.5",
+   "64.5",
+   "2022-10-31",
+   null,
+   null,
+   "SHET",
+   "Wind Onshore",
+   "Paul's Hill Wind Farm",
+   "Glenfarclas GSP",
+   "PAUL'S HILL WIND LIMITED",
+   "a0l4L0000005iQiQAI",
+   "2026-10-16 18:05:22.024485 UTC",
+   "2026-10-16 20:18:02.197207 UTC",
+   "bronze/neso_data_portal/embedded_register/2026/10/16/raw_20261016T201802Z_68b6f3a1-e1bf-403b-9062-0269fc758d77_43190337.csv",
+   "2026-10-16 20:18:02.197207 UTC",
+   "2026-10-16 20:18:02.197207 UTC",
+   "2026-10-16 18:05:22.024485 UTC",
+   "drain-39166688-1c7a-4c51-9124-4bc391b08479",
+   "1+e1"
+  ],
+  [
+   "PRO-001213",
+   "Built",
+   "20.0",
+   "0.0",
+   "20.0",
+   null,
+   null,
+   null,
+   "SPT",
+   "CCGT (Combined Cycle Gas Turbine)",
+   "Abbotshaugh Reserve Power Facility",
+   "Bainsford 132/33kV",
+   "SP DISTRIBUTION PLC",
+   "a0l4L0000005iN1QAI",
+   "2026-10-16 18:05:22.024485 UTC",
+   "2026-10-16 20:18:02.197207 UTC",
+   "bronze/neso_data_portal/embedded_register/2026/10/16/raw_20261016T201802Z_68b6f3a1-e1bf-403b-9062-0269fc758d77_43190337.csv",
+   "2026-10-16 20:18:02.197207 UTC",
+   "2026-10-16 20:18:02.197207 UTC",
+   "2026-10-16 18:05:22.024485 UTC",
+   "drain-39166688-1c7a-4c51-9124-4bc391b08479",
+   "1+e1"
+  ],
+  [
+   "PRO-001297",
+   "Under Construction/Commissioning",
+   "0.0",
+   "40.0",
+   "40.0",
+   null,
+   null,
+   null,
+   "NGET",
+   "CCGT (Combined Cycle Gas Turbine)",
+   "Grimsby",
+   "Grimsby West 132kV Substation",
+   "RWE Generation UK Plc",
+   "a0l4L0000005iS5QAI",
+   "2026-10-16 18:05:22.024485 UTC",
+   "2026-10-16 20:18:02.197207 UTC",
+   "bronze/neso_data_portal/embedded_register/2026/10/16/raw_20261016T201802Z_68b6f3a1-e1bf-403b-9062-0269fc758d77_43190337.csv",
+   "2026-10-16 20:18:02.197207 UTC",
+   "2026-10-16 20:18:02.197207 UTC",
+   "2026-10-16 18:05:22.024485 UTC",
+   "drain-39166688-1c7a-4c51-9124-4bc391b08479",
+   "1+e1"
+  ],
+  [
+   "PRO-002244",
+   "Consents Approved",
+   "0.0",
+   "49.9",
+   "49.9",
+   "2026-08-31",
+   null,
+   "2.0",
+   "SHET",
+   "Energy Storage System",
+   "Balnacraig Battery Storage",
+   "Alness 132/33kV Substation",
+   "BALNACRAIG BATTERY STORAGE LIMITED",
+   "a0l4L0000005iWnQAI",
+   "2026-10-16 18:05:22.024485 UTC",
+   "2026-10-16 20:18:02.197207 UTC",
+   "bronze/neso_data_portal/embedded_register/2026/10/16/raw_20261016T201802Z_68b6f3a1-e1bf-403b-9062-0269fc758d77_43190337.csv",
+   "2026-10-16 20:18:02.197207 UTC",
+   "2026-10-16 20:18:02.197207 UTC",
+   "2026-10-16 18:05:22.024485 UTC",
+   "drain-39166688-1c7a-4c51-9124-4bc391b08479",
+   "1+e1"
+  ],
+  [
+   "PRO-003597",
+   "Scoping",
+   "0.0",
+   "50.0",
+   "50.0",
+   "2030-10-31",
+   null,
+   "1.0",
+   "SHET",
+   "Energy Storage System",
+   "180/181 Clynelish Muir BESS",
+   "BRORA 132/33KV GRID SUPPLY POINT SUBSTATION",
+   "Opdenergy UK 19 Limited",
+   "a0l8e0000011zr5AAA",
+   "2026-10-16 18:05:22.024485 UTC",
+   "2026-10-16 20:18:02.197207 UTC",
+   "bronze/neso_data_portal/embedded_register/2026/10/16/raw_20261016T201802Z_68b6f3a1-e1bf-403b-9062-0269fc758d77_43190337.csv",
+   "2026-10-16 20:18:02.197207 UTC",
+   "2026-10-16 20:18:02.197207 UTC",
+   "2026-10-16 18:05:22.024485 UTC",
+   "drain-39166688-1c7a-4c51-9124-4bc391b08479",
+   "1+e1"
+  ],
+  [
+   "PRO-004878",
+   "Scoping",
+   "0.0",
+   "71.6",
+   "71.6",
+   "2035-10-31",
+   null,
+   null,
+   "SHET",
+   "Demand;Energy Storage System;Wind Onshore",
+   "Bunloinn Wind Farm BELLA",
+   "Fort Augustus GSP/New Fort Augustus GSP",
+   "ENERGYFARM BUNLOINN LLP",
+   "a0lJ9000000blUyIAI",
+   "2026-10-16 18:05:22.024485 UTC",
+   "2026-10-16 20:18:02.197207 UTC",
+   "bronze/neso_data_portal/embedded_register/2026/10/16/raw_20261016T201802Z_68b6f3a1-e1bf-403b-9062-0269fc758d77_43190337.csv",
+   "2026-10-16 20:18:02.197207 UTC",
+   "2026-10-16 20:18:02.197207 UTC",
+   "2026-10-16 18:05:22.024485 UTC",
+   "drain-39166688-1c7a-4c51-9124-4bc391b08479",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

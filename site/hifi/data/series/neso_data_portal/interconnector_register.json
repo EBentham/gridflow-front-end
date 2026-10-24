@@ -1,0 +1,19 @@
+{
+  "dataset": "neso_data_portal/interconnector_register",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "a6ed4e76ac43889d93f7315b0bd84a64ce6209c8d48719f52d3d00da747a2db5",
+  "type": "bar",
+  "unit": "MW",
+  "caption": "",
+  "value_column": "mw_import_total",
+  "aggregation": "sum",
+  "window": null,
+  "provenance": {"duplicates_dropped": 0, "files": 2, "null_values_dropped": 0, "rows_matched": 34, "rows_read": 70, "rows_used": 34, "silver": "neso_data_portal/interconnector_register"},
+  "spec": {"aggregation": "sum", "dedup": {"on": ["project_number"], "order_by": "published_at"}, "filter": [{"column": "published_at", "op": "ge", "value": "2026-10-16"}, {"column": "published_at", "op": "lt", "value": "2026-10-17"}, {"column": "project_number", "op": "ne", "value": "PRO-001292-1"}], "group": "project_status", "group_map": {"Awaiting Consents": "Awaiting Consents", "Built": "Built", "Scoping": "Scoping", "Under Construction/Commissioning": "Construction"}, "silver": "neso_data_portal/interconnector_register", "sort": "value_desc", "type": "bar", "unit": "MW", "value": "mw_import_total"},
+  "x_kind": "category",
+  "x": ["Scoping", "Built", "Awaiting Consents", "Construction"],
+  "series": [
+    {"key": "mw_import_total", "values": [26830.0, 10791.0, 4000.0, 1400.0]}
+  ]
+}

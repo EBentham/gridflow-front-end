@@ -1,0 +1,326 @@
+{
+ "dataset": "neso_data_portal/interconnector_register",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "c4066c63fd97b4681bcd3069f10a6c8da8f0c35f5ff2e7e7fa675ad7d00c34aa",
+ "silver": "neso_data_portal/interconnector_register",
+ "columns": [
+  {
+   "name": "project_number",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "project_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "stage",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "mw_import_current",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "mw_import_increase_decrease",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "mw_import_total",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "mw_effective_from",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "project_status",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "gate",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "mw_export_current",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "mw_export_increase_decrease",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "mw_export_total",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "host_to",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "connection_site",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "customer_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "PRO-000280",
+   "Britned",
+   null,
+   "1200.0",
+   "0.0",
+   "1200.0",
+   null,
+   "Built",
+   null,
+   "1200.0",
+   "0.0",
+   "1200.0",
+   "NGET",
+   "Grain 400kV Substation",
+   "BRITNED DEVELOPMENT LIMITED",
+   "2026-10-16 18:06:23.602416 UTC",
+   "2026-10-16 20:40:23.132896 UTC",
+   "bronze/neso_data_portal/interconnector_register/2026/10/16/raw_20261016T204023Z_64f7908f-f787-4977-93e1-5342a5f1357f_d191824c.csv",
+   "2026-10-16 20:40:23.132896 UTC",
+   "2026-10-16 20:40:23.132896 UTC",
+   "2026-10-16 18:06:23.602416 UTC",
+   "drain-ae799095-6cd1-4584-b0fa-fba613306089",
+   "1+e1"
+  ],
+  [
+   "PRO-000282",
+   "IFA Interconnector",
+   null,
+   "1988.0",
+   "0.0",
+   "1988.0",
+   null,
+   "Built",
+   null,
+   "1988.0",
+   "0.0",
+   "1988.0",
+   "NGET",
+   "Sellindge 400kV Substation",
+   "NATIONAL GRID INTERCONNECTORS LIMITED",
+   "2026-10-16 18:06:23.602416 UTC",
+   "2026-10-16 20:40:23.132896 UTC",
+   "bronze/neso_data_portal/interconnector_register/2026/10/16/raw_20261016T204023Z_64f7908f-f787-4977-93e1-5342a5f1357f_d191824c.csv",
+   "2026-10-16 20:40:23.132896 UTC",
+   "2026-10-16 20:40:23.132896 UTC",
+   "2026-10-16 18:06:23.602416 UTC",
+   "drain-ae799095-6cd1-4584-b0fa-fba613306089",
+   "1+e1"
+  ],
+  [
+   "PRO-000285",
+   "Aquind Interconnector",
+   null,
+   "0.0",
+   "2000.0",
+   "2000.0",
+   "2030-12-31",
+   "Awaiting Consents",
+   null,
+   "0.0",
+   "2075.0",
+   "2075.0",
+   "NGET",
+   "Lovedean 400kV Substation",
+   "Aquind Limited",
+   "2026-10-16 18:06:23.602416 UTC",
+   "2026-10-16 20:40:23.132896 UTC",
+   "bronze/neso_data_portal/interconnector_register/2026/10/16/raw_20261016T204023Z_64f7908f-f787-4977-93e1-5342a5f1357f_d191824c.csv",
+   "2026-10-16 20:40:23.132896 UTC",
+   "2026-10-16 20:40:23.132896 UTC",
+   "2026-10-16 18:06:23.602416 UTC",
+   "drain-ae799095-6cd1-4584-b0fa-fba613306089",
+   "1+e1"
+  ],
+  [
+   "PRO-001288",
+   "NeuConnect Interconnector",
+   null,
+   "0.0",
+   "1400.0",
+   "1400.0",
+   "2027-07-07",
+   "Under Construction/Commissioning",
+   "2.0",
+   "0.0",
+   "1470.0",
+   "1470.0",
+   "NGET",
+   "Wallend 400kV Substation",
+   "Neuconnect Britain Ltd",
+   "2026-10-16 18:06:23.602416 UTC",
+   "2026-10-16 20:40:23.132896 UTC",
+   "bronze/neso_data_portal/interconnector_register/2026/10/16/raw_20261016T204023Z_64f7908f-f787-4977-93e1-5342a5f1357f_d191824c.csv",
+   "2026-10-16 20:40:23.132896 UTC",
+   "2026-10-16 20:40:23.132896 UTC",
+   "2026-10-16 18:06:23.602416 UTC",
+   "drain-ae799095-6cd1-4584-b0fa-fba613306089",
+   "1+e1"
+  ],
+  [
+   "PRO-001292-1",
+   "Auchencrosh (interconnector CCT)",
+   "1.0",
+   "270.0",
+   "205.0",
+   "475.0",
+   "2022-04-01",
+   "Built",
+   null,
+   "500.0",
+   "0.0",
+   "500.0",
+   "SPT",
+   "Auchencrosh 275kV",
+   "MOYLE INTERCONNECTOR LIMITED",
+   "2026-10-16 18:06:23.602416 UTC",
+   "2026-10-16 20:40:23.132896 UTC",
+   "bronze/neso_data_portal/interconnector_register/2026/10/16/raw_20261016T204023Z_64f7908f-f787-4977-93e1-5342a5f1357f_d191824c.csv",
+   "2026-10-16 20:40:23.132896 UTC",
+   "2026-10-16 20:40:23.132896 UTC",
+   "2026-10-16 18:06:23.602416 UTC",
+   "drain-ae799095-6cd1-4584-b0fa-fba613306089",
+   "1+e1"
+  ],
+  [
+   "PRO-001292-2",
+   "Auchencrosh (interconnector CCT)",
+   "2.0",
+   "475.0",
+   "25.0",
+   "500.0",
+   "2022-08-01",
+   "Built",
+   null,
+   "500.0",
+   "0.0",
+   "500.0",
+   "SPT",
+   "Auchencrosh 275kV",
+   "MOYLE INTERCONNECTOR LIMITED",
+   "2026-10-16 18:06:23.602416 UTC",
+   "2026-10-16 20:40:23.132896 UTC",
+   "bronze/neso_data_portal/interconnector_register/2026/10/16/raw_20261016T204023Z_64f7908f-f787-4977-93e1-5342a5f1357f_d191824c.csv",
+   "2026-10-16 20:40:23.132896 UTC",
+   "2026-10-16 20:40:23.132896 UTC",
+   "2026-10-16 18:06:23.602416 UTC",
+   "drain-ae799095-6cd1-4584-b0fa-fba613306089",
+   "1+e1"
+  ],
+  [
+   "PRO-001454",
+   "LIRIC Interconnector",
+   null,
+   "0.0",
+   "730.0",
+   "730.0",
+   "2032-10-31",
+   "Scoping",
+   null,
+   "0.0",
+   "700.0",
+   "700.0",
+   "SPT",
+   "Hunterston East 400kV",
+   "TI LIRIC Limited",
+   "2026-10-16 18:06:23.602416 UTC",
+   "2026-10-16 20:40:23.132896 UTC",
+   "bronze/neso_data_portal/interconnector_register/2026/10/16/raw_20261016T204023Z_64f7908f-f787-4977-93e1-5342a5f1357f_d191824c.csv",
+   "2026-10-16 20:40:23.132896 UTC",
+   "2026-10-16 20:40:23.132896 UTC",
+   "2026-10-16 18:06:23.602416 UTC",
+   "drain-ae799095-6cd1-4584-b0fa-fba613306089",
+   "1+e1"
+  ],
+  [
+   "PRO-003462",
+   "Teeside MPI",
+   null,
+   "0.0",
+   "1800.0",
+   "1800.0",
+   "2035-10-30",
+   "Scoping",
+   "1.0",
+   "0.0",
+   "1800.0",
+   "1800.0",
+   "NGET",
+   "Wearside Connection Node B 400kV Substation",
+   "National Grid Interconnector Holdings Limited",
+   "2026-10-16 18:06:23.602416 UTC",
+   "2026-10-16 20:40:23.132896 UTC",
+   "bronze/neso_data_portal/interconnector_register/2026/10/16/raw_20261016T204023Z_64f7908f-f787-4977-93e1-5342a5f1357f_d191824c.csv",
+   "2026-10-16 20:40:23.132896 UTC",
+   "2026-10-16 20:40:23.132896 UTC",
+   "2026-10-16 18:06:23.602416 UTC",
+   "drain-ae799095-6cd1-4584-b0fa-fba613306089",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}
