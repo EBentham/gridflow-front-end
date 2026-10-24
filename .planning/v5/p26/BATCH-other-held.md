@@ -77,7 +77,7 @@ ENTSO-E paragraphs). Verify every one against local silver before writing it.
 | `unavailability` (GIE) | aca4443f38f5d0077 | a62afd949e6ba56c1 | DONE: approved round 2, nits fixed; committed (not pushed). Ships only after gridflow #133 merges (notebook uses data.sql until then) |
 | `procured_balancing_capacity` | a304ded779c679e9e | a2ff306455c8c2d69 | DONE: approved round 2; committed (not pushed). Template limit: frame folds market_agreement_type at 768 |
 | `balancing-energy-bids` | a77c0dcd4743a2675 | ac32d21fd7f56f7ab | DONE: approved round 2, nits fixed; committed (not pushed). Key-collision defect withdrawn (0 collisions) |
-| `outages` | ae36f09ef6e0639ad | a63ec338ce292b296 | written; in review (seat: planned-only in prose, MW-meaning caveat per member) |
+| `outages` | ae36f09ef6e0639ad | a63ec338ce292b296 | REVISE round 1 (zones unnamed; "in force" vs latest revision as fetched; DocStatus quote; 200-document bullets); writer revising |
 | `capacity-by-indicator` | ac0bdc96719e22118 | af2898390ac84e5aa | REVISE round 1 (472 caveat on three members; gas-day definition; meta.count claim; coverage scope); writer revising |
 | `cmp` | ad9551166d4bfee02 | abea4baf1a6c87ad7 | REVISE round 1 (statement-row coverage false; ENTSOG statement contradicts premiums; seat: chart to type none, label rounding; unavailable no-value claim); writer revising |
 | `netbsad` | a00f12902b3632a4d | a3862abe8d47e4491 | DONE: approved round 2; committed (not pushed). Gridflow gap: PR #128 sweep has no committed script or result |
