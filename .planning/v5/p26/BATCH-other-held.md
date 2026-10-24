@@ -78,7 +78,7 @@ ENTSO-E paragraphs). Verify every one against local silver before writing it.
 | `procured_balancing_capacity` | a304ded779c679e9e | a2ff306455c8c2d69 | DONE: approved round 2; committed (not pushed). Template limit: frame folds market_agreement_type at 768 |
 | `balancing-energy-bids` | a77c0dcd4743a2675 | ac32d21fd7f56f7ab | DONE: approved round 2, nits fixed; committed (not pushed). Key-collision defect withdrawn (0 collisions) |
 | `outages` | ae36f09ef6e0639ad | | writing |
-| `capacity-by-indicator` | ac0bdc96719e22118 | | writing |
+| `capacity-by-indicator` | ac0bdc96719e22118 | af2898390ac84e5aa | written; in review (seat: caveat on "available through" members where ENTSOG sends a 472 kWh/d record and a no-capacity sentence) |
 | `cmp` | ad9551166d4bfee02 | | writing |
 | `netbsad` | a00f12902b3632a4d | a3862abe8d47e4491 | written; in review (BPA chart 15 Jan 2026; history wording rests on PR #128 live sweep) |
 | `nonbm` | ac0848f63e8af4f35 | a1500352d7d87526a | written; in review (end-date evidence from endpoints.py probe; NESO STOR end juxtaposed) |
