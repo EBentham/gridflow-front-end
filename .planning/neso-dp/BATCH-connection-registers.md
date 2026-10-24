@@ -58,4 +58,4 @@ captures repeat rows (or as a guard). On a table with no event time, `query()` f
 |---|---|---|---|
 | 1 | a1111bee79407f06f | | writing |
 | 2 | aef85fb4eda55cf26 | | writing |
-| 3 | a9bfd403eeb22aae1 | | writing |
+| 3 | a9bfd403eeb22aae1 | aa193752879207a90 | checking; 20bw logged; related links: seat kept the writer's four (TEC, embedded, IFA, BritNed) |
