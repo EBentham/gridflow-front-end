@@ -8,7 +8,6 @@ updated: 2026-10-24
 layer_coverage: "bronze, silver"
 eligibility: "eligible"
 page:
-  held: true
   title: 14-day wind forecast
   summary: >-
     NESO's forecast of GB wind output for each half-hour out to 14 days ahead, in MW, nationally
@@ -27,15 +26,97 @@ page:
     - Benchmark a medium-range wind model against NESO's forecast, half-hour by half-hour
     - Trace NESO's day-ahead incentive wind forecast back to its two-week inputs
     - Attach a two-week wind forecast to individual wind BM units, by unit name
+  chart:
+    type: line
+    silver: neso_data_portal/wind_forecast_14d_days_ahead
+    time: timestamp_utc
+    value: wind_forecast
+    filter:
+      - {column: issue_time, op: eq, value: "2026-10-16T20:30:00Z"}
+      - {column: datetime, op: gt, value: "2026-10-16T20:30:00Z"}
+    dedup: {"on": [datetime], order_by: published_at}
+    aggregation: last
+    window: {start: "2026-10-16", end: "2026-10-30"}
+    unit: MW
+  chart_view:
+    title: Forecast wind output, 16 to 30 October 2026
+    caption: >-
+      Silver `wind_forecast_14d_days_ahead`, MW: NESO's national file of 16 October 2026, stated
+      forecast time 20:30 UTC, for each later half-hour, 21:00 UTC that day to 19:00 UTC on
+      30 October. The axis starts at zero.
+    alt: >-
+      Line chart from neso_data_portal/wind_forecast_14d_days_ahead: NESO's national wind forecast
+      in MW from its file of 16 October 2026, each half-hour from 21:00 UTC that day to 19:00 UTC on
+      30 October, on an axis from zero. It starts at 11,323, falls to the lowest, 7,689, at 10:00 UTC
+      on 18 October, climbs past 15,000 on 22 October, peaks at 17,407 at 02:00 UTC on 26 October,
+      then eases to 12,281 at the end.
+    x_label: half-hour start, UTC
+    y_min: 0
+    key:
+      - {series: wind_forecast, label: Forecast wind output, codes: Wind_Forecast, paint: horizon,
+         note: "Out of 25,502 MW of operational wind capacity, the `capacity` column below"}
   raw_feed:
     note: >-
       From NESO's CKAN portal: one `package_show`, then each CSV downloaded whole unless its
       `last_modified` is unchanged. Each file holds one 14-day window and replaces the last.
     commands:
-      - {run: gridflow pipeline neso_data_portal wind_forecast_14d_days_ahead --last 24h,
-         comment: "national file to bronze, then silver"}
+      - {run: gridflow ingest neso_data_portal wind_forecast_14d_days_ahead --last 24h,
+         comment: whole file; window must end recently}
+      - {run: gridflow transform neso_data_portal wind_forecast_14d_days_ahead --last 24h,
+         comment: the capture's date to silver}
       - {run: gridflow pipeline neso_data_portal wind_forecast_14d_day_ahead_bmu --last 24h,
          comment: "BMU file to bronze, then silver"}
+  record:
+    select:
+      filter:
+        - {column: issue_time, op: eq, value: "2026-10-16T20:30:00Z"}
+        - {column: datetime, op: le, value: "2026-10-16T23:00:00Z"}
+      dedup: {"on": [datetime], order_by: published_at}
+      order_by: [datetime]
+      columns: [datetime, forecast_datetime, published_at, wind_forecast, capacity, date,
+                settlement_period, issue_time]
+    key: [datetime, issue_time]
+    caption: "The 16 October 2026 file's first eight half-hours; three start at or before its forecast time."
+    fields:
+      datetime: "Start of the half-hour forecast, UTC, as NESO's dictionary gives it"
+      forecast_datetime: "When NESO says it produced the forecast, UTC; the same in every row here"
+      published_at: "NESO's last-modified time for the file, read as UTC"
+      wind_forecast: Forecast wind output for the half-hour, MW
+      capacity: "Operational wind capacity connected to the transmission network, MW, NESO says"
+      date: The UK settlement date the period belongs to
+      settlement_period: "Half-hour of the UK settlement day; here 23:00 UTC opens period 1"
+      issue_time: "Equals `forecast_datetime`; with `datetime`, it identifies a row"
+      timestamp_utc: "Equals `datetime`: the period start, UTC"
+      bronze_capture_id: The bronze file the row was read from; one per capture
+      capture_written_at: When gridflow wrote that capture to bronze, UTC
+  notebook:
+    lead: >-
+      `tail()` reads each table's `_latest` view (the newest capture, latest half-hours first), lineage
+      columns dropped. Times arrive in the session zone, so the cells convert them to UTC.
+    cells:
+      - |
+        nat = data.neso_data_portal.tail("wind_forecast_14d_days_ahead", 1_000)
+        for c in ["timestamp_utc", "forecast_datetime", "published_at"]:
+            nat[c] = nat[c].dt.tz_convert("UTC")
+        nat = nat.sort_values("timestamp_utc", ignore_index=True)
+        print("half-hours at or before the stated forecast time:",
+              (nat.timestamp_utc <= nat.forecast_datetime).sum())
+        cols = ["timestamp_utc", "date", "settlement_period", "wind_forecast",
+                "capacity", "forecast_datetime", "published_at"]
+        nat[cols].head()
+      - |
+        bmu = data.neso_data_portal.tail("wind_forecast_14d_day_ahead_bmu", 200_000)
+        bmu.groupby("region").generator_name.nunique().sort_values(ascending=False)
+      - |
+        ahead = nat[nat.timestamp_utc > nat.forecast_datetime]
+        ax = ahead.plot(x="timestamp_utc", y="wind_forecast", legend=False, color="#3E8C97",
+                        ylim=(0, ahead.wind_forecast.max() * 1.1), figsize=(8, 3.5),
+                        xlabel="half-hour start, UTC", ylabel="forecast wind output, MW");
+    needs: a recent capture of NESO's national and BMU 14-day wind files
+    plot_alt: >-
+      Line plot of NESO's national wind forecast in MW from its file of 16 October 2026, each
+      half-hour after its stated forecast time, 21:00 UTC that day to 19:00 UTC on 30 October, on an
+      axis from zero: lowest 7,689 on 18 October, highest 17,407 on 26 October, ending at 12,281.
   family:
     slug: 14-days-ahead-wind-forecasts
     members:
@@ -44,13 +125,13 @@ page:
         request:
           - "GET https://api.neso.energy/api/3/action/package_show?id=14-days-ahead-wind-forecasts"
           - "GET https://api.neso.energy/dataset/2f134a4e-92e5-43b8-96c3-0dd7d92fcc52/resource/93c3048e-1dab-4057-a2a9-417540583929/download/14da_wind_forecast.csv"
-        held: "All rows stay out: NESO's October 2026 files open with half-hours before their forecast time, unexplained."
+        caveat: "NESO's October 2026 files open with half-hours at or before their stated forecast time, unexplained."
       - dataset: wind_forecast_14d_day_ahead_bmu
         differs: "The same forecast per wind BM unit, with region and capacity; no forecast time"
         request:
           - "GET https://api.neso.energy/api/3/action/package_show?id=14-days-ahead-wind-forecasts"
           - "GET https://api.neso.energy/dataset/2f134a4e-92e5-43b8-96c3-0dd7d92fcc52/resource/342aae25-d3a6-436c-b168-db8b247ccb83/download/14da_windunit_forecast.csv"
-        held: "All rows stay out: NESO's files open with half-hours before publication, and carry no forecast time."
+        caveat: The file has no forecast time and opens with half-hours that began before its last-modified time.
   related:
     - {dataset: neso_data_portal/day-ahead-wind-forecast, note: "NESO's day-ahead incentive wind forecast, which NESO says these forecasts feed"}
     - {dataset: neso_data_portal/14-days-ahead-operational-metered-wind-forecasts, note: "NESO's daily 14-day forecast for farms that send it SCADA metering"}
@@ -81,8 +162,8 @@ including embedded generation. A model that needs embedded wind must add it from
 **Both families are held (unit E-SEM).** Neither file passes the forward-target rule of
 RULINGS 529: some targets in each capture start at or before the capture's CKAN
 `last_modified`, so the vintage cannot serve as an issue-time proxy for every row. The BMU file
-also has no issue column. See Holds. This page therefore gives schema, clocks and counts only,
-and no data values.
+also has no issue column. See Holds. The holds bar point-in-time model use; under ruling 66
+(2026-10-24) the site page shows both files' rows, each with one line naming its question.
 
 Related series:
 
@@ -160,7 +241,7 @@ Schema, epoch 1:
 | `published_at` | CKAN `last_modified` of the captured file (ADR-030) |
 | `available_at` | = `published_at` |
 
-**Held (unit E-SEM). This page gives schema, clocks and counts only, and no data values.**
+**Held (unit E-SEM) from point-in-time model use; the site page lists the family with its question as a caveat (ruling 66, 2026-10-24).**
 
 **The two clocks for this family:**
 
@@ -266,7 +347,7 @@ Schema, epoch 1:
 | `published_at` | CKAN `last_modified` of the captured file (ADR-030) |
 | `available_at` | = `published_at` |
 
-**Held (unit E-SEM). This page gives schema, clocks and counts only, and no data values.**
+**Held (unit E-SEM) from point-in-time model use; the site page shows its rows, chart and notebook with its question as a caveat (ruling 66, 2026-10-24).**
 
 **The two clocks for this family:**
 
@@ -358,9 +439,10 @@ gridflow outputs derived from this package carry the attribution line above.
 - `wind_forecast_14d_day_ahead_bmu`: held: TODO: 693 target rows sit at or before the CKAN vintage and the body has no issue column; there is no evidence of when each value was available (unit E-SEM)
 - `wind_forecast_14d_days_ahead`: held: TODO: 3 target rows sit before both the stated production instant and the CKAN vintage; whether the body mixes retrospective values with forecasts, and whether ForecastDateTime dates the availability of every row (unit E-SEM)
 
-Both held outputs exist in silver, but neither is eligible for publication or point-in-time
-model use until unit E-SEM answers its question (RULINGS 529, 542). This page publishes their
-schema, clocks and row counts only.
+Both held outputs exist in silver, but neither is eligible for point-in-time model use until
+unit E-SEM answers its question (RULINGS 529, 542). Under ruling 66 (2026-10-24) the site page
+shows their rows, with each question as a caveat; its chart draws only the national file's
+half-hours after its stated forecast time.
 
 Both holds come from the same 3 targets: the half-hours starting 10:30, 11:00 and 11:30 UTC on
 2026-10-08. In the BMU file that is 3 × 231 generators = 693 rows. The 2026-10-16 capture
