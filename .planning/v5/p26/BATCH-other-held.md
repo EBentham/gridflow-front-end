@@ -79,6 +79,6 @@ ENTSO-E paragraphs). Verify every one against local silver before writing it.
 | `balancing-energy-bids` | a77c0dcd4743a2675 | ac32d21fd7f56f7ab | DONE: approved round 2, nits fixed; committed (not pushed). Key-collision defect withdrawn (0 collisions) |
 | `outages` | ae36f09ef6e0639ad | a63ec338ce292b296 | written; in review (seat: planned-only in prose, MW-meaning caveat per member) |
 | `capacity-by-indicator` | ac0bdc96719e22118 | af2898390ac84e5aa | REVISE round 1 (472 caveat on three members; gas-day definition; meta.count claim; coverage scope); writer revising |
-| `cmp` | ad9551166d4bfee02 | abea4baf1a6c87ad7 | written; in review (template rounds bar labels under 10 to one decimal: 0.02 prints 0.0) |
+| `cmp` | ad9551166d4bfee02 | abea4baf1a6c87ad7 | REVISE round 1 (statement-row coverage false; ENTSOG statement contradicts premiums; seat: chart to type none, label rounding; unavailable no-value claim); writer revising |
 | `netbsad` | a00f12902b3632a4d | a3862abe8d47e4491 | DONE: approved round 2; committed (not pushed). Gridflow gap: PR #128 sweep has no committed script or result |
 | `nonbm` | ac0848f63e8af4f35 | a1500352d7d87526a | DONE: approved round 2; committed (not pushed). End-date citation resolves once gridflow #128 merges |
