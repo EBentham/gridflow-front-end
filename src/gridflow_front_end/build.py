@@ -33,6 +33,9 @@ Usage
     gridflow-build --vault-path /path/to/vault      # override vault location
     gridflow-build --check                          # build twice; non-zero on drift
 
+`--check` also fails when the mirror's sync stamp (`vault/.last_synced_from_vault`) is missing or
+unreadable: without it the committed mirror says nothing of when it was last pulled from the vault.
+
 Vault path resolution order:
     1. --vault-path CLI flag
     2. $GRIDFLOW_VAULT_PATH env var
@@ -46,6 +49,7 @@ there is no seeded or placeholder fallback (v5 decision D3).
 from __future__ import annotations
 
 import argparse
+import datetime as dt
 import filecmp
 import itertools
 import json
@@ -67,10 +71,8 @@ from gridflow_front_end.page_fields import PageFields, anatomy_errors, parse_pag
 from gridflow_front_end.paths import DEFAULT_VAULT, REPO_ROOT, SITE_DIR, resolve_vault_path
 
 TEMPLATES_DIR = REPO_ROOT / "templates"
-AUTHORED_DIR = REPO_ROOT / "authored-pages"
 
 __all__ = [
-    "AUTHORED_DIR",
     "DEFAULT_VAULT",
     "REAL_VENDORS",
     "REPO_ROOT",
@@ -2629,6 +2631,35 @@ def _diff_outputs(temp_dir: Path) -> list[str]:
     return differing
 
 
+STAMP_FILENAME = ".last_synced_from_vault"
+STAMP_MAX_AGE_DAYS = 30
+STAMP_TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+
+
+def check_stamp(stamp_path: Path) -> bool:
+    """Validate the vault mirror's sync stamp, left by the mirror propagation.
+
+    Returns:
+        True if the stamp exists and parses; False (with an ERROR printed to stderr) if it is
+        missing or malformed. An age over ``STAMP_MAX_AGE_DAYS`` only warns: syncs are
+        event-driven, not scheduled, so age alone does not prove drift.
+    """
+    try:
+        synced_at = json.loads(stamp_path.read_text(encoding="utf-8"))["synced_at_utc"]
+        synced = dt.datetime.strptime(synced_at, STAMP_TIME_FORMAT).replace(tzinfo=dt.UTC)
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        print(f"[gridflow-build] ERROR: no valid sync stamp {stamp_path}: {exc}", file=sys.stderr)
+        return False
+    age = dt.datetime.now(dt.UTC) - synced
+    if age > dt.timedelta(days=STAMP_MAX_AGE_DAYS):
+        print(
+            f"[gridflow-build] WARNING: vault sync stamp is {age.total_seconds() / 86400:.1f} days "
+            f"old (synced_at_utc={synced_at}); confirm no vault changes are unpropagated.",
+            file=sys.stderr,
+        )
+    return True
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="gridflow-build", description=__doc__.split("\n", 1)[0])
     parser.add_argument(
@@ -2640,7 +2671,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--check",
         action="store_true",
-        help="Build twice and exit non-zero if any output changes between builds (idempotence check).",
+        help="Build twice and exit non-zero if any output changes between builds (idempotence "
+        "check), or if the vault's sync stamp is missing or malformed.",
     )
     parser.add_argument(
         "--only",
@@ -2660,6 +2692,9 @@ def main(argv: list[str] | None = None) -> int:
         build(vault_path, only=frozenset(args.only))
         print(f"[gridflow-build] rendered only {sorted(args.only)}")
         return 0
+
+    if args.check and not check_stamp(vault_path / STAMP_FILENAME):
+        return 1
 
     n_datasets, n_pages, n_hubs = build(vault_path)
     print(
