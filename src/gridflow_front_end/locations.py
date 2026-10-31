@@ -34,6 +34,7 @@ import polars as pl
 
 from gridflow_front_end.artefacts import dumps_lines
 from gridflow_front_end.artefacts import locations_path as _locations_path
+from gridflow_front_end.distil import DistilError, scan_silver
 from gridflow_front_end.paths import SITE_DIR, resolve_silver_path
 
 GENERATED_BY = "gridflow-distil --locations"
@@ -171,13 +172,10 @@ def distance_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
 
 
 def _scan(silver_root: Path, dataset: str, columns: list[str]) -> pl.LazyFrame:
-    table = silver_root / SILVER_VENDOR / dataset
-    files = sorted(table.rglob("*.parquet"))
-    if not files:
-        raise LocationsError(f"no parquet files under {table}")
-    lf = pl.scan_parquet(
-        files, hive_partitioning=False, missing_columns="insert", extra_columns="ignore"
-    ).select(columns)
+    try:
+        lf = scan_silver(silver_root / SILVER_VENDOR / dataset)[0].select(columns)
+    except DistilError as exc:
+        raise LocationsError(str(exc)) from exc
     ts = lf.collect_schema()["timestamp_utc"]
     if isinstance(ts, pl.Datetime) and ts.time_zone is not None:
         # naive UTC inside Polars: a tz-aware value crossing into Python needs tz data Windows lacks

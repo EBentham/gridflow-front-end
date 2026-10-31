@@ -159,21 +159,37 @@ def _time_from_text(column: str, text: Mapping[str, Any]) -> pl.Expr:
     return (local - pl.duration(hours=day["starts"])).dt.truncate("1d")
 
 
-def _scan(silver_root: Path, spec: Mapping[str, Any]) -> tuple[pl.LazyFrame, int]:
-    table_dir = silver_root / spec["silver"]
+def scan_silver(table_dir: Path) -> tuple[pl.LazyFrame, int]:
+    """Every parquet file of one silver table as one frame, oldest file first, and the file count.
+
+    The newest file's schema is the reference: its columns, in its order, so a column a later
+    transformer added is read (older files give it nulls) and one it dropped is not. Files are
+    stacked to a common supertype, since a column can be all-null (type Null) in one daily file and
+    String in the next (ENTSOG generic silver); a column that is String in one file and another type
+    in another is refused, not turned into text. Partition folders (year=/month=) are not columns.
+
+    Raises:
+        DistilError: The table has no directory, no parquet file, or such a type change.
+    """
     if not table_dir.is_dir():
         raise DistilError(f"silver table not found: {table_dir}")
     files = sorted(table_dir.rglob("*.parquet"))
     if not files:
         raise DistilError(f"no parquet files under {table_dir}")
-    # Partition folders (year=/month=) are not columns the spec may use, and
-    # files written by older dataset versions may lack newer columns.
-    lf = pl.scan_parquet(
-        files,
-        hive_partitioning=False,
-        missing_columns="insert",
-        extra_columns="ignore",
-    )
+    schemas = [pl.read_parquet_schema(f) for f in files]
+    columns = list(schemas[-1])
+    for name in columns:
+        dtypes = {str(s[name]) for s in schemas if name in s and s[name] != pl.Null}
+        if len(dtypes) > 1 and str(pl.String) in dtypes:
+            raise DistilError(
+                f"{table_dir}: column {name!r} changes type across files: {sorted(dtypes)}"
+            )
+    frames = [pl.scan_parquet(f, hive_partitioning=False) for f in files]
+    return pl.concat(frames, how="diagonal_relaxed").select(columns), len(files)
+
+
+def _scan(silver_root: Path, spec: Mapping[str, Any]) -> tuple[pl.LazyFrame, int]:
+    lf, n_files = scan_silver(silver_root / spec["silver"])
     schema = lf.collect_schema()
     missing = [c for c in _needed_columns(spec) if c not in schema]
     if missing:
@@ -182,7 +198,7 @@ def _scan(silver_root: Path, spec: Mapping[str, Any]) -> tuple[pl.LazyFrame, int
     time_col = spec.get("time")
     if time_col and "time_text" in spec:
         lf = lf.with_columns(_time_from_text(time_col, spec["time_text"]).alias(time_col))
-        return lf, len(files)
+        return lf, n_files
     dtype = schema.get(time_col) if time_col else None
     if isinstance(dtype, pl.Datetime) and dtype.time_zone is not None:
         # Normalise to naive UTC inside polars: a tz-aware value crossing into
@@ -190,7 +206,7 @@ def _scan(silver_root: Path, spec: Mapping[str, Any]) -> tuple[pl.LazyFrame, int
         lf = lf.with_columns(
             pl.col(time_col).dt.convert_time_zone("UTC").dt.replace_time_zone(None)
         )
-    return lf, len(files)
+    return lf, n_files
 
 
 _LONG_VALUE = "__value"

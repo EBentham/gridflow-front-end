@@ -30,6 +30,17 @@ def test_no_columns_keeps_silver_order(tmp_path: Path) -> None:
     ]
 
 
+def test_a_column_null_in_one_file_and_text_in_the_next_is_read(tmp_path: Path) -> None:
+    # ENTSOG generic silver: a column all null in one daily file is typed Null there
+    table = tmp_path / "entsog" / "demo"
+    table.mkdir(parents=True)
+    pl.DataFrame({"a": range(4), "note": [None] * 4}).write_parquet(table / "d1.parquet")
+    pl.DataFrame({"a": range(4, 8), "note": ["x"] * 4}).write_parquet(table / "d2.parquet")
+    df = sample.select_rows(tmp_path, "entsog/demo", {"order_by": ["a"]})
+    assert df.schema["note"] == pl.String
+    assert df["note"].to_list() == [None] * 4 + ["x"] * 4
+
+
 def test_an_unknown_column_is_an_error(tmp_path: Path) -> None:
     with pytest.raises(sample.SampleError):
         sample.select_rows(_silver(tmp_path), "elexon/demo", {"columns": ["nope"]})

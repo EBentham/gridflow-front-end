@@ -280,6 +280,29 @@ def test_missing_table_or_column_fails_loudly(tmp_path: Path) -> None:
         )
 
 
+def test_a_column_added_after_the_first_file_is_read(tmp_path: Path) -> None:
+    """fe-site-18: a column a later transformer added is in silver, not "not in silver"."""
+    older = _fuel_rows(T0, 2)
+    newer = _fuel_rows(T0 + dt.timedelta(hours=1), 2).with_columns(capacity_mw=pl.lit(7.0))
+    _write(tmp_path, "elexon/fuelhh", {"d1": older, "d2": newer})
+    chart = distil_spec(dict(FUEL_SPEC, value="capacity_mw"), tmp_path)
+    # the older file has no capacity_mw: its rows read as nulls and drop out
+    assert chart["x"] == ["2026-09-01T01:00:00Z", "2026-09-01T01:30:00Z"]
+    assert {s["key"]: s["values"] for s in chart["series"]}["gas"] == [14.0, 14.0]
+    assert chart["provenance"]["rows_read"] == 16
+    assert chart["provenance"]["null_values_dropped"] == 8
+
+
+def test_a_column_that_turns_to_text_in_a_later_file_is_refused(tmp_path: Path) -> None:
+    older = _fuel_rows(T0, 2)
+    newer = _fuel_rows(T0 + dt.timedelta(hours=1), 2).with_columns(
+        pl.col("generation_mw").cast(pl.String)
+    )
+    _write(tmp_path, "elexon/fuelhh", {"d1": older, "d2": newer})
+    with pytest.raises(DistilError, match="'generation_mw' changes type"):
+        distil_spec(FUEL_SPEC, tmp_path)
+
+
 def test_max_points_guard(tmp_path: Path) -> None:
     _write(tmp_path, "elexon/fuelhh", {"d1": _fuel_rows(T0, 10)})
     with pytest.raises(DistilError, match="max_points"):
