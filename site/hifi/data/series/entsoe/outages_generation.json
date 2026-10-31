@@ -1,0 +1,19 @@
+{
+  "dataset": "entsoe/outages_generation",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "e384e58e5893d4569303cc1a981c1acaddc52f2da450f42b2e4e2c5889aa13a1",
+  "type": "bar",
+  "unit": "notices",
+  "caption": "",
+  "value_column": null,
+  "aggregation": "count",
+  "window": null,
+  "provenance": {"files": 13, "rows_matched": 218, "rows_read": 5501, "rows_used": 218, "silver": "entsoe/outages_generation"},
+  "spec": {"aggregation": "count", "filter": [{"column": "timestamp_utc", "op": "le", "value": "2026-09-15T12:00:00Z"}, {"column": "step_end_utc", "op": "gt", "value": "2026-09-15T12:00:00Z"}, {"column": "document_status", "op": "ne", "value": "A09"}], "group": "production_type", "group_map": {"B01": "biomass", "B02": "lignite", "B03": "hard_coal", "B04": "gas", "B05": "hard_coal", "B06": "misc", "B10": "hydro", "B11": "hydro", "B12": "hydro", "B14": "nuclear", "B25": "misc"}, "silver": "entsoe/outages_generation", "sort": "value_desc", "type": "bar", "unit": "notices"},
+  "x_kind": "category",
+  "x": ["hydro", "gas", "nuclear", "hard_coal", "lignite", "misc", "biomass"],
+  "series": [
+    {"key": "count", "values": [70, 53, 37, 29, 14, 10, 5]}
+  ]
+}

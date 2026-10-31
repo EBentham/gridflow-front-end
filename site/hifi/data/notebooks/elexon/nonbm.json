@@ -1,0 +1,119 @@
+{
+ "dataset": "elexon/nonbm",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "3b77dbdead302623ecd40975debcce34cd3cc2d7e8befe116875a406f0aaaebf",
+ "kernel": "gridflow_models",
+ "source": "elexon",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.elexon",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.elexon.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.elexon.query(\"nonbm\", \"2026-01-12\", \"2026-01-18\").sort_values(\"timestamp_utc\")",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df[df.generation_mw > 0][[\"settlement_date\", \"settlement_period\", \"timestamp_utc\", \"generation_mw\"]]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "settlement_date",
+      "settlement_period",
+      "timestamp_utc",
+      "generation_mw"
+     ],
+     "index": [
+      "169",
+      "170",
+      "171"
+     ],
+     "rows": [
+      [
+       "2026-01-15",
+       "25",
+       "2026-01-15 12:00:00+00:00",
+       "17.0"
+      ],
+      [
+       "2026-01-15",
+       "26",
+       "2026-01-15 12:30:00+00:00",
+       "28.0"
+      ],
+      [
+       "2026-01-15",
+       "27",
+       "2026-01-15 13:00:00+00:00",
+       "11.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "df.plot(x=\"timestamp_utc\", y=\"generation_mw\", ylabel=\"MW\", legend=False, figsize=(8, 3.5))",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: xlabel='timestamp_utc', ylabel='MW'>"
+    },
+    {
+     "kind": "image",
+     "src": "nonbm-5.png",
+     "width": 690,
+     "height": 369
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,145 @@
+{
+ "dataset": "entsoe/outages_generation",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "9b2851a63569e8fce5f7ce0ab17a7ad57ac597b9d0c327a1840eb08cc62b8685",
+ "kernel": "gridflow_models",
+ "source": "entsoe",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.entsoe",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.entsoe.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.entsoe.query(\"outages_generation\", \"2026-09-15\", \"2026-09-20\")\nfor col in [\"timestamp_utc\", \"step_end_utc\"]:\n    df[col] = df[col].dt.tz_convert(\"UTC\")\nactive = df[df[\"document_status\"] != \"A09\"].sort_values([\"timestamp_utc\", \"generation_unit_name\"])",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "active[[\"timestamp_utc\", \"step_end_utc\", \"generation_unit_name\", \"unavailable_mw\", \"nominal_mw\", \"revision_number\"]].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "step_end_utc",
+      "generation_unit_name",
+      "unavailable_mw",
+      "nominal_mw",
+      "revision_number"
+     ],
+     "index": [
+      "306",
+      "317",
+      "309",
+      "318",
+      "308"
+     ],
+     "rows": [
+      [
+       "2026-09-15 00:00:00+00:00",
+       "2026-09-16 00:00:00+00:00",
+       "ABTH7",
+       "0.0",
+       "535.0",
+       "40"
+      ],
+      [
+       "2026-09-15 00:00:00+00:00",
+       "2026-09-16 00:00:00+00:00",
+       "ABTH7G",
+       "0.0",
+       "17.0",
+       "39"
+      ],
+      [
+       "2026-09-15 00:00:00+00:00",
+       "2026-09-16 00:00:00+00:00",
+       "ABTH8",
+       "0.0",
+       "535.0",
+       "45"
+      ],
+      [
+       "2026-09-15 00:00:00+00:00",
+       "2026-09-16 00:00:00+00:00",
+       "ABTH8G",
+       "0.0",
+       "17.0",
+       "40"
+      ],
+      [
+       "2026-09-15 00:00:00+00:00",
+       "2026-09-16 00:00:00+00:00",
+       "ABTH9",
+       "0.0",
+       "520.0",
+       "46"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "import pandas as pd\nnoons = pd.date_range(\"2026-09-15 12:00\", \"2026-09-20 12:00\", freq=\"D\", tz=\"UTC\")\nin_force = pd.Series([((active.timestamp_utc <= t) & (active.step_end_utc > t)).sum() for t in noons], index=noons.date)\nin_force.plot(ylabel=\"notices covering 12:00 UTC\", ylim=(0, 250), color=\"#155A6E\", figsize=(8, 3.5))",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "<Axes: ylabel='notices covering 12:00 UTC'>"
+    },
+    {
+     "kind": "image",
+     "src": "outages_generation-5.png",
+     "width": 710,
+     "height": 322
+    }
+   ]
+  }
+ ]
+}

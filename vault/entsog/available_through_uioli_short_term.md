@@ -2,7 +2,7 @@
 source: entsog
 dataset_key: available_through_uioli_short_term
 vendor: ENTSOG Transparency Platform
-last_verified: 2026-05-08
+last_verified: 2026-10-24
 layer_coverage: bronze, silver
 ---
 
@@ -10,18 +10,18 @@ layer_coverage: bronze, silver
 
 ## Overview
 
-Capacity made available through short-term UIOLI.
+Capacity made available through short-term UIOLI. ENTSOG's `defaultSentence` on the records it sends without a value reads "Currently no capacity has been made available on this point through the application of the congestion-management procedures"; on 1 to 5 August 2026 these were the only records ENTSOG sent (see Known issues).
 
 The dataset is one of 19 indicators served by the same `/operationalData`
 endpoint. The (operator, point, direction) tuple selects which physical
 location to read; the `indicator` query parameter selects which series
 (physical flow, nomination, allocation, etc.) is returned. Records carry
-the daily `periodFrom` / `periodTo` window and a `value` in `kWh/d` (or
+a `periodFrom` / `periodTo` window (for capacity, the record's validity period, from one day to decades) and a `value` in `kWh/d` (or
 indicator-specific units for content/quality series).
 
 → Related concepts:
   [Gas day](../../../20-domain/concepts/gas-day.md)
-  [Nominations vs allocations](../../../20-domain/markets/gas-nominations.md)
+  [Nominations, renominations and allocations](nominations.md)
 
 ---
 
@@ -36,7 +36,7 @@ indicator-specific units for content/quality series).
 | Rate limit       | Not vendor-published; project default 5 req/s, validation throttled to 1 req/s |
 | Pagination       | `limit` + `offset`; project sets `limit=-1` (all records) |
 | Historical depth | Approx. 2010 onwards (operator-dependent) |
-| Publication lag  | Same-day for `Provisional` flow status; revised within ~1 week |
+| Publication lag  | Not vendor-documented here. Records carry their own validity period (`periodFrom`/`periodTo`); `flowStatus` is an empty string on every 2026-08/09 record |
 | Response format  | JSON |
 | Indicator | `Available through UIOLI short-term` (exact-case — vendor rejects lowercase or hyphen variants) |
 | Time zone | `timeZone=UCT` (ENTSOG's spelling — note the typo; not `UTC`) |
@@ -136,32 +136,34 @@ curl --ssl-no-revoke -fsS \
 **Path pattern**: `{data_root}/silver/entsog/available_through_uioli_short_term/year=YYYY/month=MM/available_through_uioli_short_term_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.entsog.GenericEntsogJsonTransformer (subclass AvailableThroughUioliShortTermTransformer)`
 **Pydantic schema**: `Generic — no Pydantic schema declared`
-**Dedup key**: `(timestamp_utc, point_key, operator_key, direction_key)` — fields uniquely identifying one daily record per series
-**Point-in-time field**: `last_update_date_time`
+**Dedup key**: the vendor `id`, `keep="last"`, within each gas day's bronze read (`silver/entsog/generic.py:235-241`). A partition is one gas day and every row is stamped inside it, so `(timestamp_utc, id)` is unique. A default-sentence `id` joins the dataset code, keys, an adjacent operator and the indicator, with no date; `(timestamp_utc, operator_key, point_key, direction_key)` repeats (see Known issues).
+**Bronze read filter**: a record is kept when its `periodFrom`/`periodTo` window overlaps the bronze day's gas day, when its `periodFrom` falls on that date, or when it has no date (`generic.py:174-187`, `:353-369`; `datetime.py:110-153`); see Known issues.
+**Point-in-time field**: none used by the pipeline. `last_update_date_time` is the vendor's `lastUpdateDateTime`, converted to UTC (`generic.py:212-214`); `ingested_at` is the silver transform time (`generic.py:243-249`).
 
 ### Silver schema
 
 | Field | Python type | Nullable | Source field | Notes |
 |-------|-------------|----------|--------------|-------|
-| id | str | int | Yes | id |  |
-| dataset | str | Yes | dataset |  |
+| timestamp_utc | datetime[UTC] | Yes | derived | Gas-day stamp (`generic.py:179-187`, `:216-220`; `datetime.py:156-180`): the record's `periodFrom` if it falls inside the gas day (06:00 to 06:00 Europe/Brussels), else the gas-day start; 04:00 UTC on every 2026-08 row |
+| period_from | datetime[UTC] | Yes | periodFrom | 00:00+02:00 as sent, so 22:00 UTC the previous day on every row |
+| period_to | datetime[UTC] | Yes | periodTo |  |
 | indicator | str | Yes | indicator |  |
 | period_type | str | Yes | periodType |  |
-| period_from | datetime[UTC] | Yes | periodFrom |  |
-| period_to | datetime[UTC] | Yes | periodTo |  |
 | operator_key | str | Yes | operatorKey |  |
-| tso_eic_code | str | Yes | tsoEicCode |  |
 | operator_label | str | Yes | operatorLabel |  |
+| tso_eic_code | str | Yes | tsoEicCode |  |
 | point_key | str | Yes | pointKey |  |
 | point_label | str | Yes | pointLabel |  |
-| tso_item_identifier | str | Yes | tsoItemIdentifier |  |
 | direction_key | str | Yes | directionKey |  |
-| unit | str | Yes | unit |  |
+| unit | str | Yes | unit | As sent; `""` on every 2026-08 row |
+| value | float | Yes | value | In the row's `unit`, not converted; sent as `""` it is null (Float64 cast with `strict=False`, `generic.py:231-233`) |
+| id | str | Yes | id | Dedup key (see above) |
+| data_set | str | Yes | dataset | `5` on every row, from the lowercase `dataset` key, folded into one column (`generic.py:70`, `:429`) |
+| tso_item_identifier | str | Yes | tsoItemIdentifier |  |
 | item_remarks | str | Yes | itemRemarks |  |
 | general_remarks | str | Yes | generalRemarks |  |
-| value | float | Yes | value |  |
 | last_update_date_time | datetime[UTC] | Yes | lastUpdateDateTime |  |
-| is_unlimited | bool | Yes | isUnlimited |  |
+| is_unlimited | str | Yes | isUnlimited |  |
 | flow_status | str | Yes | flowStatus |  |
 | interruption_type | str | Yes | interruptionType |  |
 | restoration_information | str | Yes | restorationInformation |  |
@@ -170,35 +172,36 @@ curl --ssl-no-revoke -fsS \
 | is_cam_relevant | bool | Yes | isCamRelevant |  |
 | is_na | str | Yes | isNA |  |
 | original_period_from | datetime[UTC] | Yes | originalPeriodFrom |  |
-| is_cmp_relevant | bool | Yes | isCmpRelevant |  |
-| is_default_sentence | str | Yes | isDefaultSentence |  |
+| is_cmp_relevant | str | Yes | isCmpRelevant |  |
+| is_default_sentence | bool | Yes | isDefaultSentence |  |
 | default_sentence | str | Yes | defaultSentence |  |
 | data_provider | str | No | derived | Always `entsog` |
-| ingested_at | datetime[UTC] | No | derived | Wall-clock at silver write |
+| ingested_at | datetime[UTC] | No | derived | Silver transform time (`generic.py:243-249`) |
 
 ### Silver sample
 
 ```python
 [
     {
-        "id": "5UK-TSO-0001ITP-00005exitUK-TSO-0003Available through UIOLI short-term",
-        "dataset": "5",
+        "timestamp_utc": "2026-08-05T04:00:00+00:00",
+        "period_from": "2026-08-04T22:00:00+00:00",
+        "period_to": "2026-08-04T22:00:00+00:00",
         "indicator": "Available through UIOLI short-term",
         "period_type": "",
-        "period_from": "2026-05-06T00:00:00+02:00",
-        "period_to": "2026-05-06T00:00:00+02:00",
         "operator_key": "UK-TSO-0001",
-        "tso_eic_code": "21X-GB-A-A0A0A-7",
         "operator_label": "National Gas TSO",
+        "tso_eic_code": "21X-GB-A-A0A0A-7",
         "point_key": "ITP-00005",
         "point_label": "Bacton (IUK)",
-        "tso_item_identifier": "21Z000000000083P",
         "direction_key": "exit",
         "unit": "",
+        "value": null,
+        "id": "5UK-TSO-0001ITP-00005exitUK-TSO-0003Available through UIOLI short-term",
+        "data_set": "5",
+        "tso_item_identifier": "21Z000000000083P",
         "item_remarks": "",
         "general_remarks": "",
-        "value": "",
-        "last_update_date_time": "2026-05-08T18:05:40+02:00",
+        "last_update_date_time": "2026-08-16T14:08:10+00:00",
         "is_unlimited": "",
         "flow_status": "",
         "interruption_type": "",
@@ -207,12 +210,12 @@ curl --ssl-no-revoke -fsS \
         "capacity_booking_status": "",
         "is_cam_relevant": false,
         "is_na": "",
-        "original_period_from": "",
+        "original_period_from": null,
         "is_cmp_relevant": "",
         "is_default_sentence": true,
         "default_sentence": "Available through UIOLI short-term: Currently no capacity has been made available on this point through the application of the congestion-management procedures.",
         "data_provider": "entsog",
-        "ingested_at": "2026-05-08T18:00:00+00:00"
+        "ingested_at": "2026-10-24T13:56:02.581483+00:00"
     }
 ]
 ```
@@ -235,6 +238,11 @@ None implemented.
 - **Datetime placeholders**: `lastUpdateDateTime` and `originalPeriodFrom` may be empty strings, `"-"`, `"N/A"`, or human-formatted strings (`"Jan 15 2024 06:00AM"`). `parse_entsog_datetime` returns `None` for unparseable values rather than raising.
 - **`directionKey` casing varies**: lowercase (`entry`/`exit`) in `/operationalData`; capitalised (`Exit`) in `/cmpUnsuccessfulRequests`. Don't compare with `==` across families.
 - **Period offset is +02:00 (CET)**: even with `timeZone=UCT`, `periodFrom` carries `+02:00` (CEST in summer / `+01:00` in winter). The silver transformer's `parse_entsog_datetime` converts to UTC.
+- **Validity records, one row per gas day**: capacity records are validity periods (in this indicator's 2026-08 bronze, only zero-length default-sentence records). The generic transformer keeps every record whose `periodFrom`/`periodTo` window overlaps the bronze day's gas day (06:00 to 06:00 Europe/Brussels), plus any dated that day or undated, for the capacity and CMP datasets in `_VALIDITY_WINDOW_DATASETS` (`silver/entsog/generic.py:174-187`, :353-369; `datetime.py:110-153`; gridflow PR #129, branch `fix/entsog-capacity-cmp`). It stamps each kept record with that gas day (`datetime.py:156-180`): `timestamp_utc` is the record's own start if inside the gas day, else the gas-day start. A record valid over many days therefore appears once per fetched gas day; do not sum rows across days. 2026-08: 55 bronze records (0 with a value), 55 silver rows.
+- **Default-sentence records**: the records sent without a value carry `isDefaultSentence` true and the `defaultSentence` quoted in the overview (ENTSOG sends two spellings, "the congestion-management procedures" and "congestion management procedures"), with `dataset` "5" (a lowercase key, folded into `data_set`, `generic.py:70`, `:429`), `periodType` "", `unit` "", `value` "", and `periodFrom` = `periodTo` = 00:00+02:00. `period_from` is therefore 22:00 UTC on the previous day; the record is kept because that is the bronze day's local date, and stamped at the gas-day start, 04:00 UTC (`datetime.py:149-150`, `:156-180`).
+- **Repeated 4-tuple**: National Gas TSO `ITP-00090` entry sends three default-sentence records a day, whose `id` names the adjacent operators `IE-TSO-0001`, `IE-TSO-0002` and `UK-TSO-0002`. Dedup on `id` keeps all three, so `(timestamp_utc, operator_key, point_key, direction_key)` is not unique.
+- **No valued records**: every 2026-08 response for this indicator holds only default-sentence records.
+- **Requested versus returned (2026-08 bronze)**: `meta.count` equals `meta.total` (11) in every response.
 
 
 
@@ -242,7 +250,7 @@ None implemented.
 
 ## Implementation delta
 
-- **No documented discrepancies** for this indicator. Live API returns the indicator name in `meta.fields` matching the code's exact-case constant in `OPERATIONAL_INDICATORS`.
+- **Validity records**: capacity datasets keep every record in force on the fetched gas day, one row per gas day (`_VALIDITY_WINDOW_DATASETS`, `silver/entsog/generic.py:353-369`; see Known issues). The indicator name matches the code's exact-case constant in `OPERATIONAL_INDICATORS` (`connectors/entsog/endpoints.py:95-115`).
 - **Synthetic fixture**: `tests/fixtures/entsog/physical_flows_response.json` carries placeholder `pointKey: "IUK"` and `operatorKey: "OP-IUK"`. Live data uses real keys (`ITP-00005`, `UK-TSO-0001`). Fixture regeneration is deferred (silver tests depend on the placeholder shape).
 
 ---
@@ -251,7 +259,7 @@ None implemented.
 
 - Used as raw input to gas balance / interconnector flow features in `gridflow_models/`.
 - Target candidates: directional flow magnitude (entry vs exit per point).
-- Filter on `flowStatus == 'Confirmed'` for backtesting; `Provisional` for live model serving.
+- `flow_status` is an empty string on every 2026-08/09 row, so the `Confirmed`/`Provisional` filter used for flows does not apply. Drop the default-sentence rows (`is_default_sentence` true): they carry no value.
 - Join with `operator_point_directions` to attach country, balancing zone, and CAM-relevant flags.
 
 ---

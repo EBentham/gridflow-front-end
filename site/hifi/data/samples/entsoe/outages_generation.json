@@ -1,0 +1,365 @@
+{
+ "dataset": "entsoe/outages_generation",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "43d137207a5b0a20126b0b633f8c86d556cdb201a2edc63ed0d142de54f50e8b",
+ "silver": "entsoe/outages_generation",
+ "columns": [
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "step_end_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "unavailable_mw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "nominal_mw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "generation_unit_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "outage_start_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "outage_end_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "revision_number",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "document_status",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "area_code",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "unit_mrid",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "unit_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "generation_unit_mrid",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "production_type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "outage_type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "business_type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "document_mrid",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "timeseries_mrid",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "resolution",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "data_provider",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "ingested_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2026-09-19 03:00:00 UTC",
+   "2026-09-19 04:00:00 UTC",
+   "553.0",
+   "840.0",
+   "KW Boxberg Block Q",
+   "2026-09-19 03:00:00 UTC",
+   "2026-09-20 19:00:00 UTC",
+   "5",
+   "",
+   "2026-09-20 16:35:09 UTC",
+   "10Y1001A1001A82H",
+   "11WD8BOXB1L----J",
+   "KW Boxberg",
+   "11WD8BOXB1L---Q2",
+   "B02",
+   "planned",
+   "A53",
+   "x-GtbpThrnCQ-ys1m-U_EQ",
+   "1",
+   "PT1M",
+   "entsoe",
+   "2026-10-24 14:35:49.015019 UTC",
+   "2026-09-19 03:00:00 UTC",
+   "2026-09-20 16:35:09 UTC",
+   "25e9e9e6-e0b5-478e-8772-198fee6d4b00",
+   "2.0.0"
+  ],
+  [
+   "2026-09-19 04:00:00 UTC",
+   "2026-09-19 05:00:00 UTC",
+   "390.0",
+   "840.0",
+   "KW Boxberg Block Q",
+   "2026-09-19 03:00:00 UTC",
+   "2026-09-20 19:00:00 UTC",
+   "5",
+   "",
+   "2026-09-20 16:35:09 UTC",
+   "10Y1001A1001A82H",
+   "11WD8BOXB1L----J",
+   "KW Boxberg",
+   "11WD8BOXB1L---Q2",
+   "B02",
+   "planned",
+   "A53",
+   "x-GtbpThrnCQ-ys1m-U_EQ",
+   "1",
+   "PT1M",
+   "entsoe",
+   "2026-10-24 14:35:49.015019 UTC",
+   "2026-09-19 04:00:00 UTC",
+   "2026-09-20 16:35:09 UTC",
+   "25e9e9e6-e0b5-478e-8772-198fee6d4b00",
+   "2.0.0"
+  ],
+  [
+   "2026-09-19 05:00:00 UTC",
+   "2026-09-20 00:00:00 UTC",
+   "0.0",
+   "840.0",
+   "KW Boxberg Block Q",
+   "2026-09-19 03:00:00 UTC",
+   "2026-09-20 19:00:00 UTC",
+   "5",
+   "",
+   "2026-09-20 16:35:09 UTC",
+   "10Y1001A1001A82H",
+   "11WD8BOXB1L----J",
+   "KW Boxberg",
+   "11WD8BOXB1L---Q2",
+   "B02",
+   "planned",
+   "A53",
+   "x-GtbpThrnCQ-ys1m-U_EQ",
+   "1",
+   "PT1M",
+   "entsoe",
+   "2026-10-24 14:35:49.015019 UTC",
+   "2026-09-19 05:00:00 UTC",
+   "2026-09-20 16:35:09 UTC",
+   "25e9e9e6-e0b5-478e-8772-198fee6d4b00",
+   "2.0.0"
+  ],
+  [
+   "2026-09-20 00:00:00 UTC",
+   "2026-09-20 15:30:00 UTC",
+   "0.0",
+   "840.0",
+   "KW Boxberg Block Q",
+   "2026-09-19 03:00:00 UTC",
+   "2026-09-20 19:00:00 UTC",
+   "5",
+   "",
+   "2026-09-20 16:35:09 UTC",
+   "10Y1001A1001A82H",
+   "11WD8BOXB1L----J",
+   "KW Boxberg",
+   "11WD8BOXB1L---Q2",
+   "B02",
+   "planned",
+   "A53",
+   "x-GtbpThrnCQ-ys1m-U_EQ",
+   "1",
+   "PT1M",
+   "entsoe",
+   "2026-10-24 14:35:49.594566 UTC",
+   "2026-09-20 00:00:00 UTC",
+   "2026-09-20 16:35:09 UTC",
+   "25e9e9e6-e0b5-478e-8772-198fee6d4b00",
+   "2.0.0"
+  ],
+  [
+   "2026-09-20 15:30:00 UTC",
+   "2026-09-20 16:00:00 UTC",
+   "240.0",
+   "840.0",
+   "KW Boxberg Block Q",
+   "2026-09-19 03:00:00 UTC",
+   "2026-09-20 19:00:00 UTC",
+   "5",
+   "",
+   "2026-09-20 16:35:09 UTC",
+   "10Y1001A1001A82H",
+   "11WD8BOXB1L----J",
+   "KW Boxberg",
+   "11WD8BOXB1L---Q2",
+   "B02",
+   "planned",
+   "A53",
+   "x-GtbpThrnCQ-ys1m-U_EQ",
+   "1",
+   "PT1M",
+   "entsoe",
+   "2026-10-24 14:35:49.594566 UTC",
+   "2026-09-20 15:30:00 UTC",
+   "2026-09-20 16:35:09 UTC",
+   "25e9e9e6-e0b5-478e-8772-198fee6d4b00",
+   "2.0.0"
+  ],
+  [
+   "2026-09-20 16:00:00 UTC",
+   "2026-09-20 16:45:00 UTC",
+   "373.0",
+   "840.0",
+   "KW Boxberg Block Q",
+   "2026-09-19 03:00:00 UTC",
+   "2026-09-20 19:00:00 UTC",
+   "5",
+   "",
+   "2026-09-20 16:35:09 UTC",
+   "10Y1001A1001A82H",
+   "11WD8BOXB1L----J",
+   "KW Boxberg",
+   "11WD8BOXB1L---Q2",
+   "B02",
+   "planned",
+   "A53",
+   "x-GtbpThrnCQ-ys1m-U_EQ",
+   "1",
+   "PT1M",
+   "entsoe",
+   "2026-10-24 14:35:49.594566 UTC",
+   "2026-09-20 16:00:00 UTC",
+   "2026-09-20 16:35:09 UTC",
+   "25e9e9e6-e0b5-478e-8772-198fee6d4b00",
+   "2.0.0"
+  ],
+  [
+   "2026-09-20 16:45:00 UTC",
+   "2026-09-20 18:00:00 UTC",
+   "555.0",
+   "840.0",
+   "KW Boxberg Block Q",
+   "2026-09-19 03:00:00 UTC",
+   "2026-09-20 19:00:00 UTC",
+   "5",
+   "",
+   "2026-09-20 16:35:09 UTC",
+   "10Y1001A1001A82H",
+   "11WD8BOXB1L----J",
+   "KW Boxberg",
+   "11WD8BOXB1L---Q2",
+   "B02",
+   "planned",
+   "A53",
+   "x-GtbpThrnCQ-ys1m-U_EQ",
+   "1",
+   "PT1M",
+   "entsoe",
+   "2026-10-24 14:35:49.594566 UTC",
+   "2026-09-20 16:45:00 UTC",
+   "2026-09-20 16:35:09 UTC",
+   "25e9e9e6-e0b5-478e-8772-198fee6d4b00",
+   "2.0.0"
+  ],
+  [
+   "2026-09-20 18:00:00 UTC",
+   "2026-09-20 19:00:00 UTC",
+   "700.0",
+   "840.0",
+   "KW Boxberg Block Q",
+   "2026-09-19 03:00:00 UTC",
+   "2026-09-20 19:00:00 UTC",
+   "5",
+   "",
+   "2026-09-20 16:35:09 UTC",
+   "10Y1001A1001A82H",
+   "11WD8BOXB1L----J",
+   "KW Boxberg",
+   "11WD8BOXB1L---Q2",
+   "B02",
+   "planned",
+   "A53",
+   "x-GtbpThrnCQ-ys1m-U_EQ",
+   "1",
+   "PT1M",
+   "entsoe",
+   "2026-10-24 14:35:49.594566 UTC",
+   "2026-09-20 18:00:00 UTC",
+   "2026-09-20 16:35:09 UTC",
+   "25e9e9e6-e0b5-478e-8772-198fee6d4b00",
+   "2.0.0"
+  ]
+ ],
+ "mark": null
+}

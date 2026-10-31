@@ -1,0 +1,313 @@
+{
+ "dataset": "gie/unavailability",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "0ba8321b09750f3f438461413cf5046e8ce69b88445f72d9733950bf53942eb3",
+ "silver": "gie_agsi/unavailability",
+ "columns": [
+  {
+   "name": "outage_date",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "facility_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "published",
+   "dtype": "Datetime(us)",
+   "lineage": false
+  },
+  {
+   "name": "start",
+   "dtype": "Datetime(us)",
+   "lineage": false
+  },
+  {
+   "name": "end",
+   "dtype": "Datetime(us)",
+   "lineage": false
+  },
+  {
+   "name": "injection",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "withdrawal",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "end_flag",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "description",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "volume",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "country_code",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "country_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "company_eic",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "company_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "facility_eic",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "data_provider",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "ingested_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2026-08-03",
+   "UGS Norg (Langelo) L-gas",
+   "2026-08-03 11:50:50",
+   "2026-08-03 12:00:00",
+   "2026-08-03 21:00:00",
+   "119.0",
+   "0.0",
+   "Estimate",
+   "Unplanned",
+   "Partial unavailability due to weather conditions.",
+   "0.0",
+   "NL",
+   "Netherlands",
+   "21X000000001075A",
+   "NAM",
+   "21W000000000015A",
+   "gie_agsi",
+   "2026-10-24 14:25:00.218317 UTC",
+   "2026-08-03 00:00:00 UTC",
+   "2026-10-24 14:25:00.195742 UTC",
+   "fix-gie-unavailability-20261024",
+   "2.0.0"
+  ],
+  [
+   "2026-08-03",
+   "UGS Norg (Langelo) L-gas",
+   "2026-08-03 12:13:21",
+   "2026-08-03 12:00:00",
+   "2026-08-03 21:00:00",
+   "179.0",
+   "0.0",
+   "Estimate",
+   "Unplanned",
+   "Partial unavailability due to weather conditions.",
+   "0.0",
+   "NL",
+   "Netherlands",
+   "21X000000001075A",
+   "NAM",
+   "21W000000000015A",
+   "gie_agsi",
+   "2026-10-24 14:25:00.218317 UTC",
+   "2026-08-03 00:00:00 UTC",
+   "2026-10-24 14:25:00.195742 UTC",
+   "fix-gie-unavailability-20261024",
+   "2.0.0"
+  ],
+  [
+   "2026-08-03",
+   "UGS Norg (Langelo) L-gas",
+   "2026-08-03 16:05:50",
+   "2026-08-03 12:00:00",
+   "2026-08-03 23:00:00",
+   "257.0",
+   "0.0",
+   "Estimate",
+   "Unplanned",
+   "Partial unavailability due to weather conditions.",
+   "0.0",
+   "NL",
+   "Netherlands",
+   "21X000000001075A",
+   "NAM",
+   "21W000000000015A",
+   "gie_agsi",
+   "2026-10-24 14:25:00.218317 UTC",
+   "2026-08-03 00:00:00 UTC",
+   "2026-10-24 14:25:00.195742 UTC",
+   "fix-gie-unavailability-20261024",
+   "2.0.0"
+  ],
+  [
+   "2026-08-03",
+   "UGS Norg (Langelo) L-gas",
+   "2026-08-04 00:19:32",
+   "2026-08-03 12:00:00",
+   "2026-08-03 23:00:00",
+   "257.0",
+   "0.0",
+   "Confirmed",
+   "Unplanned",
+   "Partial unavailability due to weather conditions.",
+   "0.0",
+   "NL",
+   "Netherlands",
+   "21X000000001075A",
+   "NAM",
+   "21W000000000015A",
+   "gie_agsi",
+   "2026-10-24 14:25:00.218317 UTC",
+   "2026-08-03 00:00:00 UTC",
+   "2026-10-24 14:25:00.195742 UTC",
+   "fix-gie-unavailability-20261024",
+   "2.0.0"
+  ],
+  [
+   "2026-08-04",
+   "UGS Norg (Langelo) L-gas",
+   "2026-08-04 10:50:56",
+   "2026-08-04 11:00:00",
+   "2026-08-04 22:00:00",
+   "274.0",
+   "0.0",
+   "Estimate",
+   "Unplanned",
+   "Due weather conditions",
+   "0.0",
+   "NL",
+   "Netherlands",
+   "21X000000001075A",
+   "NAM",
+   "21W000000000015A",
+   "gie_agsi",
+   "2026-10-24 14:25:00.247573 UTC",
+   "2026-08-04 00:00:00 UTC",
+   "2026-10-24 14:25:00.224360 UTC",
+   "fix-gie-unavailability-20261024",
+   "2.0.0"
+  ],
+  [
+   "2026-08-04",
+   "UGS Norg (Langelo) L-gas",
+   "2026-08-04 20:40:17",
+   "2026-08-04 11:00:00",
+   "2026-08-04 22:00:00",
+   "154.0",
+   "0.0",
+   "Estimate",
+   "Unplanned",
+   "Due weather conditions",
+   "0.0",
+   "NL",
+   "Netherlands",
+   "21X000000001075A",
+   "NAM",
+   "21W000000000015A",
+   "gie_agsi",
+   "2026-10-24 14:25:00.247573 UTC",
+   "2026-08-04 00:00:00 UTC",
+   "2026-10-24 14:25:00.224360 UTC",
+   "fix-gie-unavailability-20261024",
+   "2.0.0"
+  ],
+  [
+   "2026-08-04",
+   "UGS Norg (Langelo) L-gas",
+   "2026-08-04 21:43:55",
+   "2026-08-04 11:00:00",
+   "2026-08-06 03:00:00",
+   "153.0",
+   "0.0",
+   "Estimate",
+   "Unplanned",
+   "Due weather conditions",
+   "0.0",
+   "NL",
+   "Netherlands",
+   "21X000000001075A",
+   "NAM",
+   "21W000000000015A",
+   "gie_agsi",
+   "2026-10-24 14:25:00.247573 UTC",
+   "2026-08-04 00:00:00 UTC",
+   "2026-10-24 14:25:00.224360 UTC",
+   "fix-gie-unavailability-20261024",
+   "2.0.0"
+  ],
+  [
+   "2026-08-04",
+   "UGS Norg (Langelo) L-gas",
+   "2026-08-05 03:42:42",
+   "2026-08-04 11:00:00",
+   "2026-08-05 03:00:00",
+   "153.0",
+   "0.0",
+   "Confirmed",
+   "Unplanned",
+   "Due weather conditions",
+   "0.0",
+   "NL",
+   "Netherlands",
+   "21X000000001075A",
+   "NAM",
+   "21W000000000015A",
+   "gie_agsi",
+   "2026-10-24 14:25:00.247573 UTC",
+   "2026-08-04 00:00:00 UTC",
+   "2026-10-24 14:25:00.224360 UTC",
+   "fix-gie-unavailability-20261024",
+   "2.0.0"
+  ]
+ ],
+ "mark": null
+}

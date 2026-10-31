@@ -2,7 +2,7 @@
 source: entsoe
 dataset_key: outages_transmission
 vendor: ENTSO-E Transparency Platform
-last_verified: 2026-05-08
+last_verified: 2026-10-24
 layer_coverage: bronze, silver
 ---
 
@@ -71,24 +71,24 @@ Live verification 2026-05-08:
 
 **Path pattern**: `{data_root}/bronze/entsoe/outages_transmission/<year>/<month>/<day>/raw_<uuid>.xml`
 **Format**: Raw XML — one bronze file per inner ZIP entry.
-**Granularity**: One bronze XML file per outage notification.
+**Granularity**: One bronze XML file per outage notification. gridflow sends one request per zone pair per UTC day (`client.py:162-163`, `:211-226`) and files it under that day (`client.py:312`), so a multi-day outage is filed again under every day it overlaps.
 
 ### Bronze sample (single outage doc, schematic)
 
 ```xml
-<Unavailability_MarketDocument xmlns="urn:iec62325.351:tc57wg16:451-2:unavailibilitydocument:5:0">
+<Unavailability_MarketDocument xmlns="urn:iec62325.351:tc57wg16:451-6:outagedocument:3:0">
   <type>A78</type>
-  <docStatus><value>A05</value></docStatus>
+  <!-- docStatus is sent only on cancelled notices: <docStatus><value>A09</value></docStatus> -->
   <TimeSeries>
     <businessType>A53</businessType>
-    <In_Domain.mRID>10YGB----------A</In_Domain.mRID>
-    <Out_Domain.mRID>10YFR-RTE------C</Out_Domain.mRID>
+    <in_Domain.mRID>10YGB----------A</in_Domain.mRID>
+    <out_Domain.mRID>10YFR-RTE------C</out_Domain.mRID>
     <Asset_RegisteredResource>
       <mRID>...</mRID><name>IFA1</name>
     </Asset_RegisteredResource>
     <Available_Period>
       <timeInterval>...</timeInterval>
-      <resolution>PT60M</resolution>
+      <resolution>PT1M</resolution>
       <Point><position>1</position><quantity>1000</quantity></Point>
     </Available_Period>
   </TimeSeries>
@@ -102,25 +102,31 @@ Live verification 2026-05-08:
 **Path pattern**: `{data_root}/silver/entsoe/outages_transmission/year=YYYY/month=MM/outages_transmission_YYYYMMDD.parquet`
 **Transformer class**: `gridflow.silver.entsoe.outages_h7.OutagesTransmissionTransformer`
 **Pydantic schema**: `gridflow.schemas.entsoe.EntsoeOutagesTransmission`
-**Dedup key**: `(timestamp_utc, in_area_code, out_area_code, asset_mrid, timeseries_mrid)`
-**Point-in-time (as-of) field**: `available_at` (the bitemporal as-of column written by `BaseSilverTransformer`, reconstructable from bronze sidecars on reingest). `ingested_at` is the transform wall-clock (`datetime.now(UTC)`), **not** a publication vintage, so do not use it as a leak-proof as-of anchor.
+**Dedup key**: `(document_mrid, timeseries_mrid, asset_mrid, timestamp_utc)` (`outages_h7.py:66, 80-87`, `_outages.py:199-219`; gridflow `fix/entsoe-pt1m-steps`, `DATASET_VERSION` 2.0.0)
+**Row shape**: as [outages generation](outages_generation.md): one row per step of each document's highest revision in that day's bronze, clipped to the UTC day (`_outages.py:87-156`); `outage_start_utc` / `outage_end_utc` keep the period unclipped.
+**Point-in-time (as-of) field**: `available_at` (the bitemporal as-of column written by `BaseSilverTransformer`, reconstructable from bronze sidecars on reingest). `ingested_at` is the transform wall-clock (`datetime.now(UTC)`), **not** a publication vintage, so do not use it as a leak-proof as-of anchor. `published_at` is the revision's `createdDateTime` (`outages_h7.py:67-69`), the notice revision's creation time (from 8 November 2025 in silver built from bronze fetched in 2026), and it feeds `available_at`.
 
 ### Silver schema
 
 | Field | Python type | Nullable | Source field | Notes |
 |-------|-------------|----------|--------------|-------|
-| timestamp_utc | datetime[UTC] | No | Available_Period | tz-aware UTC |
-| in_area_code | str | No | `<In_Domain.mRID>` | EIC |
-| out_area_code | str | No | `<Out_Domain.mRID>` | EIC |
+| timestamp_utc | datetime[UTC] | No | `Available_Period` start + (position - 1) × resolution | Step start, tz-aware UTC (`PT1M` = one minute); clipped to the partition day. |
+| step_end_utc | datetime[UTC] | No | next declared point's start, else the period end | Step end, clipped to the next midnight. |
+| in_area_code | str | No | `<in_Domain.mRID>` (the response's casing; the request parameter is `In_Domain`) | EIC |
+| out_area_code | str | No | `<out_Domain.mRID>` | EIC |
 | asset_mrid | str | No | `<Asset_RegisteredResource><mRID>` | Default "" in canonical. Transmission asset EIC. |
 | asset_name | str | No | `<Asset_RegisteredResource><name>` | Default "" in canonical. Asset name (e.g. IFA1). |
 | outage_type | str | No | derived from `<businessType>` | "planned" / "unplanned" |
-| unavailable_mw | float | No | `<Point><quantity>` | MW |
+| unavailable_mw | float | No | `<Point><quantity>` of `Available_Period` | MW. Available or unavailable is unverified (see [outages generation](outages_generation.md)). |
 | business_type | str | No | `<businessType>` | Default "" in canonical. Raw. |
 | document_mrid | str | No | root `<mRID>` | Default "" in canonical. |
-| document_status | str | No | `<docStatus><value>` | Default "" in canonical. A05/A09/A13. |
+| revision_number | int | Yes | root `<revisionNumber>` | Highest revision in that day's bronze. |
+| document_status | str | No | `<docStatus><value>` | `A09` on cancelled notices; "" when no `docStatus` is sent. |
 | timeseries_mrid | str | No | TimeSeries `<mRID>` | Default "" in canonical. |
-| resolution | str | No | parsed | Default "" in canonical. |
+| outage_start_utc | datetime[UTC] | Yes | Period `timeInterval/start` | Not clipped. |
+| outage_end_utc | datetime[UTC] | Yes | Period `timeInterval/end` | Not clipped. |
+| resolution | str | No | parsed | Default "" in canonical. ISO code as sent; `PT1M` in every document received 2026. |
+| published_at | datetime[UTC] | Yes | root `<createdDateTime>` | Notice creation time; typed null when absent. |
 | data_provider | str | No | constant | "entsoe" |
 | ingested_at | datetime[UTC] | Yes | derived | optional |
 
@@ -138,9 +144,10 @@ Live verification 2026-05-08:
         "unavailable_mw": 1000.0,
         "business_type": "A53",
         "document_mrid": "DOC-001",
-        "document_status": "A05",
+        "revision_number": 1,
+        "document_status": "",
         "timeseries_mrid": "1",
-        "resolution": "1:00:00",
+        "resolution": "PT1M",
         "data_provider": "entsoe",
         "ingested_at": "2026-05-08T18:00:00+00:00",
     },
@@ -161,7 +168,8 @@ None implemented.
 - **Zone-pair iteration** — in code, `domain_style="zone_pair"` plus `domain_params=("In_Domain", "Out_Domain")` overrides the casing. Each interconnector pair is a separate API call; `_FLOW_PAIRS` in `client.py` iterates over GB-FR, GB-NL, GB-BE, GB-IE, plus internal European pairs.
 - **30-day window** as for other outages.
 - **ZIP archives** for multi-document responses.
-- **Outage status codes** (DocStatus): `A05` Active, `A09` Cancelled, `A13` Withdrawn.
+- **Outage status codes** (DocStatus): `A05` Active, `A09` Cancelled, `A13` Withdrawn (ENTSO-E's API documentation). gridflow sends no `DocStatus` (`endpoints.py:70-77`); responses include cancelled documents (9 of 74 documents in silver built from bronze fetched in August and September 2026), kept as `document_status` `A09`.
+- **Shared with A80** (details in [outages generation](outages_generation.md)): steps clipped to each partition day, the highest revision kept per day's bronze, not overall; `unavailable_mw` meaning unverified (gridflow backlog 13am); `BusinessType=A53` only; the `<Reason>` is not kept. 200 documents per reply at most, and gridflow sends no `offset` (largest reply 17 documents, FR to BE on 8 September 2026).
 - Asset names (e.g. "IFA1") differ across TSOs and may not match BMRS interconnector IDs verbatim.
 
 ---
