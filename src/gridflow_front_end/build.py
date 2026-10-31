@@ -16,8 +16,6 @@ Build inputs (single source of truth):
 - site/hifi/data/series/<vendor>/<slug>.json — distilled chart series, written
                                    by `gridflow-distil` from local silver and
                                    committed (see chart_spec, distil)
-- site/hifi/data/chart-specs/<vendor>/<slug>.json — staged chart specs, until
-                                   Phase 26 moves them into the vault notes
 
 Build outputs (gitignored, regenerated on every run):
 - site/hifi/data-sources/<vendor>/<slug>.html
@@ -1571,7 +1569,7 @@ def landing_chart(vault_path: Path) -> dict[str, Any] | None:
     if not note.is_file():
         return None
     doc = parse_vault_file(note, vendor_id="elexon", vendor_label=load_manifest("elexon")["name"])
-    chart, errors, _ = resolve_chart(doc)
+    chart, errors = resolve_chart(doc)
     if chart is None or errors or not doc.new_template:
         return None
     if chart_svg.check_view(chart, doc.page.chart_view):
@@ -1609,31 +1607,29 @@ def audit_vault_content(docs: list[DatasetDoc]) -> list[str]:
     return errors
 
 
-def resolve_chart(doc: DatasetDoc) -> tuple[dict[str, Any] | None, list[str], list[str]]:
-    """The committed series for one dataset, after checking it against its spec.
+def resolve_chart(doc: DatasetDoc) -> tuple[dict[str, Any] | None, list[str]]:
+    """The committed series for one dataset, after checking it against its spec (``page.chart``).
 
     Returns:
-        ``(chart, errors, notes)``. ``chart`` is ``None`` when the dataset has
+        ``(chart, errors)``. ``chart`` is ``None`` when the dataset has
         no spec, a ``none`` spec, or any error. Errors fail the build: an
         invalid spec, a spec without a series, a series without a spec, or a
         series distilled from a different spec than the one found today.
     """
     key = f"{doc.vendor_id}/{doc.slug}"
+    spec = doc.page.chart
     try:
-        spec, _origin, notes = chart_spec.resolve_spec(
-            SITE_DIR, doc.vendor_id, doc.slug, doc.page.chart
-        )
         series = chart_spec.load_series(SITE_DIR, doc.vendor_id, doc.slug)
     except (ValueError, TypeError) as exc:
-        return None, [str(exc)], []
+        return None, [str(exc)]
     if spec is not None:
         problems = chart_spec.validate_spec(spec)
         if problems:
-            return None, [f"{key}: chart spec: {p}" for p in problems], notes
+            return None, [f"{key}: chart spec: {p}" for p in problems]
     errors = chart_spec.check_series(series, spec, key)
     if errors or spec is None or spec.get("type") == "none":
-        return None, errors, notes
-    return series, [], notes
+        return None, errors
+    return series, []
 
 
 def _scoped(errors: list[str], vendor_id: str, only: frozenset[str]) -> list[str]:
@@ -1751,10 +1747,8 @@ def build_vendor(
     charts: dict[str, dict[str, Any]] = {}
     chart_errors: list[str] = []
     for doc in docs.values():
-        chart, errs, notes = resolve_chart(doc)
+        chart, errs = resolve_chart(doc)
         chart_errors.extend(errs)
-        for note in notes:
-            print(f"  NOTE: {note}", file=sys.stderr)
         if chart is not None:
             charts[doc.slug] = chart
     chart_errors = _scoped(chart_errors, vendor_id, only)
@@ -1861,10 +1855,10 @@ def build_vendor(
 
 
 def orphan_chart_files(vault_path: Path) -> list[str]:
-    """Staged specs and series files naming a dataset the site does not build.
+    """Series files naming a dataset the site does not build.
 
-    ``build_vendor`` only checks datasets in a manifest, so a spec or series
-    left behind after a dataset is dropped would otherwise sit unnoticed.
+    ``build_vendor`` only checks datasets in a manifest, so a series left
+    behind after a dataset is dropped would otherwise sit unnoticed.
     """
     known = {
         (vendor_id, d)
@@ -1872,14 +1866,11 @@ def orphan_chart_files(vault_path: Path) -> list[str]:
         if (vault_path / vendor_id).is_dir()
         for d in manifest_datasets(load_manifest(vendor_id))
     }
-    orphans: list[str] = []
-    for root in (chart_spec.staging_dir(SITE_DIR), chart_spec.series_dir(SITE_DIR)):
-        if not root.is_dir():
-            continue
-        for path in sorted(root.glob("*/*.json")):
-            if (path.parent.name, path.stem) not in known:
-                orphans.append(str(path.relative_to(REPO_ROOT)).replace("\\", "/"))
-    return orphans
+    return [
+        path.relative_to(REPO_ROOT).as_posix()
+        for path in sorted(chart_spec.series_dir(SITE_DIR).glob("*/*.json"))
+        if (path.parent.name, path.stem) not in known
+    ]
 
 
 def new_template_pages(vault_path: Path) -> set[tuple[str, str]]:

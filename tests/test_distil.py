@@ -288,7 +288,7 @@ def test_max_points_guard(tmp_path: Path) -> None:
 
 def test_payload_round_trips_and_matches_its_spec(tmp_path: Path) -> None:
     _write(tmp_path, "elexon/fuelhh", {"d1": _fuel_rows(T0, 4)})
-    payload = build_payload(SpecSource("elexon", "fuelhh", FUEL_SPEC, "staging"), tmp_path)
+    payload = build_payload(SpecSource("elexon", "fuelhh", FUEL_SPEC), tmp_path)
     text = dumps_payload(payload)
     loaded = json.loads(text)
     assert loaded == json.loads(json.dumps(payload))

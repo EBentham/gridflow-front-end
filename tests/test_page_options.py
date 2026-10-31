@@ -18,7 +18,7 @@ def _doc(vendor: str, slug: str) -> build.DatasetDoc:
 def _view(doc: build.DatasetDoc) -> tuple[dict[str, Any], list[str]]:
     arts, errors = build.check_artefacts(doc)
     assert errors == []
-    arts.chart, chart_errors, _ = build.resolve_chart(doc)
+    arts.chart, chart_errors = build.resolve_chart(doc)
     assert chart_errors == []
     return build.page_view(doc, arts, [])
 

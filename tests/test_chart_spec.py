@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import json
-from pathlib import Path
 from typing import Any
 
 import pytest
@@ -189,25 +187,13 @@ def test_check_series_catches_every_mismatch() -> None:
     assert chart_spec.check_series(ragged, LINE, key)
 
 
-def test_resolve_spec_prefers_the_vault_note(tmp_path: Path) -> None:
-    staged = chart_spec.staged_spec_path(tmp_path, "elexon", "fuelhh")
-    staged.parent.mkdir(parents=True)
-    staged.write_text(json.dumps(LINE), encoding="utf-8")
-    spec, origin, notes = chart_spec.resolve_spec(tmp_path, "elexon", "fuelhh", None)
-    assert (spec, origin, notes) == (LINE, "staging", [])
-    vault = _with(LINE, unit="GW")
-    spec, origin, notes = chart_spec.resolve_spec(tmp_path, "elexon", "fuelhh", vault)
-    assert spec == vault and origin == "vault" and len(notes) == 1
-
-
 def test_committed_specs_are_valid_and_their_series_current() -> None:
     series_files = sorted(chart_spec.series_dir(SITE_DIR).glob("*/*.json"))
     assert series_files
     for path in series_files:
         vendor, dataset = path.parent.name, path.stem
         note = build.note_path(DEFAULT_VAULT, vendor, dataset)
-        vault_chart = parse_page_fields(note.read_text(encoding="utf-8"))[0].chart
-        spec, _origin, _notes = chart_spec.resolve_spec(SITE_DIR, vendor, dataset, vault_chart)
+        spec = parse_page_fields(note.read_text(encoding="utf-8"))[0].chart
         assert spec is not None, path
         assert chart_spec.validate_spec(spec) == [], path
         series = chart_spec.load_series(SITE_DIR, vendor, dataset)

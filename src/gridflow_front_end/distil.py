@@ -48,12 +48,11 @@ class DistilError(Exception):
 
 @dataclass(frozen=True)
 class SpecSource:
-    """One dataset's resolved spec and where it came from."""
+    """One dataset's spec, from its vault note's ``page.chart``."""
 
     vendor: str
     dataset: str
     spec: dict[str, Any]
-    origin: str
 
     @property
     def key(self) -> str:
@@ -427,11 +426,9 @@ def build_payload(source: SpecSource, silver_root: Path) -> dict[str, Any]:
     return {
         "dataset": source.key,
         "generated_by": GENERATED_BY,
-        "spec_origin": source.origin,
         "spec_sha256": chart_spec.spec_digest(source.spec),
         "type": source.spec["type"],
         "unit": source.spec["unit"],
-        "caption": source.spec.get("caption", ""),
         "value_column": source.spec.get("value"),
         "aggregation": source.spec["aggregation"],
         "window": chart["window"],
@@ -469,20 +466,13 @@ def dumps_payload(payload: Mapping[str, Any]) -> str:
     return "\n".join(lines) + "\n"
 
 
-def discover_specs(
-    site_dir: Path, vault_path: Path
-) -> tuple[list[SpecSource], list[str], list[str]]:
-    """Every dataset with a spec, from vault notes and the staging directory.
+def discover_specs(site_dir: Path, vault_path: Path) -> tuple[list[SpecSource], list[str]]:
+    """Every dataset whose vault note carries a chart spec (``page.chart``).
 
     Returns:
-        ``(sources, errors, notes)``. Errors are invalid specs or unreadable
-        files; notes are non-fatal (a staged spec shadowed by a vault one).
+        ``(sources, errors)``. Errors are malformed page blocks or invalid specs.
     """
-    candidates: set[tuple[str, str]] = set()
-    staging = chart_spec.staging_dir(site_dir)
-    if staging.is_dir():
-        candidates |= {(p.parent.name, p.stem) for p in staging.glob("*/*.json")}
-    vault_charts: dict[tuple[str, str], dict[str, Any]] = {}
+    charts: dict[tuple[str, str], dict[str, Any]] = {}
     errors: list[str] = []
     if vault_path.is_dir():
         for note in sorted(vault_path.glob("*/*.md")):
@@ -491,27 +481,15 @@ def discover_specs(
             key = (note.parent.name, artefacts.note_key(site_dir, note.parent.name, note.stem))
             errors.extend(f"{key[0]}/{key[1]}: {e}" for e in page_errors)
             if fields.chart is not None:
-                vault_charts[key] = fields.chart
-                candidates.add(key)
+                charts[key] = fields.chart
     sources: list[SpecSource] = []
-    notes: list[str] = []
-    for vendor, dataset in sorted(candidates):
-        try:
-            spec, origin, spec_notes = chart_spec.resolve_spec(
-                site_dir, vendor, dataset, vault_charts.get((vendor, dataset))
-            )
-        except (ValueError, TypeError) as exc:
-            errors.append(str(exc))
-            continue
-        notes.extend(spec_notes)
-        if spec is None:
-            continue
+    for (vendor, dataset), spec in sorted(charts.items()):
         problems = chart_spec.validate_spec(spec)
         if problems:
             errors.extend(f"{vendor}/{dataset}: {p}" for p in problems)
             continue
-        sources.append(SpecSource(vendor, dataset, spec, origin))
-    return sources, errors, notes
+        sources.append(SpecSource(vendor, dataset, dict(spec)))
+    return sources, errors
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -554,9 +532,7 @@ def main(argv: list[str] | None = None) -> int:
     vault_path = resolve_vault_path(args.vault_path)
     print(f"[gridflow-distil] silver: {silver_root}")
     print(f"[gridflow-distil] vault:  {vault_path}")
-    sources, errors, notes = discover_specs(SITE_DIR, vault_path)
-    for note in notes:
-        print(f"  NOTE: {note}")
+    sources, errors = discover_specs(SITE_DIR, vault_path)
     if args.dataset:
         wanted = set(args.dataset)
         unknown = wanted - {s.key for s in sources}
@@ -591,7 +567,7 @@ def main(argv: list[str] | None = None) -> int:
             else "no time axis"
         )
         print(
-            f"  {source.key} ({source.origin}): {len(payload['series'])} series x "
+            f"  {source.key}: {len(payload['series'])} series x "
             f"{len(payload['x'])} points, {prov['rows_used']} rows used, {span}"
         )
         if prov.get("unmapped_groups"):

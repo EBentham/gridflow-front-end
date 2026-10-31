@@ -457,8 +457,8 @@ def front_matter_text(text: str) -> str | None:
 def _jsonable(value: object) -> object:
     """YAML reads an unquoted ``2026-09-01`` as a date; specs are JSON-shaped.
 
-    Normalising here keeps a vault spec and its staged JSON twin byte-equal
-    under ``chart_spec.spec_digest``.
+    Normalising here keeps a spec JSON-shaped, as ``chart_spec.spec_digest`` and
+    the copy of the spec in its series file need.
     """
     if isinstance(value, (dt.date, dt.datetime)):
         return value.isoformat()

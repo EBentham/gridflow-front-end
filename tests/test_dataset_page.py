@@ -32,7 +32,7 @@ def _new_template_docs() -> list[build.DatasetDoc]:
 def _render(doc: build.DatasetDoc) -> str:
     arts, errors = build.check_artefacts(doc)
     assert errors == []
-    chart, chart_errors, _ = build.resolve_chart(doc)
+    chart, chart_errors = build.resolve_chart(doc)
     assert chart_errors == []
     arts.chart = chart
     members = []
