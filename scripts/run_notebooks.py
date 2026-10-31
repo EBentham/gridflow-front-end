@@ -15,7 +15,7 @@ stored as data, not HTML: the help card's verbs, a DataFrame's cells as pandas
 printed them, text, and each plot as a PNG beside the JSON:
 
     site/hifi/data/notebooks/<vendor>/<dataset>.json
-    site/hifi/data/notebooks/<vendor>/<dataset>-<n>.png
+    site/hifi/data/notebooks/<vendor>/<dataset>-<n>-<k>.png    (output k of cell n)
 
 ``gridflow-build`` renders the notebook drawer from these files and checks
 their cell digest, so CI never needs the data or a kernel. A cell that raises
@@ -91,7 +91,7 @@ def png_size(data: bytes) -> tuple[int, int]:
 def outputs(cell: Any, stem: str, images: dict[str, bytes]) -> list[dict[str, Any]]:
     """One executed cell's outputs as data; plot PNGs are collected into ``images``."""
     out: list[dict[str, Any]] = []
-    for o in cell.outputs:
+    for k, o in enumerate(cell.outputs, 1):
         if o.output_type == "error":
             raise RuntimeError(f"cell [{cell.execution_count}] raised {o.ename}: {o.evalue}")
         if o.output_type == "stream":
@@ -101,7 +101,7 @@ def outputs(cell: Any, stem: str, images: dict[str, bytes]) -> list[dict[str, An
         data = o.get("data", {})
         if "image/png" in data:
             png = base64.b64decode(data["image/png"])
-            name = f"{stem}-{cell.execution_count}.png"
+            name = f"{stem}-{cell.execution_count}-{k}.png"  # a cell can draw more than one
             images[name] = png
             w, h = png_size(png)
             out.append({"kind": "image", "src": name, "width": w, "height": h})
