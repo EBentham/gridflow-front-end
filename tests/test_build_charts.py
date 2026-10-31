@@ -12,8 +12,8 @@ SEEDED_MARKERS = ("Illustrative snapshot", "seeded", '"seed"', "stackedArea")
 
 
 def _doc(vendor: str, slug: str) -> build.DatasetDoc:
-    cfg = build.REAL_VENDORS[vendor]
-    return build.parse_vault_file(DEFAULT_VAULT / vendor / f"{slug}.md", vendor, cfg["label"])
+    label = build.load_manifest(vendor)["name"]
+    return build.parse_vault_file(DEFAULT_VAULT / vendor / f"{slug}.md", vendor, label)
 
 
 def test_stale_series_fails_the_chart_check(tmp_path, monkeypatch) -> None:
@@ -24,8 +24,8 @@ def test_stale_series_fails_the_chart_check(tmp_path, monkeypatch) -> None:
         chart_spec.series_path(SITE_DIR, "elexon", "fuelhh").read_text(encoding="utf-8"),
         encoding="utf-8",
     )
-    monkeypatch.setattr(build, "SITE_DIR", site)
     doc = _doc("elexon", "fuelhh")
+    monkeypatch.setattr(build, "SITE_DIR", site)
     assert doc.page.chart is not None
     changed = dict(doc.page.chart, unit="GW")
     doc.page = dataclasses.replace(doc.page, chart=changed)

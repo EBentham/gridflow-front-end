@@ -47,7 +47,6 @@ def vault(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
             manifest if vendor_id == VENDOR else REAL_LOAD_MANIFEST(vendor_id)
         ),
     )
-    monkeypatch.setattr(build, "_MANIFEST_SLUGS_CACHE", None)
     notes = tmp_path / "vault" / VENDOR
     notes.mkdir(parents=True)
     (notes / "pkg-two.md").write_text(_note("pkg-two", ["t_b", "t_a"]), encoding="utf-8")

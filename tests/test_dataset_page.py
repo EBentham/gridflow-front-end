@@ -21,8 +21,8 @@ LOCAL_DATA = re.compile(
 
 
 def _doc(vendor: str, slug: str) -> build.DatasetDoc:
-    cfg = build.REAL_VENDORS[vendor]
-    return build.read_note(build.note_path(DEFAULT_VAULT, vendor, slug), slug, vendor, cfg["label"])
+    label = build.load_manifest(vendor)["name"]
+    return build.read_note(build.note_path(DEFAULT_VAULT, vendor, slug), slug, vendor, label)
 
 
 def _new_template_docs() -> list[build.DatasetDoc]:
@@ -358,3 +358,13 @@ def test_a_family_members_caveat_sits_under_the_member_and_with_the_frame_it_sho
     silver = _silver(html)
     assert "carry no publication time" in silver and "replaced each day" not in silver
     assert "Open the demo notebook" in html
+
+
+def test_page_words_link_only_to_the_web() -> None:
+    """A vault `.md` target or a `#` fragment has no published page or anchor, so it reads as text."""
+    md = build._markdown_inline
+    assert md("[NESO](https://www.neso.energy/)") == '<a href="https://www.neso.energy/">NESO</a>'
+    assert md("see [caveats](#caveats)") == "see caveats"
+    assert md("see [fuelinst](../elexon/fuelinst.md#overview)") == "see fuelinst"
+    assert md("[x](java\tscript:void)") == "x"
+    assert md("[x](//evil.example/)") == "x"

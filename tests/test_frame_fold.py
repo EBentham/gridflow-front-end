@@ -10,7 +10,7 @@ from gridflow_front_end.paths import DEFAULT_VAULT
 
 def _frame(vendor: str, slug: str) -> dict:
     doc = build.parse_vault_file(
-        DEFAULT_VAULT / vendor / f"{slug}.md", vendor, build.REAL_VENDORS[vendor]["label"]
+        DEFAULT_VAULT / vendor / f"{slug}.md", vendor, build.load_manifest(vendor)["name"]
     )
     arts, errors = build.check_artefacts(doc)
     assert errors == []

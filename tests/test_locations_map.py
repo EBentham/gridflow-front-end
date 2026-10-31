@@ -182,19 +182,15 @@ def test_orphan_locations_is_empty_for_the_mirror() -> None:
     ("slug", "n"), [("historical_demand", 7), ("historical_wind", 12), ("historical_solar", 6)]
 )
 def test_the_three_pages_carry_the_map(slug: str, n: int) -> None:
-    cfg = build.REAL_VENDORS["openmeteo"]
-    doc = build.parse_vault_file(
-        DEFAULT_VAULT / "openmeteo" / f"{slug}.md", "openmeteo", cfg["label"]
-    )
+    label = build.load_manifest("openmeteo")["name"]
+    doc = build.parse_vault_file(DEFAULT_VAULT / "openmeteo" / f"{slug}.md", "openmeteo", label)
     arts, errors = build.check_artefacts(doc)
     assert errors == []
     chart, chart_errors, _ = build.resolve_chart(doc)
     assert chart_errors == []
     arts.chart = chart
     members = [
-        build.parse_vault_file(
-            DEFAULT_VAULT / "openmeteo" / f"{m.dataset}.md", "openmeteo", cfg["label"]
-        )
+        build.parse_vault_file(DEFAULT_VAULT / "openmeteo" / f"{m.dataset}.md", "openmeteo", label)
         for m in doc.page.family.members
     ]
     view, view_errors = build.page_view(doc, arts, members)

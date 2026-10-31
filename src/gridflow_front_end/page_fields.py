@@ -128,8 +128,8 @@ Why front matter and not a fenced block in the body: every vault tool already
 extractor, which runs any fenced block containing the word "curl" against the
 live API. ``propagate-vault-mirror`` copies notes verbatim.
 
-A note with no ``page`` block renders on the legacy template until the Phase 26
-fan-out writes one. A note WITH a ``page`` block is on the new template, and
+A note with no ``page`` block renders as a blank page (its hero's name and id
+only). A note WITH a ``page`` block is on the new template, and
 every required field must be present and inside its word budget
 (``anatomy_errors``); the build fails otherwise.
 
