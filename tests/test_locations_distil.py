@@ -214,6 +214,34 @@ def test_solar_days_follow_the_hour_ending_stamp(tmp_path: Path) -> None:
     assert st["darkest_kwh_m2"] == pytest.approx((december * 0.5 + 3.0) / december, abs=1e-3)
 
 
+# The first stamp of a complete site and its values. Instants are stamped at the start of their
+# hour, irradiance at the end of it.
+COMPLETE = {
+    "historical_demand": (START, {"temperature_2m_c": 5.0, "hdd_k": 10.5}),
+    "historical_wind": (START, {"wind_speed_100m_mps": 5.0}),
+    "historical_solar": (START + dt.timedelta(hours=1), {"shortwave_radiation_wm2": 100.0}),
+}
+
+
+@pytest.mark.parametrize("dataset", sorted(COMPLETE))
+def test_a_repeated_hour_is_rejected(tmp_path: Path, dataset: str) -> None:
+    gridflow = _gridflow(tmp_path)
+    first, values = COMPLETE[dataset]
+    stamps = _stamps(first, HOURS)
+    sites = locations.parse_locations(ENDPOINTS)[locations.DATASETS[dataset][0]]
+    for case, these, message in (
+        # silver is not deduplicated across files: a second run's file can repeat an hour where
+        # one is missing, and the row count alone still matches
+        ("instead", stamps[:-1] + stamps[-2:-1], "35063 of 35064 hours in 35064 rows"),
+        ("as well", stamps + stamps[-1:], "35064 of 35064 hours in 35065 rows"),
+    ):
+        cols = {c: [v] * len(these) for c, v in values.items()}
+        frame = pl.concat([_site_rows(s.name, 51.0, 0.0, these, **cols) for s in sites])
+        silver = _write(tmp_path / case, dataset, frame)
+        with pytest.raises(locations.LocationsError, match=message):
+            locations.build_payload(dataset, silver, gridflow)
+
+
 def test_distil_flag_runs_the_locations_step(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:

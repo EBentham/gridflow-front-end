@@ -219,7 +219,8 @@ def _demand(lf: pl.LazyFrame) -> dict[str, dict[str, Any]]:
     )
     years = YEARS[1] - YEARS[0] + 1
     agg = df.group_by("location").agg(
-        pl.len().alias("hours"),
+        pl.col("timestamp_utc").n_unique().alias("hours"),
+        pl.len().alias("rows"),
         pl.col("temperature_2m_c").null_count().alias("nulls"),
         pl.col("temperature_2m_c").mean().alias("mean"),
         pl.col("temperature_2m_c").min().alias("coldest"),
@@ -236,6 +237,7 @@ def _demand(lf: pl.LazyFrame) -> dict[str, dict[str, Any]]:
     for row in agg.iter_rows(named=True):
         out[row["location"]] = {
             "hours": row["hours"],
+            "rows": row["rows"],
             "nulls": row["nulls"] + row["hdd_nulls"],
             "stats": {
                 "mean_temp_c": _r(row["mean"]),
@@ -253,7 +255,8 @@ def _wind(lf: pl.LazyFrame) -> dict[str, dict[str, Any]]:
         _instant_rows(lf, "wind_speed_100m_mps")
         .group_by("location")
         .agg(
-            pl.len().alias("hours"),
+            pl.col("timestamp_utc").n_unique().alias("hours"),
+            pl.len().alias("rows"),
             v.null_count().alias("nulls"),
             v.mean().alias("mean"),
             v.quantile(0.9, interpolation="linear").alias("p90"),
@@ -263,6 +266,7 @@ def _wind(lf: pl.LazyFrame) -> dict[str, dict[str, Any]]:
     return {
         row["location"]: {
             "hours": row["hours"],
+            "rows": row["rows"],
             "nulls": row["nulls"],
             "stats": {"mean_100m_mps": _r(row["mean"]), "p90_100m_mps": _r(row["p90"])},
         }
@@ -284,13 +288,17 @@ def _solar(lf: pl.LazyFrame) -> dict[str, dict[str, Any]]:
         hourly.group_by("location", pl.col("begins").dt.date().alias("day"))
         .agg(
             (pl.col("shortwave_radiation_wm2").sum() / 1000).alias("kwh"),
-            pl.len().alias("hours"),
+            pl.col("timestamp_utc").n_unique().alias("hours"),
+            pl.len().alias("rows"),
             pl.col("shortwave_radiation_wm2").null_count().alias("nulls"),
         )
         .collect()
     )
     totals = daily.group_by("location").agg(
-        pl.col("hours").sum(), pl.col("nulls").sum(), pl.col("kwh").mean().alias("mean")
+        pl.col("hours").sum(),
+        pl.col("rows").sum(),
+        pl.col("nulls").sum(),
+        pl.col("kwh").mean().alias("mean"),
     )
     months = (
         daily.group_by("location", pl.col("day").dt.month().alias("month"))
@@ -303,6 +311,7 @@ def _solar(lf: pl.LazyFrame) -> dict[str, dict[str, Any]]:
         best, worst = ranked.row(0, named=True), ranked.row(ranked.height - 1, named=True)
         out[row["location"]] = {
             "hours": row["hours"],
+            "rows": row["rows"],
             "nulls": row["nulls"],
             "stats": {
                 "mean_daily_kwh_m2": _r(row["mean"]),
@@ -328,7 +337,9 @@ def build_payload(dataset: str, silver_root: Path, gridflow: Path) -> dict[str, 
 
     Raises:
         LocationsError: The code and silver disagree on the sites, a site answers from more than
-            one grid point, or a site lacks an hour (or a value) in the window.
+            one grid point, or a site lacks an hour (or a value) in the window or repeats one.
+            Silver is not deduplicated across files, so a repeated hour could otherwise stand in
+            for a missing one.
     """
     tuple_name, kind = DATASETS[dataset]
     sites, digest = load_sites(gridflow, tuple_name)
@@ -356,9 +367,10 @@ def build_payload(dataset: str, silver_root: Path, gridflow: Path) -> dict[str, 
         if mine.height != 1:
             raise LocationsError(f"{dataset}/{site.name}: answered from {mine.height} grid points")
         got = stats[site.name]
-        if got["hours"] != hours or got["nulls"]:
+        if got["hours"] != hours or got["rows"] != hours or got["nulls"]:
             raise LocationsError(
-                f"{dataset}/{site.name}: {got['hours']} of {hours} hours, {got['nulls']} null values"
+                f"{dataset}/{site.name}: {got['hours']} of {hours} hours in {got['rows']} rows, "
+                f"{got['nulls']} null values"
             )
         lat, lon = float(mine["latitude"][0]), float(mine["longitude"][0])
         rows.append(
