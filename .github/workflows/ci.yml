@@ -133,3 +133,7 @@ jobs:
       # all vendor pages) mechanical on every PR, not just at deploy time.
       - name: Verify build idempotence (CI-03)
         run: uv run --extra build gridflow-build --check
+
+      # The distil extra brings Polars, so the tests that read parquet run instead of skipping.
+      - name: Run tests
+        run: uv run --extra build --extra distil pytest -x -q
