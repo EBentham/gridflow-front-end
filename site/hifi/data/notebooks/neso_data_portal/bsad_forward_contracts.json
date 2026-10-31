@@ -1,0 +1,234 @@
+{
+ "dataset": "neso_data_portal/bsad_forward_contracts",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "99dabac4d5fed70c0e2fffe5d101f17a0ba152f3f46d943118c3f042e0800536",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.neso_data_portal.query(\"bsad_forward_contracts\", \"2017-04-01\", \"2026-09-30\")\ndf = df.sort_values(\"timestamp_utc\")",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df.loc[df.bca > 1_000_000, [\"settlement_date\", \"settlement_period\", \"bca\", \"bva\", \"sca\", \"sva\"]].tail()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "settlement_date",
+      "settlement_period",
+      "bca",
+      "bva",
+      "sca",
+      "sva"
+     ],
+     "index": [
+      "133997",
+      "144326",
+      "144327",
+      "144328",
+      "144329"
+     ],
+     "rows": [
+      [
+       "2025-11-21",
+       "28",
+       "1023409.73",
+       "2371.0",
+       "0.0",
+       "0.0"
+      ],
+      [
+       "2026-06-24",
+       "39",
+       "1132579.97",
+       "1150.0",
+       "0.0",
+       "0.0"
+      ],
+      [
+       "2026-06-24",
+       "40",
+       "1132579.97",
+       "1150.0",
+       "0.0",
+       "0.0"
+      ],
+      [
+       "2026-06-24",
+       "41",
+       "1268819.72",
+       "1150.0",
+       "0.0",
+       "0.0"
+      ],
+      [
+       "2026-06-24",
+       "42",
+       "1268819.72",
+       "1150.0",
+       "0.0",
+       "0.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "s = df.settlement_date.astype(\"datetime64[ns]\")\nfy = (s.dt.year - (s.dt.month < 4)).rename(\"year_from_april\")\ndf.groupby(fy)[[\"bva\", \"sva\", \"bca\", \"sca\"]].sum().round(0).reset_index()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "year_from_april",
+      "bva",
+      "sva",
+      "bca",
+      "sca"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8"
+     ],
+     "rows": [
+      [
+       "2017",
+       "188975.0",
+       "654298.0",
+       "14058347.0",
+       "12827099.0"
+      ],
+      [
+       "2018",
+       "295993.0",
+       "196691.0",
+       "22360166.0",
+       "4557521.0"
+      ],
+      [
+       "2019",
+       "423765.0",
+       "731112.0",
+       "22794353.0",
+       "12513364.0"
+      ],
+      [
+       "2021",
+       "392820.0",
+       "783250.0",
+       "101816058.0",
+       "41194669.0"
+      ],
+      [
+       "2022",
+       "1818534.0",
+       "1122597.0",
+       "618476494.0",
+       "48550449.0"
+      ],
+      [
+       "2023",
+       "773688.0",
+       "1948916.0",
+       "99747274.0",
+       "53978941.0"
+      ],
+      [
+       "2024",
+       "535214.0",
+       "939127.0",
+       "89923762.0",
+       "24093714.0"
+      ],
+      [
+       "2025",
+       "596911.0",
+       "671027.0",
+       "108725584.0",
+       "17365754.0"
+      ],
+      [
+       "2026",
+       "406737.0",
+       "349555.0",
+       "83254280.0",
+       "12889708.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "source": "day = df[df.settlement_period <= 48]\nday.groupby(\"settlement_period\")[[\"bva\", \"sva\"]].mean().plot.bar(\n    ylabel=\"mean MWh per period\", color=[\"#155A6E\", \"#C77E3C\"], figsize=(8, 3.5));",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "bsad_forward_contracts-6.png",
+     "width": 699,
+     "height": 340
+    }
+   ]
+  }
+ ]
+}

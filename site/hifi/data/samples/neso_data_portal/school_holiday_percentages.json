@@ -1,0 +1,196 @@
+{
+ "dataset": "neso_data_portal/school_holiday_percentages",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "16792eb56415628351d4ad29f0257bed505b584944fd669e1b35a8b392da27a4",
+ "silver": "neso_data_portal/school_holiday_percentages",
+ "columns": [
+  {
+   "name": "local_authority",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "date",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "school_holiday",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "multiplier",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "resource_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "Birmingham",
+   "2025-07-02",
+   "0.0",
+   "0.020941",
+   "73c68bc9-d08b-4173-bfef-6ba1ac0684a9",
+   "2025-07-15 11:27:03.752628 UTC",
+   "2026-10-08 11:17:26.512555 UTC",
+   "bronze/neso_data_portal/school_holiday_percentages/2026/10/08/raw_20261008T111726Z_73c68bc9-d08b-4173-bfef-6ba1ac0684a9_32585b63.csv",
+   "2026-10-08 11:17:26.512555 UTC",
+   "2026-10-08 11:17:26.512555 UTC",
+   "2025-07-15 11:27:03.752628 UTC",
+   "620dcfa1-a01b-4782-ad63-4c67a2798d94",
+   "1+e1"
+  ],
+  [
+   "Cardiff",
+   "2025-07-02",
+   "0.0",
+   "0.005266",
+   "73c68bc9-d08b-4173-bfef-6ba1ac0684a9",
+   "2025-07-15 11:27:03.752628 UTC",
+   "2026-10-08 11:17:26.512555 UTC",
+   "bronze/neso_data_portal/school_holiday_percentages/2026/10/08/raw_20261008T111726Z_73c68bc9-d08b-4173-bfef-6ba1ac0684a9_32585b63.csv",
+   "2026-10-08 11:17:26.512555 UTC",
+   "2026-10-08 11:17:26.512555 UTC",
+   "2025-07-15 11:27:03.752628 UTC",
+   "620dcfa1-a01b-4782-ad63-4c67a2798d94",
+   "1+e1"
+  ],
+  [
+   "Edinburgh",
+   "2025-07-02",
+   "1.0",
+   "0.006834",
+   "73c68bc9-d08b-4173-bfef-6ba1ac0684a9",
+   "2025-07-15 11:27:03.752628 UTC",
+   "2026-10-08 11:17:26.512555 UTC",
+   "bronze/neso_data_portal/school_holiday_percentages/2026/10/08/raw_20261008T111726Z_73c68bc9-d08b-4173-bfef-6ba1ac0684a9_32585b63.csv",
+   "2026-10-08 11:17:26.512555 UTC",
+   "2026-10-08 11:17:26.512555 UTC",
+   "2025-07-15 11:27:03.752628 UTC",
+   "620dcfa1-a01b-4782-ad63-4c67a2798d94",
+   "1+e1"
+  ],
+  [
+   "Essex",
+   "2025-07-02",
+   "0.0",
+   "0.021482",
+   "73c68bc9-d08b-4173-bfef-6ba1ac0684a9",
+   "2025-07-15 11:27:03.752628 UTC",
+   "2026-10-08 11:17:26.512555 UTC",
+   "bronze/neso_data_portal/school_holiday_percentages/2026/10/08/raw_20261008T111726Z_73c68bc9-d08b-4173-bfef-6ba1ac0684a9_32585b63.csv",
+   "2026-10-08 11:17:26.512555 UTC",
+   "2026-10-08 11:17:26.512555 UTC",
+   "2025-07-15 11:27:03.752628 UTC",
+   "620dcfa1-a01b-4782-ad63-4c67a2798d94",
+   "1+e1"
+  ],
+  [
+   "Glasgow",
+   "2025-07-02",
+   "1.0",
+   "0.010138",
+   "73c68bc9-d08b-4173-bfef-6ba1ac0684a9",
+   "2025-07-15 11:27:03.752628 UTC",
+   "2026-10-08 11:17:26.512555 UTC",
+   "bronze/neso_data_portal/school_holiday_percentages/2026/10/08/raw_20261008T111726Z_73c68bc9-d08b-4173-bfef-6ba1ac0684a9_32585b63.csv",
+   "2026-10-08 11:17:26.512555 UTC",
+   "2026-10-08 11:17:26.512555 UTC",
+   "2025-07-15 11:27:03.752628 UTC",
+   "620dcfa1-a01b-4782-ad63-4c67a2798d94",
+   "1+e1"
+  ],
+  [
+   "Kent",
+   "2025-07-02",
+   "0.0",
+   "0.026189",
+   "73c68bc9-d08b-4173-bfef-6ba1ac0684a9",
+   "2025-07-15 11:27:03.752628 UTC",
+   "2026-10-08 11:17:26.512555 UTC",
+   "bronze/neso_data_portal/school_holiday_percentages/2026/10/08/raw_20261008T111726Z_73c68bc9-d08b-4173-bfef-6ba1ac0684a9_32585b63.csv",
+   "2026-10-08 11:17:26.512555 UTC",
+   "2026-10-08 11:17:26.512555 UTC",
+   "2025-07-15 11:27:03.752628 UTC",
+   "620dcfa1-a01b-4782-ad63-4c67a2798d94",
+   "1+e1"
+  ],
+  [
+   "North Lanarkshire",
+   "2025-07-02",
+   "1.0",
+   "0.006744",
+   "73c68bc9-d08b-4173-bfef-6ba1ac0684a9",
+   "2025-07-15 11:27:03.752628 UTC",
+   "2026-10-08 11:17:26.512555 UTC",
+   "bronze/neso_data_portal/school_holiday_percentages/2026/10/08/raw_20261008T111726Z_73c68bc9-d08b-4173-bfef-6ba1ac0684a9_32585b63.csv",
+   "2026-10-08 11:17:26.512555 UTC",
+   "2026-10-08 11:17:26.512555 UTC",
+   "2025-07-15 11:27:03.752628 UTC",
+   "620dcfa1-a01b-4782-ad63-4c67a2798d94",
+   "1+e1"
+  ],
+  [
+   "Total",
+   "2025-07-02",
+   "0.075",
+   "1.0",
+   "73c68bc9-d08b-4173-bfef-6ba1ac0684a9",
+   "2025-07-15 11:27:03.752628 UTC",
+   "2026-10-08 11:17:26.512555 UTC",
+   "bronze/neso_data_portal/school_holiday_percentages/2026/10/08/raw_20261008T111726Z_73c68bc9-d08b-4173-bfef-6ba1ac0684a9_32585b63.csv",
+   "2026-10-08 11:17:26.512555 UTC",
+   "2026-10-08 11:17:26.512555 UTC",
+   "2025-07-15 11:27:03.752628 UTC",
+   "620dcfa1-a01b-4782-ad63-4c67a2798d94",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

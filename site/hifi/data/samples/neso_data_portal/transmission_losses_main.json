@@ -1,0 +1,209 @@
+{
+ "dataset": "neso_data_portal/transmission_losses_main",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "b62edef0d0fd677b5721e67a3f75f52f964f5a5d0ea15d48d5bcb8f1574ef58f",
+ "silver": "neso_data_portal/transmission_losses_main",
+ "columns": [
+  {
+   "name": "month_vendor",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "gb_totals",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "nget",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "spt",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "shetl",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "financial_year",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "Aug-19",
+   "0.541",
+   "0.442",
+   "0.066",
+   "0.034",
+   "2019-20",
+   "2026-09-25 13:27:36.411183 UTC",
+   "2026-10-08 11:39:37.187111 UTC",
+   "bronze/neso_data_portal/transmission_losses_main/2026/10/08/raw_20261008T113937Z_fddc307d-fc5a-458d-809f-2ad9a697b142_ced65f50.csv",
+   "2026-10-08 11:39:37.187111 UTC",
+   "2026-10-08 11:39:37.187111 UTC",
+   "2026-09-25 13:27:36.411183 UTC",
+   "5c3d0245-4804-44cd-a6ad-90243351b175",
+   "1+e1"
+  ],
+  [
+   "Aug-20",
+   "0.47",
+   "0.383",
+   "0.054",
+   "0.033",
+   "2020-21",
+   "2026-09-25 13:27:36.411183 UTC",
+   "2026-10-08 11:39:37.187111 UTC",
+   "bronze/neso_data_portal/transmission_losses_main/2026/10/08/raw_20261008T113937Z_fddc307d-fc5a-458d-809f-2ad9a697b142_ced65f50.csv",
+   "2026-10-08 11:39:37.187111 UTC",
+   "2026-10-08 11:39:37.187111 UTC",
+   "2026-09-25 13:27:36.411183 UTC",
+   "5c3d0245-4804-44cd-a6ad-90243351b175",
+   "1+e1"
+  ],
+  [
+   "Aug-21",
+   "0.437",
+   "0.361",
+   "0.047",
+   "0.029",
+   "2021-22",
+   "2026-09-25 13:27:36.411183 UTC",
+   "2026-10-08 11:39:37.187111 UTC",
+   "bronze/neso_data_portal/transmission_losses_main/2026/10/08/raw_20261008T113937Z_fddc307d-fc5a-458d-809f-2ad9a697b142_ced65f50.csv",
+   "2026-10-08 11:39:37.187111 UTC",
+   "2026-10-08 11:39:37.187111 UTC",
+   "2026-09-25 13:27:36.411183 UTC",
+   "5c3d0245-4804-44cd-a6ad-90243351b175",
+   "1+e1"
+  ],
+  [
+   "Aug-22",
+   "0.528",
+   "0.433",
+   "0.058",
+   "0.037",
+   "2022-23",
+   "2026-09-25 13:27:36.411183 UTC",
+   "2026-10-08 11:39:37.187111 UTC",
+   "bronze/neso_data_portal/transmission_losses_main/2026/10/08/raw_20261008T113937Z_fddc307d-fc5a-458d-809f-2ad9a697b142_ced65f50.csv",
+   "2026-10-08 11:39:37.187111 UTC",
+   "2026-10-08 11:39:37.187111 UTC",
+   "2026-09-25 13:27:36.411183 UTC",
+   "5c3d0245-4804-44cd-a6ad-90243351b175",
+   "1+e1"
+  ],
+  [
+   "Aug-23",
+   "0.53",
+   "0.436",
+   "0.058",
+   "0.036",
+   "2023-24",
+   "2026-09-25 13:27:36.411183 UTC",
+   "2026-10-08 11:39:37.187111 UTC",
+   "bronze/neso_data_portal/transmission_losses_main/2026/10/08/raw_20261008T113937Z_fddc307d-fc5a-458d-809f-2ad9a697b142_ced65f50.csv",
+   "2026-10-08 11:39:37.187111 UTC",
+   "2026-10-08 11:39:37.187111 UTC",
+   "2026-09-25 13:27:36.411183 UTC",
+   "5c3d0245-4804-44cd-a6ad-90243351b175",
+   "1+e1"
+  ],
+  [
+   "Aug-24",
+   "0.6283",
+   "0.5171",
+   "0.0685",
+   "0.0427",
+   "2024-25",
+   "2026-09-25 13:27:36.411183 UTC",
+   "2026-10-08 11:39:37.187111 UTC",
+   "bronze/neso_data_portal/transmission_losses_main/2026/10/08/raw_20261008T113937Z_fddc307d-fc5a-458d-809f-2ad9a697b142_ced65f50.csv",
+   "2026-10-08 11:39:37.187111 UTC",
+   "2026-10-08 11:39:37.187111 UTC",
+   "2026-09-25 13:27:36.411183 UTC",
+   "5c3d0245-4804-44cd-a6ad-90243351b175",
+   "1+e1"
+  ],
+  [
+   "Aug-25",
+   "0.4636",
+   "0.3816",
+   "0.0505",
+   "0.0315",
+   "2025-26",
+   "2026-09-25 13:27:36.411183 UTC",
+   "2026-10-08 11:39:37.187111 UTC",
+   "bronze/neso_data_portal/transmission_losses_main/2026/10/08/raw_20261008T113937Z_fddc307d-fc5a-458d-809f-2ad9a697b142_ced65f50.csv",
+   "2026-10-08 11:39:37.187111 UTC",
+   "2026-10-08 11:39:37.187111 UTC",
+   "2026-09-25 13:27:36.411183 UTC",
+   "5c3d0245-4804-44cd-a6ad-90243351b175",
+   "1+e1"
+  ],
+  [
+   "Aug-26",
+   "0.1412",
+   "0.1162",
+   "0.0153",
+   "0.0096",
+   "2026-27",
+   "2026-09-25 13:27:36.411183 UTC",
+   "2026-10-08 11:39:37.187111 UTC",
+   "bronze/neso_data_portal/transmission_losses_main/2026/10/08/raw_20261008T113937Z_fddc307d-fc5a-458d-809f-2ad9a697b142_ced65f50.csv",
+   "2026-10-08 11:39:37.187111 UTC",
+   "2026-10-08 11:39:37.187111 UTC",
+   "2026-09-25 13:27:36.411183 UTC",
+   "5c3d0245-4804-44cd-a6ad-90243351b175",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

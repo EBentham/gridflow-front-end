@@ -226,19 +226,19 @@ def test_a_page_without_a_page_block_is_blank(tmp_path: Path) -> None:
     assert 'href="outages.html#outages_offshore_grid"' in pointer
 
 
-def test_the_page_set_is_159_datasets_on_77_pages() -> None:
+def test_the_page_set_is_438_datasets_on_201_pages() -> None:
     """Rulings 12 to 14: families are one page each; the headline count is computed."""
     manifests = [build.load_manifest(v) for v in build.REAL_VENDORS]
     for vendor_id, m in zip(build.REAL_VENDORS, manifests, strict=True):
         assert build.manifest_errors(vendor_id, m) == []
-    assert sum(build.manifest_total_count(m) for m in manifests) == 159
-    assert sum(len(g["pages"]) for m in manifests for g in m["groups"]) == 77
+    assert sum(build.manifest_total_count(m) for m in manifests) == 438
+    assert sum(len(g["pages"]) for m in manifests for g in m["groups"]) == 201
 
 
 def test_hubs_and_landing_link_every_page(tmp_path: Path) -> None:
     build.build(DEFAULT_VAULT, tmp_path)
     landing = (tmp_path / "data-sources.html").read_text(encoding="utf-8")
-    assert '<span class="hub-n">159 datasets</span>' in landing
+    assert '<span class="hub-n">438 datasets</span>' in landing
     for vendor_id in build.REAL_VENDORS:
         assert f'href="data-sources/{vendor_id}.html"' in landing
         hub = (tmp_path / "data-sources" / f"{vendor_id}.html").read_text(encoding="utf-8")
@@ -275,3 +275,70 @@ def test_the_demand_flexibility_service_is_one_package_page(tmp_path: Path) -> N
         assert not (DEFAULT_VAULT / "neso_data_portal" / f"{table}.md").exists()
         pointer = (out / f"{table}.html").read_text(encoding="utf-8")
         assert f'href="demand-flexibility.html#{table}"' in pointer
+
+
+CAVEAT = "NESO's files carry no publication time, so these rows are the latest file."
+
+
+def _silver(html: str) -> str:
+    return html.split('<section class="stratum stratum--silver"', 1)[1].split("</section>", 1)[0]
+
+
+def test_a_caveat_prints_just_above_the_frame_and_the_page_keeps_its_artefacts() -> None:
+    """Ruling 66: a page with a caveat is a full page: chart, frame, guide and notebook."""
+    from gridflow_front_end.page_fields import anatomy_errors
+
+    doc = _doc("elexon", "fuelhh")
+    doc.page = dataclasses.replace(doc.page, caveat=CAVEAT)
+    assert anatomy_errors(doc.page) == []
+    html = _render(doc)  # no artefact or view error: a caveat does not hold the rows back
+    assert re.findall(r'<section class="stratum stratum--(\w+)', html) == [
+        "sky",
+        "topsoil",
+        "bronze",
+        "silver",
+        "gold",
+        "deep",
+    ]
+    assert html.count('class="chart chart--') == 2 and "Open the demo notebook" in html
+    silver = _silver(html)
+    _, rest = silver.split('<p class="spec__cap"><code class="spec__shape">', 1)[1].split("</p>", 1)
+    # the line after the frame's caption, before the frame itself
+    caveat, frame = rest.split('<div class="fw"', 1)
+    assert re.fullmatch(
+        r'<p class="spec__cap">NESO\S{1,8}s files carry no publication time, so these rows are the '
+        r"latest file\.</p>",
+        caveat.strip(),
+    )
+    assert 'class="pl"' in frame and "Column guide" in frame
+    assert html.count("carry no publication time") == 1
+
+
+def test_a_page_without_a_caveat_renders_as_before() -> None:
+    html = _render(_doc("elexon", "fuelhh"))
+    silver = _silver(html)
+    assert re.search(r"</span></p>\n          <div class=\"fw\"", silver)
+    assert silver.count('class="spec__cap"') == 1
+
+
+def test_a_family_members_caveat_sits_under_the_member_and_with_the_frame_it_shows() -> None:
+    from gridflow_front_end.page_fields import anatomy_errors
+
+    doc = _doc("elexon", "indo")
+    assert doc.page.family is not None
+    members = list(doc.page.family.members)
+    members[0] = dataclasses.replace(members[0], caveat=CAVEAT)  # indo: the table the frame shows
+    members[1] = dataclasses.replace(members[1], caveat="The day-ahead file is replaced each day.")
+    family = dataclasses.replace(doc.page.family, members=tuple(members))
+    doc.page = dataclasses.replace(doc.page, family=family)
+    assert anatomy_errors(doc.page) == []
+    html = _render(doc)
+    bronze = html.split('<section class="stratum stratum--bronze"', 1)[1].split("</section>", 1)[0]
+    items = dict(re.findall(r'<li id="(\w+)">(.*?)</li>', bronze, re.DOTALL))
+    assert "carry no publication time" in items["indo"]
+    assert "The day-ahead file is replaced each day." in items["itsdo"]
+    assert "ds-variants__d" in items["indod"] and "replaced each day" not in items["indod"]
+    # the frame shows indo's rows, so indo's caveat is printed with them; itsdo's is not
+    silver = _silver(html)
+    assert "carry no publication time" in silver and "replaced each day" not in silver
+    assert "Open the demo notebook" in html

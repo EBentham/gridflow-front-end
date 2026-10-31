@@ -1,0 +1,223 @@
+{
+ "dataset": "neso_data_portal/dc_forecast_4d",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "07a44abdd7a4fa31d9bcd64faf991410e5a72fca192cc8ede9504d228b8d498a",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "data.sql(\"\"\"\n    SELECT date, service_type, efa_1, efa_6, published_at AT TIME ZONE 'UTC' AS published_utc\n    FROM silver_neso_data_portal_dc_forecast_4d_latest ORDER BY service_type, date\"\"\")",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "date",
+      "service_type",
+      "efa_1",
+      "efa_6",
+      "published_utc"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7"
+     ],
+     "rows": [
+      [
+       "17/10/2026",
+       "DC-H",
+       "1495.0",
+       "1495.0",
+       "2026-10-16 13:05:25.584994"
+      ],
+      [
+       "18/10/2026",
+       "DC-H",
+       "1495.0",
+       "1495.0",
+       "2026-10-16 13:05:25.584994"
+      ],
+      [
+       "19/10/2026",
+       "DC-H",
+       "1495.0",
+       "1495.0",
+       "2026-10-16 13:05:25.584994"
+      ],
+      [
+       "20/10/2026",
+       "DC-H",
+       "1495.0",
+       "1495.0",
+       "2026-10-16 13:05:25.584994"
+      ],
+      [
+       "17/10/2026",
+       "DC-L",
+       "1495.0",
+       "1495.0",
+       "2026-10-16 13:05:25.584994"
+      ],
+      [
+       "18/10/2026",
+       "DC-L",
+       "1495.0",
+       "1495.0",
+       "2026-10-16 13:05:25.584994"
+      ],
+      [
+       "19/10/2026",
+       "DC-L",
+       "1495.0",
+       "1495.0",
+       "2026-10-16 13:05:25.584994"
+      ],
+      [
+       "20/10/2026",
+       "DC-L",
+       "1495.0",
+       "1495.0",
+       "2026-10-16 13:05:25.584994"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "hist = data.sql(\"\"\"\n    SELECT forecast_created, forecast_target_date, service_type,\n           efa_1, efa_2, efa_3, efa_4, efa_5, efa_6\n    FROM silver_neso_data_portal_dc_forecast_4d_history_latest\n    WHERE forecast_created <> '09/08/2022'\"\"\")\nspread = (hist.groupby([\"forecast_target_date\", \"service_type\"]).efa_5\n          .agg(issues=\"count\", low=\"min\", high=\"max\").reset_index())\nspread[spread.high - spread.low >= 100].tail(6)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "forecast_target_date",
+      "service_type",
+      "issues",
+      "low",
+      "high"
+     ],
+     "index": [
+      "3054",
+      "3056",
+      "3076",
+      "3078",
+      "3080",
+      "3082"
+     ],
+     "rows": [
+      [
+       "2026-06-26",
+       "DC-H",
+       "3",
+       "1436.0",
+       "1557.0"
+      ],
+      [
+       "2026-06-27",
+       "DC-H",
+       "3",
+       "1464.0",
+       "1644.0"
+      ],
+      [
+       "2026-07-07",
+       "DC-H",
+       "4",
+       "1495.0",
+       "1617.0"
+      ],
+      [
+       "2026-07-08",
+       "DC-H",
+       "5",
+       "1495.0",
+       "1613.0"
+      ],
+      [
+       "2026-07-09",
+       "DC-H",
+       "5",
+       "1495.0",
+       "1617.0"
+      ],
+      [
+       "2026-07-10",
+       "DC-H",
+       "5",
+       "1495.0",
+       "1613.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "blocks = [f\"efa_{i}\" for i in range(1, 7)]\nmonth = hist.forecast_target_date.dt.to_period(\"M\")\nmonthly = hist[blocks].mean(axis=1).groupby([month, hist.service_type]).mean().unstack()\nmonthly.plot(figsize=(8, 3.5), color=[\"#155A6E\", \"#C77E3C\"], xlabel=\"target month\",\n             ylabel=\"mean of six EFA blocks, MW\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "dc_forecast_4d-5.png",
+     "width": 707,
+     "height": 337
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,261 @@
+{
+ "dataset": "neso_data_portal/fes_ed5_road_transport",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "38afbc23c697c4ae4233acbd053ddf86250b434cf87c398549af0fe85fc345f7",
+ "silver": "neso_data_portal/fes_ed5_road_transport",
+ "columns": [
+  {
+   "name": "data_item",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "pathway",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "projection_year",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "value",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "unit",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "fuel",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "peak_annual_minimum",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "scenario",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "edition",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "resource_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "Electric Vehicle Peak Demand",
+   "Electric Engagement",
+   "2035",
+   "6.7",
+   "GW",
+   "Electricity",
+   "Peak",
+   null,
+   "2025",
+   "ce76da34-6eb0-43a1-8e93-3cc833d6d1b4",
+   "2025-12-10 17:01:17.874457 UTC",
+   "2026-10-08 10:54:36.640837 UTC",
+   "bronze/neso_data_portal/fes_ed5_road_transport/2026/10/08/raw_20261008T105436Z_ce76da34-6eb0-43a1-8e93-3cc833d6d1b4_b59c8415.csv",
+   "2026-10-08 10:54:36.640837 UTC",
+   "2026-10-08 10:54:36.640837 UTC",
+   "2025-12-10 17:01:17.874457 UTC",
+   "6c750943-bcb3-4744-b00f-3999a4c8ac3a",
+   "1+e1"
+  ],
+  [
+   "Electric Vehicle Peak Demand",
+   "Falling Behind",
+   "2035",
+   "5.9",
+   "GW",
+   "Electricity",
+   "Peak",
+   null,
+   "2025",
+   "ce76da34-6eb0-43a1-8e93-3cc833d6d1b4",
+   "2025-12-10 17:01:17.874457 UTC",
+   "2026-10-08 10:54:36.640837 UTC",
+   "bronze/neso_data_portal/fes_ed5_road_transport/2026/10/08/raw_20261008T105436Z_ce76da34-6eb0-43a1-8e93-3cc833d6d1b4_b59c8415.csv",
+   "2026-10-08 10:54:36.640837 UTC",
+   "2026-10-08 10:54:36.640837 UTC",
+   "2025-12-10 17:01:17.874457 UTC",
+   "6c750943-bcb3-4744-b00f-3999a4c8ac3a",
+   "1+e1"
+  ],
+  [
+   "Electric Vehicle Peak Demand",
+   "Holistic Transition",
+   "2035",
+   "5.1",
+   "GW",
+   "Electricity",
+   "Peak",
+   null,
+   "2025",
+   "ce76da34-6eb0-43a1-8e93-3cc833d6d1b4",
+   "2025-12-10 17:01:17.874457 UTC",
+   "2026-10-08 10:54:36.640837 UTC",
+   "bronze/neso_data_portal/fes_ed5_road_transport/2026/10/08/raw_20261008T105436Z_ce76da34-6eb0-43a1-8e93-3cc833d6d1b4_b59c8415.csv",
+   "2026-10-08 10:54:36.640837 UTC",
+   "2026-10-08 10:54:36.640837 UTC",
+   "2025-12-10 17:01:17.874457 UTC",
+   "6c750943-bcb3-4744-b00f-3999a4c8ac3a",
+   "1+e1"
+  ],
+  [
+   "Electric Vehicle Peak Demand",
+   "Ten Year Forecast",
+   "2035",
+   "5.6",
+   "GW",
+   "Electricity",
+   "Peak",
+   null,
+   "2025",
+   "ce76da34-6eb0-43a1-8e93-3cc833d6d1b4",
+   "2025-12-10 17:01:17.874457 UTC",
+   "2026-10-08 10:54:36.640837 UTC",
+   "bronze/neso_data_portal/fes_ed5_road_transport/2026/10/08/raw_20261008T105436Z_ce76da34-6eb0-43a1-8e93-3cc833d6d1b4_b59c8415.csv",
+   "2026-10-08 10:54:36.640837 UTC",
+   "2026-10-08 10:54:36.640837 UTC",
+   "2025-12-10 17:01:17.874457 UTC",
+   "6c750943-bcb3-4744-b00f-3999a4c8ac3a",
+   "1+e1"
+  ],
+  [
+   "Electric Vehicle Peak Demand",
+   "Electric Engagement",
+   "2036",
+   "7.6",
+   "GW",
+   "Electricity",
+   "Peak",
+   null,
+   "2025",
+   "ce76da34-6eb0-43a1-8e93-3cc833d6d1b4",
+   "2025-12-10 17:01:17.874457 UTC",
+   "2026-10-08 10:54:36.640837 UTC",
+   "bronze/neso_data_portal/fes_ed5_road_transport/2026/10/08/raw_20261008T105436Z_ce76da34-6eb0-43a1-8e93-3cc833d6d1b4_b59c8415.csv",
+   "2026-10-08 10:54:36.640837 UTC",
+   "2026-10-08 10:54:36.640837 UTC",
+   "2025-12-10 17:01:17.874457 UTC",
+   "6c750943-bcb3-4744-b00f-3999a4c8ac3a",
+   "1+e1"
+  ],
+  [
+   "Electric Vehicle Peak Demand",
+   "Falling Behind",
+   "2036",
+   "6.7",
+   "GW",
+   "Electricity",
+   "Peak",
+   null,
+   "2025",
+   "ce76da34-6eb0-43a1-8e93-3cc833d6d1b4",
+   "2025-12-10 17:01:17.874457 UTC",
+   "2026-10-08 10:54:36.640837 UTC",
+   "bronze/neso_data_portal/fes_ed5_road_transport/2026/10/08/raw_20261008T105436Z_ce76da34-6eb0-43a1-8e93-3cc833d6d1b4_b59c8415.csv",
+   "2026-10-08 10:54:36.640837 UTC",
+   "2026-10-08 10:54:36.640837 UTC",
+   "2025-12-10 17:01:17.874457 UTC",
+   "6c750943-bcb3-4744-b00f-3999a4c8ac3a",
+   "1+e1"
+  ],
+  [
+   "Electric Vehicle Peak Demand",
+   "Holistic Transition",
+   "2036",
+   "5.8",
+   "GW",
+   "Electricity",
+   "Peak",
+   null,
+   "2025",
+   "ce76da34-6eb0-43a1-8e93-3cc833d6d1b4",
+   "2025-12-10 17:01:17.874457 UTC",
+   "2026-10-08 10:54:36.640837 UTC",
+   "bronze/neso_data_portal/fes_ed5_road_transport/2026/10/08/raw_20261008T105436Z_ce76da34-6eb0-43a1-8e93-3cc833d6d1b4_b59c8415.csv",
+   "2026-10-08 10:54:36.640837 UTC",
+   "2026-10-08 10:54:36.640837 UTC",
+   "2025-12-10 17:01:17.874457 UTC",
+   "6c750943-bcb3-4744-b00f-3999a4c8ac3a",
+   "1+e1"
+  ],
+  [
+   "Electric Vehicle Peak Demand",
+   "Ten Year Forecast",
+   "2036",
+   null,
+   "GW",
+   "Electricity",
+   "Peak",
+   null,
+   "2025",
+   "ce76da34-6eb0-43a1-8e93-3cc833d6d1b4",
+   "2025-12-10 17:01:17.874457 UTC",
+   "2026-10-08 10:54:36.640837 UTC",
+   "bronze/neso_data_portal/fes_ed5_road_transport/2026/10/08/raw_20261008T105436Z_ce76da34-6eb0-43a1-8e93-3cc833d6d1b4_b59c8415.csv",
+   "2026-10-08 10:54:36.640837 UTC",
+   "2026-10-08 10:54:36.640837 UTC",
+   "2025-12-10 17:01:17.874457 UTC",
+   "6c750943-bcb3-4744-b00f-3999a4c8ac3a",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

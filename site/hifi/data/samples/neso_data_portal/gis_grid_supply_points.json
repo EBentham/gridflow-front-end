@@ -1,0 +1,378 @@
+{
+ "dataset": "neso_data_portal/gis_grid_supply_points",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "de10567fede8c1d718c39b471ff190fb6d0eedb0c99cd703cdedb6889e744edc",
+ "silver": "neso_data_portal/gis_grid_supply_points",
+ "columns": [
+  {
+   "name": "ggd_id",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "gnode_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "gsp_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "dc_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "region_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "pes_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "has_pv",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "region_id",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "pes_id",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "gsp_id",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "gnode_id",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "dc_id",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "ng_id",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "gnode_lat",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "gnode_lon",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "gsp_lat",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "gsp_lon",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "dc_lat",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "dc_lon",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "1",
+   "COWL",
+   "COWL_1",
+   null,
+   "Cowley",
+   "_H",
+   "1",
+   "1",
+   "20",
+   "1",
+   "1",
+   null,
+   "1",
+   "51.71105",
+   "-1.18901",
+   "51.71105",
+   "-1.18901",
+   null,
+   null,
+   "2020-05-05 07:54:07.800829 UTC",
+   "2026-10-08 11:04:07.596378 UTC",
+   "bronze/neso_data_portal/gis_grid_supply_points/2026/10/08/raw_20261008T110407Z_bbe2cc72-a6c6-46e6-8f4e-48b879467368_e6048a53.csv",
+   "2026-10-08 11:04:07.596378 UTC",
+   "2026-10-08 11:04:07.596378 UTC",
+   "2020-05-05 07:54:07.800829 UTC",
+   "a64ba0ea-f6b8-46d1-94cd-3064d96053b4",
+   "1+e1"
+  ],
+  [
+   "290",
+   "CASK",
+   null,
+   "T_CASKD-1",
+   null,
+   null,
+   "0",
+   null,
+   null,
+   null,
+   "290",
+   "1",
+   "290",
+   "53.3421",
+   "2.7297",
+   null,
+   null,
+   "53.3421",
+   "2.7297",
+   "2020-05-05 07:54:07.800829 UTC",
+   "2026-10-08 11:04:07.596378 UTC",
+   "bronze/neso_data_portal/gis_grid_supply_points/2026/10/08/raw_20261008T110407Z_bbe2cc72-a6c6-46e6-8f4e-48b879467368_e6048a53.csv",
+   "2026-10-08 11:04:07.596378 UTC",
+   "2026-10-08 11:04:07.596378 UTC",
+   "2020-05-05 07:54:07.800829 UTC",
+   "a64ba0ea-f6b8-46d1-94cd-3064d96053b4",
+   "1+e1"
+  ],
+  [
+   "301",
+   "BRL3",
+   "BRLE_1",
+   null,
+   "Bramley",
+   "_H",
+   "1",
+   "15",
+   "20",
+   "289",
+   "301",
+   null,
+   "301",
+   "51.33557",
+   "-1.07584",
+   "51.33557",
+   "-1.07584",
+   null,
+   null,
+   "2020-05-05 07:54:07.800829 UTC",
+   "2026-10-08 11:04:07.596378 UTC",
+   "bronze/neso_data_portal/gis_grid_supply_points/2026/10/08/raw_20261008T110407Z_bbe2cc72-a6c6-46e6-8f4e-48b879467368_e6048a53.csv",
+   "2026-10-08 11:04:07.596378 UTC",
+   "2026-10-08 11:04:07.596378 UTC",
+   "2020-05-05 07:54:07.800829 UTC",
+   "a64ba0ea-f6b8-46d1-94cd-3064d96053b4",
+   "1+e1"
+  ],
+  [
+   "302",
+   "BRL1",
+   "BRLE_1",
+   null,
+   "Bramley",
+   "_H",
+   "1",
+   "15",
+   "20",
+   "289",
+   "302",
+   null,
+   "302",
+   "51.33557",
+   "-1.07584",
+   "51.33557",
+   "-1.07584",
+   null,
+   null,
+   "2020-05-05 07:54:07.800829 UTC",
+   "2026-10-08 11:04:07.596378 UTC",
+   "bronze/neso_data_portal/gis_grid_supply_points/2026/10/08/raw_20261008T110407Z_bbe2cc72-a6c6-46e6-8f4e-48b879467368_e6048a53.csv",
+   "2026-10-08 11:04:07.596378 UTC",
+   "2026-10-08 11:04:07.596378 UTC",
+   "2020-05-05 07:54:07.800829 UTC",
+   "a64ba0ea-f6b8-46d1-94cd-3064d96053b4",
+   "1+e1"
+  ],
+  [
+   "303",
+   "BRL2",
+   "BRLE_1",
+   null,
+   "Bramley",
+   "_H",
+   "1",
+   "15",
+   "20",
+   "289",
+   "303",
+   null,
+   "303",
+   "51.33557",
+   "-1.07584",
+   "51.33557",
+   "-1.07584",
+   null,
+   null,
+   "2020-05-05 07:54:07.800829 UTC",
+   "2026-10-08 11:04:07.596378 UTC",
+   "bronze/neso_data_portal/gis_grid_supply_points/2026/10/08/raw_20261008T110407Z_bbe2cc72-a6c6-46e6-8f4e-48b879467368_e6048a53.csv",
+   "2026-10-08 11:04:07.596378 UTC",
+   "2026-10-08 11:04:07.596378 UTC",
+   "2020-05-05 07:54:07.800829 UTC",
+   "a64ba0ea-f6b8-46d1-94cd-3064d96053b4",
+   "1+e1"
+  ],
+  [
+   "357",
+   "AMEM",
+   "AMEM_1",
+   null,
+   "Amersham Main",
+   "_A",
+   "1",
+   "84",
+   "10",
+   "319",
+   "350",
+   null,
+   "357",
+   "51.664249",
+   "-0.655116",
+   "51.664249",
+   "-0.655116",
+   null,
+   null,
+   "2020-05-05 07:54:07.800829 UTC",
+   "2026-10-08 11:04:07.596378 UTC",
+   "bronze/neso_data_portal/gis_grid_supply_points/2026/10/08/raw_20261008T110407Z_bbe2cc72-a6c6-46e6-8f4e-48b879467368_e6048a53.csv",
+   "2026-10-08 11:04:07.596378 UTC",
+   "2026-10-08 11:04:07.596378 UTC",
+   "2020-05-05 07:54:07.800829 UTC",
+   "a64ba0ea-f6b8-46d1-94cd-3064d96053b4",
+   "1+e1"
+  ],
+  [
+   "358",
+   "AMEM",
+   "LOUD_H",
+   null,
+   "Loudwater",
+   "_H",
+   "1",
+   "17",
+   "20",
+   "320",
+   "350",
+   null,
+   "358",
+   "51.664249",
+   "-0.655116",
+   "51.664249",
+   "-0.655116",
+   null,
+   null,
+   "2020-05-05 07:54:07.800829 UTC",
+   "2026-10-08 11:04:07.596378 UTC",
+   "bronze/neso_data_portal/gis_grid_supply_points/2026/10/08/raw_20261008T110407Z_bbe2cc72-a6c6-46e6-8f4e-48b879467368_e6048a53.csv",
+   "2026-10-08 11:04:07.596378 UTC",
+   "2026-10-08 11:04:07.596378 UTC",
+   "2020-05-05 07:54:07.800829 UTC",
+   "a64ba0ea-f6b8-46d1-94cd-3064d96053b4",
+   "1+e1"
+  ],
+  [
+   "377",
+   null,
+   "KNAR",
+   null,
+   "Knaresborough",
+   "_F",
+   "1",
+   "132",
+   "15",
+   "335",
+   null,
+   null,
+   "377",
+   null,
+   null,
+   "54.031211",
+   "-1.487844",
+   null,
+   null,
+   "2020-05-05 07:54:07.800829 UTC",
+   "2026-10-08 11:04:07.596378 UTC",
+   "bronze/neso_data_portal/gis_grid_supply_points/2026/10/08/raw_20261008T110407Z_bbe2cc72-a6c6-46e6-8f4e-48b879467368_e6048a53.csv",
+   "2026-10-08 11:04:07.596378 UTC",
+   "2026-10-08 11:04:07.596378 UTC",
+   "2020-05-05 07:54:07.800829 UTC",
+   "a64ba0ea-f6b8-46d1-94cd-3064d96053b4",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

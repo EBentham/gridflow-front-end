@@ -1,0 +1,116 @@
+{
+ "dataset": "neso_data_portal/metered_wind_output_monthly",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "231ad447b242e61ebaa8c0a1bbf5138b8d0995bee81d8fd7bc2bbd47e7a11e6b",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.neso_data_portal.query(\"metered_wind_output_monthly\", \"2026-04-01\", \"2026-04-05\")\nfor col in [\"timestamp_utc\", \"published_at\"]:\n    df[col] = df[col].dt.tz_convert(\"UTC\")\nfiles = {\"7622b040-977a-45a6-924e-f158df6c29f0\": \"2025-26\",\n         \"c9bc94c4-6d8c-49ff-afff-67c0030bec05\": \"2026-27\"}\ndf[\"file\"] = df.resource_id.map(files)\ng = df.groupby(\"file\")\ng.agg(rows=(\"total\", \"size\"), first=(\"timestamp_utc\", \"min\"),\n      last=(\"timestamp_utc\", \"max\"), modified=(\"published_at\", \"first\")).reset_index()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "file",
+      "rows",
+      "first",
+      "last",
+      "modified"
+     ],
+     "index": [
+      "0",
+      "1"
+     ],
+     "rows": [
+      [
+       "2025-26",
+       "193",
+       "2026-03-31 23:00:00+00:00",
+       "2026-04-04 23:00:00+00:00",
+       "2026-04-07 10:00:37.054177+00:00"
+      ],
+      [
+       "2026-27",
+       "240",
+       "2026-03-31 23:00:00+00:00",
+       "2026-04-05 22:30:00+00:00",
+       "2026-10-03 11:17:29.313427+00:00"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "both = df.pivot_table(index=\"timestamp_utc\", columns=\"file\", values=\"total\").dropna()\ngap = both[\"2026-27\"] - both[\"2025-26\"]\ngap.describe().round(1)",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "count    193.0\nmean      31.3\nstd       21.2\nmin        0.0\n25%       11.6\n50%       31.5\n75%       47.0\nmax       70.9\ndtype: float64"
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "ax = gap.plot(figsize=(8, 3.5), color=\"#155A6E\", xlabel=\"settlement period start, UTC\",\n              ylabel=\"2026-27 minus 2025-26 file, MW\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "metered_wind_output_monthly-5.png",
+     "width": 690,
+     "height": 369
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,19 @@
+{
+  "dataset": "neso_data_portal/national_forecast_7d_day_ahead_demand",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "d0ef3ab392b944d4c3263f09db317011ee037cf069e3db42a59620032d10f091",
+  "type": "bar",
+  "unit": "MW",
+  "caption": "",
+  "value_column": "forecastdemand",
+  "aggregation": "last",
+  "window": null,
+  "provenance": {"duplicates_dropped": 0, "files": 2, "null_values_dropped": 0, "rows_matched": 12, "rows_read": 24, "rows_used": 12, "silver": "neso_data_portal/national_forecast_7d_day_ahead_demand"},
+  "spec": {"aggregation": "last", "dedup": {"on": ["targetdate", "cardinalpoint"], "order_by": "published_at"}, "filter": [{"column": "targetdate", "op": "eq", "value": "2026-10-23"}], "group": "cardinalpoint", "group_map": {"1A": "02:00-02:30 peak", "1B": "04:30-07:30 trough", "1F": "00:30 fixed", "1S": "01:00-01:30 trough", "2A": "08:30-12:00 peak", "2B": "12:30-13:00 peak", "2F": "08:00 fixed", "3B": "13:30-16:30 trough", "3C": "17:00-18:00 peak", "4": "04:00 fixed", "4B": "18:30-20:00 peak", "4C": "24:00 fixed"}, "silver": "neso_data_portal/national_forecast_7d_day_ahead_demand", "sort": "label", "type": "bar", "unit": "MW", "value": "forecastdemand"},
+  "x_kind": "category",
+  "x": ["00:30 fixed", "01:00-01:30 trough", "02:00-02:30 peak", "04:00 fixed", "04:30-07:30 trough", "08:00 fixed", "08:30-12:00 peak", "12:30-13:00 peak", "13:30-16:30 trough", "17:00-18:00 peak", "18:30-20:00 peak", "24:00 fixed"],
+  "series": [
+    {"key": "forecastdemand", "values": [22507.0, 21902.0, 21867.0, 19613.0, 19192.0, 28223.0, 30121.0, 26736.0, 25825.0, 31090.0, 32182.0, 22304.0]}
+  ]
+}

@@ -1,0 +1,152 @@
+{
+ "dataset": "neso_data_portal/metered_wind_forecast_14d",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "16607271611cfe481aa83e43af3f117b7d14b19638542e43637163cbc85a1d32",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "nat = data.neso_data_portal.tail(\"metered_wind_forecast_14d\", 1_000)\nfor c in [\"timestamp_utc\", \"issue_time\", \"published_at\"]:\n    nat[c] = nat[c].dt.tz_convert(\"UTC\")\nnat = nat.sort_values(\"timestamp_utc\", ignore_index=True)\ncols = [\"timestamp_utc\", \"date\", \"settlement_period\", \"wind_forecast\",\n        \"capacity\", \"issue_time\", \"published_at\"]\nnat[cols].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "timestamp_utc",
+      "date",
+      "settlement_period",
+      "wind_forecast",
+      "capacity",
+      "issue_time",
+      "published_at"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2026-10-16 20:30:00+00:00",
+       "2026-10-16",
+       "44",
+       "11553.0",
+       "26860.0",
+       "2026-10-16 19:52:23+00:00",
+       "2026-10-16 20:16:19.155934+00:00"
+      ],
+      [
+       "2026-10-16 21:00:00+00:00",
+       "2026-10-16",
+       "45",
+       "11634.0",
+       "26860.0",
+       "2026-10-16 19:52:23+00:00",
+       "2026-10-16 20:16:19.155934+00:00"
+      ],
+      [
+       "2026-10-16 21:30:00+00:00",
+       "2026-10-16",
+       "46",
+       "11429.0",
+       "26860.0",
+       "2026-10-16 19:52:23+00:00",
+       "2026-10-16 20:16:19.155934+00:00"
+      ],
+      [
+       "2026-10-16 22:00:00+00:00",
+       "2026-10-16",
+       "47",
+       "11268.0",
+       "26860.0",
+       "2026-10-16 19:52:23+00:00",
+       "2026-10-16 20:16:19.155934+00:00"
+      ],
+      [
+       "2026-10-16 22:30:00+00:00",
+       "2026-10-16",
+       "48",
+       "11142.0",
+       "26860.0",
+       "2026-10-16 19:52:23+00:00",
+       "2026-10-16 20:16:19.155934+00:00"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "farms = data.neso_data_portal.tail(\"metered_wind_forecast_14d_windfarm\", 200_000)\nfarms[\"timestamp_utc\"] = farms[\"timestamp_utc\"].dt.tz_convert(\"UTC\")\nper = farms.groupby(\"timestamp_utc\").agg(\n    farms=(\"generator_name\", \"nunique\"), farm_sum=(\"wind_forecast\", \"sum\"))\ncheck = nat.set_index(\"timestamp_utc\").join(per)\nprint(\"farms per half-hour:\", sorted(check.farms.unique().tolist()))\nprint(\"largest national minus farm sum, MW:\",\n      round((check.wind_forecast - check.farm_sum).abs().max(), 3))\nprint(\"most periods in one settlement day of this capture:\",\n      nat.groupby(\"date\").size().max())",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "farms per half-hour: [272]\nlargest national minus farm sum, MW: 0.499\nmost periods in one settlement day of this capture: 50"
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "top = nat.wind_forecast.max() * 1.1\nax = nat.plot(x=\"timestamp_utc\", y=\"wind_forecast\", ylim=(0, top), legend=False,\n              color=\"#3E8C97\", figsize=(8, 3.5), xlabel=\"half-hour start, UTC\",\n              ylabel=\"forecast wind output, MW\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "metered_wind_forecast_14d-5.png",
+     "width": 716,
+     "height": 371
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,139 @@
+{
+ "dataset": "neso_data_portal/odfm_market_information_instructed",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "ba33fae2b63e37976990d208f7a532edee6e03d0dd70231d231cccf6d6b4fdc5",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.neso_data_portal.query(\n    \"odfm_market_information_instructed\", \"2020-07-04\", \"2020-07-05\")\ndf = df.sort_values(\"timestamp_utc\")\ndf[\"timestamp_utc\"] = df.timestamp_utc.dt.tz_convert(\"UTC\")",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "bst = df.timestamp_utc.dt.tz_convert(\"Europe/London\").dt.strftime(\"%H:%M\")\nprint((bst == df.time_label).sum(), \"of\", len(df), \"Time labels equal the period's UK start\")\ndf[[\"settlement_date\", \"settlement_period\", \"time_label\", \"timestamp_utc\",\n    \"odfm_instructed_mw\"]].head()",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "49 of 49 Time labels equal the period's UK start"
+    },
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "settlement_date",
+      "settlement_period",
+      "time_label",
+      "timestamp_utc",
+      "odfm_instructed_mw"
+     ],
+     "index": [
+      "0",
+      "1",
+      "24",
+      "14",
+      "4"
+     ],
+     "rows": [
+      [
+       "2020-07-04",
+       "47",
+       "23:00",
+       "2020-07-04 22:00:00+00:00",
+       "0.0"
+      ],
+      [
+       "2020-07-04",
+       "48",
+       "23:30",
+       "2020-07-04 22:30:00+00:00",
+       "0.0"
+      ],
+      [
+       "2020-07-05",
+       "1",
+       "00:00",
+       "2020-07-04 23:00:00+00:00",
+       "66.0"
+      ],
+      [
+       "2020-07-05",
+       "2",
+       "00:30",
+       "2020-07-04 23:30:00+00:00",
+       "249.0"
+      ],
+      [
+       "2020-07-05",
+       "3",
+       "01:00",
+       "2020-07-05 00:00:00+00:00",
+       "488.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "ax = df.plot(x=\"timestamp_utc\", y=\"odfm_instructed_mw\", drawstyle=\"steps-post\",\n             legend=False, figsize=(8, 3))\nax.set(xlabel=\"period start, UTC\", ylabel=\"instructed MW\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "odfm_market_information_instructed-5.png",
+     "width": 707,
+     "height": 315
+    }
+   ]
+  }
+ ]
+}

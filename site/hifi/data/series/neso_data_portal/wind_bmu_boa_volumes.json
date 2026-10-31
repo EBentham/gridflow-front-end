@@ -1,0 +1,19 @@
+{
+  "dataset": "neso_data_portal/wind_bmu_boa_volumes",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "a450a5b4a5e0b24c0456c5dce1f7d1a8e83abc401f50b940a37138a8d5015b5c",
+  "type": "bar",
+  "unit": "unit half-hours",
+  "caption": "",
+  "value_column": null,
+  "aggregation": "count",
+  "window": null,
+  "provenance": {"duplicates_dropped": 145759, "files": 7, "rows_matched": 1064725, "rows_read": 1064725, "rows_used": 918966, "silver": "neso_data_portal/wind_bmu_boa_volumes"},
+  "spec": {"aggregation": "count", "dedup": {"on": ["resource_id", "date", "settlement_period", "generator_name"], "order_by": "published_at"}, "group": "resource_id", "group_map": {"094ad551-630a-4302-b259-800a27122cfb": "fy2021", "1edaa5fe-86fe-41b4-95b9-55e9ec45fab0": "fy2023", "45598dcd-ea9c-4911-95f2-7946c5f3b034": "fy2026", "62da8915-4b87-4d77-a8f5-89084de1830d": "fy2022", "7bf83942-3590-4fe5-9980-49a9546e30a9": "fy2025", "b8670a89-36cd-4a19-b00d-2129ab15d3b2": "fy2020"}, "silver": "neso_data_portal/wind_bmu_boa_volumes", "sort": "label", "type": "bar", "unit": "unit half-hours"},
+  "x_kind": "category",
+  "x": ["fy2020", "fy2021", "fy2022", "fy2023", "fy2025", "fy2026"],
+  "series": [
+    {"key": "count", "values": [113023, 90561, 106617, 171867, 276413, 160485]}
+  ]
+}

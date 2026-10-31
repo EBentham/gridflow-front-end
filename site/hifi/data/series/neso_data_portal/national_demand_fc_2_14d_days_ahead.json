@@ -1,0 +1,20 @@
+{
+  "dataset": "neso_data_portal/national_demand_fc_2_14d_days_ahead",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "6266c0b0f9ee996baa85582bf822b8062f45e3c79fbbf81681fccd5c55ba674f",
+  "type": "line",
+  "unit": "MW",
+  "caption": "",
+  "value_column": "forecastdemand",
+  "aggregation": "last",
+  "window": {"end": "2026-10-30", "rule": "fixed", "start": "2026-10-18"},
+  "provenance": {"duplicates_dropped": 0, "files": 2, "null_values_dropped": 0, "rows_matched": 26, "rows_read": 307, "rows_used": 26, "silver": "neso_data_portal/national_demand_fc_2_14d_days_ahead", "silver_first": "2026-10-18", "silver_last": "2026-10-30"},
+  "spec": {"aggregation": "last", "dedup": {"on": ["targetdate", "f_point"], "order_by": "published_at"}, "filter": [{"column": "published_at", "op": "ge", "value": "2026-10-16T00:00:00+00:00"}, {"column": "f_point", "op": "in", "value": ["EM", "Om"]}], "group": "f_point", "group_map": {"EM": "evening", "Om": "overnight"}, "series_order": ["evening", "overnight"], "silver": "neso_data_portal/national_demand_fc_2_14d_days_ahead", "time": "targetdate", "type": "line", "unit": "MW", "value": "forecastdemand", "window": {"end": "2026-10-30", "start": "2026-10-18"}},
+  "x_kind": "time",
+  "x": ["2026-10-18", "2026-10-19", "2026-10-20", "2026-10-21", "2026-10-22", "2026-10-23", "2026-10-24", "2026-10-25", "2026-10-26", "2026-10-27", "2026-10-28", "2026-10-29", "2026-10-30"],
+  "series": [
+    {"key": "evening", "values": [33421.0, 35929.0, 35304.0, 34950.0, 33884.0, 32177.0, 31454.0, 33234.0, 36096.0, 37689.0, 37809.0, 37600.0, 36330.0]},
+    {"key": "overnight", "values": [20147.0, 21190.0, 21664.0, 21132.0, 20276.0, 19293.0, 19269.0, 18468.0, 17303.0, 20316.0, 20403.0, 20490.0, 20467.0]}
+  ]
+}

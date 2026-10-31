@@ -1,0 +1,300 @@
+{
+ "dataset": "neso_data_portal/fes_ws1_gas_supply",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "2b2dc39a2fe46ac4dcfc50b429124f358705a16e1d24a12c8a53faf53d7eefc6",
+ "silver": "neso_data_portal/fes_ws1_gas_supply",
+ "columns": [
+  {
+   "name": "fuel_type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "category",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "sector",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "units",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "projection_year",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "value",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "fuel",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "feedstock",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "category_lookup",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "scenario",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "pathway",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "edition",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "resource_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "Hydrogen",
+   "Capacity",
+   "Methane Reformation with CCUS",
+   "GW",
+   "2030",
+   "0.0059",
+   null,
+   null,
+   "Methane Reformation with CCUS",
+   "Ten Year Outlook",
+   null,
+   "2026",
+   "0dd30611-5b9f-452d-bd34-966737d14fca",
+   "2026-09-16 14:49:53.687177 UTC",
+   "2026-10-08 10:58:11.248826 UTC",
+   "bronze/neso_data_portal/fes_ws1_gas_supply/2026/10/08/raw_20261008T105811Z_0dd30611-5b9f-452d-bd34-966737d14fca_01da6a23.csv",
+   "2026-10-08 10:58:11.248826 UTC",
+   "2026-10-08 10:58:11.248826 UTC",
+   "2026-09-16 14:49:53.687177 UTC",
+   "9a20f575-3af1-4965-9df3-68b28f8fa71e",
+   "1+e1"
+  ],
+  [
+   "Hydrogen",
+   "Feedstock",
+   "Methane Reformation with CCUS",
+   "TWh",
+   "2030",
+   "0.07612",
+   "Natural Gas",
+   null,
+   "Natural Gas",
+   "Ten Year Outlook",
+   null,
+   "2026",
+   "0dd30611-5b9f-452d-bd34-966737d14fca",
+   "2026-09-16 14:49:53.687177 UTC",
+   "2026-10-08 10:58:11.248826 UTC",
+   "bronze/neso_data_portal/fes_ws1_gas_supply/2026/10/08/raw_20261008T105811Z_0dd30611-5b9f-452d-bd34-966737d14fca_01da6a23.csv",
+   "2026-10-08 10:58:11.248826 UTC",
+   "2026-10-08 10:58:11.248826 UTC",
+   "2026-09-16 14:49:53.687177 UTC",
+   "9a20f575-3af1-4965-9df3-68b28f8fa71e",
+   "1+e1"
+  ],
+  [
+   "Hydrogen",
+   "Supply",
+   "Methane Reformation with CCUS",
+   "TWh",
+   "2030",
+   "0.0491",
+   null,
+   null,
+   "Methane Reformation with CCUS",
+   "Ten Year Outlook",
+   null,
+   "2026",
+   "0dd30611-5b9f-452d-bd34-966737d14fca",
+   "2026-09-16 14:49:53.687177 UTC",
+   "2026-10-08 10:58:11.248826 UTC",
+   "bronze/neso_data_portal/fes_ws1_gas_supply/2026/10/08/raw_20261008T105811Z_0dd30611-5b9f-452d-bd34-966737d14fca_01da6a23.csv",
+   "2026-10-08 10:58:11.248826 UTC",
+   "2026-10-08 10:58:11.248826 UTC",
+   "2026-09-16 14:49:53.687177 UTC",
+   "9a20f575-3af1-4965-9df3-68b28f8fa71e",
+   "1+e1"
+  ],
+  [
+   "Hydrogen",
+   "Capacity",
+   "Networked Electrolysis",
+   "GW",
+   "2030",
+   "0.2806",
+   null,
+   null,
+   "Networked Electrolysis",
+   "Ten Year Outlook",
+   null,
+   "2026",
+   "0dd30611-5b9f-452d-bd34-966737d14fca",
+   "2026-09-16 14:49:53.687177 UTC",
+   "2026-10-08 10:58:11.248826 UTC",
+   "bronze/neso_data_portal/fes_ws1_gas_supply/2026/10/08/raw_20261008T105811Z_0dd30611-5b9f-452d-bd34-966737d14fca_01da6a23.csv",
+   "2026-10-08 10:58:11.248826 UTC",
+   "2026-10-08 10:58:11.248826 UTC",
+   "2026-09-16 14:49:53.687177 UTC",
+   "9a20f575-3af1-4965-9df3-68b28f8fa71e",
+   "1+e1"
+  ],
+  [
+   "Hydrogen",
+   "Feedstock",
+   "Networked Electrolysis",
+   "TWh",
+   "2030",
+   "2.09996",
+   "Networked Electricity",
+   null,
+   "Networked Electricity",
+   "Ten Year Outlook",
+   null,
+   "2026",
+   "0dd30611-5b9f-452d-bd34-966737d14fca",
+   "2026-09-16 14:49:53.687177 UTC",
+   "2026-10-08 10:58:11.248826 UTC",
+   "bronze/neso_data_portal/fes_ws1_gas_supply/2026/10/08/raw_20261008T105811Z_0dd30611-5b9f-452d-bd34-966737d14fca_01da6a23.csv",
+   "2026-10-08 10:58:11.248826 UTC",
+   "2026-10-08 10:58:11.248826 UTC",
+   "2026-09-16 14:49:53.687177 UTC",
+   "9a20f575-3af1-4965-9df3-68b28f8fa71e",
+   "1+e1"
+  ],
+  [
+   "Hydrogen",
+   "Supply",
+   "Networked Electrolysis",
+   "TWh",
+   "2030",
+   "1.20063",
+   null,
+   null,
+   "Networked Electrolysis",
+   "Ten Year Outlook",
+   null,
+   "2026",
+   "0dd30611-5b9f-452d-bd34-966737d14fca",
+   "2026-09-16 14:49:53.687177 UTC",
+   "2026-10-08 10:58:11.248826 UTC",
+   "bronze/neso_data_portal/fes_ws1_gas_supply/2026/10/08/raw_20261008T105811Z_0dd30611-5b9f-452d-bd34-966737d14fca_01da6a23.csv",
+   "2026-10-08 10:58:11.248826 UTC",
+   "2026-10-08 10:58:11.248826 UTC",
+   "2026-09-16 14:49:53.687177 UTC",
+   "9a20f575-3af1-4965-9df3-68b28f8fa71e",
+   "1+e1"
+  ],
+  [
+   "Natural Gas",
+   "Supply",
+   "Norway",
+   "bcm/yr",
+   "2030",
+   "26.46",
+   null,
+   null,
+   "Imports",
+   "Ten Year Outlook",
+   null,
+   "2026",
+   "0dd30611-5b9f-452d-bd34-966737d14fca",
+   "2026-09-16 14:49:53.687177 UTC",
+   "2026-10-08 10:58:11.248826 UTC",
+   "bronze/neso_data_portal/fes_ws1_gas_supply/2026/10/08/raw_20261008T105811Z_0dd30611-5b9f-452d-bd34-966737d14fca_01da6a23.csv",
+   "2026-10-08 10:58:11.248826 UTC",
+   "2026-10-08 10:58:11.248826 UTC",
+   "2026-09-16 14:49:53.687177 UTC",
+   "9a20f575-3af1-4965-9df3-68b28f8fa71e",
+   "1+e1"
+  ],
+  [
+   "Natural Gas",
+   "Supply",
+   "UKCS",
+   "bcm/yr",
+   "2030",
+   "16.53",
+   null,
+   null,
+   "UKCS",
+   "Ten Year Outlook",
+   null,
+   "2026",
+   "0dd30611-5b9f-452d-bd34-966737d14fca",
+   "2026-09-16 14:49:53.687177 UTC",
+   "2026-10-08 10:58:11.248826 UTC",
+   "bronze/neso_data_portal/fes_ws1_gas_supply/2026/10/08/raw_20261008T105811Z_0dd30611-5b9f-452d-bd34-966737d14fca_01da6a23.csv",
+   "2026-10-08 10:58:11.248826 UTC",
+   "2026-10-08 10:58:11.248826 UTC",
+   "2026-09-16 14:49:53.687177 UTC",
+   "9a20f575-3af1-4965-9df3-68b28f8fa71e",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

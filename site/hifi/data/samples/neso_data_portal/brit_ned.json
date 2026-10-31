@@ -1,0 +1,196 @@
+{
+ "dataset": "neso_data_portal/brit_ned",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "cf53d47280ddf019854445c8cf0951648fb3efd3a9489ca68c4d1f77ccb1d004",
+ "silver": "neso_data_portal/brit_ned",
+ "columns": [
+  {
+   "name": "operational_date_and_hour",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "flow_to_gb_mw_raw",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "flow_from_gb_mw_raw",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "reason_for_restriction",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "resource_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "20260923 20:00-21:00",
+   "1060",
+   "1060",
+   null,
+   "2026-09-30 09:13:52.503781 UTC",
+   "27f2e375-5a0b-484e-938f-4d4c0206d9c0",
+   "2026-10-08 09:01:05.536202 UTC",
+   "bronze/neso_data_portal/brit_ned/2026/10/08/raw_20261008T090105Z_27f2e375-5a0b-484e-938f-4d4c0206d9c0_0f063185.csv",
+   "2026-10-08 09:01:05.536202 UTC",
+   "2026-10-08 09:01:05.536202 UTC",
+   "2026-09-30 09:13:52.503781 UTC",
+   "8d01fad1-52ae-486f-a018-55185f7abff0",
+   "1+e1"
+  ],
+  [
+   "20260923 21:00-22:00",
+   "1060",
+   "1060",
+   null,
+   "2026-09-30 09:13:52.503781 UTC",
+   "27f2e375-5a0b-484e-938f-4d4c0206d9c0",
+   "2026-10-08 09:01:05.536202 UTC",
+   "bronze/neso_data_portal/brit_ned/2026/10/08/raw_20261008T090105Z_27f2e375-5a0b-484e-938f-4d4c0206d9c0_0f063185.csv",
+   "2026-10-08 09:01:05.536202 UTC",
+   "2026-10-08 09:01:05.536202 UTC",
+   "2026-09-30 09:13:52.503781 UTC",
+   "8d01fad1-52ae-486f-a018-55185f7abff0",
+   "1+e1"
+  ],
+  [
+   "20260923 22:00-23:00",
+   "1060",
+   "1060",
+   null,
+   "2026-09-30 09:13:52.503781 UTC",
+   "27f2e375-5a0b-484e-938f-4d4c0206d9c0",
+   "2026-10-08 09:01:05.536202 UTC",
+   "bronze/neso_data_portal/brit_ned/2026/10/08/raw_20261008T090105Z_27f2e375-5a0b-484e-938f-4d4c0206d9c0_0f063185.csv",
+   "2026-10-08 09:01:05.536202 UTC",
+   "2026-10-08 09:01:05.536202 UTC",
+   "2026-09-30 09:13:52.503781 UTC",
+   "8d01fad1-52ae-486f-a018-55185f7abff0",
+   "1+e1"
+  ],
+  [
+   "20260924 23:00-00:00",
+   "1060",
+   "0",
+   "System Security",
+   "2026-09-30 09:13:52.503781 UTC",
+   "27f2e375-5a0b-484e-938f-4d4c0206d9c0",
+   "2026-10-08 09:01:05.536202 UTC",
+   "bronze/neso_data_portal/brit_ned/2026/10/08/raw_20261008T090105Z_27f2e375-5a0b-484e-938f-4d4c0206d9c0_0f063185.csv",
+   "2026-10-08 09:01:05.536202 UTC",
+   "2026-10-08 09:01:05.536202 UTC",
+   "2026-09-30 09:13:52.503781 UTC",
+   "8d01fad1-52ae-486f-a018-55185f7abff0",
+   "1+e1"
+  ],
+  [
+   "20260924 00:00-01:00",
+   "1060",
+   "0",
+   "System Security",
+   "2026-09-30 09:13:52.503781 UTC",
+   "27f2e375-5a0b-484e-938f-4d4c0206d9c0",
+   "2026-10-08 09:01:05.536202 UTC",
+   "bronze/neso_data_portal/brit_ned/2026/10/08/raw_20261008T090105Z_27f2e375-5a0b-484e-938f-4d4c0206d9c0_0f063185.csv",
+   "2026-10-08 09:01:05.536202 UTC",
+   "2026-10-08 09:01:05.536202 UTC",
+   "2026-09-30 09:13:52.503781 UTC",
+   "8d01fad1-52ae-486f-a018-55185f7abff0",
+   "1+e1"
+  ],
+  [
+   "20260924 01:00-02:00",
+   "1060",
+   "0",
+   "System Security",
+   "2026-09-30 09:13:52.503781 UTC",
+   "27f2e375-5a0b-484e-938f-4d4c0206d9c0",
+   "2026-10-08 09:01:05.536202 UTC",
+   "bronze/neso_data_portal/brit_ned/2026/10/08/raw_20261008T090105Z_27f2e375-5a0b-484e-938f-4d4c0206d9c0_0f063185.csv",
+   "2026-10-08 09:01:05.536202 UTC",
+   "2026-10-08 09:01:05.536202 UTC",
+   "2026-09-30 09:13:52.503781 UTC",
+   "8d01fad1-52ae-486f-a018-55185f7abff0",
+   "1+e1"
+  ],
+  [
+   "20260924 02:00-03:00",
+   "1060",
+   "0",
+   "System Security",
+   "2026-09-30 09:13:52.503781 UTC",
+   "27f2e375-5a0b-484e-938f-4d4c0206d9c0",
+   "2026-10-08 09:01:05.536202 UTC",
+   "bronze/neso_data_portal/brit_ned/2026/10/08/raw_20261008T090105Z_27f2e375-5a0b-484e-938f-4d4c0206d9c0_0f063185.csv",
+   "2026-10-08 09:01:05.536202 UTC",
+   "2026-10-08 09:01:05.536202 UTC",
+   "2026-09-30 09:13:52.503781 UTC",
+   "8d01fad1-52ae-486f-a018-55185f7abff0",
+   "1+e1"
+  ],
+  [
+   "20260924 03:00-04:00",
+   "1060",
+   "0",
+   "System Security",
+   "2026-09-30 09:13:52.503781 UTC",
+   "27f2e375-5a0b-484e-938f-4d4c0206d9c0",
+   "2026-10-08 09:01:05.536202 UTC",
+   "bronze/neso_data_portal/brit_ned/2026/10/08/raw_20261008T090105Z_27f2e375-5a0b-484e-938f-4d4c0206d9c0_0f063185.csv",
+   "2026-10-08 09:01:05.536202 UTC",
+   "2026-10-08 09:01:05.536202 UTC",
+   "2026-09-30 09:13:52.503781 UTC",
+   "8d01fad1-52ae-486f-a018-55185f7abff0",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

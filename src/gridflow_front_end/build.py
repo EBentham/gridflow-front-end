@@ -62,7 +62,7 @@ from typing import Any
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 from markupsafe import Markup
 
-from gridflow_front_end import artefacts, chart_spec, chart_svg, map_svg
+from gridflow_front_end import artefacts, chart_spec, chart_svg, map_svg, raw_sample
 from gridflow_front_end.page_fields import PageFields, anatomy_errors, parse_page_fields
 from gridflow_front_end.paths import DEFAULT_VAULT, REPO_ROOT, SITE_DIR, resolve_vault_path
 
@@ -319,6 +319,24 @@ def _all_manifest_slugs() -> dict[str, set[str]]:
             )
         _MANIFEST_SLUGS_CACHE = cache
     return _MANIFEST_SLUGS_CACHE
+
+
+def _related_targets() -> dict[str, set[str]]:
+    """What a page's related entry may name, per vendor: a table key or a page slug of the page set.
+
+    A table key links to ``<key>.html`` (its page, or the pointer to its family page); a page slug
+    (a package page such as ``aggregated-bsad``, or a family page) links to that page itself.
+    """
+    out: dict[str, set[str]] = {}
+    for vendor_id in REAL_VENDORS:
+        try:
+            manifest = load_manifest(vendor_id)
+        except FileNotFoundError:
+            out[vendor_id] = set()
+            continue
+        pages = {page for group in manifest["groups"] for page in group["pages"]}
+        out[vendor_id] = set(manifest_datasets(manifest)) | pages
+    return out
 
 
 _MD_LINK_TARGET_RE = re.compile(r"^(?P<path>[^#]*\.md)(?P<anchor>#.*)?$")
@@ -950,7 +968,8 @@ def manifest_errors(vendor_id: str, manifest: dict, notes: set[str] | None = Non
     if len(datasets) != len(set(datasets)):
         twice = sorted({d for d in datasets if datasets.count(d) > 1})
         errors.append(f"{vendor_id}: {twice} are in two families or listed twice")
-    clash = sorted((set(fams) | set(tables)) & set(datasets))
+    named_apart = {page for page, key in tables.items() if key != page}
+    clash = sorted((set(fams) | named_apart) & set(datasets))
     if clash:
         errors.append(f"{vendor_id}: family slug(s) {clash} are also dataset slugs")
     for page in pages:
@@ -1035,6 +1054,7 @@ class PageArtefacts:
     sample: dict[str, Any] | None = None
     notebook: dict[str, Any] | None = None
     locations: dict[str, Any] | None = None
+    raw_sample: dict[str, Any] | None = None
 
 
 def highlight(code: str) -> Markup:
@@ -1069,11 +1089,39 @@ def _nw(text: str) -> str:
     return f'<span class="nw">{text}</span>'
 
 
+# A command argument or URL segment longer than this (a 38-character table key, a 36-character file
+# id) does not fit one row of a well at phone width, so it may break after its underscores (and a
+# URL segment after its hyphens) there; theme.css releases ``.nw-cut`` below 768 px only, so a
+# wider well keeps every argument and segment whole.
+LONG_ARGUMENT = 30
+# A URL segment longer than this (a CKAN download's 90-character file name) fits no well at any
+# width, so its break points are live everywhere.
+LONG_SEGMENT = 60
+_KEY_TOKEN = re.compile(r"[a-z0-9]+(?:_[a-z0-9]+)+")
+
+
+def _argument(escaped: str) -> str:
+    if len(escaped) > LONG_ARGUMENT and _KEY_TOKEN.fullmatch(escaped):
+        return f'<span class="nw nw-cut">{escaped.replace("_", "_<wbr>")}</span>'
+    return _nw(escaped)
+
+
+def _url_segment(escaped: str) -> str:
+    """A path segment kept whole, except that a phone may break a long one after a hyphen."""
+    if len(escaped) > LONG_ARGUMENT and re.search(r"[-_].", escaped):
+        cut = re.sub(r"([-_])(?=.)", lambda m: m.group(1) + "<wbr>", escaped)
+        if len(escaped) > LONG_SEGMENT:
+            return f'<span class="nw-long">{cut}</span>'
+        return f'<span class="nw nw-cut">{cut}</span>'
+    return _nw(escaped)
+
+
 def command_row(run: str) -> Markup:
     """A CLI command whose row may wrap only between arguments, never inside one.
 
     A browser may break after any hyphen, which would split ``--end`` or a date; each flag is
-    kept with its value, and every other argument whole.
+    kept with its value, and every other argument whole. A table key too long for a phone's well
+    may break after an underscore there, and only there (``LONG_ARGUMENT``).
     """
     tokens = run.split(" ")
     parts: list[str] = []
@@ -1083,19 +1131,23 @@ def command_row(run: str) -> Markup:
         if tok.startswith("-") and i + 1 < len(tokens) and not tokens[i + 1].startswith("-"):
             tok = f"{tok} {tokens[i + 1]}"
             i += 1
-        parts.append(_nw(html_escape(tok, quote=False)))
+        parts.append(_argument(html_escape(tok, quote=False)))
         i += 1
     return Markup(" ".join(parts))
 
 
 def _url_row(line: str) -> str:
-    """An escaped request line whose URL may wrap only after a slash, never at a hyphen."""
+    """An escaped request line whose URL may wrap only after a slash, never at a hyphen.
+
+    The exception is a segment too long for a phone's well (``LONG_ARGUMENT``), which may break
+    after a hyphen below 768 px.
+    """
     m = re.match(r"(.*?)(https?://[^/]+/)(.*)$", line)
     if not m:
         return line
     lead, host, path = m.groups()
-    segments = [host, *re.findall(r"[^/]*/|[^/]+$", path)]
-    return lead + "<wbr>".join(_nw(s) for s in segments if s)
+    segments = [_url_segment(s) for s in re.findall(r"[^/]*/|[^/]+$", path) if s]
+    return lead + "<wbr>".join([_nw(host), *segments])
 
 
 def request_lines(request: str) -> Markup:
@@ -1112,11 +1164,32 @@ def request_lines(request: str) -> Markup:
 
 
 def check_artefacts(doc: DatasetDoc) -> tuple[PageArtefacts, list[str]]:
-    """Load a new-template page's sample and notebook files and check their digests."""
+    """Load a new-template page's sample and notebook files and check their digests.
+
+    A held page shows no silver rows, so it has no chart, sample, notebook or locations file,
+    and a leftover one fails the build. Its one allowed artefact is a raw sample (the first rows
+    of one bronze file, ``page.raw_feed.sample``), which any other page must not carry.
+    """
     key = f"{doc.vendor_id}/{doc.slug}"
     errors: list[str] = []
     fields = doc.page
     arts = PageArtefacts()
+    arts.raw_sample, raw_errors = _check_raw_sample(doc)
+    errors.extend(raw_errors)
+    if fields.held:
+        leftovers = [
+            path.name
+            for path in (
+                artefacts.sample_path(SITE_DIR, doc.vendor_id, doc.slug),
+                artefacts.notebook_path(SITE_DIR, doc.vendor_id, doc.slug),
+                artefacts.locations_path(SITE_DIR, doc.vendor_id, doc.slug),
+                chart_spec.series_path(SITE_DIR, doc.vendor_id, doc.slug),
+            )
+            if path.is_file()
+        ]
+        if leftovers:
+            errors.append(f"{key}: a held page shows no rows; delete its {leftovers}")
+        return arts, errors
     silver = artefacts.sample_silver(doc.vendor_id, doc.slug, fields.record.select, fields.chart)
     try:
         sample = artefacts.load_json(artefacts.sample_path(SITE_DIR, doc.vendor_id, doc.slug))
@@ -1164,6 +1237,27 @@ def check_artefacts(doc: DatasetDoc) -> tuple[PageArtefacts, list[str]]:
                             f"{key}: page.notebook.plot_alt is required for the plot output"
                         )
     return arts, errors
+
+
+def _check_raw_sample(doc: DatasetDoc) -> tuple[dict[str, Any] | None, list[str]]:
+    """A note's committed raw sample, if it asks for one, and why it cannot be shown."""
+    key = f"{doc.vendor_id}/{doc.slug}"
+    path = artefacts.raw_sample_path(SITE_DIR, doc.vendor_id, doc.slug)
+    spec = doc.page.raw_feed.sample
+    if spec is None:
+        if path.is_file():
+            return None, [f"{key}: the note has no page.raw_feed.sample; delete its {[path.name]}"]
+        return None, []
+    try:
+        raw = artefacts.load_json(path)
+    except (ValueError, TypeError) as exc:
+        return None, [f"{key}: {exc}"]
+    if raw is None:
+        return None, [f"{key}: no raw sample (run gridflow-sample and commit it)"]
+    if raw.get("select_sha256") != artefacts.raw_sample_digest(spec.table, spec.file):
+        stale = f"{key}: the raw sample was read for a different page.raw_feed.sample"
+        return None, [f"{stale}; rerun gridflow-sample"]
+    return raw, []
 
 
 # Columns every silver table carries; the frame shows them, the guide gives them no line.
@@ -1427,8 +1521,11 @@ def page_view(
         ("Vendor", Markup(_markdown_inline(p.facts.vendor, doc.vendor_id))),
         ("Cadence", Markup(_markdown_inline(p.facts.cadence, doc.vendor_id))),
         ("Grain", Markup(_markdown_inline(p.facts.grain, doc.vendor_id))),
-        ("Key", Markup(", ".join(f"<code>{html_escape(k)}</code>" for k in p.record.key))),
     ]
+    if not p.held:  # the key comes from record, which a held page has none of
+        facts.append(
+            ("Key", Markup(", ".join(f"<code>{html_escape(k)}</code>" for k in p.record.key)))
+        )
     if p.facts.history:
         facts.append(("History", Markup(_markdown_inline(p.facts.history, doc.vendor_id))))
 
@@ -1468,7 +1565,7 @@ def page_view(
         errors.extend(rec_errors)
 
     related = []
-    slugs = _all_manifest_slugs()
+    slugs = _related_targets()
     for rel in p.related:
         vendor, _, slug = rel.dataset.partition("/")
         if slug not in slugs.get(vendor, set()):
@@ -1490,12 +1587,27 @@ def page_view(
                     "key": f"{doc.vendor_id}/{mem.dataset}",
                     "code": "" if code == mem.dataset.upper() else code,
                     "differs": mem.differs,
-                    "request": request_lines(mem.request),
+                    # each file's request as rows of the member's one well
+                    "request": Markup("").join(request_lines(r) for r in mem.requests),
+                    # a held page lists the reasons in its silver section instead
+                    "held": "" if p.held else mem.held,
+                    "caveat": "" if p.held else mem.caveat,
                 }
             )
 
+    held = []
+    if p.held:
+        if p.family is not None:
+            held = [
+                {"key": _breakable(f"{doc.vendor_id}/{m.dataset}"), "reason": m.held}
+                for m in p.family.members
+            ]
+        else:
+            held = [{"key": _breakable(key), "reason": p.held_reason}]
+
     view = {
         "vendor_id": doc.vendor_id,
+        "caveat": _frame_caveat(doc) if record_v else "",
         "vendor_label": doc.vendor_label,
         "key": key,
         "blank": False,
@@ -1517,13 +1629,55 @@ def page_view(
             "commands": [
                 {"run": command_row(c.run), "comment": c.comment} for c in p.raw_feed.commands
             ],
+            "sample": _raw_sample_view(doc, arts.raw_sample) if arts.raw_sample else None,
         },
         "variants": variants,
+        "held": held,
         "record": record_v,
         "notebook": _notebook_view(doc, arts.notebook) if arts.notebook else {},
         "related": related,
     }
     return view, errors
+
+
+def _frame_caveat(doc: DatasetDoc) -> str:
+    """The caveat printed with the frame: the page's, or on a family page the shown member's."""
+    p = doc.page
+    if p.family is None:
+        return p.caveat
+    shown = artefacts.sample_silver(doc.vendor_id, doc.slug, p.record.select, p.chart)
+    return next((m.caveat for m in p.family.members if f"{doc.vendor_id}/{m.dataset}" == shown), "")
+
+
+_COUNT_WORDS = ("no", "one", "two", "three", "four", "five", "six", "seven", "eight")
+
+
+def _raw_sample_view(doc: DatasetDoc, raw: dict[str, Any]) -> dict[str, Any]:
+    """A held page's raw sample: its heading, its caveat and the file's lines as fetched."""
+    spec = doc.page.raw_feed.sample
+    assert spec is not None
+    lines: list[str] = raw["lines"]
+    n = len(lines) - 1
+    file = Markup("<code>{}</code>").format(_breakable(raw["file"]))
+    if n == 0:
+        head = Markup("The header of {}, as fetched: the file holds no rows").format(file)
+    elif n == 1:
+        head = Markup("The header and only row of {}, as fetched").format(file)
+    elif n < raw_sample.ROWS:  # read_head stops at ROWS, so fewer is the whole file
+        head = Markup("The header and all {} rows of {}, as fetched").format(_COUNT_WORDS[n], file)
+    else:
+        head = Markup("The header and first {} rows of {}, as fetched").format(
+            _COUNT_WORDS[n], file
+        )
+    if doc.page.family is not None:
+        table = Markup("<code>{}</code>").format(_breakable(f"{doc.vendor_id}/{raw['table']}"))
+        head = Markup("{}, a file of {}").format(head, table)
+    return {
+        "head": head,
+        "caveat": spec.caveat,
+        "lines": well_lines([html_escape(ln, quote=False).replace(",", ",<wbr>") for ln in lines]),
+        "aria": f"The first lines of {raw['file']}",
+    }
 
 
 _DEFAULT_LANDSCAPE = {"entsog": "gas", "gie": "gas"}
@@ -2278,6 +2432,8 @@ def build_vendor(
         fam = fams.get(page)
         pointers = fam["members"] if fam else [tables[page]] if page in tables else []
         for member in pointers:
+            if member == page:  # a package named after its one table: the page is the pointer
+                continue
             href = f"{page}.html#{member}"
             (out_dataset_dir / f"{member}.html").write_text(
                 render_redirect(env, f"{vendor_id}/{member}", href, view["title"]), encoding="utf-8"

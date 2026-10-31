@@ -1,0 +1,158 @@
+{
+ "dataset": "neso_data_portal/tresp_generation_pathways_resp_region",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "3fd474e7cf43697749c4e275c816590cf8f177654e0b440019edefb6f8c998d4",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "solar = data.sql(\"\"\"\n    SELECT pathway, projection_year, SUM(value) AS mw\n    FROM silver_neso_data_portal_tresp_generation_pathways_resp_region_latest\n    WHERE building_block_id = 'Gen_BB012'\n    GROUP BY pathway, projection_year\n\"\"\")\nwide = solar.pivot(index=\"projection_year\", columns=\"pathway\", values=\"mw\")\nwide.loc[2033:2037].round(1)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "pathway",
+      "tRESP - EE",
+      "tRESP - HE",
+      "tRESP - HT",
+      "projection_year",
+      "",
+      "",
+      ""
+     ],
+     "index": [
+      "2033",
+      "2034",
+      "2035",
+      "2036",
+      "2037"
+     ],
+     "rows": [
+      [
+       "NaN",
+       "NaN",
+       "37671.8"
+      ],
+      [
+       "NaN",
+       "NaN",
+       "41008.4"
+      ],
+      [
+       "44345.0",
+       "44345.0",
+       "44345.0"
+      ],
+      [
+       "47046.9",
+       "47006.3",
+       "47681.7"
+      ],
+      [
+       "48358.6",
+       "48264.5",
+       "50156.8"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "ax = wide.plot(figsize=(8, 3.5), color=[\"#155A6E\", \"#8A9A2B\", \"#B5651D\"],\n               xlabel=\"year, installed at 31 March\", ylabel=\"large solar, MW, all regions\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "tresp_generation_pathways_resp_region-4.png",
+     "width": 716,
+     "height": 337
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "gsp = data.sql(\"\"\"\n    SELECT pathway, SUM(value) AS gsp_mw\n    FROM silver_neso_data_portal_tresp_generation_pathways_gsp_latest\n    WHERE building_block_id = 'Gen_BB012' AND projection_year = 2050\n    GROUP BY pathway\n\"\"\").set_index(\"pathway\")\ngsp.join(wide.loc[2050].rename(\"region_mw\")).round(1)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "gsp_mw",
+      "region_mw",
+      "pathway",
+      "",
+      ""
+     ],
+     "index": [
+      "tRESP - EE",
+      "tRESP - HT",
+      "tRESP - HE"
+     ],
+     "rows": [
+      [
+       "56903.5",
+       "56903.5"
+      ],
+      [
+       "64451.1",
+       "64451.1"
+      ],
+      [
+       "56546.1",
+       "56546.1"
+      ]
+     ]
+    }
+   ]
+  }
+ ]
+}

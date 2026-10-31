@@ -1,0 +1,183 @@
+{
+ "dataset": "neso_data_portal/nemolink_ntc",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "69a56189039a1380fd061b698c018696340b42c69c5f75a00a7c2f06cd7afc7e",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "import pandas as pd\ndf = data.sql(\"\"\"\n    SELECT operational_period_start_gmt AS hour, auction_type, data_upload_time_gmt,\n           flow_to_gb_mw, flow_from_gb_mw, reason_for_restriction_from_gb\n    FROM silver_neso_data_portal_nemolink_ntc_latest\n    WHERE operational_period_start_gmt >= TIMESTAMPTZ '2026-10-01 00:00:00+00'\n    ORDER BY hour, auction_type\"\"\")\ndf[\"hour\"] = df.hour.dt.tz_convert(\"UTC\")\ndf[\"data_upload_time_gmt\"] = df.data_upload_time_gmt.dt.tz_convert(\"UTC\")\ndf.head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "hour",
+      "auction_type",
+      "data_upload_time_gmt",
+      "flow_to_gb_mw",
+      "flow_from_gb_mw",
+      "reason_for_restriction_from_gb"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2026-10-01 00:00:00+00:00",
+       "Day Ahead",
+       "2026-09-30 09:30:05+00:00",
+       "1032.0",
+       "1032.0",
+       "No Restriction"
+      ],
+      [
+       "2026-10-01 00:00:00+00:00",
+       "Intraday 1",
+       "2026-09-30 20:11:04+00:00",
+       "1032.0",
+       "520.0",
+       "Network Constraints"
+      ],
+      [
+       "2026-10-01 01:00:00+00:00",
+       "Day Ahead",
+       "2026-09-30 09:30:05+00:00",
+       "1032.0",
+       "1032.0",
+       "No Restriction"
+      ],
+      [
+       "2026-10-01 01:00:00+00:00",
+       "Intraday 1",
+       "2026-09-30 20:11:04+00:00",
+       "1032.0",
+       "590.0",
+       "Network Constraints"
+      ],
+      [
+       "2026-10-01 02:00:00+00:00",
+       "Day Ahead",
+       "2026-09-30 09:30:05+00:00",
+       "1032.0",
+       "1032.0",
+       "No Restriction"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "pd.crosstab(df.auction_type, df.reason_for_restriction_from_gb)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "reason_for_restriction_from_gb",
+      "Margin Extremes",
+      "Network Constraints",
+      "No Restriction",
+      "auction_type",
+      "",
+      "",
+      ""
+     ],
+     "index": [
+      "Day Ahead",
+      "Intraday 1",
+      "Intraday 2",
+      "Intraday 3"
+     ],
+     "rows": [
+      [
+       "78",
+       "0",
+       "328"
+      ],
+      [
+       "37",
+       "249",
+       "48"
+      ],
+      [
+       "0",
+       "18",
+       "6"
+      ],
+      [
+       "6",
+       "0",
+       "18"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "days = df[(df.hour >= pd.Timestamp(\"2026-10-13\", tz=\"UTC\"))\n          & (df.hour < pd.Timestamp(\"2026-10-16\", tz=\"UTC\"))]\ndays.pivot(index=\"hour\", columns=\"auction_type\", values=\"flow_from_gb_mw\").plot(\n    drawstyle=\"steps-post\", color=[\"#155A6E\", \"#C77E3C\", \"#7A8B3C\"], figsize=(8, 3.5),\n    xlabel=\"hour start, UTC\", ylabel=\"export limit from GB, MW\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "nemolink_ntc-5.png",
+     "width": 707,
+     "height": 369
+    }
+   ]
+  }
+ ]
+}

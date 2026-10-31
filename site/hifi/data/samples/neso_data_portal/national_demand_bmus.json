@@ -1,0 +1,144 @@
+{
+ "dataset": "neso_data_portal/national_demand_bmus",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "6b122fc7d4172f629fdcc6bd9a19e7815af5e770cd57871bd6cc590b9466a994",
+ "silver": "neso_data_portal/national_demand_bmus",
+ "columns": [
+  {
+   "name": "bm_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "ABERU-1",
+   "2026-09-29 13:45:22.344455 UTC",
+   "2026-10-08 11:12:57.464036 UTC",
+   "2026-10-08 11:12:57.464036 UTC",
+   "bronze/neso_data_portal/national_demand_bmus/2026/10/08/raw_20261008T111257Z_7e1e84cf-89f4-4c69-a72a-d778087c22a4_46cdc2ce.csv",
+   "2026-10-08 11:12:57.464036 UTC",
+   "2026-09-29 13:45:22.344455 UTC",
+   "16902c7d-65f4-4138-a446-ba35203578e6",
+   "1+e1"
+  ],
+  [
+   "ABRTW-1",
+   "2026-09-29 13:45:22.344455 UTC",
+   "2026-10-08 11:12:57.464036 UTC",
+   "2026-10-08 11:12:57.464036 UTC",
+   "bronze/neso_data_portal/national_demand_bmus/2026/10/08/raw_20261008T111257Z_7e1e84cf-89f4-4c69-a72a-d778087c22a4_46cdc2ce.csv",
+   "2026-10-08 11:12:57.464036 UTC",
+   "2026-09-29 13:45:22.344455 UTC",
+   "16902c7d-65f4-4138-a446-ba35203578e6",
+   "1+e1"
+  ],
+  [
+   "AG-ADL03E",
+   "2026-09-29 13:45:22.344455 UTC",
+   "2026-10-08 11:12:57.464036 UTC",
+   "2026-10-08 11:12:57.464036 UTC",
+   "bronze/neso_data_portal/national_demand_bmus/2026/10/08/raw_20261008T111257Z_7e1e84cf-89f4-4c69-a72a-d778087c22a4_46cdc2ce.csv",
+   "2026-10-08 11:12:57.464036 UTC",
+   "2026-09-29 13:45:22.344455 UTC",
+   "16902c7d-65f4-4138-a446-ba35203578e6",
+   "1+e1"
+  ],
+  [
+   "AG-PEPG01",
+   "2026-09-29 13:45:22.344455 UTC",
+   "2026-10-08 11:12:57.464036 UTC",
+   "2026-10-08 11:12:57.464036 UTC",
+   "bronze/neso_data_portal/national_demand_bmus/2026/10/08/raw_20261008T111257Z_7e1e84cf-89f4-4c69-a72a-d778087c22a4_46cdc2ce.csv",
+   "2026-10-08 11:12:57.464036 UTC",
+   "2026-09-29 13:45:22.344455 UTC",
+   "16902c7d-65f4-4138-a446-ba35203578e6",
+   "1+e1"
+  ],
+  [
+   "DIDCB6",
+   "2026-09-29 13:45:22.344455 UTC",
+   "2026-10-08 11:12:57.464036 UTC",
+   "2026-10-08 11:12:57.464036 UTC",
+   "bronze/neso_data_portal/national_demand_bmus/2026/10/08/raw_20261008T111257Z_7e1e84cf-89f4-4c69-a72a-d778087c22a4_46cdc2ce.csv",
+   "2026-10-08 11:12:57.464036 UTC",
+   "2026-09-29 13:45:22.344455 UTC",
+   "16902c7d-65f4-4138-a446-ba35203578e6",
+   "1+e1"
+  ],
+  [
+   "DNGB21",
+   "2026-09-29 13:45:22.344455 UTC",
+   "2026-10-08 11:12:57.464036 UTC",
+   "2026-10-08 11:12:57.464036 UTC",
+   "bronze/neso_data_portal/national_demand_bmus/2026/10/08/raw_20261008T111257Z_7e1e84cf-89f4-4c69-a72a-d778087c22a4_46cdc2ce.csv",
+   "2026-10-08 11:12:57.464036 UTC",
+   "2026-09-29 13:45:22.344455 UTC",
+   "16902c7d-65f4-4138-a446-ba35203578e6",
+   "1+e1"
+  ],
+  [
+   "HAB02G",
+   "2026-09-29 13:45:22.344455 UTC",
+   "2026-10-08 11:12:57.464036 UTC",
+   "2026-10-08 11:12:57.464036 UTC",
+   "bronze/neso_data_portal/national_demand_bmus/2026/10/08/raw_20261008T111257Z_7e1e84cf-89f4-4c69-a72a-d778087c22a4_46cdc2ce.csv",
+   "2026-10-08 11:12:57.464036 UTC",
+   "2026-09-29 13:45:22.344455 UTC",
+   "16902c7d-65f4-4138-a446-ba35203578e6",
+   "1+e1"
+  ],
+  [
+   "ZEN02A",
+   "2026-09-29 13:45:22.344455 UTC",
+   "2026-10-08 11:12:57.464036 UTC",
+   "2026-10-08 11:12:57.464036 UTC",
+   "bronze/neso_data_portal/national_demand_bmus/2026/10/08/raw_20261008T111257Z_7e1e84cf-89f4-4c69-a72a-d778087c22a4_46cdc2ce.csv",
+   "2026-10-08 11:12:57.464036 UTC",
+   "2026-09-29 13:45:22.344455 UTC",
+   "16902c7d-65f4-4138-a446-ba35203578e6",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

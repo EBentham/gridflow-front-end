@@ -1,0 +1,19 @@
+{
+  "dataset": "neso_data_portal/stor_windows",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "7fc6f87980c4537a050f9ff2e34eae275a3146c598777b4f4d279c1837a14b3d",
+  "type": "bar",
+  "unit": "days",
+  "caption": "",
+  "value_column": null,
+  "aggregation": "count",
+  "window": null,
+  "provenance": {"duplicates_dropped": 0, "files": 1, "rows_matched": 365, "rows_read": 1826, "rows_used": 365, "silver": "neso_data_portal/stor_windows"},
+  "spec": {"aggregation": "count", "dedup": {"on": ["date"], "order_by": "published_at"}, "filter": [{"column": "date", "op": "ge", "value": "2025-04-01"}, {"column": "date", "op": "le", "value": "2026-03-31"}], "group": "season", "silver": "neso_data_portal/stor_windows", "sort": "label", "type": "bar", "unit": "days"},
+  "x_kind": "category",
+  "x": ["19.1", "19.2", "19.3", "19.4", "19.5", "19.6"],
+  "series": [
+    {"key": "count", "values": [27, 112, 35, 28, 91, 72]}
+  ]
+}

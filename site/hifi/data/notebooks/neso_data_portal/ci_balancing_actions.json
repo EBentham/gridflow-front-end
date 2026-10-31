@@ -1,0 +1,124 @@
+{
+ "dataset": "neso_data_portal/ci_balancing_actions",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "01d54a0aa55ab4a62c01617cbb45f57b9e2fc7591dd8f5143e548174bd9db82a",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.sql(\"\"\"\n    SELECT datetime, fpn, boa, difference\n    FROM silver_neso_data_portal_ci_balancing_actions_latest\n    WHERE datetime >= '2026-10-09' AND datetime < '2026-10-16'\n    ORDER BY datetime\"\"\")\ndf.head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "datetime",
+      "fpn",
+      "boa",
+      "difference"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "2026-10-09T00:00:00",
+       "27.56",
+       "38.610",
+       "11.050"
+      ],
+      [
+       "2026-10-09T00:30:00",
+       "28.18",
+       "52.976",
+       "24.796"
+      ],
+      [
+       "2026-10-09T01:00:00",
+       "28.30",
+       "51.606",
+       "23.306"
+      ],
+      [
+       "2026-10-09T01:30:00",
+       "27.42",
+       "50.042",
+       "22.622"
+      ],
+      [
+       "2026-10-09T02:00:00",
+       "27.12",
+       "49.126",
+       "22.006"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "s = df.set_index(df.datetime.astype(\"datetime64[ns]\"))[\"difference\"]\nax = s.plot(figsize=(8, 3.5), color=\"#C77E3C\",\n            xlabel=\"DATETIME as NESO writes it, UTC\", ylabel=\"Difference, gCO2/kWh\")\nax.axhline(0, color=\"#155A6E\", linewidth=0.8);",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "ci_balancing_actions-4.png",
+     "width": 699,
+     "height": 369
+    }
+   ]
+  }
+ ]
+}

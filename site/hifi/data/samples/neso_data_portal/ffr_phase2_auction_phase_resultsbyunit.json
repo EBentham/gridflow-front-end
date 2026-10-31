@@ -1,0 +1,261 @@
+{
+ "dataset": "neso_data_portal/ffr_phase2_auction_phase_resultsbyunit",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "e6b0ccba7598847148c25d80902a06b6e4d3f77229932d4cee117ead80c3da5b",
+ "silver": "neso_data_portal/ffr_phase2_auction_phase_resultsbyunit",
+ "columns": [
+  {
+   "name": "unit_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "efa_date",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "efa",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "service",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "cleared_volume",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "clearing_price",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "cancelled",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "company",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "delivery_start",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "delivery_end",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "UF_GBD02",
+   "2021-07-24",
+   "1",
+   "LFS",
+   "6.0",
+   "5.4",
+   null,
+   "GRIDBEYOND LIMITED",
+   "23/07/2021 23:00",
+   "24/07/2021 03:00",
+   "2021-07-23 23:00:00 UTC",
+   "2021-11-26 11:20:28.830268 UTC",
+   "bronze/neso_data_portal/ffr_phase2_auction_phase_resultsbyunit/2026/10/08/raw_20261008T105918Z_feafb7ab-7db6-406e-a46f-bbcf6ed92ba1_a09a489f.csv",
+   "2026-10-08 10:59:18.920386 UTC",
+   "2021-07-23 23:00:00 UTC",
+   "2021-11-26 11:20:28.830268 UTC",
+   "0faaa09f-c89a-4482-9736-a55cd99f2d8a",
+   "1+e1"
+  ],
+  [
+   "UF_GBD03",
+   "2021-07-24",
+   "1",
+   "LFS",
+   "7.0",
+   "5.4",
+   null,
+   "GRIDBEYOND LIMITED",
+   "23/07/2021 23:00",
+   "24/07/2021 03:00",
+   "2021-07-23 23:00:00 UTC",
+   "2021-11-26 11:20:28.830268 UTC",
+   "bronze/neso_data_portal/ffr_phase2_auction_phase_resultsbyunit/2026/10/08/raw_20261008T105918Z_feafb7ab-7db6-406e-a46f-bbcf6ed92ba1_a09a489f.csv",
+   "2026-10-08 10:59:18.920386 UTC",
+   "2021-07-23 23:00:00 UTC",
+   "2021-11-26 11:20:28.830268 UTC",
+   "0faaa09f-c89a-4482-9736-a55cd99f2d8a",
+   "1+e1"
+  ],
+  [
+   "UF_GBD05",
+   "2021-07-24",
+   "1",
+   "LFS",
+   "9.0",
+   "5.4",
+   null,
+   "GRIDBEYOND LIMITED",
+   "23/07/2021 23:00",
+   "24/07/2021 03:00",
+   "2021-07-23 23:00:00 UTC",
+   "2021-11-26 11:20:28.830268 UTC",
+   "bronze/neso_data_portal/ffr_phase2_auction_phase_resultsbyunit/2026/10/08/raw_20261008T105918Z_feafb7ab-7db6-406e-a46f-bbcf6ed92ba1_a09a489f.csv",
+   "2026-10-08 10:59:18.920386 UTC",
+   "2021-07-23 23:00:00 UTC",
+   "2021-11-26 11:20:28.830268 UTC",
+   "0faaa09f-c89a-4482-9736-a55cd99f2d8a",
+   "1+e1"
+  ],
+  [
+   "UF_GBD06",
+   "2021-07-24",
+   "1",
+   "LFS",
+   "13.0",
+   "5.4",
+   null,
+   "GRIDBEYOND LIMITED",
+   "23/07/2021 23:00",
+   "24/07/2021 03:00",
+   "2021-07-23 23:00:00 UTC",
+   "2021-11-26 11:20:28.830268 UTC",
+   "bronze/neso_data_portal/ffr_phase2_auction_phase_resultsbyunit/2026/10/08/raw_20261008T105918Z_feafb7ab-7db6-406e-a46f-bbcf6ed92ba1_a09a489f.csv",
+   "2026-10-08 10:59:18.920386 UTC",
+   "2021-07-23 23:00:00 UTC",
+   "2021-11-26 11:20:28.830268 UTC",
+   "0faaa09f-c89a-4482-9736-a55cd99f2d8a",
+   "1+e1"
+  ],
+  [
+   "UF_GBD12",
+   "2021-07-24",
+   "1",
+   "LFS",
+   "11.0",
+   "5.4",
+   null,
+   "GRIDBEYOND LIMITED",
+   "23/07/2021 23:00",
+   "24/07/2021 03:00",
+   "2021-07-23 23:00:00 UTC",
+   "2021-11-26 11:20:28.830268 UTC",
+   "bronze/neso_data_portal/ffr_phase2_auction_phase_resultsbyunit/2026/10/08/raw_20261008T105918Z_feafb7ab-7db6-406e-a46f-bbcf6ed92ba1_a09a489f.csv",
+   "2026-10-08 10:59:18.920386 UTC",
+   "2021-07-23 23:00:00 UTC",
+   "2021-11-26 11:20:28.830268 UTC",
+   "0faaa09f-c89a-4482-9736-a55cd99f2d8a",
+   "1+e1"
+  ],
+  [
+   "UF_GBD14",
+   "2021-07-24",
+   "1",
+   "LFS",
+   "20.0",
+   "5.4",
+   "Executed volume is over tested volume - cancelled",
+   "GRIDBEYOND LIMITED",
+   "23/07/2021 23:00",
+   "24/07/2021 03:00",
+   "2021-07-23 23:00:00 UTC",
+   "2021-11-26 11:20:28.830268 UTC",
+   "bronze/neso_data_portal/ffr_phase2_auction_phase_resultsbyunit/2026/10/08/raw_20261008T105918Z_feafb7ab-7db6-406e-a46f-bbcf6ed92ba1_a09a489f.csv",
+   "2026-10-08 10:59:18.920386 UTC",
+   "2021-07-23 23:00:00 UTC",
+   "2021-11-26 11:20:28.830268 UTC",
+   "0faaa09f-c89a-4482-9736-a55cd99f2d8a",
+   "1+e1"
+  ],
+  [
+   "UF_GBD15",
+   "2021-07-24",
+   "1",
+   "LFS",
+   "20.0",
+   "5.4",
+   "Executed volume is over tested volume - cancelled",
+   "GRIDBEYOND LIMITED",
+   "23/07/2021 23:00",
+   "24/07/2021 03:00",
+   "2021-07-23 23:00:00 UTC",
+   "2021-11-26 11:20:28.830268 UTC",
+   "bronze/neso_data_portal/ffr_phase2_auction_phase_resultsbyunit/2026/10/08/raw_20261008T105918Z_feafb7ab-7db6-406e-a46f-bbcf6ed92ba1_a09a489f.csv",
+   "2026-10-08 10:59:18.920386 UTC",
+   "2021-07-23 23:00:00 UTC",
+   "2021-11-26 11:20:28.830268 UTC",
+   "0faaa09f-c89a-4482-9736-a55cd99f2d8a",
+   "1+e1"
+  ],
+  [
+   "UF_KWP01",
+   "2021-07-24",
+   "1",
+   "LFS",
+   "10.0",
+   "5.4",
+   null,
+   "KIWI POWER LTD",
+   "23/07/2021 23:00",
+   "24/07/2021 03:00",
+   "2021-07-23 23:00:00 UTC",
+   "2021-11-26 11:20:28.830268 UTC",
+   "bronze/neso_data_portal/ffr_phase2_auction_phase_resultsbyunit/2026/10/08/raw_20261008T105918Z_feafb7ab-7db6-406e-a46f-bbcf6ed92ba1_a09a489f.csv",
+   "2026-10-08 10:59:18.920386 UTC",
+   "2021-07-23 23:00:00 UTC",
+   "2021-11-26 11:20:28.830268 UTC",
+   "0faaa09f-c89a-4482-9736-a55cd99f2d8a",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

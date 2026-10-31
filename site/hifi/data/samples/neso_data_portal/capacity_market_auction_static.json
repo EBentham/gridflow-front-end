@@ -1,0 +1,339 @@
+{
+ "dataset": "neso_data_portal/capacity_market_auction_static",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "cf071d30d39eb9fdf4bce94a525060ce25f436283d6a9f2c9461b2b1b17c9307",
+ "silver": "neso_data_portal/capacity_market_auction_static",
+ "columns": [
+  {
+   "name": "auction_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "clearing_price_gbp_per_kw_per_year",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "total_volume_of_agreements_awarded",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "auction_target_capacity_mw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "base_period_for_the_agreement",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "termination_fee_1_rate",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "termination_fee_2_rate",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "termination_fee_3_rate",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "termination_fee_4_rate",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "termination_fee_5_rate",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "termination_fee_6_rate",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "termination_fee_7_rate",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "termination_fee_8_rate",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "termination_fee_9_rate",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "annual_penalty_cap",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "monthly_penalty_cap",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2025-26 (T-4) Four Year Ahead Capacity Auction",
+   "30.59",
+   "42364.314",
+   "42100.0",
+   "Winter 2020/2021",
+   "£5000 /MW",
+   "£25000 /MW",
+   "£10000 /MW",
+   "£15000 /MW",
+   "£35000 /MW",
+   null,
+   null,
+   null,
+   null,
+   "100%",
+   "200%",
+   "2026-09-09 11:51:45.161649 UTC",
+   "2026-10-08 09:14:19.659695 UTC",
+   "bronze/neso_data_portal/capacity_market_auction_static/2026/10/08/raw_20261008T091419Z_784fa703-1460-42cd-a8bb-fba4dcabac8d_2b0e779b.csv",
+   "2026-10-08 09:14:19.659695 UTC",
+   "2026-10-08 09:14:19.659695 UTC",
+   "2026-09-09 11:51:45.161649 UTC",
+   "8229d3af-00f2-41bc-8c78-ab06962ebc34",
+   "1+e1"
+  ],
+  [
+   "2026-27 (T-1) One Year Ahead Capacity Auction",
+   "5.0",
+   "7192.317",
+   "6300.0",
+   null,
+   "£5000 /MW",
+   "£25000 /MW",
+   "£10000 /MW",
+   "£15000 /MW",
+   "£35000 /MW",
+   null,
+   null,
+   null,
+   null,
+   "100%",
+   "200%",
+   "2026-09-09 11:51:45.161649 UTC",
+   "2026-10-08 09:14:19.659695 UTC",
+   "bronze/neso_data_portal/capacity_market_auction_static/2026/10/08/raw_20261008T091419Z_784fa703-1460-42cd-a8bb-fba4dcabac8d_2b0e779b.csv",
+   "2026-10-08 09:14:19.659695 UTC",
+   "2026-10-08 09:14:19.659695 UTC",
+   "2026-09-09 11:51:45.161649 UTC",
+   "8229d3af-00f2-41bc-8c78-ab06962ebc34",
+   "1+e1"
+  ],
+  [
+   "2026-27 (T-4) Four Year Ahead Capacity Auction",
+   "63.0",
+   "43000.955",
+   "43900.0",
+   "Winter 2021/2022",
+   "£5000 /MW",
+   "£25000 /MW",
+   "£10000 /MW",
+   "£15000 /MW",
+   "£35000 /MW",
+   null,
+   null,
+   null,
+   null,
+   "100%",
+   "200%",
+   "2026-09-09 11:51:45.161649 UTC",
+   "2026-10-08 09:14:19.659695 UTC",
+   "bronze/neso_data_portal/capacity_market_auction_static/2026/10/08/raw_20261008T091419Z_784fa703-1460-42cd-a8bb-fba4dcabac8d_2b0e779b.csv",
+   "2026-10-08 09:14:19.659695 UTC",
+   "2026-10-08 09:14:19.659695 UTC",
+   "2026-09-09 11:51:45.161649 UTC",
+   "8229d3af-00f2-41bc-8c78-ab06962ebc34",
+   "1+e1"
+  ],
+  [
+   "2027-28 (T-1) One Year Ahead Capacity Auction",
+   null,
+   null,
+   null,
+   null,
+   "£5000 /MW",
+   "£25000 /MW",
+   "£10000 /MW",
+   "£15000 /MW",
+   "£35000 /MW",
+   "£6500 /MW",
+   "£13000 /MW",
+   "£19500 /MW",
+   "£45500 /MW",
+   "100%",
+   "200%",
+   "2026-09-09 11:51:45.161649 UTC",
+   "2026-10-08 09:14:19.659695 UTC",
+   "bronze/neso_data_portal/capacity_market_auction_static/2026/10/08/raw_20261008T091419Z_784fa703-1460-42cd-a8bb-fba4dcabac8d_2b0e779b.csv",
+   "2026-10-08 09:14:19.659695 UTC",
+   "2026-10-08 09:14:19.659695 UTC",
+   "2026-09-09 11:51:45.161649 UTC",
+   "8229d3af-00f2-41bc-8c78-ab06962ebc34",
+   "1+e1"
+  ],
+  [
+   "2027-28 (T-4) Four Year Ahead Capacity Auction",
+   "65.0",
+   "42830.829",
+   "44000.0",
+   "Winter 2022/2023",
+   "£5000 /MW",
+   "£25000 /MW",
+   "£10000 /MW",
+   "£15000 /MW",
+   "£35000 /MW",
+   null,
+   null,
+   null,
+   null,
+   "100%",
+   "200%",
+   "2026-09-09 11:51:45.161649 UTC",
+   "2026-10-08 09:14:19.659695 UTC",
+   "bronze/neso_data_portal/capacity_market_auction_static/2026/10/08/raw_20261008T091419Z_784fa703-1460-42cd-a8bb-fba4dcabac8d_2b0e779b.csv",
+   "2026-10-08 09:14:19.659695 UTC",
+   "2026-10-08 09:14:19.659695 UTC",
+   "2026-09-09 11:51:45.161649 UTC",
+   "8229d3af-00f2-41bc-8c78-ab06962ebc34",
+   "1+e1"
+  ],
+  [
+   "2028-29 (T-4) Four Year Ahead Capacity Auction",
+   "60.0",
+   "43055.073",
+   "43700.0",
+   "Winter 2023/2024",
+   "£5000 /MW",
+   "£25000 /MW",
+   "£10000 /MW",
+   "£15000 /MW",
+   "£35000 /MW",
+   null,
+   null,
+   null,
+   null,
+   "100%",
+   "200%",
+   "2026-09-09 11:51:45.161649 UTC",
+   "2026-10-08 09:14:19.659695 UTC",
+   "bronze/neso_data_portal/capacity_market_auction_static/2026/10/08/raw_20261008T091419Z_784fa703-1460-42cd-a8bb-fba4dcabac8d_2b0e779b.csv",
+   "2026-10-08 09:14:19.659695 UTC",
+   "2026-10-08 09:14:19.659695 UTC",
+   "2026-09-09 11:51:45.161649 UTC",
+   "8229d3af-00f2-41bc-8c78-ab06962ebc34",
+   "1+e1"
+  ],
+  [
+   "2029-30 (T-4) Four Year Ahead Capacity Auction",
+   "27.1",
+   "40108.608",
+   "39400.0",
+   "Winter 2024/2025",
+   "£5000 /MW",
+   "£25000 /MW",
+   "£10000 /MW",
+   "£15000 /MW",
+   "£35000 /MW",
+   null,
+   null,
+   null,
+   null,
+   "100%",
+   "200%",
+   "2026-09-09 11:51:45.161649 UTC",
+   "2026-10-08 09:14:19.659695 UTC",
+   "bronze/neso_data_portal/capacity_market_auction_static/2026/10/08/raw_20261008T091419Z_784fa703-1460-42cd-a8bb-fba4dcabac8d_2b0e779b.csv",
+   "2026-10-08 09:14:19.659695 UTC",
+   "2026-10-08 09:14:19.659695 UTC",
+   "2026-09-09 11:51:45.161649 UTC",
+   "8229d3af-00f2-41bc-8c78-ab06962ebc34",
+   "1+e1"
+  ],
+  [
+   "2030-31 (T-4) Four Year Ahead Capacity Auction",
+   null,
+   null,
+   null,
+   null,
+   "£5000 /MW",
+   "£25000 /MW",
+   "£10000 /MW",
+   "£15000 /MW",
+   "£35000 /MW",
+   "£6500 /MW",
+   "£13000 /MW",
+   "£19500 /MW",
+   "£45500 /MW",
+   "100%",
+   "200%",
+   "2026-09-09 11:51:45.161649 UTC",
+   "2026-10-08 09:14:19.659695 UTC",
+   "bronze/neso_data_portal/capacity_market_auction_static/2026/10/08/raw_20261008T091419Z_784fa703-1460-42cd-a8bb-fba4dcabac8d_2b0e779b.csv",
+   "2026-10-08 09:14:19.659695 UTC",
+   "2026-10-08 09:14:19.659695 UTC",
+   "2026-09-09 11:51:45.161649 UTC",
+   "8229d3af-00f2-41bc-8c78-ab06962ebc34",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

@@ -1,0 +1,209 @@
+{
+ "dataset": "neso_data_portal/wind_bmu_boa_volumes",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "268fd85885b8fc356e32497de9679840077db75c11aae7e897018b1427c7ff67",
+ "silver": "neso_data_portal/wind_bmu_boa_volumes",
+ "columns": [
+  {
+   "name": "date",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "settlement_period",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "generator_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "boa_volume",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "generator_full_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "resource_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2025-04-04",
+   "4",
+   "NNGAO-1",
+   "-41.5",
+   "Neart Na Gaoithe 1",
+   "7bf83942-3590-4fe5-9980-49a9546e30a9",
+   "2025-04-04 00:30:00 UTC",
+   "2026-05-28 09:03:25.895718 UTC",
+   "bronze/neso_data_portal/wind_bmu_boa_volumes/2026/10/08/raw_20261008T114152Z_7bf83942-3590-4fe5-9980-49a9546e30a9_d7d46ad2.csv",
+   "2026-10-08 11:41:52.749162 UTC",
+   "2025-04-04 00:30:00 UTC",
+   "2026-05-28 09:03:25.895718 UTC",
+   "0850c532-a9f0-45dd-8b76-28738bb87c81",
+   "1+e1"
+  ],
+  [
+   "2025-04-04",
+   "5",
+   "NNGAO-1",
+   "-35.0",
+   "Neart Na Gaoithe 1",
+   "7bf83942-3590-4fe5-9980-49a9546e30a9",
+   "2025-04-04 01:00:00 UTC",
+   "2026-05-28 09:03:25.895718 UTC",
+   "bronze/neso_data_portal/wind_bmu_boa_volumes/2026/10/08/raw_20261008T114152Z_7bf83942-3590-4fe5-9980-49a9546e30a9_d7d46ad2.csv",
+   "2026-10-08 11:41:52.749162 UTC",
+   "2025-04-04 01:00:00 UTC",
+   "2026-05-28 09:03:25.895718 UTC",
+   "0850c532-a9f0-45dd-8b76-28738bb87c81",
+   "1+e1"
+  ],
+  [
+   "2025-04-04",
+   "5",
+   "NNGAO-1",
+   "-0.5",
+   "Neart Na Gaoithe 1",
+   "7bf83942-3590-4fe5-9980-49a9546e30a9",
+   "2025-04-04 01:00:00 UTC",
+   "2026-05-28 09:03:25.895718 UTC",
+   "bronze/neso_data_portal/wind_bmu_boa_volumes/2026/10/08/raw_20261008T114152Z_7bf83942-3590-4fe5-9980-49a9546e30a9_d7d46ad2.csv",
+   "2026-10-08 11:41:52.749162 UTC",
+   "2025-04-04 01:00:00 UTC",
+   "2026-05-28 09:03:25.895718 UTC",
+   "0850c532-a9f0-45dd-8b76-28738bb87c81",
+   "1+e1"
+  ],
+  [
+   "2025-04-04",
+   "6",
+   "NNGAO-1",
+   "-36.0",
+   "Neart Na Gaoithe 1",
+   "7bf83942-3590-4fe5-9980-49a9546e30a9",
+   "2025-04-04 01:30:00 UTC",
+   "2026-05-28 09:03:25.895718 UTC",
+   "bronze/neso_data_portal/wind_bmu_boa_volumes/2026/10/08/raw_20261008T114152Z_7bf83942-3590-4fe5-9980-49a9546e30a9_d7d46ad2.csv",
+   "2026-10-08 11:41:52.749162 UTC",
+   "2025-04-04 01:30:00 UTC",
+   "2026-05-28 09:03:25.895718 UTC",
+   "0850c532-a9f0-45dd-8b76-28738bb87c81",
+   "1+e1"
+  ],
+  [
+   "2025-04-04",
+   "6",
+   "NNGAO-1",
+   "-1.0",
+   "Neart Na Gaoithe 1",
+   "7bf83942-3590-4fe5-9980-49a9546e30a9",
+   "2025-04-04 01:30:00 UTC",
+   "2026-05-28 09:03:25.895718 UTC",
+   "bronze/neso_data_portal/wind_bmu_boa_volumes/2026/10/08/raw_20261008T114152Z_7bf83942-3590-4fe5-9980-49a9546e30a9_d7d46ad2.csv",
+   "2026-10-08 11:41:52.749162 UTC",
+   "2025-04-04 01:30:00 UTC",
+   "2026-05-28 09:03:25.895718 UTC",
+   "0850c532-a9f0-45dd-8b76-28738bb87c81",
+   "1+e1"
+  ],
+  [
+   "2025-04-04",
+   "7",
+   "NNGAO-1",
+   "-29.896",
+   "Neart Na Gaoithe 1",
+   "7bf83942-3590-4fe5-9980-49a9546e30a9",
+   "2025-04-04 02:00:00 UTC",
+   "2026-05-28 09:03:25.895718 UTC",
+   "bronze/neso_data_portal/wind_bmu_boa_volumes/2026/10/08/raw_20261008T114152Z_7bf83942-3590-4fe5-9980-49a9546e30a9_d7d46ad2.csv",
+   "2026-10-08 11:41:52.749162 UTC",
+   "2025-04-04 02:00:00 UTC",
+   "2026-05-28 09:03:25.895718 UTC",
+   "0850c532-a9f0-45dd-8b76-28738bb87c81",
+   "1+e1"
+  ],
+  [
+   "2025-04-04",
+   "7",
+   "NNGAO-1",
+   "-1.02",
+   "Neart Na Gaoithe 1",
+   "7bf83942-3590-4fe5-9980-49a9546e30a9",
+   "2025-04-04 02:00:00 UTC",
+   "2026-05-28 09:03:25.895718 UTC",
+   "bronze/neso_data_portal/wind_bmu_boa_volumes/2026/10/08/raw_20261008T114152Z_7bf83942-3590-4fe5-9980-49a9546e30a9_d7d46ad2.csv",
+   "2026-10-08 11:41:52.749162 UTC",
+   "2025-04-04 02:00:00 UTC",
+   "2026-05-28 09:03:25.895718 UTC",
+   "0850c532-a9f0-45dd-8b76-28738bb87c81",
+   "1+e1"
+  ],
+  [
+   "2025-04-04",
+   "8",
+   "NNGAO-1",
+   "-35.0",
+   "Neart Na Gaoithe 1",
+   "7bf83942-3590-4fe5-9980-49a9546e30a9",
+   "2025-04-04 02:30:00 UTC",
+   "2026-05-28 09:03:25.895718 UTC",
+   "bronze/neso_data_portal/wind_bmu_boa_volumes/2026/10/08/raw_20261008T114152Z_7bf83942-3590-4fe5-9980-49a9546e30a9_d7d46ad2.csv",
+   "2026-10-08 11:41:52.749162 UTC",
+   "2025-04-04 02:30:00 UTC",
+   "2026-05-28 09:03:25.895718 UTC",
+   "0850c532-a9f0-45dd-8b76-28738bb87c81",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

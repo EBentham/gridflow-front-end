@@ -1,0 +1,222 @@
+{
+ "dataset": "neso_data_portal/tresp_generation_pathways_resp_region",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "61ade1ac66adbc42f5abb0c8f96b833573d6e043338669e1dbac03c3235f4350",
+ "silver": "neso_data_portal/tresp_generation_pathways_resp_region",
+ "columns": [
+  {
+   "name": "building_block_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "resp_region",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "pathway",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "projection_year",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "value",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "unit",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "resource_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "Gen_BB012",
+   "South_west",
+   "tRESP - HT",
+   "2025",
+   "2599.173781",
+   "MW",
+   "f295b8b5-8022-433d-b07f-b75b729fb199",
+   "2026-01-30 08:34:24.152349 UTC",
+   "2026-10-08 11:40:26.441105 UTC",
+   "bronze/neso_data_portal/tresp_generation_pathways_resp_region/2026/10/08/raw_20261008T114026Z_f295b8b5-8022-433d-b07f-b75b729fb199_67c25b77.csv",
+   "2026-10-08 11:40:26.441105 UTC",
+   "2026-10-08 11:40:26.441105 UTC",
+   "2026-01-30 08:34:24.152349 UTC",
+   "0136ff0b-2218-4569-9017-64123dd13800",
+   "1+e1"
+  ],
+  [
+   "Gen_BB012",
+   "South_west",
+   "tRESP - HT",
+   "2034",
+   "6882.084986",
+   "MW",
+   "f295b8b5-8022-433d-b07f-b75b729fb199",
+   "2026-01-30 08:34:24.152349 UTC",
+   "2026-10-08 11:40:26.441105 UTC",
+   "bronze/neso_data_portal/tresp_generation_pathways_resp_region/2026/10/08/raw_20261008T114026Z_f295b8b5-8022-433d-b07f-b75b729fb199_67c25b77.csv",
+   "2026-10-08 11:40:26.441105 UTC",
+   "2026-10-08 11:40:26.441105 UTC",
+   "2026-01-30 08:34:24.152349 UTC",
+   "0136ff0b-2218-4569-9017-64123dd13800",
+   "1+e1"
+  ],
+  [
+   "Gen_BB012",
+   "South_west",
+   "tRESP - EE",
+   "2035",
+   "7394.227719",
+   "MW",
+   "f295b8b5-8022-433d-b07f-b75b729fb199",
+   "2026-01-30 08:34:24.152349 UTC",
+   "2026-10-08 11:40:26.441105 UTC",
+   "bronze/neso_data_portal/tresp_generation_pathways_resp_region/2026/10/08/raw_20261008T114026Z_f295b8b5-8022-433d-b07f-b75b729fb199_67c25b77.csv",
+   "2026-10-08 11:40:26.441105 UTC",
+   "2026-10-08 11:40:26.441105 UTC",
+   "2026-01-30 08:34:24.152349 UTC",
+   "0136ff0b-2218-4569-9017-64123dd13800",
+   "1+e1"
+  ],
+  [
+   "Gen_BB012",
+   "South_west",
+   "tRESP - HE",
+   "2035",
+   "7394.227719",
+   "MW",
+   "f295b8b5-8022-433d-b07f-b75b729fb199",
+   "2026-01-30 08:34:24.152349 UTC",
+   "2026-10-08 11:40:26.441105 UTC",
+   "bronze/neso_data_portal/tresp_generation_pathways_resp_region/2026/10/08/raw_20261008T114026Z_f295b8b5-8022-433d-b07f-b75b729fb199_67c25b77.csv",
+   "2026-10-08 11:40:26.441105 UTC",
+   "2026-10-08 11:40:26.441105 UTC",
+   "2026-01-30 08:34:24.152349 UTC",
+   "0136ff0b-2218-4569-9017-64123dd13800",
+   "1+e1"
+  ],
+  [
+   "Gen_BB012",
+   "South_west",
+   "tRESP - HT",
+   "2035",
+   "7394.227719",
+   "MW",
+   "f295b8b5-8022-433d-b07f-b75b729fb199",
+   "2026-01-30 08:34:24.152349 UTC",
+   "2026-10-08 11:40:26.441105 UTC",
+   "bronze/neso_data_portal/tresp_generation_pathways_resp_region/2026/10/08/raw_20261008T114026Z_f295b8b5-8022-433d-b07f-b75b729fb199_67c25b77.csv",
+   "2026-10-08 11:40:26.441105 UTC",
+   "2026-10-08 11:40:26.441105 UTC",
+   "2026-01-30 08:34:24.152349 UTC",
+   "0136ff0b-2218-4569-9017-64123dd13800",
+   "1+e1"
+  ],
+  [
+   "Gen_BB012",
+   "South_west",
+   "tRESP - EE",
+   "2036",
+   "7781.539951",
+   "MW",
+   "f295b8b5-8022-433d-b07f-b75b729fb199",
+   "2026-01-30 08:34:24.152349 UTC",
+   "2026-10-08 11:40:26.441105 UTC",
+   "bronze/neso_data_portal/tresp_generation_pathways_resp_region/2026/10/08/raw_20261008T114026Z_f295b8b5-8022-433d-b07f-b75b729fb199_67c25b77.csv",
+   "2026-10-08 11:40:26.441105 UTC",
+   "2026-10-08 11:40:26.441105 UTC",
+   "2026-01-30 08:34:24.152349 UTC",
+   "0136ff0b-2218-4569-9017-64123dd13800",
+   "1+e1"
+  ],
+  [
+   "Gen_BB012",
+   "South_west",
+   "tRESP - HE",
+   "2036",
+   "7772.879666",
+   "MW",
+   "f295b8b5-8022-433d-b07f-b75b729fb199",
+   "2026-01-30 08:34:24.152349 UTC",
+   "2026-10-08 11:40:26.441105 UTC",
+   "bronze/neso_data_portal/tresp_generation_pathways_resp_region/2026/10/08/raw_20261008T114026Z_f295b8b5-8022-433d-b07f-b75b729fb199_67c25b77.csv",
+   "2026-10-08 11:40:26.441105 UTC",
+   "2026-10-08 11:40:26.441105 UTC",
+   "2026-01-30 08:34:24.152349 UTC",
+   "0136ff0b-2218-4569-9017-64123dd13800",
+   "1+e1"
+  ],
+  [
+   "Gen_BB012",
+   "South_west",
+   "tRESP - HT",
+   "2036",
+   "7906.370453",
+   "MW",
+   "f295b8b5-8022-433d-b07f-b75b729fb199",
+   "2026-01-30 08:34:24.152349 UTC",
+   "2026-10-08 11:40:26.441105 UTC",
+   "bronze/neso_data_portal/tresp_generation_pathways_resp_region/2026/10/08/raw_20261008T114026Z_f295b8b5-8022-433d-b07f-b75b729fb199_67c25b77.csv",
+   "2026-10-08 11:40:26.441105 UTC",
+   "2026-10-08 11:40:26.441105 UTC",
+   "2026-01-30 08:34:24.152349 UTC",
+   "0136ff0b-2218-4569-9017-64123dd13800",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

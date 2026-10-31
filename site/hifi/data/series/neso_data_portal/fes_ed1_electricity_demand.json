@@ -1,0 +1,19 @@
+{
+  "dataset": "neso_data_portal/fes_ed1_electricity_demand",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "d8a8c8a1b64a1918dc51b338183a227acb007c2ccac5c5def7183c82837dd86b",
+  "type": "bar",
+  "unit": "GWh",
+  "caption": "",
+  "value_column": "value",
+  "aggregation": "max",
+  "window": null,
+  "provenance": {"duplicates_dropped": 0, "files": 4, "null_values_dropped": 0, "rows_matched": 5, "rows_read": 45985, "rows_used": 5, "silver": "neso_data_portal/fes_ed1_electricity_demand"},
+  "spec": {"aggregation": "max", "dedup": {"on": ["resource_id", "edition", "data_item", "unit", "pathway", "peak_annual_minimum", "projection_year"], "order_by": "capture_written_at"}, "filter": [{"column": "edition", "op": "eq", "value": 2025}, {"column": "data_item", "op": "eq", "value": "GBFES System Demand: Total"}, {"column": "pathway", "op": "eq", "value": "Holistic Transition"}, {"column": "projection_year", "op": "in", "value": [2030, 2035, 2040, 2045, 2050]}], "group": "projection_year", "silver": "neso_data_portal/fes_ed1_electricity_demand", "sort": "label", "type": "bar", "unit": "GWh", "value": "value"},
+  "x_kind": "category",
+  "x": ["2030", "2035", "2040", "2045", "2050"],
+  "series": [
+    {"key": "value", "values": [339295.0, 433422.0, 563928.0, 654296.0, 705223.0]}
+  ]
+}

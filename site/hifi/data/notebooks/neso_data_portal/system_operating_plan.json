@@ -1,0 +1,207 @@
+{
+ "dataset": "neso_data_portal/system_operating_plan",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "8464e60b939daedc3fad96800a66ec0cbf7891efa478ba39f107451a468cd6aa",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.neso_data_portal.query(\"system_operating_plan\", \"2026-10-01\", \"2026-10-16\")\ntimes = [\"sop_datetime\", \"sop_report_creation_time_gmt\"]\ndf[times] = df[times].apply(lambda c: c.dt.tz_convert(\"UTC\"))\ndf = df.sort_values(\"sop_datetime\", ignore_index=True)\ndf[[\"sop_datetime\", \"cardinal_point\", \"latest_version\", \"sop_report_creation_time_gmt\",\n    \"total_sop_demand\", \"total_temx\"]].tail()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "sop_datetime",
+      "cardinal_point",
+      "latest_version",
+      "sop_report_creation_time_gmt",
+      "total_sop_demand",
+      "total_temx"
+     ],
+     "index": [
+      "51",
+      "52",
+      "53",
+      "54",
+      "55"
+     ],
+     "rows": [
+      [
+       "2026-10-16 02:00:00+00:00",
+       "1A",
+       "2",
+       "2026-10-15 18:58:00+00:00",
+       "23464.0",
+       "25096.0"
+      ],
+      [
+       "2026-10-16 04:45:00+00:00",
+       "1B",
+       "5",
+       "2026-10-15 23:38:00+00:00",
+       "21472.0",
+       "25114.0"
+      ],
+      [
+       "2026-10-16 08:15:00+00:00",
+       "2F",
+       "4",
+       "2026-10-16 02:52:00+00:00",
+       "31062.0",
+       "33769.0"
+      ],
+      [
+       "2026-10-16 09:10:00+00:00",
+       "2A",
+       "4",
+       "2026-10-16 04:43:00+00:00",
+       "30450.0",
+       "33365.0"
+      ],
+      [
+       "2026-10-16 18:50:00+00:00",
+       "3C",
+       "8",
+       "2026-10-16 12:23:00+00:00",
+       "33536.0",
+       "36943.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "hours_ahead = (df.sop_datetime - df.sop_report_creation_time_gmt).dt.total_seconds() / 3600\nhours_ahead.groupby(df.cardinal_point).agg([\"count\", \"min\", \"max\"]).round(1)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "count",
+      "min",
+      "max",
+      "cardinal_point",
+      "",
+      "",
+      ""
+     ],
+     "index": [
+      "1A",
+      "1B",
+      "2A",
+      "2B",
+      "2F",
+      "3B",
+      "3C",
+      "4B"
+     ],
+     "rows": [
+      [
+       "6",
+       "6.0",
+       "7.0"
+      ],
+      [
+       "11",
+       "4.8",
+       "6.8"
+      ],
+      [
+       "11",
+       "3.8",
+       "6.1"
+      ],
+      [
+       "4",
+       "4.8",
+       "5.1"
+      ],
+      [
+       "5",
+       "3.9",
+       "5.4"
+      ],
+      [
+       "5",
+       "4.4",
+       "6.3"
+      ],
+      [
+       "6",
+       "4.8",
+       "7.0"
+      ],
+      [
+       "8",
+       "3.8",
+       "6.6"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "df.plot(x=\"sop_datetime\", y=[\"total_sop_demand\", \"total_temx\"], color=[\"#155A6E\", \"#C77E3C\"],\n        figsize=(8, 3.5), marker=\".\", xlabel=\"cardinal point time, UTC\", ylabel=\"MW\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "system_operating_plan-5.png",
+     "width": 716,
+     "height": 343
+    }
+   ]
+  }
+ ]
+}

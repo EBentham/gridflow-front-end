@@ -1,0 +1,186 @@
+{
+ "dataset": "neso_data_portal/obp_reserve_instructions",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "5531cee0856be8674bd8ece96478df21546377c1055cd844ff65edb3cf477089",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.neso_data_portal.query(\n    \"obp_reserve_instructions\", \"2025-10-10\", \"2026-10-02\")\ndf[\"point_datetime\"] = df.point_datetime.dt.tz_convert(\"UTC\")\ndf = df.sort_values([\"timestamp_utc\", \"instruction_point_id\"])",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "starts = df[df.instruction_point_type == \"START\"]\nstarts.groupby(\"service_id\").agg(instructions=(\"instruction_id\", \"count\"),\n    units=(\"unit_id\", \"nunique\"), lowest_price=(\"target_price\", \"min\"),\n    highest_price=(\"target_price\", \"max\")).reset_index()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "service_id",
+      "instructions",
+      "units",
+      "lowest_price",
+      "highest_price"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2"
+     ],
+     "rows": [
+      [
+       "PQR",
+       "73",
+       "14",
+       "110.79",
+       "180.00"
+      ],
+      [
+       "PSR",
+       "7",
+       "7",
+       "120.00",
+       "197.85"
+      ],
+      [
+       "RDP",
+       "5",
+       "3",
+       "-210.00",
+       "-75.00"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "call = df[df.timestamp_utc.between(\"2026-08-05 20:30Z\", \"2026-08-05 21:30Z\")]\ncall = call.sort_values([\"unit_id\", \"sequence\"])\ncall.loc[call.unit_id == \"KILN-01\", [\"service_id\", \"sequence\", \"instruction_point_type\",\n    \"point_datetime\", \"target_mw\", \"target_price\"]]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "service_id",
+      "sequence",
+      "instruction_point_type",
+      "point_datetime",
+      "target_mw",
+      "target_price"
+     ],
+     "index": [
+      "335",
+      "346",
+      "352",
+      "370",
+      "373"
+     ],
+     "rows": [
+      [
+       "PSR",
+       "1",
+       "START",
+       "2026-08-05 20:36:00+00:00",
+       "0.0",
+       "181.35"
+      ],
+      [
+       "PSR",
+       "2",
+       "VP",
+       "2026-08-05 20:44:45+00:00",
+       "14.0",
+       "181.35"
+      ],
+      [
+       "PSR",
+       "3",
+       "SPP",
+       "2026-08-05 21:00:00+00:00",
+       "14.0",
+       "181.35"
+      ],
+      [
+       "PSR",
+       "4",
+       "STOP",
+       "2026-08-05 21:15:00+00:00",
+       "14.0",
+       "181.35"
+      ],
+      [
+       "PSR",
+       "5",
+       "VP",
+       "2026-08-05 21:25:32+00:00",
+       "0.0",
+       "181.35"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "source": "ax = None\nfor unit, g in call.groupby(\"unit_id\"):\n    ax = g.plot(x=\"point_datetime\", y=\"target_mw\", label=unit, marker=\".\", ax=ax,\n                figsize=(8, 3.5))\nax.set(xlabel=\"point time, UTC, 5 August 2026\", ylabel=\"target MW\")\nax.legend(ncol=3, fontsize=8);",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "obp_reserve_instructions-6.png",
+     "width": 703,
+     "height": 333
+    }
+   ]
+  }
+ ]
+}

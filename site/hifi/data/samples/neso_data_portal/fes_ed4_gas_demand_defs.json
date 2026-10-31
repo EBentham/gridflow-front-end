@@ -1,0 +1,196 @@
+{
+ "dataset": "neso_data_portal/fes_ed4_gas_demand_defs",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "63f8fc3b220d080adb1577e24a2c05f974571fa455f144f9ffbe84556b32ca07",
+ "silver": "neso_data_portal/fes_ed4_gas_demand_defs",
+ "columns": [
+  {
+   "name": "item_no",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "edition",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "description",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "definition",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "resource_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2",
+   "2025",
+   "Annual end-use gas demand from the commercial sector",
+   "Gas used in the commercial sector. This excludes gas used for electricity generation by peaking/flexible plants (see item no. 6).",
+   "2025-12-10 16:56:34.330431 UTC",
+   "74485527-6c09-4c1a-bf8c-8569810eb918",
+   "2026-10-08 10:54:24.609913 UTC",
+   "bronze/neso_data_portal/fes_ed4_gas_demand_defs/2026/10/08/raw_20261008T105424Z_74485527-6c09-4c1a-bf8c-8569810eb918_00d5b089.csv",
+   "2026-10-08 10:54:24.609913 UTC",
+   "2026-10-08 10:54:24.609913 UTC",
+   "2025-12-10 16:56:34.330431 UTC",
+   "56e58e32-8749-4c01-8bec-496924c06ac9",
+   "1+e1"
+  ],
+  [
+   "2",
+   "2026",
+   "Annual end-use gas demand from the commercial sector",
+   "Gas used in the commercial sector. This excludes gas used for electricity generation by peaking/flexible plants (see item no. 6). Commercial demand here includes networked CNG used for transport.",
+   "2026-09-16 14:59:52.804239 UTC",
+   "b5ae9932-2ce9-42f0-a820-15a13f0eedd0",
+   "2026-10-08 10:54:27.264484 UTC",
+   "bronze/neso_data_portal/fes_ed4_gas_demand_defs/2026/10/08/raw_20261008T105427Z_b5ae9932-2ce9-42f0-a820-15a13f0eedd0_1b5845f9.csv",
+   "2026-10-08 10:54:27.264484 UTC",
+   "2026-10-08 10:54:27.264484 UTC",
+   "2026-09-16 14:59:52.804239 UTC",
+   "56e58e32-8749-4c01-8bec-496924c06ac9",
+   "1+e1"
+  ],
+  [
+   "3",
+   "2025",
+   "Gas end-use demand for transport",
+   "Gas used in the transport sector. This includes networked Compressed Natural Gas (CNG) and non-networked Liquified Natural Gas (LNG).",
+   "2025-12-10 16:56:34.330431 UTC",
+   "74485527-6c09-4c1a-bf8c-8569810eb918",
+   "2026-10-08 10:54:24.609913 UTC",
+   "bronze/neso_data_portal/fes_ed4_gas_demand_defs/2026/10/08/raw_20261008T105424Z_74485527-6c09-4c1a-bf8c-8569810eb918_00d5b089.csv",
+   "2026-10-08 10:54:24.609913 UTC",
+   "2026-10-08 10:54:24.609913 UTC",
+   "2025-12-10 16:56:34.330431 UTC",
+   "56e58e32-8749-4c01-8bec-496924c06ac9",
+   "1+e1"
+  ],
+  [
+   "3",
+   "2026",
+   "Gas end-use demand for transport",
+   "Gas used in the transport sector. This includes networked Compressed Natural Gas (CNG) and non-networked Liquified Natural Gas (LNG). Because this includes both non-networked LNG and networked CNG this is not be added to other demand components to get to total gas networked gas demand. The networked element of gas demand for transport is included within the commercial demand, to enable categories to be summed to calculate total gas demand.",
+   "2026-09-16 14:59:52.804239 UTC",
+   "b5ae9932-2ce9-42f0-a820-15a13f0eedd0",
+   "2026-10-08 10:54:27.264484 UTC",
+   "bronze/neso_data_portal/fes_ed4_gas_demand_defs/2026/10/08/raw_20261008T105427Z_b5ae9932-2ce9-42f0-a820-15a13f0eedd0_1b5845f9.csv",
+   "2026-10-08 10:54:27.264484 UTC",
+   "2026-10-08 10:54:27.264484 UTC",
+   "2026-09-16 14:59:52.804239 UTC",
+   "56e58e32-8749-4c01-8bec-496924c06ac9",
+   "1+e1"
+  ],
+  [
+   "5",
+   "2025",
+   "Total gas demand (gas NTS connected only) for electricity generation",
+   "Gas used for power generation by power stations connected to the gas transmission network.",
+   "2025-12-10 16:56:34.330431 UTC",
+   "74485527-6c09-4c1a-bf8c-8569810eb918",
+   "2026-10-08 10:54:24.609913 UTC",
+   "bronze/neso_data_portal/fes_ed4_gas_demand_defs/2026/10/08/raw_20261008T105424Z_74485527-6c09-4c1a-bf8c-8569810eb918_00d5b089.csv",
+   "2026-10-08 10:54:24.609913 UTC",
+   "2026-10-08 10:54:24.609913 UTC",
+   "2025-12-10 16:56:34.330431 UTC",
+   "56e58e32-8749-4c01-8bec-496924c06ac9",
+   "1+e1"
+  ],
+  [
+   "5",
+   "2026",
+   "Total gas demand (gas NTS connected only) for electricity generation",
+   "Gas used for power generation by power stations connected to the gas transmission network. This year we have included an outlook for additional gas demand for gas-fired power generation likely to arise from electricity network constraints. In the FES 2026 10 Year Forecast we didn't include this additional gas demand in the annual gas demands quoted in the data workbook, and hence the FES25 10 Year Forecast for power generation is not directly comparable to this year's 2026 10 Year Outlook.",
+   "2026-09-16 14:59:52.804239 UTC",
+   "b5ae9932-2ce9-42f0-a820-15a13f0eedd0",
+   "2026-10-08 10:54:27.264484 UTC",
+   "bronze/neso_data_portal/fes_ed4_gas_demand_defs/2026/10/08/raw_20261008T105427Z_b5ae9932-2ce9-42f0-a820-15a13f0eedd0_1b5845f9.csv",
+   "2026-10-08 10:54:27.264484 UTC",
+   "2026-10-08 10:54:27.264484 UTC",
+   "2026-09-16 14:59:52.804239 UTC",
+   "56e58e32-8749-4c01-8bec-496924c06ac9",
+   "1+e1"
+  ],
+  [
+   "11",
+   "2025",
+   "Total GB Gas Demand (Excluding exports and shrinkage)",
+   "= 1+2+3+4+5+6+8",
+   "2025-12-10 16:56:34.330431 UTC",
+   "74485527-6c09-4c1a-bf8c-8569810eb918",
+   "2026-10-08 10:54:24.609913 UTC",
+   "bronze/neso_data_portal/fes_ed4_gas_demand_defs/2026/10/08/raw_20261008T105424Z_74485527-6c09-4c1a-bf8c-8569810eb918_00d5b089.csv",
+   "2026-10-08 10:54:24.609913 UTC",
+   "2026-10-08 10:54:24.609913 UTC",
+   "2025-12-10 16:56:34.330431 UTC",
+   "56e58e32-8749-4c01-8bec-496924c06ac9",
+   "1+e1"
+  ],
+  [
+   "11",
+   "2026",
+   "Total GB Gas Demand (Excluding exports and shrinkage)",
+   "= 1+2+4+5+6+8",
+   "2026-09-16 14:59:52.804239 UTC",
+   "b5ae9932-2ce9-42f0-a820-15a13f0eedd0",
+   "2026-10-08 10:54:27.264484 UTC",
+   "bronze/neso_data_portal/fes_ed4_gas_demand_defs/2026/10/08/raw_20261008T105427Z_b5ae9932-2ce9-42f0-a820-15a13f0eedd0_1b5845f9.csv",
+   "2026-10-08 10:54:27.264484 UTC",
+   "2026-10-08 10:54:27.264484 UTC",
+   "2026-09-16 14:59:52.804239 UTC",
+   "56e58e32-8749-4c01-8bec-496924c06ac9",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

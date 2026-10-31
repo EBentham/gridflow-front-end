@@ -1,0 +1,303 @@
+{
+ "dataset": "neso_data_portal/capacity_market_auction_static",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "30da10b249f9cf961ca98db9c0b17f8fa431addf56a307fa676a85241d1828b1",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "auctions = data.sql(\"\"\"\n    SELECT auction_name, clearing_price_gbp_per_kw_per_year AS price,\n           auction_target_capacity_mw AS target_mw,\n           total_volume_of_agreements_awarded AS awarded_mw,\n           base_period_for_the_agreement AS base_period\n    FROM silver_neso_data_portal_capacity_market_auction_static_latest\n    ORDER BY auction_name\"\"\")\nauctions[auctions.auction_name.str.contains(\"(T-4)\", regex=False)]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "auction_name",
+      "price",
+      "target_mw",
+      "awarded_mw",
+      "base_period"
+     ],
+     "index": [
+      "4",
+      "6",
+      "8",
+      "10",
+      "13",
+      "15",
+      "17",
+      "19",
+      "21",
+      "23",
+      "24",
+      "25",
+      "26"
+     ],
+     "rows": [
+      [
+       "2018-19 (T-4) Four Year Ahead Capacity Auction",
+       "19.40",
+       "48600.0",
+       "49258.938",
+       "Winter 2012/2013"
+      ],
+      [
+       "2019-20 (T-4) Four Year Ahead Capacity Auction",
+       "18.00",
+       "44665.0",
+       "46353.569",
+       "Winter 2014/2015"
+      ],
+      [
+       "2020-21 (T-4) Four Year Ahead Capacity Auction",
+       "22.50",
+       "51700.0",
+       "52425.302",
+       "Winter 2015/2016"
+      ],
+      [
+       "2021-22 (T-4) Four Year Ahead Capacity Auction",
+       "8.40",
+       "49500.0",
+       "50415.403",
+       "Winter 2016/2017"
+      ],
+      [
+       "2022-23 (T-4) Four Year Ahead Capacity Auction",
+       "NaN",
+       "NaN",
+       "NaN",
+       "Winter 2017/2018"
+      ],
+      [
+       "2023-24 (T-4) Four Year Ahead Capacity Auction",
+       "15.97",
+       "43100.0",
+       "43748.988",
+       "Winter 2018/2019"
+      ],
+      [
+       "2024-25 (T-4) Four Year Ahead Capacity Auction",
+       "18.00",
+       "40100.0",
+       "40819.895",
+       "Winter 2019/2020"
+      ],
+      [
+       "2025-26 (T-4) Four Year Ahead Capacity Auction",
+       "30.59",
+       "42100.0",
+       "42364.314",
+       "Winter 2020/2021"
+      ],
+      [
+       "2026-27 (T-4) Four Year Ahead Capacity Auction",
+       "63.00",
+       "43900.0",
+       "43000.955",
+       "Winter 2021/2022"
+      ],
+      [
+       "2027-28 (T-4) Four Year Ahead Capacity Auction",
+       "65.00",
+       "44000.0",
+       "42830.829",
+       "Winter 2022/2023"
+      ],
+      [
+       "2028-29 (T-4) Four Year Ahead Capacity Auction",
+       "60.00",
+       "43700.0",
+       "43055.073",
+       "Winter 2023/2024"
+      ],
+      [
+       "2029-30 (T-4) Four Year Ahead Capacity Auction",
+       "27.10",
+       "39400.0",
+       "40108.608",
+       "Winter 2024/2025"
+      ],
+      [
+       "2030-31 (T-4) Four Year Ahead Capacity Auction",
+       "NaN",
+       "NaN",
+       "NaN",
+       "NaN"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "units = data.sql(\"\"\"\n    SELECT primary_fuel_type, COUNT(*) AS units,\n           SUM(auction_acquired_capacity_obligation) AS obligation_mw\n    FROM silver_neso_data_portal_capacity_market_unit_cmu_latest\n    WHERE auction_name = '2029-30 (T-4) Four Year Ahead Capacity Auction'\n      AND capacity_agreement_awarded = 'Yes'\n    GROUP BY primary_fuel_type ORDER BY obligation_mw DESC\"\"\")\nunits.loc[len(units)] = [\"total\", units.units.sum(), units.obligation_mw.sum()]\nunits.round(3)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "primary_fuel_type",
+      "units",
+      "obligation_mw"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14"
+     ],
+     "rows": [
+      [
+       "Gas",
+       "175",
+       "23476.917"
+      ],
+      [
+       "Interconnector",
+       "11",
+       "7823.560"
+      ],
+      [
+       "DSR",
+       "197",
+       "2567.511"
+      ],
+      [
+       "Storage - Pumped",
+       "6",
+       "1352.468"
+      ],
+      [
+       "Storage - Battery",
+       "109",
+       "1224.580"
+      ],
+      [
+       "Hydro",
+       "89",
+       "1220.654"
+      ],
+      [
+       "Nuclear",
+       "2",
+       "929.142"
+      ],
+      [
+       "Waste",
+       "28",
+       "697.184"
+      ],
+      [
+       "Diesel",
+       "10",
+       "348.895"
+      ],
+      [
+       "Distillate",
+       "9",
+       "309.045"
+      ],
+      [
+       "Onshore Wind",
+       "41",
+       "117.352"
+      ],
+      [
+       "Offshore Wind",
+       "3",
+       "19.056"
+      ],
+      [
+       "Solar",
+       "10",
+       "13.732"
+      ],
+      [
+       "Biomass",
+       "1",
+       "8.512"
+      ],
+      [
+       "total",
+       "691",
+       "40108.608"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "cost = data.sql(\"\"\"\n    SELECT auction_name, delivery_year, capacity_awarded\n    FROM silver_neso_data_portal_capacity_market_auction_cost_latest\"\"\")\ncost[\"auction\"] = cost.auction_name.str.extract(r\"\\((T-\\d|TR)\\)\")[0]\nmw = cost.pivot_table(index=\"delivery_year\", columns=\"auction\",\n                      values=\"capacity_awarded\", aggfunc=\"sum\")\nax = mw[[\"T-4\", \"T-3\", \"T-1\", \"TR\"]].plot.bar(\n    stacked=True, width=0.85, figsize=(8, 3.5),\n    color=[\"#155A6E\", \"#3E8C97\", \"#AFC64E\", \"#C77E3C\"],\n    xlabel=\"delivery year\", ylabel=\"MW awarded, summed over auctions\")\nax.legend(ncol=4, loc=\"lower center\", bbox_to_anchor=(0.5, 1.0), frameon=False);",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "capacity_market_auction_static-5.png",
+     "width": 716,
+     "height": 429
+    }
+   ]
+  }
+ ]
+}

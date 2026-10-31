@@ -1,0 +1,118 @@
+{
+ "dataset": "neso_data_portal/slow_reserve_requirement_fc",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "9c8f4b621628a1e3cb0e35a07e986972edfc2f9a113302a7f2e6db74196500a8",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.sql(\"\"\"\n    SELECT service_delivery_date, auction_date, forecast_produced_on, service_window,\n           service_window_start_time,\n           positive_slow_reserve_requirement_mw AS positive_mw,\n           negative_slow_reserve_requirement_mw AS negative_mw\n    FROM silver_neso_data_portal_slow_reserve_requirement_fc_latest\n    ORDER BY service_delivery_date, service_window_start_time, service_window\"\"\")\ndf.groupby(\"forecast_produced_on\").agg(\n    first=(\"service_delivery_date\", \"min\"), last=(\"service_delivery_date\", \"max\"),\n    days=(\"service_delivery_date\", \"nunique\"), windows=(\"service_window\", \"count\"))",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "first",
+      "last",
+      "days",
+      "windows",
+      "forecast_produced_on",
+      "",
+      "",
+      "",
+      ""
+     ],
+     "index": [
+      "2026-08-31",
+      "2026-09-22"
+     ],
+     "rows": [
+      [
+       "2026-09-23",
+       "2026-09-30",
+       "8",
+       "384"
+      ],
+      [
+       "2026-10-01",
+       "2026-10-31",
+       "31",
+       "1490"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "df.value_counts([\"positive_mw\", \"negative_mw\"])",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "positive_mw  negative_mw\n1800.0       1800.0         1874\nName: count, dtype: int64"
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "days = df.drop_duplicates(\"service_delivery_date\").assign(\n    days_ahead=lambda d: (d.service_delivery_date - d.forecast_produced_on).dt.days,\n    produced=lambda d: d.forecast_produced_on.dt.strftime(\"%Y-%m-%d\"))\nax = days.pivot(index=\"service_delivery_date\", columns=\"produced\", values=\"days_ahead\").plot(\n    color=[\"#155A6E\", \"#C77E3C\"], marker=\"o\", ylim=(0, 45), figsize=(8, 3.5), rot=0,\n    xlabel=\"service day\", ylabel=\"days after production date\")\nax.legend(title=\"forecast produced on\", loc=\"upper left\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "slow_reserve_requirement_fc-5.png",
+     "width": 690,
+     "height": 385
+    }
+   ]
+  }
+ ]
+}

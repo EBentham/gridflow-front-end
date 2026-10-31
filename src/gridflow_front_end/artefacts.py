@@ -10,6 +10,8 @@ builds from a bare checkout.
 - ``site/hifi/data/samples/<vendor>/<dataset>.json``: written by
   ``gridflow-sample`` (``sample.py``, the ``distil`` extra) from local silver,
   every value formatted by Polars.
+- ``site/hifi/data/raw-samples/<vendor>/<dataset>.json``: a held page's raw sample, the
+  first rows of one bronze file as fetched (``gridflow-sample``, ``raw_sample.py``).
 - ``site/hifi/data/locations/<vendor>/<dataset>.json``: the sites a weather dataset is taken
   at, for the page's map (``gridflow-distil --locations``, ``locations.py``): coordinates from
   gridflow's code, answered grid points and statistics from local silver.
@@ -72,6 +74,21 @@ def locations_path(site_dir: Path, vendor: str, dataset: str) -> Path:
 def sample_path(site_dir: Path, vendor: str, dataset: str) -> Path:
     """Where ``gridflow-sample`` writes one dataset's rows."""
     return samples_dir(site_dir) / vendor / f"{dataset}.json"
+
+
+def raw_samples_dir(site_dir: Path) -> Path:
+    """Committed raw samples (a held page's first rows of one raw file), one file per page."""
+    return site_dir / "data" / "raw-samples"
+
+
+def raw_sample_path(site_dir: Path, vendor: str, dataset: str) -> Path:
+    """Where ``gridflow-sample`` writes a held page's raw sample."""
+    return raw_samples_dir(site_dir) / vendor / f"{dataset}.json"
+
+
+def raw_sample_digest(table: str, file: str) -> str:
+    """Digest of the raw file choice (``raw_feed.sample``) a raw sample was made from."""
+    return _digest({"table": table, "file": file})
 
 
 def notebook_path(site_dir: Path, vendor: str, dataset: str) -> Path:

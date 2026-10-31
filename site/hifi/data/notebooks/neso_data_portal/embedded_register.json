@@ -1,0 +1,182 @@
+{
+ "dataset": "neso_data_portal/embedded_register",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "9c90b701f51ee3b9cdff111ca0f203480ced7df9e29693c338c86cba8e5a93dc",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.sql(\"\"\"\n    SELECT project_number, project_name, project_status, plant_type, host_to,\n           mw_connected, mw_increase_decrease, cumulative_total_capacity_mw,\n           mw_effective_from, stage, gate, published_at\n    FROM silver_neso_data_portal_embedded_register_latest\n    ORDER BY project_number\n\"\"\")\ncols = [\"project_number\", \"project_status\", \"plant_type\", \"mw_connected\",\n        \"mw_increase_decrease\", \"published_at\"]\ndf[cols].head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "project_number",
+      "project_status",
+      "plant_type",
+      "mw_connected",
+      "mw_increase_decrease",
+      "published_at"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "PRO-000062",
+       "Built",
+       "Wind Onshore",
+       "12.00",
+       "0.0",
+       "2026-10-16 19:05:22.024485+01:00"
+      ],
+      [
+       "PRO-000071",
+       "Built",
+       "Hydro",
+       "40.00",
+       "0.0",
+       "2026-10-16 19:05:22.024485+01:00"
+      ],
+      [
+       "PRO-000289",
+       "Built",
+       "Wind Onshore",
+       "48.00",
+       "0.0",
+       "2026-10-16 19:05:22.024485+01:00"
+      ],
+      [
+       "PRO-000290",
+       "Built",
+       "Wind Onshore",
+       "39.00",
+       "0.0",
+       "2026-10-16 19:05:22.024485+01:00"
+      ],
+      [
+       "PRO-000292",
+       "Built",
+       "Wind Onshore",
+       "37.45",
+       "0.0",
+       "2026-10-16 19:05:22.024485+01:00"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "df.groupby(\"project_status\")[[\"mw_connected\", \"mw_increase_decrease\"]].sum().round(1)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "mw_connected",
+      "mw_increase_decrease",
+      "project_status",
+      "",
+      ""
+     ],
+     "index": [
+      "Awaiting Consents",
+      "Built",
+      "Consents Approved",
+      "Scoping",
+      "Under Construction/Commissioning"
+     ],
+     "rows": [
+      [
+       "0.0",
+       "817.0"
+      ],
+      [
+       "2985.6",
+       "-5.5"
+      ],
+      [
+       "0.0",
+       "1813.7"
+      ],
+      [
+       "0.0",
+       "7448.3"
+      ],
+      [
+       "4.0",
+       "118.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "import pandas as pd\ndated = df.dropna(subset=[\"mw_effective_from\"]).assign(\n    year=lambda d: pd.to_datetime(d.mw_effective_from).dt.year)\nax = dated.pivot_table(index=\"year\", columns=\"project_status\", values=\"mw_increase_decrease\",\n                       aggfunc=\"sum\").plot.bar(stacked=True, figsize=(8, 4))\nax.legend(title=None, fontsize=8, bbox_to_anchor=(1, 1), loc=\"upper left\")\nax.set(xlabel=\"year the MW change is contracted from (NESO)\", ylabel=\"MW\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "embedded_register-5.png",
+     "width": 928,
+     "height": 395
+    }
+   ]
+  }
+ ]
+}

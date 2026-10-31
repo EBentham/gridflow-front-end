@@ -130,6 +130,7 @@ def _needed_columns(spec: Mapping[str, Any]) -> list[str]:
     for key in ("time", "value", "group"):
         if key in spec:
             cols.append(spec[key])
+    cols.extend(column for column, _ in chart_spec.value_columns(spec))
     for flt in spec.get("filter", []):
         cols.append(flt["column"])
     if "dedup" in spec:
@@ -194,11 +195,30 @@ def _scan(silver_root: Path, spec: Mapping[str, Any]) -> tuple[pl.LazyFrame, int
     return lf, len(files)
 
 
+_LONG_VALUE = "__value"
+
+
+def _unpivot(df: pl.DataFrame, spec: Mapping[str, Any]) -> pl.DataFrame:
+    """A wide table's ``values`` columns as long rows: one row per cell, its series key in ``__g``.
+
+    Each column keeps its own nulls, so a null cell is missing for its series only; the other
+    columns of the same row still count.
+    """
+    pairs = chart_spec.value_columns(spec)
+    keys = {column: series for column, series in pairs}
+    return (
+        df.select([spec["time"], *keys])
+        .unpivot(on=list(keys), index=spec["time"], variable_name="__col", value_name=_LONG_VALUE)
+        .with_columns(pl.col("__col").replace_strict(keys).alias("__g"))
+        .drop("__col")
+    )
+
+
 def _agg_expr(spec: Mapping[str, Any]) -> pl.Expr:
     agg = spec["aggregation"]
     if agg == "count":
         return pl.len().alias("__v")
-    col = pl.col(spec["value"])
+    col = pl.col(_LONG_VALUE if "values" in spec else spec["value"])
     exprs = {
         "sum": col.sum(),
         "mean": col.mean(),
@@ -211,6 +231,8 @@ def _agg_expr(spec: Mapping[str, Any]) -> pl.Expr:
 
 def _apply_groups(df: pl.DataFrame, spec: Mapping[str, Any]) -> tuple[pl.DataFrame, list[str]]:
     """Add the ``__g`` series label column; report raw values the map missed."""
+    if "values" in spec:
+        return df, []  # the unpivot already wrote each row's series key
     if "group" not in spec:
         return df.with_columns(pl.lit(spec.get("value", "count")).alias("__g")), []
     if "group_null" in spec:
@@ -233,6 +255,10 @@ def _apply_groups(df: pl.DataFrame, spec: Mapping[str, Any]) -> tuple[pl.DataFra
 
 def _order_labels(labels: Sequence[str], spec: Mapping[str, Any]) -> list[str]:
     order = [s for s in spec.get("series_order", []) if s in labels]
+    if "values" in spec:
+        # the columns' listed order, after any series_order
+        listed = [key for _, key in chart_spec.value_columns(spec) if key in labels]
+        return order + [k for k in listed if k not in order]
     return order + sorted(set(labels) - set(order))
 
 
@@ -316,7 +342,13 @@ def distil_spec(spec: Mapping[str, Any], silver_root: Path) -> dict[str, Any]:
         )
         provenance["duplicates_dropped"] = before - df.height
 
-    if "value" in spec:
+    if "values" in spec:
+        provenance["rows_unpivoted"] = df.height
+        df = _unpivot(df, spec)
+        before = df.height
+        df = df.filter(pl.col(_LONG_VALUE).is_not_null())
+        provenance["null_values_dropped"] = before - df.height
+    elif "value" in spec:
         before = df.height
         df = df.filter(pl.col(spec["value"]).is_not_null())
         provenance["null_values_dropped"] = before - df.height

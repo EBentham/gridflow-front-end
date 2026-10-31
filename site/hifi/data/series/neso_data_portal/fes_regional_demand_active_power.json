@@ -1,0 +1,19 @@
+{
+  "dataset": "neso_data_portal/fes_regional_demand_active_power",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "308cc0be63622ee6c738bb7c522aede45249ea50b6f861f40e111d440986e994",
+  "type": "bar",
+  "unit": "MW",
+  "caption": "",
+  "value_column": "demand_pk",
+  "aggregation": "sum",
+  "window": null,
+  "provenance": {"duplicates_dropped": 0, "files": 4, "null_values_dropped": 0, "rows_matched": 18426, "rows_read": 1280724, "rows_used": 18426, "silver": "neso_data_portal/fes_regional_demand_active_power"},
+  "spec": {"aggregation": "sum", "dedup": {"on": ["resource_id", "edition", "scenario", "gsp", "type", "year_label"], "order_by": "capture_written_at"}, "filter": [{"column": "edition", "op": "eq", "value": 2024}, {"column": "scenario", "op": "eq", "value": "HT"}, {"column": "year_label", "op": "in", "value": [25, 30, 35, 40, 45, 50]}], "group": "year_label", "group_map": {"25": "2025/26", "30": "2030/31", "35": "2035/36", "40": "2040/41", "45": "2045/46", "50": "2050/51"}, "silver": "neso_data_portal/fes_regional_demand_active_power", "sort": "label", "type": "bar", "unit": "MW", "value": "demand_pk"},
+  "x_kind": "category",
+  "x": ["2025/26", "2030/31", "2035/36", "2040/41", "2045/46", "2050/51"],
+  "series": [
+    {"key": "demand_pk", "values": [57980.836, 62829.669, 74638.645, 90099.701, 100259.034, 104053.957]}
+  ]
+}

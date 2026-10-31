@@ -1,0 +1,274 @@
+{
+ "dataset": "neso_data_portal/fes_ed3_heat_demand_natural_gas_sum_ed",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "c6190a5033dc33f54a4032e7311ab5eff0c82457ee5443aec3dacd93bbd43a8d",
+ "silver": "neso_data_portal/fes_ed3_heat_demand_natural_gas_sum_ed",
+ "columns": [
+  {
+   "name": "description",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "component",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "data_type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "units",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "pathway",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "projection_year",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "value",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "fuel",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "scenario",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "edition",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "resource_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "Annual end-use gas demand from the commercial sector",
+   "Commercial demand",
+   "Annuals",
+   "GWh",
+   "Holistic Transition",
+   "2030",
+   "74920.18644",
+   "gas",
+   null,
+   "2025",
+   "f33e8ded-d302-40c4-be10-c7ca3a04b401",
+   "2025-12-10 16:50:20.589918 UTC",
+   "2026-10-08 10:54:06.022320 UTC",
+   "bronze/neso_data_portal/fes_ed3_heat_demand_natural_gas_sum_ed/2026/10/08/raw_20261008T105406Z_f33e8ded-d302-40c4-be10-c7ca3a04b401_224f836d.csv",
+   "2026-10-08 10:54:06.022320 UTC",
+   "2026-10-08 10:54:06.022320 UTC",
+   "2025-12-10 16:50:20.589918 UTC",
+   "8be7f607-c0b1-485c-953b-d5b22e87c510",
+   "1+e1"
+  ],
+  [
+   "Total gas demand (gas NTS connected only) for electricity generation",
+   "Electricity generation",
+   "Annuals",
+   "GWh",
+   "Holistic Transition",
+   "2030",
+   "59066.88433",
+   "gas",
+   null,
+   "2025",
+   "f33e8ded-d302-40c4-be10-c7ca3a04b401",
+   "2025-12-10 16:50:20.589918 UTC",
+   "2026-10-08 10:54:06.022320 UTC",
+   "bronze/neso_data_portal/fes_ed3_heat_demand_natural_gas_sum_ed/2026/10/08/raw_20261008T105406Z_f33e8ded-d302-40c4-be10-c7ca3a04b401_224f836d.csv",
+   "2026-10-08 10:54:06.022320 UTC",
+   "2026-10-08 10:54:06.022320 UTC",
+   "2025-12-10 16:50:20.589918 UTC",
+   "8be7f607-c0b1-485c-953b-d5b22e87c510",
+   "1+e1"
+  ],
+  [
+   "LDZ connected peaking/flexible plants (estimated)",
+   "Flexible electricity generation",
+   "Annuals",
+   "GWh",
+   "Holistic Transition",
+   "2030",
+   "3399.56699",
+   "gas",
+   null,
+   "2025",
+   "f33e8ded-d302-40c4-be10-c7ca3a04b401",
+   "2025-12-10 16:50:20.589918 UTC",
+   "2026-10-08 10:54:06.022320 UTC",
+   "bronze/neso_data_portal/fes_ed3_heat_demand_natural_gas_sum_ed/2026/10/08/raw_20261008T105406Z_f33e8ded-d302-40c4-be10-c7ca3a04b401_224f836d.csv",
+   "2026-10-08 10:54:06.022320 UTC",
+   "2026-10-08 10:54:06.022320 UTC",
+   "2025-12-10 16:50:20.589918 UTC",
+   "8be7f607-c0b1-485c-953b-d5b22e87c510",
+   "1+e1"
+  ],
+  [
+   "Hydrogen Production: Natural Gas Demand",
+   "Hydrogen production SMR",
+   "Annuals",
+   "GWh",
+   "Holistic Transition",
+   "2030",
+   "7636.45833",
+   "gas",
+   null,
+   "2025",
+   "f33e8ded-d302-40c4-be10-c7ca3a04b401",
+   "2025-12-10 16:50:20.589918 UTC",
+   "2026-10-08 10:54:06.022320 UTC",
+   "bronze/neso_data_portal/fes_ed3_heat_demand_natural_gas_sum_ed/2026/10/08/raw_20261008T105406Z_f33e8ded-d302-40c4-be10-c7ca3a04b401_224f836d.csv",
+   "2026-10-08 10:54:06.022320 UTC",
+   "2026-10-08 10:54:06.022320 UTC",
+   "2025-12-10 16:50:20.589918 UTC",
+   "8be7f607-c0b1-485c-953b-d5b22e87c510",
+   "1+e1"
+  ],
+  [
+   "Annual end-use gas demand from industry",
+   "Industrial demand",
+   "Annuals",
+   "GWh",
+   "Holistic Transition",
+   "2030",
+   "83808.51264",
+   "gas",
+   null,
+   "2025",
+   "f33e8ded-d302-40c4-be10-c7ca3a04b401",
+   "2025-12-10 16:50:20.589918 UTC",
+   "2026-10-08 10:54:06.022320 UTC",
+   "bronze/neso_data_portal/fes_ed3_heat_demand_natural_gas_sum_ed/2026/10/08/raw_20261008T105406Z_f33e8ded-d302-40c4-be10-c7ca3a04b401_224f836d.csv",
+   "2026-10-08 10:54:06.022320 UTC",
+   "2026-10-08 10:54:06.022320 UTC",
+   "2025-12-10 16:50:20.589918 UTC",
+   "8be7f607-c0b1-485c-953b-d5b22e87c510",
+   "1+e1"
+  ],
+  [
+   "Total end-use residential gas demand",
+   "Residential demand",
+   "Annuals",
+   "GWh",
+   "Holistic Transition",
+   "2030",
+   "304612.30516",
+   "gas",
+   null,
+   "2025",
+   "f33e8ded-d302-40c4-be10-c7ca3a04b401",
+   "2025-12-10 16:50:20.589918 UTC",
+   "2026-10-08 10:54:06.022320 UTC",
+   "bronze/neso_data_portal/fes_ed3_heat_demand_natural_gas_sum_ed/2026/10/08/raw_20261008T105406Z_f33e8ded-d302-40c4-be10-c7ca3a04b401_224f836d.csv",
+   "2026-10-08 10:54:06.022320 UTC",
+   "2026-10-08 10:54:06.022320 UTC",
+   "2025-12-10 16:50:20.589918 UTC",
+   "8be7f607-c0b1-485c-953b-d5b22e87c510",
+   "1+e1"
+  ],
+  [
+   "Total GB Gas Demand (Excluding exports and shrinkage)",
+   "Total GB demand",
+   "Annuals",
+   "GWh",
+   "Holistic Transition",
+   "2030",
+   "534713.09748",
+   "gas",
+   null,
+   "2025",
+   "f33e8ded-d302-40c4-be10-c7ca3a04b401",
+   "2025-12-10 16:50:20.589918 UTC",
+   "2026-10-08 10:54:06.022320 UTC",
+   "bronze/neso_data_portal/fes_ed3_heat_demand_natural_gas_sum_ed/2026/10/08/raw_20261008T105406Z_f33e8ded-d302-40c4-be10-c7ca3a04b401_224f836d.csv",
+   "2026-10-08 10:54:06.022320 UTC",
+   "2026-10-08 10:54:06.022320 UTC",
+   "2025-12-10 16:50:20.589918 UTC",
+   "8be7f607-c0b1-485c-953b-d5b22e87c510",
+   "1+e1"
+  ],
+  [
+   "Total GB Peak 1-in-20 Demand",
+   "Total GB demand",
+   "Peak 1in20",
+   "GWh/day",
+   "Holistic Transition",
+   "2030",
+   "4543.31758",
+   "gas",
+   null,
+   "2025",
+   "f33e8ded-d302-40c4-be10-c7ca3a04b401",
+   "2025-12-10 16:50:20.589918 UTC",
+   "2026-10-08 10:54:06.022320 UTC",
+   "bronze/neso_data_portal/fes_ed3_heat_demand_natural_gas_sum_ed/2026/10/08/raw_20261008T105406Z_f33e8ded-d302-40c4-be10-c7ca3a04b401_224f836d.csv",
+   "2026-10-08 10:54:06.022320 UTC",
+   "2026-10-08 10:54:06.022320 UTC",
+   "2025-12-10 16:50:20.589918 UTC",
+   "8be7f607-c0b1-485c-953b-d5b22e87c510",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

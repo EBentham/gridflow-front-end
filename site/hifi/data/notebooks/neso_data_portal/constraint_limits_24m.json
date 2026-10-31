@@ -1,0 +1,273 @@
+{
+ "dataset": "neso_data_portal/constraint_limits_24m",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "fb7d9de74908af08a1c19f2539f91d906f8b03c39200b288d2cade048fa6fb49",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.sql(\"\"\"\n    SELECT * EXCLUDE (timestamp_utc, bronze_capture_id, capture_written_at)\n    FROM silver_neso_data_portal_constraint_limits_24m\n    ORDER BY published_at, year_vendor, week_no\"\"\")\ndf[\"published_at\"] = df.published_at.dt.tz_convert(\"UTC\")\ndf.groupby([\"published_at\", \"year_vendor\"]).week_no.agg([\"min\", \"max\", \"count\"]).reset_index()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "published_at",
+      "year_vendor",
+      "min",
+      "max",
+      "count"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5"
+     ],
+     "rows": [
+      [
+       "2026-09-10 09:48:47.500911+00:00",
+       "2026",
+       "40",
+       "52",
+       "13"
+      ],
+      [
+       "2026-09-10 09:48:47.500911+00:00",
+       "2027",
+       "1",
+       "52",
+       "52"
+      ],
+      [
+       "2026-09-10 09:48:47.500911+00:00",
+       "2028",
+       "1",
+       "40",
+       "40"
+      ],
+      [
+       "2026-10-09 09:29:34.943764+00:00",
+       "2026",
+       "44",
+       "52",
+       "9"
+      ],
+      [
+       "2026-10-09 09:29:34.943764+00:00",
+       "2027",
+       "1",
+       "52",
+       "52"
+      ],
+      [
+       "2026-10-09 09:29:34.943764+00:00",
+       "2028",
+       "1",
+       "44",
+       "44"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "boundaries = [\"scotex\", \"estex\", \"dreshex1\", \"flowsth\", \"gm_snow5a\", \"harspnbly\",\n              \"nkilgrmo\", \"seimppr2\", \"sse_grm\", \"ssen_s\", \"sse_sp2\", \"ssharn3\"]\nnewest = df[df.published_at == df.published_at.max()]\nnewest[boundaries].describe().loc[[\"min\", \"50%\", \"max\"]].T.rename_axis(\"boundary\").reset_index()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "boundary",
+      "min",
+      "50%",
+      "max"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11"
+     ],
+     "rows": [
+      [
+       "scotex",
+       "3300.0",
+       "4950.0",
+       "6800.0"
+      ],
+      [
+       "estex",
+       "4700.0",
+       "6050.0",
+       "7200.0"
+      ],
+      [
+       "dreshex1",
+       "4950.0",
+       "6350.0",
+       "7708.0"
+      ],
+      [
+       "flowsth",
+       "8900.0",
+       "10252.0",
+       "11172.0"
+      ],
+      [
+       "gm_snow5a",
+       "1500.0",
+       "2300.0",
+       "3040.0"
+      ],
+      [
+       "harspnbly",
+       "3200.0",
+       "5642.0",
+       "6931.0"
+      ],
+      [
+       "nkilgrmo",
+       "1250.0",
+       "1769.0",
+       "3440.0"
+      ],
+      [
+       "seimppr2",
+       "3000.0",
+       "5571.0",
+       "7200.0"
+      ],
+      [
+       "sse_grm",
+       "1440.0",
+       "1935.0",
+       "3230.0"
+      ],
+      [
+       "ssen_s",
+       "961.0",
+       "1800.0",
+       "2640.0"
+      ],
+      [
+       "sse_sp2",
+       "973.0",
+       "1947.0",
+       "3300.0"
+      ],
+      [
+       "ssharn3",
+       "5500.0",
+       "7550.0",
+       "8450.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "old, new = (df[df.published_at == t].set_index([\"year_vendor\", \"week_no\"])[boundaries]\n            for t in sorted(df.published_at.unique()))\nshared = old.index.intersection(new.index)\n(old.loc[shared] != new.loc[shared]).sum().rename(\"weeks revised\").to_frame().T",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "scotex",
+      "estex",
+      "dreshex1",
+      "flowsth",
+      "gm_snow5a",
+      "harspnbly",
+      "nkilgrmo",
+      "seimppr2",
+      "sse_grm",
+      "ssen_s",
+      "sse_sp2",
+      "ssharn3"
+     ],
+     "index": [
+      "weeks revised"
+     ],
+     "rows": [
+      [
+       "26",
+       "8",
+       "8",
+       "8",
+       "8",
+       "8",
+       "6",
+       "6",
+       "6",
+       "6",
+       "4",
+       "8"
+      ]
+     ]
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,125 @@
+{
+ "dataset": "neso_data_portal/tec_register",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "8a5aac87d84bf05c6aeb78684955e3bd38e323c9e1de26bd32f00ed4972e40b3",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.sql(\"\"\"\n    SELECT project_number, stage, project_status, plant_type, mw_connected,\n           mw_increase_decrease, cumulative_total_capacity_mw, mw_effective_from,\n           published_at AT TIME ZONE 'UTC' AS published_utc\n    FROM silver_neso_data_portal_tec_register_latest\"\"\")\nstatus = [\"Built\", \"Under Construction/Commissioning\", \"Consents Approved\",\n          \"Awaiting Consents\", \"Scoping\"]\ndf.groupby(\"project_status\")[[\"mw_connected\", \"mw_increase_decrease\"]].sum().loc[status]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "mw_connected",
+      "mw_increase_decrease",
+      "project_status",
+      "",
+      ""
+     ],
+     "index": [
+      "Built",
+      "Under Construction/Commissioning",
+      "Consents Approved",
+      "Awaiting Consents",
+      "Scoping"
+     ],
+     "rows": [
+      [
+       "82011.71",
+       "2477.05"
+      ],
+      [
+       "75.00",
+       "7821.72"
+      ],
+      [
+       "69.00",
+       "44815.13"
+      ],
+      [
+       "0.00",
+       "57650.78"
+      ],
+      [
+       "0.00",
+       "484036.22"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "staged = df[df.stage.notna()].sort_values([\"project_number\", \"stage\"])\nproject = staged.project_number.str.rsplit(\"-\", n=1).str[0]\nrunning = (staged.mw_connected + staged.mw_increase_decrease).groupby(project).cumsum()\ngap = (staged.cumulative_total_capacity_mw - running).abs()\ngap.agg([\"count\", \"max\"]).round(3)",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "count    262.00\nmax        0.01\ndtype: float64"
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "by_year = data.sql(\"\"\"\n    SELECT year(mw_effective_from) AS year, project_status,\n           sum(mw_increase_decrease) / 1000 AS gw\n    FROM silver_neso_data_portal_tec_register_latest\n    WHERE mw_effective_from IS NOT NULL\n    GROUP BY ALL\"\"\").pivot_table(index=\"year\", columns=\"project_status\", values=\"gw\", fill_value=0)\nax = by_year[status].plot.bar(\n    stacked=True, figsize=(8, 3.5), rot=90, ylabel=\"GW due to be added\",\n    xlabel=\"contracted effective year (a contract date, not history)\",\n    color=[\"#155A6E\", \"#3E8C97\", \"#66793B\", \"#AFC64E\", \"#C77E3C\"])\nax.legend(title=\"project_status\", fontsize=8);",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "tec_register-5.png",
+     "width": 690,
+     "height": 357
+    }
+   ]
+  }
+ ]
+}

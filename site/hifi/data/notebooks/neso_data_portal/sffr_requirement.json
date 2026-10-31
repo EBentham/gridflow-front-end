@@ -1,0 +1,229 @@
+{
+ "dataset": "neso_data_portal/sffr_requirement",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "abeee0f6923494885b7fcd7ddf51496b37751e8d8e6a6fdd00e5b0531fc4d312",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.sql(\"\"\"\n    SELECT efa_date, service, efa1, efa2, efa3, efa4, efa5, efa6,\n           published_at AT TIME ZONE 'UTC' AS published_utc\n    FROM silver_neso_data_portal_sffr_requirement_latest\n    ORDER BY efa_date\"\"\")\ndf.groupby(\"service\").agg(\n    first=(\"efa_date\", \"min\"), last=(\"efa_date\", \"max\"),\n    dates=(\"efa_date\", \"count\"), published_utc=(\"published_utc\", \"max\")).reset_index()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "service",
+      "first",
+      "last",
+      "dates",
+      "published_utc"
+     ],
+     "index": [
+      "0"
+     ],
+     "rows": [
+      [
+       "SFFR",
+       "2026-09-23",
+       "2026-10-31",
+       "39",
+       "2026-09-22 14:48:22.737387"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "blocks = [f\"efa{i}\" for i in range(1, 7)]\nlong = df.melt([\"efa_date\", \"service\"], blocks, var_name=\"block\", value_name=\"mw\")\nlong.groupby(\"block\").mw.agg([\"min\", \"max\", \"count\"]).reset_index()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "block",
+      "min",
+      "max",
+      "count"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5"
+     ],
+     "rows": [
+      [
+       "efa1",
+       "250.0",
+       "250.0",
+       "39"
+      ],
+      [
+       "efa2",
+       "250.0",
+       "250.0",
+       "39"
+      ],
+      [
+       "efa3",
+       "250.0",
+       "250.0",
+       "39"
+      ],
+      [
+       "efa4",
+       "250.0",
+       "250.0",
+       "39"
+      ],
+      [
+       "efa5",
+       "250.0",
+       "250.0",
+       "39"
+      ],
+      [
+       "efa6",
+       "250.0",
+       "250.0",
+       "39"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "import pandas as pd\nn = long.block.str[3:].astype(int)\nlocal = long.efa_date + pd.to_timedelta(4 * n - 5, unit=\"h\")\nlong[\"start_utc\"] = local.dt.tz_localize(\"Europe/London\").dt.tz_convert(\"UTC\")\nlong = long.sort_values(\"start_utc\")\nlong[\"hours\"] = long.start_utc.diff().shift(-1).dt.total_seconds() / 3600\nlong[long.efa_date.eq(\"2026-10-25\")][[\"efa_date\", \"block\", \"start_utc\", \"hours\", \"mw\"]]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "efa_date",
+      "block",
+      "start_utc",
+      "hours",
+      "mw"
+     ],
+     "index": [
+      "32",
+      "71",
+      "110",
+      "149",
+      "188",
+      "227"
+     ],
+     "rows": [
+      [
+       "2026-10-25",
+       "efa1",
+       "2026-10-24 22:00:00+00:00",
+       "5.0",
+       "250.0"
+      ],
+      [
+       "2026-10-25",
+       "efa2",
+       "2026-10-25 03:00:00+00:00",
+       "4.0",
+       "250.0"
+      ],
+      [
+       "2026-10-25",
+       "efa3",
+       "2026-10-25 07:00:00+00:00",
+       "4.0",
+       "250.0"
+      ],
+      [
+       "2026-10-25",
+       "efa4",
+       "2026-10-25 11:00:00+00:00",
+       "4.0",
+       "250.0"
+      ],
+      [
+       "2026-10-25",
+       "efa5",
+       "2026-10-25 15:00:00+00:00",
+       "4.0",
+       "250.0"
+      ],
+      [
+       "2026-10-25",
+       "efa6",
+       "2026-10-25 19:00:00+00:00",
+       "4.0",
+       "250.0"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "source": "long.set_index(\"start_utc\").mw.plot(\n    drawstyle=\"steps-post\", color=\"#155A6E\", lw=2, ylim=(0, 300), figsize=(8, 3.5),\n    xlabel=\"EFA block start, UTC\", ylabel=\"requirement, MW\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "sffr_requirement-6.png",
+     "width": 699,
+     "height": 348
+    }
+   ]
+  }
+ ]
+}

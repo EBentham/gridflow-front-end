@@ -1,0 +1,170 @@
+{
+ "dataset": "neso_data_portal/obp_reserve_avail_price",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "44ad09fb2d98bb149ea5e9c32599e11ebb924503d7525bac521bc54d81559d4f",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.neso_data_portal.query(\n    \"obp_reserve_avail_price\", \"2025-10-09\", \"2026-10-16\")\nfor col in [\"time_from\", \"time_to\", \"timestamp_utc\"]:\n    df[col] = df[col].dt.tz_convert(\"UTC\")\ndf = df.sort_values([\"time_from\", \"service_id\", \"unit_id\"])",
+   "outputs": []
+  },
+  {
+   "n": 4,
+   "source": "df.groupby(\"service_id\").agg(pair_id=(\"pair_id\", \"unique\"),\n    units=(\"unit_id\", \"nunique\"), first=(\"time_from\", \"min\"),\n    top_mw=(\"availability_power\", \"max\"),\n    lowest_price=(\"utilisation_price\", \"min\"),\n    highest_price=(\"utilisation_price\", \"max\")).reset_index()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "service_id",
+      "pair_id",
+      "units",
+      "first",
+      "top_mw",
+      "lowest_price",
+      "highest_price"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2"
+     ],
+     "rows": [
+      [
+       "NQR",
+       "[-1]",
+       "11",
+       "2025-10-09 10:00:00+00:00",
+       "49.0",
+       "-10000.0",
+       "300.00"
+      ],
+      [
+       "PQR",
+       "[1]",
+       "19",
+       "2025-10-09 10:00:00+00:00",
+       "49.0",
+       "0.0",
+       "10000.00"
+      ],
+      [
+       "PSR",
+       "[1]",
+       "40",
+       "2026-05-08 05:00:00+00:00",
+       "55.0",
+       "0.0",
+       "2599.04"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "skipped = df[df.time_from.between(\"2026-03-29 00:30Z\", \"2026-03-29 02:00Z\")]\nskipped.groupby(\"time_from\").agg(rows=(\"unit_id\", \"size\"),\n    units=(\"unit_id\", \"nunique\")).reset_index()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "time_from",
+      "rows",
+      "units"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3"
+     ],
+     "rows": [
+      [
+       "2026-03-29 00:30:00+00:00",
+       "3",
+       "3"
+      ],
+      [
+       "2026-03-29 01:00:00+00:00",
+       "3",
+       "3"
+      ],
+      [
+       "2026-03-29 01:30:00+00:00",
+       "3",
+       "3"
+      ],
+      [
+       "2026-03-29 02:00:00+00:00",
+       "3",
+       "3"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "source": "day = df[df.time_from.between(\"2026-10-14 00:00Z\", \"2026-10-14 23:30Z\")]\nmw = day.pivot_table(index=\"time_from\", columns=\"service_id\",\n    values=\"availability_power\", aggfunc=\"sum\")\nax = mw.plot(figsize=(8, 3.5), drawstyle=\"steps-post\")\nax.set(xlabel=\"window start, UTC, 14 October 2026\", ylabel=\"MW available\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "obp_reserve_avail_price-6.png",
+     "width": 699,
+     "height": 353
+    }
+   ]
+  }
+ ]
+}
