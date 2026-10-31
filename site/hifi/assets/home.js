@@ -12,12 +12,12 @@
   var NS = "http://www.w3.org/2000/svg";
   var main = document.getElementById("main");
   var land = document.querySelector(".landscape svg");
-  if (!main || !land || !land.getScreenCTM || !window.matchMedia) return;
+  if (!main || !land || !land.getScreenCTM || !window.matchMedia || !window.gridflowDraw) return;
 
   var feedsOn = window.matchMedia("(min-width: 1100px)");
   var joinOn = window.matchMedia("(min-width: 1380px)");
-  var css = getComputedStyle(document.documentElement);
-  function tok(name, fallback) { return (css.getPropertyValue(name) || "").trim() || fallback; }
+  var kit = window.gridflowDraw;
+  var tok = kit.tok, smoothstep = kit.smoothstep, n = kit.n, smooth = kit.smooth;
   var INK = tok("--ink", "#1C2B22");
   var BRONZE = tok("--bronze", "#A5713C");
   var SILVER = tok("--silver", "#9FADAB");
@@ -32,11 +32,7 @@
   main.insertBefore(svg, main.firstChild);
 
   function q(sel) { return document.querySelector(sel); }
-  function box(el) {
-    var r = el.getBoundingClientRect();
-    var m = main.getBoundingClientRect();
-    return { l: r.left - m.left, t: r.top - m.top, r: r.right - m.left, b: r.bottom - m.top, w: r.width, h: r.height };
-  }
+  function box(el) { return kit.box(el, main); }
   // drawing coordinates of the landscape to page coordinates inside <main>
   function fromLand(x, y) {
     var p = land.createSVGPoint();
@@ -47,18 +43,6 @@
   }
   // the ground surface of the drawing (gen.prof on the reference board)
   function prof(x) { return 940 + 4 * Math.sin(x / 190 + 0.6) - 2.5 * Math.sin(x / 83 + 1.3); }
-  function smoothstep(t) { t = Math.max(0, Math.min(1, t)); return t * t * (3 - 2 * t); }
-  function n(v) { return Math.round(v * 10) / 10; }
-  // Catmull-Rom through the points, as cubic Beziers (the reference generator's smooth())
-  function smooth(pts) {
-    var d = "M" + n(pts[0][0]) + " " + n(pts[0][1]);
-    for (var i = 0; i < pts.length - 1; i++) {
-      var p0 = pts[i > 0 ? i - 1 : i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2 < pts.length ? i + 2 : i + 1];
-      d += " C" + n(p1[0] + (p2[0] - p0[0]) / 6) + " " + n(p1[1] + (p2[1] - p0[1]) / 6) + " " +
-           n(p2[0] - (p3[0] - p1[0]) / 6) + " " + n(p2[1] - (p3[1] - p1[1]) / 6) + " " + n(p2[0]) + " " + n(p2[1]);
-    }
-    return d;
-  }
 
   var out = [];
   function cable(d, core, sheath, corew) {
