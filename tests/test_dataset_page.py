@@ -254,6 +254,7 @@ def test_hubs_and_landing_link_every_page(tmp_path: Path) -> None:
     build.build(DEFAULT_VAULT, tmp_path)
     landing = (tmp_path / "data-sources.html").read_text(encoding="utf-8")
     assert '<span class="hub-n">438 datasets</span>' in landing
+    assert "131 packages, 292 tables, current file only" in landing
     for vendor_id in build.REAL_VENDORS:
         assert f'href="data-sources/{vendor_id}.html"' in landing
         hub = (tmp_path / "data-sources" / f"{vendor_id}.html").read_text(encoding="utf-8")

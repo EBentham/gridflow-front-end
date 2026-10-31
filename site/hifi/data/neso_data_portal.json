@@ -39,7 +39,7 @@
   "landscape": "power",
   "landing": {
     "bronze": "bronze/neso_data_portal/",
-    "desc": "System operator files: the GB generation mix since 2009, embedded forecasts",
+    "desc": "System operator files: balancing services and costs, constraints, demand, generation, interconnectors, FES",
     "fact": "current file only, no API key",
     "start": [
       [

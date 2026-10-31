@@ -931,6 +931,19 @@ def manifest_total_count(manifest: dict) -> int:
     return len(manifest_datasets(manifest))
 
 
+def manifest_count_line(manifest: dict) -> str:
+    """The vendor's count as Data sources and Home state it, computed from its page set.
+
+    A package catalogue (the NESO Data Portal) counts its package pages and the tables they
+    document; every other vendor counts its datasets.
+    """
+    n = manifest_total_count(manifest)
+    if "catalogue" in manifest:
+        packages = sum(len(g["pages"]) for g in manifest["groups"])
+        return f"{packages} packages, {n} tables"
+    return f"{n} datasets"
+
+
 def manifest_errors(vendor_id: str, manifest: dict, notes: set[str] | None = None) -> list[str]:
     """Structural checks on a vendor's page set.
 
@@ -2110,7 +2123,7 @@ def landing_view(manifests: dict[str, dict], chart: dict[str, Any] | None) -> di
                 "name": m["name"],
                 "bronze": land["bronze"],
                 "desc": land["desc"],
-                "fact": f"{manifest_total_count(m)} datasets, {land['fact']}",
+                "fact": f"{manifest_count_line(m)}, {land['fact']}",
                 "col": col,
                 "row": row,
                 "start": [
