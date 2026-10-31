@@ -293,14 +293,30 @@ def test_a_column_added_after_the_first_file_is_read(tmp_path: Path) -> None:
     assert chart["provenance"]["null_values_dropped"] == 8
 
 
-def test_a_column_that_turns_to_text_in_a_later_file_is_refused(tmp_path: Path) -> None:
+@pytest.mark.parametrize("dtype", [pl.String, pl.Boolean, pl.Int64])
+def test_a_column_that_changes_type_in_a_later_file_is_refused(tmp_path: Path, dtype: Any) -> None:
+    """A changed type is refused, never cast (text, a flag or a truncated number as a measure)."""
     older = _fuel_rows(T0, 2)
     newer = _fuel_rows(T0 + dt.timedelta(hours=1), 2).with_columns(
-        pl.col("generation_mw").cast(pl.String)
+        pl.col("generation_mw").cast(dtype)
     )
     _write(tmp_path, "elexon/fuelhh", {"d1": older, "d2": newer})
     with pytest.raises(DistilError, match="'generation_mw' changes type"):
         distil_spec(FUEL_SPEC, tmp_path)
+
+
+def test_a_column_the_newest_file_dropped_is_not_read(tmp_path: Path) -> None:
+    """Older files' types for a retired column never need reconciling."""
+    files = {
+        "d1": _fuel_rows(T0, 2).with_columns(retired=pl.lit(1)),
+        "d2": _fuel_rows(T0 + dt.timedelta(hours=1), 2).with_columns(
+            retired=pl.concat_list(pl.lit(1))
+        ),
+        "d3": _fuel_rows(T0 + dt.timedelta(hours=2), 2),
+    }
+    _write(tmp_path, "elexon/fuelhh", files)
+    chart = distil_spec(dict(FUEL_SPEC, window={"last": "3h"}), tmp_path)
+    assert chart["provenance"]["rows_read"] == 24
 
 
 def test_max_points_guard(tmp_path: Path) -> None:

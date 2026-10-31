@@ -163,10 +163,10 @@ def scan_silver(table_dir: Path) -> tuple[pl.LazyFrame, int]:
     """Every parquet file of one silver table as one frame, oldest file first, and the file count.
 
     The newest file's schema is the reference: its columns, in its order, so a column a later
-    transformer added is read (older files give it nulls) and one it dropped is not. Files are
-    stacked to a common supertype, since a column can be all-null (type Null) in one daily file and
-    String in the next (ENTSOG generic silver); a column that is String in one file and another type
-    in another is refused, not turned into text. Partition folders (year=/month=) are not columns.
+    transformer added is read (older files give it nulls) and one it dropped is not read at all. A
+    column may be all-null (type Null) in one daily file and typed in the next (ENTSOG generic
+    silver); any other change of type between files is refused, never cast. Partition folders
+    (year=/month=) are not columns.
 
     Raises:
         DistilError: The table has no directory, no parquet file, or such a type change.
@@ -180,11 +180,14 @@ def scan_silver(table_dir: Path) -> tuple[pl.LazyFrame, int]:
     columns = list(schemas[-1])
     for name in columns:
         dtypes = {str(s[name]) for s in schemas if name in s and s[name] != pl.Null}
-        if len(dtypes) > 1 and str(pl.String) in dtypes:
+        if len(dtypes) > 1:
             raise DistilError(
                 f"{table_dir}: column {name!r} changes type across files: {sorted(dtypes)}"
             )
-    frames = [pl.scan_parquet(f, hive_partitioning=False) for f in files]
+    frames = [
+        pl.scan_parquet(f, hive_partitioning=False).select([c for c in columns if c in schema])
+        for f, schema in zip(files, schemas, strict=True)
+    ]
     return pl.concat(frames, how="diagonal_relaxed").select(columns), len(files)
 
 
