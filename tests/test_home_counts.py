@@ -32,7 +32,7 @@ def test_home_lists_every_vendor_with_the_builds_name_count_and_fact() -> None:
     for vid, m in manifests.items():
         name, fact = rows[vid]
         assert name == m["name"], vid
-        assert fact == f"{build.manifest_total_count(m)} datasets, {m['landing']['fact']}", vid
+        assert fact == f"{build.manifest_count_line(m)}, {m['landing']['fact']}", vid
 
 
 def test_home_headline_count_is_the_builds_total() -> None:
