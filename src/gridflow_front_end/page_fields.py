@@ -49,7 +49,7 @@ one key (v5 decision D2). The fields follow the locked page anatomy
       # 4. silver
       record:
         select: {filter: [...], dedup: {...}, order_by: [...], columns: [...]}  # eight rows; columns = print order
-        mark: {fuel_type: PS}                    # optional, unused by the page since the frame (3a) lock
+        mark: {fuel_type: PS}                    # tolerated and ignored: unused since the frame (3a) lock
         key: [settlement_date, settlement_period, fuel_type]
         caption: ...                             # 16 words or fewer
         fields: {settlement_date: ..., ...}      # one meaning per column, 14 words or fewer; none for the
@@ -356,7 +356,6 @@ class Record:
     """The silver stratum: which real rows are shown, and what each column means."""
 
     select: dict[str, Any] = field(default_factory=dict, hash=False, compare=False)
-    mark: dict[str, Any] = field(default_factory=dict, hash=False, compare=False)
     key: tuple[str, ...] = ()
     caption: str = ""
     fields: dict[str, str] = field(default_factory=dict, hash=False, compare=False)
@@ -611,11 +610,11 @@ def _read(page: Mapping[str, Any]) -> tuple[PageFields, list[str]]:
     )
 
     rec_m = r.mapping(f"{p}.{RECORD}", page.get(RECORD))
+    # `mark` is tolerated and ignored: some notes still carry one, and no page reads it
     r.unknown(f"{p}.{RECORD}", rec_m, ("select", "mark", "key", "caption", "fields"))
     fields_m = r.mapping(f"{p}.record.fields", rec_m.get("fields"))
     record = Record(
         select=dict(_jsonable(r.mapping(f"{p}.record.select", rec_m.get("select")))),  # type: ignore[arg-type]
-        mark=dict(_jsonable(r.mapping(f"{p}.record.mark", rec_m.get("mark")))),  # type: ignore[arg-type]
         key=tuple(
             r.text(f"{p}.record.key[{i}]", v)
             for i, v in enumerate(r.seq(f"{p}.record.key", rec_m.get("key")))

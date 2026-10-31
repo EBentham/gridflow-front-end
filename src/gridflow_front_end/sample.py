@@ -181,7 +181,6 @@ def build_payload(
     dataset: str,
     silver: str,
     select: Mapping[str, Any],
-    mark: Mapping[str, Any],
     silver_root: Path,
 ) -> dict[str, Any]:
     """Select, format and describe one dataset's eight rows."""
@@ -191,15 +190,6 @@ def build_payload(
     rows = [
         [None if nulls[r][c] else text[r][c] for c in range(df.width)] for r in range(df.height)
     ]
-    marked = [
-        r
-        for r in range(df.height)
-        if all(k in df.columns and rows[r][df.columns.index(k)] == str(v) for k, v in mark.items())
-    ]
-    if mark and len(marked) != 1:
-        raise SampleError(
-            f"record.mark {dict(mark)} matches {len(marked)} of the eight rows; needs 1"
-        )
     return {
         "dataset": f"{vendor}/{dataset}",
         "generated_by": GENERATED_BY,
@@ -214,7 +204,6 @@ def build_payload(
             for name, dtype in df.schema.items()
         ],
         "rows": rows,
-        "mark": marked[0] if mark else None,
     }
 
 
@@ -281,19 +270,12 @@ def main(argv: list[str] | None = None) -> int:
             continue
         silver = artefacts.sample_silver(vendor, dataset, fields.record.select, fields.chart)
         try:
-            payload = build_payload(
-                vendor,
-                dataset,
-                silver,
-                fields.record.select,
-                fields.record.mark,
-                silver_root,
-            )
+            payload = build_payload(vendor, dataset, silver, fields.record.select, silver_root)
         except (SampleError, pl.exceptions.PolarsError) as exc:
             print(f"  FAIL {key}: {exc}", file=sys.stderr)
             failures += 1
             continue
-        print(f"  {key}: {len(payload['columns'])} columns, mark row {payload['mark']}")
+        print(f"  {key}: {len(payload['columns'])} columns")
         if args.dry_run:
             for row in payload["rows"]:
                 print("   ", row)
