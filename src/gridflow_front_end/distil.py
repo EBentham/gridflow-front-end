@@ -25,7 +25,6 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
-import json
 import sys
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
@@ -440,32 +439,6 @@ def build_payload(source: SpecSource, silver_root: Path) -> dict[str, Any]:
     }
 
 
-def dumps_payload(payload: Mapping[str, Any]) -> str:
-    """Serialise a payload one key per line and one series per line.
-
-    The files are re-committed after every distil, so a diff should read as
-    "these series changed", not as thousands of one-number lines.
-    """
-
-    def one(value: object) -> str:
-        return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(", ", ": "))
-
-    keys = list(payload)
-    lines = ["{"]
-    for i, key in enumerate(keys):
-        comma = "," if i < len(keys) - 1 else ""
-        value = payload[key]
-        if key == "series" and isinstance(value, list):
-            lines.append(f"  {json.dumps(key)}: [")
-            for j, item in enumerate(value):
-                lines.append(f"    {one(item)}{',' if j < len(value) - 1 else ''}")
-            lines.append(f"  ]{comma}")
-        else:
-            lines.append(f"  {json.dumps(key)}: {one(value)}{comma}")
-    lines.append("}")
-    return "\n".join(lines) + "\n"
-
-
 def discover_specs(site_dir: Path, vault_path: Path) -> tuple[list[SpecSource], list[str]]:
     """Every dataset whose vault note carries a chart spec (``page.chart``).
 
@@ -576,7 +549,7 @@ def main(argv: list[str] | None = None) -> int:
             out.parent.mkdir(parents=True, exist_ok=True)
             # LF on every platform so the committed bytes do not depend on
             # the machine that ran the distil.
-            out.write_text(dumps_payload(payload), encoding="utf-8", newline="\n")
+            out.write_text(artefacts.dumps_lines(payload, "series"), encoding="utf-8", newline="\n")
     written = len(sources) - failures
     verb = "would write" if args.dry_run else "wrote"
     print(f"[gridflow-distil] {verb} {written} series file(s); {failures} failure(s)")

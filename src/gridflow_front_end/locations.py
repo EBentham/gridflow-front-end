@@ -22,18 +22,17 @@ import argparse
 import datetime as dt
 import hashlib
 import importlib.util
-import json
 import math
 import os
 import re
 import sys
-from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 import polars as pl
 
+from gridflow_front_end.artefacts import dumps_lines
 from gridflow_front_end.artefacts import locations_path as _locations_path
 from gridflow_front_end.paths import SITE_DIR, resolve_silver_path
 
@@ -403,29 +402,6 @@ def build_payload(dataset: str, silver_root: Path, gridflow: Path) -> dict[str, 
     return payload
 
 
-def dumps(payload: Mapping[str, Any]) -> str:
-    """One key per line and one site per line, so a regenerated file diffs by site."""
-
-    def one(value: object) -> str:
-        return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(", ", ": "))
-
-    lines = ["{"]
-    keys = list(payload)
-    for i, key in enumerate(keys):
-        comma = "," if i < len(keys) - 1 else ""
-        value = payload[key]
-        if key == "sites":
-            lines.append(f"  {json.dumps(key)}: [")
-            lines.extend(
-                f"    {one(s)}{',' if j < len(value) - 1 else ''}" for j, s in enumerate(value)
-            )
-            lines.append(f"  ]{comma}")
-        else:
-            lines.append(f"  {json.dumps(key)}: {one(value)}{comma}")
-    lines.append("}")
-    return "\n".join(lines) + "\n"
-
-
 def main(argv: list[str] | None = None) -> int:
     """Write every Open-Meteo site file (``gridflow-distil --locations``)."""
     parser = argparse.ArgumentParser(
@@ -467,7 +443,7 @@ def main(argv: list[str] | None = None) -> int:
         if not args.dry_run:
             out = locations_path(SITE_DIR, dataset)
             out.parent.mkdir(parents=True, exist_ok=True)
-            out.write_text(dumps(payload), encoding="utf-8", newline="\n")
+            out.write_text(dumps_lines(payload, "sites"), encoding="utf-8", newline="\n")
     return 1 if failures else 0
 
 

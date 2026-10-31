@@ -11,14 +11,14 @@ import pytest
 
 pl = pytest.importorskip("polars")
 
-from gridflow_front_end import chart_spec
+from gridflow_front_end import artefacts, chart_spec
 from gridflow_front_end.distil import (
     DistilError,
     SpecSource,
     build_payload,
     distil_spec,
-    dumps_payload,
 )
+from gridflow_front_end.paths import SITE_DIR
 
 T0 = dt.datetime(2026, 9, 1, tzinfo=dt.UTC)
 
@@ -289,9 +289,19 @@ def test_max_points_guard(tmp_path: Path) -> None:
 def test_payload_round_trips_and_matches_its_spec(tmp_path: Path) -> None:
     _write(tmp_path, "elexon/fuelhh", {"d1": _fuel_rows(T0, 4)})
     payload = build_payload(SpecSource("elexon", "fuelhh", FUEL_SPEC), tmp_path)
-    text = dumps_payload(payload)
+    text = artefacts.dumps_lines(payload, "series")
     loaded = json.loads(text)
     assert loaded == json.loads(json.dumps(payload))
     assert chart_spec.check_series(loaded, FUEL_SPEC, "elexon/fuelhh") == []
     # One line per series keeps re-distil diffs readable.
     assert text.count('{"key": ') == len(payload["series"])
+
+
+def test_committed_series_and_locations_files_read_back_byte_for_byte() -> None:
+    """The one line-per-item writer reproduces the files the two old writers committed."""
+    files = [(path, "series") for path in chart_spec.series_dir(SITE_DIR).glob("*/*.json")]
+    files += [(path, "sites") for path in artefacts.locations_dir(SITE_DIR).glob("*/*.json")]
+    assert len({key for _, key in files}) == 2
+    for path, key in files:
+        text = path.read_text(encoding="utf-8")
+        assert artefacts.dumps_lines(json.loads(text), key) == text, path

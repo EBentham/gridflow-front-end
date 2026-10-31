@@ -162,3 +162,29 @@ def load_json(path: Path) -> dict[str, Any] | None:
 def dumps(payload: Mapping[str, Any]) -> str:
     """Stable, diff-friendly JSON for committed artefacts."""
     return json.dumps(payload, indent=1, ensure_ascii=False) + "\n"
+
+
+def dumps_lines(payload: Mapping[str, Any], list_key: str) -> str:
+    """One key per line, and one item per line of the ``list_key`` list.
+
+    The series and locations files are re-committed after every run, so a diff should read as
+    "these series (or sites) changed", not as thousands of one-number lines.
+    """
+
+    def one(value: object) -> str:
+        return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(", ", ": "))
+
+    keys = list(payload)
+    lines = ["{"]
+    for i, key in enumerate(keys):
+        comma = "," if i < len(keys) - 1 else ""
+        value = payload[key]
+        if key == list_key and isinstance(value, list):
+            lines.append(f"  {json.dumps(key)}: [")
+            for j, item in enumerate(value):
+                lines.append(f"    {one(item)}{',' if j < len(value) - 1 else ''}")
+            lines.append(f"  ]{comma}")
+        else:
+            lines.append(f"  {json.dumps(key)}: {one(value)}{comma}")
+    lines.append("}")
+    return "\n".join(lines) + "\n"
