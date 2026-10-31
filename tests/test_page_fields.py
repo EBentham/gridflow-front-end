@@ -75,9 +75,9 @@ Body text.
 
 def test_note_without_page_block_is_empty() -> None:
     fields, errors = parse_page_fields("---\nsource: elexon\n---\n# x\n")
-    assert fields.is_empty and not fields.present and errors == []
+    assert not fields.declared and not fields.present and errors == []
     fields, errors = parse_page_fields("# no front matter\n")
-    assert fields.is_empty and errors == []
+    assert not fields.declared and errors == []
 
 
 def test_page_block_is_read() -> None:

@@ -433,11 +433,6 @@ class PageFields:
     caveat: str = ""
     declared: frozenset[str] = frozenset()
 
-    @property
-    def is_empty(self) -> bool:
-        """True when the note declares no page field at all."""
-        return not self.declared
-
 
 def front_matter_text(text: str) -> str | None:
     """The raw YAML between a note's opening and closing ``---`` lines.
