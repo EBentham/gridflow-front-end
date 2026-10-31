@@ -456,25 +456,6 @@ def make_env() -> Environment:
     return env
 
 
-def chart_opts_json(chart: dict[str, Any]) -> str:
-    """The ``data-opts`` payload ``charts.js`` needs to draw one series file.
-
-    Only what the renderer reads: identity, provenance and the spec stay in the
-    committed JSON, not in every page.
-    """
-    return json.dumps(
-        {
-            "type": chart["type"],
-            "unit": chart["unit"],
-            "x_kind": chart["x_kind"],
-            "x": chart["x"],
-            "series": [{"key": s["key"], "values": s["values"]} for s in chart["series"]],
-        },
-        separators=(",", ":"),
-        ensure_ascii=False,
-    )
-
-
 # ──────────────────────────────────────────────────────────────────────
 # The dataset page template (locked anatomy, v5 Phase 25b)
 # ──────────────────────────────────────────────────────────────────────

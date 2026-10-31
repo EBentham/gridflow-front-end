@@ -118,8 +118,7 @@ publishes only after they pass (see `.github/workflows/ci.yml`).
         ├── data-sources/             # build outputs (gitignored except hub stubs)
         ├── data/elexon.json          # structural manifest
         ├── assets/theme.css          # shared stylesheet
-        ├── assets/site.js            # chrome injection + scroll-spy + tabs
-        └── assets/charts.js          # deterministic seeded SVG charts
+        └── assets/site.js            # chrome injection + scroll-spy + tabs
 ```
 
 ## Planning artifacts
