@@ -6,6 +6,13 @@ on:
     branches: [main]
   workflow_dispatch:
 
+# Runs on main publish, so a newer one cancels the one before it, checks and all: an older commit
+# whose checks finish late can never deploy over a newer one. Every other run (pull requests,
+# manual runs on other branches) gets a group of its own and is never cancelled.
+concurrency:
+  group: ${{ github.ref == 'refs/heads/main' && 'pages' || format('run-{0}', github.run_id) }}
+  cancel-in-progress: true
+
 jobs:
   docs-integrity:
     runs-on: ubuntu-latest
@@ -148,9 +155,6 @@ jobs:
       contents: read
       pages: write
       id-token: write
-    concurrency:
-      group: pages
-      cancel-in-progress: true
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
