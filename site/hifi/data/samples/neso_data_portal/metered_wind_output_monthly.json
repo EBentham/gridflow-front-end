@@ -1,0 +1,209 @@
+{
+ "dataset": "neso_data_portal/metered_wind_output_monthly",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "a56edad7271379f7fcf55a746fda8ac7e2e5c33b9e55fa4dc562a471a870520b",
+ "silver": "neso_data_portal/metered_wind_output_monthly",
+ "columns": [
+  {
+   "name": "sett_period",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "resource_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "total",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "scottish_wind_output",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "england_wales_wind_output",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "sett_date",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "1",
+   "7622b040-977a-45a6-924e-f158df6c29f0",
+   "5187.84",
+   "3670.428",
+   "1517.412",
+   "2026-04-01",
+   "2026-04-07 10:00:37.054177 UTC",
+   "2026-03-31 23:00:00 UTC",
+   "bronze/neso_data_portal/metered_wind_output_monthly/2026/10/08/raw_20261008T111243Z_7622b040-977a-45a6-924e-f158df6c29f0_4e39e845.csv",
+   "2026-10-08 11:12:43.591189 UTC",
+   "2026-03-31 23:00:00 UTC",
+   "2026-04-07 10:00:37.054177 UTC",
+   "e24821f0-415f-4c77-9b27-980f645dfb12",
+   "1+e1"
+  ],
+  [
+   "1",
+   "c9bc94c4-6d8c-49ff-afff-67c0030bec05",
+   "5197.678",
+   "3677.116",
+   "1520.562",
+   "2026-04-01",
+   "2026-10-03 11:17:29.313427 UTC",
+   "2026-03-31 23:00:00 UTC",
+   "bronze/neso_data_portal/metered_wind_output_monthly/2026/10/08/raw_20261008T111246Z_c9bc94c4-6d8c-49ff-afff-67c0030bec05_c5079a69.csv",
+   "2026-10-08 11:12:46.191152 UTC",
+   "2026-03-31 23:00:00 UTC",
+   "2026-10-03 11:17:29.313427 UTC",
+   "e24821f0-415f-4c77-9b27-980f645dfb12",
+   "1+e1"
+  ],
+  [
+   "2",
+   "7622b040-977a-45a6-924e-f158df6c29f0",
+   "5116.954",
+   "3625.008",
+   "1491.946",
+   "2026-04-01",
+   "2026-04-07 10:00:37.054177 UTC",
+   "2026-03-31 23:30:00 UTC",
+   "bronze/neso_data_portal/metered_wind_output_monthly/2026/10/08/raw_20261008T111243Z_7622b040-977a-45a6-924e-f158df6c29f0_4e39e845.csv",
+   "2026-10-08 11:12:43.591189 UTC",
+   "2026-03-31 23:30:00 UTC",
+   "2026-04-07 10:00:37.054177 UTC",
+   "e24821f0-415f-4c77-9b27-980f645dfb12",
+   "1+e1"
+  ],
+  [
+   "2",
+   "c9bc94c4-6d8c-49ff-afff-67c0030bec05",
+   "5125.2",
+   "3628.974",
+   "1496.226",
+   "2026-04-01",
+   "2026-10-03 11:17:29.313427 UTC",
+   "2026-03-31 23:30:00 UTC",
+   "bronze/neso_data_portal/metered_wind_output_monthly/2026/10/08/raw_20261008T111246Z_c9bc94c4-6d8c-49ff-afff-67c0030bec05_c5079a69.csv",
+   "2026-10-08 11:12:46.191152 UTC",
+   "2026-03-31 23:30:00 UTC",
+   "2026-10-03 11:17:29.313427 UTC",
+   "e24821f0-415f-4c77-9b27-980f645dfb12",
+   "1+e1"
+  ],
+  [
+   "3",
+   "7622b040-977a-45a6-924e-f158df6c29f0",
+   "5102.93",
+   "3696.466",
+   "1406.464",
+   "2026-04-01",
+   "2026-04-07 10:00:37.054177 UTC",
+   "2026-04-01 00:00:00 UTC",
+   "bronze/neso_data_portal/metered_wind_output_monthly/2026/10/08/raw_20261008T111243Z_7622b040-977a-45a6-924e-f158df6c29f0_4e39e845.csv",
+   "2026-10-08 11:12:43.591189 UTC",
+   "2026-04-01 00:00:00 UTC",
+   "2026-04-07 10:00:37.054177 UTC",
+   "e24821f0-415f-4c77-9b27-980f645dfb12",
+   "1+e1"
+  ],
+  [
+   "3",
+   "c9bc94c4-6d8c-49ff-afff-67c0030bec05",
+   "5109.586",
+   "3698.798",
+   "1410.788",
+   "2026-04-01",
+   "2026-10-03 11:17:29.313427 UTC",
+   "2026-04-01 00:00:00 UTC",
+   "bronze/neso_data_portal/metered_wind_output_monthly/2026/10/08/raw_20261008T111246Z_c9bc94c4-6d8c-49ff-afff-67c0030bec05_c5079a69.csv",
+   "2026-10-08 11:12:46.191152 UTC",
+   "2026-04-01 00:00:00 UTC",
+   "2026-10-03 11:17:29.313427 UTC",
+   "e24821f0-415f-4c77-9b27-980f645dfb12",
+   "1+e1"
+  ],
+  [
+   "4",
+   "7622b040-977a-45a6-924e-f158df6c29f0",
+   "5171.54",
+   "3827.172",
+   "1344.368",
+   "2026-04-01",
+   "2026-04-07 10:00:37.054177 UTC",
+   "2026-04-01 00:30:00 UTC",
+   "bronze/neso_data_portal/metered_wind_output_monthly/2026/10/08/raw_20261008T111243Z_7622b040-977a-45a6-924e-f158df6c29f0_4e39e845.csv",
+   "2026-10-08 11:12:43.591189 UTC",
+   "2026-04-01 00:30:00 UTC",
+   "2026-04-07 10:00:37.054177 UTC",
+   "e24821f0-415f-4c77-9b27-980f645dfb12",
+   "1+e1"
+  ],
+  [
+   "4",
+   "c9bc94c4-6d8c-49ff-afff-67c0030bec05",
+   "5179.186",
+   "3830.974",
+   "1348.212",
+   "2026-04-01",
+   "2026-10-03 11:17:29.313427 UTC",
+   "2026-04-01 00:30:00 UTC",
+   "bronze/neso_data_portal/metered_wind_output_monthly/2026/10/08/raw_20261008T111246Z_c9bc94c4-6d8c-49ff-afff-67c0030bec05_c5079a69.csv",
+   "2026-10-08 11:12:46.191152 UTC",
+   "2026-04-01 00:30:00 UTC",
+   "2026-10-03 11:17:29.313427 UTC",
+   "e24821f0-415f-4c77-9b27-980f645dfb12",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

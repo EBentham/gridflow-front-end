@@ -37,6 +37,14 @@ references; dated NESO facts only. Keep the wording the same across a batch wher
 example the interconnector limit tables, the TNUoS tariff tables). Family pages show one frame: give each member
 with rows its own caveat; the frame shows the lead or `record.select.silver`.
 
+**Tariff tables (parent, 2026-10-24):** fixed BSUoS tariffs, AAHEDC and all eight TNUoS tables carry a per-row
+Published Date, but a date with no time, and NESO does not say older rows stay unchanged after it; use the rewritten
+rows in the corrected-reasons file for their caveats.
+
+**Old body lines (B1 review):** the held notes' bodies say "no data values are published" in several places. On a
+page that now shows rows, remove or correct every such line (a major finding otherwise). On a page that stays held
+with a raw sample, say it shows the file's first lines as fetched and no table.
+
 ## Where things are
 
 | Branch key | Front-end worktree | Vault worktree |
@@ -83,6 +91,7 @@ Silver: Y = a silver table exists locally (`C:\gridflow-data\silver\neso_data_po
 | CI1 | ci | `carbon-intensity-of-balancing-actions`; `country-carbon-intensity-forecast`; `national-carbon-intensity-forecast`; `regional-carbon-intensity-forecast`: all Y | 9994 | 9814 |
 | F1 | fes | `building-heat-model` (example output Y; list input -); `fes-electricity-demand-summary-data-table-ed1`; `future-energy-scenario-electricity-supply-data-table-es1`; `fes-european-electricity-supply-data-table-es2`; `fes-flexibility-data-table-data-table-flx1`: Y | 9995 | 9815 |
 | F2 | fes | `fes-natural-gas-residential-and-non-domestic-i-c-heat-demand-summary-data-table-ed3` (three Y); `fes-road-transport-summary-data-table-ed5`; `fes-whole-system-gas-supply-data-table-ws1`; `fes-whole-system-gas-supply-emissions-data-table-ws2`; `local-authority-level-spatial-heat-model-outputs-fes` (two Y): Y; `levelised-cost-of-green-hydrogen` (carve-out, reason only) | 9996 | 9816 |
+| R1 | bc, sys | Fixed defects (gridflow PR #134): `current-balancing-services-use-of-system-bsuos-data` (day-first files now read; branch bc) and `system-frequency-data` (2014: all 12 files, repeated October hour by `dtm_occurrence`; branch sys): take off the defect caveats and notes, refresh artefacts from the re-transformed silver | 9997 | 9817 |
 
 Not in scope: held packages that are document-only file groups (ETYS boundaries, GIS charging zones, SSEP shapefiles)
 keep their pages as they are.
@@ -103,13 +112,62 @@ repeat rows; on a table with no event time use `data.sql()`; the column guide ac
 
 | Batch | Writer | Checker | State |
 |---|---|---|---|
-| A1 | a012e047532732e92 | | writing |
-| A2 | a9f952220257ebd0a | af25be4d62dca5b4a | written; in review (ORPS frame shows the default-rate member; ASDP window ends before it starts on 29 Mar 2026, a defect) |
-| B1 | a12aa2a2d21abdba4 | aac52199c23c016ff | written; in review (writer: fixed-tariffs rows do carry Published Date, caveat follows the code; cost file restated 170 Sept rows between 8 and 16 Oct captures) |
-| B2 | a948627e0bfe2b68d | | writing |
-| C1 | ad75c58a68842e8b6 | | writing |
+| A1 | a012e047532732e92 | a4ec36bb8e74245fd | APPROVED x4 (round 2); committed (site 8cff52a); merged into ancillary part 2; 20cn logged |
+| A2 | a9f952220257ebd0a | af25be4d62dca5b4a | APPROVED x4 (round 2); committed (vault, then mirror and artefacts f95709e); 20cm logged |
+| B1 | a12aa2a2d21abdba4 | aac52199c23c016ff | APPROVED x5; committed (vault 96396ba, site be9a3f6); 20cl logged |
+| B2 | a948627e0bfe2b68d | aaf248079da8934b8 | APPROVED x2 (round 2); committed (site 8a9f6fe); leads reordered; 20co logged |
+| C1 | ad75c58a68842e8b6 | aa4a892ba7c0e0bd4 | APPROVED x6 (round 2); committed (site 43a7188); 20cp logged |
+| S1 | a7ab77ada40837869 | a0a8c6d80773615fa | APPROVED x3; committed (site 5a00070, 733b52c); Pathfinder lead reordered (7342b43) |
+| T1 | abf6b4cf3ba85c1a5 | a335a0dc2e2350249 | APPROVED x6 (round 2); committed (site e3a1ca9); pushed; 20cq logged |
+| D1 | ac29ae2189289eb20 | a1587b1603e0092f5 | APPROVED x4 (round 2); committed (site bb1ee8d); demand pushed, parent told; 20cr logged |
+| D2 | a6529fae660c4ff74 | aaa229431fb8d7d45 | APPROVED x3 (round 2); committed on dem |
+| G1 | af234cffef25e4fa7 | adaa14b1da19ee956 | APPROVED x5, nits fixed; committed (site 5ed280c); pushed; parent told |
+| I1 | a475c72bb4c6ca14f | a1fdee2150037abad | APPROVED x4 (round 2); committed (site e9fbe4e) with I2; pushed; parent told; 20cs logged |
+| I2 | a85a78f0c3de4f450 | a1fdee2150037abad | APPROVED x3; committed with I1 |
+| N1 | a0ac37967725c0a93 | a24fb2d76dca812ba | APPROVED x2 (round 2); committed (site 4ae7dc4); pushed; parent told; 20ct logged |
+| CI1 | ace01fca13556e033 | a50d6c3658e06feeb | DONE: approved after one revision (national alt, country caption); pushed 42b7cb7 / vault 172559a; 20cu-20cw logged |
+| F1 | a34676c0e232141b9 | a34861f355f97978d | DONE: approved, nits fixed; pushed with F2 (fes 4d33fe7 / vault 1d9aed0) |
+| F2 | a52e0573a78ee0c3e | aa0ab3c0490d93fb0 | DONE: approved after one revision; leads re-led f71a4f4; stack merged to dpc and pushed; 20cx-20cy logged |
+| R1 | a2169fe0f64b6cf11 | a0829310d3f9bfefb | DONE: approved after round 2; committed bc f4f4976 / vault 5f13ea5, sys 04196aa / vault d01f079; stack merged bc to ci |
 
 Pace raised 2026-10-24 ~13:25Z (Bobbo via the parent): 5 agents at once, aim about 50% of weekly usage over 36 hours;
 park at 98% weekly. After NESO: ruling 66 on the seven blank other-vendor pages (ENTSO-E balancing-energy bids, current
 balancing state, procured balancing capacity, outages; ENTSOG capacity-by-indicator and cmp; GIE unavailability), one
-writer and one checker each, one branch and PR off main plus the vault PR; not NETBSAD or NONBM (silver wrong).
+writer and one checker each, one branch and PR off main plus the vault PR. Added 2026-10-24 ~15:10Z (parent):
+Elexon `netbsad` and `nonbm`, same staffing, after gridflow's fix (gridflow PR #128, unmerged; local silver re-ingested).
+NETBSAD: no parser bug; Elexon publishes zeros almost always, non-zero buy-price adjustments on only four days since
+January 2024 (24 May 2024, 13 Aug 2024, 24 Oct 2025, 15 Jan 2026; 19 periods on 15 Jan, 1.49 to 10.65 GBP/MWh);
+balancing actions appear in DISBSAD; seven duplicate boundary rows in the January week (backlog 12e); chart 15 Jan 2026.
+NONBM: the connector sent parameters Elexon ignores (fixed); silver 741 distinct rows (12-19 Jan and 25 Mar-2 Apr
+2026); Elexon stopped publishing after 1 Apr 2026 10:04 UTC (SP22); each day's file holds what was published that UTC
+day, so it starts with the previous day's last half-hour; most periods 0 (17, 28, 11 MW on 15 Jan 2026 SP25-27).
+Verify all of this against silver before writing.
+GIE `unavailability` (parent, ~15:45Z): fixed in gridflow PR #133 (unmerged; local silver re-transformed): typed, keyed,
+one row per outage notice per calendar day, new `outage_date` column; 1-5 Aug went from 1,705 rows to 76. Write it
+without the defect caveat; remaining caveats: timestamps carry no time zone (GIE's reporters mix UTC and local), units
+unstated, an outage running 06:00 to 06:00 appears on two calendar days, the August capture has 13 of 16 pages.
+
+ENTSOG (parent, ~16:45Z): `capacity-by-indicator` and `cmp` fixed in gridflow PR #129 (unmerged, CI green; local silver
+re-written from bronze). Day D's silver keeps every record whose validity overlaps gas day D (06:00-06:00 Brussels);
+`timestamp_utc` is the record's own start if inside that gas day, else the gas-day start; record id + timestamp_utc
+unique (firm_technical 28 rows/0 values -> 126/98; auction premiums 0 -> all 54 a day; unavailable firm capacity 25 on
+one day -> 291 a day; null timestamps gone, 18c). capacity-by-indicator: no defect caveat (say
+`available_through_uioli_short_term` holds only the "no capacity" sentences). cmp: caveat the six mixed units on auction
+premiums and that it is unconfirmed which price the unit applies to (18u). Parked notes on `v5/p26-entsog-gas-held` /
+`docs/v5-p26-entsog-gas-held`; the three cmp vault notes can now be corrected. Write both from current silver.
+
+ENTSO-E (parent, ~18:40Z): fixed in gridflow PRs #130, #131, #132 (unmerged, CI green; local silver re-built).
+`current_balancing_state`: no defect caveat; rows per minute with zone and direction, 21,600 rows over 1-5 Aug
+(FR/NL/BE), and the data really exists only for those five days. `balancing-energy-bids` and
+`procured_balancing_capacity`: no defect caveat for 1 Aug 2026 (re-ingested: bids 6,852 -> 80,843 rows, every zone
+00:00-23:45; procured 126,156 rows with area, agreement type, direction, price); other days still hold page-one-only
+bronze until re-ingested, so chart and sample 1 Aug only and say so. Procured MW for an area is the sum over its rows.
+Aggregated bids: area filled on all 768 BE rows. `outages` (5 tables): one row per step clipped to the day, latest
+revision per document, identity/revision/cancelled status/unclipped start and end/unit/nominal power kept; generation
+11,011 -> 5,501 rows (no post-2027 stamps; 299 of 909 documents cancelled). Keep two caveats: the meaning of
+`unavailable_mw` is unverified (13am), and only planned outages are requested (13an). Write all from current silver.
+
+**Fixed in gridflow PR #134 (unmerged; local silver re-transformed):** current BSUoS day-first files (remediation 20y)
+and system frequency 2014 (20ao: 12 of 12 files, the repeated October hour told apart by `dtm_occurrence`). Their
+pages' defect caveats and notes come off in a small follow-up batch. The DC 4-day forecast's month-first 2022 issue is
+still misread: keep that caveat.

@@ -1,0 +1,209 @@
+{
+ "dataset": "neso_data_portal/as_industry_notifications_balancing",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "0ecad432ea144bcaba0f0ced8c87cdc5c2e40f281da6722d856b482ccd17e480",
+ "silver": "neso_data_portal/as_industry_notifications_balancing",
+ "columns": [
+  {
+   "name": "notification_issued_date_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "effective_from_date_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "effective_to_date_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "service",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "notes",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "description",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2026-03-26 14:45:00 UTC",
+   "2026-04-15 08:30:00 UTC",
+   null,
+   "BR",
+   null,
+   "To improve data accessibility and usability, EAC Results Summary, Buy Orders and Results by Unit will be archived annually by financial year, while Sell Orders will continue to be archived monthly due to data size. From 15 April 2026, all EAC data (https://www.neso.energy/data-portal/eac-auction-results) before 1 April 2026 will be removed from the live datasets and moved to archives. Existing multi?year archives will be split into one archive per financial year. This change will make data access faster, more stable, and easier to use. For more information please visit https://www.neso.energy/industry-information/balancing-services/enduring-auction-capability-eac (EAC Releases section).",
+   "2026-09-04 10:50:39.380805 UTC",
+   "2026-03-26 14:45:00 UTC",
+   "bronze/neso_data_portal/as_industry_notifications_balancing/2026/10/08/raw_20261008T081601Z_13f8f6b1-690b-4695-993e-dbc26f9bbe54_5e93ae28.csv",
+   "2026-10-08 08:16:01.889466 UTC",
+   "2026-03-26 14:45:00 UTC",
+   "2026-09-04 10:50:39.380805 UTC",
+   "e845f497-0259-40fe-ac0b-2d438ea436e6",
+   "1+e1"
+  ],
+  [
+   "2026-04-24 11:00:00 UTC",
+   "2026-04-24 11:00:00 UTC",
+   null,
+   "BR",
+   "This only applies to a single auction.",
+   "Please note for EAC auctions on 24/04/2026 and 25/04/2026 (delivery days 25/04/2026 and 26/04/2026), we forsee underlying systems conditions indicating a non-zero valuation of negative reserve",
+   "2026-09-04 10:50:39.380805 UTC",
+   "2026-04-24 11:00:00 UTC",
+   "bronze/neso_data_portal/as_industry_notifications_balancing/2026/10/08/raw_20261008T081601Z_13f8f6b1-690b-4695-993e-dbc26f9bbe54_5e93ae28.csv",
+   "2026-10-08 08:16:01.889466 UTC",
+   "2026-04-24 11:00:00 UTC",
+   "2026-09-04 10:50:39.380805 UTC",
+   "e845f497-0259-40fe-ac0b-2d438ea436e6",
+   "1+e1"
+  ],
+  [
+   "2026-05-22 09:00:00 UTC",
+   "2026-05-22 09:00:00 UTC",
+   null,
+   "BR",
+   null,
+   "Please note for EAC auctions on 22/05/2026, 23/05/2026 and 24/05/2026 (delivery days 23/05/2026, 24/05/2026 and 25/05/2026), we forsee underlying systems conditions indicating a non-zero valuation of negative reserve",
+   "2026-09-04 10:50:39.380805 UTC",
+   "2026-05-22 09:00:00 UTC",
+   "bronze/neso_data_portal/as_industry_notifications_balancing/2026/10/08/raw_20261008T081601Z_13f8f6b1-690b-4695-993e-dbc26f9bbe54_5e93ae28.csv",
+   "2026-10-08 08:16:01.889466 UTC",
+   "2026-05-22 09:00:00 UTC",
+   "2026-09-04 10:50:39.380805 UTC",
+   "e845f497-0259-40fe-ac0b-2d438ea436e6",
+   "1+e1"
+  ],
+  [
+   "2026-06-11 15:00:00 UTC",
+   "2026-06-11 15:00:00 UTC",
+   null,
+   "BR",
+   null,
+   "Please note for EAC auctions on 12/06/2026 and 13/06/2026 (delivery days 13/06/2026 and 14/06/2026), we forsee underlying systems conditions indicating a non-zero valuation of negative reserve.",
+   "2026-09-04 10:50:39.380805 UTC",
+   "2026-06-11 15:00:00 UTC",
+   "bronze/neso_data_portal/as_industry_notifications_balancing/2026/10/08/raw_20261008T081601Z_13f8f6b1-690b-4695-993e-dbc26f9bbe54_5e93ae28.csv",
+   "2026-10-08 08:16:01.889466 UTC",
+   "2026-06-11 15:00:00 UTC",
+   "2026-09-04 10:50:39.380805 UTC",
+   "e845f497-0259-40fe-ac0b-2d438ea436e6",
+   "1+e1"
+  ],
+  [
+   "2026-08-07 09:00:00 UTC",
+   "2026-08-07 09:00:00 UTC",
+   null,
+   "BR",
+   null,
+   "Please note for EAC auction on 07/08/2026 (delivery day 08/08/2026), we forsee underlying systems conditions indicating a non-zero valuation of negative reserve.",
+   "2026-09-04 10:50:39.380805 UTC",
+   "2026-08-07 09:00:00 UTC",
+   "bronze/neso_data_portal/as_industry_notifications_balancing/2026/10/08/raw_20261008T081601Z_13f8f6b1-690b-4695-993e-dbc26f9bbe54_5e93ae28.csv",
+   "2026-10-08 08:16:01.889466 UTC",
+   "2026-08-07 09:00:00 UTC",
+   "2026-09-04 10:50:39.380805 UTC",
+   "e845f497-0259-40fe-ac0b-2d438ea436e6",
+   "1+e1"
+  ],
+  [
+   "2026-08-07 14:35:00 UTC",
+   "2026-08-07 14:35:00 UTC",
+   null,
+   "BR",
+   "This only applies to a single auction.",
+   "To help manage system conditions during the solar eclipse on Wednesday 12th August (auction date 11th August), we have increase PBR requirements in service windows 33-48.  We also anticipate a non-zero valuation of NBR during this time.",
+   "2026-09-04 10:50:39.380805 UTC",
+   "2026-08-07 14:35:00 UTC",
+   "bronze/neso_data_portal/as_industry_notifications_balancing/2026/10/08/raw_20261008T081601Z_13f8f6b1-690b-4695-993e-dbc26f9bbe54_5e93ae28.csv",
+   "2026-10-08 08:16:01.889466 UTC",
+   "2026-08-07 14:35:00 UTC",
+   "2026-09-04 10:50:39.380805 UTC",
+   "e845f497-0259-40fe-ac0b-2d438ea436e6",
+   "1+e1"
+  ],
+  [
+   "2026-08-19 15:15:00 UTC",
+   "2026-08-19 15:15:00 UTC",
+   "2026-10-01 16:00:00 UTC",
+   "BR",
+   null,
+   "The EAC sell orders for August and September will be archived on 1st October. There will be no archiving activity during September.",
+   "2026-09-04 10:50:39.380805 UTC",
+   "2026-08-19 15:15:00 UTC",
+   "bronze/neso_data_portal/as_industry_notifications_balancing/2026/10/08/raw_20261008T081601Z_13f8f6b1-690b-4695-993e-dbc26f9bbe54_5e93ae28.csv",
+   "2026-10-08 08:16:01.889466 UTC",
+   "2026-08-19 15:15:00 UTC",
+   "2026-09-04 10:50:39.380805 UTC",
+   "e845f497-0259-40fe-ac0b-2d438ea436e6",
+   "1+e1"
+  ],
+  [
+   "2026-09-04 11:00:00 UTC",
+   "2026-09-04 11:00:00 UTC",
+   null,
+   "BR",
+   "This only applies to a single auction.",
+   "Please note for EAC auction on 05/09/2026 (delivery day 06/09/2026), we forsee underlying systems conditions indicating a non-zero valuation of negative reserve.",
+   "2026-09-04 10:50:39.380805 UTC",
+   "2026-09-04 11:00:00 UTC",
+   "bronze/neso_data_portal/as_industry_notifications_balancing/2026/10/08/raw_20261008T081601Z_13f8f6b1-690b-4695-993e-dbc26f9bbe54_5e93ae28.csv",
+   "2026-10-08 08:16:01.889466 UTC",
+   "2026-09-04 11:00:00 UTC",
+   "2026-09-04 10:50:39.380805 UTC",
+   "e845f497-0259-40fe-ac0b-2d438ea436e6",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

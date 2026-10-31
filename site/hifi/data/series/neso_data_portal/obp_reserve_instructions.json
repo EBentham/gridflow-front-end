@@ -1,0 +1,21 @@
+{
+  "dataset": "neso_data_portal/obp_reserve_instructions",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "9f92f9a3d506fe10f34d4d14e1df4fb5b5f8b9fdfa07f3152ad2d7c8435db051",
+  "type": "line",
+  "unit": "£/MWh",
+  "caption": "",
+  "value_column": "target_price",
+  "aggregation": "mean",
+  "window": {"end": "2026-10-02", "rule": "fixed", "start": "2025-10-10"},
+  "provenance": {"files": 1, "null_values_dropped": 0, "rows_matched": 85, "rows_read": 422, "rows_used": 85, "silver": "neso_data_portal/obp_reserve_instructions", "silver_first": "2025-10-10T10:00:00Z", "silver_last": "2026-10-02T06:27:00Z", "time_bucket": "1 day"},
+  "spec": {"aggregation": "mean", "filter": [{"column": "instruction_point_type", "op": "eq", "value": "START"}], "group": "service_id", "group_map": {"PQR": "quick", "PSR": "slow", "RDP": "rdp"}, "series_order": ["slow", "quick", "rdp"], "silver": "neso_data_portal/obp_reserve_instructions", "time": "point_datetime", "time_bucket": "1d", "type": "line", "unit": "£/MWh", "value": "target_price", "window": {"end": "2026-10-02", "start": "2025-10-10"}},
+  "x_kind": "time",
+  "x": ["2025-10-10T00:00:00Z", "2025-12-02T00:00:00Z", "2026-03-27T00:00:00Z", "2026-04-17T00:00:00Z", "2026-04-20T00:00:00Z", "2026-04-27T00:00:00Z", "2026-04-30T00:00:00Z", "2026-05-01T00:00:00Z", "2026-05-09T00:00:00Z", "2026-05-10T00:00:00Z", "2026-05-12T00:00:00Z", "2026-05-19T00:00:00Z", "2026-05-20T00:00:00Z", "2026-05-28T00:00:00Z", "2026-06-06T00:00:00Z", "2026-06-16T00:00:00Z", "2026-06-23T00:00:00Z", "2026-07-02T00:00:00Z", "2026-07-27T00:00:00Z", "2026-07-29T00:00:00Z", "2026-07-30T00:00:00Z", "2026-08-05T00:00:00Z", "2026-08-14T00:00:00Z", "2026-10-02T00:00:00Z"],
+  "series": [
+    {"key": "slow", "values": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 169.07, 120.0, null, 187.804, null, null]},
+    {"key": "quick", "values": [123.446, 150.0, 150.0, 150.0, 119.417, null, null, 153.333, 150.0, 150.0, 150.0, 150.0, null, 146.667, 150.0, null, 150.833, 147.5, 150.0, null, 150.0, 157.5, 152.5, 160.0]},
+    {"key": "rdp", "values": [null, null, null, null, null, -210.0, -210.0, null, null, null, null, null, -99.0, null, null, -75.0, null, null, null, null, null, null, null, null]}
+  ]
+}

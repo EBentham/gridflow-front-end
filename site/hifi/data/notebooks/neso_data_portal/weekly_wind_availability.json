@@ -1,0 +1,187 @@
+{
+ "dataset": "neso_data_portal/weekly_wind_availability",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "1927363a62facce435d4ce101ef07c718d5d96e14e3f2ca2697bbf99ef64a856",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.sql(\"\"\"\n    SELECT bmu_id, week_number, mw, published_at\n    FROM silver_neso_data_portal_weekly_wind_availability_latest\"\"\")\ndf[\"published_at\"] = df.published_at.dt.tz_convert(\"UTC\")\nprint(\"BM units:\", df.bmu_id.nunique(), \"| week labels:\", df.week_number.nunique())\ndf.head()",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "BM units: 281 | week labels: 155"
+    },
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "bmu_id",
+      "week_number",
+      "mw",
+      "published_at"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "ABRBO-1",
+       "44W26",
+       "99.0",
+       "2026-10-16 20:20:25.674628+00:00"
+      ],
+      [
+       "ABRBO-1",
+       "45W26",
+       "99.0",
+       "2026-10-16 20:20:25.674628+00:00"
+      ],
+      [
+       "ABRBO-1",
+       "46W26",
+       "99.0",
+       "2026-10-16 20:20:25.674628+00:00"
+      ],
+      [
+       "ABRBO-1",
+       "47W26",
+       "99.0",
+       "2026-10-16 20:20:25.674628+00:00"
+      ],
+      [
+       "ABRBO-1",
+       "48W26",
+       "99.0",
+       "2026-10-16 20:20:25.674628+00:00"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "spread = df.groupby(\"bmu_id\").mw.agg([\"min\", \"max\", \"nunique\"])\nspread[spread[\"nunique\"] > 1].sort_values(\"max\", ascending=False).head(8)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "min",
+      "max",
+      "nunique",
+      "bmu_id",
+      "",
+      "",
+      ""
+     ],
+     "index": [
+      "SOFWO-21",
+      "SGRWO-6",
+      "SOFWO-12",
+      "SOFWO-11",
+      "DBBWO-1",
+      "SOFWO-22",
+      "WHILW-1",
+      "DBAWO-2"
+     ],
+     "rows": [
+      [
+       "0.0",
+       "406.0",
+       "2"
+      ],
+      [
+       "358.0",
+       "361.0",
+       "2"
+      ],
+      [
+       "0.0",
+       "350.0",
+       "2"
+      ],
+      [
+       "0.0",
+       "336.0",
+       "2"
+      ],
+      [
+       "0.0",
+       "312.0",
+       "3"
+      ],
+      [
+       "0.0",
+       "308.0",
+       "2"
+      ],
+      [
+       "0.0",
+       "305.0",
+       "4"
+      ],
+      [
+       "108.0",
+       "304.0",
+       "2"
+      ]
+     ]
+    }
+   ]
+  }
+ ]
+}

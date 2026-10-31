@@ -1,0 +1,227 @@
+{
+ "dataset": "neso_data_portal/tresp_building_block_definitions",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "a322418f417a82141bb74aaf06b3cf48852c0ed9602cf758183673506dfc5a18",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "blocks = data.sql(\"\"\"\n    SELECT demand_generation_storage, technology, fes_bb_id_number, technology_detail, units\n    FROM silver_neso_data_portal_tresp_building_block_definitions_latest\n    ORDER BY demand_generation_storage, fes_bb_id_number\n\"\"\")\nblocks[blocks.demand_generation_storage == \"Demand\"]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "demand_generation_storage",
+      "technology",
+      "fes_bb_id_number",
+      "technology_detail",
+      "units"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11"
+     ],
+     "rows": [
+      [
+       "Demand",
+       "Heat Pumps",
+       "Dem_BB005_1",
+       "Industrial & Commercial Heat Pumps excl. proce...",
+       "Annual Demand (GWh)"
+      ],
+      [
+       "Demand",
+       "Heat Pumps",
+       "Dem_BB005_2",
+       "Industrial & Commercial Heat Pumps excl. proce...",
+       "Surface Area"
+      ],
+      [
+       "Demand",
+       "Electric Vehicles",
+       "Lct_BB001",
+       "Pure Electric (Vans, Cars & Motorbikes)",
+       "Number"
+      ],
+      [
+       "Demand",
+       "Electric Vehicles",
+       "Lct_BB002",
+       "Plug-in-hybrid (Vans, Cars and Motorbikes)",
+       "Number"
+      ],
+      [
+       "Demand",
+       "Electric Vehicles",
+       "Lct_BB003",
+       "Pure Electric (Buses, Coaches and HGVs)",
+       "Number"
+      ],
+      [
+       "Demand",
+       "Electric Vehicles",
+       "Lct_BB004",
+       "Plug-in-hybrid (Buses, Coaches and HGVs)",
+       "Number"
+      ],
+      [
+       "Demand",
+       "Heat Pumps",
+       "Lct_BB005",
+       "Domestic - Non-hybrid",
+       "Number"
+      ],
+      [
+       "Demand",
+       "Heat Pumps",
+       "Lct_BB006",
+       "Domestic – Hybrid",
+       "Number"
+      ],
+      [
+       "Demand",
+       "District Heating",
+       "Lct_BB009",
+       "Domestic customers on Heat Pump-Supplied Networks",
+       "Number"
+      ],
+      [
+       "Demand",
+       "Airconditioning Units",
+       "Lct_BB014",
+       "AC Domestic Units",
+       "Number"
+      ],
+      [
+       "Demand",
+       "Airconditioning Units",
+       "Lct_BB015_1",
+       "AC Industrial & Commercial Units",
+       "Annual Demand (GWh)"
+      ],
+      [
+       "Demand",
+       "Airconditioning Units",
+       "Lct_BB015_2",
+       "AC Industrial & Commercial Units",
+       "Surface Area"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "blocks.value_counts([\"demand_generation_storage\", \"units\"])",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "demand_generation_storage  units                  \nGeneration                 Capacity Installed (MW)    18\nDemand                     Number                      8\nStorage                    Capacity Installed (MW)     5\nDemand                     Annual Demand (GWh)         2\n                           Surface Area                2\nName: count, dtype: int64"
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "names = data.sql(\"\"\"\n    SELECT tresp_gsp_area, tresp_gsp_area_name\n    FROM silver_neso_data_portal_tresp_gsp_area_names_latest\n    ORDER BY tresp_gsp_area_name\n\"\"\")\nnames.head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "tresp_gsp_area",
+      "tresp_gsp_area_name"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "_L@ABHA1",
+       "tRESP Abham 132kV NGED"
+      ],
+      [
+       "_C@ACTL_C",
+       "tRESP Acton Lane 22kV UKPN"
+      ],
+      [
+       "_L@ALVE1",
+       "tRESP Alverdiscott 132kV NGED"
+      ],
+      [
+       "_H@LOUD_H",
+       "tRESP Amersham SSEN"
+      ],
+      [
+       "_A@AMEM_1",
+       "tRESP Amersham UKPN"
+      ]
+     ]
+    }
+   ]
+  }
+ ]
+}

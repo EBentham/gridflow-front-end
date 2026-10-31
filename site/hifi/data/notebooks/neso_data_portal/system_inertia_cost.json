@@ -1,0 +1,200 @@
+{
+ "dataset": "neso_data_portal/system_inertia_cost",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "7828826acae6bca721af7b21fed85035a8c40aaa0c115c5cdb83747cebc485a7",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.neso_data_portal.query(\"system_inertia_cost\", \"2017-04-01\", \"2026-03-31\")\ndf[\"timestamp_utc\"] = df.timestamp_utc.dt.tz_convert(\"UTC\")\ndf = df.sort_values(\"settlement_date\", ignore_index=True)\ndf.loc[df.settlement_date.between(\"2025-03-29\", \"2025-04-01\"),\n       [\"settlement_date\", \"timestamp_utc\", \"cost_gbp_per_gvas\", \"resource_id\"]]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "settlement_date",
+      "timestamp_utc",
+      "cost_gbp_per_gvas",
+      "resource_id"
+     ],
+     "index": [
+      "2912",
+      "2913",
+      "2914",
+      "2915"
+     ],
+     "rows": [
+      [
+       "2025-03-29",
+       "2025-03-29 00:00:00+00:00",
+       "4256",
+       "91947c0c-bbbf-4d55-a29d-dc610d91d075"
+      ],
+      [
+       "2025-03-30",
+       "2025-03-30 00:00:00+00:00",
+       "3361",
+       "91947c0c-bbbf-4d55-a29d-dc610d91d075"
+      ],
+      [
+       "2025-03-31",
+       "2025-03-30 23:00:00+00:00",
+       "0",
+       "91947c0c-bbbf-4d55-a29d-dc610d91d075"
+      ],
+      [
+       "2025-04-01",
+       "2025-03-31 23:00:00+00:00",
+       "1791",
+       "a6a52241-1774-48d8-935f-2bef0d843e18"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "import pandas as pd\np = df.set_index(\"settlement_date\").cost_gbp_per_gvas\nfy = pd.Series([f\"{y}-{(y + 1) % 100:02d}\" for y in p.index.year - (p.index.month < 4)],\n               index=p.index)\npd.DataFrame({\"days\": p.groupby(fy).size(), \"above zero\": (p > 0).groupby(fy).sum(),\n              \"median above zero\": p.where(p > 0).groupby(fy).median(),\n              \"max\": p.groupby(fy).max()})",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "days",
+      "above zero",
+      "median above zero",
+      "max"
+     ],
+     "index": [
+      "2017-18",
+      "2018-19",
+      "2019-20",
+      "2020-21",
+      "2021-22",
+      "2022-23",
+      "2023-24",
+      "2024-25",
+      "2025-26"
+     ],
+     "rows": [
+      [
+       "365",
+       "7",
+       "1130.0",
+       "2833"
+      ],
+      [
+       "365",
+       "77",
+       "1993.0",
+       "14399"
+      ],
+      [
+       "366",
+       "87",
+       "1353.0",
+       "4742"
+      ],
+      [
+       "365",
+       "146",
+       "1399.5",
+       "9850"
+      ],
+      [
+       "361",
+       "124",
+       "4890.0",
+       "14650"
+      ],
+      [
+       "362",
+       "131",
+       "5700.0",
+       "13041"
+      ],
+      [
+       "366",
+       "164",
+       "3502.0",
+       "8812"
+      ],
+      [
+       "365",
+       "195",
+       "3399.0",
+       "7576"
+      ],
+      [
+       "365",
+       "174",
+       "3475.5",
+       "58570"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "ax = p[p > 0].plot(style=\".\", ms=3, color=\"#155A6E\", logy=True, figsize=(8, 3.5),\n                   xlabel=\"settlement day\", ylabel=\"£ per GVA.s, days above zero\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "system_inertia_cost-5.png",
+     "width": 698,
+     "height": 320
+    }
+   ]
+  }
+ ]
+}

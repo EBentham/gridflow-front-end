@@ -68,7 +68,131 @@
         "demand-flexibility",
         "eac-br-auction-results",
         "aggregated-bsad",
-        "constraint-breakdown"
+        "constraint-breakdown",
+        "balancing-reserve-auction-requirement-forecast",
+        "dynamic-containment-data",
+        "dynamic-moderation-requirements",
+        "dynamic-regulation-requirements",
+        "quick-reserve-auction-requirement-forecast",
+        "slow-reserve-requirement-forecast",
+        "static-firm-frequency-response-auction-results",
+        "static-firm-frequency-response-requirement",
+        "phase-2-ffr-auction-results-summary",
+        "firm-frequency-response-post-tender-reports",
+        "eac-auction-results",
+        "dynamic-containment-4-day-forecast",
+        "long-term-forecasts-for-dc-dm-dr-requirements",
+        "eac-mock-auction-results",
+        "eac-br-mock-auction-results",
+        "ancillary-services-important-industry-notifications",
+        "balancing-services-adjustment-data-forward-contracts",
+        "non-bm-ancillary-service-dispatch-platform-asdp-instructions",
+        "obp-non-bm-reserve-instructions",
+        "obp-non-bm-physical-notifications",
+        "obp-reserve-availability-utilisation-price",
+        "optional-downward-flexibility-management-odfm-market-information",
+        "short-term-operating-reserve-stor-day-ahead-auction-results",
+        "short-term-operating-reserve-stor-day-ahead-buy-curve",
+        "stor-windows",
+        "contract-transfer-of-obligation",
+        "disaggregated-bsad",
+        "non-bm-ancillary-service-dispatch-platform-asdp-window-prices",
+        "obligatory-reactive-power-service-orps-utilisation",
+        "bsuos-fixed-tariffs",
+        "current-balancing-services-use-of-system-bsuos-data",
+        "daily-balancing-costs-balancing-services-use-of-system",
+        "balancing-services-use-of-system-bsuos-daily-forecast",
+        "daily-balancing-volume-balancing-services-use-of-system",
+        "gb-system-inertia-bid-and-offer-costs",
+        "bsuos-monthly-forecast",
+        "skip-rates",
+        "thermal-constraint-costs",
+        "outturn-voltage-costs",
+        "24-months-ahead-constraint-cost-forecast",
+        "24-months-ahead-constraint-limits",
+        "constraint-management-intertrip-service-information-cmis",
+        "day-ahead-constraint-flows-and-limits",
+        "operational-transparency-forum-network-congestion-data",
+        "voltage-requirement",
+        "etys-gb-transmission-system-boundaries",
+        "gis-boundaries-for-gb-dno-license-areas",
+        "gis-boundaries-for-gb-grid-supply-points",
+        "monthly-utilisation-data-of-voltage-contracted-units",
+        "stability-midterm-y-1-utilisation-report",
+        "stability-pathfinder-service-information",
+        "system-frequency-data",
+        "system-inertia",
+        "system-inertia-cost",
+        "system-operating-plan-sop",
+        "demand-flexibility-service",
+        "demand-flexibility-service-live-events",
+        "demand-flexibility-service-test-events",
+        "day-ahead-power-exchange-prices-nordpool",
+        "balancing-services-contract-enactment",
+        "index-linked-contract-volume",
+        "super-stable-export-limit-contract-enactment",
+        "historic-gtma-grid-trade-master-agreement-trades-data",
+        "interconnector-requirement-and-auction-summary-data",
+        "upcoming-trades",
+        "1-day-ahead-demand-forecast",
+        "2-day-ahead-demand-forecast",
+        "7-day-ahead-national-forecast",
+        "2-14-days-ahead-national-demand-forecast",
+        "national-demand-balancing-mechanism-units",
+        "tresp-demand-pathways",
+        "day-ahead-half-hourly-demand-forecast-performance",
+        "daily-demand-update",
+        "demand-profile-dates",
+        "historic-demand-data",
+        "long-term-2-52-weeks-ahead-national-demand-forecast",
+        "school-holiday-percentages",
+        "transmission-losses",
+        "14-days-ahead-operational-metered-wind-forecasts",
+        "negative-reserve-active-power-margin-nrapm-forecast",
+        "day-ahead-wind-forecast",
+        "monthly-operational-metered-wind-output",
+        "tresp-generation-pathways",
+        "14-days-ahead-wind-forecasts",
+        "daily-opmr",
+        "weekly-opmr",
+        "weekly-wind-availability",
+        "wind-bmu-boa-volumes",
+        "brit-ned",
+        "eleclink",
+        "ifa",
+        "ifa2",
+        "nemolink",
+        "nsl",
+        "viking",
+        "embedded-register",
+        "interconnector-register",
+        "transmission-entry-capacity-tec-register",
+        "aahedc-tariffs",
+        "gis-boundaries-for-gb-generation-charging-zones",
+        "transmission-network-use-of-system-tnuos-tariffs",
+        "capacity-market-register",
+        "carbon-intensity-of-balancing-actions",
+        "country-carbon-intensity-forecast",
+        "national-carbon-intensity-forecast",
+        "regional-carbon-intensity-forecast",
+        "building-heat-model",
+        "future-energy-scenario-fes-building-block-data",
+        "fes-electricity-demand-summary-data-table-ed1",
+        "future-energy-scenario-electricity-supply-data-table-es1",
+        "fes-european-electricity-supply-data-table-es2",
+        "fes-flexibility-data-table-data-table-flx1",
+        "fes-natural-gas-demand-definitions-ed4",
+        "fes-natural-gas-residential-and-non-domestic-i-c-heat-demand-summary-data-table-ed3",
+        "fes-road-transport-notes-data-table-ed6",
+        "fes-road-transport-summary-data-table-ed5",
+        "fes-whole-system-gas-supply-emissions-data-table-ws2",
+        "fes-whole-system-gas-supply-data-table-ws1",
+        "levelised-cost-of-green-hydrogen",
+        "local-authority-level-spatial-heat-model-outputs-fes",
+        "regional-breakdown-of-fes-data-electricity",
+        "resource-adequacy-in-2030s",
+        "ssep-onshore-publication-zone-shapefile",
+        "data-portal-planned-changes-known-issues"
       ]
     }
   ],
@@ -94,6 +218,545 @@
         "eac_br_results_buy_orders",
         "eac_br_results_sell_orders"
       ]
+    },
+    {
+      "slug": "balancing-reserve-auction-requirement-forecast",
+      "title": "Balancing Reserve requirement forecast",
+      "note": "balancing-reserve-auction-requirement-forecast",
+      "members": [
+        "br_auction_requirement_fc_da",
+        "br_auction_requirement_fc_da_archive",
+        "br_auction_requirement_fc_medium_term"
+      ]
+    },
+    {
+      "slug": "dynamic-containment-data",
+      "title": "Dynamic Containment auction data",
+      "note": "dynamic-containment-data",
+      "members": [
+        "dynamic_containment_dc_dr_dm_results",
+        "dynamic_containment_dc_dr_dm_block",
+        "dynamic_containment_masterdata",
+        "dynamic_containment_dc_dr_dm_results_sum",
+        "dynamic_containment_dc_dr_dm_linear"
+      ]
+    },
+    {
+      "slug": "static-firm-frequency-response-auction-results",
+      "title": "Static FFR auction results",
+      "note": "static-firm-frequency-response-auction-results",
+      "members": [
+        "sffr_auction_results_main",
+        "sffr_auction_results_buy_orders"
+      ]
+    },
+    {
+      "slug": "phase-2-ffr-auction-results-summary",
+      "title": "Phase 2 FFR auction results",
+      "note": "phase-2-ffr-auction-results-summary",
+      "members": [
+        "ffr_phase2_auction_phase_resultsbyunit",
+        "ffr_phase2_auction_phase_resultsum",
+        "ffr_phase2_auction_phase_blockorders",
+        "ffr_phase2_auction_phase_block_order",
+        "ffr_phase2_auction_phase_linearorders",
+        "ffr_phase2_auction_phase_linear_orders",
+        "ffr_phase2_auction_phase_results_sum",
+        "ffr_phase2_auction_phase_results_unit",
+        "ffr_phase2_result_summary_archive",
+        "ffr_phase2_results_by_unit_archive",
+        "ffr_phase2_blockorders_archive",
+        "ffr_phase2_linearorders_archive"
+      ]
+    },
+    {
+      "slug": "firm-frequency-response-post-tender-reports",
+      "title": "FFR post-tender reports",
+      "note": "firm-frequency-response-post-tender-reports",
+      "members": [
+        "ffr_post_tender_reports_csv_ext",
+        "ffr_post_tender_reports_workbook",
+        "ffr_post_tender_reports_csv",
+        "ffr_post_tender_reports_ext"
+      ]
+    },
+    {
+      "slug": "eac-auction-results",
+      "title": "EAC auction results",
+      "note": "eac-auction-results",
+      "members": [
+        "eac_results_summary",
+        "eac_results_summary_fy",
+        "eac_results_daily_summary",
+        "eac_results_by_unit",
+        "eac_results_by_unit_fy",
+        "eac_results_daily_by_unit",
+        "eac_results_buy_orders",
+        "eac_results_buy_orders_fy",
+        "eac_results_daily_buy_orders",
+        "eac_results_sell_orders",
+        "eac_results_daily_sell_orders"
+      ]
+    },
+    {
+      "slug": "dynamic-containment-4-day-forecast",
+      "title": "Dynamic Containment 4 day forecast",
+      "note": "dynamic-containment-4-day-forecast",
+      "members": [
+        "dc_forecast_4d",
+        "dc_forecast_4d_history"
+      ]
+    },
+    {
+      "slug": "eac-mock-auction-results",
+      "title": "EAC mock auction results",
+      "note": "eac-mock-auction-results",
+      "members": [
+        "eac_mock_results_summary",
+        "eac_mock_results_by_unit",
+        "eac_mock_results_buy_orders",
+        "eac_mock_results_sell_orders",
+        "eac_mock_results_daily_summary",
+        "eac_mock_results_daily_by_unit",
+        "eac_mock_results_daily_buy_orders",
+        "eac_mock_results_daily_sell_orders"
+      ]
+    },
+    {
+      "slug": "eac-br-mock-auction-results",
+      "title": "Balancing Reserve mock auction results",
+      "note": "eac-br-mock-auction-results",
+      "members": [
+        "eac_br_mock_results_summary",
+        "eac_br_mock_results_by_unit",
+        "eac_br_mock_results_buy_orders",
+        "eac_br_mock_results_sell_orders"
+      ]
+    },
+    {
+      "slug": "ancillary-services-important-industry-notifications",
+      "title": "Ancillary services industry notifications",
+      "note": "ancillary-services-important-industry-notifications",
+      "members": [
+        "as_industry_notifications_balancing",
+        "as_industry_notifications_dc_dm_dr",
+        "as_industry_notifications_quick_reserve",
+        "as_industry_notifications_slow_reserve",
+        "as_industry_notifications_stor_important",
+        "as_industry_notifications_sffr_important"
+      ]
+    },
+    {
+      "slug": "optional-downward-flexibility-management-odfm-market-information",
+      "title": "ODFM market information",
+      "note": "optional-downward-flexibility-management-odfm-market-information",
+      "members": [
+        "odfm_market_information_instructed",
+        "odfm_market_information_load_factors",
+        "odfm_market_information_results"
+      ]
+    },
+    {
+      "slug": "obligatory-reactive-power-service-orps-utilisation",
+      "title": "ORPS reactive power utilisation",
+      "note": "obligatory-reactive-power-service-orps-utilisation",
+      "members": [
+        "orps_utilisation_reactive",
+        "orps_utilisation_historic_reactive",
+        "orps_utilisation_reactive_default"
+      ]
+    },
+    {
+      "slug": "current-balancing-services-use-of-system-bsuos-data",
+      "title": "Current BSUoS charges",
+      "note": "current-balancing-services-use-of-system-bsuos-data",
+      "members": [
+        "current_bsuos_ii",
+        "current_bsuos_sf",
+        "current_bsuos_rf",
+        "current_bsuos_historic_ii",
+        "current_bsuos_historic_sf",
+        "current_bsuos_historic_rf",
+        "current_bsuos_cap_adjustments"
+      ]
+    },
+    {
+      "slug": "bsuos-monthly-forecast",
+      "title": "Monthly BSUoS forecast",
+      "note": "bsuos-monthly-forecast",
+      "members": [
+        "bsuos_monthly_forecast_fc_summary",
+        "bsuos_monthly_forecast_actual_sum",
+        "bsuos_monthly_forecast_fc_summary_pct",
+        "bsuos_monthly_forecast_impact_on_due",
+        "bsuos_monthly_forecast_including_new",
+        "bsuos_monthly_forecast_sum_winter",
+        "bsuos_monthly_forecast_summary",
+        "bsuos_monthly_forecast_summary_pct"
+      ]
+    },
+    {
+      "slug": "skip-rates",
+      "title": "Skip rates",
+      "note": "skip-rates",
+      "members": [
+        "skip_rates_summary",
+        "skip_rates_behind_constraints_bmu",
+        "skip_rates_behind_constraints_cons",
+        "skip_rates_exclusion_reasons",
+        "skip_rates_in_merit_all_bm",
+        "skip_rates_in_merit_psa",
+        "skip_rates_in_merit_psa_dsf_unit",
+        "skip_rates_stage5_dsf_technology",
+        "skip_rates_stage5_psa_technology",
+        "skip_rates_stage6_acceptance",
+        "skip_rates_stage6_psa"
+      ]
+    },
+    {
+      "slug": "thermal-constraint-costs",
+      "title": "Thermal constraint costs",
+      "note": "thermal-constraint-costs",
+      "members": [
+        "thermal_constraint_costs",
+        "thermal_constraint_costs_xlsx"
+      ]
+    },
+    {
+      "slug": "outturn-voltage-costs",
+      "title": "Outturn voltage costs",
+      "note": "outturn-voltage-costs",
+      "members": [
+        "outturn_voltage_costs_main",
+        "outturn_voltage_costs_historical"
+      ]
+    },
+    {
+      "slug": "stability-pathfinder-service-information",
+      "title": "Stability pathfinder service information",
+      "note": "stability-pathfinder-service-information",
+      "members": [
+        "stability_pathfinder_utilisation_report",
+        "stability_pathfinder_availability_report"
+      ]
+    },
+    {
+      "slug": "system-frequency-data",
+      "title": "System frequency",
+      "note": "system-frequency-data",
+      "members": [
+        "system_frequency",
+        "system_frequency_dmy_csv",
+        "system_frequency_gmt_csv",
+        "system_frequency_gmt_zip",
+        "system_frequency_offset_csv",
+        "system_frequency_offset_zip"
+      ]
+    },
+    {
+      "slug": "demand-flexibility-service",
+      "title": "Demand Flexibility Service 2023/24",
+      "note": "demand-flexibility-service",
+      "members": [
+        "dfs_utilisation_report_sum",
+        "dfs_utilisation_report",
+        "dfs_industry_notification",
+        "dfs_service_requirements"
+      ]
+    },
+    {
+      "slug": "demand-flexibility-service-live-events",
+      "title": "Demand Flexibility Service 2022/23 live events",
+      "note": "demand-flexibility-service-live-events",
+      "members": [
+        "dfs_live_events_utilisation_report_sum",
+        "dfs_live_events_utilisation_report",
+        "dfs_live_events_service_update_industry",
+        "dfs_live_events_service_requirement"
+      ]
+    },
+    {
+      "slug": "demand-flexibility-service-test-events",
+      "title": "Demand Flexibility Service 2022/23 test events",
+      "note": "demand-flexibility-service-test-events",
+      "members": [
+        "dfs_test_events_utilisation_report_sum",
+        "dfs_test_events_utilisation_report",
+        "dfs_test_events_service_update_industry",
+        "dfs_test_events_service_requirement"
+      ]
+    },
+    {
+      "slug": "balancing-services-contract-enactment",
+      "title": "Balancing services contract enactment",
+      "note": "balancing-services-contract-enactment",
+      "members": [
+        "bs_contract_enactment_balancing",
+        "bs_contract_enactment_balancing_service"
+      ]
+    },
+    {
+      "slug": "historic-gtma-grid-trade-master-agreement-trades-data",
+      "title": "Historic GTMA trades",
+      "note": "historic-gtma-grid-trade-master-agreement-trades-data",
+      "members": [
+        "gtma_trades_data",
+        "gtma_trades_data_pre",
+        "gtma_trades_fy"
+      ]
+    },
+    {
+      "slug": "1-day-ahead-demand-forecast",
+      "title": "1 day ahead demand forecast",
+      "note": "1-day-ahead-demand-forecast",
+      "members": [
+        "demand_forecast_1d_day_ahead_national",
+        "demand_forecast_1d_historic_day_ahead"
+      ]
+    },
+    {
+      "slug": "2-day-ahead-demand-forecast",
+      "title": "2 day ahead demand forecast",
+      "note": "2-day-ahead-demand-forecast",
+      "members": [
+        "demand_forecast_2d_day_ahead",
+        "demand_forecast_2d_historic_day_ahead"
+      ]
+    },
+    {
+      "slug": "7-day-ahead-national-forecast",
+      "title": "7 day ahead national forecast",
+      "note": "7-day-ahead-national-forecast",
+      "members": [
+        "national_forecast_7d_day_ahead_demand",
+        "national_forecast_7d_historic_day_ahead"
+      ]
+    },
+    {
+      "slug": "2-14-days-ahead-national-demand-forecast",
+      "title": "2-14 days ahead national demand forecast",
+      "note": "2-14-days-ahead-national-demand-forecast",
+      "members": [
+        "national_demand_fc_2_14d_days_ahead",
+        "national_demand_fc_2_14d_days_ahead_half",
+        "national_demand_fc_2_14d_historic_day"
+      ]
+    },
+    {
+      "slug": "tresp-demand-pathways",
+      "title": "tRESP demand pathways",
+      "note": "tresp-demand-pathways",
+      "members": [
+        "tresp_building_block_definitions",
+        "tresp_gsp_area_names",
+        "tresp_demand_pathways_gsp",
+        "tresp_demand_pathways_la_england",
+        "tresp_demand_pathways_la_scotland",
+        "tresp_demand_pathways_la_wales",
+        "tresp_demand_pathways_resp_region"
+      ]
+    },
+    {
+      "slug": "transmission-losses",
+      "title": "Transmission losses",
+      "note": "transmission-losses",
+      "members": [
+        "transmission_losses_main",
+        "transmission_losses_financial_year"
+      ]
+    },
+    {
+      "slug": "14-days-ahead-operational-metered-wind-forecasts",
+      "title": "14 days ahead operational metered wind forecasts",
+      "note": "14-days-ahead-operational-metered-wind-forecasts",
+      "members": [
+        "metered_wind_forecast_14d",
+        "metered_wind_forecast_14d_windfarm"
+      ]
+    },
+    {
+      "slug": "negative-reserve-active-power-margin-nrapm-forecast",
+      "title": "Negative reserve active power margin (NRAPM) forecast",
+      "note": "negative-reserve-active-power-margin-nrapm-forecast",
+      "members": [
+        "nrapm_forecast_national_daily_days",
+        "nrapm_forecast_scotland_daily_days",
+        "nrapm_forecast_weekly_week_national",
+        "nrapm_forecast_weekly_week_scotland"
+      ]
+    },
+    {
+      "slug": "day-ahead-wind-forecast",
+      "title": "Day-ahead wind forecast",
+      "note": "day-ahead-wind-forecast",
+      "members": [
+        "da_wind_forecast_day_ahead",
+        "da_wind_forecast_day_ahead_bmu",
+        "da_wind_forecast_historic_day_ahead",
+        "da_wind_forecast_historic_day_ahead_bmu"
+      ]
+    },
+    {
+      "slug": "tresp-generation-pathways",
+      "title": "tRESP generation pathways",
+      "note": "tresp-generation-pathways",
+      "members": [
+        "tresp_generation_pathways_resp_region",
+        "tresp_generation_pathways_gsp",
+        "tresp_generation_pathways_la_england",
+        "tresp_generation_pathways_la_scotland",
+        "tresp_generation_pathways_la_wales"
+      ]
+    },
+    {
+      "slug": "14-days-ahead-wind-forecasts",
+      "title": "14 days ahead wind forecasts",
+      "note": "14-days-ahead-wind-forecasts",
+      "members": [
+        "wind_forecast_14d_days_ahead",
+        "wind_forecast_14d_day_ahead_bmu"
+      ]
+    },
+    {
+      "slug": "ifa",
+      "title": "IFA",
+      "note": "ifa",
+      "members": [
+        "ifa_itl",
+        "ifa_da_id_weekly_itls"
+      ]
+    },
+    {
+      "slug": "ifa2",
+      "title": "IFA2",
+      "note": "ifa2",
+      "members": [
+        "ifa2_ifa_itl",
+        "ifa2_ifa_da_id_weekly_itls"
+      ]
+    },
+    {
+      "slug": "nemolink",
+      "title": "Nemo Link",
+      "note": "nemolink",
+      "members": [
+        "nemolink_ntc",
+        "nemolink_intraday",
+        "nemolink_nemo_da_id_weekly_ntcs"
+      ]
+    },
+    {
+      "slug": "viking",
+      "title": "Viking Link",
+      "note": "viking",
+      "members": [
+        "viking_link_ntc",
+        "viking_ntc"
+      ]
+    },
+    {
+      "slug": "transmission-network-use-of-system-tnuos-tariffs",
+      "title": "Transmission Network Use of System (TNUoS) Tariffs",
+      "note": "transmission-network-use-of-system-tnuos-tariffs",
+      "members": [
+        "tnuos_tariffs_half_hourly_hh_demand",
+        "tnuos_tariffs_non_half_hourly_nhh_demand",
+        "tnuos_tariffs_embedded_export",
+        "tnuos_tariffs_transmission_demand",
+        "tnuos_tariffs_onshore_generator",
+        "tnuos_tariffs_local_offshore_generator",
+        "tnuos_tariffs_local_substation_tariff",
+        "tnuos_tariffs_onshore_local_circuit"
+      ]
+    },
+    {
+      "slug": "capacity-market-register",
+      "title": "Capacity Market Register",
+      "note": "capacity-market-register",
+      "members": [
+        "capacity_market_auction_static",
+        "capacity_market_auction_cost",
+        "capacity_market_unit_cmu",
+        "capacity_market_unit_cmu_history",
+        "capacity_market_components",
+        "capacity_market_component_history",
+        "capacity_market_component_history_pre",
+        "capacity_market_de_rating_factors"
+      ]
+    },
+    {
+      "slug": "building-heat-model",
+      "title": "Building Heat Model",
+      "note": "building-heat-model",
+      "members": [
+        "building_heat_model_example_output_half",
+        "building_heat_model_list_input"
+      ]
+    },
+    {
+      "slug": "future-energy-scenario-fes-building-block-data",
+      "title": "FES: Pathways to Net Zero Building Block Data",
+      "note": "future-energy-scenario-fes-building-block-data",
+      "members": [
+        "fes_building_blocks_block_definitions",
+        "fes_building_blocks_block_licence_area",
+        "fes_building_blocks_main"
+      ]
+    },
+    {
+      "slug": "fes-natural-gas-residential-and-non-domestic-i-c-heat-demand-summary-data-table-ed3",
+      "title": "FES: Pathways to Net Zero – Natural Gas, Residential and non-domestic (I&C) Heat Demand Summary Data table (ED3)",
+      "note": "fes-natural-gas-residential-and-non-domestic-i-c-heat-demand-summary-data-table-ed3",
+      "members": [
+        "fes_ed3_heat_demand_natural_gas_sum_ed",
+        "fes_ed3_heat_demand_natural_gas",
+        "fes_ed3_heat_demand_sum_ed"
+      ]
+    },
+    {
+      "slug": "levelised-cost-of-green-hydrogen",
+      "title": "Levelised cost of green hydrogen",
+      "note": "levelised-cost-of-green-hydrogen",
+      "members": [
+        "lcoh_capex_opex_input_assumptions_pem",
+        "lcoh_levelised_cost_blue_hydrogen",
+        "lcoh_levelised_cost_green_hydrogen"
+      ]
+    },
+    {
+      "slug": "local-authority-level-spatial-heat-model-outputs-fes",
+      "title": "Local Authority Level Spatial Heat Model Outputs (FES)",
+      "note": "local-authority-level-spatial-heat-model-outputs-fes",
+      "members": [
+        "fes_la_heat_model_residential",
+        "fes_la_heat_model_domestic"
+      ]
+    },
+    {
+      "slug": "regional-breakdown-of-fes-data-electricity",
+      "title": "Regional breakdown of FES data (Electricity)",
+      "note": "regional-breakdown-of-fes-data-electricity",
+      "members": [
+        "fes_regional_demand_active_power",
+        "fes_regional_dg_gt_1mw",
+        "fes_regional_dg_lt_1mw",
+        "fes_regional_dsr",
+        "fes_regional_gsp_info",
+        "fes_regional_storage_gt_1mw",
+        "fes_regional_storage_gt_1mw_pre2023",
+        "fes_regional_storage_lt_1mw",
+        "fes_regional_storage_lt_1mw_pre2023"
+      ]
+    },
+    {
+      "slug": "resource-adequacy-in-2030s",
+      "title": "Resource Adequacy in the 2030s",
+      "note": "resource-adequacy-in-2030s",
+      "members": [
+        "resource_adequacy_2030s_results",
+        "resource_adequacy_2030s_peak_demand",
+        "resource_adequacy_2030s_portfolio"
+      ]
     }
   ],
   "names": {
@@ -101,12 +764,164 @@
     "embedded_wind_solar_forecast": "Embedded wind and solar forecast",
     "daily_wind_availability": "Daily wind availability",
     "aggregated-bsad": "Aggregated BSAD",
-    "constraint-breakdown": "Constraint breakdown"
+    "constraint-breakdown": "Constraint breakdown",
+    "dynamic-moderation-requirements": "Dynamic Moderation requirements",
+    "dynamic-regulation-requirements": "Dynamic Regulation requirements",
+    "quick-reserve-auction-requirement-forecast": "Quick Reserve requirement forecast",
+    "slow-reserve-requirement-forecast": "Slow Reserve requirement forecast",
+    "static-firm-frequency-response-requirement": "Static FFR requirement",
+    "long-term-forecasts-for-dc-dm-dr-requirements": "DC, DM and DR long-term forecasts",
+    "balancing-services-adjustment-data-forward-contracts": "BSAD forward contracts",
+    "non-bm-ancillary-service-dispatch-platform-asdp-instructions": "ASDP instructions",
+    "obp-non-bm-reserve-instructions": "OBP non-BM reserve instructions",
+    "obp-non-bm-physical-notifications": "OBP non-BM physical notifications",
+    "obp-reserve-availability-utilisation-price": "OBP reserve availability and utilisation prices",
+    "short-term-operating-reserve-stor-day-ahead-auction-results": "STOR day-ahead auction results",
+    "short-term-operating-reserve-stor-day-ahead-buy-curve": "STOR day-ahead buy curve",
+    "stor-windows": "STOR windows",
+    "contract-transfer-of-obligation": "Contract transfer of obligation",
+    "disaggregated-bsad": "Disaggregated BSAD",
+    "non-bm-ancillary-service-dispatch-platform-asdp-window-prices": "ASDP window prices",
+    "bsuos-fixed-tariffs": "BSUoS fixed tariffs",
+    "daily-balancing-costs-balancing-services-use-of-system": "Daily BSUoS costs",
+    "balancing-services-use-of-system-bsuos-daily-forecast": "Daily BSUoS forecast",
+    "daily-balancing-volume-balancing-services-use-of-system": "Daily BSUoS volume",
+    "gb-system-inertia-bid-and-offer-costs": "GB system inertia bid and offer costs",
+    "24-months-ahead-constraint-cost-forecast": "24-month constraint cost forecast",
+    "24-months-ahead-constraint-limits": "24-month constraint limits",
+    "constraint-management-intertrip-service-information-cmis": "Constraint management intertrip service",
+    "day-ahead-constraint-flows-and-limits": "Day-ahead constraint flows and limits",
+    "operational-transparency-forum-network-congestion-data": "OTF network congestion",
+    "voltage-requirement": "Voltage requirement",
+    "etys-gb-transmission-system-boundaries": "ETYS transmission boundaries",
+    "gis-boundaries-for-gb-dno-license-areas": "DNO licence area boundaries",
+    "gis-boundaries-for-gb-grid-supply-points": "Grid supply point boundaries",
+    "monthly-utilisation-data-of-voltage-contracted-units": "Voltage contracted units utilisation",
+    "stability-midterm-y-1-utilisation-report": "Stability mid-term Y-1 utilisation",
+    "system-inertia": "System inertia",
+    "system-inertia-cost": "System inertia cost",
+    "system-operating-plan-sop": "System operating plan",
+    "day-ahead-power-exchange-prices-nordpool": "Day-ahead power exchange prices (Nord Pool)",
+    "index-linked-contract-volume": "Index Linked Contracted Energy Volume",
+    "super-stable-export-limit-contract-enactment": "Super SEL contract enactment",
+    "interconnector-requirement-and-auction-summary-data": "Interconnector requirement and auction summary",
+    "upcoming-trades": "Upcoming trades",
+    "national-demand-balancing-mechanism-units": "National demand BM units",
+    "day-ahead-half-hourly-demand-forecast-performance": "Day-ahead half-hourly demand forecast performance",
+    "daily-demand-update": "Daily demand update",
+    "demand-profile-dates": "Demand profile dates",
+    "historic-demand-data": "Historic demand data",
+    "long-term-2-52-weeks-ahead-national-demand-forecast": "Long-term 2-52 weeks ahead national demand forecast",
+    "school-holiday-percentages": "School holiday percentages",
+    "monthly-operational-metered-wind-output": "Monthly operational metered wind output",
+    "daily-opmr": "Daily OPMR",
+    "weekly-opmr": "Weekly OPMR",
+    "weekly-wind-availability": "Weekly wind availability",
+    "wind-bmu-boa-volumes": "Wind BMU BOA volumes",
+    "brit-ned": "BritNed",
+    "eleclink": "ElecLink",
+    "nsl": "North Sea Link",
+    "embedded-register": "Embedded register",
+    "interconnector-register": "Interconnector register",
+    "transmission-entry-capacity-tec-register": "Transmission Entry Capacity (TEC) register",
+    "aahedc-tariffs": "Assistance for Areas of High Electricity Distribution Costs (AAHEDC) Tariffs",
+    "gis-boundaries-for-gb-generation-charging-zones": "GIS Boundaries for GB Generation Charging Zones",
+    "carbon-intensity-of-balancing-actions": "Carbon Intensity of Balancing Actions",
+    "country-carbon-intensity-forecast": "Country Carbon Intensity Forecast",
+    "national-carbon-intensity-forecast": "National Carbon Intensity Forecast",
+    "regional-carbon-intensity-forecast": "Regional Carbon Intensity Forecast",
+    "fes-electricity-demand-summary-data-table-ed1": "FES: Pathways to Net Zero – Electricity Demand Summary Data table (ED1)",
+    "future-energy-scenario-electricity-supply-data-table-es1": "FES: Pathways to Net Zero – Electricity Supply Data Table (ES1)",
+    "fes-european-electricity-supply-data-table-es2": "FES: Pathways to Net Zero – European Electricity Supply Data Table (ES2)",
+    "fes-flexibility-data-table-data-table-flx1": "FES: Pathways to Net Zero – Flexibility Data table (FLX1)",
+    "fes-natural-gas-demand-definitions-ed4": "FES: Pathways to Net Zero – Natural Gas demand definitions Data table (ED4)",
+    "fes-road-transport-notes-data-table-ed6": "FES: Pathways to Net Zero – Road Transport Notes Data Table (ED6)",
+    "fes-road-transport-summary-data-table-ed5": "FES: Pathways to Net Zero – Road Transport Summary Data table (ED5)",
+    "fes-whole-system-gas-supply-emissions-data-table-ws2": "FES: Pathways to Net Zero – Whole System & Gas Supply - Emissions Data table (WS2)",
+    "fes-whole-system-gas-supply-data-table-ws1": "FES: Pathways to Net Zero – Whole System & Gas Supply Data table (WS1)",
+    "ssep-onshore-publication-zone-shapefile": "Strategic Spatial Energy Plan (SSEP) Onshore Publication Zone Shapefile",
+    "data-portal-planned-changes-known-issues": "Data Portal: Planned Changes & Known Issues"
   },
   "dropped": {},
   "package_tables": {
     "aggregated-bsad": "aggregated_bsad",
-    "constraint-breakdown": "constraint_breakdown"
+    "constraint-breakdown": "constraint_breakdown",
+    "dynamic-moderation-requirements": "dm_requirements",
+    "dynamic-regulation-requirements": "dr_requirements",
+    "quick-reserve-auction-requirement-forecast": "qr_auction_requirement_fc",
+    "slow-reserve-requirement-forecast": "slow_reserve_requirement_fc",
+    "static-firm-frequency-response-requirement": "sffr_requirement",
+    "long-term-forecasts-for-dc-dm-dr-requirements": "dc_dm_dr_long_term_fc",
+    "balancing-services-adjustment-data-forward-contracts": "bsad_forward_contracts",
+    "non-bm-ancillary-service-dispatch-platform-asdp-instructions": "asdp_instructions",
+    "obp-non-bm-reserve-instructions": "obp_reserve_instructions",
+    "obp-non-bm-physical-notifications": "obp_physical_notifications",
+    "obp-reserve-availability-utilisation-price": "obp_reserve_avail_price",
+    "short-term-operating-reserve-stor-day-ahead-auction-results": "stor_da_auction_results",
+    "short-term-operating-reserve-stor-day-ahead-buy-curve": "stor_da_buy_curve",
+    "stor-windows": "stor_windows",
+    "contract-transfer-of-obligation": "contract_transfer_obligation",
+    "disaggregated-bsad": "disaggregated_bsad",
+    "non-bm-ancillary-service-dispatch-platform-asdp-window-prices": "asdp_window_prices",
+    "bsuos-fixed-tariffs": "bsuos_fixed_tariffs",
+    "daily-balancing-costs-balancing-services-use-of-system": "daily_balancing_costs",
+    "balancing-services-use-of-system-bsuos-daily-forecast": "bsuos_daily_forecast",
+    "daily-balancing-volume-balancing-services-use-of-system": "daily_balancing_volume",
+    "gb-system-inertia-bid-and-offer-costs": "inertia_bid_offer_costs",
+    "24-months-ahead-constraint-cost-forecast": "constraint_cost_fc_24m",
+    "24-months-ahead-constraint-limits": "constraint_limits_24m",
+    "constraint-management-intertrip-service-information-cmis": "cmis_intertrip",
+    "day-ahead-constraint-flows-and-limits": "da_constraint_flows_limits",
+    "operational-transparency-forum-network-congestion-data": "otf_network_congestion",
+    "voltage-requirement": "voltage_requirement",
+    "etys-gb-transmission-system-boundaries": "etys_boundaries_files",
+    "gis-boundaries-for-gb-dno-license-areas": "gis_dno_license_areas_files",
+    "gis-boundaries-for-gb-grid-supply-points": "gis_grid_supply_points",
+    "monthly-utilisation-data-of-voltage-contracted-units": "voltage_units_utilisation",
+    "stability-midterm-y-1-utilisation-report": "stability_midterm_y1",
+    "system-inertia": "system_inertia",
+    "system-inertia-cost": "system_inertia_cost",
+    "system-operating-plan-sop": "system_operating_plan",
+    "day-ahead-power-exchange-prices-nordpool": "nordpool_da_prices",
+    "index-linked-contract-volume": "index_linked_contract_volume",
+    "super-stable-export-limit-contract-enactment": "ssel_contract_enactment",
+    "interconnector-requirement-and-auction-summary-data": "ic_requirement_auction",
+    "upcoming-trades": "upcoming_trades",
+    "national-demand-balancing-mechanism-units": "national_demand_bmus",
+    "day-ahead-half-hourly-demand-forecast-performance": "da_demand_fc_performance",
+    "daily-demand-update": "daily_demand_update",
+    "demand-profile-dates": "demand_profile_dates",
+    "historic-demand-data": "historic_demand",
+    "long-term-2-52-weeks-ahead-national-demand-forecast": "demand_forecast_2_52w",
+    "school-holiday-percentages": "school_holiday_percentages",
+    "monthly-operational-metered-wind-output": "metered_wind_output_monthly",
+    "daily-opmr": "daily_opmr",
+    "weekly-opmr": "weekly_opmr",
+    "weekly-wind-availability": "weekly_wind_availability",
+    "wind-bmu-boa-volumes": "wind_bmu_boa_volumes",
+    "brit-ned": "brit_ned",
+    "eleclink": "eleclink",
+    "nsl": "nsl",
+    "embedded-register": "embedded_register",
+    "interconnector-register": "interconnector_register",
+    "transmission-entry-capacity-tec-register": "tec_register",
+    "aahedc-tariffs": "aahedc_tariffs",
+    "gis-boundaries-for-gb-generation-charging-zones": "gis_gen_charging_zones_files",
+    "carbon-intensity-of-balancing-actions": "ci_balancing_actions",
+    "country-carbon-intensity-forecast": "country_ci_forecast",
+    "national-carbon-intensity-forecast": "national_ci_forecast",
+    "regional-carbon-intensity-forecast": "regional_ci_forecast",
+    "fes-electricity-demand-summary-data-table-ed1": "fes_ed1_electricity_demand",
+    "future-energy-scenario-electricity-supply-data-table-es1": "fes_es1_electricity_supply",
+    "fes-european-electricity-supply-data-table-es2": "fes_es2_european_supply",
+    "fes-flexibility-data-table-data-table-flx1": "fes_flx1_flexibility",
+    "fes-natural-gas-demand-definitions-ed4": "fes_ed4_gas_demand_defs",
+    "fes-road-transport-notes-data-table-ed6": "fes_ed6_road_transport_notes",
+    "fes-road-transport-summary-data-table-ed5": "fes_ed5_road_transport",
+    "fes-whole-system-gas-supply-emissions-data-table-ws2": "fes_ws2_gas_emissions",
+    "fes-whole-system-gas-supply-data-table-ws1": "fes_ws1_gas_supply",
+    "ssep-onshore-publication-zone-shapefile": "ssep_publication_zones_files",
+    "data-portal-planned-changes-known-issues": "portal_known_issues"
   },
   "catalogue": {
     "_about": "NESO's catalogue as the hub draws it: its data groups in portal order, each with NESO's description and its packages (NESO's titles and CKAN names). `page_packages` names the CKAN package of a page not named after it; a package is a link when a page in `groups` documents it. `plan` lays the groups out as plots: a slug is one plot, `row` sets its children side by side, `col` stacks them; `wide` from 1100 px, `narrow` below, and `tag_narrow` plots carry their name beneath them when narrow.",

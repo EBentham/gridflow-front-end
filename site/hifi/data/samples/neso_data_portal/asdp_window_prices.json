@@ -1,0 +1,248 @@
+{
+ "dataset": "neso_data_portal/asdp_window_prices",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "da0c6b062b7c093ceb7d2825f68b60e7682115c2451fd80efb1a872043f77a30",
+ "silver": "neso_data_portal/asdp_window_prices",
+ "columns": [
+  {
+   "name": "sp_start_date_time",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "sp_end_date_time",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "window_price",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "created_time",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "asset_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "party_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "entry_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "service_type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "resource_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2026-03-29T00:30:00",
+   "2026-03-29T01:00:00",
+   "142.07",
+   "2026-03-29T00:40:38",
+   "OFR-ENWL-1",
+   "ENWL",
+   "73427",
+   "Non-BM Fast Reserve",
+   "832e6702-3007-4424-9146-8d35db8b2fe4",
+   "2026-10-08 08:51:58.504934 UTC",
+   null,
+   "bronze/neso_data_portal/asdp_window_prices/2026/10/08/raw_20261008T085158Z_832e6702-3007-4424-9146-8d35db8b2fe4_1249d37d.csv",
+   "2026-10-08 08:51:58.504934 UTC",
+   "2026-10-08 08:51:58.504934 UTC",
+   "2026-10-08 08:51:58.504934 UTC",
+   "94a17e45-ddb3-4df6-a71b-4d31e54e25bf",
+   "1+e1"
+  ],
+  [
+   "2026-03-29T01:00:00",
+   "2026-03-29T01:30:00",
+   "145.12",
+   "2026-03-29T01:01:00",
+   "OFR-ENWL-1",
+   "ENWL",
+   "73427",
+   "Non-BM Fast Reserve",
+   "832e6702-3007-4424-9146-8d35db8b2fe4",
+   "2026-10-08 08:51:58.504934 UTC",
+   null,
+   "bronze/neso_data_portal/asdp_window_prices/2026/10/08/raw_20261008T085158Z_832e6702-3007-4424-9146-8d35db8b2fe4_1249d37d.csv",
+   "2026-10-08 08:51:58.504934 UTC",
+   "2026-10-08 08:51:58.504934 UTC",
+   "2026-10-08 08:51:58.504934 UTC",
+   "94a17e45-ddb3-4df6-a71b-4d31e54e25bf",
+   "1+e1"
+  ],
+  [
+   "2026-03-29T01:30:00",
+   "2026-03-29T01:00:00",
+   "130.04",
+   "2026-03-29T01:31:00",
+   "OFR-ENWL-1",
+   "ENWL",
+   "73427",
+   "Non-BM Fast Reserve",
+   "832e6702-3007-4424-9146-8d35db8b2fe4",
+   "2026-10-08 08:51:58.504934 UTC",
+   null,
+   "bronze/neso_data_portal/asdp_window_prices/2026/10/08/raw_20261008T085158Z_832e6702-3007-4424-9146-8d35db8b2fe4_1249d37d.csv",
+   "2026-10-08 08:51:58.504934 UTC",
+   "2026-10-08 08:51:58.504934 UTC",
+   "2026-10-08 08:51:58.504934 UTC",
+   "94a17e45-ddb3-4df6-a71b-4d31e54e25bf",
+   "1+e1"
+  ],
+  [
+   "2026-03-29T03:00:00",
+   "2026-03-29T03:30:00",
+   "124.72",
+   "2026-03-29T04:01:00",
+   "OFR-ENWL-1",
+   "ENWL",
+   "73470",
+   "Non-BM Fast Reserve",
+   "832e6702-3007-4424-9146-8d35db8b2fe4",
+   "2026-10-08 08:51:58.504934 UTC",
+   null,
+   "bronze/neso_data_portal/asdp_window_prices/2026/10/08/raw_20261008T085158Z_832e6702-3007-4424-9146-8d35db8b2fe4_1249d37d.csv",
+   "2026-10-08 08:51:58.504934 UTC",
+   "2026-10-08 08:51:58.504934 UTC",
+   "2026-10-08 08:51:58.504934 UTC",
+   "94a17e45-ddb3-4df6-a71b-4d31e54e25bf",
+   "1+e1"
+  ],
+  [
+   "2026-03-29T03:30:00",
+   "2026-03-29T04:00:00",
+   "133.61",
+   "2026-03-29T04:50:14",
+   "OFR-ENWL-1",
+   "ENWL",
+   "73470",
+   "Non-BM Fast Reserve",
+   "832e6702-3007-4424-9146-8d35db8b2fe4",
+   "2026-10-08 08:51:58.504934 UTC",
+   null,
+   "bronze/neso_data_portal/asdp_window_prices/2026/10/08/raw_20261008T085158Z_832e6702-3007-4424-9146-8d35db8b2fe4_1249d37d.csv",
+   "2026-10-08 08:51:58.504934 UTC",
+   "2026-10-08 08:51:58.504934 UTC",
+   "2026-10-08 08:51:58.504934 UTC",
+   "94a17e45-ddb3-4df6-a71b-4d31e54e25bf",
+   "1+e1"
+  ],
+  [
+   "2026-03-29T04:30:00",
+   "2026-03-29T05:00:00",
+   "138.69",
+   "2026-03-29T05:31:00",
+   "OFR-ENWL-1",
+   "ENWL",
+   "73480",
+   "Non-BM Fast Reserve",
+   "832e6702-3007-4424-9146-8d35db8b2fe4",
+   "2026-10-08 08:51:58.504934 UTC",
+   null,
+   "bronze/neso_data_portal/asdp_window_prices/2026/10/08/raw_20261008T085158Z_832e6702-3007-4424-9146-8d35db8b2fe4_1249d37d.csv",
+   "2026-10-08 08:51:58.504934 UTC",
+   "2026-10-08 08:51:58.504934 UTC",
+   "2026-10-08 08:51:58.504934 UTC",
+   "94a17e45-ddb3-4df6-a71b-4d31e54e25bf",
+   "1+e1"
+  ],
+  [
+   "2026-03-29T05:00:00",
+   "2026-03-29T05:30:00",
+   "148.41",
+   "2026-03-29T06:02:49",
+   "OFR-ENWL-1",
+   "ENWL",
+   "73480",
+   "Non-BM Fast Reserve",
+   "832e6702-3007-4424-9146-8d35db8b2fe4",
+   "2026-10-08 08:51:58.504934 UTC",
+   null,
+   "bronze/neso_data_portal/asdp_window_prices/2026/10/08/raw_20261008T085158Z_832e6702-3007-4424-9146-8d35db8b2fe4_1249d37d.csv",
+   "2026-10-08 08:51:58.504934 UTC",
+   "2026-10-08 08:51:58.504934 UTC",
+   "2026-10-08 08:51:58.504934 UTC",
+   "94a17e45-ddb3-4df6-a71b-4d31e54e25bf",
+   "1+e1"
+  ],
+  [
+   "2026-03-29T05:30:00",
+   "2026-03-29T06:00:00",
+   "145.02",
+   "2026-03-29T06:31:00",
+   "OFR-ENWL-1",
+   "ENWL",
+   "73495",
+   "Non-BM Fast Reserve",
+   "832e6702-3007-4424-9146-8d35db8b2fe4",
+   "2026-10-08 08:51:58.504934 UTC",
+   null,
+   "bronze/neso_data_portal/asdp_window_prices/2026/10/08/raw_20261008T085158Z_832e6702-3007-4424-9146-8d35db8b2fe4_1249d37d.csv",
+   "2026-10-08 08:51:58.504934 UTC",
+   "2026-10-08 08:51:58.504934 UTC",
+   "2026-10-08 08:51:58.504934 UTC",
+   "94a17e45-ddb3-4df6-a71b-4d31e54e25bf",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

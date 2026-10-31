@@ -1,0 +1,225 @@
+{
+ "dataset": "neso_data_portal/demand_forecast_1d_day_ahead_national",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "4fd5198f54a828ce62e73c94e2c390042ed606ac60bc6c4108638d2648937994",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.neso_data_portal.tail(\"demand_forecast_1d_day_ahead_national\")\nfor c in [\"timestamp_utc\", \"published_at\", \"capture_written_at\"]:\n    df[c] = df[c].dt.tz_convert(\"UTC\")\ndf = df.assign(start=df.cp_st_time.astype(int)).sort_values(\"start\")\ndf[[\"targetdate\", \"cardinalpoint\", \"cp_type\", \"cp_st_time\", \"cp_end_time\",\n    \"forecastdemand\", \"f_point\", \"published_at\"]]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "targetdate",
+      "cardinalpoint",
+      "cp_type",
+      "cp_st_time",
+      "cp_end_time",
+      "forecastdemand",
+      "f_point",
+      "published_at"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11"
+     ],
+     "rows": [
+      [
+       "2026-10-17",
+       "1F",
+       "F",
+       "30",
+       "30",
+       "23736.0",
+       "",
+       "2026-10-16 11:00:01.383712+00:00"
+      ],
+      [
+       "2026-10-17",
+       "1S",
+       "T",
+       "100",
+       "130",
+       "23347.0",
+       "",
+       "2026-10-16 11:00:01.383712+00:00"
+      ],
+      [
+       "2026-10-17",
+       "1A",
+       "P",
+       "200",
+       "230",
+       "23137.0",
+       "",
+       "2026-10-16 11:00:01.383712+00:00"
+      ],
+      [
+       "2026-10-17",
+       "4",
+       "F",
+       "400",
+       "400",
+       "21223.0",
+       "",
+       "2026-10-16 11:00:01.383712+00:00"
+      ],
+      [
+       "2026-10-17",
+       "1B",
+       "T",
+       "430",
+       "730",
+       "20520.0",
+       "Om",
+       "2026-10-16 11:00:01.383712+00:00"
+      ],
+      [
+       "2026-10-17",
+       "2F",
+       "F",
+       "800",
+       "800",
+       "24504.0",
+       "",
+       "2026-10-16 11:00:01.383712+00:00"
+      ],
+      [
+       "2026-10-17",
+       "2A",
+       "P",
+       "830",
+       "1200",
+       "26221.0",
+       "DM",
+       "2026-10-16 11:00:01.383712+00:00"
+      ],
+      [
+       "2026-10-17",
+       "2B",
+       "P",
+       "1230",
+       "1300",
+       "22121.0",
+       "",
+       "2026-10-16 11:00:01.383712+00:00"
+      ],
+      [
+       "2026-10-17",
+       "3B",
+       "T",
+       "1330",
+       "1630",
+       "21333.0",
+       "Dm",
+       "2026-10-16 11:00:01.383712+00:00"
+      ],
+      [
+       "2026-10-17",
+       "3C",
+       "P",
+       "1700",
+       "1800",
+       "30269.0",
+       "",
+       "2026-10-16 11:00:01.383712+00:00"
+      ],
+      [
+       "2026-10-17",
+       "4B",
+       "P",
+       "1830",
+       "2000",
+       "31966.0",
+       "EM",
+       "2026-10-16 11:00:01.383712+00:00"
+      ],
+      [
+       "2026-10-17",
+       "4C",
+       "F",
+       "2400",
+       "2400",
+       "23946.0",
+       "",
+       "2026-10-16 11:00:01.383712+00:00"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "label = df.cp_st_time.str.zfill(4) + \" \" + df.cardinalpoint\nax = df.set_index(label).forecastdemand.plot.bar(\n    figsize=(8, 3.5), color=\"#155A6E\", width=0.8, rot=45,\n    xlabel=\"window start (NESO's HHMM, zero-padded) and cardinal point\",\n    ylabel=\"forecast national demand, MW\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "demand_forecast_1d_day_ahead_national-4.png",
+     "width": 716,
+     "height": 374
+    }
+   ]
+  }
+ ]
+}

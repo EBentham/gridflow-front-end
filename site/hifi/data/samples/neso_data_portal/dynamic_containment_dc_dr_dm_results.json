@@ -1,0 +1,287 @@
+{
+ "dataset": "neso_data_portal/dynamic_containment_dc_dr_dm_results",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "7116897bd0a0e68648282752481dbf36000074d440d275149be2596eef5389b4",
+ "silver": "neso_data_portal/dynamic_containment_dc_dr_dm_results",
+ "columns": [
+  {
+   "name": "unit_name",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "efa_date",
+   "dtype": "Date",
+   "lineage": false
+  },
+  {
+   "name": "efa",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "service",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "cleared_volume",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "clearing_price",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "company",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "delivery_start",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "delivery_end",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "technology_type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "location",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "cancelled",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "AFFR-1",
+   "2022-06-25",
+   "5",
+   "DCH",
+   "19.0",
+   "7.9",
+   "UK POWER RESERVE LIMITED",
+   "2022-06-25T15:00:00",
+   "2022-06-25T19:00:00",
+   "Batteries",
+   "LE14",
+   "",
+   "2022-06-24 23:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/dynamic_containment_dc_dr_dm_results/2026/10/08/raw_20261008T101204Z_ddc4afde-d2bd-424d-891c-56ad49c13d1a_05db5673.csv",
+   "2026-10-08 10:12:05.000741 UTC",
+   "2022-06-24 23:00:00 UTC",
+   "2026-10-08 10:12:05.000741 UTC",
+   "2f57e497-2944-48e6-b9df-b8e8df456a85",
+   "1+e1"
+  ],
+  [
+   "AFFR-1",
+   "2022-06-25",
+   "5",
+   "DCL",
+   "19.0",
+   "105.0",
+   "UK POWER RESERVE LIMITED",
+   "2022-06-25T15:00:00",
+   "2022-06-25T19:00:00",
+   "Batteries",
+   "LE14",
+   "",
+   "2022-06-24 23:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/dynamic_containment_dc_dr_dm_results/2026/10/08/raw_20261008T101204Z_ddc4afde-d2bd-424d-891c-56ad49c13d1a_05db5673.csv",
+   "2026-10-08 10:12:05.000741 UTC",
+   "2022-06-24 23:00:00 UTC",
+   "2026-10-08 10:12:05.000741 UTC",
+   "2f57e497-2944-48e6-b9df-b8e8df456a85",
+   "1+e1"
+  ],
+  [
+   "AFFR-2",
+   "2022-06-25",
+   "5",
+   "DCH",
+   "8.0",
+   "7.9",
+   "UK POWER RESERVE LIMITED",
+   "2022-06-25T15:00:00",
+   "2022-06-25T19:00:00",
+   "Batteries",
+   "CH65",
+   "",
+   "2022-06-24 23:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/dynamic_containment_dc_dr_dm_results/2026/10/08/raw_20261008T101204Z_ddc4afde-d2bd-424d-891c-56ad49c13d1a_05db5673.csv",
+   "2026-10-08 10:12:05.000741 UTC",
+   "2022-06-24 23:00:00 UTC",
+   "2026-10-08 10:12:05.000741 UTC",
+   "2f57e497-2944-48e6-b9df-b8e8df456a85",
+   "1+e1"
+  ],
+  [
+   "AFFR-2",
+   "2022-06-25",
+   "5",
+   "DCL",
+   "19.0",
+   "105.0",
+   "UK POWER RESERVE LIMITED",
+   "2022-06-25T15:00:00",
+   "2022-06-25T19:00:00",
+   "Batteries",
+   "CH65",
+   "",
+   "2022-06-24 23:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/dynamic_containment_dc_dr_dm_results/2026/10/08/raw_20261008T101204Z_ddc4afde-d2bd-424d-891c-56ad49c13d1a_05db5673.csv",
+   "2026-10-08 10:12:05.000741 UTC",
+   "2022-06-24 23:00:00 UTC",
+   "2026-10-08 10:12:05.000741 UTC",
+   "2f57e497-2944-48e6-b9df-b8e8df456a85",
+   "1+e1"
+  ],
+  [
+   "AG-AEDF02",
+   "2022-06-25",
+   "5",
+   "DCH",
+   "39.0",
+   "7.9",
+   "EDF ENERGY CUSTOMERS LIMITED",
+   "2022-06-25T15:00:00",
+   "2022-06-25T19:00:00",
+   "Batteries",
+   "IP13",
+   "",
+   "2022-06-24 23:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/dynamic_containment_dc_dr_dm_results/2026/10/08/raw_20261008T101204Z_ddc4afde-d2bd-424d-891c-56ad49c13d1a_05db5673.csv",
+   "2026-10-08 10:12:05.000741 UTC",
+   "2022-06-24 23:00:00 UTC",
+   "2026-10-08 10:12:05.000741 UTC",
+   "2f57e497-2944-48e6-b9df-b8e8df456a85",
+   "1+e1"
+  ],
+  [
+   "AG-AEDF02",
+   "2022-06-25",
+   "5",
+   "DCL",
+   "49.0",
+   "105.0",
+   "EDF ENERGY CUSTOMERS LIMITED",
+   "2022-06-25T15:00:00",
+   "2022-06-25T19:00:00",
+   "Batteries",
+   "IP13",
+   "",
+   "2022-06-24 23:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/dynamic_containment_dc_dr_dm_results/2026/10/08/raw_20261008T101204Z_ddc4afde-d2bd-424d-891c-56ad49c13d1a_05db5673.csv",
+   "2026-10-08 10:12:05.000741 UTC",
+   "2022-06-24 23:00:00 UTC",
+   "2026-10-08 10:12:05.000741 UTC",
+   "2f57e497-2944-48e6-b9df-b8e8df456a85",
+   "1+e1"
+  ],
+  [
+   "V__BEROV001",
+   "2022-06-25",
+   "5",
+   "DCH",
+   "7.0",
+   "7.9",
+   "OPEN ENERGI LIMITED",
+   "2022-06-25T15:00:00",
+   "2022-06-25T19:00:00",
+   "Batteries",
+   "LE65",
+   "",
+   "2022-06-24 23:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/dynamic_containment_dc_dr_dm_results/2026/10/08/raw_20261008T101204Z_ddc4afde-d2bd-424d-891c-56ad49c13d1a_05db5673.csv",
+   "2026-10-08 10:12:05.000741 UTC",
+   "2022-06-24 23:00:00 UTC",
+   "2026-10-08 10:12:05.000741 UTC",
+   "2f57e497-2944-48e6-b9df-b8e8df456a85",
+   "1+e1"
+  ],
+  [
+   "V__BEROV001",
+   "2022-06-25",
+   "5",
+   "DCL",
+   "10.0",
+   "105.0",
+   "OPEN ENERGI LIMITED",
+   "2022-06-25T15:00:00",
+   "2022-06-25T19:00:00",
+   "Batteries",
+   "LE65",
+   "",
+   "2022-06-24 23:00:00 UTC",
+   null,
+   "bronze/neso_data_portal/dynamic_containment_dc_dr_dm_results/2026/10/08/raw_20261008T101204Z_ddc4afde-d2bd-424d-891c-56ad49c13d1a_05db5673.csv",
+   "2026-10-08 10:12:05.000741 UTC",
+   "2022-06-24 23:00:00 UTC",
+   "2026-10-08 10:12:05.000741 UTC",
+   "2f57e497-2944-48e6-b9df-b8e8df456a85",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

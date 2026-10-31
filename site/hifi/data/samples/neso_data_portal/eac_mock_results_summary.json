@@ -1,0 +1,235 @@
+{
+ "dataset": "neso_data_portal/eac_mock_results_summary",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "cd36d55319e8c327b906f6770b51d32caaca53c141158d0f8cf0a6e3235ef450",
+ "silver": "neso_data_portal/eac_mock_results_summary",
+ "columns": [
+  {
+   "name": "auction_product",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "delivery_start",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "delivery_end",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "cleared_volume",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "clearing_price",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "service_type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "auction_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "linked_service_window_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "DCH",
+   "2026-03-04T15:00:00",
+   "2026-03-04T19:00:00",
+   "9.0",
+   "1.41",
+   "Response",
+   "9",
+   null,
+   "2026-10-08 10:28:22.964546 UTC",
+   null,
+   "bronze/neso_data_portal/eac_mock_results_summary/2026/10/08/raw_20261008T102822Z_454216d8-61f3-40b6-b787-4dff035ce3c3_264795fe.csv",
+   "2026-10-08 10:28:22.964546 UTC",
+   "2026-10-08 10:28:22.964546 UTC",
+   "2026-10-08 10:28:22.964546 UTC",
+   "eec8ce40-7e64-4134-b734-aff5e3d20aa9",
+   "1+e1"
+  ],
+  [
+   "DCL",
+   "2026-03-04T15:00:00",
+   "2026-03-04T19:00:00",
+   "9.0",
+   "1.41",
+   "Response",
+   "9",
+   null,
+   "2026-10-08 10:28:22.964546 UTC",
+   null,
+   "bronze/neso_data_portal/eac_mock_results_summary/2026/10/08/raw_20261008T102822Z_454216d8-61f3-40b6-b787-4dff035ce3c3_264795fe.csv",
+   "2026-10-08 10:28:22.964546 UTC",
+   "2026-10-08 10:28:22.964546 UTC",
+   "2026-10-08 10:28:22.964546 UTC",
+   "eec8ce40-7e64-4134-b734-aff5e3d20aa9",
+   "1+e1"
+  ],
+  [
+   "DMH",
+   "2026-03-04T15:00:00",
+   "2026-03-04T19:00:00",
+   "6.0",
+   "0.94",
+   "Response",
+   "9",
+   null,
+   "2026-10-08 10:28:22.964546 UTC",
+   null,
+   "bronze/neso_data_portal/eac_mock_results_summary/2026/10/08/raw_20261008T102822Z_454216d8-61f3-40b6-b787-4dff035ce3c3_264795fe.csv",
+   "2026-10-08 10:28:22.964546 UTC",
+   "2026-10-08 10:28:22.964546 UTC",
+   "2026-10-08 10:28:22.964546 UTC",
+   "eec8ce40-7e64-4134-b734-aff5e3d20aa9",
+   "1+e1"
+  ],
+  [
+   "DML",
+   "2026-03-04T15:00:00",
+   "2026-03-04T19:00:00",
+   "6.0",
+   "0.94",
+   "Response",
+   "9",
+   null,
+   "2026-10-08 10:28:22.964546 UTC",
+   null,
+   "bronze/neso_data_portal/eac_mock_results_summary/2026/10/08/raw_20261008T102822Z_454216d8-61f3-40b6-b787-4dff035ce3c3_264795fe.csv",
+   "2026-10-08 10:28:22.964546 UTC",
+   "2026-10-08 10:28:22.964546 UTC",
+   "2026-10-08 10:28:22.964546 UTC",
+   "eec8ce40-7e64-4134-b734-aff5e3d20aa9",
+   "1+e1"
+  ],
+  [
+   "NBR",
+   "2026-03-04T15:00:00",
+   "2026-03-04T15:30:00",
+   "4.0",
+   "0.0",
+   "Balancing Reserve",
+   "9",
+   null,
+   "2026-10-08 10:28:22.964546 UTC",
+   null,
+   "bronze/neso_data_portal/eac_mock_results_summary/2026/10/08/raw_20261008T102822Z_454216d8-61f3-40b6-b787-4dff035ce3c3_264795fe.csv",
+   "2026-10-08 10:28:22.964546 UTC",
+   "2026-10-08 10:28:22.964546 UTC",
+   "2026-10-08 10:28:22.964546 UTC",
+   "eec8ce40-7e64-4134-b734-aff5e3d20aa9",
+   "1+e1"
+  ],
+  [
+   "NSR",
+   "2026-03-04T15:00:00",
+   "2026-03-04T15:30:00",
+   "10.0",
+   "0.0",
+   "Slow Reserve",
+   "9",
+   null,
+   "2026-10-08 10:28:22.964546 UTC",
+   null,
+   "bronze/neso_data_portal/eac_mock_results_summary/2026/10/08/raw_20261008T102822Z_454216d8-61f3-40b6-b787-4dff035ce3c3_264795fe.csv",
+   "2026-10-08 10:28:22.964546 UTC",
+   "2026-10-08 10:28:22.964546 UTC",
+   "2026-10-08 10:28:22.964546 UTC",
+   "eec8ce40-7e64-4134-b734-aff5e3d20aa9",
+   "1+e1"
+  ],
+  [
+   "PBR",
+   "2026-03-04T15:00:00",
+   "2026-03-04T15:30:00",
+   "9.0",
+   "4.0",
+   "Balancing Reserve",
+   "9",
+   null,
+   "2026-10-08 10:28:22.964546 UTC",
+   null,
+   "bronze/neso_data_portal/eac_mock_results_summary/2026/10/08/raw_20261008T102822Z_454216d8-61f3-40b6-b787-4dff035ce3c3_264795fe.csv",
+   "2026-10-08 10:28:22.964546 UTC",
+   "2026-10-08 10:28:22.964546 UTC",
+   "2026-10-08 10:28:22.964546 UTC",
+   "eec8ce40-7e64-4134-b734-aff5e3d20aa9",
+   "1+e1"
+  ],
+  [
+   "PSR",
+   "2026-03-04T15:00:00",
+   "2026-03-04T15:30:00",
+   "182.0",
+   "10.0",
+   "Slow Reserve",
+   "9",
+   "3",
+   "2026-10-08 10:28:22.964546 UTC",
+   null,
+   "bronze/neso_data_portal/eac_mock_results_summary/2026/10/08/raw_20261008T102822Z_454216d8-61f3-40b6-b787-4dff035ce3c3_264795fe.csv",
+   "2026-10-08 10:28:22.964546 UTC",
+   "2026-10-08 10:28:22.964546 UTC",
+   "2026-10-08 10:28:22.964546 UTC",
+   "eec8ce40-7e64-4134-b734-aff5e3d20aa9",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

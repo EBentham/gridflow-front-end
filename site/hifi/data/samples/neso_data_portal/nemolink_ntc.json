@@ -1,0 +1,300 @@
+{
+ "dataset": "neso_data_portal/nemolink_ntc",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "c687b5ab752099c9cf6ed6523e01a379c81ff6096394bcb530ec497edfe43657",
+ "silver": "neso_data_portal/nemolink_ntc",
+ "columns": [
+  {
+   "name": "operational_period_start_gmt",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "auction_type",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "data_upload_time_gmt",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "flow_from_gb_mw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "reason_for_restriction_from_gb",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "flow_to_gb_mw",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "reason_for_restriction_to_gb",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "operational_date",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "version",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "hourly_time_period",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "reason_for_restriction",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "issue_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "resource_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "2026-10-13 04:00:00 UTC",
+   "Day Ahead",
+   "2026-10-12 09:30:05 UTC",
+   "1032.0",
+   "No Restriction",
+   "1032.0",
+   "No Restriction",
+   null,
+   null,
+   null,
+   null,
+   "2026-10-12 09:30:05 UTC",
+   "7d43e2a0-1c22-4e05-895d-756bae210756",
+   "2026-10-16 20:41:34.688010 UTC",
+   null,
+   "bronze/neso_data_portal/nemolink_ntc/2026/10/16/raw_20261016T204134Z_7d43e2a0-1c22-4e05-895d-756bae210756_d91a1a0a.csv",
+   "2026-10-16 20:41:34.688010 UTC",
+   "2026-10-16 20:41:34.688010 UTC",
+   "2026-10-16 20:41:34.688010 UTC",
+   "drain-f71c7d44-eda2-457c-9450-0bc96b203fdb",
+   "1+e1"
+  ],
+  [
+   "2026-10-13 04:00:00 UTC",
+   "Intraday 2",
+   "2026-10-13 10:30:06 UTC",
+   "770.0",
+   "Network Constraints",
+   "1032.0",
+   "No Restriction",
+   null,
+   null,
+   null,
+   null,
+   "2026-10-13 10:30:06 UTC",
+   "7d43e2a0-1c22-4e05-895d-756bae210756",
+   "2026-10-16 20:41:34.688010 UTC",
+   null,
+   "bronze/neso_data_portal/nemolink_ntc/2026/10/16/raw_20261016T204134Z_7d43e2a0-1c22-4e05-895d-756bae210756_d91a1a0a.csv",
+   "2026-10-16 20:41:34.688010 UTC",
+   "2026-10-16 20:41:34.688010 UTC",
+   "2026-10-16 20:41:34.688010 UTC",
+   "drain-f71c7d44-eda2-457c-9450-0bc96b203fdb",
+   "1+e1"
+  ],
+  [
+   "2026-10-13 09:00:00 UTC",
+   "Day Ahead",
+   "2026-10-12 09:30:05 UTC",
+   "1032.0",
+   "No Restriction",
+   "1032.0",
+   "No Restriction",
+   null,
+   null,
+   null,
+   null,
+   "2026-10-12 09:30:05 UTC",
+   "7d43e2a0-1c22-4e05-895d-756bae210756",
+   "2026-10-16 20:41:34.688010 UTC",
+   null,
+   "bronze/neso_data_portal/nemolink_ntc/2026/10/16/raw_20261016T204134Z_7d43e2a0-1c22-4e05-895d-756bae210756_d91a1a0a.csv",
+   "2026-10-16 20:41:34.688010 UTC",
+   "2026-10-16 20:41:34.688010 UTC",
+   "2026-10-16 20:41:34.688010 UTC",
+   "drain-f71c7d44-eda2-457c-9450-0bc96b203fdb",
+   "1+e1"
+  ],
+  [
+   "2026-10-13 09:00:00 UTC",
+   "Intraday 2",
+   "2026-10-13 10:30:06 UTC",
+   "770.0",
+   "Network Constraints",
+   "1032.0",
+   "No Restriction",
+   null,
+   null,
+   null,
+   null,
+   "2026-10-13 10:30:06 UTC",
+   "7d43e2a0-1c22-4e05-895d-756bae210756",
+   "2026-10-16 20:41:34.688010 UTC",
+   null,
+   "bronze/neso_data_portal/nemolink_ntc/2026/10/16/raw_20261016T204134Z_7d43e2a0-1c22-4e05-895d-756bae210756_d91a1a0a.csv",
+   "2026-10-16 20:41:34.688010 UTC",
+   "2026-10-16 20:41:34.688010 UTC",
+   "2026-10-16 20:41:34.688010 UTC",
+   "drain-f71c7d44-eda2-457c-9450-0bc96b203fdb",
+   "1+e1"
+  ],
+  [
+   "2026-10-13 18:00:00 UTC",
+   "Day Ahead",
+   "2026-10-12 09:30:05 UTC",
+   "940.0",
+   "Margin Extremes",
+   "1032.0",
+   "No Restriction",
+   null,
+   null,
+   null,
+   null,
+   "2026-10-12 09:30:05 UTC",
+   "7d43e2a0-1c22-4e05-895d-756bae210756",
+   "2026-10-16 20:41:34.688010 UTC",
+   null,
+   "bronze/neso_data_portal/nemolink_ntc/2026/10/16/raw_20261016T204134Z_7d43e2a0-1c22-4e05-895d-756bae210756_d91a1a0a.csv",
+   "2026-10-16 20:41:34.688010 UTC",
+   "2026-10-16 20:41:34.688010 UTC",
+   "2026-10-16 20:41:34.688010 UTC",
+   "drain-f71c7d44-eda2-457c-9450-0bc96b203fdb",
+   "1+e1"
+  ],
+  [
+   "2026-10-13 18:00:00 UTC",
+   "Intraday 2",
+   "2026-10-13 10:30:06 UTC",
+   "770.0",
+   "Network Constraints",
+   "1032.0",
+   "No Restriction",
+   null,
+   null,
+   null,
+   null,
+   "2026-10-13 10:30:06 UTC",
+   "7d43e2a0-1c22-4e05-895d-756bae210756",
+   "2026-10-16 20:41:34.688010 UTC",
+   null,
+   "bronze/neso_data_portal/nemolink_ntc/2026/10/16/raw_20261016T204134Z_7d43e2a0-1c22-4e05-895d-756bae210756_d91a1a0a.csv",
+   "2026-10-16 20:41:34.688010 UTC",
+   "2026-10-16 20:41:34.688010 UTC",
+   "2026-10-16 20:41:34.688010 UTC",
+   "drain-f71c7d44-eda2-457c-9450-0bc96b203fdb",
+   "1+e1"
+  ],
+  [
+   "2026-10-13 19:00:00 UTC",
+   "Day Ahead",
+   "2026-10-12 09:30:05 UTC",
+   "1032.0",
+   "No Restriction",
+   "1032.0",
+   "No Restriction",
+   null,
+   null,
+   null,
+   null,
+   "2026-10-12 09:30:05 UTC",
+   "7d43e2a0-1c22-4e05-895d-756bae210756",
+   "2026-10-16 20:41:34.688010 UTC",
+   null,
+   "bronze/neso_data_portal/nemolink_ntc/2026/10/16/raw_20261016T204134Z_7d43e2a0-1c22-4e05-895d-756bae210756_d91a1a0a.csv",
+   "2026-10-16 20:41:34.688010 UTC",
+   "2026-10-16 20:41:34.688010 UTC",
+   "2026-10-16 20:41:34.688010 UTC",
+   "drain-f71c7d44-eda2-457c-9450-0bc96b203fdb",
+   "1+e1"
+  ],
+  [
+   "2026-10-13 19:00:00 UTC",
+   "Intraday 2",
+   "2026-10-13 10:30:06 UTC",
+   "640.0",
+   "Network Constraints",
+   "1032.0",
+   "No Restriction",
+   null,
+   null,
+   null,
+   null,
+   "2026-10-13 10:30:06 UTC",
+   "7d43e2a0-1c22-4e05-895d-756bae210756",
+   "2026-10-16 20:41:34.688010 UTC",
+   null,
+   "bronze/neso_data_portal/nemolink_ntc/2026/10/16/raw_20261016T204134Z_7d43e2a0-1c22-4e05-895d-756bae210756_d91a1a0a.csv",
+   "2026-10-16 20:41:34.688010 UTC",
+   "2026-10-16 20:41:34.688010 UTC",
+   "2026-10-16 20:41:34.688010 UTC",
+   "drain-f71c7d44-eda2-457c-9450-0bc96b203fdb",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

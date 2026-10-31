@@ -1,0 +1,259 @@
+{
+ "dataset": "neso_data_portal/fes_building_blocks_block_definitions",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "dc3ae94de02effefec4e11d8d5493bf07c97d097a9f3f7dfbb6331e70075b622",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "blocks = data.sql(\"\"\"\n    SELECT edition, count(*) AS blocks\n    FROM silver_neso_data_portal_fes_building_blocks_block_definitions_latest\n    GROUP BY edition ORDER BY edition\n\"\"\")\nblocks",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "edition",
+      "blocks"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5"
+     ],
+     "rows": [
+      [
+       "2020",
+       "49"
+      ],
+      [
+       "2021",
+       "64"
+      ],
+      [
+       "2022",
+       "66"
+      ],
+      [
+       "2023",
+       "66"
+      ],
+      [
+       "2024",
+       "66"
+      ],
+      [
+       "2025",
+       "66"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "dropped = data.sql(\"\"\"\n    SELECT building_block_id_number, technology\n    FROM silver_neso_data_portal_fes_building_blocks_block_definitions_latest\n    WHERE edition = 2020 AND building_block_id_number NOT IN (\n        SELECT building_block_id_number\n        FROM silver_neso_data_portal_fes_building_blocks_block_definitions_latest\n        WHERE edition = 2021)\n    ORDER BY building_block_id_number\n\"\"\")\ndropped",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "building_block_id_number",
+      "technology"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11"
+     ],
+     "rows": [
+      [
+       "COAL",
+       "Coal"
+      ],
+      [
+       "Dem_BB001b",
+       "Demand"
+      ],
+      [
+       "Dem_BB002c",
+       "Demand"
+      ],
+      [
+       "Hydrogen",
+       "Hydrogen fuelled generation"
+      ],
+      [
+       "IC",
+       "Interconnector"
+      ],
+      [
+       "NC_GEN",
+       "Offshore-Wind"
+      ],
+      [
+       "Srg_BB006",
+       "I&C DSR"
+      ],
+      [
+       "Srg_BB007",
+       "I&C DSR"
+      ],
+      [
+       "Srg_BB008",
+       "I&C DSR"
+      ],
+      [
+       "Srg_BB009",
+       "Domestic DSR"
+      ],
+      [
+       "Srg_BB010",
+       "Domestic DSR"
+      ],
+      [
+       "Srg_BB011",
+       "Domestic DSR"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "areas = data.sql(\"\"\"\n    SELECT area_type, fes23_bb_area_name, fes2024_area_name, elexon_gsp_group\n    FROM silver_neso_data_portal_fes_building_blocks_block_licence_area_latest\n    ORDER BY area_type, fes23_bb_area_name\n\"\"\")\nareas.head(8)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "area_type",
+      "fes23_bb_area_name",
+      "fes2024_area_name",
+      "elexon_gsp_group"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7"
+     ],
+     "rows": [
+      [
+       "DNO",
+       "ENW",
+       "Electricity North West",
+       "_G"
+      ],
+      [
+       "DNO",
+       "EPN",
+       "UKPN Eastern",
+       "_A"
+      ],
+      [
+       "DNO",
+       "East Midlands",
+       "NGED East Midlands",
+       "_B"
+      ],
+      [
+       "DNO",
+       "LPN",
+       "UKPN London",
+       "_C"
+      ],
+      [
+       "DNO",
+       "NPgN",
+       "NPg Northeast",
+       "_F"
+      ],
+      [
+       "DNO",
+       "NPgY",
+       "NPg Yorkshire",
+       "_M"
+      ],
+      [
+       "DNO",
+       "SEPD",
+       "SSEN South",
+       "_H"
+      ],
+      [
+       "DNO",
+       "SHEPD",
+       "SSEN (SHEPD)",
+       "_P"
+      ]
+     ]
+    }
+   ]
+  }
+ ]
+}

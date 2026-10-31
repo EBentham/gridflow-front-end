@@ -1,0 +1,217 @@
+{
+ "dataset": "neso_data_portal/eac_results_summary",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "abb161f47b7b48a0a5cb5d89b500e60ce2ef1c87788ea62b55a6336b6443530e",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.neso_data_portal.query(\"eac_results_summary\", \"2026-10-16\", \"2026-10-17\")\nday = df[(df.auction_id == \"2906\") & (df.service_type == \"Response\")]\nday.pivot(index=\"delivery_start\", columns=\"auction_product\", values=\"clearing_price\")",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "auction_product",
+      "DCH",
+      "DCL",
+      "DMH",
+      "DML",
+      "DRH",
+      "DRL",
+      "delivery_start",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     "index": [
+      "2026-10-16 23:00:00+01:00",
+      "2026-10-17 03:00:00+01:00",
+      "2026-10-17 07:00:00+01:00",
+      "2026-10-17 11:00:00+01:00",
+      "2026-10-17 15:00:00+01:00",
+      "2026-10-17 19:00:00+01:00"
+     ],
+     "rows": [
+      [
+       "0.51",
+       "2.35",
+       "-2.30",
+       "7.54",
+       "-17.41",
+       "11.93"
+      ],
+      [
+       "1.79",
+       "1.06",
+       "-1.24",
+       "5.37",
+       "-15.69",
+       "8.67"
+      ],
+      [
+       "0.50",
+       "3.92",
+       "-3.91",
+       "8.28",
+       "-18.00",
+       "13.91"
+      ],
+      [
+       "5.19",
+       "1.93",
+       "1.82",
+       "5.87",
+       "-11.81",
+       "12.22"
+      ],
+      [
+       "4.07",
+       "4.75",
+       "2.15",
+       "12.72",
+       "-10.00",
+       "15.14"
+      ],
+      [
+       "2.22",
+       "5.48",
+       "-1.93",
+       "12.72",
+       "-18.35",
+       "20.31"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "hist = data.sql(\"\"\"\n    SELECT auction_product, delivery_end, clearing_price\n    FROM silver_neso_data_portal_eac_results_summary_fy_latest WHERE service_type = 'Response'\n    UNION ALL\n    SELECT auction_product, delivery_end, clearing_price\n    FROM silver_neso_data_portal_eac_results_summary_latest WHERE service_type = 'Response'\"\"\")\nmonth = hist.delivery_end.dt.tz_convert(\"UTC\").dt.strftime(\"%Y-%m\")\nmonthly = hist.groupby([month, \"auction_product\"]).clearing_price.mean().unstack()\nmonthly.round(2).iloc[[0, 12, 24, -1]]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "auction_product",
+      "DCH",
+      "DCL",
+      "DMH",
+      "DML",
+      "DRH",
+      "DRL",
+      "delivery_end",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     "index": [
+      "2023-11",
+      "2024-11",
+      "2025-11",
+      "2026-10"
+     ],
+     "rows": [
+      [
+       "1.85",
+       "2.14",
+       "0.25",
+       "4.36",
+       "-4.41",
+       "12.45"
+      ],
+      [
+       "1.46",
+       "3.29",
+       "0.03",
+       "5.53",
+       "-7.79",
+       "8.45"
+      ],
+      [
+       "2.19",
+       "3.20",
+       "1.66",
+       "6.23",
+       "-3.05",
+       "15.78"
+      ],
+      [
+       "3.23",
+       "5.11",
+       "1.37",
+       "10.44",
+       "-10.33",
+       "18.16"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "ax = monthly.plot(figsize=(8, 3.5), xlabel=\"delivery month\",\n                  ylabel=\"mean clearing price, £/MW/h\",\n                  color=[\"#3E8C97\", \"#155A6E\", \"#AFC64E\", \"#7C5530\", \"#66793B\", \"#C77E3C\"])\nax.legend(ncol=6, loc=\"lower center\", bbox_to_anchor=(0.5, 1.0), frameon=False);",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "eac_results_summary-5.png",
+     "width": 699,
+     "height": 371
+    }
+   ]
+  }
+ ]
+}

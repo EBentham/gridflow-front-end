@@ -1,0 +1,250 @@
+{
+ "dataset": "neso_data_portal/national_demand_bmus",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "261875bd8b12ad537b83e65e736efda29a9e50a4224f47d82369ec2163b056c9",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.sql(\"\"\"\n    SELECT n.bm_name, e.bm_unit_id, e.bm_unit_name, e.fuel_type\n    FROM silver_neso_data_portal_national_demand_bmus_latest AS n\n    LEFT JOIN silver_elexon_bmunits_reference AS e\n      ON e.national_grid_bm_unit = n.bm_name\n    ORDER BY n.bm_name\n\"\"\")\ndf.head()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "bm_name",
+      "bm_unit_id",
+      "bm_unit_name",
+      "fuel_type"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+     ],
+     "rows": [
+      [
+       "ABERU-1",
+       "E_ABERDARE",
+       "Aberdare Power Station",
+       "NaN"
+      ],
+      [
+       "ABRBO-1",
+       "T_ABRBO-1",
+       "ABRBO-1",
+       "WIND"
+      ],
+      [
+       "ABRTW-1",
+       "E_ABRTW-1",
+       "Auchrobert Wind Farm",
+       "WIND"
+      ],
+      [
+       "ACHLW-1",
+       "C__PSMAR001",
+       "C__PSMAR001-AAA-ACH-183",
+       "WIND"
+      ],
+      [
+       "ACHRW-1",
+       "T_ACHRW-1",
+       "AChruach Wind Farm",
+       "WIND"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "df.bm_unit_id.notna().rename(\"in_elexon_register\").value_counts()",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "in_elexon_register\nTrue     859\nFalse    142\nName: count, dtype: int64"
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "reg = data.sql(\"\"\"\n    SELECT fuel_type, national_grid_bm_unit IN (\n               SELECT bm_name FROM silver_neso_data_portal_national_demand_bmus_latest\n           ) AS on_list\n    FROM silver_elexon_bmunits_reference\n    WHERE fuel_type IS NOT NULL\n\"\"\")\nreg.groupby([\"fuel_type\", \"on_list\"]).size().unstack(fill_value=0)",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "on_list",
+      "False",
+      "True",
+      "fuel_type",
+      "",
+      ""
+     ],
+     "index": [
+      "BIOMASS",
+      "CCGT",
+      "COAL",
+      "INTELEC",
+      "INTEW",
+      "INTFR",
+      "INTGRNL",
+      "INTIFA2",
+      "INTIRL",
+      "INTNED",
+      "INTNEM",
+      "INTNSL",
+      "INTVKL",
+      "NPSHYD",
+      "NUCLEAR",
+      "OCGT",
+      "OTHER",
+      "PS",
+      "WIND"
+     ],
+     "rows": [
+      [
+       "3",
+       "12"
+      ],
+      [
+       "14",
+       "47"
+      ],
+      [
+       "8",
+       "2"
+      ],
+      [
+       "2",
+       "0"
+      ],
+      [
+       "1",
+       "0"
+      ],
+      [
+       "1",
+       "0"
+      ],
+      [
+       "1",
+       "0"
+      ],
+      [
+       "1",
+       "0"
+      ],
+      [
+       "1",
+       "0"
+      ],
+      [
+       "1",
+       "0"
+      ],
+      [
+       "1",
+       "0"
+      ],
+      [
+       "1",
+       "0"
+      ],
+      [
+       "1",
+       "0"
+      ],
+      [
+       "6",
+       "16"
+      ],
+      [
+       "2",
+       "14"
+      ],
+      [
+       "10",
+       "12"
+      ],
+      [
+       "3",
+       "89"
+      ],
+      [
+       "16",
+       "0"
+      ],
+      [
+       "12",
+       "222"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "source": "kind = df.fuel_type.where(df.bm_unit_id.notna(), \"not in register\").fillna(\"no fuel type\")\nax = kind.value_counts(ascending=True).plot.barh(figsize=(6, 4))\nax.set(xlabel=\"BM units on NESO's list\", ylabel=\"\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "national_demand_bmus-6.png",
+     "width": 590,
+     "height": 375
+    }
+   ]
+  }
+ ]
+}

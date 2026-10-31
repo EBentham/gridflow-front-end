@@ -1,0 +1,235 @@
+{
+ "dataset": "neso_data_portal/tresp_building_block_definitions",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "f91ef87cf8abfad7b72796ba867de2edcfe665c0e5fb47041cc9846e75cd89bf",
+ "silver": "neso_data_portal/tresp_building_block_definitions",
+ "columns": [
+  {
+   "name": "fes_bb_id_number",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "technology",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "units",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "technology_detail",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "demand_generation_storage",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "child_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "child_crc32",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "resource_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "Lct_BB014",
+   "Airconditioning Units",
+   "Number",
+   "AC Domestic Units",
+   "Demand",
+   "tRESP Building Blocks",
+   "2238457871",
+   "11c36b60-eee5-45e9-b0da-6240e6e60d1c",
+   "2026-01-30 08:15:29.726307 UTC",
+   "2026-10-08 11:39:46.157281 UTC",
+   "bronze/neso_data_portal/tresp_demand_pathways_files/2026/10/08/raw_20261008T113946Z_11c36b60-eee5-45e9-b0da-6240e6e60d1c_fe3dde0f.xlsx",
+   "2026-10-08 11:39:46.157281 UTC",
+   "2026-10-08 11:39:46.157281 UTC",
+   "2026-01-30 08:15:29.726307 UTC",
+   "1a8e67a3-a614-482e-b6ac-6b4b04e282aa",
+   "1+e1"
+  ],
+  [
+   "Lct_BB015_1",
+   "Airconditioning Units",
+   "Annual Demand (GWh)",
+   "AC Industrial & Commercial Units",
+   "Demand",
+   "tRESP Building Blocks",
+   "2238457871",
+   "11c36b60-eee5-45e9-b0da-6240e6e60d1c",
+   "2026-01-30 08:15:29.726307 UTC",
+   "2026-10-08 11:39:46.157281 UTC",
+   "bronze/neso_data_portal/tresp_demand_pathways_files/2026/10/08/raw_20261008T113946Z_11c36b60-eee5-45e9-b0da-6240e6e60d1c_fe3dde0f.xlsx",
+   "2026-10-08 11:39:46.157281 UTC",
+   "2026-10-08 11:39:46.157281 UTC",
+   "2026-01-30 08:15:29.726307 UTC",
+   "1a8e67a3-a614-482e-b6ac-6b4b04e282aa",
+   "1+e1"
+  ],
+  [
+   "Lct_BB015_2",
+   "Airconditioning Units",
+   "Surface Area",
+   "AC Industrial & Commercial Units",
+   "Demand",
+   "tRESP Building Blocks",
+   "2238457871",
+   "11c36b60-eee5-45e9-b0da-6240e6e60d1c",
+   "2026-01-30 08:15:29.726307 UTC",
+   "2026-10-08 11:39:46.157281 UTC",
+   "bronze/neso_data_portal/tresp_demand_pathways_files/2026/10/08/raw_20261008T113946Z_11c36b60-eee5-45e9-b0da-6240e6e60d1c_fe3dde0f.xlsx",
+   "2026-10-08 11:39:46.157281 UTC",
+   "2026-10-08 11:39:46.157281 UTC",
+   "2026-01-30 08:15:29.726307 UTC",
+   "1a8e67a3-a614-482e-b6ac-6b4b04e282aa",
+   "1+e1"
+  ],
+  [
+   "Lct_BB009",
+   "District Heating",
+   "Number",
+   "Domestic customers on Heat Pump-Supplied Networks",
+   "Demand",
+   "tRESP Building Blocks",
+   "2238457871",
+   "11c36b60-eee5-45e9-b0da-6240e6e60d1c",
+   "2026-01-30 08:15:29.726307 UTC",
+   "2026-10-08 11:39:46.157281 UTC",
+   "bronze/neso_data_portal/tresp_demand_pathways_files/2026/10/08/raw_20261008T113946Z_11c36b60-eee5-45e9-b0da-6240e6e60d1c_fe3dde0f.xlsx",
+   "2026-10-08 11:39:46.157281 UTC",
+   "2026-10-08 11:39:46.157281 UTC",
+   "2026-01-30 08:15:29.726307 UTC",
+   "1a8e67a3-a614-482e-b6ac-6b4b04e282aa",
+   "1+e1"
+  ],
+  [
+   "Dem_BB005_1",
+   "Heat Pumps",
+   "Annual Demand (GWh)",
+   "Industrial & Commercial Heat Pumps excl. processes (incl. Hybrid)",
+   "Demand",
+   "tRESP Building Blocks",
+   "2238457871",
+   "11c36b60-eee5-45e9-b0da-6240e6e60d1c",
+   "2026-01-30 08:15:29.726307 UTC",
+   "2026-10-08 11:39:46.157281 UTC",
+   "bronze/neso_data_portal/tresp_demand_pathways_files/2026/10/08/raw_20261008T113946Z_11c36b60-eee5-45e9-b0da-6240e6e60d1c_fe3dde0f.xlsx",
+   "2026-10-08 11:39:46.157281 UTC",
+   "2026-10-08 11:39:46.157281 UTC",
+   "2026-01-30 08:15:29.726307 UTC",
+   "1a8e67a3-a614-482e-b6ac-6b4b04e282aa",
+   "1+e1"
+  ],
+  [
+   "Dem_BB005_2",
+   "Heat Pumps",
+   "Surface Area",
+   "Industrial & Commercial Heat Pumps excl. processes (incl. Hybrid)",
+   "Demand",
+   "tRESP Building Blocks",
+   "2238457871",
+   "11c36b60-eee5-45e9-b0da-6240e6e60d1c",
+   "2026-01-30 08:15:29.726307 UTC",
+   "2026-10-08 11:39:46.157281 UTC",
+   "bronze/neso_data_portal/tresp_demand_pathways_files/2026/10/08/raw_20261008T113946Z_11c36b60-eee5-45e9-b0da-6240e6e60d1c_fe3dde0f.xlsx",
+   "2026-10-08 11:39:46.157281 UTC",
+   "2026-10-08 11:39:46.157281 UTC",
+   "2026-01-30 08:15:29.726307 UTC",
+   "1a8e67a3-a614-482e-b6ac-6b4b04e282aa",
+   "1+e1"
+  ],
+  [
+   "Lct_BB005",
+   "Heat Pumps",
+   "Number",
+   "Domestic - Non-hybrid",
+   "Demand",
+   "tRESP Building Blocks",
+   "2238457871",
+   "11c36b60-eee5-45e9-b0da-6240e6e60d1c",
+   "2026-01-30 08:15:29.726307 UTC",
+   "2026-10-08 11:39:46.157281 UTC",
+   "bronze/neso_data_portal/tresp_demand_pathways_files/2026/10/08/raw_20261008T113946Z_11c36b60-eee5-45e9-b0da-6240e6e60d1c_fe3dde0f.xlsx",
+   "2026-10-08 11:39:46.157281 UTC",
+   "2026-10-08 11:39:46.157281 UTC",
+   "2026-01-30 08:15:29.726307 UTC",
+   "1a8e67a3-a614-482e-b6ac-6b4b04e282aa",
+   "1+e1"
+  ],
+  [
+   "Lct_BB006",
+   "Heat Pumps",
+   "Number",
+   "Domestic – Hybrid",
+   "Demand",
+   "tRESP Building Blocks",
+   "2238457871",
+   "11c36b60-eee5-45e9-b0da-6240e6e60d1c",
+   "2026-01-30 08:15:29.726307 UTC",
+   "2026-10-08 11:39:46.157281 UTC",
+   "bronze/neso_data_portal/tresp_demand_pathways_files/2026/10/08/raw_20261008T113946Z_11c36b60-eee5-45e9-b0da-6240e6e60d1c_fe3dde0f.xlsx",
+   "2026-10-08 11:39:46.157281 UTC",
+   "2026-10-08 11:39:46.157281 UTC",
+   "2026-01-30 08:15:29.726307 UTC",
+   "1a8e67a3-a614-482e-b6ac-6b4b04e282aa",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

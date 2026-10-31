@@ -1,0 +1,261 @@
+{
+ "dataset": "neso_data_portal/portal_known_issues",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "dd45db345bdda02cea9319d110d6dd712c78285b5c38736abb47c4b24273697c",
+ "silver": "neso_data_portal/portal_known_issues",
+ "columns": [
+  {
+   "name": "po",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "status",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "change_issue_title",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "change_datetime_from",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "change_datetime_to",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "last_updated",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "notes",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "dataset_specific",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "file_specific",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "description",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "239",
+   "Deployed",
+   "Changes to Datasets",
+   "2026-10-09 11:00:00 UTC",
+   "2026-10-09 16:00:00 UTC",
+   "2026-10-12 09:30:00 UTC",
+   null,
+   "Constraint Management Intertrip Service Information (CMIS)",
+   "Constraint Management Intertrip Arming 2026-2027",
+   "As part of our ongoing efforts to align with data management best practices and improve consistency across datasets, the Column IDs of the following data file belonging to Constraint Management Intertrip Service Information (CMIS) dataset will be updated on 9th October 2026.\n\nConstraint Management Intertrip Arming 2026-2027:\nCost for this utilisation (£)  →  Cost for this utilisation\nB6/EC5  →  B6 or EC5 boundary\nCurrent Arming Fee (£ / MWH)  →  Current Arming Fee\n\nPlease update any downstream processes, integrations, reports, or scripts that reference these Column IDs prior to the change taking effect on 9th October 2026. No changes will be made to the underlying data values; only the column IDs are being updated.",
+   "2026-10-16 13:34:40.735778 UTC",
+   "2026-10-16 20:43:02.218882 UTC",
+   "bronze/neso_data_portal/portal_known_issues/2026/10/16/raw_20261016T204302Z_23021dfa-a3b8-4f62-93bc-b60186c53fa4_cbda5b45.csv",
+   "2026-10-16 20:43:02.218882 UTC",
+   "2026-10-16 20:43:02.218882 UTC",
+   "2026-10-16 13:34:40.735778 UTC",
+   "drain-1a731bdb-3de6-486a-81c1-f6ad11c9dfb7",
+   "1+e1"
+  ],
+  [
+   "240",
+   "Deployed",
+   "Planned Maintenance",
+   "2026-10-15 21:00:00 UTC",
+   "2026-10-16 01:00:00 UTC",
+   "2026-10-16 09:30:00 UTC",
+   null,
+   "Daily Wind Availability\nWeekly Wind Availability\nIndex Linked Contracted Energy Volume\nAggregated Balancing Services Adjustment Data (BSAD)\nBalancing Services Adjustment Data (BSAD) Forward Contracts\nDisaggregated Balancing Services Adjustment Data (BSAD)\nDaily Operational Planning Margin Requirement (OPMR)\nWeekly Operational Planning Margin Requirement (OPMR)\nUpcoming Trades\nSystem Operating Plan (SOP)\nNon-BM Ancillary Service Dispatch Platform (ASDP) Instructions\nSuper Stable Export Limit Contract Enactment\nHistoric GTMA (Grid Trade Master Agreement) Trades Data\nBalancing Services Contract Enactment\nNorth Sea Link - NESO's Net Transfer Capacity\nElecLink - NESO's Net Transfer Capacity\nNemoLink - NESO's Net Transfer Capacity\nViking Link - NESO's Net Transfer Capacity\nDynamic Containment, Regulation and Moderation Auction Results\nDynamic Containment 4 Day Forecast",
+   "N/A",
+   "There is a planned Oracle Cloud Infrastructure (OCI) Router Upgrade Activity that will impact the OCI CDSA services. During the maintenance window, OCI CDSA services will be unavailable, and application interfaces, integrations, and data exchanges may be impacted. We apologise for any inconvenience this planned maintenance may cause and appreciate your understanding and cooperation.",
+   "2026-10-16 13:34:40.735778 UTC",
+   "2026-10-16 20:43:02.218882 UTC",
+   "bronze/neso_data_portal/portal_known_issues/2026/10/16/raw_20261016T204302Z_23021dfa-a3b8-4f62-93bc-b60186c53fa4_cbda5b45.csv",
+   "2026-10-16 20:43:02.218882 UTC",
+   "2026-10-16 20:43:02.218882 UTC",
+   "2026-10-16 13:34:40.735778 UTC",
+   "drain-1a731bdb-3de6-486a-81c1-f6ad11c9dfb7",
+   "1+e1"
+  ],
+  [
+   "241",
+   "Planned",
+   "Changes to Datasets",
+   "2026-10-19 11:00:00 UTC",
+   "2026-10-19 16:00:00 UTC",
+   "2026-10-15 15:00:00 UTC",
+   "Has been rescheduled for 19/10/2026",
+   "Assistance for Areas of High Electricity Distribution Costs (AAHEDC) Tariffs",
+   "Assistance for Areas of High Electricity Distribution Costs (AAHEDC) Tariffs",
+   "As part of our ongoing efforts to align with data management best practices and improve consistency across datasets, the Column IDs of the following data file belonging to Assistance for Areas of High Electricity Distribution Costs (AAHEDC) Tariffs dataset will be updated on 15th October 2026.\n\nAssistance for Areas of High Electricity Distribution Costs (AAHEDC) Tariffs:\nShetland Tariff in p/kwh  →  Shetland Tariff in p per kwh\nTotal Scheme Tariff in p/kwh  →  Total Scheme Tariff in p per kwh\nAAHEDC tariff excluding the Shetland Assistance Amount in p/kwh  →  AAHEDC tariff excluding the Shetland Assistance Amount in p per kwh\n\nPlease update any downstream processes, integrations, reports, or scripts that reference these Column IDs prior to the change taking effect on 15th October 2026. No changes will be made to the underlying data values; only the column IDs are being updated.",
+   "2026-10-16 13:34:40.735778 UTC",
+   "2026-10-16 20:43:02.218882 UTC",
+   "bronze/neso_data_portal/portal_known_issues/2026/10/16/raw_20261016T204302Z_23021dfa-a3b8-4f62-93bc-b60186c53fa4_cbda5b45.csv",
+   "2026-10-16 20:43:02.218882 UTC",
+   "2026-10-16 20:43:02.218882 UTC",
+   "2026-10-16 13:34:40.735778 UTC",
+   "drain-1a731bdb-3de6-486a-81c1-f6ad11c9dfb7",
+   "1+e1"
+  ],
+  [
+   "242",
+   "Deployed",
+   "Changes to Datasets",
+   "2026-10-14 10:00:00 UTC",
+   "2026-10-14 12:00:00 UTC",
+   "2026-10-14 12:00:00 UTC",
+   null,
+   "ElecLink - NESO's Net Transfer Capacity\nViking Link - NESO's Net Transfer Capacity\nNorth Sea Link - NESO's Net Transfer Capacity\nNemoLink - NESO's Net Transfer Capacity\nIFA2 - NESO's Intraday Transfer Limit\nIFA - NESO's Intraday Transfer Limit\n",
+   "Archived ElecLink NTC Data\nArchived IFA2 DA & ID Weekly ITLs\nArchived IFA DA & ID Weekly ITLs\nArchived Viking NTC Data\nArchived NSL NTC Data\nNemoLink-Intraday1-20240127-001\nArchived Nemo DA & ID Weekly NTCs\nArchived NemoLink NTC Data\n",
+   "As part of our ongoing efforts to align with data management best practices and improve consistency across datasets, the below Column IDs within the following data files will be updated on 14 October 2026.\n\n1. Archived ElecLink NTC Data (ElecLink - NESO's Net Transfer Capacity):\nHourly Time Period (GMT) → Hourly Time Period GMT\nFlow (MW) To GB → Flow in MW To GB\nFlow (MW) From GB →  Flow in MW From GB\n\n2. Archived IFA2 DA & ID Weekly ITLs (IFA2 - NESO's Intraday Transfer Limit):\nOperational Date (YYYY-MM-DD) & Time GMT/BST (HH:MM - HH:MM) → Operational Date and Time GMT_BST\nFlow (MW) To GB → Flow in MW To GB\nFlow (MW) From GB → Flow in MW To GB\n\n3. Archived IFA DA & ID Weekly ITLs (IFA - NESO's Intraday Transfer Limit):\nOperational Date (YYYY-MM-DD) & Time GMT/BST (HH:MM - HH:MM) → Operational Date and Time GMT_BST\nFlow (MW) To GB → Flow in MW To GB\nFlow (MW) From GB → Flow in MW To GB\n\n4. Archived Viking NTC Data (Viking Link - NESO's Net Transfer Capacity):\nHourly Time Period (GMT) →...",
+   "2026-10-16 13:34:40.735778 UTC",
+   "2026-10-16 20:43:02.218882 UTC",
+   "bronze/neso_data_portal/portal_known_issues/2026/10/16/raw_20261016T204302Z_23021dfa-a3b8-4f62-93bc-b60186c53fa4_cbda5b45.csv",
+   "2026-10-16 20:43:02.218882 UTC",
+   "2026-10-16 20:43:02.218882 UTC",
+   "2026-10-16 13:34:40.735778 UTC",
+   "drain-1a731bdb-3de6-486a-81c1-f6ad11c9dfb7",
+   "1+e1"
+  ],
+  [
+   "243",
+   "Deployed",
+   "Changes to Datasets",
+   "2026-10-14 10:00:00 UTC",
+   "2026-10-14 12:00:00 UTC",
+   "2026-10-14 12:00:00 UTC",
+   null,
+   "Constraint Management Intertrip Service Information (CMIS)",
+   "Constraint Management Intertrip Arming 2025-2026\nConstraint Management Intertrip Arming 2024-2025\nConstraint Management Intertrip Arming 2023-2024\nConstraint Management Intertrip Arming 2022-2023",
+   "As part of our ongoing efforts to align with data management best practices and improve consistency across datasets, the below Column IDs within the following data files will be updated on 14 October 2026.\n\n1. Constraint Management Intertrip Arming 2025-2026:\nCost for this utilisation (£) → Cost for this utilisation\nB6/EC5 → B6 or EC5 boundary\nCurrent Arming Fee (£ / MWH) → Current Arming Fee\n\n2. Constraint Management Intertrip Arming 2024-2025:\nCost for this utilisation (£) → Cost for this utilisation\nB6/EC5 → B6 or EC5 boundary\nCurrent Arming Fee (£ / MWH) → Current Arming Fee\n\n3. Constraint Management Intertrip Arming 2023-2024:\nCost for this utilisation (£) → Cost for this utilisation\nCurrent Arming Fee (£ / SP) → Current Arming Fee\n\n4. Constraint Management Intertrip Arming 2022-2023:\nCost for this utilisation (£) → Cost for this utilisation\nCurrent Arming Fee (£ / SP) → Current Arming Fee\n\nPlease update any downstream processes, integrations, reports, or scripts that reference th...",
+   "2026-10-16 13:34:40.735778 UTC",
+   "2026-10-16 20:43:02.218882 UTC",
+   "bronze/neso_data_portal/portal_known_issues/2026/10/16/raw_20261016T204302Z_23021dfa-a3b8-4f62-93bc-b60186c53fa4_cbda5b45.csv",
+   "2026-10-16 20:43:02.218882 UTC",
+   "2026-10-16 20:43:02.218882 UTC",
+   "2026-10-16 13:34:40.735778 UTC",
+   "drain-1a731bdb-3de6-486a-81c1-f6ad11c9dfb7",
+   "1+e1"
+  ],
+  [
+   "244",
+   "Deployed",
+   "Changes to Datasets",
+   "2026-10-16 11:00:00 UTC",
+   "2026-10-16 16:00:00 UTC",
+   "2026-10-16 14:00:00 UTC",
+   null,
+   "Daily Balancing Services Use of System (BSUoS) Volume Data\nThermal Constraint Costs\nMonthly operational metered wind output",
+   "Daily Balancing Volume 2026-2027\nThermal Constraint Costs Data 26-27\nMonthly Operational Metered Wind Output 2026-2027",
+   "As part of our ongoing efforts to align with data management best practices and improve consistency across datasets, the below Column IDs within the following data files will be updated on 16 October 2026.\n\n1. Daily Balancing Volume 2026-2027 (Daily Balancing Services Use of System (BSUoS) Volume Data):\nEnergy Imbalance (MWh) →  Energy Imbalance MWh\nFrequency Control Offers (MWh) → Frequency Control Offers MWh\nFrequency Control Bids (MWh) → Frequency Control Bids MWh\nPositive Reserve (MWh) → Positive Reserve MWh\nConstraint Offers (MWh) → Constraint Offers MWh\nConstraint Bids (MWh) → Constraint Bids MWh\nNegative Reserve (MWh)  → Negative Reserve MWh\nOther (MWh) → Other MWh\n\n2. Thermal Constraint Costs Data 26-27 (Thermal Constraint Costs):\nDaily Cost (GBP) →  Daily Cost GBP\n\n3. Monthly Operational Metered Wind Output 2026-2027 (Monthly operational metered wind output):\nEngland/Wales Wind Output → England Wales Wind Output\n\nPlease update any downstream processes, integrations, reports, o...",
+   "2026-10-16 13:34:40.735778 UTC",
+   "2026-10-16 20:43:02.218882 UTC",
+   "bronze/neso_data_portal/portal_known_issues/2026/10/16/raw_20261016T204302Z_23021dfa-a3b8-4f62-93bc-b60186c53fa4_cbda5b45.csv",
+   "2026-10-16 20:43:02.218882 UTC",
+   "2026-10-16 20:43:02.218882 UTC",
+   "2026-10-16 13:34:40.735778 UTC",
+   "drain-1a731bdb-3de6-486a-81c1-f6ad11c9dfb7",
+   "1+e1"
+  ],
+  [
+   "255",
+   "Planned",
+   "Changes to Datasets",
+   "2026-10-26 11:00:00 UTC",
+   "2026-10-26 16:00:00 UTC",
+   "2026-10-14 15:00:00 UTC",
+   null,
+   "Stability midterm (Y-1) utilisation report",
+   "Stability midterm (Y-1) utilisation report 25/26",
+   "As part of our ongoing efforts to align with data management best practices and improve consistency across datasets, the Column IDs of the following data file belonging to Stability midterm (Y-1) utilisation report dataset will be updated on 26th October 2026.\n\nStability midterm (Y-1) utilisation report 25/26:\nInertia (in MVA.s)  →  Inertia\nMonth & Year  →  Month and Year\n\nPlease update any downstream processes, integrations, reports, or scripts that reference these Column IDs prior to the change taking effect on 26th October 2026. No changes will be made to the underlying data values; only the column IDs are being updated.",
+   "2026-10-16 13:34:40.735778 UTC",
+   "2026-10-16 20:43:02.218882 UTC",
+   "bronze/neso_data_portal/portal_known_issues/2026/10/16/raw_20261016T204302Z_23021dfa-a3b8-4f62-93bc-b60186c53fa4_cbda5b45.csv",
+   "2026-10-16 20:43:02.218882 UTC",
+   "2026-10-16 20:43:02.218882 UTC",
+   "2026-10-16 13:34:40.735778 UTC",
+   "drain-1a731bdb-3de6-486a-81c1-f6ad11c9dfb7",
+   "1+e1"
+  ],
+  [
+   "256",
+   "Planned",
+   "Changes to Datasets",
+   "2026-10-19 11:00:00 UTC",
+   "2026-10-19 16:00:00 UTC",
+   "2026-10-16 13:30:00 UTC",
+   null,
+   "Transmission Network Use of System (TNUoS) Tariffs",
+   "Local Offshore Generator Tariffs\nEmbedded Export Tariffs\nTransmission Demand Residual (TDR) Tariffs\nOnshore Generator Tariffs\nHalf-Hourly (HH) Demand Tariffs\nNon Half-Hourly (NHH) Demand Tariffs\nOnshore Local Circuit Tariffs",
+   "As part of our ongoing efforts to align with data management best practices and improve consistency across datasets, the below Column IDs within the following data files belonging to Transmission Network Use of System (TNUoS) Tariffs will be updated on 19 October 2026.\n\n1. Local Offshore Generator Tariffs:\nSubstation_£/kW  → Substation GBP per kW\nCircuit_£/kW  → Circuit GBP per kW\nETUoS_£/kW  → ETUoS GBP per kW\n\n2. Embedded Export Tariffs:\nLocational_£/kW  → Locational GBP per kW\nAGIC_£/kW  → AGIC GBP per kW\nPhasedResidual_£/kW  → PhasedResidual GBP per kW \nEET(Floored)_£/kW  → EET Floored GBP per kW\n\n3. Transmission Demand Residual (TDR) Tariffs:\nTDR Tariff in Â£/(Site Day) → TDR Tariff in GBP per Site Day\n\n4. Onshore Generator Tariffs:\nSystemPeak_£/kW → SystemPeak GBP per kW\nSharedYearRound_£/kW → SharedYearRound GBP per kW\nNotSharedYearRound_£/kW → NotSharedYearRound GBP per kW\nResidual_£/kW → Residual GBP per kW\nSmallGenDiscount_£/kW → SmallGenDiscount GBP per kW\n\n5. Half-Hourly (H...",
+   "2026-10-16 13:34:40.735778 UTC",
+   "2026-10-16 20:43:02.218882 UTC",
+   "bronze/neso_data_portal/portal_known_issues/2026/10/16/raw_20261016T204302Z_23021dfa-a3b8-4f62-93bc-b60186c53fa4_cbda5b45.csv",
+   "2026-10-16 20:43:02.218882 UTC",
+   "2026-10-16 20:43:02.218882 UTC",
+   "2026-10-16 13:34:40.735778 UTC",
+   "drain-1a731bdb-3de6-486a-81c1-f6ad11c9dfb7",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

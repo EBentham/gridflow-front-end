@@ -1,0 +1,287 @@
+{
+ "dataset": "neso_data_portal/fes_ed1_electricity_demand",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "afe1f12f52b6004ed55cb9d2c256fb38ba8158fb560ca6a4e4e5f3c6e85143ae",
+ "silver": "neso_data_portal/fes_ed1_electricity_demand",
+ "columns": [
+  {
+   "name": "data_item",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "pathway",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "peak_annual_minimum",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "unit",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "projection_year",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "value",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "edition",
+   "dtype": "Int64",
+   "lineage": false
+  },
+  {
+   "name": "aggregation_level",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "resource_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "scenario",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "fuel",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "level",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "GBFES System Demand: Total",
+   "Electric Engagement",
+   "Annual [Fiscal]",
+   "GWh",
+   "2035",
+   "450076.0",
+   "2025",
+   "1",
+   "300c07b9-baeb-4411-bc40-987cbb4aec0b",
+   "2025-12-10 17:03:48.740109 UTC",
+   "2026-10-08 10:53:43.056847 UTC",
+   null,
+   "Electricity",
+   null,
+   "bronze/neso_data_portal/fes_ed1_electricity_demand/2026/10/08/raw_20261008T105343Z_300c07b9-baeb-4411-bc40-987cbb4aec0b_bd36b16b.csv",
+   "2026-10-08 10:53:43.056847 UTC",
+   "2026-10-08 10:53:43.056847 UTC",
+   "2025-12-10 17:03:48.740109 UTC",
+   "31c2b342-7eff-4f0e-a2f2-6bc17237745a",
+   "1+e1"
+  ],
+  [
+   "GBFES System Demand: Total",
+   "Holistic Transition",
+   "Annual [Fiscal]",
+   "GWh",
+   "2035",
+   "433422.0",
+   "2025",
+   "1",
+   "300c07b9-baeb-4411-bc40-987cbb4aec0b",
+   "2025-12-10 17:03:48.740109 UTC",
+   "2026-10-08 10:53:43.056847 UTC",
+   null,
+   "Electricity",
+   null,
+   "bronze/neso_data_portal/fes_ed1_electricity_demand/2026/10/08/raw_20261008T105343Z_300c07b9-baeb-4411-bc40-987cbb4aec0b_bd36b16b.csv",
+   "2026-10-08 10:53:43.056847 UTC",
+   "2026-10-08 10:53:43.056847 UTC",
+   "2025-12-10 17:03:48.740109 UTC",
+   "31c2b342-7eff-4f0e-a2f2-6bc17237745a",
+   "1+e1"
+  ],
+  [
+   "GBFES System Demand: Total",
+   "Hydrogen Evolution",
+   "Annual [Fiscal]",
+   "GWh",
+   "2035",
+   "464347.0",
+   "2025",
+   "1",
+   "300c07b9-baeb-4411-bc40-987cbb4aec0b",
+   "2025-12-10 17:03:48.740109 UTC",
+   "2026-10-08 10:53:43.056847 UTC",
+   null,
+   "Electricity",
+   null,
+   "bronze/neso_data_portal/fes_ed1_electricity_demand/2026/10/08/raw_20261008T105343Z_300c07b9-baeb-4411-bc40-987cbb4aec0b_bd36b16b.csv",
+   "2026-10-08 10:53:43.056847 UTC",
+   "2026-10-08 10:53:43.056847 UTC",
+   "2025-12-10 17:03:48.740109 UTC",
+   "31c2b342-7eff-4f0e-a2f2-6bc17237745a",
+   "1+e1"
+  ],
+  [
+   "GBFES System Demand: Total",
+   "Ten Year Forecast",
+   "Annual [Fiscal]",
+   "GWh",
+   "2035",
+   "396764.0",
+   "2025",
+   "1",
+   "300c07b9-baeb-4411-bc40-987cbb4aec0b",
+   "2025-12-10 17:03:48.740109 UTC",
+   "2026-10-08 10:53:43.056847 UTC",
+   null,
+   "Electricity",
+   null,
+   "bronze/neso_data_portal/fes_ed1_electricity_demand/2026/10/08/raw_20261008T105343Z_300c07b9-baeb-4411-bc40-987cbb4aec0b_bd36b16b.csv",
+   "2026-10-08 10:53:43.056847 UTC",
+   "2026-10-08 10:53:43.056847 UTC",
+   "2025-12-10 17:03:48.740109 UTC",
+   "31c2b342-7eff-4f0e-a2f2-6bc17237745a",
+   "1+e1"
+  ],
+  [
+   "GBFES System Demand: Total",
+   "Electric Engagement",
+   "Annual [Fiscal]",
+   "GWh",
+   "2036",
+   "483247.0",
+   "2025",
+   "1",
+   "300c07b9-baeb-4411-bc40-987cbb4aec0b",
+   "2025-12-10 17:03:48.740109 UTC",
+   "2026-10-08 10:53:43.056847 UTC",
+   null,
+   "Electricity",
+   null,
+   "bronze/neso_data_portal/fes_ed1_electricity_demand/2026/10/08/raw_20261008T105343Z_300c07b9-baeb-4411-bc40-987cbb4aec0b_bd36b16b.csv",
+   "2026-10-08 10:53:43.056847 UTC",
+   "2026-10-08 10:53:43.056847 UTC",
+   "2025-12-10 17:03:48.740109 UTC",
+   "31c2b342-7eff-4f0e-a2f2-6bc17237745a",
+   "1+e1"
+  ],
+  [
+   "GBFES System Demand: Total",
+   "Holistic Transition",
+   "Annual [Fiscal]",
+   "GWh",
+   "2036",
+   "461449.0",
+   "2025",
+   "1",
+   "300c07b9-baeb-4411-bc40-987cbb4aec0b",
+   "2025-12-10 17:03:48.740109 UTC",
+   "2026-10-08 10:53:43.056847 UTC",
+   null,
+   "Electricity",
+   null,
+   "bronze/neso_data_portal/fes_ed1_electricity_demand/2026/10/08/raw_20261008T105343Z_300c07b9-baeb-4411-bc40-987cbb4aec0b_bd36b16b.csv",
+   "2026-10-08 10:53:43.056847 UTC",
+   "2026-10-08 10:53:43.056847 UTC",
+   "2025-12-10 17:03:48.740109 UTC",
+   "31c2b342-7eff-4f0e-a2f2-6bc17237745a",
+   "1+e1"
+  ],
+  [
+   "GBFES System Demand: Total",
+   "Hydrogen Evolution",
+   "Annual [Fiscal]",
+   "GWh",
+   "2036",
+   "502185.0",
+   "2025",
+   "1",
+   "300c07b9-baeb-4411-bc40-987cbb4aec0b",
+   "2025-12-10 17:03:48.740109 UTC",
+   "2026-10-08 10:53:43.056847 UTC",
+   null,
+   "Electricity",
+   null,
+   "bronze/neso_data_portal/fes_ed1_electricity_demand/2026/10/08/raw_20261008T105343Z_300c07b9-baeb-4411-bc40-987cbb4aec0b_bd36b16b.csv",
+   "2026-10-08 10:53:43.056847 UTC",
+   "2026-10-08 10:53:43.056847 UTC",
+   "2025-12-10 17:03:48.740109 UTC",
+   "31c2b342-7eff-4f0e-a2f2-6bc17237745a",
+   "1+e1"
+  ],
+  [
+   "GBFES System Demand: Total",
+   "Ten Year Forecast",
+   "Annual [Fiscal]",
+   "GWh",
+   "2036",
+   null,
+   "2025",
+   "1",
+   "300c07b9-baeb-4411-bc40-987cbb4aec0b",
+   "2025-12-10 17:03:48.740109 UTC",
+   "2026-10-08 10:53:43.056847 UTC",
+   null,
+   "Electricity",
+   null,
+   "bronze/neso_data_portal/fes_ed1_electricity_demand/2026/10/08/raw_20261008T105343Z_300c07b9-baeb-4411-bc40-987cbb4aec0b_bd36b16b.csv",
+   "2026-10-08 10:53:43.056847 UTC",
+   "2026-10-08 10:53:43.056847 UTC",
+   "2025-12-10 17:03:48.740109 UTC",
+   "31c2b342-7eff-4f0e-a2f2-6bc17237745a",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

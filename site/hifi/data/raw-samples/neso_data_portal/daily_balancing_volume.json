@@ -1,0 +1,20 @@
+{
+ "dataset": "neso_data_portal/daily_balancing_volume",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "876d214a2593045ce1bfb28bfb3ba107a6cef51858500f678450d4559ad6b527",
+ "table": "daily_balancing_volume",
+ "file": "q1_vol_fy2627.csv",
+ "body_sha256": "edf40a608df4319d1c5001239253f4c7bd2a6e5d15642526f9b1ca5978410220",
+ "encoding": "utf-8",
+ "lines": [
+  "SETT_DATE,SETT_PERIOD,Energy Imbalance MWh,Frequency Control Offers MWh,Frequency Control Bids MWh,Positive Reserve MWh,Constraint Offers MWh,Constraint Bids MWh,Negative Reserve MWh,Other MWh",
+  "2026-04-01,1,-66.276,0.0,0.0,1188.787,120.0,-1434.508,0.0,59.445",
+  "2026-04-01,2,-105.384,0.0,0.0,1174.121,61.75,-1435.307,0.0,94.052",
+  "2026-04-01,3,-171.772,71.132,-6.108,1080.497,0.0,-1334.026,0.0,16.733",
+  "2026-04-01,4,46.586,62.937,-0.6,1178.48,0.0,-1361.024,0.0,166.793",
+  "2026-04-01,5,73.882,118.5,0.0,1141.904,0.0,-1501.596,0.0,315.074",
+  "2026-04-01,6,-175.209,22.55,0.0,963.088,0.0,-1512.573,0.0,351.726",
+  "2026-04-01,7,-231.517,0.0,0.0,849.341,0.0,-1551.032,0.0,470.174",
+  "2026-04-01,8,-60.535,117.759,0.0,902.742,0.0,-1549.319,0.0,468.283"
+ ]
+}

@@ -1,0 +1,20 @@
+{
+ "dataset": "neso_data_portal/demand_profile_dates",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "60521e69508b73440f8bfb12cd17940b38f400474149388dabe288279a5ec62c",
+ "table": "demand_profile_dates",
+ "file": "profile_dates.csv",
+ "body_sha256": "569dae35885338b34eeb5d7365cc741223ef6f56d8beb229c1683f8de3375483",
+ "encoding": "utf-8",
+ "lines": [
+  "\"FORECAST_DATE\",\"PROFILE_DATE\"",
+  "2018-01-01,2017-01-01",
+  "2018-01-02,2017-01-03",
+  "2018-01-03,2017-01-04",
+  "2018-01-04,2017-01-05",
+  "2018-01-05,2017-01-06",
+  "2018-01-06,2017-01-07",
+  "2018-01-07,2017-01-08",
+  "2018-01-08,2017-01-09"
+ ]
+}

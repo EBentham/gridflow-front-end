@@ -1,0 +1,235 @@
+{
+ "dataset": "neso_data_portal/gtma_trades_data",
+ "generated_by": "gridflow-sample",
+ "select_sha256": "dff93bb5f0cc8dd817a5226384e0b133705eb2e510c6b13fb898f78bb43435b3",
+ "silver": "neso_data_portal/gtma_trades_data",
+ "columns": [
+  {
+   "name": "trade_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "start_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "end_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "volume",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "price",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "cost",
+   "dtype": "Float64",
+   "lineage": false
+  },
+  {
+   "name": "so_flag",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "resource_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "timestamp_utc",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "published_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "bronze_capture_id",
+   "dtype": "String",
+   "lineage": false
+  },
+  {
+   "name": "capture_written_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": false
+  },
+  {
+   "name": "event_time",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "available_at",
+   "dtype": "Datetime(us, UTC)",
+   "lineage": true
+  },
+  {
+   "name": "source_run_id",
+   "dtype": "String",
+   "lineage": true
+  },
+  {
+   "name": "dataset_version",
+   "dtype": "String",
+   "lineage": true
+  }
+ ],
+ "rows": [
+  [
+   "ES00000109",
+   "2015-04-28 18:00:00 UTC",
+   "2015-04-28 18:30:00 UTC",
+   "-1.0",
+   "45.51",
+   "-45.51",
+   "F",
+   "bde33bcf-efc6-4e4a-bc7c-452b7424ea45",
+   "2015-04-28 18:00:00 UTC",
+   "2020-12-09 17:08:51.416402 UTC",
+   "bronze/neso_data_portal/gtma_trades_data/2026/10/08/raw_20261008T110439Z_bde33bcf-efc6-4e4a-bc7c-452b7424ea45_1855c457.csv",
+   "2026-10-08 11:04:39.809727 UTC",
+   "2015-04-28 18:00:00 UTC",
+   "2020-12-09 17:08:51.416402 UTC",
+   "22f7cdab-4e24-4a80-9988-1c82d4af2ba4",
+   "1+e1"
+  ],
+  [
+   "ES00001314",
+   "2015-07-19 13:00:00 UTC",
+   "2015-07-19 16:00:00 UTC",
+   "-600.0",
+   "0.0",
+   "0.0",
+   "T",
+   "bde33bcf-efc6-4e4a-bc7c-452b7424ea45",
+   "2015-07-19 13:00:00 UTC",
+   "2020-12-09 17:08:51.416402 UTC",
+   "bronze/neso_data_portal/gtma_trades_data/2026/10/08/raw_20261008T110439Z_bde33bcf-efc6-4e4a-bc7c-452b7424ea45_1855c457.csv",
+   "2026-10-08 11:04:39.809727 UTC",
+   "2015-07-19 13:00:00 UTC",
+   "2020-12-09 17:08:51.416402 UTC",
+   "22f7cdab-4e24-4a80-9988-1c82d4af2ba4",
+   "1+e1"
+  ],
+  [
+   "ES00007382",
+   "2016-09-11 15:30:00 UTC",
+   "2016-09-10 23:30:00 UTC",
+   "2080.0",
+   "125.0",
+   "260000.0",
+   "T",
+   "b24d619b-f6ea-41e6-87ab-569960594d3f",
+   "2016-09-11 15:30:00 UTC",
+   "2020-12-09 16:50:44.945078 UTC",
+   "bronze/neso_data_portal/gtma_trades_data/2026/10/08/raw_20261008T110442Z_b24d619b-f6ea-41e6-87ab-569960594d3f_dcc97609.csv",
+   "2026-10-08 11:04:42.382991 UTC",
+   "2016-09-11 15:30:00 UTC",
+   "2020-12-09 16:50:44.945078 UTC",
+   "22f7cdab-4e24-4a80-9988-1c82d4af2ba4",
+   "1+e1"
+  ],
+  [
+   "ES00005140",
+   "2017-09-10 23:00:00 UTC",
+   "2017-09-11 05:00:00 UTC",
+   "-6600.0",
+   "0.0",
+   "0.0",
+   "F",
+   "6f2772a4-ac7a-4eb7-a8ee-59ca6a03e205",
+   "2017-09-10 23:00:00 UTC",
+   "2020-12-09 16:51:36.261207 UTC",
+   "bronze/neso_data_portal/gtma_trades_data/2026/10/08/raw_20261008T110445Z_6f2772a4-ac7a-4eb7-a8ee-59ca6a03e205_5eb10812.csv",
+   "2026-10-08 11:04:45.300931 UTC",
+   "2017-09-10 23:00:00 UTC",
+   "2020-12-09 16:51:36.261207 UTC",
+   "22f7cdab-4e24-4a80-9988-1c82d4af2ba4",
+   "1+e1"
+  ],
+  [
+   "ES00008415",
+   "2017-11-26 23:00:00 UTC",
+   "2017-11-26 08:00:00 UTC",
+   "-162.0",
+   "-77.01",
+   "12475.62",
+   "T",
+   "6f2772a4-ac7a-4eb7-a8ee-59ca6a03e205",
+   "2017-11-26 23:00:00 UTC",
+   "2020-12-09 16:51:36.261207 UTC",
+   "bronze/neso_data_portal/gtma_trades_data/2026/10/08/raw_20261008T110445Z_6f2772a4-ac7a-4eb7-a8ee-59ca6a03e205_5eb10812.csv",
+   "2026-10-08 11:04:45.300931 UTC",
+   "2017-11-26 23:00:00 UTC",
+   "2020-12-09 16:51:36.261207 UTC",
+   "22f7cdab-4e24-4a80-9988-1c82d4af2ba4",
+   "1+e1"
+  ],
+  [
+   "ES00029863",
+   "2019-08-09 00:00:00 UTC",
+   "2019-08-09 01:00:00 UTC",
+   "-100.0",
+   "19.7",
+   "-1970.0",
+   "T",
+   "6a03c415-475f-4005-bf55-b9108291c511",
+   "2019-08-09 00:00:00 UTC",
+   "2020-12-09 16:54:00.343328 UTC",
+   "bronze/neso_data_portal/gtma_trades_data/2026/10/08/raw_20261008T110450Z_6a03c415-475f-4005-bf55-b9108291c511_9845ed60.csv",
+   "2026-10-08 11:04:50.274119 UTC",
+   "2019-08-09 00:00:00 UTC",
+   "2020-12-09 16:54:00.343328 UTC",
+   "22f7cdab-4e24-4a80-9988-1c82d4af2ba4",
+   "1+e1"
+  ],
+  [
+   "ES00029965",
+   "2019-08-09 00:00:00 UTC",
+   "2019-08-09 01:00:00 UTC",
+   "-125.0",
+   "17.35",
+   "-2168.75",
+   "F",
+   "6a03c415-475f-4005-bf55-b9108291c511",
+   "2019-08-09 00:00:00 UTC",
+   "2020-12-09 16:54:00.343328 UTC",
+   "bronze/neso_data_portal/gtma_trades_data/2026/10/08/raw_20261008T110450Z_6a03c415-475f-4005-bf55-b9108291c511_9845ed60.csv",
+   "2026-10-08 11:04:50.274119 UTC",
+   "2019-08-09 00:00:00 UTC",
+   "2020-12-09 16:54:00.343328 UTC",
+   "22f7cdab-4e24-4a80-9988-1c82d4af2ba4",
+   "1+e1"
+  ],
+  [
+   "ES00029916",
+   "2019-08-09 01:00:00 UTC",
+   "2019-08-09 02:00:00 UTC",
+   "150.0",
+   "34.9",
+   "5235.0",
+   "T",
+   "6a03c415-475f-4005-bf55-b9108291c511",
+   "2019-08-09 01:00:00 UTC",
+   "2020-12-09 16:54:00.343328 UTC",
+   "bronze/neso_data_portal/gtma_trades_data/2026/10/08/raw_20261008T110450Z_6a03c415-475f-4005-bf55-b9108291c511_9845ed60.csv",
+   "2026-10-08 11:04:50.274119 UTC",
+   "2019-08-09 01:00:00 UTC",
+   "2020-12-09 16:54:00.343328 UTC",
+   "22f7cdab-4e24-4a80-9988-1c82d4af2ba4",
+   "1+e1"
+  ]
+ ],
+ "mark": null
+}

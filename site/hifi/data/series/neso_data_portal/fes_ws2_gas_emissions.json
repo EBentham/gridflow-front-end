@@ -1,0 +1,19 @@
+{
+  "dataset": "neso_data_portal/fes_ws2_gas_emissions",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "c648f7b851dc92b963a537963b62a3cf62fa555f579ba74f9cb75329d22e732c",
+  "type": "bar",
+  "unit": "MTCO2e",
+  "caption": "",
+  "value_column": "value",
+  "aggregation": "sum",
+  "window": null,
+  "provenance": {"duplicates_dropped": 0, "files": 4, "null_values_dropped": 0, "rows_matched": 6, "rows_read": 9180, "rows_used": 6, "silver": "neso_data_portal/fes_ws2_gas_emissions"},
+  "spec": {"aggregation": "sum", "dedup": {"on": ["resource_id", "edition", "scenario", "pathway", "category", "sector", "projection_year"], "order_by": "capture_written_at"}, "filter": [{"column": "edition", "op": "eq", "value": 2025}, {"column": "pathway", "op": "eq", "value": "Holistic Transition"}, {"column": "sector", "op": "eq", "value": "Electricity without BECCS"}, {"column": "projection_year", "op": "in", "value": [2025, 2030, 2035, 2040, 2045, 2050]}], "group": "projection_year", "silver": "neso_data_portal/fes_ws2_gas_emissions", "sort": "label", "type": "bar", "unit": "MTCO2e", "value": "value"},
+  "x_kind": "category",
+  "x": ["2025", "2030", "2035", "2040", "2045", "2050"],
+  "series": [
+    {"key": "value", "values": [12.803, 6.806, 2.75, 1.183, 1.079, 0.914]}
+  ]
+}

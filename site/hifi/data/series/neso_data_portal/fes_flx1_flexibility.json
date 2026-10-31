@@ -1,0 +1,19 @@
+{
+  "dataset": "neso_data_portal/fes_flx1_flexibility",
+  "generated_by": "gridflow-distil",
+  "spec_origin": "vault",
+  "spec_sha256": "efc95830064782f24d6edeec419cce70f5d7be1c5d87aea9f93d01f28b46add4",
+  "type": "bar",
+  "unit": "GW",
+  "caption": "",
+  "value_column": "value",
+  "aggregation": "max",
+  "window": null,
+  "provenance": {"duplicates_dropped": 0, "files": 3, "null_values_dropped": 0, "rows_matched": 5, "rows_read": 11382, "rows_used": 5, "silver": "neso_data_portal/fes_flx1_flexibility"},
+  "spec": {"aggregation": "max", "dedup": {"on": ["resource_id", "edition", "flexibility_sub_type", "data_item", "unit", "pathway", "fuel", "detail", "projection_year"], "order_by": "capture_written_at"}, "filter": [{"column": "edition", "op": "eq", "value": 2025}, {"column": "pathway", "op": "eq", "value": "Holistic Transition"}, {"column": "data_item", "op": "eq", "value": "Electricity storage connection capacity"}, {"column": "detail", "op": "eq", "value": "Battery"}, {"column": "projection_year", "op": "in", "value": [2030, 2035, 2040, 2045, 2050]}], "group": "projection_year", "silver": "neso_data_portal/fes_flx1_flexibility", "sort": "label", "type": "bar", "unit": "GW", "value": "value"},
+  "x_kind": "category",
+  "x": ["2030", "2035", "2040", "2045", "2050"],
+  "series": [
+    {"key": "value", "values": [23.169, 29.84, 34.652, 37.015, 39.347]}
+  ]
+}

@@ -1,0 +1,186 @@
+{
+ "dataset": "neso_data_portal/outturn_voltage_costs_main",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "9b251ac5ed36331d8c0addc4609f33ed460766953457dd402dbcea57722b26e5",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "import pandas as pd\nhist = data.neso_data_portal.query(\"outturn_voltage_costs_historical\", \"2024-04-01\", \"2025-03-31\")\nnewest = data.neso_data_portal.query(\"outturn_voltage_costs_main\", \"2025-04-01\", \"2025-05-31\")\ndf = pd.concat([hist, newest], ignore_index=True)\ndf[\"settlement_month\"] = pd.to_datetime(df.settlement_month)\ndf[\"start_utc\"] = df.timestamp_utc.dt.tz_convert(\"UTC\")\nmonths = pd.to_datetime([\"2024-10-01\", \"2024-11-01\", \"2025-03-01\", \"2025-04-01\", \"2025-05-01\"])\ndf[(df.voltage_constraint_group == \"SE ENGLAND\") & df.settlement_month.isin(months)][[\"settlement_month\", \"start_utc\", \"sync_costs_gbp_m\", \"utilisation_costs_gbp_m\"]]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "settlement_month",
+      "start_utc",
+      "sync_costs_gbp_m",
+      "utilisation_costs_gbp_m"
+     ],
+     "index": [
+      "127",
+      "146",
+      "222",
+      "241",
+      "260"
+     ],
+     "rows": [
+      [
+       "2024-10-01",
+       "2024-09-30 23:00:00+00:00",
+       "1.544417",
+       "0.986426"
+      ],
+      [
+       "2024-11-01",
+       "2024-11-01 00:00:00+00:00",
+       "0.159962",
+       "1.390493"
+      ],
+      [
+       "2025-03-01",
+       "2025-03-01 00:00:00+00:00",
+       "1.041089",
+       "2.503933"
+      ],
+      [
+       "2025-04-01",
+       "2025-03-31 23:00:00+00:00",
+       "3.082484",
+       "2.660690"
+      ],
+      [
+       "2025-05-01",
+       "2025-04-30 23:00:00+00:00",
+       "7.040000",
+       "2.385287"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "year = df[df.settlement_month < \"2025-04-01\"]\nby_group = year.groupby(\"voltage_constraint_group\")[[\"sync_costs_gbp_m\", \"utilisation_costs_gbp_m\"]].sum()\nby_group.assign(total=by_group.sum(axis=1)).sort_values(\"total\", ascending=False).head(6).round(2).reset_index()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "voltage_constraint_group",
+      "sync_costs_gbp_m",
+      "utilisation_costs_gbp_m",
+      "total"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5"
+     ],
+     "rows": [
+      [
+       "S WALES",
+       "93.25",
+       "12.65",
+       "105.90"
+      ],
+      [
+       "SE ENGLAND",
+       "10.59",
+       "18.58",
+       "29.17"
+      ],
+      [
+       "EAST MIDLANDS",
+       "10.52",
+       "11.08",
+       "21.60"
+      ],
+      [
+       "NW ENGLAND",
+       "7.49",
+       "12.06",
+       "19.55"
+      ],
+      [
+       "E CORRIDOR",
+       "0.00",
+       "19.17",
+       "19.17"
+      ],
+      [
+       "S CENTRAL",
+       "13.84",
+       "1.91",
+       "15.75"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "monthly = df.groupby(\"settlement_month\")[[\"utilisation_costs_gbp_m\", \"sync_costs_gbp_m\"]].sum()\nmonthly.index = monthly.index.strftime(\"%b %Y\")\nax = monthly.plot.bar(stacked=True, figsize=(8, 3.5), color=[\"#155A6E\", \"#C77E3C\"],\n                      xlabel=\"settlement month; the last two are from the 2025-26 file\",\n                      ylabel=\"£m, summed over the 19 groups\")\nax.legend([\"Utilisation costs\", \"Sync costs\"]);",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "outturn_voltage_costs_main-5.png",
+     "width": 690,
+     "height": 390
+    }
+   ]
+  }
+ ]
+}

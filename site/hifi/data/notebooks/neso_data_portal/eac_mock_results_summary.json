@@ -1,0 +1,209 @@
+{
+ "dataset": "neso_data_portal/eac_mock_results_summary",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "c34dae11823cbf804c2e1773ecad07f4c4b2f2f952b61ea73d2a5c871bf57866",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "data.sql(\"\"\"\n    SELECT service_type, auction_product, COUNT(*) AS windows,\n           COUNT(*) FILTER (WHERE cleared_volume > 0) AS windows_cleared,\n           ROUND(AVG(clearing_price) FILTER (WHERE cleared_volume > 0), 2) AS mean_price\n    FROM silver_neso_data_portal_eac_mock_results_summary_latest\n    GROUP BY ALL ORDER BY service_type, auction_product\"\"\")",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "service_type",
+      "auction_product",
+      "windows",
+      "windows_cleared",
+      "mean_price"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11"
+     ],
+     "rows": [
+      [
+       "Balancing Reserve",
+       "NBR",
+       "1056",
+       "738",
+       "0.00"
+      ],
+      [
+       "Balancing Reserve",
+       "PBR",
+       "1056",
+       "782",
+       "3.13"
+      ],
+      [
+       "Quick Reserve",
+       "NQR",
+       "1056",
+       "208",
+       "2.40"
+      ],
+      [
+       "Quick Reserve",
+       "PQR",
+       "1056",
+       "216",
+       "2.40"
+      ],
+      [
+       "Response",
+       "DCH",
+       "132",
+       "120",
+       "1.37"
+      ],
+      [
+       "Response",
+       "DCL",
+       "132",
+       "120",
+       "1.32"
+      ],
+      [
+       "Response",
+       "DMH",
+       "132",
+       "114",
+       "0.98"
+      ],
+      [
+       "Response",
+       "DML",
+       "132",
+       "119",
+       "1.04"
+      ],
+      [
+       "Response",
+       "DRH",
+       "132",
+       "10",
+       "-0.46"
+      ],
+      [
+       "Response",
+       "DRL",
+       "132",
+       "10",
+       "-0.46"
+      ],
+      [
+       "Slow Reserve",
+       "NSR",
+       "1056",
+       "964",
+       "3.30"
+      ],
+      [
+       "Slow Reserve",
+       "PSR",
+       "1056",
+       "1056",
+       "7.63"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "data.sql(\"\"\"\n    WITH u AS (SELECT auction_product, delivery_start, SUM(executed_quantity) AS units_mw\n               FROM silver_neso_data_portal_eac_mock_results_by_unit_latest GROUP BY ALL)\n    SELECT COUNT(*) AS windows,\n           COUNT(*) FILTER (WHERE ABS(s.cleared_volume - COALESCE(u.units_mw, 0)) < 0.001)\n               AS units_sum_to_cleared\n    FROM silver_neso_data_portal_eac_mock_results_summary_latest s\n    LEFT JOIN u USING (auction_product, delivery_start)\"\"\")",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "windows",
+      "units_sum_to_cleared"
+     ],
+     "index": [
+      "0"
+     ],
+     "rows": [
+      [
+       "7128",
+       "7128"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "resp = data.sql(\"\"\"\n    SELECT CAST(auction_id AS INTEGER) AS auction, auction_product,\n           AVG(clearing_price) AS price\n    FROM silver_neso_data_portal_eac_mock_results_summary_latest\n    WHERE service_type = 'Response' AND cleared_volume > 0\n    GROUP BY ALL ORDER BY auction\"\"\")\nax = resp.pivot(index=\"auction\", columns=\"auction_product\", values=\"price\").plot(\n    marker=\"o\", figsize=(8, 3.5), xlabel=\"mock auction number\",\n    ylabel=\"mean clearing price, £/MW/h\",\n    color=[\"#155A6E\", \"#3E8C97\", \"#AFC64E\", \"#66793B\", \"#7C5530\", \"#C77E3C\"])\nax.legend(ncol=6, loc=\"lower center\", bbox_to_anchor=(0.5, 1.0), frameon=False);",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "eac_mock_results_summary-5.png",
+     "width": 691,
+     "height": 371
+    }
+   ]
+  }
+ ]
+}

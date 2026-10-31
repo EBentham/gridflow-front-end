@@ -1,0 +1,179 @@
+{
+ "dataset": "neso_data_portal/da_demand_fc_performance",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "7f8fbdac3add603e3d692ddb96d8e9a00d8c90650a3d0b64c734a5501af52a5b",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.sql(\"\"\"\n    SELECT outturn_date, settlement_period, demand_forecast, demand_outturn,\n           absolute_error, ape, publish_datetime, published_at\n    FROM silver_neso_data_portal_da_demand_fc_performance\n    WHERE published_at = (SELECT max(published_at)\n                          FROM silver_neso_data_portal_da_demand_fc_performance)\"\"\")\ndays = df.groupby(\"outturn_date\").settlement_period.agg(rows=\"count\", labels=\"nunique\")\ndays.value_counts().rename(\"days\").reset_index()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "rows",
+      "labels",
+      "days"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5"
+     ],
+     "rows": [
+      [
+       "48",
+       "48",
+       "2014"
+      ],
+      [
+       "46",
+       "46",
+       "5"
+      ],
+      [
+       "50",
+       "50",
+       "3"
+      ],
+      [
+       "50",
+       "48",
+       "1"
+      ],
+      [
+       "48",
+       "46",
+       "1"
+      ],
+      [
+       "19",
+       "19",
+       "1"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "month = df.outturn_date.astype(\"datetime64[ns]\").dt.to_period(\"M\").rename(\"month\")\nmonthly = df.groupby(month)[[\"absolute_error\", \"ape\"]].mean().loc[:\"2026-09\"]\nmonthly.tail(6).round(1).reset_index()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "month",
+      "absolute_error",
+      "ape"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5"
+     ],
+     "rows": [
+      [
+       "2026-04",
+       "753.8",
+       "3.3"
+      ],
+      [
+       "2026-05",
+       "734.7",
+       "3.4"
+      ],
+      [
+       "2026-06",
+       "922.3",
+       "4.3"
+      ],
+      [
+       "2026-07",
+       "813.1",
+       "3.8"
+      ],
+      [
+       "2026-08",
+       "657.0",
+       "3.1"
+      ],
+      [
+       "2026-09",
+       "722.9",
+       "3.2"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "ax = monthly.absolute_error.plot(figsize=(8, 3.5), color=\"#155A6E\",\n                                 xlabel=\"outturn month, as NESO dates it\",\n                                 ylabel=\"mean of NESO's absolute error, MW\");",
+   "outputs": [
+    {
+     "kind": "image",
+     "src": "da_demand_fc_performance-5.png",
+     "width": 707,
+     "height": 340
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,289 @@
+{
+ "dataset": "neso_data_portal/index_linked_contract_volume",
+ "generated_by": "scripts/run_notebooks.py",
+ "cells_sha256": "8a022997a2e40bacdb9537cc6114ce6eeb1da0995292678e23c80f82d5dce409",
+ "kernel": "gridflow_models",
+ "source": "neso_data_portal",
+ "cells": [
+  {
+   "n": 1,
+   "source": "from gridflow_models import setup_notebook\ndata, models, common = setup_notebook()",
+   "outputs": []
+  },
+  {
+   "n": 2,
+   "source": "data.neso_data_portal",
+   "outputs": [
+    {
+     "kind": "card",
+     "rows": [
+      [
+       "list_datasets",
+       "List every dataset this source provides."
+      ],
+      [
+       "refresh",
+       "Fetch the latest rows for this source, topping up what you have."
+      ],
+      [
+       "describe",
+       "Show a dataset's columns, sample values, and freshness."
+      ],
+      [
+       "backfill",
+       "Download history for a dataset and store it locally."
+      ],
+      [
+       "query",
+       "Read stored rows for a dataset over a date range."
+      ],
+      [
+       "tail",
+       "Read the most recent rows of a dataset."
+      ],
+      [
+       "coverage",
+       "Show how up to date each dataset on this source is."
+      ]
+     ],
+     "foot": [
+      "Discover datasets:",
+      "data.neso_data_portal.list_datasets()"
+     ]
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "source": "df = data.neso_data_portal.query(\"index_linked_contract_volume\", \"2021-04-01\", \"2025-03-31\")\ndf[[\"id\", \"starttime\", \"endtime\", \"volume\", \"price\", \"cost\", \"asset_id\"]].tail()",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "id",
+      "starttime",
+      "endtime",
+      "volume",
+      "price",
+      "cost",
+      "asset_id"
+     ],
+     "index": [
+      "11",
+      "12",
+      "13",
+      "14",
+      "15"
+     ],
+     "rows": [
+      [
+       "ES00165152",
+       "2022-03-25 23:00:00+00:00",
+       "2022-03-26 08:00:00+00:00",
+       "110.0",
+       "73.32",
+       "72586.8",
+       "ROCK-1"
+      ],
+      [
+       "ES00177627",
+       "2022-07-03 23:00:00+01:00",
+       "2022-07-04 07:00:00+01:00",
+       "230.0",
+       "31.50",
+       "57960.0",
+       "GRAI-6"
+      ],
+      [
+       "ES00239190",
+       "2023-03-31 23:00:00+01:00",
+       "2023-04-01 07:00:00+01:00",
+       "130.0",
+       "181.00",
+       "188240.0",
+       "RYHPS-1"
+      ],
+      [
+       "ES00241156",
+       "2023-05-07 23:00:00+01:00",
+       "2023-05-08 07:00:00+01:00",
+       "375.0",
+       "24.25",
+       "72750.0",
+       "LBAR-1"
+      ],
+      [
+       "ES00312361",
+       "2024-11-01 23:00:00+00:00",
+       "2024-11-02 08:00:00+00:00",
+       "270.0",
+       "99.75",
+       "242392.5",
+       "RYHPS-1"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "source": "df.assign(hours=(df.endtime - df.starttime).dt.total_seconds() / 3600)[\n    [\"id\", \"hours\", \"volume\", \"price\", \"cost\"]]",
+   "outputs": [
+    {
+     "kind": "df",
+     "columns": [
+      "",
+      "id",
+      "hours",
+      "volume",
+      "price",
+      "cost"
+     ],
+     "index": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15"
+     ],
+     "rows": [
+      [
+       "ES00151372",
+       "9.0",
+       "110.0",
+       "71.82",
+       "71101.8"
+      ],
+      [
+       "ES00151374",
+       "9.0",
+       "110.0",
+       "73.32",
+       "72586.8"
+      ],
+      [
+       "ES00151377",
+       "8.0",
+       "110.0",
+       "73.32",
+       "64521.6"
+      ],
+      [
+       "ES00151452",
+       "9.0",
+       "110.0",
+       "71.82",
+       "71101.8"
+      ],
+      [
+       "ES00151514",
+       "8.0",
+       "110.0",
+       "87.32",
+       "76841.6"
+      ],
+      [
+       "ES00152294",
+       "9.0",
+       "110.0",
+       "87.32",
+       "86446.8"
+      ],
+      [
+       "ES00161439",
+       "8.0",
+       "110.0",
+       "73.32",
+       "64521.6"
+      ],
+      [
+       "ES00162253",
+       "8.0",
+       "110.0",
+       "87.32",
+       "76841.6"
+      ],
+      [
+       "ES00164522",
+       "8.0",
+       "210.0",
+       "48.65",
+       "81732.0"
+      ],
+      [
+       "ES00164535",
+       "8.0",
+       "110.0",
+       "73.32",
+       "64521.6"
+      ],
+      [
+       "ES00164597",
+       "8.0",
+       "110.0",
+       "71.82",
+       "63201.6"
+      ],
+      [
+       "ES00165152",
+       "9.0",
+       "110.0",
+       "73.32",
+       "72586.8"
+      ],
+      [
+       "ES00177627",
+       "8.0",
+       "230.0",
+       "31.50",
+       "57960.0"
+      ],
+      [
+       "ES00239190",
+       "8.0",
+       "130.0",
+       "181.00",
+       "188240.0"
+      ],
+      [
+       "ES00241156",
+       "8.0",
+       "375.0",
+       "24.25",
+       "72750.0"
+      ],
+      [
+       "ES00312361",
+       "9.0",
+       "270.0",
+       "99.75",
+       "242392.5"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "source": "df.groupby([\"asset_id\", \"reason\"], dropna=False).size()",
+   "outputs": [
+    {
+     "kind": "text",
+     "text": "asset_id  reason     \nGRAI-6    V_SOUTHEAST     1\nLBAR-1    V_LONBAR        1\nROCK-1    V_MERSEY       11\n          NaN             1\nRYHPS-1   V_LONBAR        2\ndtype: int64"
+    }
+   ]
+  }
+ ]
+}
