@@ -695,6 +695,31 @@ def _thin(pts: list[tuple[float, float]]) -> list[tuple[float, float]]:
     return out
 
 
+def _below(pts: list[tuple[float, float]], zero: float) -> list[list[tuple[float, float]]]:
+    """The areas between a line and the zero rule where the line is below it (y below ``zero``).
+
+    Each area runs along the rule between the line's crossings, found on the segment between the
+    points either side, so the shading meets the line where the line meets zero.
+    """
+    areas: list[list[tuple[float, float]]] = []
+    area: list[tuple[float, float]] = []
+    for i, (x, y) in enumerate(pts):
+        if i and (pts[i - 1][1] > zero) != (y > zero):
+            px, py = pts[i - 1]
+            cross = (px + (zero - py) / (y - py) * (x - px), zero)
+            if area:
+                areas.append([*area, cross])
+                area = []
+            else:
+                area = [cross]
+        if y > zero:
+            area = area or [(x, zero)]
+            area.append((x, y))
+    if area:
+        areas.append([*area, (area[-1][0], zero)])
+    return areas
+
+
 def spark(chart: dict[str, Any], key: str, w: int = 280, h: int = 52) -> str:
     """One series of a time chart as a homepage sparkline: no axes, drawn to its own range.
 
@@ -723,14 +748,12 @@ def spark(chart: dict[str, Any], key: str, w: int = 280, h: int = 52) -> str:
     for run in runs:
         pts = _thin([(X(t), Y(v)) for t, v in run])
         if zero is not None:
-            for below, group in itertools.groupby(pts, key=lambda p: p[1] > zero):
-                if below:
-                    seg = list(group)
-                    shade.append(
-                        f'<path d="M{_f(seg[0][0] - 1.2)} {_f(zero)} '
-                        + " ".join(f"L{_f(x)} {_f(y)}" for x, y in seg)
-                        + f' L{_f(seg[-1][0] + 1.2)} {_f(zero)} Z" fill="{clay}"/>'
-                    )
+            shade.extend(
+                '<path d="M'
+                + " L".join(f"{_f(x)} {_f(y)}" for x, y in area)
+                + f' Z" fill="{clay}"/>'
+                for area in _below(pts, zero)
+            )
         lines.append(
             '<path d="M'
             + " L".join(f"{_f(x)} {_f(y)}" for x, y in pts)

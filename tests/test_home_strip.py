@@ -100,6 +100,20 @@ def test_a_sparkline_breaks_at_a_gap_and_shades_below_zero() -> None:
     assert 'stroke-dasharray="3 3"' in svg  # the zero rule
 
 
+def test_the_shading_below_zero_meets_the_line_where_it_crosses_zero() -> None:
+    chart = {
+        "type": "line",
+        "unit": "£/MWh",
+        "x": ["2026-09-16", "2026-09-17", "2026-09-18", "2026-09-19"],
+        "series": [{"key": "p", "values": [10.0, -10.0, 10.0, -10.0]}],
+    }
+    svg = chart_svg.spark(chart, "p")
+    # the line runs 4 4, 94.7 48, 185.3 4, 276 48 with zero at y 26: it crosses at x 49.3, 140, 230.7
+    clay = chart_svg.colour("fuel-gas")
+    fills = re.findall(rf'<path d="(M[^"]+)" fill="{clay}"', svg)
+    assert fills == ["M49.3 26 L94.7 48 L140 26 Z", "M230.7 26 L276 48 L276 26 Z"]
+
+
 def test_a_long_sparkline_keeps_its_extremes_in_two_points_a_pixel() -> None:
     days = 6000
     values = [float((i * 37) % 101) for i in range(days)]
