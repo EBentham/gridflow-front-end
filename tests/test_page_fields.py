@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from gridflow_front_end import chart_spec
-from gridflow_front_end.build import _parse_frontmatter
+from gridflow_front_end.build import _front_matter
 from gridflow_front_end.page_fields import anatomy_errors, parse_page_fields
 
 NOTE = """---
@@ -75,9 +75,9 @@ Body text.
 
 def test_note_without_page_block_is_empty() -> None:
     fields, errors = parse_page_fields("---\nsource: elexon\n---\n# x\n")
-    assert fields.is_empty and not fields.present and errors == []
+    assert not fields.declared and not fields.present and errors == []
     fields, errors = parse_page_fields("# no front matter\n")
-    assert fields.is_empty and errors == []
+    assert not fields.declared and errors == []
 
 
 def test_page_block_is_read() -> None:
@@ -143,10 +143,16 @@ def test_an_unquoted_dedup_on_key_survives_yaml() -> None:
     assert fields.record.select["dedup"] == {"on": ["settlement_date"], "order_by": "published_at"}
 
 
-def test_build_frontmatter_ignores_nested_keys() -> None:
-    fm, body = _parse_frontmatter(NOTE)
+def test_build_front_matter_keeps_nested_keys_nested() -> None:
+    fm, body = _front_matter(NOTE)
     assert fm["dataset_key"] == "fuelhh"
-    assert fm["last_verified"] == "2026-09-09"
     # Nested page/chart keys must not leak in as top-level fields.
     assert "summary" not in fm and "unit" not in fm and "date" not in fm
+    assert fm["page"]["title"] == "Generation by fuel type"
     assert body.startswith("# Elexon")
+
+
+def test_build_front_matter_reads_a_quoted_key_without_its_quotes() -> None:
+    fm, _ = _front_matter('---\ndataset_key: "brit_ned"\ndataset_keys: ["a", "b"]\n---\n# x\n')
+    assert fm["dataset_key"] == "brit_ned" and fm["dataset_keys"] == ["a", "b"]
+    assert _front_matter("---\nkey: [unclosed\n---\n# body\n") == ({}, "# body\n")

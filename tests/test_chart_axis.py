@@ -17,7 +17,7 @@ def _gas_days(n: int) -> list[float]:
 
 def test_gas_days_are_labelled_under_their_points_with_ticks_on_their_edges() -> None:
     ts = _gas_days(9)
-    ticks, lo, hi = chart_svg._time_axis(ts, chart_svg.WIDE, narrow=False)
+    ticks, lo, hi = chart_svg._time_axis(ts, narrow=False)
     labelled = [(label, centre) for _t, label, centre in ticks if label]
     assert [label for label, _c in labelled] == [f"{d} Sep" for d in range(13, 22)]
     assert [centre for _l, centre in labelled] == [t + DAY / 2 for t in ts]
@@ -36,7 +36,7 @@ def test_no_axis_label_passes_the_end_of_the_axis() -> None:
 def test_a_span_of_hours_is_labelled_by_the_clock() -> None:
     start = dt.datetime(2026, 9, 17, tzinfo=dt.UTC).timestamp()
     ts = [start + i * 15 for i in range(6 * 240)]
-    ticks, _lo, _hi = chart_svg._time_axis(ts, chart_svg.WIDE, narrow=False)
+    ticks, _lo, _hi = chart_svg._time_axis(ts, narrow=False)
     assert [label for _t, label, _c in ticks] == [f"{h:02d}:00" for h in range(7)]
 
 
@@ -62,7 +62,7 @@ def test_settlement_dates_tick_on_uk_midnight() -> None:
     # settlement dates 15 to 21 September 2026 in BST: each opens at 23:00 UTC the evening before
     lo = dt.datetime(2026, 9, 14, 23, tzinfo=dt.UTC).timestamp()
     ts = [lo + i * 1800 for i in range(7 * 48)]
-    ticks, _lo, _hi = chart_svg._time_axis(ts, chart_svg.WIDE, narrow=False, uk_days=True)
+    ticks, _lo, _hi = chart_svg._time_axis(ts, narrow=False, uk_days=True)
     assert [t for t, _l, _c in ticks] == [lo + i * DAY for i in range(8)]
     assert [label for _t, label, _c in ticks][:2] == ["15 Sep", "16 Sep"]
 
@@ -70,7 +70,7 @@ def test_settlement_dates_tick_on_uk_midnight() -> None:
 def test_winter_settlement_dates_tick_on_utc_midnight() -> None:
     lo = dt.datetime(2026, 12, 1, tzinfo=dt.UTC).timestamp()
     ts = [lo + i * 1800 for i in range(3 * 48)]
-    ticks, _lo, _hi = chart_svg._time_axis(ts, chart_svg.WIDE, narrow=False, uk_days=True)
+    ticks, _lo, _hi = chart_svg._time_axis(ts, narrow=False, uk_days=True)
     assert ticks[0][0] == lo
 
 
@@ -85,7 +85,7 @@ def test_the_midnight_closing_the_axis_carries_no_day_label() -> None:
     lo = dt.datetime(2026, 9, 14, 23, tzinfo=dt.UTC).timestamp()
     ts = [lo + i * 1800 for i in range(7 * 48)]
     for narrow in (False, True):
-        ticks, _lo, hi = chart_svg._time_axis(ts, chart_svg.WIDE, narrow=narrow, uk_days=True)
+        ticks, _lo, hi = chart_svg._time_axis(ts, narrow=narrow, uk_days=True)
         assert ticks[-1][0] == hi and ticks[-1][1] == ""
 
 
@@ -171,14 +171,14 @@ def test_a_span_of_a_year_and_a_half_ticks_every_half_year() -> None:
     # the Balancing Reserve archive: 13 March 2024 to 29 October 2025, one 1 January inside
     ts = _daily(dt.date(2024, 3, 13), dt.date(2025, 10, 29))
     for fr, narrow in ((chart_svg.WIDE, False), (chart_svg.NARROW, True)):
-        ticks, _lo, _hi = chart_svg._time_axis(ts, fr, narrow=narrow)
+        ticks, _lo, _hi = chart_svg._time_axis(ts, narrow=narrow)
         assert [label for _t, label, _c in ticks] == ["Jul 2024", "2025", "Jul"]
         assert _drawn_labels(ts, fr, narrow) == ["Jul 2024", "2025", "Jul"]
 
 
 def test_a_span_just_over_a_year_ticks_every_quarter() -> None:
     ts = _daily(dt.date(2024, 2, 10), dt.date(2025, 3, 28))
-    ticks, _lo, _hi = chart_svg._time_axis(ts, chart_svg.WIDE, narrow=False)
+    ticks, _lo, _hi = chart_svg._time_axis(ts, narrow=False)
     assert [label for _t, label, _c in ticks] == ["Apr 2024", "Jul", "Oct", "2025"]
     for fr, narrow in ((chart_svg.WIDE, False), (chart_svg.NARROW, True)):
         assert len(_drawn_labels(ts, fr, narrow)) >= 3
@@ -196,5 +196,5 @@ def test_a_thinned_axis_keeps_the_year_on_each_tick_that_changes_it() -> None:
 
 def test_a_span_of_several_years_keeps_its_yearly_ticks() -> None:
     ts = _daily(dt.date(2021, 6, 1), dt.date(2025, 11, 30))
-    ticks, _lo, _hi = chart_svg._time_axis(ts, chart_svg.WIDE, narrow=False)
+    ticks, _lo, _hi = chart_svg._time_axis(ts, narrow=False)
     assert [label for _t, label, _c in ticks] == ["2022", "2023", "2024", "2025"]

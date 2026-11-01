@@ -184,14 +184,13 @@ class Frame:
     top: float
     bottom: float
     y_ticks: int
-    font_note: str
 
 
-WIDE = Frame(w=900, h=470, x0=74, x1=884, top=26, bottom=410, y_ticks=5, font_note="")
-NARROW = Frame(w=360, h=300, x0=50, x1=350, top=22, bottom=246, y_ticks=4, font_note=" narrow")
+WIDE = Frame(w=900, h=470, x0=74, x1=884, top=26, bottom=410, y_ticks=5)
+NARROW = Frame(w=360, h=300, x0=50, x1=350, top=22, bottom=246, y_ticks=4)
 # The Data sources landing sets the chart in a 600 to 700 px column: drawn 600 wide, its 13 px text
 # renders at 13 px or more there, where the 900-wide frame shrank it to 9 px.
-LANDING = Frame(w=600, h=380, x0=64, x1=588, top=26, bottom=318, y_ticks=5, font_note="")
+LANDING = Frame(w=600, h=380, x0=64, x1=588, top=26, bottom=318, y_ticks=5)
 
 
 def _parse_time(value: str) -> float:
@@ -270,7 +269,7 @@ def _season_ticks(
 
 
 def _time_axis(
-    ts: Sequence[float], fr: Frame, narrow: bool, uk_days: bool = False
+    ts: Sequence[float], narrow: bool, uk_days: bool = False
 ) -> tuple[list[tuple[float, str, float]], float, float]:
     """Ticks as ``(tick_ts, label, label_ts)``, plus the axis span."""
     lo, hi = ts[0], ts[-1]
@@ -352,7 +351,7 @@ class _Plot:
     ) -> None:
         self.fr = fr
         self.narrow = narrow
-        self.ticks, self.t0, self.t1 = _time_axis(ts, fr, narrow, uk_days)
+        self.ticks, self.t0, self.t1 = _time_axis(ts, narrow, uk_days)
         self.yt = nice_ticks(lo_v, hi_v, fr.y_ticks)
         self.v0, self.v1 = self.yt[0], self.yt[-1]
         if y_min is not None:
@@ -645,7 +644,7 @@ def _bars(chart: dict[str, Any], view: ChartView, fr: Frame, uid: str, narrow: b
 def _height_for_bars(chart: dict[str, Any], fr: Frame) -> Frame:
     n = len(chart["x"])
     h = int(fr.top + n * 34 + 40)
-    return Frame(fr.w, h, fr.x0 - 50, fr.x1, fr.top, h - 40, fr.y_ticks, fr.font_note)
+    return Frame(fr.w, h, fr.x0 - 50, fr.x1, fr.top, h - 40, fr.y_ticks)
 
 
 def key_kind(chart: dict[str, Any]) -> str:

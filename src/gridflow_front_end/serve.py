@@ -9,102 +9,57 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import functools
 import http.server
-import os
 import sys
-import threading
-import time
 import webbrowser
-from pathlib import Path
 
-# Root of the static site relative to this package, resolved at import time.
-_PACKAGE_DIR = Path(__file__).parent
-_PROJECT_ROOT = _PACKAGE_DIR.parent.parent  # src/gridflow_front_end -> src -> project root
-_SITE_DIR = _PROJECT_ROOT / "site" / "hifi"
+from gridflow_front_end.paths import SITE_DIR
 
 
 class _SilentHandler(http.server.SimpleHTTPRequestHandler):
-    """SimpleHTTPRequestHandler that suppresses per-request log lines."""
+    """SimpleHTTPRequestHandler without the per-request log lines; real errors still print."""
 
     def log_message(self, format: str, *args: object) -> None:
-        # Silence the default "GET /index.html 200 -" noise.
         pass
 
     def log_error(self, format: str, *args: object) -> None:
-        # Still surface real errors.
         sys.stderr.write(f"[gridflow-serve] ERROR: {format % args}\n")
-
-
-def _open_browser(url: str, delay: float = 0.5) -> None:
-    """Open *url* in the default browser after a short delay.
-
-    The delay gives the server socket time to bind before the browser hits it.
-    """
-
-    def _go() -> None:
-        time.sleep(delay)
-        webbrowser.open(url)
-
-    t = threading.Thread(target=_go, daemon=True)
-    t.start()
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        prog="gridflow-serve",
-        description="Serve the Gridflow static site locally.",
+        prog="gridflow-serve", description="Serve the Gridflow static site locally."
     )
-    parser.add_argument(
-        "--port",
-        type=int,
-        default=8765,
-        help="TCP port to listen on (default: 8765)",
-    )
-    parser.add_argument(
-        "--no-open",
-        action="store_true",
-        default=False,
-        help="Do not open a browser tab automatically",
-    )
+    parser.add_argument("--port", type=int, default=8765, help="TCP port (default: 8765)")
+    parser.add_argument("--no-open", action="store_true", help="Do not open a browser tab")
     args = parser.parse_args()
 
-    if not _SITE_DIR.is_dir():
-        sys.exit(
-            f"[gridflow-serve] Site directory not found: {_SITE_DIR}\n"
-            "Run the project setup or copy the hifi files into site/hifi/ first."
-        )
-
-    # SimpleHTTPRequestHandler serves relative to the process cwd.
-    os.chdir(_SITE_DIR)
-
-    url = f"http://localhost:{args.port}/"
-    handler = _SilentHandler
-
+    if not SITE_DIR.is_dir():
+        sys.exit(f"[gridflow-serve] Site directory not found: {SITE_DIR}")
+    handler = functools.partial(_SilentHandler, directory=str(SITE_DIR))
     try:
-        # Threading, not http.server.HTTPServer: that one is single-threaded, and
-        # SimpleHTTPRequestHandler speaks HTTP/1.1 keep-alive, so a browser's idle
-        # connection holds the only handler thread and every other request is
-        # refused until it times out. The socket stays bound throughout, so the
-        # server looks healthy from netstat while serving nobody.
+        # Threading, not http.server.HTTPServer: SimpleHTTPRequestHandler speaks HTTP/1.1
+        # keep-alive, so one idle browser connection would hold a single-threaded server's only
+        # handler and every other request would wait until it timed out.
         server = http.server.ThreadingHTTPServer(("", args.port), handler)
-        server.daemon_threads = True
     except OSError as exc:
         sys.exit(
             f"[gridflow-serve] Could not bind to port {args.port}: {exc}\n"
-            f"Try a different port with --port <number>."
+            "Try a different port with --port <number>."
         )
 
+    url = f"http://localhost:{args.port}/"
     print(f"Gridflow  ·  serving on {url}")
     print("Press Ctrl+C to stop.\n")
-
     if not args.no_open:
-        _open_browser(url)
-
-    try:
-        server.serve_forever()
-    except KeyboardInterrupt:
-        print("\n[gridflow-serve] Stopped.")
-        server.server_close()
+        # the socket is bound and listening, so the browser's request waits for serve_forever
+        webbrowser.open(url)
+    with server:
+        try:
+            server.serve_forever()
+        except KeyboardInterrupt:
+            print("\n[gridflow-serve] Stopped.")
 
 
 if __name__ == "__main__":

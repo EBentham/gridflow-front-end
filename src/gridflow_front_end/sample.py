@@ -30,7 +30,7 @@ from typing import Any
 import polars as pl
 
 from gridflow_front_end import artefacts, raw_sample
-from gridflow_front_end.distil import _filter_expr, coerce_value
+from gridflow_front_end.distil import DistilError, _filter_expr, coerce_value, scan_silver
 from gridflow_front_end.page_fields import PageFields, parse_page_fields
 from gridflow_front_end.paths import (
     SITE_DIR,
@@ -54,22 +54,6 @@ def dtype_label(dtype: pl.DataType) -> str:
             return f"Datetime({dtype.time_unit}, {dtype.time_zone})"
         return f"Datetime({dtype.time_unit})"
     return str(dtype)
-
-
-def _scan(silver_root: Path, silver: str) -> pl.LazyFrame:
-    table_dir = silver_root / silver
-    if not table_dir.is_dir():
-        raise SampleError(f"silver table not found: {table_dir}")
-    files = sorted(table_dir.rglob("*.parquet"))
-    if not files:
-        raise SampleError(f"no parquet files under {table_dir}")
-    # Newest file first: its schema (the current transformer's columns, in
-    # order) is the reference; older files lacking a column get nulls. A column
-    # can be all-null (type Null) in one daily file and String in the next
-    # (ENTSOG generic silver), so frames are stacked to a common supertype.
-    columns = list(pl.read_parquet_schema(files[-1]))
-    frames = [pl.scan_parquet(f, hive_partitioning=False) for f in files[::-1]]
-    return pl.concat(frames, how="diagonal_relaxed").select(columns)
 
 
 # Polars' markdown table is read back by splitting rows on "|" and cells on line ends, so a value
@@ -146,7 +130,10 @@ def polars_text(df: pl.DataFrame) -> list[list[str]]:
 
 def select_rows(silver_root: Path, silver: str, select: Mapping[str, Any]) -> pl.DataFrame:
     """Run a note's ``record.select`` against silver; exactly eight rows or an error."""
-    lf = _scan(silver_root, silver)
+    try:
+        lf = scan_silver(silver_root / silver)[0]
+    except DistilError as exc:
+        raise SampleError(str(exc)) from exc
     schema = lf.collect_schema()
     for i, flt in enumerate(select.get("filter", [])):
         col = flt.get("column")
@@ -181,7 +168,6 @@ def build_payload(
     dataset: str,
     silver: str,
     select: Mapping[str, Any],
-    mark: Mapping[str, Any],
     silver_root: Path,
 ) -> dict[str, Any]:
     """Select, format and describe one dataset's eight rows."""
@@ -191,15 +177,6 @@ def build_payload(
     rows = [
         [None if nulls[r][c] else text[r][c] for c in range(df.width)] for r in range(df.height)
     ]
-    marked = [
-        r
-        for r in range(df.height)
-        if all(k in df.columns and rows[r][df.columns.index(k)] == str(v) for k, v in mark.items())
-    ]
-    if mark and len(marked) != 1:
-        raise SampleError(
-            f"record.mark {dict(mark)} matches {len(marked)} of the eight rows; needs 1"
-        )
     return {
         "dataset": f"{vendor}/{dataset}",
         "generated_by": GENERATED_BY,
@@ -214,7 +191,6 @@ def build_payload(
             for name, dtype in df.schema.items()
         ],
         "rows": rows,
-        "mark": marked[0] if mark else None,
     }
 
 
@@ -281,19 +257,12 @@ def main(argv: list[str] | None = None) -> int:
             continue
         silver = artefacts.sample_silver(vendor, dataset, fields.record.select, fields.chart)
         try:
-            payload = build_payload(
-                vendor,
-                dataset,
-                silver,
-                fields.record.select,
-                fields.record.mark,
-                silver_root,
-            )
+            payload = build_payload(vendor, dataset, silver, fields.record.select, silver_root)
         except (SampleError, pl.exceptions.PolarsError) as exc:
             print(f"  FAIL {key}: {exc}", file=sys.stderr)
             failures += 1
             continue
-        print(f"  {key}: {len(payload['columns'])} columns, mark row {payload['mark']}")
+        print(f"  {key}: {len(payload['columns'])} columns")
         if args.dry_run:
             for row in payload["rows"]:
                 print("   ", row)

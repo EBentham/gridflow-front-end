@@ -7,13 +7,8 @@ series grouping, the aggregation, the time window, the unit and the caption.
 one committed JSON file per dataset; ``gridflow-build`` renders from that file
 and never touches silver, so CI builds from a bare checkout.
 
-Where a spec lives
-------------------
-Canonical: the dataset's vault note, under the ``page.chart`` key of its YAML
-front matter (see ``page_fields``). Until the Phase 26 authors write those
-notes, specs are staged in this repo at
-``site/hifi/data/chart-specs/<vendor>/<dataset>.json``. A vault spec wins over
-a staged one; having both is reported so the staged copy can be deleted.
+A spec lives in the dataset's vault note, under the ``page.chart`` key of its
+YAML front matter (see ``page_fields``).
 
 This module is stdlib-only on purpose: the build imports it in CI, where
 polars and silver are absent.
@@ -244,8 +239,7 @@ def validate_spec(spec: object) -> list[str]:
     """Validate one chart spec.
 
     Args:
-        spec: The parsed spec (from a vault note's ``page.chart`` or a staged
-            JSON file).
+        spec: The parsed spec (a vault note's ``page.chart``).
 
     Returns:
         Human-readable error strings; empty when the spec is valid.
@@ -380,75 +374,14 @@ def spec_digest(spec: Mapping[str, Any]) -> str:
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
-def staging_dir(site_dir: Path) -> Path:
-    """Directory of staged specs, ``<site>/data/chart-specs``."""
-    return site_dir / "data" / "chart-specs"
-
-
 def series_dir(site_dir: Path) -> Path:
     """Directory of committed distilled series, ``<site>/data/series``."""
     return site_dir / "data" / "series"
 
 
-def staged_spec_path(site_dir: Path, vendor: str, dataset: str) -> Path:
-    """Path of one staged spec file."""
-    return staging_dir(site_dir) / vendor / f"{dataset}.json"
-
-
 def series_path(site_dir: Path, vendor: str, dataset: str) -> Path:
     """Path of one committed series file."""
     return series_dir(site_dir) / vendor / f"{dataset}.json"
-
-
-def load_staged_spec(site_dir: Path, vendor: str, dataset: str) -> dict[str, Any] | None:
-    """Read a staged spec, or ``None`` when the dataset has none.
-
-    Raises:
-        ValueError: The file exists but is not valid JSON.
-        TypeError: The file holds JSON that is not an object.
-    """
-    path = staged_spec_path(site_dir, vendor, dataset)
-    if not path.is_file():
-        return None
-    try:
-        data = json.loads(path.read_text(encoding="utf-8"))
-    except json.JSONDecodeError as exc:
-        raise ValueError(f"{path}: not valid JSON ({exc})") from exc
-    if not isinstance(data, dict):
-        raise TypeError(f"{path}: a spec must be a JSON object")
-    return data
-
-
-def resolve_spec(
-    site_dir: Path,
-    vendor: str,
-    dataset: str,
-    vault_chart: Mapping[str, Any] | None,
-) -> tuple[dict[str, Any] | None, str, list[str]]:
-    """Pick the spec for one dataset: the vault note's, else the staged one.
-
-    Args:
-        site_dir: The ``site/hifi`` directory.
-        vendor: Site vendor id (``elexon``).
-        dataset: Dataset slug (``fuelhh``).
-        vault_chart: ``page.chart`` from the vault note, if it has one.
-
-    Returns:
-        ``(spec, origin, notes)`` where origin is ``"vault"``, ``"staging"`` or
-        ``""`` and notes are non-fatal observations (both sources present).
-    """
-    staged = load_staged_spec(site_dir, vendor, dataset)
-    notes: list[str] = []
-    if vault_chart is not None:
-        if staged is not None:
-            notes.append(
-                f"{vendor}/{dataset}: vault note carries page.chart; the staged spec "
-                f"{staged_spec_path(site_dir, vendor, dataset).name} is ignored and can be deleted"
-            )
-        return dict(vault_chart), "vault", notes
-    if staged is not None:
-        return staged, "staging", notes
-    return None, "", notes
 
 
 def load_series(site_dir: Path, vendor: str, dataset: str) -> dict[str, Any] | None:

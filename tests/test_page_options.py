@@ -11,14 +11,14 @@ from gridflow_front_end.paths import DEFAULT_VAULT
 
 
 def _doc(vendor: str, slug: str) -> build.DatasetDoc:
-    cfg = build.REAL_VENDORS[vendor]
-    return build.read_note(build.note_path(DEFAULT_VAULT, vendor, slug), slug, vendor, cfg["label"])
+    label = build.load_manifest(vendor)["name"]
+    return build.read_note(build.note_path(DEFAULT_VAULT, vendor, slug), slug, vendor, label)
 
 
 def _view(doc: build.DatasetDoc) -> tuple[dict[str, Any], list[str]]:
     arts, errors = build.check_artefacts(doc)
     assert errors == []
-    arts.chart, chart_errors, _ = build.resolve_chart(doc)
+    arts.chart, chart_errors = build.resolve_chart(doc)
     assert chart_errors == []
     return build.page_view(doc, arts, [])
 

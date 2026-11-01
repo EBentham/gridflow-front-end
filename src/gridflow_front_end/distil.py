@@ -25,7 +25,6 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
-import json
 import sys
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
@@ -48,12 +47,11 @@ class DistilError(Exception):
 
 @dataclass(frozen=True)
 class SpecSource:
-    """One dataset's resolved spec and where it came from."""
+    """One dataset's spec, from its vault note's ``page.chart``."""
 
     vendor: str
     dataset: str
     spec: dict[str, Any]
-    origin: str
 
     @property
     def key(self) -> str:
@@ -161,21 +159,40 @@ def _time_from_text(column: str, text: Mapping[str, Any]) -> pl.Expr:
     return (local - pl.duration(hours=day["starts"])).dt.truncate("1d")
 
 
-def _scan(silver_root: Path, spec: Mapping[str, Any]) -> tuple[pl.LazyFrame, int]:
-    table_dir = silver_root / spec["silver"]
+def scan_silver(table_dir: Path) -> tuple[pl.LazyFrame, int]:
+    """Every parquet file of one silver table as one frame, oldest file first, and the file count.
+
+    The newest file's schema is the reference: its columns, in its order, so a column a later
+    transformer added is read (older files give it nulls) and one it dropped is not read at all. A
+    column may be all-null (type Null) in one daily file and typed in the next (ENTSOG generic
+    silver); any other change of type between files is refused, never cast. Partition folders
+    (year=/month=) are not columns.
+
+    Raises:
+        DistilError: The table has no directory, no parquet file, or such a type change.
+    """
     if not table_dir.is_dir():
         raise DistilError(f"silver table not found: {table_dir}")
     files = sorted(table_dir.rglob("*.parquet"))
     if not files:
         raise DistilError(f"no parquet files under {table_dir}")
-    # Partition folders (year=/month=) are not columns the spec may use, and
-    # files written by older dataset versions may lack newer columns.
-    lf = pl.scan_parquet(
-        files,
-        hive_partitioning=False,
-        missing_columns="insert",
-        extra_columns="ignore",
-    )
+    schemas = [pl.read_parquet_schema(f) for f in files]
+    columns = list(schemas[-1])
+    for name in columns:
+        dtypes = {str(s[name]) for s in schemas if name in s and s[name] != pl.Null}
+        if len(dtypes) > 1:
+            raise DistilError(
+                f"{table_dir}: column {name!r} changes type across files: {sorted(dtypes)}"
+            )
+    frames = [
+        pl.scan_parquet(f, hive_partitioning=False).select([c for c in columns if c in schema])
+        for f, schema in zip(files, schemas, strict=True)
+    ]
+    return pl.concat(frames, how="diagonal_relaxed").select(columns), len(files)
+
+
+def _scan(silver_root: Path, spec: Mapping[str, Any]) -> tuple[pl.LazyFrame, int]:
+    lf, n_files = scan_silver(silver_root / spec["silver"])
     schema = lf.collect_schema()
     missing = [c for c in _needed_columns(spec) if c not in schema]
     if missing:
@@ -184,7 +201,7 @@ def _scan(silver_root: Path, spec: Mapping[str, Any]) -> tuple[pl.LazyFrame, int
     time_col = spec.get("time")
     if time_col and "time_text" in spec:
         lf = lf.with_columns(_time_from_text(time_col, spec["time_text"]).alias(time_col))
-        return lf, len(files)
+        return lf, n_files
     dtype = schema.get(time_col) if time_col else None
     if isinstance(dtype, pl.Datetime) and dtype.time_zone is not None:
         # Normalise to naive UTC inside polars: a tz-aware value crossing into
@@ -192,7 +209,7 @@ def _scan(silver_root: Path, spec: Mapping[str, Any]) -> tuple[pl.LazyFrame, int
         lf = lf.with_columns(
             pl.col(time_col).dt.convert_time_zone("UTC").dt.replace_time_zone(None)
         )
-    return lf, len(files)
+    return lf, n_files
 
 
 _LONG_VALUE = "__value"
@@ -427,11 +444,9 @@ def build_payload(source: SpecSource, silver_root: Path) -> dict[str, Any]:
     return {
         "dataset": source.key,
         "generated_by": GENERATED_BY,
-        "spec_origin": source.origin,
         "spec_sha256": chart_spec.spec_digest(source.spec),
         "type": source.spec["type"],
         "unit": source.spec["unit"],
-        "caption": source.spec.get("caption", ""),
         "value_column": source.spec.get("value"),
         "aggregation": source.spec["aggregation"],
         "window": chart["window"],
@@ -443,46 +458,13 @@ def build_payload(source: SpecSource, silver_root: Path) -> dict[str, Any]:
     }
 
 
-def dumps_payload(payload: Mapping[str, Any]) -> str:
-    """Serialise a payload one key per line and one series per line.
-
-    The files are re-committed after every distil, so a diff should read as
-    "these series changed", not as thousands of one-number lines.
-    """
-
-    def one(value: object) -> str:
-        return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(", ", ": "))
-
-    keys = list(payload)
-    lines = ["{"]
-    for i, key in enumerate(keys):
-        comma = "," if i < len(keys) - 1 else ""
-        value = payload[key]
-        if key == "series" and isinstance(value, list):
-            lines.append(f"  {json.dumps(key)}: [")
-            for j, item in enumerate(value):
-                lines.append(f"    {one(item)}{',' if j < len(value) - 1 else ''}")
-            lines.append(f"  ]{comma}")
-        else:
-            lines.append(f"  {json.dumps(key)}: {one(value)}{comma}")
-    lines.append("}")
-    return "\n".join(lines) + "\n"
-
-
-def discover_specs(
-    site_dir: Path, vault_path: Path
-) -> tuple[list[SpecSource], list[str], list[str]]:
-    """Every dataset with a spec, from vault notes and the staging directory.
+def discover_specs(site_dir: Path, vault_path: Path) -> tuple[list[SpecSource], list[str]]:
+    """Every dataset whose vault note carries a chart spec (``page.chart``).
 
     Returns:
-        ``(sources, errors, notes)``. Errors are invalid specs or unreadable
-        files; notes are non-fatal (a staged spec shadowed by a vault one).
+        ``(sources, errors)``. Errors are malformed page blocks or invalid specs.
     """
-    candidates: set[tuple[str, str]] = set()
-    staging = chart_spec.staging_dir(site_dir)
-    if staging.is_dir():
-        candidates |= {(p.parent.name, p.stem) for p in staging.glob("*/*.json")}
-    vault_charts: dict[tuple[str, str], dict[str, Any]] = {}
+    charts: dict[tuple[str, str], dict[str, Any]] = {}
     errors: list[str] = []
     if vault_path.is_dir():
         for note in sorted(vault_path.glob("*/*.md")):
@@ -491,27 +473,15 @@ def discover_specs(
             key = (note.parent.name, artefacts.note_key(site_dir, note.parent.name, note.stem))
             errors.extend(f"{key[0]}/{key[1]}: {e}" for e in page_errors)
             if fields.chart is not None:
-                vault_charts[key] = fields.chart
-                candidates.add(key)
+                charts[key] = fields.chart
     sources: list[SpecSource] = []
-    notes: list[str] = []
-    for vendor, dataset in sorted(candidates):
-        try:
-            spec, origin, spec_notes = chart_spec.resolve_spec(
-                site_dir, vendor, dataset, vault_charts.get((vendor, dataset))
-            )
-        except (ValueError, TypeError) as exc:
-            errors.append(str(exc))
-            continue
-        notes.extend(spec_notes)
-        if spec is None:
-            continue
+    for (vendor, dataset), spec in sorted(charts.items()):
         problems = chart_spec.validate_spec(spec)
         if problems:
             errors.extend(f"{vendor}/{dataset}: {p}" for p in problems)
             continue
-        sources.append(SpecSource(vendor, dataset, spec, origin))
-    return sources, errors, notes
+        sources.append(SpecSource(vendor, dataset, dict(spec)))
+    return sources, errors
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -554,9 +524,7 @@ def main(argv: list[str] | None = None) -> int:
     vault_path = resolve_vault_path(args.vault_path)
     print(f"[gridflow-distil] silver: {silver_root}")
     print(f"[gridflow-distil] vault:  {vault_path}")
-    sources, errors, notes = discover_specs(SITE_DIR, vault_path)
-    for note in notes:
-        print(f"  NOTE: {note}")
+    sources, errors = discover_specs(SITE_DIR, vault_path)
     if args.dataset:
         wanted = set(args.dataset)
         unknown = wanted - {s.key for s in sources}
@@ -591,7 +559,7 @@ def main(argv: list[str] | None = None) -> int:
             else "no time axis"
         )
         print(
-            f"  {source.key} ({source.origin}): {len(payload['series'])} series x "
+            f"  {source.key}: {len(payload['series'])} series x "
             f"{len(payload['x'])} points, {prov['rows_used']} rows used, {span}"
         )
         if prov.get("unmapped_groups"):
@@ -600,7 +568,7 @@ def main(argv: list[str] | None = None) -> int:
             out.parent.mkdir(parents=True, exist_ok=True)
             # LF on every platform so the committed bytes do not depend on
             # the machine that ran the distil.
-            out.write_text(dumps_payload(payload), encoding="utf-8", newline="\n")
+            out.write_text(artefacts.dumps_lines(payload, "series"), encoding="utf-8", newline="\n")
     written = len(sources) - failures
     verb = "would write" if args.dry_run else "wrote"
     print(f"[gridflow-distil] {verb} {written} series file(s); {failures} failure(s)")

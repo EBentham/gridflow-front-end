@@ -27,7 +27,6 @@ gridflow-build = "gridflow_front_end.build:main"
 gridflow-distil = "gridflow_front_end.distil:main"
 gridflow-sample = "gridflow_front_end.sample:main"
 gridflow-drift-check = "gridflow_front_end.drift_check_entry:main"
-gridflow-staleness-check = "gridflow_front_end.staleness_check:main"
 
 [dependency-groups]
 dev = ["pytest>=8"]

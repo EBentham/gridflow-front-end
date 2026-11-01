@@ -1,24 +1,21 @@
 """gridflow-build — render dataset pages from Obsidian Vault markdown.
 
-Reads vault `.md` files under `<vault>/elexon/*.md`, parses YAML frontmatter
-and the structured sections (Overview, API endpoint, Silver layer, Known
-issues, etc.), and renders one HTML file per dataset using Jinja2 templates
-under `templates/`. Also rebuilds the vendor hub (`site/hifi/data-sources/elexon.html`)
-from the manifest at `site/hifi/data/elexon.json`.
+Reads vault `.md` files under `<vault>/<vendor>/*.md` and renders one HTML file per page using
+Jinja2 templates under `templates/`. A page renders from its note's front matter `page:` block;
+of the note's body only two things are read: the vendor code in its H1 (a family page's variant
+codes) and the path in its API endpoint table (a hub row). Also rebuilds each vendor hub
+(`site/hifi/data-sources/<vendor>.html`) from its manifest (`site/hifi/data/<vendor>.json`).
 
 Build inputs (single source of truth):
-- vault/<vendor>/<slug>.md       — authored content (frontmatter + sections);
-                                   the front matter's `page:` block carries the
-                                   page fields and chart spec (see page_fields).
-                                   A package note (`package:` in its front
-                                   matter) documents several tables on one page
-                                   and is read under its lead table key
+- vault/<vendor>/<slug>.md       — authored content; the front matter's `page:`
+                                   block carries the page fields and chart spec
+                                   (see page_fields). A package note (`package:`
+                                   in its front matter) documents several tables
+                                   on one page and is read under its lead table key
 - site/hifi/data/<vendor>.json   — structural manifest (id/title/freq/lag/rows)
 - site/hifi/data/series/<vendor>/<slug>.json — distilled chart series, written
                                    by `gridflow-distil` from local silver and
                                    committed (see chart_spec, distil)
-- site/hifi/data/chart-specs/<vendor>/<slug>.json — staged chart specs, until
-                                   Phase 26 moves them into the vault notes
 
 Build outputs (gitignored, regenerated on every run):
 - site/hifi/data-sources/<vendor>/<slug>.html
@@ -33,6 +30,9 @@ Usage
     gridflow-build --vault-path /path/to/vault      # override vault location
     gridflow-build --check                          # build twice; non-zero on drift
 
+`--check` also fails when the mirror's sync stamp (`vault/.last_synced_from_vault`) is missing or
+unreadable: without it the committed mirror says nothing of when it was last pulled from the vault.
+
 Vault path resolution order:
     1. --vault-path CLI flag
     2. $GRIDFLOW_VAULT_PATH env var
@@ -46,6 +46,7 @@ there is no seeded or placeholder fallback (v5 decision D3).
 from __future__ import annotations
 
 import argparse
+import datetime as dt
 import filecmp
 import itertools
 import json
@@ -59,18 +60,22 @@ from html import escape as html_escape
 from pathlib import Path
 from typing import Any
 
+import yaml
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 from markupsafe import Markup
 
 from gridflow_front_end import artefacts, chart_spec, chart_svg, map_svg, raw_sample
-from gridflow_front_end.page_fields import PageFields, anatomy_errors, parse_page_fields
+from gridflow_front_end.page_fields import (
+    PageFields,
+    anatomy_errors,
+    front_matter_text,
+    parse_page_fields,
+)
 from gridflow_front_end.paths import DEFAULT_VAULT, REPO_ROOT, SITE_DIR, resolve_vault_path
 
 TEMPLATES_DIR = REPO_ROOT / "templates"
-AUTHORED_DIR = REPO_ROOT / "authored-pages"
 
 __all__ = [
-    "AUTHORED_DIR",
     "DEFAULT_VAULT",
     "REAL_VENDORS",
     "REPO_ROOT",
@@ -80,29 +85,8 @@ __all__ = [
 ]
 
 
-# ──────────────────────────────────────────────────────────────────────
-# Vendor configuration — drives both real hubs and coming-soon stubs.
-# ──────────────────────────────────────────────────────────────────────
-
-
-REAL_VENDORS: dict[str, dict] = {
-    "elexon": {
-        "label": "Elexon BMRS",
-        "vendor_doc_base": "https://bmrs.elexon.co.uk/api-documentation/endpoint/datasets/",
-    },
-    "entsoe": {"label": "ENTSO-E", "vendor_doc_base": "https://transparency.entsoe.eu/"},
-    "entsog": {"label": "ENTSO-G", "vendor_doc_base": "https://transparency.entsog.eu/"},
-    "gie": {"label": "GIE AGSI+ and ALSI", "vendor_doc_base": "https://agsi.gie.eu/"},
-    "neso": {
-        "label": "NESO Carbon Intensity",
-        "vendor_doc_base": "https://carbonintensity.org.uk/",
-    },
-    "openmeteo": {"label": "Open-Meteo", "vendor_doc_base": "https://open-meteo.com/en/docs"},
-    "neso_data_portal": {
-        "label": "NESO Data Portal",
-        "vendor_doc_base": "https://www.neso.energy/data-portal/api-guidance",
-    },
-}
+# The vendors the site builds, each from its manifest (site/hifi/data/<vendor>.json), in build order.
+REAL_VENDORS = ("elexon", "entsoe", "entsog", "gie", "neso", "openmeteo", "neso_data_portal")
 
 
 # ──────────────────────────────────────────────────────────────────────
@@ -111,45 +95,12 @@ REAL_VENDORS: dict[str, dict] = {
 
 
 @dataclass
-class SchemaRow:
-    name: str
-    pk: bool
-    type: str
-    nullable: bool
-    note: str
-
-
-@dataclass
-class Caveat:
-    title: str
-    text: str
-
-
-@dataclass
 class DatasetDoc:
     slug: str
     vendor_id: str  # "elexon"
     vendor_label: str  # "Elexon BMRS"
-    last_verified: str  # "2026-05-08"
-    title_line: str  # H1 of the vault doc
-    api_code: str  # e.g. "FUELHH"
-    overview_paragraphs: list[str] = field(default_factory=list)
-    base_url: str = ""
-    api_path: str = ""
-    auth_note: str = ""
-    silver_path: str = ""
-    transformer_class: str = ""
-    pydantic_schema: str = ""
-    dedup_key: str = ""
-    point_in_time_field: str = ""
-    pydantic_schema_wired: bool = False
-    schema_rows: list[SchemaRow] = field(default_factory=list)
-    sample_columns: list[str] = field(default_factory=list)
-    sample_rows: list[list[str]] = field(default_factory=list)
-    sample_language: str = "json"
-    sample_raw: str = ""
-    caveats: list[Caveat] = field(default_factory=list)
-    bronze_path: str = ""
+    api_code: str  # the vendor code in the note's H1, e.g. "FUELHH" (a family page's variant codes)
+    api_path: str = ""  # the path in the note's API endpoint table (a hub row)
     page: PageFields = field(default_factory=PageFields)
     page_errors: list[str] = field(default_factory=list)
     package: str = ""  # a package note's `package:`; it documents every table of the package
@@ -160,68 +111,33 @@ class DatasetDoc:
         """True when the note carries a ``page:`` block: it renders on the locked anatomy."""
         return self.page.present
 
-    @property
-    def vendor_doc_url(self) -> str:
-        """Link to the canonical vendor endpoint reference, derived from vendor config."""
-        base = REAL_VENDORS.get(self.vendor_id, {}).get("vendor_doc_base", "")
-        if self.vendor_id == "elexon":
-            return f"{base}{self.api_code}"
-        if self.vendor_id == "entsoe":
-            return base  # ENTSO-E TP doesn't have per-dataset URLs
-        return base
-
-    @property
-    def silver_dir(self) -> str:
-        """Directory glob root for the silver layer (drops trailing partition spec)."""
-        if not self.silver_path:
-            return f"data/silver/elexon/{self.slug}"
-        # Truncate at the first `<` or `=` partition marker, or at the filename basename
-        head = re.split(r"/[^/]*[=<]", self.silver_path)[0]
-        return head.rstrip("/")
-
-    @property
-    def first_pk_column(self) -> str:
-        """First PK column (for the DuckDB date-filter example)."""
-        for row in self.schema_rows:
-            if row.pk:
-                return row.name
-        return "settlement_date"
-
 
 # ──────────────────────────────────────────────────────────────────────
 # Vault parsing
 # ──────────────────────────────────────────────────────────────────────
 
 
-def _parse_frontmatter(text: str) -> tuple[dict[str, str], str]:
-    if not text.startswith("---"):
-        return {}, text
-    end = text.find("\n---", 3)
-    if end == -1:
-        return {}, text
-    fm_text = text[3:end].strip()
-    body = text[end + 4 :].lstrip("\n")
-    frontmatter: dict[str, str] = {}
-    for line in fm_text.splitlines():
-        # Top-level scalars only. Nested YAML (v2_fix_history, the `page:`
-        # block) is indented; letting it through would let a nested key
-        # overwrite a top-level one. `page:` is read by page_fields with YAML.
-        if line[:1].isspace() or line.lstrip().startswith("-"):
-            continue
-        if ":" in line:
-            k, v = line.split(":", 1)
-            frontmatter[k.strip()] = v.strip()
-    return frontmatter, body
+def _front_matter(text: str) -> tuple[dict[str, Any], str]:
+    """A note's front matter as YAML, and its body.
 
-
-_HEADING_RE = re.compile(r"^(#+)\s+(.*?)\s*$", re.MULTILINE)
+    Front matter that is absent, or not a valid YAML mapping, reads as empty here; ``page_fields``
+    reports invalid YAML as a page error, which fails the build.
+    """
+    raw = front_matter_text(text)
+    if raw is None:
+        return {}, text
+    try:
+        data = yaml.safe_load(raw)
+    except yaml.YAMLError:
+        data = None
+    body = text[3 + len(raw) + len("\n---") :].lstrip("\n")
+    return (data if isinstance(data, dict) else {}), body
 
 
 def _split_sections(body: str) -> dict[str, str]:
-    """Split a markdown body into sections keyed by lowercased heading text.
+    """Split a markdown body into sections keyed by lowercased ``## Heading`` text.
 
-    Recognises any `## Heading` line. Sections include nested `### subheads`
-    in their content. Returns ordered dict (insertion order = source order).
+    Sections include nested `### subheads` in their content.
     """
     sections: dict[str, str] = {}
     matches = list(re.finditer(r"^##\s+(?P<title>.*?)\s*$", body, re.MULTILINE))
@@ -231,171 +147,6 @@ def _split_sections(body: str) -> dict[str, str]:
         end = matches[i + 1].start() if i + 1 < len(matches) else len(body)
         sections[key] = body[start:end].strip()
     return sections
-
-
-def _strip_link(text: str) -> str:
-    """Strip markdown links '[a](b)' → 'a'."""
-    return re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", text)
-
-
-# Link-count telemetry from the most recent `_markdown_inline` pass, keyed by
-# outcome. Populated as a module-level counter (rather than threaded through
-# every call site) so `build()` can report resolved-vs-plain-text counts for
-# vault-relative `.md` links without changing every caller's signature.
-_MD_LINK_STATS: dict[str, int] = {"resolved": 0, "plain_text": 0, "fragment_dropped": 0}
-
-
-def _reset_md_link_stats() -> None:
-    _MD_LINK_STATS["resolved"] = 0
-    _MD_LINK_STATS["plain_text"] = 0
-    _MD_LINK_STATS["fragment_dropped"] = 0
-
-
-# Section ids that exist on EVERY generated dataset page
-# (templates/dataset.html.j2) — the only fragments a resolved `.md` link may
-# carry, because the deploy gate link-checks fragments (`lychee
-# --include-fragments`): an anchor to a heading that only exists in the vault
-# source would 404 the fragment and block deployment. The chart section is
-# not listed: a page without a chart spec has no chart section at all.
-_GENERATED_SECTION_IDS = frozenset({"overview", "schema", "sample", "api", "caveats", "related"})
-
-# Vault heading slugs whose content demonstrably lands in a specific generated
-# section. Anything not listed here (e.g. `#changelog`, ad-hoc subsection
-# anchors) has no generated counterpart: the fragment is dropped and counted,
-# and the link points at the page top.
-_VAULT_FRAGMENT_TO_SECTION_ID = {
-    "known-issues-and-gotchas": "caveats",
-    "silver-schema": "schema",
-    # Subsection of "Known issues and gotchas" (historical_wind) — its content
-    # renders inside the caveats section.
-    "archive-10m100m-limitation": "caveats",
-}
-
-
-def _map_fragment(frag: str) -> str | None:
-    """Best generated-page anchor for a vault fragment slug, or None."""
-    if frag in _GENERATED_SECTION_IDS:
-        return frag
-    return _VAULT_FRAGMENT_TO_SECTION_ID.get(frag)
-
-
-# Caveat-extraction telemetry, same shape and lifecycle as `_MD_LINK_STATS`:
-# any line inside a "Known issues and gotchas" section that the grammar cannot
-# place is COUNTED here rather than silently discarded, and `build()` reports
-# a nonzero count at the end of the run.
-_CAVEAT_STATS: dict[str, int] = {"dropped_lines": 0}
-
-
-def _reset_caveat_stats() -> None:
-    _CAVEAT_STATS["dropped_lines"] = 0
-
-
-_MANIFEST_SLUGS_CACHE: dict[str, set[str]] | None = None
-
-# (vendor, slug) of every note on the new dataset template, filled by build()
-# before any page renders, so a legacy page's link into one drops its
-# legacy-only fragment instead of failing the fragment-aware link check.
-_NEW_TEMPLATE_PAGES: set[tuple[str, str]] = set()
-
-
-def _all_manifest_slugs() -> dict[str, set[str]]:
-    """Slug set per vendor, loaded from each vendor's manifest and cached.
-
-    Used to decide whether a vault-relative `.md` link target actually has a
-    published dataset page (`site/hifi/data-sources/<vendor>/<slug>.html`).
-    """
-    global _MANIFEST_SLUGS_CACHE
-    if _MANIFEST_SLUGS_CACHE is None:
-        cache: dict[str, set[str]] = {}
-        for vendor_id in REAL_VENDORS:
-            try:
-                manifest = load_manifest(vendor_id)
-            except FileNotFoundError:
-                cache[vendor_id] = set()
-                continue
-            # a package note's stem names its page, so a link to the note resolves to it
-            cache[vendor_id] = set(manifest_datasets(manifest)) | set(
-                artefacts.package_leads(manifest)
-            )
-        _MANIFEST_SLUGS_CACHE = cache
-    return _MANIFEST_SLUGS_CACHE
-
-
-def _related_targets() -> dict[str, set[str]]:
-    """What a page's related entry may name, per vendor: a table key or a page slug of the page set.
-
-    A table key links to ``<key>.html`` (its page, or the pointer to its family page); a page slug
-    (a package page such as ``aggregated-bsad``, or a family page) links to that page itself.
-    """
-    out: dict[str, set[str]] = {}
-    for vendor_id in REAL_VENDORS:
-        try:
-            manifest = load_manifest(vendor_id)
-        except FileNotFoundError:
-            out[vendor_id] = set()
-            continue
-        pages = {page for group in manifest["groups"] for page in group["pages"]}
-        out[vendor_id] = set(manifest_datasets(manifest)) | pages
-    return out
-
-
-_MD_LINK_TARGET_RE = re.compile(r"^(?P<path>[^#]*\.md)(?P<anchor>#.*)?$")
-
-
-def _resolve_md_link(target: str, vendor_id: str) -> str | None:
-    """Resolve a vault-relative `.md` link to its published dataset-page href.
-
-    Routing shape (see module docstring / `build_vendor`): a vault file at
-    `vault/<vendor>/<slug>.md` publishes to
-    `site/hifi/data-sources/<vendor>/<slug>.html`, and dataset pages for the
-    same vendor sit flat in that vendor's directory, so a same-vendor link
-    resolves to `<slug>.html` and a cross-vendor link to
-    `../<other-vendor>/<slug>.html` (matching the existing sibling-link and
-    vendor-hub href shapes already used by the Jinja templates).
-
-    Recognised shapes: bare `slug.md`, `./slug.md` (same vendor), and
-    `../<vendor>/slug.md` (cross-vendor) — each with an optional `#anchor`
-    suffix. A fragment survives only if it names a real generated section id,
-    directly or via `_VAULT_FRAGMENT_TO_SECTION_ID`; otherwise it is dropped
-    (counted in `_MD_LINK_STATS["fragment_dropped"]`) so the deploy gate's
-    fragment-aware link check cannot fail on a vault-only heading anchor.
-    Anything else (a domain-notes path
-    like `../../../20-domain/...`, `../README.md`, or a same/cross-vendor
-    slug that isn't in that vendor's manifest — i.e. has no published page)
-    returns None so the caller renders plain text instead of a dead link.
-    """
-    m = _MD_LINK_TARGET_RE.match(target)
-    if not m:
-        return None
-    path, anchor = m.group("path"), m.group("anchor") or ""
-    parts = path.split("/")
-    if len(parts) == 1 or (len(parts) == 2 and parts[0] == "."):
-        target_vendor = vendor_id
-        slug = Path(parts[-1]).stem
-    elif len(parts) == 3 and parts[0] == ".." and parts[1] in REAL_VENDORS:
-        target_vendor = parts[1]
-        slug = Path(parts[2]).stem
-    else:
-        return None
-    if slug not in _all_manifest_slugs().get(target_vendor, set()):
-        return None
-    if anchor and (target_vendor, slug) in _NEW_TEMPLATE_PAGES:
-        # the new template has none of the legacy section ids (no #caveats, no
-        # #schema); keep the page target and drop the fragment
-        _MD_LINK_STATS["fragment_dropped"] += 1
-        anchor = ""
-    if anchor:
-        mapped = _map_fragment(anchor[1:])
-        if mapped:
-            anchor = f"#{mapped}"
-        else:
-            # Cross-page link stays useful without its fragment: keep the
-            # page target, drop the vault-only anchor.
-            _MD_LINK_STATS["fragment_dropped"] += 1
-            anchor = ""
-    if target_vendor == vendor_id:
-        return f"{slug}.html{anchor}"
-    return f"../{target_vendor}/{slug}.html{anchor}"
 
 
 _URI_SCHEME_RE = re.compile(r"^([a-zA-Z][a-zA-Z0-9+.\-]*):")
@@ -409,48 +160,30 @@ _ASCII_TAB_NL_RE = re.compile(r"[\t\n\r]")
 _C0_AND_SPACE = "".join(chr(c) for c in range(0x21))
 
 
-def _sanitize_href(url: str, vendor_id: str) -> str | None:
+def _sanitize_href(url: str) -> str | None:
     """Return a safe href for `url`, or None if it must render as plain text.
 
     The input is first normalized the way browsers normalize URLs (tab/newline
     removed anywhere, C0 controls and spaces trimmed at the ends), and the
     normalized form is both what gets checked and what gets returned.
 
-    Allowlist: `http:`, `https:`, `mailto:`; scheme-less relative paths;
-    `#anchor` fragments that map to a real generated section id (via
-    `_map_fragment` — same-page anchors to vault-only headings render as
-    plain text, counted); and vault-relative `.md` targets that resolve to a
-    published dataset page (see `_resolve_md_link`). Everything else —
-    `javascript:`, `data:`, `vbscript:`, any other unrecognised scheme,
-    protocol-relative `//` links, and `.md` targets with no published page —
-    is rejected so the caller can render inert plain text instead of a
-    clickable href.
+    Allowlist: `http:`, `https:`, `mailto:` and scheme-less relative paths.
+    Everything else — `javascript:`, `data:`, `vbscript:`, any other scheme and
+    protocol-relative `//` links — is rejected so the caller can render inert
+    plain text instead of a clickable href. A vault `.md` target or a `#`
+    fragment is rejected too: page words have no published page or generated
+    anchor to point it at.
     """
     url = _ASCII_TAB_NL_RE.sub("", url).strip(_C0_AND_SPACE)
     scheme_match = _URI_SCHEME_RE.match(url)
     if scheme_match:
         return url if scheme_match.group(1).lower() in _ALLOWED_URI_SCHEMES else None
-    if url.startswith("//"):
+    if url.startswith(("//", "#")) or re.search(r"\.md(#.*)?$", url):
         return None
-    if url.startswith("#"):
-        frag = url[1:]
-        if not frag:
-            return url
-        mapped = _map_fragment(frag)
-        if mapped:
-            return f"#{mapped}"
-        # A same-page link whose anchor has no generated counterpart is a
-        # dead link with no useful remainder — render plain text, counted.
-        _MD_LINK_STATS["fragment_dropped"] += 1
-        return None
-    if re.search(r"\.md(#.*)?$", url):
-        resolved = _resolve_md_link(url, vendor_id)
-        _MD_LINK_STATS["resolved" if resolved else "plain_text"] += 1
-        return resolved
     return url
 
 
-def _markdown_inline(text: str, vendor_id: str = "") -> str:
+def _markdown_inline(text: str) -> str:
     """Render a minimal markdown subset: backticks -> <code>, **bold**, *italic*/_italic_,
     [text](url) -> <a>.
 
@@ -461,11 +194,8 @@ def _markdown_inline(text: str, vendor_id: str = "") -> str:
     Bold is substituted before italic so a leftover single `*` from a
     consumed `**pair**` can never be mistaken for an italic delimiter.
 
-    `[text](url)` links are passed through `_sanitize_href` (scoped to
-    `vendor_id`, the current dataset page's vendor): an unsafe or dead link
-    target renders as escaped plain text instead of an `<a href>` — see
-    `_sanitize_href` and `_resolve_md_link` for the allowlist/resolution
-    rules.
+    `[text](url)` links are passed through `_sanitize_href`: an unsafe target
+    renders as escaped plain text instead of an `<a href>`.
     """
     text = html_escape(text)
     text = re.sub(r"`([^`]+)`", r"<code>\1</code>", text)
@@ -475,38 +205,13 @@ def _markdown_inline(text: str, vendor_id: str = "") -> str:
 
     def _link_repl(m: re.Match[str]) -> str:
         label, url = m.group(1), m.group(2)
-        href = _sanitize_href(url, vendor_id)
+        href = _sanitize_href(url)
         if href is None:
             return label
         return f'<a href="{href}">{label}</a>'
 
     text = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", _link_repl, text)
     return text
-
-
-def _parse_overview(section: str) -> list[str]:
-    """Split overview body into paragraphs; strip 'Link to relevant domain...' note."""
-    text = section.strip()
-    # Drop the "→ Link to relevant domain..." auto-inserted block (and its bullets)
-    text = re.sub(
-        r"→ Link to relevant domain concept notes.*?(?=\n\n|\Z)",
-        "",
-        text,
-        flags=re.DOTALL,
-    )
-    paragraphs = []
-    for p in re.split(r"\n\s*\n", text):
-        p = p.strip()
-        # Drop empty paragraphs and lone markdown horizontal rules
-        if not p or re.fullmatch(r"-{3,}", p):
-            continue
-        paragraphs.append(p)
-    return paragraphs
-
-
-def _strip_title_backticks(line: str) -> str:
-    """Strip backticks but keep ALLCAPS dataset code visible: 'X (`FOO`)' → 'X (FOO)'."""
-    return line.replace("`", "")
 
 
 def _parse_markdown_table(text: str) -> list[list[str]] | None:
@@ -524,343 +229,45 @@ def _parse_markdown_table(text: str) -> list[list[str]] | None:
     return rows
 
 
-def _extract_api_table(section: str) -> dict[str, str]:
-    """Parse the API endpoint key/value table from the 'API endpoint' section."""
-    rows = _parse_markdown_table(section)
-    if not rows:
-        return {}
-    out: dict[str, str] = {}
-    for row in rows[1:]:
-        if len(row) < 2:
-            continue
-        key = row[0].lower()
-        value = row[1]
-        out[key] = value
-    return out
+def _api_path(body: str) -> str:
+    """The ``Path`` row of the note's 'API endpoint' table (the last one, if it repeats)."""
+    rows = _parse_markdown_table(_split_sections(body).get("api endpoint", "")) or []
+    table = {row[0].lower(): row[1] for row in rows[1:] if len(row) >= 2}
+    return table.get("path", "").strip("`")
 
 
-def _extract_silver_metadata(section: str) -> dict[str, str]:
-    """Parse the bold key/value pairs at the top of the Silver layer section.
-
-    Values may be backtick-quoted with an optional trailing note (e.g.
-    `` `ingested_at` (no native PIT field) ``). Extract the first backtick value
-    when present; otherwise return the raw value with surrounding backticks stripped.
-    """
-    meta: dict[str, str] = {}
-    for line in section.splitlines():
-        m = re.match(r"\*\*(?P<key>[^*]+)\*\*\s*:\s*(?P<val>.*?)\s*$", line)
-        if not m:
-            continue
-        key = m.group("key").strip().lower()
-        val = m.group("val").strip()
-        # Prefer the first backtick-bounded value if present (the canonical code value)
-        code_match = re.match(r"`([^`]+)`", val)
-        if code_match:
-            meta[key] = code_match.group(1)
-        else:
-            meta[key] = val.strip("`")
-    return meta
-
-
-def _parse_pk_columns(dedup_key: str) -> set[str]:
-    """Extract PK column names from a dedup-key string like '(a, b, c)' or 'a, b'."""
-    cleaned = dedup_key.strip().strip("()").strip()
-    if not cleaned:
-        return set()
-    return {c.strip().strip("`") for c in cleaned.split(",") if c.strip()}
-
-
-def _extract_silver_schema_rows(section: str, pk_columns: set[str]) -> list[SchemaRow]:
-    """Parse the silver schema table under '### Silver schema'."""
-    sub_match = re.search(r"###\s+Silver schema\s*\n(.*?)(?=\n###\s|\n##\s|\Z)", section, re.DOTALL)
-    if not sub_match:
-        return []
-    table = _parse_markdown_table(sub_match.group(1))
-    if not table or len(table) < 2:
-        return []
-    header = [c.lower() for c in table[0]]
-    name_i = header.index("field") if "field" in header else 0
-    type_i = header.index("python type") if "python type" in header else 1
-    nullable_i = header.index("nullable") if "nullable" in header else 2
-    rows: list[SchemaRow] = []
-    for r in table[1:]:
-        if len(r) < 3:
-            continue
-        raw_name = r[name_i].strip("`").strip()
-        is_pk = raw_name in pk_columns
-        nullable_raw = r[nullable_i].strip()
-        nullable = nullable_raw.lower() in {"yes", "true"}
-        notes = ""
-        if len(r) >= 5:
-            notes = r[4].strip()
-        elif len(r) == 4:
-            notes = r[3].strip()
-        type_str = r[type_i].strip("`").strip()
-        if "pk" in notes.lower() or "primary key" in notes.lower():
-            is_pk = True
-        rows.append(
-            SchemaRow(
-                name=raw_name,
-                pk=is_pk,
-                type=type_str,
-                nullable=nullable,
-                note=notes,
-            )
-        )
-    return rows
-
-
-def _extract_silver_sample(section: str) -> tuple[list[str], list[list[str]], str, str]:
-    """Parse silver sample. Returns (columns, rows, language, raw_block).
-
-    Vault format varies: sometimes a Python list of dicts, sometimes JSON, sometimes
-    a markdown table. We render it as code-block sample (raw) on the page; columns/rows
-    are used by the data-table when a structured form can be derived.
-    """
-    sub_match = re.search(r"###\s+Silver sample\s*\n(.*?)(?=\n###\s|\n##\s|\Z)", section, re.DOTALL)
-    if not sub_match:
-        return [], [], "json", ""
-    sub_text = sub_match.group(1)
-    # Find first fenced code block
-    fence = re.search(r"```(\w*)\n(.*?)```", sub_text, re.DOTALL)
-    if fence:
-        lang = fence.group(1) or "json"
-        raw = fence.group(2).strip()
-        # Try to extract list[dict] into a structured table
-        rows_struct, cols_struct = _try_parse_listdict(raw)
-        return cols_struct, rows_struct, lang, raw
-    # Else try a markdown table
-    table = _parse_markdown_table(sub_text)
-    if table:
-        return table[0], table[1:], "table", ""
-    return [], [], "json", sub_text.strip()
-
-
-def _try_parse_listdict(raw: str) -> tuple[list[list[str]], list[str]]:
-    """Best-effort: parse a python-list-of-dicts literal into rows+columns."""
-    try:
-        # Python dicts allow trailing commas and unquoted keys sometimes —
-        # safer to do a coarse parse
-        s = raw.strip()
-        if not s.startswith("["):
-            return [], []
-        # Replace Python None/True/False with JSON nulls/bools
-        s_json = (
-            s.replace("'", '"')
-            .replace("True", "true")
-            .replace("False", "false")
-            .replace("None", "null")
-        )
-        # Drop trailing commas before ] or }
-        s_json = re.sub(r",(\s*[\]}])", r"\1", s_json)
-        data = json.loads(s_json)
-    except (ValueError, json.JSONDecodeError):
-        return [], []
-    if not isinstance(data, list) or not data:
-        return [], []
-    if not isinstance(data[0], dict):
-        return [], []
-    columns = list(data[0].keys())
-    rows = [[str(d.get(c, "")) for c in columns] for d in data]
-    return rows, columns
-
-
-_CAVEAT_LEAD_RE = re.compile(r"^\*\*(?P<title>[^*]+?)\*\*\s*(?P<rest>.*)$")
-_CAVEAT_SEP_RE = re.compile(r"^[—:\-–]\s*")
-
-
-def _extract_caveats(section: str) -> list[Caveat]:
-    """Parse 'Known issues and gotchas' bullet list into numbered caveats.
-
-    The vault format uses three observed bullet shapes: `- **Title** — body`,
-    `- **Title**: body`, and `` - **Title.** body `` (a bold lead-in ending in
-    its own sentence period, immediately followed by the body sentence with
-    no separator character at all — e.g. ``**PSR types are human-readable
-    labels.** Elexon's AGPT API returns...``). All three are handled by
-    stripping the bold title, then optionally stripping a leading separator
-    from what remains. A trailing period on the title is dropped since it
-    belongs to the bold lead-in's own sentence, not the title text.
-
-    A bullet's body may wrap onto subsequent physical lines: the vault's
-    authored markdown indents continuation lines by two spaces (standard
-    Obsidian bullet-wrap style) rather than repeating the leading `-`. Each
-    indented, non-blank line immediately following an open bullet belongs to
-    that bullet's body and is joined with a single space, UNTIL a terminator
-    is seen. A blank line or a pure horizontal-rule (``---``) line genuinely
-    resets the open-bullet state: any indented content that follows a
-    terminator is non-caveat content — it does NOT get appended to the
-    caveat that preceded the terminator, and it is counted in
-    ``_CAVEAT_STATS["dropped_lines"]`` rather than silently discarded.
-
-    An in-section subheading (``### Control-area vs cross-zonal``) opens a
-    caveat of its own: the heading text is the title and the col-0 prose
-    lines that follow are its body, joined across blank-separated paragraphs
-    until the next bullet, subheading, or horizontal rule. Col-0 prose with
-    no open subheading has nowhere to go and is counted as dropped.
-
-    An indented nested `-` bullet (e.g. Obsidian sub-bullets under a caveat)
-    is not itself a new top-level caveat — top-level bullets are only
-    recognised at column 0. While a caveat is open, an indented nested
-    bullet joins that caveat's body as plain text (its own leading `-`
-    marker is stripped). A nested bullet encountered after a terminator has
-    no open caveat to join, so — like any other post-terminator indented
-    line — it is dropped and counted, not silently ignored.
-
-    Pure horizontal-rule lines (``---``) can appear inside a section's body
-    (a markdown ``---`` divider before the next ``##`` heading is not itself
-    a heading, so `_split_sections` leaves it in-section) and must not be
-    misread as an empty caveat bullet — they are skipped explicitly (and, as
-    above, they close out any open caveat's continuation).
-    """
-    caveats: list[Caveat] = []
-    caveat_open = False
-    heading_open = False
-    for line in section.splitlines():
-        stripped = line.strip()
-        if not stripped:
-            # Blank line terminates any open bullet's continuation. A
-            # heading-opened caveat stays open: its prose paragraphs are
-            # authored blank-separated at column 0.
-            caveat_open = False
-            continue
-        if re.fullmatch(r"-{3,}", stripped):
-            # Horizontal rule — not a bullet, and terminates continuation
-            # of whatever bullet or subheading preceded it.
-            caveat_open = False
-            heading_open = False
-            continue
-        is_indented = line[:1].isspace()
-        if not is_indented and stripped.startswith("#"):
-            # An in-section subheading (`### Control-area vs cross-zonal`)
-            # opens a caveat whose body is the col-0 prose that follows it.
-            caveats.append(Caveat(title=stripped.lstrip("#").strip(), text=""))
-            caveat_open = False
-            heading_open = True
-            continue
-        if not is_indented and stripped.startswith("-"):
-            heading_open = False
-            content = stripped[1:].strip()
-            m = _CAVEAT_LEAD_RE.match(content)
-            if m:
-                title = m.group("title").strip().rstrip(".").strip()
-                rest = m.group("rest")
-                sep_m = _CAVEAT_SEP_RE.match(rest)
-                body = rest[sep_m.end() :].strip() if sep_m else rest.strip()
-                if not sep_m and re.fullmatch(r"[.!?]*", body):
-                    # Title-only bullet (e.g. `- **GB empty post-Brexit**.`) —
-                    # the trailing punctuation belongs to the title's own
-                    # sentence, not a separate body; don't render a stray "."
-                    # as the caveat body.
-                    body = ""
-                caveats.append(Caveat(title=title, text=body))
-            else:
-                # Fallback: take the first sentence as title
-                title = content.split(".", 1)[0]
-                body = content[len(title) :].lstrip(". ").strip()
-                caveats.append(Caveat(title=title, text=body))
-            caveat_open = True
-            continue
-        if ((is_indented and caveat_open) or (not is_indented and heading_open)) and caveats:
-            # Continuation content: an indented line under an open bullet
-            # (including a nested `-` bullet, whose own marker is stripped),
-            # or a col-0 prose line under an open subheading. Joins the open
-            # caveat's body with a space.
-            joined = stripped[1:].strip() if stripped.startswith("-") else stripped
-            if caveats[-1].text:
-                caveats[-1] = Caveat(title=caveats[-1].title, text=f"{caveats[-1].text} {joined}")
-            else:
-                caveats[-1] = Caveat(title=caveats[-1].title, text=joined)
-            continue
-        # Anything the grammar cannot place (indented content after a
-        # terminator, col-0 prose with no open subheading) is counted, never
-        # silently discarded — `build()` reports a nonzero count.
-        _CAVEAT_STATS["dropped_lines"] += 1
-    return caveats
-
-
-def _extract_api_code_from_title(title_line: str, slug: str) -> str:
-    """Extract '(FUELHH)' style code from the title line."""
-    m = re.search(r"\(`?([A-Z][A-Z0-9_\-/]+)`?\)", title_line)
-    if m:
-        return m.group(1).replace("-", "_").replace("/", "_")
-    return slug.upper()
+def _api_code(body: str, slug: str) -> str:
+    """The vendor code in the note's first H1 ('Generation by fuel (`FUELHH`)'), else the slug."""
+    h1 = re.search(r"^#\s+(.*?)\s*$", body, re.MULTILINE)
+    m = re.search(r"\(`?([A-Z][A-Z0-9_\-/]+)`?\)", h1.group(1)) if h1 else None
+    return m.group(1).replace("-", "_").replace("/", "_") if m else slug.upper()
 
 
 def parse_vault_file(
     path: Path, vendor_id: str = "elexon", vendor_label: str = "Elexon BMRS"
 ) -> DatasetDoc:
     text = path.read_text(encoding="utf-8")
-    fm, body = _parse_frontmatter(text)
-    slug = fm.get("dataset_key", path.stem)
-    # First H1 is the title; strip backticks so HTML escaping doesn't lose semantics
-    h1_match = re.search(r"^#\s+(.*?)\s*$", body, re.MULTILINE)
-    raw_title = h1_match.group(1).strip() if h1_match else slug
-    # Strip leading "Elexon - " or "Vendor - " prefix; the vendor breadcrumb already shows it
-    title_line = re.sub(r"^(Elexon|ENTSO-E|ENTSO-G|GIE|NESO|Open-Meteo)\s*-\s*", "", raw_title)
-    title_line = _strip_title_backticks(title_line)
-    api_code = _extract_api_code_from_title(title_line, slug)
-
-    sections = _split_sections(body)
-    overview = _parse_overview(sections.get("overview", ""))
-    api_meta = _extract_api_table(sections.get("api endpoint", ""))
-    silver_section = sections.get("silver layer", "")
-    silver_meta = _extract_silver_metadata(silver_section)
-    dedup_key_raw = silver_meta.get("dedup key", "").strip("`")
-    pk_cols = _parse_pk_columns(dedup_key_raw)
-    schema_rows = _extract_silver_schema_rows(silver_section, pk_cols)
-    sample_cols, sample_rows, sample_lang, sample_raw = _extract_silver_sample(silver_section)
-    caveats = _extract_caveats(sections.get("known issues and gotchas", ""))
-    bronze_section = sections.get("bronze layer", "")
-    bronze_meta = _extract_silver_metadata(bronze_section)  # same key/value shape
-
-    # Detect whether the pydantic schema is wired: must look like a dotted module path
-    raw_schema = silver_meta.get("pydantic schema", "").strip("`")
-    pydantic_wired = bool(re.match(r"^[\w]+(\.[\w]+)+$", raw_schema))
+    fm, body = _front_matter(text)
+    slug = str(fm.get("dataset_key", path.stem))
+    package = str(fm.get("package") or "")
+    keys = fm.get("dataset_keys")
     page, page_errors = parse_page_fields(text)
-
     return DatasetDoc(
         slug=slug,
         vendor_id=vendor_id,
         vendor_label=vendor_label,
-        last_verified=fm.get("last_verified", ""),
-        title_line=title_line,
-        api_code=api_code,
-        overview_paragraphs=overview,
-        base_url=api_meta.get("base url", "").strip("`"),
-        api_path=api_meta.get("path", "").strip("`"),
-        auth_note=api_meta.get("auth", ""),
-        silver_path=silver_meta.get("path pattern", "").strip("`"),
-        transformer_class=silver_meta.get("transformer class", "").strip("`"),
-        pydantic_schema=raw_schema if pydantic_wired else "",
-        pydantic_schema_wired=pydantic_wired,
-        dedup_key=silver_meta.get("dedup key", "").strip("`"),
-        point_in_time_field=silver_meta.get("point-in-time field", "").strip("`"),
-        schema_rows=schema_rows,
-        sample_columns=sample_cols,
-        sample_rows=sample_rows,
-        sample_language=sample_lang,
-        sample_raw=sample_raw,
-        caveats=caveats,
-        bronze_path=bronze_meta.get("path pattern", "").strip("`"),
+        api_code=_api_code(body, slug),
+        api_path=_api_path(body),
         page=page,
         page_errors=page_errors,
-        package=fm.get("package", "").strip('"'),
+        package=package,
         # A single-table package note names its one table as `dataset_key` instead.
-        dataset_keys=_parse_key_list(fm["dataset_keys"])
-        if "dataset_keys" in fm
-        else [fm["dataset_key"].strip('"')]
-        if fm.get("package") and fm.get("dataset_key")
+        dataset_keys=[str(k) for k in keys]
+        if isinstance(keys, list)
+        else [slug]
+        if package and "dataset_key" in fm and "dataset_keys" not in fm
         else [],
     )
-
-
-def _parse_key_list(raw: str) -> list[str]:
-    """A front-matter flow list of keys (``["a", "b"]``); anything else reads as no keys."""
-    try:
-        keys = json.loads(raw) if raw.startswith("[") else []
-    except json.JSONDecodeError:
-        return []
-    return [k for k in keys if isinstance(k, str)] if isinstance(keys, list) else []
 
 
 # ──────────────────────────────────────────────────────────────────────
@@ -1012,6 +419,24 @@ def read_note(path: Path, key: str, vendor_id: str, vendor_label: str) -> Datase
     return replace(doc, slug=key) if doc.package else doc
 
 
+def _related_targets() -> dict[str, set[str]]:
+    """What a page's related entry may name, per vendor: a table key or a page slug of the page set.
+
+    A table key links to ``<key>.html`` (its page, or the pointer to its family page); a page slug
+    (a package page such as ``aggregated-bsad``, or a family page) links to that page itself.
+    """
+    out: dict[str, set[str]] = {}
+    for vendor_id in REAL_VENDORS:
+        try:
+            manifest = load_manifest(vendor_id)
+        except FileNotFoundError:
+            out[vendor_id] = set()
+            continue
+        pages = {page for group in manifest["groups"] for page in group["pages"]}
+        out[vendor_id] = set(manifest_datasets(manifest)) | pages
+    return out
+
+
 # ──────────────────────────────────────────────────────────────────────
 # Rendering
 # ──────────────────────────────────────────────────────────────────────
@@ -1029,25 +454,6 @@ def make_env() -> Environment:
     env.filters["md_inline"] = _markdown_inline
     env.filters["breakable"] = _breakable
     return env
-
-
-def chart_opts_json(chart: dict[str, Any]) -> str:
-    """The ``data-opts`` payload ``charts.js`` needs to draw one series file.
-
-    Only what the renderer reads: identity, provenance and the spec stay in the
-    committed JSON, not in every page.
-    """
-    return json.dumps(
-        {
-            "type": chart["type"],
-            "unit": chart["unit"],
-            "x_kind": chart["x_kind"],
-            "x": chart["x"],
-            "series": [{"key": s["key"], "values": s["values"]} for s in chart["series"]],
-        },
-        separators=(",", ":"),
-        ensure_ascii=False,
-    )
 
 
 # ──────────────────────────────────────────────────────────────────────
@@ -1531,16 +937,16 @@ def page_view(
     p = doc.page
     errors: list[str] = []
     facts: list[tuple[str, Markup]] = [
-        ("Vendor", Markup(_markdown_inline(p.facts.vendor, doc.vendor_id))),
-        ("Cadence", Markup(_markdown_inline(p.facts.cadence, doc.vendor_id))),
-        ("Grain", Markup(_markdown_inline(p.facts.grain, doc.vendor_id))),
+        ("Vendor", Markup(_markdown_inline(p.facts.vendor))),
+        ("Cadence", Markup(_markdown_inline(p.facts.cadence))),
+        ("Grain", Markup(_markdown_inline(p.facts.grain))),
     ]
     if not p.held:  # the key comes from record, which a held page has none of
         facts.append(
             ("Key", Markup(", ".join(f"<code>{html_escape(k)}</code>" for k in p.record.key)))
         )
     if p.facts.history:
-        facts.append(("History", Markup(_markdown_inline(p.facts.history, doc.vendor_id))))
+        facts.append(("History", Markup(_markdown_inline(p.facts.history))))
 
     chart_v = None
     if arts.chart is not None:
@@ -1983,11 +1389,7 @@ def hub_view(vendor_id: str, manifest: dict, docs: dict[str, DatasetDoc]) -> dic
     facts = [
         (
             k,
-            Markup(
-                _CODE_SPAN.sub(
-                    lambda m: str(_breakable(m.group(0))), _markdown_inline(v, vendor_id)
-                )
-            ),
+            Markup(_CODE_SPAN.sub(lambda m: str(_breakable(m.group(0))), _markdown_inline(v))),
         )
         for k, v in manifest["facts"]
     ]
@@ -2147,8 +1549,8 @@ def landing_chart(vault_path: Path) -> dict[str, Any] | None:
     note = vault_path / "elexon" / "system_prices.md"
     if not note.is_file():
         return None
-    doc = parse_vault_file(note, vendor_id="elexon", vendor_label=REAL_VENDORS["elexon"]["label"])
-    chart, errors, _ = resolve_chart(doc)
+    doc = parse_vault_file(note, vendor_id="elexon", vendor_label=load_manifest("elexon")["name"])
+    chart, errors = resolve_chart(doc)
     if chart is None or errors or not doc.new_template:
         return None
     if chart_svg.check_view(chart, doc.page.chart_view):
@@ -2172,72 +1574,43 @@ def render_landing(env: Environment, view: dict[str, Any]) -> str:
 # ──────────────────────────────────────────────────────────────────────
 
 
-def audit_vault_content(docs: list[DatasetDoc]) -> tuple[list[str], list[str]]:
-    """Per-dataset content audit (VAULT-03).
+def audit_vault_content(docs: list[DatasetDoc]) -> list[str]:
+    """The errors in the notes' ``page:`` blocks: a malformed field, or a page off its anatomy.
 
-    Returns (warnings, errors). Errors fail the build; warnings are surfaced
-    on stderr but don't block. Critical-vs-soft thresholds:
-      ERROR (build-blocking): no overview, no api endpoint base URL, no slug,
-                              a malformed `page:` block in the front matter
-      WARN  (surfaced):       schema rows empty, sample empty, caveats empty,
-                              pydantic class not declared
-
-    A package note has its own body (one section per table), so only its ``page:`` block is
-    checked.
+    Only the ``page:`` block is checked: no page renders a note's body, and vault quality is
+    checked in the vault.
     """
-    warnings: list[str] = []
     errors: list[str] = []
     for d in docs:
-        if not d.package:
-            if not d.overview_paragraphs:
-                errors.append(f"{d.slug}: vault file has no Overview content")
-            if not d.base_url and not d.api_path:
-                errors.append(f"{d.slug}: vault file declares no API endpoint")
         errors.extend(f"{d.slug}: {e}" for e in d.page_errors)
         if d.new_template:
             errors.extend(f"{d.slug}: {e}" for e in anatomy_errors(d.page))
-            continue
-        if d.package:
-            continue
-        if not d.schema_rows:
-            warnings.append(f"{d.slug}: silver schema rows empty (table will render placeholder)")
-        if not (d.sample_rows or d.sample_raw):
-            warnings.append(f"{d.slug}: silver sample empty (section will render placeholder)")
-        if not d.caveats:
-            warnings.append(f"{d.slug}: no caveats captured in vault")
-        if not d.pydantic_schema_wired:
-            warnings.append(
-                f"{d.slug}: no Pydantic class declared in gridflow.schemas.elexon "
-                f"(drift surface — flagged in schema description)"
-            )
-    return warnings, errors
+    return errors
 
 
-def resolve_chart(doc: DatasetDoc) -> tuple[dict[str, Any] | None, list[str], list[str]]:
-    """The committed series for one dataset, after checking it against its spec.
+def resolve_chart(doc: DatasetDoc) -> tuple[dict[str, Any] | None, list[str]]:
+    """The committed series for one dataset, after checking it against its spec (``page.chart``).
 
     Returns:
-        ``(chart, errors, notes)``. ``chart`` is ``None`` when the dataset has
+        ``(chart, errors)``. ``chart`` is ``None`` when the dataset has
         no spec, a ``none`` spec, or any error. Errors fail the build: an
         invalid spec, a spec without a series, a series without a spec, or a
         series distilled from a different spec than the one found today.
     """
     key = f"{doc.vendor_id}/{doc.slug}"
+    spec = doc.page.chart
     try:
-        spec, _origin, notes = chart_spec.resolve_spec(
-            SITE_DIR, doc.vendor_id, doc.slug, doc.page.chart
-        )
         series = chart_spec.load_series(SITE_DIR, doc.vendor_id, doc.slug)
     except (ValueError, TypeError) as exc:
-        return None, [str(exc)], []
+        return None, [str(exc)]
     if spec is not None:
         problems = chart_spec.validate_spec(spec)
         if problems:
-            return None, [f"{key}: chart spec: {p}" for p in problems], notes
+            return None, [f"{key}: chart spec: {p}" for p in problems]
     errors = chart_spec.check_series(series, spec, key)
     if errors or spec is None or spec.get("type") == "none":
-        return None, errors, notes
-    return series, [], notes
+        return None, errors
+    return series, []
 
 
 def _scoped(errors: list[str], vendor_id: str, only: frozenset[str]) -> list[str]:
@@ -2348,23 +1721,15 @@ def build_vendor(
     if errors:
         _fail(vendor_id, "page set", errors)
 
-    # VAULT-03 audit
-    warnings, errors = audit_vault_content(list(docs.values()))
-    if warnings:
-        print(f"[gridflow-build] {vendor_id}: {len(warnings)} content warning(s):", file=sys.stderr)
-        for w in warnings:
-            print(f"  WARN: {w}", file=sys.stderr)
-    errors = _scoped(errors, vendor_id, only)
+    errors = _scoped(audit_vault_content(list(docs.values())), vendor_id, only)
     if errors:
         _fail(vendor_id, "content", errors)
 
     charts: dict[str, dict[str, Any]] = {}
     chart_errors: list[str] = []
     for doc in docs.values():
-        chart, errs, notes = resolve_chart(doc)
+        chart, errs = resolve_chart(doc)
         chart_errors.extend(errs)
-        for note in notes:
-            print(f"  NOTE: {note}", file=sys.stderr)
         if chart is not None:
             charts[doc.slug] = chart
     chart_errors = _scoped(chart_errors, vendor_id, only)
@@ -2471,10 +1836,10 @@ def build_vendor(
 
 
 def orphan_chart_files(vault_path: Path) -> list[str]:
-    """Staged specs and series files naming a dataset the site does not build.
+    """Series files naming a dataset the site does not build.
 
-    ``build_vendor`` only checks datasets in a manifest, so a spec or series
-    left behind after a dataset is dropped would otherwise sit unnoticed.
+    ``build_vendor`` only checks datasets in a manifest, so a series left
+    behind after a dataset is dropped would otherwise sit unnoticed.
     """
     known = {
         (vendor_id, d)
@@ -2482,14 +1847,11 @@ def orphan_chart_files(vault_path: Path) -> list[str]:
         if (vault_path / vendor_id).is_dir()
         for d in manifest_datasets(load_manifest(vendor_id))
     }
-    orphans: list[str] = []
-    for root in (chart_spec.staging_dir(SITE_DIR), chart_spec.series_dir(SITE_DIR)):
-        if not root.is_dir():
-            continue
-        for path in sorted(root.glob("*/*.json")):
-            if (path.parent.name, path.stem) not in known:
-                orphans.append(str(path.relative_to(REPO_ROOT)).replace("\\", "/"))
-    return orphans
+    return [
+        path.relative_to(REPO_ROOT).as_posix()
+        for path in sorted(chart_spec.series_dir(SITE_DIR).glob("*/*.json"))
+        if (path.parent.name, path.stem) not in known
+    ]
 
 
 def new_template_pages(vault_path: Path) -> set[tuple[str, str]]:
@@ -2539,15 +1901,11 @@ def build(
     """
     env = make_env()
     out_root = output_dir or SITE_DIR
-    _reset_md_link_stats()
-    _reset_caveat_stats()
 
     orphans = orphan_chart_files(vault_path)
     if orphans:
         _fail("charts", "orphan chart file", [f"{o}: no such dataset page" for o in orphans])
-    _NEW_TEMPLATE_PAGES.clear()
-    _NEW_TEMPLATE_PAGES.update(new_template_pages(vault_path))
-    orphans = orphan_artefacts(_NEW_TEMPLATE_PAGES)
+    orphans = orphan_artefacts(new_template_pages(vault_path))
     if orphans:
         _fail("pages", "orphan artefact", [f"{o}: no dataset-template page" for o in orphans])
     orphans = orphan_locations(vault_path)
@@ -2583,18 +1941,6 @@ def build(
         f"[gridflow-build] charts: {n_charts} template page(s) carry a distilled series; "
         "every other page has no chart section"
     )
-    print(
-        f"[gridflow-build] vault-relative .md links: {_MD_LINK_STATS['resolved']} resolved, "
-        f"{_MD_LINK_STATS['plain_text']} rendered as plain text (no published page), "
-        f"{_MD_LINK_STATS['fragment_dropped']} fragment(s) dropped (no generated anchor)"
-    )
-    if _CAVEAT_STATS["dropped_lines"]:
-        print(
-            f"[gridflow-build] WARNING: {_CAVEAT_STATS['dropped_lines']} line(s) in "
-            "'Known issues and gotchas' sections could not be placed by the caveat "
-            "grammar and were dropped from rendered output",
-            file=sys.stderr,
-        )
     return n_datasets, n_pages, n_hubs
 
 
@@ -2629,6 +1975,35 @@ def _diff_outputs(temp_dir: Path) -> list[str]:
     return differing
 
 
+STAMP_FILENAME = ".last_synced_from_vault"
+STAMP_MAX_AGE_DAYS = 30
+STAMP_TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+
+
+def check_stamp(stamp_path: Path) -> bool:
+    """Validate the vault mirror's sync stamp, left by the mirror propagation.
+
+    Returns:
+        True if the stamp exists and parses; False (with an ERROR printed to stderr) if it is
+        missing or malformed. An age over ``STAMP_MAX_AGE_DAYS`` only warns: syncs are
+        event-driven, not scheduled, so age alone does not prove drift.
+    """
+    try:
+        synced_at = json.loads(stamp_path.read_text(encoding="utf-8"))["synced_at_utc"]
+        synced = dt.datetime.strptime(synced_at, STAMP_TIME_FORMAT).replace(tzinfo=dt.UTC)
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        print(f"[gridflow-build] ERROR: no valid sync stamp {stamp_path}: {exc}", file=sys.stderr)
+        return False
+    age = dt.datetime.now(dt.UTC) - synced
+    if age > dt.timedelta(days=STAMP_MAX_AGE_DAYS):
+        print(
+            f"[gridflow-build] WARNING: vault sync stamp is {age.total_seconds() / 86400:.1f} days "
+            f"old (synced_at_utc={synced_at}); confirm no vault changes are unpropagated.",
+            file=sys.stderr,
+        )
+    return True
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="gridflow-build", description=__doc__.split("\n", 1)[0])
     parser.add_argument(
@@ -2640,7 +2015,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--check",
         action="store_true",
-        help="Build twice and exit non-zero if any output changes between builds (idempotence check).",
+        help="Build twice and exit non-zero if any output changes between builds (idempotence "
+        "check), or if the vault's sync stamp is missing or malformed.",
     )
     parser.add_argument(
         "--only",
@@ -2660,6 +2036,9 @@ def main(argv: list[str] | None = None) -> int:
         build(vault_path, only=frozenset(args.only))
         print(f"[gridflow-build] rendered only {sorted(args.only)}")
         return 0
+
+    if args.check and not check_stamp(vault_path / STAMP_FILENAME):
+        return 1
 
     n_datasets, n_pages, n_hubs = build(vault_path)
     print(

@@ -8,7 +8,8 @@
 
    Every page carries its own <main id="main">. The masthead goes in before it, the footer after it.
    The small behaviours at the end (tabs, copy buttons, the sidebar scroll-spy) are shared by the
-   generated dataset and vendor pages. */
+   generated dataset and vendor pages, and window.gridflowDraw holds the drawing primitives of the
+   buried cables (home.js, hubs.js; both load after this file). */
 
 (function () {
   "use strict";
@@ -287,4 +288,30 @@
     }, { rootMargin: "-20% 0px -70% 0px" });
     document.querySelectorAll("section[id]").forEach(function (s) { observer.observe(s); });
   }
+
+  // ---------------------------------------------------------------- the cables' drawing primitives
+  var css = getComputedStyle(document.documentElement);
+  function n(v) { return Math.round(v * 10) / 10; }
+  window.gridflowDraw = {
+    // a colour token from tokens.css, or the fallback
+    tok: function (name, fallback) { return (css.getPropertyValue(name) || "").trim() || fallback; },
+    // an element's box in page coordinates inside `main`
+    box: function (el, main) {
+      var r = el.getBoundingClientRect();
+      var m = main.getBoundingClientRect();
+      return { l: r.left - m.left, t: r.top - m.top, r: r.right - m.left, b: r.bottom - m.top, w: r.width, h: r.height };
+    },
+    smoothstep: function (t) { t = Math.max(0, Math.min(1, t)); return t * t * (3 - 2 * t); },
+    n: n,
+    // Catmull-Rom through the points, as cubic Beziers (the reference generator's smooth())
+    smooth: function (pts) {
+      var d = "M" + n(pts[0][0]) + " " + n(pts[0][1]);
+      for (var i = 0; i < pts.length - 1; i++) {
+        var p0 = pts[i > 0 ? i - 1 : i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2 < pts.length ? i + 2 : i + 1];
+        d += " C" + n(p1[0] + (p2[0] - p0[0]) / 6) + " " + n(p1[1] + (p2[1] - p0[1]) / 6) + " " +
+             n(p2[0] - (p3[0] - p1[0]) / 6) + " " + n(p2[1] - (p3[1] - p1[1]) / 6) + " " + n(p2[0]) + " " + n(p2[1]);
+      }
+      return d;
+    }
+  };
 })();

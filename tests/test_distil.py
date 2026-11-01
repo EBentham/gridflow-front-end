@@ -11,14 +11,14 @@ import pytest
 
 pl = pytest.importorskip("polars")
 
-from gridflow_front_end import chart_spec
+from gridflow_front_end import artefacts, chart_spec
 from gridflow_front_end.distil import (
     DistilError,
     SpecSource,
     build_payload,
     distil_spec,
-    dumps_payload,
 )
+from gridflow_front_end.paths import SITE_DIR
 
 T0 = dt.datetime(2026, 9, 1, tzinfo=dt.UTC)
 
@@ -280,6 +280,45 @@ def test_missing_table_or_column_fails_loudly(tmp_path: Path) -> None:
         )
 
 
+def test_a_column_added_after_the_first_file_is_read(tmp_path: Path) -> None:
+    """fe-site-18: a column a later transformer added is in silver, not "not in silver"."""
+    older = _fuel_rows(T0, 2)
+    newer = _fuel_rows(T0 + dt.timedelta(hours=1), 2).with_columns(capacity_mw=pl.lit(7.0))
+    _write(tmp_path, "elexon/fuelhh", {"d1": older, "d2": newer})
+    chart = distil_spec(dict(FUEL_SPEC, value="capacity_mw"), tmp_path)
+    # the older file has no capacity_mw: its rows read as nulls and drop out
+    assert chart["x"] == ["2026-09-01T01:00:00Z", "2026-09-01T01:30:00Z"]
+    assert {s["key"]: s["values"] for s in chart["series"]}["gas"] == [14.0, 14.0]
+    assert chart["provenance"]["rows_read"] == 16
+    assert chart["provenance"]["null_values_dropped"] == 8
+
+
+@pytest.mark.parametrize("dtype", [pl.String, pl.Boolean, pl.Int64])
+def test_a_column_that_changes_type_in_a_later_file_is_refused(tmp_path: Path, dtype: Any) -> None:
+    """A changed type is refused, never cast (text, a flag or a truncated number as a measure)."""
+    older = _fuel_rows(T0, 2)
+    newer = _fuel_rows(T0 + dt.timedelta(hours=1), 2).with_columns(
+        pl.col("generation_mw").cast(dtype)
+    )
+    _write(tmp_path, "elexon/fuelhh", {"d1": older, "d2": newer})
+    with pytest.raises(DistilError, match="'generation_mw' changes type"):
+        distil_spec(FUEL_SPEC, tmp_path)
+
+
+def test_a_column_the_newest_file_dropped_is_not_read(tmp_path: Path) -> None:
+    """Older files' types for a retired column never need reconciling."""
+    files = {
+        "d1": _fuel_rows(T0, 2).with_columns(retired=pl.lit(1)),
+        "d2": _fuel_rows(T0 + dt.timedelta(hours=1), 2).with_columns(
+            retired=pl.concat_list(pl.lit(1))
+        ),
+        "d3": _fuel_rows(T0 + dt.timedelta(hours=2), 2),
+    }
+    _write(tmp_path, "elexon/fuelhh", files)
+    chart = distil_spec(dict(FUEL_SPEC, window={"last": "3h"}), tmp_path)
+    assert chart["provenance"]["rows_read"] == 24
+
+
 def test_max_points_guard(tmp_path: Path) -> None:
     _write(tmp_path, "elexon/fuelhh", {"d1": _fuel_rows(T0, 10)})
     with pytest.raises(DistilError, match="max_points"):
@@ -288,10 +327,20 @@ def test_max_points_guard(tmp_path: Path) -> None:
 
 def test_payload_round_trips_and_matches_its_spec(tmp_path: Path) -> None:
     _write(tmp_path, "elexon/fuelhh", {"d1": _fuel_rows(T0, 4)})
-    payload = build_payload(SpecSource("elexon", "fuelhh", FUEL_SPEC, "staging"), tmp_path)
-    text = dumps_payload(payload)
+    payload = build_payload(SpecSource("elexon", "fuelhh", FUEL_SPEC), tmp_path)
+    text = artefacts.dumps_lines(payload, "series")
     loaded = json.loads(text)
     assert loaded == json.loads(json.dumps(payload))
     assert chart_spec.check_series(loaded, FUEL_SPEC, "elexon/fuelhh") == []
     # One line per series keeps re-distil diffs readable.
     assert text.count('{"key": ') == len(payload["series"])
+
+
+def test_committed_series_and_locations_files_read_back_byte_for_byte() -> None:
+    """The one line-per-item writer reproduces the files the two old writers committed."""
+    files = [(path, "series") for path in chart_spec.series_dir(SITE_DIR).glob("*/*.json")]
+    files += [(path, "sites") for path in artefacts.locations_dir(SITE_DIR).glob("*/*.json")]
+    assert len({key for _, key in files}) == 2
+    for path, key in files:
+        text = path.read_text(encoding="utf-8")
+        assert artefacts.dumps_lines(json.loads(text), key) == text, path

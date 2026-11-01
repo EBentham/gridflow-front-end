@@ -8,11 +8,11 @@
   "use strict";
   var NS = "http://www.w3.org/2000/svg";
   var main = document.getElementById("main");
-  if (!main || !window.matchMedia) return;
+  if (!main || !window.matchMedia || !window.gridflowDraw) return;
   var mode = main.getAttribute("data-cable");
   var on = window.matchMedia("(min-width: 1100px)");
-  var css = getComputedStyle(document.documentElement);
-  function tok(name, fallback) { return (css.getPropertyValue(name) || "").trim() || fallback; }
+  var kit = window.gridflowDraw;
+  var tok = kit.tok, smoothstep = kit.smoothstep, n = kit.n, smooth = kit.smooth;
   var INK = tok("--ink", "#1C2B22");
   var CORE = { bronze: tok("--bronze", "#A5713C"), silver: tok("--silver", "#9FADAB"), gold: tok("--gold", "#C2A14A") };
   var svg = document.createElementNS(NS, "svg");
@@ -21,11 +21,7 @@
   svg.setAttribute("focusable", "false");
   main.insertBefore(svg, main.firstChild);
 
-  function box(el) {
-    var r = el.getBoundingClientRect();
-    var m = main.getBoundingClientRect();
-    return { l: r.left - m.left, t: r.top - m.top, r: r.right - m.left, b: r.bottom - m.top, w: r.width, h: r.height };
-  }
+  function box(el) { return kit.box(el, main); }
   function centre(el) { var b = box(el); return [b.l + b.w / 2, b.t + b.h / 2]; }
   // a cable anchor drawn in the landscape (<circle data-a>, drawing coordinates) to page coordinates
   function anchor(key) {
@@ -38,17 +34,6 @@
     p = p.matrixTransform(land.getScreenCTM());
     var m = main.getBoundingClientRect();
     return [p.x - m.left, p.y - m.top];
-  }
-  function smoothstep(t) { t = Math.max(0, Math.min(1, t)); return t * t * (3 - 2 * t); }
-  function n(v) { return Math.round(v * 10) / 10; }
-  function smooth(pts) {
-    var d = "M" + n(pts[0][0]) + " " + n(pts[0][1]);
-    for (var i = 0; i < pts.length - 1; i++) {
-      var p0 = pts[i > 0 ? i - 1 : i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2 < pts.length ? i + 2 : i + 1];
-      d += " C" + n(p1[0] + (p2[0] - p0[0]) / 6) + " " + n(p1[1] + (p2[1] - p0[1]) / 6) + " " +
-           n(p2[0] - (p3[0] - p1[0]) / 6) + " " + n(p2[1] - (p3[1] - p1[1]) / 6) + " " + n(p2[0]) + " " + n(p2[1]);
-    }
-    return d;
   }
   var out = [];
   function cable(d, core) {

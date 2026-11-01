@@ -104,7 +104,7 @@ publishes only after they pass (see `.github/workflows/ci.yml`).
 │   ├── serve.py                      # stdlib-only local dev server
 │   └── build.py                      # Jinja2 renderer over vault content
 ├── templates/
-│   ├── _partials/                    # shared head + partials
+│   ├── _partials/                    # shared partials
 │   ├── dataset.html.j2               # 7-section dataset page template
 │   ├── hub.html.j2                   # vendor hub template
 │   └── data-sources.html.j2          # Data sources landing
@@ -118,8 +118,7 @@ publishes only after they pass (see `.github/workflows/ci.yml`).
         ├── data-sources/             # build outputs (gitignored except hub stubs)
         ├── data/elexon.json          # structural manifest
         ├── assets/theme.css          # shared stylesheet
-        ├── assets/site.js            # chrome injection + scroll-spy + tabs
-        └── assets/charts.js          # deterministic seeded SVG charts
+        └── assets/site.js            # chrome injection + scroll-spy + tabs
 ```
 
 ## Planning artifacts
