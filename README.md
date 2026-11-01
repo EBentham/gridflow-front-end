@@ -91,14 +91,14 @@ Two checks run when `--check` is passed:
    sample / caveats / Pydantic class declaration. Fail loud if a vault file has
    no Overview or no API endpoint.
 
-CI runs `gridflow-build --check` after the initial build (see
-`.github/workflows/deploy.yml`).
+CI runs `gridflow-build --check` and the tests on every pull request, and the deploy job
+publishes only after they pass (see `.github/workflows/ci.yml`).
 
 ## Repo layout
 
 ```
 .
-├── .github/workflows/deploy.yml      # GitHub Pages deploy on push to main
+├── .github/workflows/ci.yml          # checks and tests; GitHub Pages deploy on push to main
 ├── pyproject.toml                    # gridflow-serve (runtime) + gridflow-build ([build] extra)
 ├── src/gridflow_front_end/
 │   ├── serve.py                      # stdlib-only local dev server
