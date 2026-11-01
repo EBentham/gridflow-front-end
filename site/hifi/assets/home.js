@@ -57,7 +57,7 @@
 
   // ---------------------------------------------------------------- the four feeds
   function feeds() {
-    var keys = ["elexon", "nesodp", "entsoe", "gie", "neso", "openmeteo", "entsog"];
+    var keys = ["elexon", "neso_data_portal", "entsoe", "gie", "neso", "openmeteo", "entsog"];
     var v = {};
     for (var k = 0; k < keys.length; k++) {
       var el = q(".vend--" + keys[k]);
@@ -125,7 +125,7 @@
     cable(runs[0] + " V" + n(lane - R) + " Q" + n(ends[0]) + " " + n(lane) + " " + n(ends[0] - R) + " " + n(lane) +
           " H" + n(ex[0] + R) + " Q" + n(ex[0]) + " " + n(lane) + " " + n(ex[0]) + " " + n(lane + R) + " V" + n(ex[1]),
           BRONZE, 4.4, 1.5);
-    [mark("nesodp"), mark("neso")].forEach(function (b) {
+    [mark("neso_data_portal"), mark("neso")].forEach(function (b) {
       cable("M" + n(b[0] + R) + " " + n(lane) + " Q" + n(b[0]) + " " + n(lane) + " " + n(b[0]) + " " + n(lane + R) +
             " V" + n(b[1]), BRONZE, 4.4, 1.5);
       joints.push([b[0] + R, lane]);

@@ -20,6 +20,9 @@ Build inputs (single source of truth):
 Build outputs (gitignored, regenerated on every run):
 - site/hifi/data-sources/<vendor>/<slug>.html
 - site/hifi/data-sources/<vendor>.html
+- site/hifi/data-sources.html    — the Data sources landing
+- site/hifi/index.html           — the homepage (templates/index.html.j2); its vendor strip
+                                   comes from the manifests, its sparklines from the series
 
 The deployed artefact stays pure static HTML/CSS/JS — Jinja2 is a build-time
 dependency only (declared in pyproject.toml's [build] extras).
@@ -1569,6 +1572,56 @@ def render_landing(env: Environment, view: dict[str, Any]) -> str:
     return env.get_template("data-sources.html.j2").render(v=view)
 
 
+# The homepage's vendor strip in reading order (home.js and theme.css place each card by vendor id),
+# with the dataset whose chart each vendor's sparkline draws.
+_HOME_SPARKS = {
+    "elexon": "system_prices",
+    "neso_data_portal": "historic_generation_mix",
+    "entsoe": "day_ahead_prices",
+    "gie": "storage",
+    "neso": "carbon_intensity",
+    "openmeteo": "historical_wind",
+    "entsog": "physical_flows",
+}
+
+
+def home_view(landing: dict[str, Any], vault_path: Path) -> dict[str, Any]:
+    """The homepage: the landing's counts and vendors, each with a sparkline from a dataset page.
+
+    The sparkline is the lead series of the dataset page's chart (the first in its key), drawn from
+    the page's own committed series, and its caption gives the page's chart title and that series'
+    range, so the homepage cannot state a window or a figure the dataset page does not.
+    """
+    by_id = {d["id"]: d for d in landing["vendors"]}
+    vendors = []
+    for vendor_id, slug in _HOME_SPARKS.items():
+        vendor = by_id[vendor_id]
+        doc = read_note(note_path(vault_path, vendor_id, slug), slug, vendor_id, vendor["name"])
+        chart, errors = resolve_chart(doc)
+        if chart is None or chart["type"] not in chart_spec.TIME_CHART_TYPES:
+            _fail("home", "sparkline", errors or [f"{vendor_id}/{slug}: no time chart to draw"])
+        view = doc.page.chart_view
+        lead = view.key[0]
+        values = next(s["values"] for s in chart["series"] if s["key"] == lead.series)
+        drawn = [v for v in values if v is not None]
+        lo, hi = min(drawn), max(drawn)
+        step = 1 if max(abs(lo), abs(hi)) >= 100 else 0.1
+        span = f"{chart_svg.fmt_num(lo, step)} to {chart_svg.fmt_num(hi, step)}"
+        vendors.append(
+            {
+                **vendor,
+                "code": slug,
+                "spark": Markup(chart_svg.spark(chart, lead.series)),
+                "caption": f"{view.title}. {lead.label}: {span}\u00a0{chart['unit']}",
+            }
+        )
+    return {
+        "n": landing["n"],
+        "count": _count_word(len(vendors)).capitalize(),
+        "vendors": vendors,
+    }
+
+
 # ──────────────────────────────────────────────────────────────────────
 # Driver
 # ──────────────────────────────────────────────────────────────────────
@@ -1894,7 +1947,7 @@ def orphan_artefacts(pages: set[tuple[str, str]]) -> list[str]:
 def build(
     vault_path: Path, output_dir: Path | None = None, only: frozenset[str] = frozenset()
 ) -> tuple[int, int, int]:
-    """Render every vendor's pages and hub, then the Data sources landing.
+    """Render every vendor's pages and hub, then the Data sources landing and the homepage.
 
     Returns ``(n_datasets, n_pages, n_hubs)``: the datasets the pages document, the pages
     written (family pointers not counted) and the hubs.
@@ -1936,6 +1989,10 @@ def build(
         landing = landing_view(manifests, landing_chart(vault_path))
         (out_root / "data-sources.html").write_text(render_landing(env, landing), encoding="utf-8")
         print(f"  wrote: data-sources.html (landing: {landing['n']} datasets)")
+        home = home_view(landing, vault_path)
+        page = env.get_template("index.html.j2").render(v=home)
+        (out_root / "index.html").write_text(page, encoding="utf-8")
+        print(f"  wrote: index.html (home: {len(home['vendors'])} vendors, each with a sparkline)")
 
     print(
         f"[gridflow-build] charts: {n_charts} template page(s) carry a distilled series; "
@@ -1947,8 +2004,7 @@ def build(
 def _generated(root: Path) -> list[Path]:
     """Every file the build writes under ``root`` (a site root or a snapshot of one)."""
     out = sorted((root / "data-sources").rglob("*.html"))
-    landing = root / "data-sources.html"
-    return [*out, landing] if landing.exists() else out
+    return out + [p for p in (root / "data-sources.html", root / "index.html") if p.exists()]
 
 
 def _snapshot_outputs(temp_dir: Path) -> None:
@@ -2043,7 +2099,7 @@ def main(argv: list[str] | None = None) -> int:
     n_datasets, n_pages, n_hubs = build(vault_path)
     print(
         f"[gridflow-build] wrote {n_pages} dataset pages ({n_datasets} datasets) "
-        f"+ {n_hubs} vendor hub(s) + the landing"
+        f"+ {n_hubs} vendor hub(s) + the landing + the homepage"
     )
 
     if args.check:
