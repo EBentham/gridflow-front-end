@@ -31,5 +31,7 @@ site/hifi/data-sources/openmeteo/*.html
 site/hifi/data-sources/openmeteo.html
 site/hifi/data-sources/neso_data_portal/*.html
 site/hifi/data-sources/neso_data_portal.html
-# The Data sources landing (rendered by gridflow-build from the same vendor files).
+# The Data sources landing and the homepage (rendered by gridflow-build from the same vendor files
+# and the committed series; the homepage's source is templates/index.html.j2).
 site/hifi/data-sources.html
+site/hifi/index.html

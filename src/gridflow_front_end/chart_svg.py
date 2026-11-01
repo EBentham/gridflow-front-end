@@ -685,6 +685,71 @@ def render(
     return out[0], out[1]
 
 
+def _thin(pts: list[tuple[float, float]]) -> list[tuple[float, float]]:
+    """Each pixel column's lowest and highest point, in time order: the same line in fewer points."""
+    out: list[tuple[float, float]] = []
+    for _, group in itertools.groupby(pts, key=lambda p: round(p[0])):
+        col = list(group)
+        ends = {min(col, key=lambda p: p[1]), max(col, key=lambda p: p[1])}
+        out.extend(p for p in col if p in ends)
+    return out
+
+
+def spark(chart: dict[str, Any], key: str, w: int = 280, h: int = 52) -> str:
+    """One series of a time chart as a homepage sparkline: no axes, drawn to its own range.
+
+    A gap breaks the line as on the dataset page, a stretch below zero is shaded clay down to a
+    dashed zero rule, and a series of a few points is dotted. A long series (17 years of days) is
+    thinned to two points a pixel column, keeping its shape and its extremes.
+    """
+    pad = 4
+    ts = [_parse_time(x) for x in chart["x"]]
+    values = next(s["values"] for s in chart["series"] if s["key"] == key)
+    runs = _runs(ts, values, _step(ts))
+    drawn = [v for run in runs for _, v in run]
+    lo, hi = min(drawn), max(drawn)
+
+    def X(t: float) -> float:
+        return pad + (t - ts[0]) / ((ts[-1] - ts[0]) or 1) * (w - 2 * pad)
+
+    def Y(v: float) -> float:
+        return pad + (hi - v) / ((hi - lo) or 1) * (h - 2 * pad)
+
+    ink, clay = colour("ink"), colour("fuel-gas")
+    zero = Y(0) if lo < 0 < hi else None
+    shade: list[str] = []
+    lines: list[str] = []
+    dots: list[str] = []
+    for run in runs:
+        pts = _thin([(X(t), Y(v)) for t, v in run])
+        if zero is not None:
+            for below, group in itertools.groupby(pts, key=lambda p: p[1] > zero):
+                if below:
+                    seg = list(group)
+                    shade.append(
+                        f'<path d="M{_f(seg[0][0] - 1.2)} {_f(zero)} '
+                        + " ".join(f"L{_f(x)} {_f(y)}" for x, y in seg)
+                        + f' L{_f(seg[-1][0] + 1.2)} {_f(zero)} Z" fill="{clay}"/>'
+                    )
+        lines.append(
+            '<path d="M'
+            + " L".join(f"{_f(x)} {_f(y)}" for x, y in pts)
+            + f'" fill="none" stroke="{ink}" stroke-width="1.5" stroke-linejoin="round"/>'
+        )
+        if len(drawn) <= 20 or len(pts) == 1:
+            dots.extend(f'<circle cx="{_f(x)}" cy="{_f(y)}" r="2.6" fill="{ink}"/>' for x, y in pts)
+    if zero is not None:
+        shade.append(
+            f'<path d="M0 {_f(zero)} H{w}" stroke="{ink}" stroke-width=".8" stroke-dasharray="3 3" '
+            'opacity=".6"/>'
+        )
+    return (
+        f'<svg width="{w}" height="{h}" viewBox="0 0 {w} {h}" aria-hidden="true">'
+        + "".join(shade + lines + dots)
+        + "</svg>"
+    )
+
+
 def value_range(chart: dict[str, Any]) -> tuple[float, float]:
     """The lowest and highest value a time chart draws: a stack's sums, else the values."""
     if chart["type"] == "stacked-area":

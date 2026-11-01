@@ -107,14 +107,15 @@ publishes only after they pass (see `.github/workflows/ci.yml`).
 │   ├── _partials/                    # shared partials
 │   ├── dataset.html.j2               # 7-section dataset page template
 │   ├── hub.html.j2                   # vendor hub template
-│   └── data-sources.html.j2          # Data sources landing
+│   ├── data-sources.html.j2          # Data sources landing
+│   └── index.html.j2                 # homepage
 ├── vault/
 │   └── elexon/*.md                   # 33 vendored Elexon dataset specs
 └── site/
     └── hifi/                         # deploy artefact (uploaded to GitHub Pages)
-        ├── index.html                # hand-authored
+        ├── index.html                # build output (gitignored)
         ├── architecture.html         # hand-authored
-        ├── data-sources.html         # hand-authored
+        ├── data-sources.html         # build output (gitignored)
         ├── data-sources/             # build outputs (gitignored except hub stubs)
         ├── data/elexon.json          # structural manifest
         ├── assets/theme.css          # shared stylesheet
