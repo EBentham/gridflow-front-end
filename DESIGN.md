@@ -86,9 +86,9 @@ Use the tokens in `tokens.css`. The roles:
 ## Charts
 
 - Real data only. Every chart names its dataset, unit and window in the caption or the axis.
-  Series come from `site/hifi/data/chart-series.json` or the silver/gold stores, never invented.
-  Caveats that must stay true: chart-series values are per-timestamp means across rows, and
-  `elexon/fuelhh` values are per-row means, never total output.
+  Series come from silver through `gridflow-distil` (`site/hifi/data/series/`, each distilled from
+  its note's chart spec) or the gold stores, never invented. A caption says how a series is
+  aggregated, and never presents a mean across categories as a total.
 - **Schematic drawings** (the merit-order stack, the residual-demand draws) carry no numbers and no
   scales, and the missing numbers carry that honestly. Do not add "illustrative" captions.
 - Captions describe what the line shows, never a cause nobody has verified.
